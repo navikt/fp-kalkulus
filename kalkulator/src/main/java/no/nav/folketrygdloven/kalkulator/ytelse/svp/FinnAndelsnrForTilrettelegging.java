@@ -1,0 +1,28 @@
+package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+
+import static no.nav.folketrygdloven.kalkulator.ytelse.svp.AktivitetStatusMapper.mapAktivitetStatus;
+
+import java.util.Optional;
+
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+
+class FinnAndelsnrForTilrettelegging {
+
+    static Optional<Long> finnAndelsnrIFørstePeriode(BeregningsgrunnlagDto vlBeregningsgrunnlag,
+                                                     TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold) {
+        Arbeidsgiver tilretteleggingArbeidsgiver = tilretteleggingArbeidsforhold.getArbeidsgiver().orElse(null);
+        InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
+        AktivitetStatus tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
+        return vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
+            .stream().filter(a -> a.getAktivitetStatus().equals(tilretteleggingAktivitetStatus) &&
+                a.getBgAndelArbeidsforhold().map(bgAndelArbeidsforhold -> bgAndelArbeidsforhold.getArbeidsgiver().equals(tilretteleggingArbeidsgiver) &&
+                    bgAndelArbeidsforhold.getArbeidsforholdRef().gjelderFor(tilretteleggingArbeidsforholdRef)).orElse(true))
+            .findFirst().map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr);
+    }
+
+}

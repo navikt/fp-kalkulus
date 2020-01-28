@@ -1,0 +1,1197 @@
+package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.assertj.core.data.Offset;
+import org.junit.Before;
+import org.junit.Test;
+
+import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
+import no.nav.folketrygdloven.kalkulator.FullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.fastsette.RegelFullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.SvpGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.SvpTilretteleggingDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.vedtak.util.Tuple;
+
+public class FullføreBeregningsgrunnlagSVPImplTest {
+
+    private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
+    private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
+    private static final Long GRUNNBELØP = 100_000L;
+    private static final BigDecimal SEKS_G = BigDecimal.valueOf(6 * GRUNNBELØP);
+    private static final String ORGNR1 = "654";
+    private static final UUID ORGNR1_ARB_ID1 = UUID.randomUUID();
+    private static final UUID ORGNR1_ARB_ID2 = UUID.randomUUID();
+    private static final String ORGNR2 = "765";
+    private static final UUID ORGNR2_ARB_ID1 = UUID.randomUUID();
+    private static final String ORGNR3 = "888";
+    private static final UUID ORGNR3_ARB_ID1 = UUID.randomUUID();
+    private static final LocalDate ARBEIDSPERIODE_FOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
+    private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
+    public static final AktørId AKTØR_ID = AktørId.dummy();
+
+    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private FullføreBeregningsgrunnlag tjeneste;
+    private BeregningsgrunnlagDto beregningsgrunnlag;
+
+    @Before
+    public void setup() {
+        tjeneste = new FullføreBeregningsgrunnlagSVPImpl();
+        beregningsgrunnlag = lagBeregningsgrunnlagAT();
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagAT() {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
+            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
+            .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+            .build();
+        BeregningsgrunnlagPeriodeDto.builder()
+            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+            .build(bg);
+        SammenligningsgrunnlagDto.builder()
+            .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
+            .medRapportertPrÅr(BigDecimal.ZERO)
+            .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+            .build(bg);
+        return bg;
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagATMedToPerioder() {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
+            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
+            .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+            .build();
+        BeregningsgrunnlagPeriodeDto.builder()
+            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2))
+            .build(bg);
+        BeregningsgrunnlagPeriodeDto.builder()
+            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), null)
+            .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR)
+            .build(bg);
+        SammenligningsgrunnlagDto.builder()
+            .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
+            .medRapportertPrÅr(BigDecimal.ZERO)
+            .medAvvikPromilleNy(BigDecimal.valueOf(0L))
+            .build(bg);
+        return bg;
+    }
+
+    private BeregningsgrunnlagPrStatusOgAndelDto lagAndel(BeregningsgrunnlagPeriodeDto periode, String orgnr, UUID arbRefId, int inntekt, int refusjon) {
+        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(Arbeidsgiver.virksomhet(orgnr), arbRefId, refusjon))
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
+            .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+            .build(periode);
+    }
+
+    private BeregningsgrunnlagPrStatusOgAndelDto lagFrilansAndel(BeregningsgrunnlagPeriodeDto periode, int inntekt) {
+        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medAktivitetStatus(AktivitetStatus.FRILANSER)
+            .medInntektskategori(Inntektskategori.FRILANSER)
+            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
+            .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+            .build(periode);
+    }
+
+    private BeregningsgrunnlagPrStatusOgAndelDto lagNæringAndel(BeregningsgrunnlagPeriodeDto periode, int inntekt) {
+        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+            .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
+            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
+            .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+            .build(periode);
+    }
+
+    private BGAndelArbeidsforholdDto.Builder lagBgAndelArbeidsforhold(Arbeidsgiver arbeidsgiver, UUID arbRefId, int refusjon) {
+        return BGAndelArbeidsforholdDto.builder()
+            .medArbeidsperiodeFom(ARBEIDSPERIODE_FOM)
+            .medArbeidsperiodeTom(ARBEIDSPERIODE_TOM)
+            .medArbeidsforholdRef(arbRefId != null ? arbRefId.toString() : null)
+            .medArbeidsgiver(arbeidsgiver)
+            .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjon));
+    }
+
+    @Test
+    public void skal_teste_et_arbeidsforhold_med_refusjon_over_6G() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 612_000, 612_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 612_000, 600_000, 2308, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.ZERO, SEKS_G, SEKS_G);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_beregningsgrunnlag_under_6G_full_refusjon_gradert() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 200_000, 200_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 300_000, 300_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
+        mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
+        mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50)));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 500_000, 350_000, 1346, 350_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(150_000), BigDecimal.valueOf(150_000));
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void næring_med_beregningsgrunnlag_under_6G() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagNæringAndel(periode, 300_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 300_000, 1154, 300_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void næring_med_beregningsgrunnlag_under_6G_ikke_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagNæringAndel(periode, 300_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 0, 0, 0);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void næring_med_beregningsgrunnlag_under_6G_delvis_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagNæringAndel(periode, 300_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 150_000, 577, 150_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(150_000), BigDecimal.ZERO, BigDecimal.valueOf(150_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void næring_med_beregningsgrunnlag_over_6G_delvis_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagNæringAndel(periode, 800_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 800_000, 300_000, 1154, 300_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_beregningsgrunnlag_over_6G_refusjon_under_6G_gradert() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 800_000, 200_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 200_000, 200_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
+        mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
+        mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50)));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_000_000, 540_000, 2077, 540_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(240_000), BigDecimal.valueOf(200_000), BigDecimal.valueOf(440_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.valueOf(0), BigDecimal.valueOf(100_000), BigDecimal.valueOf(100_000));
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_to_perioder_med_refusjon_over_6G_gradert() {
+        // Arrange
+        BeregningsgrunnlagDto bg = lagBeregningsgrunnlagATMedToPerioder();
+        var periode1 = bg.getBeregningsgrunnlagPerioder().get(0);
+        var periode2 = bg.getBeregningsgrunnlagPerioder().get(1);
+
+        lagAndel(periode1, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode1, ORGNR2, ORGNR2_ARB_ID1,600_000, 0);
+        lagAndel(periode2, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode2, ORGNR2, ORGNR2_ARB_ID1,600_000, 600_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
+        mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
+        mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), BigDecimal.valueOf(50)));
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(2);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_200_000, 300_000, 1154, 300_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+
+        BeregningsgrunnlagPeriodeDto resPeriode2 = bgPerioder.get(1);
+        assertPeriode(resPeriode2, 1_200_000, 450_000, 1730, 450_000);
+        assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+        assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_to_perioder_med_refusjon_over_6G_gradert_ulik_refusjon() {
+        // Arrange
+        BeregningsgrunnlagDto bg = lagBeregningsgrunnlagATMedToPerioder();
+        var periode1 = bg.getBeregningsgrunnlagPerioder().get(0);
+        var periode2 = bg.getBeregningsgrunnlagPerioder().get(1);
+
+        lagAndel(periode1, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode1, ORGNR2, ORGNR2_ARB_ID1,600_000, 0);
+        lagAndel(periode2, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode2, ORGNR2, ORGNR2_ARB_ID1,600_000, 100_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
+        mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
+        mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), BigDecimal.valueOf(50)));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(2);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_200_000, 300_000, 1154, 300_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+
+        BeregningsgrunnlagPeriodeDto resPeriode2 = bgPerioder.get(1);
+        assertPeriode(resPeriode2, 1_200_000, 450_000, 1730, 450_000);
+        assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
+        assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(50_000), BigDecimal.valueOf(50_000));
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_to_perioder_med_refusjon_over_6G() {
+        // Arrange
+        BeregningsgrunnlagDto bg = lagBeregningsgrunnlagATMedToPerioder();
+        var periode1 = bg.getBeregningsgrunnlagPerioder().get(0);
+        var periode2 = bg.getBeregningsgrunnlagPerioder().get(1);
+
+        lagAndel(periode1, ORGNR1, ORGNR1_ARB_ID1,  9*GRUNNBELØP.intValue(), 9*GRUNNBELØP.intValue());
+        lagAndel(periode1, ORGNR2, ORGNR2_ARB_ID1,  3*GRUNNBELØP.intValue(), 0);
+        lagAndel(periode2, ORGNR1, ORGNR1_ARB_ID1,  9*GRUNNBELØP.intValue(), 9*GRUNNBELØP.intValue());
+        lagAndel(periode2, ORGNR2, ORGNR2_ARB_ID1,  3*GRUNNBELØP.intValue(), 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1));
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(2);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 12*GRUNNBELØP.intValue(), (int) (4.5*GRUNNBELØP.intValue()), 1731, (int) (4.5*GRUNNBELØP.intValue()));
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(4.5* GRUNNBELØP), BigDecimal.valueOf(4.5* GRUNNBELØP));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+
+        BeregningsgrunnlagPeriodeDto resPeriode2 = bgPerioder.get(1);
+        assertPeriode(resPeriode2, 12*GRUNNBELØP.intValue(), 6*GRUNNBELØP.intValue(), 2308, 6*GRUNNBELØP.intValue());
+        assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(6*GRUNNBELØP.intValue()), BigDecimal.valueOf(6.0* GRUNNBELØP));
+        assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_over_6G() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,600_000, 560_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,750_000, 200_000);
+        lagAndel(periode, ORGNR3, ORGNR3_ARB_ID1,250_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_600_000, 506_250, 1947, 506_250);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(306_250), null);
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(200_000), null);
+        assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_under_6G() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 600_000, 150_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 750_000, 200_000);
+        lagAndel(periode, ORGNR3, ORGNR3_ARB_ID1, 250_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1, ORGNR3, ORGNR3_ARB_ID1);
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_600_000, 506_250, 1947, 506_250);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(75_000), BigDecimal.valueOf(150_000), BigDecimal.valueOf(225_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.valueOf(81_250), BigDecimal.valueOf(200_000), BigDecimal.valueOf(281_250));
+        assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_og_inntekt_under_6G() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,150_000, 100_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,200_000, 200_000);
+        lagAndel(periode, ORGNR3, ORGNR3_ARB_ID1,100_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1, ORGNR3, ORGNR3_ARB_ID1);
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 450_000, 350_000, 1346, 350_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(50_000), BigDecimal.valueOf(100_000), BigDecimal.valueOf(150_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
+        assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_lik_6G_og_inntekt_over_6G_gradert() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 600_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, BigDecimal> map = new HashMap<>();
+        map.put(ORGNR1, BigDecimal.valueOf(100));
+        map.put(ORGNR2, BigDecimal.valueOf(50));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_200_000, 450_000, 1731, 450_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(450_000), BigDecimal.valueOf(450_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_lik_6G_for_begge_og_inntekt_over_6G_gradert() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 600_000, 600_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 600_000, 600_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, BigDecimal> map = new HashMap<>();
+        map.put(ORGNR1, BigDecimal.valueOf(100));
+        map.put(ORGNR2, BigDecimal.valueOf(50));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_200_000, 450_000, 1730, 450_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_med_refusjon_lik_6G_og_1G_og_inntekt_over_6G_gradert() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,600_000, 600_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,600_000, 100_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, BigDecimal> map = new HashMap<>();
+        map.put(ORGNR1, BigDecimal.valueOf(100));
+        map.put(ORGNR2, BigDecimal.valueOf(50));
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 1_200_000, 450_000, 1730, 450_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(50_000), BigDecimal.valueOf(50_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test //PFP-8177
+    public void skal_teste_arbeidsforhold_med_refusjon_uten_tilrettelegging_og_tilrettelegging_uten_refusjon() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 300_000, 150_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,210_000, 210_000);
+        lagAndel(periode, ORGNR3, ORGNR3_ARB_ID1,240_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1, ORGNR2, ORGNR2_ARB_ID1, ORGNR3, ORGNR3_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        map.put(ORGNR3, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertPeriode(resPeriode, 750000, 432_000, 1661, 432_000);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(90_000), BigDecimal.valueOf(150_000), BigDecimal.valueOf(240_000));
+        assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.valueOf(192_000), BigDecimal.ZERO, BigDecimal.valueOf(192_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_at_arbeidsforhold_uten_match_i_tilrettelegging_ikke_feiler() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,150_000, 100_000);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        Map<String, LocalDate> map = new HashMap<>();
+        map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
+        assertThat(resPeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
+        assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_arbeidstaker_med_delvis_søkt_ytelse() {
+        // Arrange
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,300_000, 0);
+
+        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1);
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
+
+        var uttakResultat = lagUttakResultat(BigDecimal.valueOf(45));
+        List<InntektsmeldingDto> inntektsmeldinger = List.of();
+
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(uttakResultat, tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 135_000, 519, 135_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(135_000), BigDecimal.ZERO, BigDecimal.valueOf(135_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_med_beregningsgrunnlag_under_6G() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 300_000);
+
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 300_000, 1154, 300_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_med_beregningsgrunnlag_under_6G_delvis_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 300_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 150_000, 577, 150_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(150_000), BigDecimal.ZERO, BigDecimal.valueOf(150_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_med_beregningsgrunnlag_over_6G_delvis_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 800_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 800_000, 300_000, 1154, 300_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_med_beregningsgrunnlag_under_6G_ikkje_søkt_ytelse() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 300_000);
+
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 300_000, 0, 0, 0);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
+        assertAndel(andel, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_arbeid_med_beregningsgrunnlag_under_6G_søkt_ytelse_for_alle() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 200_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 200_000, 0);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 400_000, 400_000, 1538, 400_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.valueOf(200_000), BigDecimal.ZERO, BigDecimal.valueOf(200_000));
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.valueOf(200_000), BigDecimal.ZERO, BigDecimal.valueOf(200_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_arbeid_med_beregningsgrunnlag_over_6G_for_arbeid_søkt_ytelse_for_alle() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 200_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,800_000, 0);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_000_000, 600_000, 2308, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.valueOf(600_000), BigDecimal.ZERO, BigDecimal.valueOf(600_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_arbeid_med_beregningsgrunnlag_over_6G_for_arbeid_søkt_ytelse_for_frilans() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 200_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,800_000, 0);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_000_000, 0, 0, 0);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_arbeid_med_beregningsgrunnlag_over_6G_til_sammen_søkt_delvis_ytelse_for_frilans() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 500_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 500_000, 0);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_000_000, 50_000, 192, 50_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.valueOf(50_000), BigDecimal.ZERO, BigDecimal.valueOf(50_000));
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_to_arbeid_med_beregningsgrunnlag_over_6G_til_sammen_søkt_ytelse_for_alle_med_refusjonkrav_som_overstiger_total_avkortet_for_arbeid() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 500_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 500_000, 500_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 500_000, 200_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2307, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
+        assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_frilans_og_to_arbeid_med_beregningsgrunnlag_over_6G_til_sammen_søkt_ytelse_for_alle_med_refusjonkrav_som_overstiger_total_avkortet_for_arbeid_med_fordeling_av_refusjonskrav() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 500_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,500_000, 500_000);
+        lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,500_000, 300_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2308, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
+        assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    @Test
+    public void skal_teste_to_arbeidsforhold_hos_en_arbeidsgiver_med_beregningsgrunnlag_over_6G() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,400_000, 300_000);
+        lagAndel(periode, ORGNR1, ORGNR1_ARB_ID2,300_000, 300_000);
+
+        SvpGrunnlagDto tilrettelegging = lagTilrettelegging(Map.of(ORGNR1, ORGNR1_ARB_ID1));
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID2, periodeMedUtbetalingsgradArbeid2);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 700_000, 600_000, 2308, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(0);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertThat(arbeid.getArbeidsgiver()).isPresent();
+        assertThat(arbeid.getArbeidsgiver().get().getOrgnr()).isEqualTo(ORGNR1);
+        assertThat(arbeid.getArbeidsforholdRef().get().getUUIDReferanse()).isEqualTo(ORGNR1_ARB_ID1);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(1);
+        assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
+        assertThat(arbeid2.getArbeidsgiver()).isPresent();
+        assertThat(arbeid2.getArbeidsgiver().get().getOrgnr()).isEqualTo(ORGNR1);
+        assertThat(arbeid2.getArbeidsforholdRef().get().getUUIDReferanse()).isEqualTo(ORGNR1_ARB_ID2);
+
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+    private BeregningsgrunnlagPrStatusOgAndelDto getAndel(BeregningsgrunnlagPeriodeDto periode, String orgnr) {
+        return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+            .filter(andel -> andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).filter(arb -> arb.getIdentifikator().equals(orgnr)).isPresent())
+            .findFirst()
+            .orElse(null);
+    }
+
+    private void assertAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, BigDecimal bruker, BigDecimal refusjon, BigDecimal avkortet) {
+        Function<BigDecimal, Long> calcDagsats = a -> a.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+        BigDecimal total = bruker.add(refusjon);
+        assertThat(andel.getRedusertBrukersAndelPrÅr()).isEqualByComparingTo(bruker);
+        assertThat(andel.getRedusertRefusjonPrÅr()).isEqualByComparingTo(refusjon);
+        assertThat(andel.getDagsatsBruker()).isEqualTo(calcDagsats.apply(bruker));
+        assertThat(andel.getDagsatsArbeidsgiver()).isEqualTo(calcDagsats.apply(refusjon));
+        assertThat(BigDecimal.valueOf(andel.getDagsats())).isCloseTo(BigDecimal.valueOf(calcDagsats.apply(total)), Offset.offset(BigDecimal.ONE));
+        if (avkortet == null) {
+            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(total);
+        } else {
+            assertThat(andel.getAvkortetPrÅr()).isEqualByComparingTo(avkortet);
+        }
+        assertThat(andel.getRedusertPrÅr()).isEqualByComparingTo(total);
+    }
+
+    @Test
+    public void skal_teste_frilans_og_to_arbeid_med_beregningsgrunnlag_over_6G_til_sammen_søkt_ytelse_for_alle_med_refusjonkrav_som_overstiger_total_avkortet_for_arbeid_uten_arbeidsforhold_id() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        lagFrilansAndel(periode, 500_000);
+        lagAndel(periode, ORGNR1, null, 500_000, 500_000);
+        lagAndel(periode, ORGNR2, null, 500_000, 200_000);
+        SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), null, periodeMedUtbetalingsgradArbeid);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), null, periodeMedUtbetalingsgradArbeid2);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+
+        // Act
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+
+        // Assert
+        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(bgPerioder).hasSize(1);
+        assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2307, 600_000);
+        var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = bgAndeler.get(0);
+        assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
+        assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
+        BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
+        assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
+        assertRegelsporing(bgPerioder.get(0));
+    }
+
+
+    private void assertPeriode(BeregningsgrunnlagPeriodeDto resPeriode, int brutto, int avkortet, int dagsats, int redusert) {
+        assertThat(resPeriode.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(brutto));
+        assertThat(resPeriode.getAvkortetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(avkortet));
+        assertThat(resPeriode.getDagsats()).isEqualTo(dagsats);
+        assertThat(resPeriode.getRedusertPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(redusert));
+    }
+
+
+    private void assertRegelsporing(BeregningsgrunnlagPeriodeDto periode) {
+        assertThat(periode.getRegelInputFinnGrenseverdi()).isNotEmpty();
+        assertThat(periode.getRegelEvalueringFinnGrenseverdi()).isNotEmpty();
+        assertThat(periode.getRegelInputFastsett()).isNotEmpty();
+        assertThat(periode.getRegelEvalueringFastsett()).isNotEmpty();
+        assertThat(periode.getRegelEvalueringFastsett()).contains(RegelFullføreBeregningsgrunnlag.ID);
+    }
+
+    private BeregningsgrunnlagDto act(BeregningsgrunnlagDto beregningsgrunnlag,
+                                      Collection<InntektsmeldingDto> inntektsmeldinger, SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
+        BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+            .medBeregningsgrunnlag(beregningsgrunnlag)
+            .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
+        var input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengerGrunnlag);
+        return tjeneste.fullføreBeregningsgrunnlag(input);
+    }
+
+    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultat(BigDecimal utbetalingsgrad) {
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, utbetalingsgrad);
+        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
+
+        return List.of(tilretteleggingMedUtbelingsgrad);
+    }
+
+    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultatMedGraderingFraDato(Map<String, Tuple<LocalDate, BigDecimal>> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+        return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
+            PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(entry.getValue().getElement1(), entry.getValue().getElement2());
+            return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
+        }).collect(Collectors.toList());
+    }
+
+    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultat(Map<String, LocalDate> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+        return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
+            PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(entry.getValue(), BigDecimal.valueOf(100));
+            return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
+        }).collect(Collectors.toList());
+    }
+
+    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultatMedGraderingFraSkjæringstidspunkt(Map<String, BigDecimal> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+        return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
+            PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, entry.getValue());
+            return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
+        }).collect(Collectors.toList());
+    }
+
+    private TilretteleggingMedUtbelingsgradDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver, UUID arbRefUuid, PeriodeMedUtbetalingsgradDto... perioder) {
+        var tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.ref(arbRefUuid), uttakArbeidType);
+        return new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(perioder));
+    }
+
+    private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, BigDecimal utbetalingsgrad) {
+        return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusMonths(3)), utbetalingsgrad);
+    }
+
+    private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad, SvpGrunnlagDto tilrettelegging) {
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(
+            tilretteleggingMedUtbelingsgrad,
+            new TilretteleggingFilterDto(tilrettelegging).getAktuelleTilretteleggingerFiltrert()
+        );
+        svangerskapspengerGrunnlag.setGrunnbeløpMilitærHarKravPå(45000);
+        return svangerskapspengerGrunnlag;
+    }
+
+    private SvpGrunnlagDto lagTilrettelegging(Map<String, UUID> arbeidsgivere) {
+        List<SvpTilretteleggingDto> tilrettelegginger = arbeidsgivere.entrySet().stream()
+            .map(arb -> new SvpTilretteleggingDto.Builder()
+                .medArbeidsgiver(Arbeidsgiver.virksomhet(arb.getKey()))
+                .medInternArbeidsforholdRef(InternArbeidsforholdRefDto.ref(arb.getValue()))
+                .medHarSøktDelvisTilrettelegging(false)
+                .build())
+            .collect(Collectors.toList());
+        return new SvpGrunnlagDto.Builder()
+            .medBehandlingId(behandlingReferanse.getId())
+            .medOpprinneligeTilrettelegginger(tilrettelegginger)
+            .build();
+    }
+
+    private SvpGrunnlagDto lagTilretteleggingFrilans() {
+        SvpTilretteleggingDto tilrettelegginger = new SvpTilretteleggingDto.Builder()
+                .medArbeidsgiver(null)
+                .medHarSøktDelvisTilrettelegging(false)
+                .build();
+        return new SvpGrunnlagDto.Builder()
+            .medBehandlingId(behandlingReferanse.getId())
+            .medOpprinneligeTilrettelegginger(List.of(tilrettelegginger))
+
+            .build();
+    }
+}

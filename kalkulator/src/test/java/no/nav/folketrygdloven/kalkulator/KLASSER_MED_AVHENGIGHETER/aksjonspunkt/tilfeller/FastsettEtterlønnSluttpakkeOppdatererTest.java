@@ -1,0 +1,109 @@
+package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller;
+
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
+
+import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettEtterlønnSluttpakkeDto;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
+
+public class FastsettEtterlønnSluttpakkeOppdatererTest {
+    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
+    private static final Beløp GRUNNBELØP = new Beløp(BigDecimal.valueOf(85000));
+
+
+    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private BeregningsgrunnlagDto beregningsgrunnlag;
+    private FastsettEtterlønnSluttpakkeOppdaterer fastsettEtterlønnSluttpakkeOppdaterer;
+    private static final Arbeidsgiver ARBEIDSGIVER2 = Arbeidsgiver.fra(new VirksomhetEntitet.Builder().medOrgnr("490830958").build());
+    private BeregningsgrunnlagInput input;
+
+    @Before
+    public void setup() {
+        fastsettEtterlønnSluttpakkeOppdaterer = new FastsettEtterlønnSluttpakkeOppdaterer();
+        beregningsgrunnlag = lagBeregningsgrunnlag();
+    }
+
+    @Test
+    public void skalTesteAtOppdatererSetterKorrektInntektPåSøkerensEtterlønnSluttpakkeAndel() {
+        // Arrange
+        FastsettEtterlønnSluttpakkeDto fastsettDto = new FastsettEtterlønnSluttpakkeDto(10000);
+        FaktaBeregningLagreDto dto = new FaktaBeregningLagreDto(singletonList(FaktaOmBeregningTilfelle.FASTSETT_ETTERLØNN_SLUTTPAKKE));
+        dto.setFastsettEtterlønnSluttpakke(fastsettDto);
+
+        // Act
+        BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
+        fastsettEtterlønnSluttpakkeOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+
+        // Assert
+        List<BeregningsgrunnlagPeriodeDto> bgPerioder = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
+        Assertions.assertThat(bgPerioder).hasSize(1);
+        assertThat(bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
+        BeregningsgrunnlagPrStatusOgAndelDto andel = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()
+            .stream()
+            .filter(a -> a.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Finner ikke forventet andel etter å ha kjørt oppdaterer"));
+        Assertions.assertThat(andel.getBeregnetPrÅr().compareTo(BigDecimal.valueOf(120000)) == 0).isTrue();
+        assertThat(andel.getFastsattAvSaksbehandler()).isTrue();
+        assertThat(andel.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE);
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag() {
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+            .medGrunnbeløp(GRUNNBELØP)
+            .build();
+
+        BeregningsgrunnlagPeriodeDto periode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag,
+            SKJÆRINGSTIDSPUNKT, null);
+        buildBgPrStatusOgAndel(periode);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT);
+        return beregningsgrunnlag;
+    }
+
+    private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .medArbforholdType(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
+            .build(beregningsgrunnlagPeriode);
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
+            .build(beregningsgrunnlagPeriode);
+
+    }
+
+    private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate fom, LocalDate tom) {
+        return BeregningsgrunnlagPeriodeDto.builder()
+            .medBeregningsgrunnlagPeriode(fom, tom)
+            .build(beregningsgrunnlag);
+    }
+
+}

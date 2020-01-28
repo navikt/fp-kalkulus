@@ -1,0 +1,25 @@
+package no.nav.folketrygdloven.kalkulator.kontrollerfakta.utledere;
+
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.kontrollerfakta.VurderMottarYtelseTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.FaktaOmBeregningTilfelle;
+
+@ApplicationScoped
+public class VurderMottarYtelseTilfelleUtleder implements TilfelleUtleder {
+
+    @Override
+    public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
+        Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
+        return VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, input.getIayGrunnlag()) ?
+            Optional.of(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE) : Optional.empty();
+    }
+
+}

@@ -1,0 +1,50 @@
+package no.nav.folketrygdloven.kalkulator.modell.iay;
+
+import java.math.BigDecimal;
+
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
+public class YtelseAnvistDtoBuilder {
+    private final YtelseAnvistDto ytelseAnvist;
+
+    YtelseAnvistDtoBuilder(YtelseAnvistDto ytelseAnvist) {
+        this.ytelseAnvist = ytelseAnvist;
+    }
+
+    public static YtelseAnvistDtoBuilder ny() {
+        return new YtelseAnvistDtoBuilder(new YtelseAnvistDto());
+    }
+
+    public YtelseAnvistDtoBuilder medBeløp(BigDecimal beløp) {
+        if (beløp != null) {
+            this.ytelseAnvist.setBeløp(new Beløp(beløp));
+        }
+        return this;
+    }
+
+    public YtelseAnvistDtoBuilder medDagsats(BigDecimal dagsats) {
+        if (dagsats != null) {
+            this.ytelseAnvist.setDagsats(new Beløp(dagsats));
+        }
+        return this;
+    }
+
+    public YtelseAnvistDtoBuilder medAnvistPeriode(Intervall intervallEntitet){
+        this.ytelseAnvist.setAnvistPeriode(intervallEntitet);
+        return this;
+    }
+
+    public YtelseAnvistDtoBuilder medUtbetalingsgradProsent(BigDecimal utbetalingsgradProsent) {
+        if (utbetalingsgradProsent != null) {
+            this.ytelseAnvist.setUtbetalingsgradProsent(new Stillingsprosent(utbetalingsgradProsent));
+        }
+        return this;
+    }
+
+    public YtelseAnvistDto build() {
+        return ytelseAnvist;
+    }
+
+}

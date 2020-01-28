@@ -1,0 +1,139 @@
+package no.nav.folketrygdloven.kalkulator.modell.iay;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import org.jboss.weld.exceptions.IllegalArgumentException;
+
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.vedtak.konfig.Tid;
+
+public class InntektsmeldingDtoBuilder {
+    private final InntektsmeldingDto kladd;
+    private EksternArbeidsforholdRef eksternArbeidsforholdId;
+    private boolean erBygget;
+
+    InntektsmeldingDtoBuilder(InntektsmeldingDto kladd) {
+        this.kladd = kladd;
+    }
+
+    public static InntektsmeldingDtoBuilder builder() {
+        return new InntektsmeldingDtoBuilder(new InntektsmeldingDto());
+    }
+
+    public static InntektsmeldingDtoBuilder kopi(InntektsmeldingDto inntektsmelding) {
+        return new InntektsmeldingDtoBuilder(new InntektsmeldingDto(inntektsmelding));
+    }
+
+    public InntektsmeldingDto build() {
+        return build(false);
+    }
+
+    public InntektsmeldingDto build(boolean ignore) {
+        var internRef = getInternArbeidsforholdRef();
+        if (internRef.isPresent() && !ignore) {
+            // magic - hvis har ekstern referanse må også intern referanse være spesifikk
+            if ((eksternArbeidsforholdId != null && eksternArbeidsforholdId.gjelderForSpesifiktArbeidsforhold()) && internRef.get().getReferanse() == null) {
+                throw new IllegalArgumentException(
+                    "Begge referanser må gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + internRef);
+            }
+        }
+        erBygget = true; // Kan ikke bygge mer med samme builder, vil bare returnere samme kladd.
+        return kladd;
+    }
+
+    public Arbeidsgiver getArbeidsgiver() {
+        return kladd.getArbeidsgiver();
+    }
+
+    public Optional<EksternArbeidsforholdRef> getEksternArbeidsforholdRef() {
+        return Optional.ofNullable(eksternArbeidsforholdId);
+    }
+
+    public Optional<InternArbeidsforholdRefDto> getInternArbeidsforholdRef() {
+        return Optional.ofNullable(kladd.getArbeidsforholdRef());
+    }
+
+    public InntektsmeldingDtoBuilder leggTil(NaturalYtelseDto naturalYtelse) {
+        precondition();
+        kladd.leggTil(naturalYtelse);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder leggTil(RefusjonDto refusjon) {
+        precondition();
+        kladd.leggTil(refusjon);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medArbeidsforholdId(EksternArbeidsforholdRef arbeidsforholdId) {
+        precondition();
+        this.eksternArbeidsforholdId = arbeidsforholdId;
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medArbeidsforholdId(InternArbeidsforholdRefDto arbeidsforholdId) {
+        precondition();
+        if (arbeidsforholdId != null) {
+            // magic - hvis har ekstern referanse må også intern referanse være spesifikk
+            if (arbeidsforholdId.getReferanse() == null && eksternArbeidsforholdId != null && eksternArbeidsforholdId.gjelderForSpesifiktArbeidsforhold()) {
+                throw new IllegalArgumentException(
+                    "Begge referanser gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + arbeidsforholdId);
+            }
+            kladd.setArbeidsforholdId(arbeidsforholdId);
+        }
+        return this;
+    }
+
+    /**
+     * @deprecated bruk eksplisitt Intern/Ekstern arbeidforhold Id.
+     */
+    @Deprecated(forRemoval = true)
+    public InntektsmeldingDtoBuilder medArbeidsforholdId(String arbeidsforholdId) {
+        precondition();
+        return medArbeidsforholdId(arbeidsforholdId == null ? null : InternArbeidsforholdRefDto.ref(arbeidsforholdId));
+    }
+
+    public InntektsmeldingDtoBuilder medArbeidsgiver(Arbeidsgiver arbeidsgiver) {
+        precondition();
+        kladd.setArbeidsgiver(arbeidsgiver);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medBeløp(BigDecimal verdi) {
+        precondition();
+        kladd.setInntektBeløp(verdi == null ? null : new Beløp(verdi));
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi) {
+        precondition();
+        kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
+        kladd.setRefusjonOpphører(Tid.TIDENES_ENDE);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi, LocalDate opphører) {
+        precondition();
+        kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
+        kladd.setRefusjonOpphører(opphører);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medStartDatoPermisjon(LocalDate startPermisjon) {
+        precondition();
+        kladd.setStartDatoPermisjon(startPermisjon);
+        return this;
+    }
+
+    private void precondition() {
+        if (erBygget) {
+            throw new IllegalStateException("Inntektsmelding objekt er allerede bygget, kan ikke modifisere nå. Returnerer kun : " + kladd);
+        }
+    }
+
+}

@@ -1,0 +1,60 @@
+package no.nav.folketrygdloven.kalkulator.modell.iay;
+
+import java.util.Objects;
+
+import javax.persistence.Convert;
+
+import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
+public class OppgittAnnenAktivitetDto {
+
+    Intervall periode;
+
+    @Convert(converter = ArbeidType.KodeverdiConverter.class)
+    private ArbeidType arbeidType;
+
+    public OppgittAnnenAktivitetDto(Intervall periode, ArbeidType arbeidType) {
+        this.periode = periode;
+        this.arbeidType = arbeidType;
+    }
+
+    public OppgittAnnenAktivitetDto() {
+        // hibernate
+    }
+
+    public String getIndexKey() {
+        return IndexKey.createKey(periode, arbeidType);
+    }
+
+    public ArbeidType getArbeidType() {
+        return arbeidType;
+    }
+
+    public Intervall getPeriode() {
+        return periode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof OppgittAnnenAktivitetDto)) return false;
+        OppgittAnnenAktivitetDto that = (OppgittAnnenAktivitetDto) o;
+        return Objects.equals(periode, that.periode) &&
+                Objects.equals(arbeidType, that.arbeidType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(periode, arbeidType);
+    }
+
+    @Override
+    public String toString() {
+        return "AnnenAktivitetEntitet{" +
+                "periode=" + periode +
+                ", arbeidType=" + arbeidType +
+                '}';
+    }
+}

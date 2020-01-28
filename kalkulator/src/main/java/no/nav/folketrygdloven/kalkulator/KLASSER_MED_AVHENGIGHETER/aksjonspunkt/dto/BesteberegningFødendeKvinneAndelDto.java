@@ -1,0 +1,32 @@
+package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto;
+
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
+
+public class BesteberegningFødendeKvinneAndelDto {
+
+    private Long andelsnr;
+
+    private Boolean lagtTilAvSaksbehandler;
+
+    private FastsatteVerdierForBesteberegningDto fastsatteVerdier;
+
+    public BesteberegningFødendeKvinneAndelDto(Long andelsnr, Integer inntektPrMnd, Inntektskategori inntektskategori,
+                                               boolean lagtTilAvSaksbehandler) {
+        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
+        this.andelsnr = andelsnr;
+        fastsatteVerdier = new FastsatteVerdierForBesteberegningDto(inntektPrMnd, inntektskategori);
+    }
+
+    public FastsatteVerdierForBesteberegningDto getFastsatteVerdier() {
+        return fastsatteVerdier;
+    }
+
+    public Long getAndelsnr() {
+        return andelsnr;
+    }
+
+    public Boolean getLagtTilAvSaksbehandler() {
+        return lagtTilAvSaksbehandler;
+    }
+
+}

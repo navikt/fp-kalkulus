@@ -1,0 +1,61 @@
+package no.nav.folketrygdloven.kalkulator.modell.iay;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+
+public class InntektspostDtoBuilder {
+    private InntektspostDto inntektspost;
+
+    InntektspostDtoBuilder(InntektspostDto inntektspost) {
+        this.inntektspost = inntektspost;
+    }
+
+    public static InntektspostDtoBuilder ny() {
+        return new InntektspostDtoBuilder(new InntektspostDto());
+    }
+
+    public InntektspostDtoBuilder medInntektspostType(InntektspostType inntektspostType) {
+        this.inntektspost.setInntektspostType(inntektspostType);
+        return this;
+    }
+
+    public InntektspostDtoBuilder medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType skatteOgAvgiftsregelType) {
+        this.inntektspost.setSkatteOgAvgiftsregelType(skatteOgAvgiftsregelType);
+        return this;
+    }
+
+    public InntektspostDtoBuilder medPeriode(LocalDate fraOgMed, LocalDate tilOgMed) {
+        this.inntektspost.setPeriode(fraOgMed, tilOgMed);
+        return this;
+    }
+
+    public InntektspostDtoBuilder medBeløp(BigDecimal verdi) {
+        this.inntektspost.setBeløp(new Beløp(verdi));
+        return this;
+    }
+
+    public InntektspostDtoBuilder medYtelse(YtelseType offentligYtelseType) {
+        this.inntektspost.setYtelse(offentligYtelseType);
+        return this;
+    }
+
+    public InntektspostDto build() {
+        if (inntektspost.hasValues()) {
+            return inntektspost;
+        }
+        throw new IllegalStateException();
+    }
+
+    public InntektspostDtoBuilder medInntektspostType(String kode) {
+       return medInntektspostType(InntektspostType.fraKode(kode));
+    }
+
+    public InntektspostDtoBuilder medSkatteOgAvgiftsregelType(String kode) {
+        return medSkatteOgAvgiftsregelType(SkatteOgAvgiftsregelType.fraKode(kode));
+    }
+}

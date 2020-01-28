@@ -1,0 +1,140 @@
+package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
+
+import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.rest.dto.OverstyrBeregningsgrunnlagDto;
+import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
+import no.nav.vedtak.felles.testutilities.cdi.CdiRunner;
+
+
+@RunWith(CdiRunner.class)
+public class BeregningFaktaOgOverstyringHåndtererTest {
+
+    private static final LocalDate STP = LocalDate.of(2019, 1, 1);
+
+    @Inject
+    private FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer;
+    private BeregningFaktaOgOverstyringHåndterer beregningFaktaOgOverstyringHåndterer;
+    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(STP);
+
+    @Before
+    public void setup() {
+        this.beregningFaktaOgOverstyringHåndterer = new BeregningFaktaOgOverstyringHåndterer(faktaOmBeregningTilfellerOppdaterer);
+    }
+
+    @Test
+    public void skal_sette_inntekt_for_en_andel_i_en_periode() {
+        // Arrange
+        Long andelsnr = 1L;
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(STP, null)));
+        int fastsattBeløp = 10000;
+        OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp), null);
+        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+
+        // Act
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(input, overstyrDto);
+
+        // Assert
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        AssertionsForClassTypes.assertThat(nyttBg).isPresent();
+        assertThat(nyttBg.get().isOverstyrt()).isTrue();
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
+        AssertionsForClassTypes.assertThat(perioder.size()).isEqualTo(1);
+        BeregningsgrunnlagPeriodeDto p1 = perioder.get(0);
+        assertThat(p1.getBeregningsgrunnlagPeriodeFom()).isEqualTo(STP);
+        validerAndeler(fastsattBeløp, p1);
+    }
+
+
+    @Test
+    public void skal_sette_inntekt_for_en_andel_i_to_perioder() {
+        // Arrange
+        Long andelsnr = 1L;
+        LocalDate tilOgMed = STP.plusMonths(1).minusDays(1);
+        List<ÅpenDatoIntervallEntitet> periodeList = List.of(ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(STP, tilOgMed),
+            ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(tilOgMed.plusDays(1), null));
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr,
+            periodeList);
+        int fastsattBeløp1 = 10000;
+        OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp1), null);
+        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+
+        // Act
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(input, overstyrDto);
+
+        // Assert
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        AssertionsForClassTypes.assertThat(nyttBg).isPresent();
+        assertThat(nyttBg.get().isOverstyrt()).isTrue();
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
+        AssertionsForClassTypes.assertThat(perioder.size()).isEqualTo(2);
+        BeregningsgrunnlagPeriodeDto p1 = perioder.get(0);
+        assertThat(p1.getBeregningsgrunnlagPeriodeFom()).isEqualTo(STP);
+        validerAndeler(fastsattBeløp1, p1);
+        BeregningsgrunnlagPeriodeDto p2 = perioder.get(1);
+        assertThat(p2.getBeregningsgrunnlagPeriodeFom()).isEqualTo(tilOgMed.plusDays(1));
+        validerAndeler(fastsattBeløp1, p2);
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<ÅpenDatoIntervallEntitet> perioder) {
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+            .medSkjæringstidspunkt(STP)
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+            .build();
+        perioder.forEach(p -> {
+            BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato())
+                .build(beregningsgrunnlag);
+            BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAndelsnr(andelsnr)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.fra(AktørId.dummy())))
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(periode);
+        });
+        return beregningsgrunnlag;
+    }
+
+    private void validerAndeler(int fastsattBeløp, BeregningsgrunnlagPeriodeDto p1) {
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().size()).isEqualTo(1);
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getBeregnetPrÅr().intValue()).isEqualTo(fastsattBeløp * 12);
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFastsattAvSaksbehandler()).isTrue();
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
+    }
+
+    private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1) {
+        RedigerbarAndelDto andelsInfo = new RedigerbarAndelDto(false, andelsnr, false, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
+        FastsatteVerdierDto fastsatteVerdier1 = new FastsatteVerdierDto(null, fastsattBeløp1, null, null);
+        FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, Inntektskategori.ARBEIDSTAKER, null,null);
+        return List.of(andelDto1);
+    }
+
+}

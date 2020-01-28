@@ -1,0 +1,66 @@
+package no.nav.folketrygdloven.kalkulator.modell.iay;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+
+public class AktivitetsAvtaleDtoBuilder {
+    private final AktivitetsAvtaleDto aktivitetsAvtale;
+    private boolean oppdatering = false;
+
+    AktivitetsAvtaleDtoBuilder(AktivitetsAvtaleDto aktivitetsAvtaleEntitet, boolean oppdatering) {
+        this.aktivitetsAvtale = aktivitetsAvtaleEntitet; // NOSONAR
+        this.oppdatering = oppdatering;
+    }
+
+    public static AktivitetsAvtaleDtoBuilder ny() {
+        return new AktivitetsAvtaleDtoBuilder(new AktivitetsAvtaleDto(), false);
+    }
+
+    static AktivitetsAvtaleDtoBuilder oppdater(Optional<AktivitetsAvtaleDto> aktivitetsAvtale) {
+        return new AktivitetsAvtaleDtoBuilder(aktivitetsAvtale.orElse(new AktivitetsAvtaleDto()), aktivitetsAvtale.isPresent());
+    }
+
+    public AktivitetsAvtaleDtoBuilder medPeriode(Intervall periode) {
+        this.aktivitetsAvtale.setPeriode(periode);
+        return this;
+    }
+
+    //TODO(OJR) starter på og innføre nytt objekt for intervall
+    public AktivitetsAvtaleDtoBuilder medPeriode(DatoIntervallEntitet periode) {
+        this.aktivitetsAvtale.setPeriode(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
+        return this;
+    }
+
+    public AktivitetsAvtaleDtoBuilder medProsentsats(BigDecimal prosentsats) {
+        this.aktivitetsAvtale.setProsentsats(new Stillingsprosent(prosentsats));
+        return this;
+    }
+
+    public AktivitetsAvtaleDtoBuilder medErAnsettelsesPeriode(boolean erAnsettelsesPeriode) {
+        this.aktivitetsAvtale.setErAnsettelsesPeriode(erAnsettelsesPeriode);
+        return this;
+    }
+
+
+    public AktivitetsAvtaleDto build() {
+        if (aktivitetsAvtale.hasValues()) {
+            return aktivitetsAvtale;
+        }
+        throw new IllegalStateException();
+    }
+
+    public boolean isOppdatering() {
+        return oppdatering;
+    }
+
+    public AktivitetsAvtaleDtoBuilder medSisteLønnsendringsdato(LocalDate sisteLønnsendringsdato) {
+        this.aktivitetsAvtale.sisteLønnsendringsdato(sisteLønnsendringsdato);
+        this.aktivitetsAvtale.setErAnsettelsesPeriode(false);
+        return this;
+    }
+}

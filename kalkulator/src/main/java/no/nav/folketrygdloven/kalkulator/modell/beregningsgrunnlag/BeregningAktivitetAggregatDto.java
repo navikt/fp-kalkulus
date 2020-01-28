@@ -1,0 +1,69 @@
+package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+public class BeregningAktivitetAggregatDto {
+
+
+    private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
+    private LocalDate skjæringstidspunktOpptjening;
+
+    public BeregningAktivitetAggregatDto() {
+        // NOSONAR
+    }
+
+    public List<BeregningAktivitetDto> getBeregningAktiviteter() {
+        return Collections.unmodifiableList(aktiviteter);
+    }
+
+    public LocalDate getSkjæringstidspunktOpptjening() {
+        return skjæringstidspunktOpptjening;
+    }
+
+    private void leggTilAktivitet(BeregningAktivitetDto beregningAktivitet) {
+        beregningAktivitet.setBeregningAktiviteter(this);
+        aktiviteter.add(beregningAktivitet);
+    }
+
+    @Override
+    public String toString() {
+        return "BeregningAktivitetAggregat{" +
+                "skjæringstidspunktOpptjening=" + skjæringstidspunktOpptjening +
+                '}';
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final BeregningAktivitetAggregatDto kladd;
+
+        private Builder() {
+            kladd = new BeregningAktivitetAggregatDto();
+        }
+
+        public Builder medSkjæringstidspunktOpptjening(LocalDate skjæringstidspunktOpptjening) {
+            kladd.skjæringstidspunktOpptjening = skjæringstidspunktOpptjening;
+            return this;
+        }
+
+        public Builder leggTilAktivitet(BeregningAktivitetDto beregningAktivitet) { // NOSONAR
+            kladd.leggTilAktivitet(beregningAktivitet);
+            return this;
+        }
+
+        public BeregningAktivitetAggregatDto build() {
+            verifyStateForBuild();
+            return kladd;
+        }
+
+        private void verifyStateForBuild() {
+            Objects.requireNonNull(kladd.skjæringstidspunktOpptjening, "skjæringstidspunktOpptjening");
+        }
+    }
+}

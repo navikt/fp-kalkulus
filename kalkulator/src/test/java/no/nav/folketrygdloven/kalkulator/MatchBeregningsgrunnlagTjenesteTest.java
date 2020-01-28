@@ -1,0 +1,101 @@
+package no.nav.folketrygdloven.kalkulator;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+
+import java.time.LocalDate;
+
+import org.junit.Test;
+
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.vedtak.exception.TekniskException;
+
+public class MatchBeregningsgrunnlagTjenesteTest {
+
+
+    private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
+    private static final Arbeidsgiver arbeidsgiverEn = Arbeidsgiver.virksomhet("973152351");
+    public BehandlingReferanse behandlingReferanse = mock(BehandlingReferanse.class);
+
+
+    private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {
+        return BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .build(bg);
+    }
+
+    @Test
+    public void skal_matche_på_andelsnr() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nullRef();
+        Long andelsnr = 1L;
+
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+        BeregningsgrunnlagPeriodeDto periode =    lagPeriode(beregningsgrunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medAndelsnr(andelsnr)
+            .medLagtTilAvSaksbehandler(true)
+            .medInntektskategori(Inntektskategori.SJØMANN)
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn))
+            .build(periode);
+
+        // Act
+        BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, andelsnr, arbId);
+
+        // Assert
+        assertThat(korrektAndel).isEqualTo(andel);
+    }
+
+    @Test
+    public void skal_matche_på_arbid_om_andelsnr_input_er_null() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        Long andelsnr = 1L;
+
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+        BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
+            .medAndelsnr(andelsnr)
+            .medLagtTilAvSaksbehandler(true)
+            .medInntektskategori(Inntektskategori.SJØMANN)
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .build(periode);
+
+        // Act
+        BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, null, arbId);
+
+        // Assert
+        assertThat(korrektAndel).isEqualTo(andel);
+    }
+
+    @Test(expected = TekniskException.class)
+    public void skal_kaste_exception_om_andel_ikkje_eksisterer_i_grunnlag() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        Long andelsnr = 1L;
+
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+        BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
+            .medAndelsnr(andelsnr)
+            .medLagtTilAvSaksbehandler(true)
+            .medInntektskategori(Inntektskategori.SJØMANN)
+            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .build(periode);
+
+        // Act
+        MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef());
+    }
+}
