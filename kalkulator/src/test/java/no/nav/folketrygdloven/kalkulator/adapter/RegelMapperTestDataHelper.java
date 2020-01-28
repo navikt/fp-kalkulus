@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.Grunnbeløp;
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -30,12 +30,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Samm
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusMedHjemmel;
-import no.nav.folketrygdloven.kalkulator.regelmodell.BeregningsgrunnlagHjemmel;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SammenligningsGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 
 public class RegelMapperTestDataHelper {
     public static final LocalDate NOW = LocalDate.now();
@@ -152,8 +152,8 @@ public class RegelMapperTestDataHelper {
             .build();
     }
 
-    public static BeregningsgrunnlagPrStatus buildRegelBGPeriode(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode regelBGP, no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus status, Periode periode) {
-        if (no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.erArbeidstakerEllerFrilanser(status)) {
+    public static BeregningsgrunnlagPrStatus buildRegelBGPeriode(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode regelBGP, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus status, Periode periode) {
+        if (no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.erArbeidstakerEllerFrilanser(status)) {
             final BeregningsgrunnlagPrStatus regelBGPStatus = BeregningsgrunnlagPrStatus.builder(regelBGP.getBeregningsgrunnlagPrStatus(status))
                 .medBeregningsperiode(periode)
                 .build();
@@ -171,11 +171,11 @@ public class RegelMapperTestDataHelper {
         }
     }
 
-    public static no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag buildRegelBeregningsgrunnlag(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus aktivitetStatus,
-                                                                                                                         no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori,
+    public static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag buildRegelBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus,
+                                                                                                                         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori,
                                                                                                                          BeregningsgrunnlagHjemmel hjemmel) {
-        no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode periode = buildRegelBGPeriode(aktivitetStatus, inntektskategori);
-        return no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag.builder()
+        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode periode = buildRegelBGPeriode(aktivitetStatus, inntektskategori);
+        return no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder()
             .medInntektsgrunnlag(new Inntektsgrunnlag())
             .medSkjæringstidspunkt(NOW)
             .medAktivitetStatuser(singletonList(new AktivitetStatusMedHjemmel(aktivitetStatus, hjemmel)))
@@ -184,14 +184,14 @@ public class RegelMapperTestDataHelper {
             .build();
     }
 
-    private static no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode buildRegelBGPeriode(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus aktivitetStatus, no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori) {
-        no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode.Builder periodeBuilder =
-            no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode.builder()
+    private static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode buildRegelBGPeriode(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori) {
+        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode.Builder periodeBuilder =
+            no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode.builder()
                 .medPeriode(Periode.of(NOW, null));
         long andelNr = 1;
-        if (no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.erKombinasjonMedSelvstendig(aktivitetStatus)) {
-            BeregningsgrunnlagPrStatus prStatusATFL = buildPrStatus(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.ATFL, inntektskategori, null);
-            BeregningsgrunnlagPrStatus prStatusSN = buildPrStatus(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.SN, no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, andelNr);
+        if (no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.erKombinasjonMedSelvstendig(aktivitetStatus)) {
+            BeregningsgrunnlagPrStatus prStatusATFL = buildPrStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.ATFL, inntektskategori, null);
+            BeregningsgrunnlagPrStatus prStatusSN = buildPrStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.SN, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, andelNr);
             return periodeBuilder
                 .medBeregningsgrunnlagPrStatus(prStatusATFL)
                 .medBeregningsgrunnlagPrStatus(prStatusSN)
@@ -202,11 +202,11 @@ public class RegelMapperTestDataHelper {
             .build();
     }
 
-    private static BeregningsgrunnlagPrStatus buildPrStatus(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus aktivitetStatus, no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori, Long andelNr) {
+    private static BeregningsgrunnlagPrStatus buildPrStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori inntektskategori, Long andelNr) {
         return BeregningsgrunnlagPrStatus.builder()
             .medAktivitetStatus(aktivitetStatus)
             .medInntektskategori(inntektskategori)
-            .medAndelNr(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.erArbeidstaker(aktivitetStatus) ? null : andelNr)
+            .medAndelNr(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.erArbeidstaker(aktivitetStatus) ? null : andelNr)
             .build();
     }
 }

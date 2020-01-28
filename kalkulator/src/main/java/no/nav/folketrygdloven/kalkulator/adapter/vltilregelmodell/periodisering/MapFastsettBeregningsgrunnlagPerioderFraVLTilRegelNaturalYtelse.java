@@ -18,10 +18,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.ArbeidsforholdOgInntektsmelding;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Gradering;
-import no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeModell;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SplittetPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.vedtak.feil.Feil;
 import no.nav.vedtak.feil.FeilFactory;
 import no.nav.vedtak.feil.LogLevel;
@@ -59,7 +59,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
                                              LocalDate skjæringstidspunkt,
                                              List<SplittetPeriode> eksisterendePerioder,
                                              List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
-                                             List<no.nav.folketrygdloven.kalkulator.regelmodell.AndelGradering> regelAndelGraderinger) {
+                                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger) {
         return PeriodeModell.builder()
             .medSkjæringstidspunkt(skjæringstidspunkt)
             .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())

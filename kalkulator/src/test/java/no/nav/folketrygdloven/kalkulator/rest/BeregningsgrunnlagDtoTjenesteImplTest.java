@@ -40,7 +40,7 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto;

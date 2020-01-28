@@ -25,8 +25,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusV2;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AndelGraderingImpl;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGraderingImpl;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class MapAndelGraderingTest {
@@ -62,7 +62,7 @@ public class MapAndelGraderingTest {
             vlAndelGradering, filter);
 
         // Assert
-        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusV2.SN);
+        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2.SN);
         assertThat(regelAndelGradering.getGraderinger()).hasSize(2);
         assertThat(regelAndelGradering.getGraderinger()).anySatisfy(periode -> {
             assertThat(periode.getFom()).isEqualTo(fom1);
@@ -95,7 +95,7 @@ public class MapAndelGraderingTest {
         AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(ref, vlAndelGradering, filter);
 
         // Assert
-        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusV2.FL);
+        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2.FL);
         assertThat(regelAndelGradering.getGraderinger()).hasSize(2);
         assertThat(regelAndelGradering.getGraderinger()).anySatisfy(periode -> {
             assertThat(periode.getFom()).isEqualTo(fom1);

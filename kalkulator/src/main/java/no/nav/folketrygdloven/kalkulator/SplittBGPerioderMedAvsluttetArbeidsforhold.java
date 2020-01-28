@@ -7,10 +7,10 @@ import java.util.ListIterator;
 
 import no.nav.folketrygdloven.kalkulator.adapter.util.KopierBeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 
 class SplittBGPerioderMedAvsluttetArbeidsforhold {
     private SplittBGPerioderMedAvsluttetArbeidsforhold() {

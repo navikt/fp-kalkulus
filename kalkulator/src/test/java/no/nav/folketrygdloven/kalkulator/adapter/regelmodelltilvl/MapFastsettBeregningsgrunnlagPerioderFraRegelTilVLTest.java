@@ -22,10 +22,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Innt
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SplittetPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
 

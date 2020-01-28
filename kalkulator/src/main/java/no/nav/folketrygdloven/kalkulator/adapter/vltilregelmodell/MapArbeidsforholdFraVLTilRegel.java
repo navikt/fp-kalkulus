@@ -9,7 +9,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Akti
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 
 public class MapArbeidsforholdFraVLTilRegel {
     private MapArbeidsforholdFraVLTilRegel() {

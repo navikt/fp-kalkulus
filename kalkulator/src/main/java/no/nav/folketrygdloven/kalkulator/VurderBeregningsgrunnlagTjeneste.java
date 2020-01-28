@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -11,10 +12,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.regelmodell.RegelMerknad;
-import no.nav.folketrygdloven.kalkulator.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.vurder.RegelVurderBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.vurder.RegelVurderBeregningsgrunnlag;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 public class VurderBeregningsgrunnlagTjeneste {
@@ -51,7 +52,7 @@ public class VurderBeregningsgrunnlagTjeneste {
             .noneMatch(avslagskode -> avslagskode.equals("1041"));
     }
 
-    private static String toJson(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
+    private static String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
         return JacksonJsonConfig.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 }

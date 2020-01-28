@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.vedtak.util.FPDateUtil;
 

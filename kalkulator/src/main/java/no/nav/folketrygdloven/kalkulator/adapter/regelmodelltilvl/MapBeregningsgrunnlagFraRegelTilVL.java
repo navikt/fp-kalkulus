@@ -24,11 +24,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Peri
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SammenligningsGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 
 public class MapBeregningsgrunnlagFraRegelTilVL {
     private static final Map<AktivitetStatus, SammenligningsgrunnlagType> AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP = Map.of(
@@ -48,12 +48,12 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         FASTSETT,
     }
 
-    public static BeregningsgrunnlagDto mapForeslåBeregningsgrunnlag(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
+    public static BeregningsgrunnlagDto mapForeslåBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
                                                               List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FORESLÅ);
     }
 
-    public static BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
+    public static BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
                                                                List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FASTSETT);
     }
@@ -70,7 +70,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return nyttBeregningsgrunnlag;
     }
 
-    public static BeregningsgrunnlagDto mapForFordel(List<no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode> resultatPerioder, List<RegelResultat> regelResultater,
+    public static BeregningsgrunnlagDto mapForFordel(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> resultatPerioder, List<RegelResultat> regelResultater,
                                                      BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         Objects.requireNonNull(resultatPerioder, "resultatPerioder");
         Objects.requireNonNull(regelResultater, "regelResultater");
@@ -84,7 +84,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return eksisterendeVLGrunnlag;
     }
 
-    private static BeregningsgrunnlagDto map(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
+    private static BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
         mapSammenligningsgrunnlag(resultatGrunnlag.getSammenligningsGrunnlag(), eksisterendeVLGrunnlag);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag).build();
         if (nyttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
@@ -106,7 +106,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return nyttBeregningsgrunnlag;
     }
 
-    private static void mapPerioder(List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg, List<no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
+    private static void mapPerioder(List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg, List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
         Iterator<RegelResultat> resultat = regelResultater.iterator();
 
         int vlBGnummer = 0;
@@ -293,7 +293,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             .build(vlBGPeriode);
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapBeregningsgrunnlagPeriode(final no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode resultatGrunnlagPeriode,
+    private static BeregningsgrunnlagPeriodeDto mapBeregningsgrunnlagPeriode(final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatGrunnlagPeriode,
                                                                       RegelResultat regelResultat,
                                                                       final BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                                       BeregningsgrunnlagDto eksisterendeVLGrunnlag,
@@ -387,7 +387,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         });
     }
 
-    private static List<PeriodeÅrsak> mapPeriodeÅrsaker(List<no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak> periodeÅrsaker) {
+    private static List<PeriodeÅrsak> mapPeriodeÅrsaker(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> periodeÅrsaker) {
         return periodeÅrsaker.stream()
             .map(MapPeriodeÅrsakFraRegelTilVL::map)
             .collect(Collectors.toList());

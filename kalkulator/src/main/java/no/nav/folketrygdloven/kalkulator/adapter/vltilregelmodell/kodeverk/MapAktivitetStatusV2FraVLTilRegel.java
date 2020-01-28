@@ -4,7 +4,7 @@ import java.util.Map;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
 
 public class MapAktivitetStatusV2FraVLTilRegel {
     private static final Map<AktivitetStatus, AktivitetStatusV2> MAP_AKTIVITETSTATUS =

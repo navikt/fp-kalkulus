@@ -33,12 +33,12 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektskilde;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Periodeinntekt;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 
 public class MapInntektsgrunnlagVLTilRegel {
     private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
@@ -118,8 +118,8 @@ public class MapInntektsgrunnlagVLTilRegel {
         inntektsmeldinger.forEach(im -> {
             Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
             BigDecimal inntekt = im.getInntektBeløp().getVerdi();
-            List<no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
-                .map(ny -> new no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(), ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
+            List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
+                .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(), ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
                 .collect(Collectors.toList());
             Periodeinntekt.Builder naturalYtelserBuilder = Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSMELDING)

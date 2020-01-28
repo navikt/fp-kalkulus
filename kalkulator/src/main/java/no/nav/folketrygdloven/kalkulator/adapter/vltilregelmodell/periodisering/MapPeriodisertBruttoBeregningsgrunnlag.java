@@ -9,11 +9,11 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapAk
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusV2;
-import no.nav.folketrygdloven.kalkulator.regelmodell.BruttoBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.PeriodisertBruttoBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BruttoBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodisertBruttoBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 
 public final class MapPeriodisertBruttoBeregningsgrunnlag {
 

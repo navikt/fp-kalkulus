@@ -30,16 +30,16 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Hjem
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatusMedHjemmel;
-import no.nav.folketrygdloven.kalkulator.regelmodell.BeregningsgrunnlagHjemmel;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Dekningsgrad;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SammenligningsGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Dekningsgrad;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 
 public class MapBeregningsgrunnlagFraVLTilRegel {
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
@@ -55,14 +55,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         // skjul meg
     }
 
-    public static List<no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
+    public static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
                                                                                                                                BeregningsgrunnlagDto Beregningsgrunnlag, BeregningsgrunnlagInput input) {
         Objects.requireNonNull(referanse, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(Beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
         return mapBeregningsgrunnlagPerioder(Beregningsgrunnlag, input);
     }
 
-    public static no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
+    public static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
         var ref = input.getBehandlingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");
@@ -86,7 +86,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         boolean erMilitærIOpptjeningsperioden = harHattMilitærIOpptjeningsperioden(oppdatertGrunnlag.getGjeldendeAktiviteter());
 
-        var builder = no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag.builder();
+        var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
         sammenligningsgrunnlagMap.forEach(builder::medSammenligningsgrunnlagPrStatus);
         return builder
             .medInntektsgrunnlag(inntektsgrunnlag)
@@ -102,15 +102,15 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             .build();
     }
 
-    private static List<no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
+    private static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
         if (beregningsgrunnlagPeriodeÅrsaker.isEmpty()) {
             return Collections.emptyList();
         }
-        List<no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak> periodeÅrsakerMapped = new ArrayList<>();
+        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> periodeÅrsakerMapped = new ArrayList<>();
         beregningsgrunnlagPeriodeÅrsaker.forEach(bgPeriodeÅrsak -> {
             if (!PeriodeÅrsak.UDEFINERT.equals(bgPeriodeÅrsak.getPeriodeÅrsak())) {
                 try {
-                    periodeÅrsakerMapped.add(no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak.valueOf(bgPeriodeÅrsak.getPeriodeÅrsak().getKode()));
+                    periodeÅrsakerMapped.add(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.valueOf(bgPeriodeÅrsak.getPeriodeÅrsak().getKode()));
                 } catch (IllegalArgumentException e) {
                     throw new IllegalStateException("Ukjent PeriodeÅrsak: (" + bgPeriodeÅrsak.getPeriodeÅrsak().getKode() + ").", e);
                 }

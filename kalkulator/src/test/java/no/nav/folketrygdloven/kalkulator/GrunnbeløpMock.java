@@ -18,7 +18,8 @@ import static no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter.GSNITT
 import java.time.LocalDate;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 
 public class GrunnbeløpMock {
 

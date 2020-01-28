@@ -20,9 +20,9 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Aktivitet;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
@@ -57,7 +57,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
         assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(null);
     }
@@ -101,7 +101,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
         assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(arbId.getReferanse());
     }
@@ -127,7 +127,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
     }
@@ -176,7 +176,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
             Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
             assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
             assertThat(arbeidsforhold.getReferanseType())
-                .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+                .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
             assertThat(arbeidsforhold.getOrgnr()).isEqualTo(orgnr);
         }
     }
@@ -212,7 +212,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
     }
 
@@ -248,7 +248,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR);
         assertThat(arbeidsforhold.getOrgnr()).isEqualTo(ORGNR);
     }
 
@@ -273,7 +273,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         Arbeidsforhold arbeidsforhold = aktivPeriode.getArbeidsforhold();
         assertThat(arbeidsforhold.getAktivitet()).isEqualByComparingTo(Aktivitet.ARBEIDSTAKERINNTEKT);
         assertThat(arbeidsforhold.getReferanseType())
-            .isEqualByComparingTo(no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.AKTØR_ID);
+            .isEqualByComparingTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.AKTØR_ID);
         assertThat(arbeidsforhold.getAktørId()).isEqualTo(aktørId.getId());
         assertThat(arbeidsforhold.getArbeidsforholdId()).isNull();
     }
@@ -458,7 +458,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
     private void assertAktivPeriode(AktivitetStatusModell modell, String orgnr, LocalDate fom, LocalDate tom, String arbRef) {
         Optional<AktivPeriode> aktivPeriodeOpt = modell.getAktivePerioder().stream()
             .filter(ap -> Objects.equals(ap.getArbeidsforhold().getReferanseType(),
-                no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR) &&
+                no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType.ORG_NR) &&
                 Objects.equals(ap.getArbeidsforhold().getOrgnr(), orgnr) &&
                 Objects.equals(ap.getArbeidsforhold().getArbeidsforholdId(), arbRef) &&
                 Objects.equals(ap.getArbeidsforhold().getAktivitet(), Aktivitet.ARBEIDSTAKERINNTEKT))

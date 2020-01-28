@@ -30,13 +30,13 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.ArbeidsforholdOgInntektsmelding;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Gradering;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeModell;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.Arbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.grunnlag.inntekt.ReferanseType;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SplittetPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
@@ -91,7 +91,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                                                       LocalDate skjæringstidspunkt,
                                                       List<SplittetPeriode> eksisterendePerioder,
                                                       List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
-                                                      List<no.nav.folketrygdloven.kalkulator.regelmodell.AndelGradering> regelAndelGraderinger);
+                                                      List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger);
 
     protected abstract void mapInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                Collection<AndelGradering> andelGraderinger,

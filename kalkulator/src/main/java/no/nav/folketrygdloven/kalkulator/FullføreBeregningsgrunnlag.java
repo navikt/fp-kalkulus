@@ -6,7 +6,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 
 public abstract class FullføreBeregningsgrunnlag {
 
@@ -30,9 +30,9 @@ public abstract class FullføreBeregningsgrunnlag {
         return fastsattBeregningsgrunnlag;
     }
 
-    protected abstract List<RegelResultat> evaluerRegelmodell(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput input);
+    protected abstract List<RegelResultat> evaluerRegelmodell(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput input);
 
-    protected static String toJson(no.nav.folketrygdloven.kalkulator.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected static String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
         return JacksonJsonConfig.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 }

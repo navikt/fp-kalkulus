@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.Grunnbeløp;
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -23,8 +23,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Akti
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
 public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
@@ -47,8 +47,8 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
             throw new IllegalStateException("Antall regelresultater må være 2 for å spore regellogg");
         }
 
-        if (regelModell.getAktivitetStatuser().containsAll(Arrays.asList(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.DP,
-            no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.AAP))) {
+        if (regelModell.getAktivitetStatuser().containsAll(Arrays.asList(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.DP,
+            no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.AAP))) {
             throw new IllegalStateException("Ugyldig kombinasjon av statuser: Kan ikke både ha status AAP og DP samtidig");
         }
         LocalDate skjæringstidspunktForBeregning = regelModell.getSkjæringstidspunktForBeregning();
@@ -121,7 +121,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                 .build(beregningsgrunnlagPeriode));
     }
 
-    private static boolean erATFL(no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus aktivitetStatus) {
-        return no.nav.folketrygdloven.kalkulator.regelmodell.AktivitetStatus.ATFL.equals(aktivitetStatus);
+    private static boolean erATFL(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus) {
+        return no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.ATFL.equals(aktivitetStatus);
     }
 }

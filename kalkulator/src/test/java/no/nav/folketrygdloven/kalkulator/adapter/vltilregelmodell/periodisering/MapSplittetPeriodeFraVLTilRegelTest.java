@@ -15,8 +15,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Akti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.regelmodell.resultat.SplittetPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 
 public class MapSplittetPeriodeFraVLTilRegelTest {
     @Test
@@ -73,7 +73,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
         assertThat(splittetPeriode.getPeriode().getFom()).isEqualTo(fom);
         assertThat(splittetPeriode.getPeriode().getTom()).isEqualTo(tom);
         assertThat(splittetPeriode.getPeriodeÅrsaker()).hasSize(1);
-        assertThat(splittetPeriode.getPeriodeÅrsaker().get(0)).isEqualTo(no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak.REFUSJON_OPPHØRER);
+        assertThat(splittetPeriode.getPeriodeÅrsaker().get(0)).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.REFUSJON_OPPHØRER);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
         assertThat(splittetPeriode.getPeriode().getFom()).isEqualTo(fom);
         assertThat(splittetPeriode.getPeriode().getTom()).isEqualTo(tom);
         assertThat(splittetPeriode.getPeriodeÅrsaker()).hasSize(2);
-        assertThat(splittetPeriode.getPeriodeÅrsaker().get(0)).isEqualTo(no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak.GRADERING);
-        assertThat(splittetPeriode.getPeriodeÅrsaker().get(1)).isEqualTo(no.nav.folketrygdloven.kalkulator.regelmodell.PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
+        assertThat(splittetPeriode.getPeriodeÅrsaker().get(0)).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.GRADERING);
+        assertThat(splittetPeriode.getPeriodeÅrsaker().get(1)).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
     }
 }
