@@ -4,13 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.persistence.Convert;
-
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.converters.BooleanToStringConverter;
 
 public class OppgittEgenNæringDto {
 
@@ -23,16 +20,9 @@ public class OppgittEgenNæringDto {
     private String begrunnelse;
     private BigDecimal bruttoInntekt;
 
-    @Convert(converter = BooleanToStringConverter.class)
     private boolean nyoppstartet;
-
-    @Convert(converter = BooleanToStringConverter.class)
     private boolean varigEndring;
-
-    @Convert(converter = BooleanToStringConverter.class)
     private boolean nærRelasjon;
-
-    @Convert(converter = BooleanToStringConverter.class)
     private boolean nyIArbeidslivet;
 
     OppgittEgenNæringDto() {

@@ -16,9 +16,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import no.nav.folketrygdloven.kalkulus.felles.converters.BooleanToStringConverter;
+
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BeregningsgrunnlagGrunnlagEntitet")
 @Table(name = "GR_BEREGNINGSGRUNNLAG")

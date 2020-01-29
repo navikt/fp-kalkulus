@@ -16,8 +16,9 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import no.nav.folketrygdloven.kalkulus.felles.converters.BooleanToStringConverter;
+
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BeregningsgrunnlagFrilansAndel")
 @Table(name = "BG_FRILANS_ANDEL")
