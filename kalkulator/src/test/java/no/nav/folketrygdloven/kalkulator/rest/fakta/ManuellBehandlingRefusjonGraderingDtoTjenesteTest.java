@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
@@ -43,7 +43,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
     private BeregningAktivitetAggregatRestDto aktivitetAggregatEntitet;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         aktivitetAggregatEntitet = BeregningAktivitetAggregatRestDto.builder()
             .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER))

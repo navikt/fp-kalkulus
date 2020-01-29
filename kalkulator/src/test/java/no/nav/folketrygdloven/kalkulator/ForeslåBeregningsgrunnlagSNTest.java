@@ -10,10 +10,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
@@ -36,6 +35,7 @@ import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrun
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
 
+@ExtendWith(MockitoExtension.class)
 public class ForeslåBeregningsgrunnlagSNTest {
 
     private static final double MÅNEDSINNTEKT1 = 12345d;
@@ -48,9 +48,6 @@ public class ForeslåBeregningsgrunnlagSNTest {
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule().silent();
 
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
 

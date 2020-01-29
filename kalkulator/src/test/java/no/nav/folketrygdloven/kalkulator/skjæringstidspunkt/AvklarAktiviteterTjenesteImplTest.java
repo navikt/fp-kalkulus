@@ -10,8 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
@@ -53,7 +53,7 @@ public class AvklarAktiviteterTjenesteImplTest {
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         behandlingReferanse = nyBehandling();
     }

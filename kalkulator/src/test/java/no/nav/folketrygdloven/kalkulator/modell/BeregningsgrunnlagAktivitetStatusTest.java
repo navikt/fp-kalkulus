@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -19,7 +19,7 @@ public class BeregningsgrunnlagAktivitetStatusTest {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagAktivitetStatusDto beregningsgrunnlagAktivitetStatus;
 
-    @Before
+    @BeforeEach
     public void setup() {
         beregningsgrunnlag = lagBeregningsgrunnlag();
         beregningsgrunnlagAktivitetStatus = lagMedPaakrevdeFelter();

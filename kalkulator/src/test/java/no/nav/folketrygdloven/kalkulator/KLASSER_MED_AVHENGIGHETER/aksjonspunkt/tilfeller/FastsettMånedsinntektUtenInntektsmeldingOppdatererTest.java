@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
@@ -44,7 +44,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
     private BeregningsgrunnlagInput input;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);

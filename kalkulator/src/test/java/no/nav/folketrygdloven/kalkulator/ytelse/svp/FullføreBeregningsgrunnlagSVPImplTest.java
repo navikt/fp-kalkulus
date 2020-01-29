@@ -17,8 +17,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.assertj.core.data.Offset;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
@@ -75,7 +75,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
     private FullføreBeregningsgrunnlag tjeneste;
     private BeregningsgrunnlagDto beregningsgrunnlag;
 
-    @Before
+    @BeforeEach
     public void setup() {
         tjeneste = new FullføreBeregningsgrunnlagSVPImpl();
         beregningsgrunnlag = lagBeregningsgrunnlagAT();

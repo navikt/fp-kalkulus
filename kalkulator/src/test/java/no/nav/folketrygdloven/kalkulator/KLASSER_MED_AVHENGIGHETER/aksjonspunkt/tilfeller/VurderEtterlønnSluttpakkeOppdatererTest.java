@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
@@ -36,7 +36,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagInput input;
 
-    @Before
+    @BeforeEach
     public void setup() {
         beregningsgrunnlag = lagBeregningsgrunnlag();
     }

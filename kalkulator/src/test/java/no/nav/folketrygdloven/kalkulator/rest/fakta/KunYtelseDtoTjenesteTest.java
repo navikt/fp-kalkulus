@@ -8,8 +8,8 @@ import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
@@ -41,7 +41,7 @@ public class KunYtelseDtoTjenesteTest {
 
     private KunYtelseDtoTjeneste kunYtelseDtoTjeneste;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.kunYtelseDtoTjeneste = new KunYtelseDtoTjeneste();
     }

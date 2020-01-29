@@ -1,14 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.modell;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -30,7 +29,7 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
     private BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode;
     private BeregningsgrunnlagPrStatusOgAndelDto prStatusOgAndel;
 
-    @Before
+    @BeforeEach
     public void setup() {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto.Builder builder = lagBeregningsgrunnlagPeriodeBuilder();
@@ -89,7 +88,7 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
         try {
             builder.medBeregningsperiode(PERIODE_FOM, PERIODE_FOM.plusDays(2));
         } catch (IllegalArgumentException e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 

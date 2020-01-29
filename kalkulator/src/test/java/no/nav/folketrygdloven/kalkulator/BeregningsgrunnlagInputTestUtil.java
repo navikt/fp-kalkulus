@@ -20,7 +20,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Bere
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import oracle.ucp.common.waitfreepool.Tuple;
+import no.nav.vedtak.util.Tuple;
+
 
 public class BeregningsgrunnlagInputTestUtil {
 
@@ -38,12 +39,12 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand>... forrige) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.get1(), aktivt.get2());
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, aktivt.get2());
+        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, aktivt.getElement2());
         for (Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> bg : forrige) {
-            BeregningsgrunnlagGrunnlagDto gr = lagGrunnlag(bg.get1(), bg.get2());
-            inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(gr, bg.get2());
+            BeregningsgrunnlagGrunnlagDto gr = lagGrunnlag(bg.getElement1(), bg.getElement2());
+            inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(gr, bg.getElement2());
         }
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);

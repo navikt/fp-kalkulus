@@ -22,9 +22,6 @@ public class FaktaOmBeregningDtoTjeneste {
     private List<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenester;
     private AndelerForFaktaOmBeregningTjeneste andelerForFaktaOmBeregningTjeneste;
 
-    FaktaOmBeregningDtoTjeneste() {
-        // Hibernate
-    }
 
     @Inject
     public FaktaOmBeregningDtoTjeneste(@Any Instance<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenesteInstance,

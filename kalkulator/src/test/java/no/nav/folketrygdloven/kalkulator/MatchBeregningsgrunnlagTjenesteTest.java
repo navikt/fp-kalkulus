@@ -5,7 +5,8 @@ import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -79,7 +80,6 @@ public class MatchBeregningsgrunnlagTjenesteTest {
         assertThat(korrektAndel).isEqualTo(andel);
     }
 
-    @Test(expected = TekniskException.class)
     public void skal_kaste_exception_om_andel_ikkje_eksisterer_i_grunnlag() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
@@ -96,6 +96,8 @@ public class MatchBeregningsgrunnlagTjenesteTest {
             .build(periode);
 
         // Act
-        MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef());
+        Assertions.assertThrows(TekniskException.class, () -> {
+            MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef());
+        });
     }
 }

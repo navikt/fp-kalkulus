@@ -11,10 +11,10 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.QuarkusTest;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
@@ -33,20 +33,15 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Fakt
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
-import no.nav.vedtak.felles.testutilities.cdi.CdiRunner;
 
-@RunWith(CdiRunner.class)
+@QuarkusTest
 public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
 
-
-
     @Inject
     private FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer;
-
-
 
     private List<VurderteArbeidsforholdDto> tidsbestemteArbeidsforhold;
     private final long FØRSTE_ANDELSNR = 1L;
@@ -59,7 +54,7 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
-    @Before
+    @BeforeEach
     public void setup() {
         virksomheter.add(new VirksomhetEntitet.Builder()
                 .medOrgnr("123")
