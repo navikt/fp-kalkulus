@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -35,7 +35,7 @@ public class MapAndelGraderingTest {
 
     private BehandlingReferanse ref;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ref = mock(BehandlingReferanse.class);
         when(ref.getSkjæringstidspunktBeregning()).thenReturn(LocalDate.now());

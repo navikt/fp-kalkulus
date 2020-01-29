@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -21,7 +21,7 @@ public class BeregningsgrunnlagPeriodeTest {
     private List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelListe;
     private BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode;
 
-    @Before
+    @BeforeEach
     public void setup() {
         beregningsgrunnlag = lagBeregningsgrunnlag();
         beregningsgrunnlagPrStatusOgAndelListe = new ArrayList<>();

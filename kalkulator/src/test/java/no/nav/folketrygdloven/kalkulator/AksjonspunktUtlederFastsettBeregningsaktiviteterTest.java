@@ -13,9 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -63,7 +63,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
     private LocalDate tom;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         settSimulertNåtidTil(LocalDate.of(2020, 1, 8));
         FPDateUtil.init();
@@ -93,7 +93,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 100000);
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         settSimulertNåtidTil(LocalDate.now());
         FPDateUtil.init();

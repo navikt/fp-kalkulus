@@ -2,18 +2,24 @@ package no.nav.folketrygdloven.kalkulator.ytelse.svp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjeneste;
@@ -55,11 +61,11 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
-import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.konfig.Tid;
 
-
+@ExtendWith(MockitoExtension.class)
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder()
@@ -71,9 +77,6 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private static final String ORG_NUMMER = "45345";
     private static final String ORG_NUMMER_2 = "15345";
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     private final BeregningAktivitetAggregatDto beregningAktivitetAggregat = Mockito.mock(BeregningAktivitetAggregatDto.class);
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
 
@@ -82,7 +85,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.tjeneste = lagTjeneste();
 

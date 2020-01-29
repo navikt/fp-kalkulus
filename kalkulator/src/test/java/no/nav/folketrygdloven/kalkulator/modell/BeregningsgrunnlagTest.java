@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
@@ -16,7 +16,7 @@ public class BeregningsgrunnlagTest {
     private BeregningsgrunnlagDto.Builder builder;
     private BeregningsgrunnlagDto beregningsgrunnlag;
 
-    @Before
+    @BeforeEach
     public void setup() {
         beregningsgrunnlag = lagMedPaakrevdeFelter();
         builder = lagBuilderMedPaakrevdeFelter();

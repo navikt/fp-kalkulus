@@ -21,8 +21,8 @@
 //
 //import no.nav.vedtak.felles.jpa.tid.AbstractLocalDateInterval;
 //import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
-//import org.junit.Before;
-//import org.junit.Test;
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
 //
 //import java.time.LocalDate;
 //import java.util.Optional;
@@ -37,7 +37,7 @@
 //    private VurderBesteberegningTilfelleUtleder vurderBesteberegningTilfelleUtleder;
 //    private BehandlingReferanse behandlingReferanse = mock(BehandlingReferanse.class);
 //
-//    @Before
+//    @BeforeEach
 //    public void setUp() {
 //        when(behandlingReferanse.getFagsakYtelseType()).thenReturn(FagsakYtelseType.FORELDREPENGER);
 //        vurderBesteberegningTilfelleUtleder = new VurderBesteberegningTilfelleUtleder();

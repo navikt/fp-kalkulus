@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
@@ -41,7 +41,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
     private BehandlingReferanse referanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         vurderRefusjonTilfelleOppdaterer = new VurderRefusjonTilfelleOppdaterer();
     }

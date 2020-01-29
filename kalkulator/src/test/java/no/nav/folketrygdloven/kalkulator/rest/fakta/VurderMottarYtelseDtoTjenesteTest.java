@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
@@ -65,7 +65,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
     private BeregningsgrunnlagGrunnlagRestDto grunnlag;
     private InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         beregningsgrunnlag = BeregningsgrunnlagRestDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)

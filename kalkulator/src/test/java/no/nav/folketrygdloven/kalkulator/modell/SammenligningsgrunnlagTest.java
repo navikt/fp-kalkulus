@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.fail;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
@@ -22,7 +22,7 @@ public class SammenligningsgrunnlagTest {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private SammenligningsgrunnlagDto sammenligningsgrunnlag;
 
-    @Before
+    @BeforeEach
     public void setup() {
         beregningsgrunnlag = lagBeregningsgrunnlag();
         sammenligningsgrunnlag = lagSammenligningsgrunnlag();

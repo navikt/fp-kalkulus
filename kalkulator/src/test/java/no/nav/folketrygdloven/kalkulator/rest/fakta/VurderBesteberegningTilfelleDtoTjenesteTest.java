@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
@@ -36,7 +36,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
     private static final BGAndelArbeidsforholdRestDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdRestDto.builder();
     private VurderBesteberegningTilfelleDtoTjeneste dtoTjeneste;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         var orgnr = "347289324";
         bgAndelArbeidsforholdBuilder

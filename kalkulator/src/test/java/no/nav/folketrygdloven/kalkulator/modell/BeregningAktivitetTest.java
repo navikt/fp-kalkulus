@@ -6,9 +6,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto;
@@ -22,8 +21,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class BeregningAktivitetTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     private static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_REF = InternArbeidsforholdRefDto.namedRef("TEST-REF");
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.fra(AktørId.dummy());
@@ -77,10 +74,10 @@ public class BeregningAktivitetTest {
             .build();
 
         // Assert
-        expectedException.expect(IllegalStateException.class);
-
         // Act
-        aktivitet.skalBrukes(overstyringer);
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            aktivitet.skalBrukes(overstyringer);
+        });
     }
 
     private BeregningAktivitetOverstyringerDto lagOverstyring(int antallOverstyringer) {

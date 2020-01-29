@@ -15,10 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.BeregningsgrunnlagTestUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
@@ -67,12 +66,11 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.vedtak.exception.TekniskException;
 import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
-import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.konfig.Tid;
-
 
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
@@ -83,9 +81,6 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private static final AktørId ARBEIDSGIVER_AKTØR_ID = AktørId.dummy();
     private static final BigDecimal ANTALL_MÅNEDER_I_ÅR = BigDecimal.valueOf(12);
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
 
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
@@ -100,7 +95,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         tjeneste = lagTjeneste();
@@ -1691,14 +1686,12 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
             .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Assert
-        expectedException.expect(TekniskException.class);
-        expectedException.expectMessage("periode, fant 2");
-
         // Act
-        var input = new BeregningsgrunnlagInput(behandlingRef, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        Assertions.assertThrows(TekniskException.class, () -> {
+            var input = new BeregningsgrunnlagInput(behandlingRef, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
-        tjeneste.fastsettPerioderForNaturalytelse(input, beregningsgrunnlag);
-
+            tjeneste.fastsettPerioderForNaturalytelse(input, beregningsgrunnlag);
+        });
     }
 
     @Test

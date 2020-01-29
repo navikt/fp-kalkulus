@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
@@ -47,7 +47,7 @@ public class RefusjonOgGraderingTjenesteTest {
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat = mock(BeregningAktivitetAggregatDto.class);
     private List<BeregningAktivitetDto> aktivitetList = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(beregningAktivitetAggregat.getBeregningAktiviteter()).thenReturn(aktivitetList);
     }

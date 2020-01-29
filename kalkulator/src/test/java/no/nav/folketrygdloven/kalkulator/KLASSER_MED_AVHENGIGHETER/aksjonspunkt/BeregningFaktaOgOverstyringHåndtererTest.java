@@ -10,9 +10,8 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
@@ -35,10 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.rest.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
-import no.nav.vedtak.felles.testutilities.cdi.CdiRunner;
 
-
-@RunWith(CdiRunner.class)
 public class BeregningFaktaOgOverstyringHåndtererTest {
 
     private static final LocalDate STP = LocalDate.of(2019, 1, 1);
@@ -48,7 +44,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     private BeregningFaktaOgOverstyringHåndterer beregningFaktaOgOverstyringHåndterer;
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(STP);
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.beregningFaktaOgOverstyringHåndterer = new BeregningFaktaOgOverstyringHåndterer(faktaOmBeregningTilfellerOppdaterer);
     }

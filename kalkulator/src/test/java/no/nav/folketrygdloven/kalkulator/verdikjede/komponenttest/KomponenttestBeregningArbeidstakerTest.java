@@ -17,10 +17,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.QuarkusTest;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
@@ -50,10 +50,9 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningArbeidsgiverTest
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.testutilities.cdi.CdiRunner;
 import no.nav.vedtak.konfig.Tid;
 
-@RunWith(CdiRunner.class)
+@QuarkusTest
 public class KomponenttestBeregningArbeidstakerTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.DECEMBER, 1);
@@ -69,7 +68,7 @@ public class KomponenttestBeregningArbeidstakerTest {
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
     }

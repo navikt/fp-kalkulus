@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.BeregningsgrunnlagTestUtil;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -26,7 +26,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
 
     private BehandlingReferanse ref = new BehandlingReferanseMock();
 
-    @After
+    @AfterEach
     public void after() {
         System.clearProperty(FPDateUtil.SystemConfiguredClockProvider.PROPERTY_KEY_OFFSET_PERIODE);
         FPDateUtil.init();

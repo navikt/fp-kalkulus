@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
@@ -56,7 +56,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BehandlingReferanse referanse = new BehandlingReferanseMock();
     private BeregningsgrunnlagGrunnlagRestDto grunnlagEntitet;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         referanse = referanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING).build());

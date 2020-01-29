@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
@@ -45,7 +45,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     private static final int OVERSTYRT_PR_AR = 200000;
     private static final int FRILANSER_INNTEKT = 4000;
 
-    @Before
+    @BeforeEach
     public void setup() {
         virksomheter.add(new VirksomhetEntitet.Builder()
                 .medOrgnr("991825827")

@@ -1,12 +1,46 @@
-.settings
-.wtpmodules
-target
+# Eclipse
 .project
 .classpath
-outdated-dependencies.txt
-bin
-*.iml
+.settings/
+bin/
+
+# IntelliJ
 .idea
+*.ipr
+*.iml
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# Visual Studio Code
+.vscode
+
+# OSX
+.DS_Store
+
+# Vim
+*.swp
+*.swo
+
+# patch
+*.orig
+*.rej
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+maven-eclipse.xml
+.mvn/maven.config
+.mvn/jvm.config
+
+# Maven Wrapper
+.mvn/wrapper/*.jar
+
+# App
 _*.sh
 *.local
 *.localz
@@ -18,16 +52,15 @@ es.properties.backup
 *.log
 *.db
 mqjms.log*
-maven-eclipse.xml
 .externalToolBuilders
 dep.txt
 /docs/asciidoc/index.html
 .eslint-loader-cache
-.mvn/maven.config
-.mvn/jvm.config
 .flattened*
 *.patch
-/.mvn/
 /logback.xml
 .temp*.txt
+/logs/
 .env
+app.properties
+app-local.properties

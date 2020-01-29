@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
@@ -79,7 +79,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private BeregningAktivitetAggregatRestDto beregningAktiviteter;
     private static ArbeidsgiverMedNavn virksomhet = ArbeidsgiverMedNavn.virksomhet(ORGNR);
 
-    @Before
+    @BeforeEach
     public void setup() {
         AndelerForFaktaOmBeregningTjeneste andelerForFaktaOmBeregningTjeneste = new AndelerForFaktaOmBeregningTjeneste();
         FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(

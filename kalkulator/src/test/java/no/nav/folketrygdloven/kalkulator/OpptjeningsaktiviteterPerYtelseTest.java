@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.OpptjeningsaktiviteterPerYtelse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
