@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.PensjonTrygdType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class InntektspostDto {
 
@@ -31,7 +31,7 @@ public class InntektspostDto {
     private InntektDto inntekt;
     private String ytelseType = OffentligYtelseType.KODEVERK;
     private String ytelse = OffentligYtelseType.UDEFINERT.getKode();
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
     private Beløp beløp;
 
     public InntektspostDto() {
@@ -89,10 +89,10 @@ public class InntektspostDto {
     }
 
     void setPeriode(LocalDate fom, LocalDate tom) {
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

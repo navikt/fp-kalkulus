@@ -19,6 +19,12 @@
             <artifactId>beregningsgrunnlag-regelmodell</artifactId>
         </dependency>
 
+        <!-- felles i kalkulus -->
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>felles</artifactId>
+        </dependency>
+
         <!-- NARE: Java regelmodell -->
         <dependency>
             <groupId>no.nav.fpsak.nare</groupId>
@@ -120,6 +126,11 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>3.2.4</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>felles</artifactId>
+                <version>${revision}${sha1}${changelist}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

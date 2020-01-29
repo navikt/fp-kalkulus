@@ -29,7 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+
 
 public class BeregningsgrunnlagTestUtil {
 
@@ -109,7 +109,7 @@ public class BeregningsgrunnlagTestUtil {
             for (int i = 0; i < aktiviteter.size(); i++) {
                 String arbId = aktiviteter.get(i).getArbeidsforholdRef().getReferanse();
                 String orgNr = aktiviteter.get(i).getArbeidsgiver().getIdentifikator();
-                DatoIntervallEntitet arbeidsperiode = finnArbeidsperiode(filter, aktiviteter, i);
+                Intervall arbeidsperiode = finnArbeidsperiode(filter, aktiviteter, i);
                 BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(lagArbeidsgiver(orgNr))
                     .medArbeidsforholdRef(arbId)
@@ -125,14 +125,14 @@ public class BeregningsgrunnlagTestUtil {
         }
     }
 
-    private static DatoIntervallEntitet finnArbeidsperiode(YrkesaktivitetFilterDto filter, List<YrkesaktivitetDto> aktiviteter, int i) {
+    private static Intervall finnArbeidsperiode(YrkesaktivitetFilterDto filter, List<YrkesaktivitetDto> aktiviteter, int i) {
         return filter.getAnsettelsesPerioder(aktiviteter.get(i)).stream()
-            .map(a -> DatoIntervallEntitet.fraOgMedTilOgMed(a.getPeriode().getFomDato(), a.getPeriode().getTomDato()))
+            .map(a -> Intervall.fraOgMedTilOgMed(a.getPeriode().getFomDato(), a.getPeriode().getTomDato()))
             .reduce((p1, p2) -> {
                 LocalDate fom = p1.getFomDato().isBefore(p2.getFomDato()) ? p1.getFomDato() : p2.getFomDato();
                 LocalDate tom = p1.getTomDato().isAfter(p2.getTomDato()) ? p1.getTomDato() : p2.getTomDato();
-                return tom == null ? DatoIntervallEntitet.fraOgMed(fom) : DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
-        }).orElse(DatoIntervallEntitet.fraOgMedTilOgMed(LocalDate.now().minusYears(1), LocalDate.now().plusYears(2)));
+                return tom == null ? Intervall.fraOgMed(fom) : Intervall.fraOgMedTilOgMed(fom, tom);
+        }).orElse(Intervall.fraOgMedTilOgMed(LocalDate.now().minusYears(1), LocalDate.now().plusYears(2)));
     }
 
     private static List<AktivitetStatus> oversettTilEnkeltstatuser(AktivitetStatus... statuser) {
@@ -204,7 +204,7 @@ public class BeregningsgrunnlagTestUtil {
             Arbeidsgiver arbeidsgiver = arbeidsgivere.get(i);
             String identifikator = arbeidsgiver.getIdentifikator();
             List<YrkesaktivitetDto> aktivitetIPeriode = finnAktivitetForAndelIPeriode(filter, aktiviteter, beregningsgrunnlagPeriode.getPeriode(), identifikator);
-            DatoIntervallEntitet arbeidsperiode = finnArbeidsperiode(filter, aktiviteter, i);
+            Intervall arbeidsperiode = finnArbeidsperiode(filter, aktiviteter, i);
             BGAndelArbeidsforholdDto.Builder bga = byggArbeidsforhold(refusjonPrÅr, arbId, arbeidsgiver, arbeidsperiode);
             if (!aktivitetIPeriode.isEmpty()) {
                 if (lagtTilAvSaksbehandlerPrAndelIArbeidsforhold.get(identifikator) != null && !lagtTilAvSaksbehandlerPrAndelIArbeidsforhold.get(identifikator).isEmpty()) {
@@ -249,7 +249,7 @@ public class BeregningsgrunnlagTestUtil {
             inntektskategoriPrAndelIArbeidsforhold.get(orgNr).get(k) : Inntektskategori.ARBEIDSTAKER;
     }
 
-    private static BGAndelArbeidsforholdDto.Builder byggArbeidsforhold(Map<String, Integer> refusjonPrÅr, String arbId, Arbeidsgiver arbeidsgiver, DatoIntervallEntitet arbeidsperiode) {
+    private static BGAndelArbeidsforholdDto.Builder byggArbeidsforhold(Map<String, Integer> refusjonPrÅr, String arbId, Arbeidsgiver arbeidsgiver, Intervall arbeidsperiode) {
         String identifikator = arbeidsgiver.getIdentifikator();
         return BGAndelArbeidsforholdDto.builder()
             .medArbeidsgiver(arbeidsgiver)

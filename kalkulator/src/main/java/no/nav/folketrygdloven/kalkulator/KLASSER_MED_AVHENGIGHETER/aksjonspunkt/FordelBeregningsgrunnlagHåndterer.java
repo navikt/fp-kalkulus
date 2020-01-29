@@ -109,14 +109,18 @@ public class FordelBeregningsgrunnlagHåndterer {
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBuilderMedInntektOgInntektskategori(FastsettBeregningsgrunnlagAndelDto endretAndel) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny();
+
+        if (endretAndel.getBeregningsperiodeFom() != null) {
+            builder.medBeregningsperiode(endretAndel.getBeregningsperiodeFom(), endretAndel.getBeregningsperiodeTom());
+        }
+        return builder
             .medAndelsnr(endretAndel.getNyAndel() ? null : endretAndel.getAndelsnr()) // Opprettholder andelsnr som andel ble lagret med forrige gang
             .medAktivitetStatus(endretAndel.getAktivitetStatus())
             .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
             .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
             .medLagtTilAvSaksbehandler(endretAndel.getLagtTilAvSaksbehandler())
             .medArbforholdType(endretAndel.getArbeidsforholdType())
-            .medBeregningsperiode(endretAndel.getBeregningsperiodeFom(), endretAndel.getBeregningsperiodeTom())
             .medFastsattAvSaksbehandler(true);
     }
 

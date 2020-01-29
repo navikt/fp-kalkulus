@@ -6,28 +6,29 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class GraderingDto implements Comparable<GraderingDto> {
 
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
     private Stillingsprosent arbeidstidProsent;
 
     GraderingDto() {
     }
 
-    public GraderingDto(DatoIntervallEntitet periode, BigDecimal arbeidstidProsent) {
+    public GraderingDto(Intervall periode, BigDecimal arbeidstidProsent) {
         this.arbeidstidProsent = new Stillingsprosent(Objects.requireNonNull(arbeidstidProsent,  "arbeidstidProsent"));
         this.periode = periode;
     }
 
-    public GraderingDto(DatoIntervallEntitet periode, Stillingsprosent arbeidstidProsent) {
+    public GraderingDto(Intervall periode, Stillingsprosent arbeidstidProsent) {
         this.arbeidstidProsent = arbeidstidProsent;
         this.periode = periode;
     }
 
     public GraderingDto(LocalDate fom, LocalDate tom, BigDecimal arbeidstidProsent) {
-        this(tom == null ? DatoIntervallEntitet.fraOgMed(fom) : DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom), new Stillingsprosent(Objects.requireNonNull(arbeidstidProsent,  "arbeidstidProsent")));
+        this(tom == null ? Intervall.fraOgMed(fom) : Intervall.fraOgMedTilOgMed(fom, tom), new Stillingsprosent(Objects.requireNonNull(arbeidstidProsent,  "arbeidstidProsent")));
     }
 
     GraderingDto(GraderingDto gradering) {
@@ -38,7 +39,7 @@ public class GraderingDto implements Comparable<GraderingDto> {
         return IndexKey.createKey(periode);
     }
 
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

@@ -26,11 +26,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 
 public class KortvarigArbeidsforholdTjenesteTest {
@@ -46,7 +45,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(
+        Intervall periode = Intervall.fraOgMedTilOgMed(
             LocalDate.of(2018, 8, 5),
             LocalDate.of(2019, 2, 4));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -66,7 +65,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(
+        Intervall periode = Intervall.fraOgMedTilOgMed(
             LocalDate.of(2018, 8, 29),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -86,7 +85,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(
+        Intervall periode = Intervall.fraOgMedTilOgMed(
             LocalDate.of(2018, 8, 31),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -106,7 +105,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(
+        Intervall periode = Intervall.fraOgMedTilOgMed(
             LocalDate.of(2018, 9, 1),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -125,7 +124,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(
+        Intervall periode = Intervall.fraOgMedTilOgMed(
             LocalDate.of(2018, 8, 30),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -148,7 +147,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -170,7 +169,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -193,7 +192,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -222,7 +221,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
             arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
         // Act
@@ -239,7 +238,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -291,7 +290,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         // Lager et kortvarig arbeidsforhold
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING,
@@ -314,7 +313,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
         // Lager et kortvarig arbeidsforhold
-        DatoIntervallEntitet periode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
+        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
@@ -329,7 +328,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         assertThat(resultat).isTrue();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeid(InternArbeidsforholdRefDto arbId, String orgnr, DatoIntervallEntitet periode, LocalDate skjæringstidspunktOpptjening) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeid(InternArbeidsforholdRefDto arbId, String orgnr, Intervall periode, LocalDate skjæringstidspunktOpptjening) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.Builder.oppdater(Optional.empty())
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .medSkjæringstidspunkt(skjæringstidspunktOpptjening)
@@ -348,7 +347,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         return beregningsgrunnlag;
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeidOgDagpenger(InternArbeidsforholdRefDto arbId, String orgnr, DatoIntervallEntitet periode, LocalDate skjæringstidspunktOpptjening) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedArbeidOgDagpenger(InternArbeidsforholdRefDto arbId, String orgnr, Intervall periode, LocalDate skjæringstidspunktOpptjening) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.Builder.oppdater(Optional.empty())
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER))
@@ -417,9 +416,9 @@ public class KortvarigArbeidsforholdTjenesteTest {
         return beregningsgrunnlag;
     }
 
-    private DatoIntervallEntitet getPeriode(YrkesaktivitetDto ya) {
+    private Intervall getPeriode(YrkesaktivitetDto ya) {
         Intervall periode = ya.getAlleAktivitetsAvtaler().stream().filter(AktivitetsAvtaleDto::erAnsettelsesPeriode).findFirst().orElseThrow().getPeriode();
-        return DatoIntervallEntitet.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato());
+        return Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato());
     }
 
 }

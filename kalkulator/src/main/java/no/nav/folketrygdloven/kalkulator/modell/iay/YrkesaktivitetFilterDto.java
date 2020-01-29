@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractLocalDateInterval;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
 /**
  * Brukt til å filtrere registrerte yrkesaktiviteter, overstyrte arbeidsforhold og frilans arbeidsforhold etter skjæringstidspunkt.
@@ -216,7 +216,7 @@ public class YrkesaktivitetFilterDto {
             Set<AktivitetsAvtaleDto> avtaler = new LinkedHashSet<>();
             overstyrtePerioder.forEach(overstyrtPeriode -> yaAvtaler.stream()
                 .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)
-                .filter(aa -> AbstractLocalDateInterval.TIDENES_ENDE.equals(aa.getPeriodeUtenOverstyring().getTomDato()))
+                .filter(aa -> AbstractIntervall.TIDENES_ENDE.equals(aa.getPeriodeUtenOverstyring().getTomDato()))
                 .filter(aa -> overstyrtPeriode.getOverstyrtePeriode().getFomDato().isEqual(aa.getPeriodeUtenOverstyring().getFomDato()))
                 .forEach(avtale -> avtaler.add(new AktivitetsAvtaleDto(avtale, Intervall.fraOgMedTilOgMed(overstyrtPeriode.getOverstyrtePeriode().getFomDato(), overstyrtPeriode.getOverstyrtePeriode().getTomDato())))));
 

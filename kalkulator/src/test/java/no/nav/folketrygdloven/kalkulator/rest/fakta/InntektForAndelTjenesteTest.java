@@ -34,10 +34,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektsKilde;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 
 public class InntektForAndelTjenesteTest {
@@ -139,7 +139,7 @@ public class InntektForAndelTjenesteTest {
 
     private AktivitetsAvtaleDtoBuilder lagAktivitetsavtale() {
         return AktivitetsAvtaleDtoBuilder.ny()
-            .medPeriode(DatoIntervallEntitet.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2)));
+            .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2)));
     }
 
     private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder lagAktørInntekt(List<InntektDtoBuilder> inntektList) {

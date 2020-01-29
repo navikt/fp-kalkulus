@@ -19,8 +19,8 @@
 //import no.nav.folketrygdloven.beregningsgrunnlag.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 //import no.nav.folketrygdloven.beregningsgrunnlag.KLASSER_MED_AVHENGIGHETER.fp.VurderBesteberegningTilfelleUtleder;
 //
-//import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractLocalDateInterval;
-//import no.nav.folketrygdloven.kalkulus.felles.tid.ÅpenDatoIntervallEntitet;
+//import no.nav.vedtak.felles.jpa.tid.AbstractLocalDateInterval;
+//
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //
@@ -51,7 +51,7 @@
 //            .medSkjæringstidspunkt(LocalDate.of(2019, 1, 1))
 //            .build();
 //
-//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.DAGPENGER);
 //
 //        // Act
@@ -68,7 +68,7 @@
 //            .medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
 //            .medSkjæringstidspunkt(LocalDate.of(2019, 1, 1))
 //            .build();
-//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.SYKEPENGER);
 //
 //        // Act
@@ -89,7 +89,7 @@
 //        when(behandlingReferanse.getRelasjonsRolleType()).thenReturn(RelasjonsRolleType.FARA);
 //
 //        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,
-//            ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER);
 //
 //        // Act
@@ -108,7 +108,7 @@
 //            .build();
 //
 //        when(behandlingReferanse.getRelasjonsRolleType()).thenReturn(RelasjonsRolleType.MORA);
-//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER);
 //
 //        // Act
@@ -128,7 +128,7 @@
 //
 //        when(behandlingReferanse.getRelasjonsRolleType()).thenReturn(RelasjonsRolleType.MORA);
 //
-//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT,Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.NÆRING);
 //
 //        // Act
@@ -148,7 +148,7 @@
 //
 //        when(behandlingReferanse.getRelasjonsRolleType()).thenReturn(RelasjonsRolleType.MORA);
 //
-//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
+//        BeregningAktivitetAggregat beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10),
 //            AbstractLocalDateInterval.TIDENES_ENDE), OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER);
 //
 //        // Act

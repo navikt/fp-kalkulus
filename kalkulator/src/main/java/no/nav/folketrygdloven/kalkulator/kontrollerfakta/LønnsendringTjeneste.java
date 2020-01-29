@@ -17,7 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingSomIkkeKommer
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 public class LønnsendringTjeneste {
 

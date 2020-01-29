@@ -33,7 +33,9 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.rest.dto.OverstyrBeregningsgrunnlagDto;
-import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
+
 
 public class BeregningFaktaOgOverstyringHåndtererTest {
 
@@ -53,7 +55,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     public void skal_sette_inntekt_for_en_andel_i_en_periode() {
         // Arrange
         Long andelsnr = 1L;
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(STP, null)));
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(Intervall.fraOgMedTilOgMed(STP, AbstractIntervall.TIDENES_ENDE)));
         int fastsattBeløp = 10000;
         OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp), null);
         BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
@@ -78,8 +80,8 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         // Arrange
         Long andelsnr = 1L;
         LocalDate tilOgMed = STP.plusMonths(1).minusDays(1);
-        List<ÅpenDatoIntervallEntitet> periodeList = List.of(ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(STP, tilOgMed),
-            ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(tilOgMed.plusDays(1), null));
+        List<Intervall> periodeList = List.of(Intervall.fraOgMedTilOgMed(STP, tilOgMed),
+            Intervall.fraOgMedTilOgMed(tilOgMed.plusDays(1), AbstractIntervall.TIDENES_ENDE));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr,
             periodeList);
         int fastsattBeløp1 = 10000;
@@ -103,7 +105,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         validerAndeler(fastsattBeløp1, p2);
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<ÅpenDatoIntervallEntitet> perioder) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<Intervall> perioder) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(STP)
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))

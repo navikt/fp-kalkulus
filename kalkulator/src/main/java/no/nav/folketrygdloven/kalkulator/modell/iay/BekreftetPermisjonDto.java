@@ -4,13 +4,14 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.BekreftetPermisjonStatus;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class BekreftetPermisjonDto {
 
     private BekreftetPermisjonStatus status = BekreftetPermisjonStatus.UDEFINERT;
 
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
 
     BekreftetPermisjonDto() {
     }
@@ -20,7 +21,7 @@ public class BekreftetPermisjonDto {
     }
 
     public BekreftetPermisjonDto(LocalDate permisjonFom, LocalDate permisjonTom, BekreftetPermisjonStatus status){
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(permisjonFom, permisjonTom);
+        this.periode = Intervall.fraOgMedTilOgMed(permisjonFom, permisjonTom);
         this.status = status;
     }
 
@@ -33,7 +34,7 @@ public class BekreftetPermisjonDto {
         return status;
     }
 
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

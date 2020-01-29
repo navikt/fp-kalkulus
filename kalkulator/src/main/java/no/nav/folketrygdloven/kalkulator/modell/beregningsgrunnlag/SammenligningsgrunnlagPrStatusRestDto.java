@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.SammenligningsgrunnlagType;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 
 public class SammenligningsgrunnlagPrStatusRestDto {
 
-    private DatoIntervallEntitet sammenligningsperiode;
+    private Intervall sammenligningsperiode;
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
     private BigDecimal rapportertPrÅr;
     private Long avvikPromille = 0L;
@@ -116,7 +116,7 @@ public class SammenligningsgrunnlagPrStatusRestDto {
         }
 
         public Builder medSammenligningsperiode(LocalDate fom, LocalDate tom) {
-            sammenligningsgrunnlagMal.sammenligningsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+            sammenligningsgrunnlagMal.sammenligningsperiode = Intervall.fraOgMedTilOgMed(fom, tom);
             return this;
         }
 

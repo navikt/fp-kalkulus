@@ -40,12 +40,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.RelatertYtelseTilst
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 
 public class BeregningIAYTestUtil {
@@ -197,8 +196,8 @@ public class BeregningIAYTestUtil {
 
 
     private static OppgittAnnenAktivitetDto mapFrilansPeriode(Periode periode) {
-        Intervall datoIntervallEntitet = mapPeriode(periode);
-        return new OppgittAnnenAktivitetDto(datoIntervallEntitet, ArbeidType.FRILANSER);
+        Intervall Intervall = mapPeriode(periode);
+        return new OppgittAnnenAktivitetDto(Intervall, ArbeidType.FRILANSER);
     }
 
     private static Intervall mapPeriode(Periode periode) {
@@ -262,7 +261,7 @@ public class BeregningIAYTestUtil {
 
     public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse,
                                         LocalDate skjæringstidspunktOpptjening,
-                                        DatoIntervallEntitet arbeidsperiode,
+                                        Intervall arbeidsperiode,
                                         InternArbeidsforholdRefDto arbId,
                                         Arbeidsgiver arbeidsgiver,
                                         InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
@@ -349,11 +348,11 @@ public class BeregningIAYTestUtil {
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = hentYABuilder(aktørArbeidBuilder, arbeidType, arbeidsgiver, arbId);
 
         AktivitetsAvtaleDtoBuilder aktivitetsAvtale = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder()
-            .medPeriode(tilOgMed == null ? DatoIntervallEntitet.fraOgMed(fraOgMed) : DatoIntervallEntitet.fraOgMedTilOgMed(fraOgMed, tilOgMed))
+            .medPeriode(tilOgMed == null ? Intervall.fraOgMed(fraOgMed) : Intervall.fraOgMedTilOgMed(fraOgMed, tilOgMed))
             .medErAnsettelsesPeriode(false)
             .medSisteLønnsendringsdato(lønnsendringsdato.orElse(null));
         AktivitetsAvtaleDtoBuilder arbeidsperiode = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder()
-            .medPeriode(tilOgMed == null ? DatoIntervallEntitet.fraOgMed(fraOgMed) : DatoIntervallEntitet.fraOgMedTilOgMed(fraOgMed, tilOgMed));
+            .medPeriode(tilOgMed == null ? Intervall.fraOgMed(fraOgMed) : Intervall.fraOgMedTilOgMed(fraOgMed, tilOgMed));
 
         yrkesaktivitetBuilder
             .medArbeidType(arbeidType)

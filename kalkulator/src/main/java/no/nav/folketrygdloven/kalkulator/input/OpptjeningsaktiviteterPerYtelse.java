@@ -7,7 +7,7 @@ import java.util.Set;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 public class OpptjeningsaktiviteterPerYtelse {
 

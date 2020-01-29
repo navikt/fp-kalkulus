@@ -5,21 +5,22 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.UtsettelseÅrsak;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class UtsettelsePeriodeDto {
 
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
     private UtsettelseÅrsak årsak = UtsettelseÅrsak.UDEFINERT;
 
     private UtsettelsePeriodeDto(LocalDate fom, LocalDate tom) {
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
         this.årsak = UtsettelseÅrsak.FERIE;
     }
 
     private UtsettelsePeriodeDto(LocalDate fom, LocalDate tom, UtsettelseÅrsak årsak) {
         this.årsak = årsak;
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
     UtsettelsePeriodeDto() {
@@ -30,7 +31,7 @@ public class UtsettelsePeriodeDto {
         this.årsak = utsettelsePeriode.getÅrsak();
     }
 
-    private UtsettelsePeriodeDto(DatoIntervallEntitet datoIntervall, UtsettelseÅrsak årsak) {
+    private UtsettelsePeriodeDto(Intervall datoIntervall, UtsettelseÅrsak årsak) {
         this.årsak = årsak;
         this.periode = datoIntervall;
     }
@@ -43,7 +44,7 @@ public class UtsettelsePeriodeDto {
         return new UtsettelsePeriodeDto(fom, tom, årsak);
     }
 
-    public static UtsettelsePeriodeDto utsettelse(DatoIntervallEntitet datoIntervall, UtsettelseÅrsak årsak) {
+    public static UtsettelsePeriodeDto utsettelse(Intervall datoIntervall, UtsettelseÅrsak årsak) {
         return new UtsettelsePeriodeDto(datoIntervall, årsak);
     }
 
@@ -55,7 +56,7 @@ public class UtsettelsePeriodeDto {
      * Perioden som utsettes
      * @return perioden
      */
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

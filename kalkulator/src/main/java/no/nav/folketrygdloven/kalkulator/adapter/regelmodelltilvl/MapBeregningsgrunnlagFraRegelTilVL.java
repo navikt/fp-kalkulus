@@ -193,7 +193,12 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPAndel))
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPAndel));
+
+        if (arbeidsforhold.getBeregningsperiode() != null && arbeidsforhold.getBeregningsperiode().getFom() != null) {
+            builder.medBeregningsperiode(arbeidsforhold.getBeregningsperiode().getFom(), arbeidsforhold.getBeregningsperiode().getTom());
+        }
+        return builder
             .medBeregnetPrÅr(verifisertBeløp(arbeidsforhold.getBeregnetPrÅr()))
             .medOverstyrtPrÅr(verifisertBeløp(arbeidsforhold.getOverstyrtPrÅr()))
             .medFordeltPrÅr(verifisertBeløp(arbeidsforhold.getFordeltPrÅr()))
@@ -204,10 +209,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             .medRedusertRefusjonPrÅr(arbeidsforhold.getRedusertRefusjonPrÅr())
             .medAvkortetBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getAvkortetBrukersAndelPrÅr()))
             .medRedusertBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getRedusertBrukersAndelPrÅr()))
-            .medBeregningsperiode(
-                arbeidsforhold.getBeregningsperiode() == null ? null : arbeidsforhold.getBeregningsperiode().getFomOrNull(),
-                arbeidsforhold.getBeregningsperiode() == null ? null : arbeidsforhold.getBeregningsperiode().getTomOrNull()
-            )
             .medFastsattAvSaksbehandler(arbeidsforhold.getFastsattAvSaksbehandler())
             .medLagtTilAvSaksbehandler(arbeidsforhold.getLagtTilAvSaksbehandler())
             .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(arbeidsforhold.getArbeidsforhold().getAktivitet()))
@@ -267,7 +268,12 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                                                BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatusOgAndel,
                                                Steg steg) {
         boolean gjelderForeslå = steg.equals(Steg.FORESLÅ);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPStatusOgAndel))
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPStatusOgAndel));
+        if(resultatBGPStatus.getBeregningsperiode() != null && resultatBGPStatus.getBeregningsperiode().getFom() != null){
+            builder.medBeregningsperiode(resultatBGPStatus.getBeregningsperiode().getFom(), resultatBGPStatus.getBeregningsperiode().getTom());
+        }
+
+        builder
             .medBeregnetPrÅr(verifisertBeløp(resultatBGPStatus.getBeregnetPrÅr()))
             .medOverstyrtPrÅr(verifisertBeløp(resultatBGPStatus.getOverstyrtPrÅr()))
             .medFordeltPrÅr(verifisertBeløp(resultatBGPStatus.getFordeltPrÅr()))
@@ -278,10 +284,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             .medMaksimalRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
             .medAvkortetRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
             .medRedusertRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
-            .medBeregningsperiode(
-                resultatBGPStatus.getBeregningsperiode() == null ? null : resultatBGPStatus.getBeregningsperiode().getFomOrNull(),
-                resultatBGPStatus.getBeregningsperiode() == null ? null : resultatBGPStatus.getBeregningsperiode().getTomOrNull()
-            )
+
             .medPgi(resultatBGPStatus.getGjennomsnittligPGI(), resultatBGPStatus.getPgiListe())
             .medÅrsbeløpFraTilstøtendeYtelse(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse())
             .medNyIArbeidslivet(resultatBGPStatus.getNyIArbeidslivet())

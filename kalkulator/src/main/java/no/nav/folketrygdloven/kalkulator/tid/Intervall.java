@@ -5,9 +5,10 @@ import java.time.LocalDate;
 
 import org.threeten.extra.Interval;
 
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
-/** Skal ersatte {@link DatoIntervallEntitet} for kalkulus
+
+/** Skal ersatte {@link Intervall} for kalkulus
  *
  *  Wrapper om {@link Interval} som sikrer riktig behandling av intervaller i beregning
  */

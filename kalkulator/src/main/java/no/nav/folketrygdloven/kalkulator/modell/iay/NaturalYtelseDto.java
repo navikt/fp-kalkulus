@@ -7,11 +7,12 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class NaturalYtelseDto {
 
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
     private Beløp beloepPerMnd;
 
     private NaturalYtelseType type = NaturalYtelseType.UDEFINERT;
@@ -22,10 +23,10 @@ public class NaturalYtelseDto {
     public NaturalYtelseDto(LocalDate fom, LocalDate tom, BigDecimal beloepPerMnd, NaturalYtelseType type) {
         this.beloepPerMnd = new Beløp(beloepPerMnd);
         this.type = type;
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public NaturalYtelseDto(DatoIntervallEntitet datoIntervall, BigDecimal beloepPerMnd, NaturalYtelseType type) {
+    public NaturalYtelseDto(Intervall datoIntervall, BigDecimal beloepPerMnd, NaturalYtelseType type) {
         this.beloepPerMnd = new Beløp(beloepPerMnd);
         this.type = type;
         this.periode = datoIntervall;
@@ -41,7 +42,7 @@ public class NaturalYtelseDto {
         return IndexKey.createKey(type, periode);
     }
 
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

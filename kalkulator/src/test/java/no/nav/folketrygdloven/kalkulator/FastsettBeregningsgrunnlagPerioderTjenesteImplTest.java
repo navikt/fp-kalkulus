@@ -61,15 +61,16 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.vedtak.exception.TekniskException;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+
 import no.nav.vedtak.konfig.Tid;
 
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
@@ -91,7 +92,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private FastsettBeregningsgrunnlagPerioderTjeneste tjeneste;
 
     private BehandlingReferanse behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
-    private static final DatoIntervallEntitet ARBEIDSPERIODE = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
+    private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
@@ -127,7 +128,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medData(inntektArbeidYtelseAggregatBuilder);
     }
 
-    private Arbeidsgiver leggTilYrkesaktivitet(DatoIntervallEntitet arbeidsperiode, InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder,
+    private Arbeidsgiver leggTilYrkesaktivitet(Intervall arbeidsperiode, InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder,
                                                String orgnr) {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
         AktivitetsAvtaleDtoBuilder aaBuilder1 = AktivitetsAvtaleDtoBuilder.ny()
@@ -570,7 +571,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT, null)
+            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT, AbstractIntervall.TIDENES_ENDE)
             .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
 
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
@@ -1138,7 +1139,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         var arbId = InternArbeidsforholdRefDto.namedRef("A");
         var arbeidsgiver = Arbeidsgiver.virksomhet(ORG_NUMMER);
 
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusYears(5));
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusYears(5));
         List<String> orgnrs = List.of();
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(orgnrs, beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
@@ -1200,8 +1201,8 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
     @Test
     public void skalIkkeLeggeTilArbeidsforholdSomTilkommerEtterSkjæringstidspunktDersomDetAlleredeEksisterer() {
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode1 = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusMonths(1));
-        DatoIntervallEntitet arbeidsperiode2 = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(3), TIDENES_ENDE);
+        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        Intervall arbeidsperiode2 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(3), TIDENES_ENDE);
 
         var aaBuilder1 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode1);
@@ -1303,7 +1304,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
             .build());
 
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
 
         var aaBuilder2 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode);
@@ -1371,7 +1372,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         LocalDate permisjonFom = SKJÆRINGSTIDSPUNKT.minusMonths(1);
         LocalDate permisjonTom = SKJÆRINGSTIDSPUNKT.plusMonths(1);
 
-        DatoIntervallEntitet arbeidsperiode1 = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
+        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
 
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
             .medAktørId(behandlingRef.getAktørId());
@@ -1424,7 +1425,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
     @Test
     public void skalLeggeTilAndelSomTilkommerPåSkjæringstidspunkt() {
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
 
         var aaBuilder2 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode);
@@ -1480,7 +1481,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
     @Test
     public void skalLeggeTilAndelSomTilkommerPåSkjæringstidspunktOgSletteVedOpphør() {
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var aaBuilder2 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode);
@@ -1546,7 +1547,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
             .build());
 
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
 
         var aaBuilder2 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode);
@@ -1613,7 +1614,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
             .build());
 
         BigDecimal inntekt = BigDecimal.valueOf(40000);
-        DatoIntervallEntitet arbeidsperiode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+        Intervall arbeidsperiode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
 
         var aaBuilder2 = AktivitetsAvtaleDtoBuilder.ny()
             .medPeriode(arbeidsperiode);

@@ -16,7 +16,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektsKilde;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 /**
  * Filter for å hente inntekter og inntektsposter fra grunnlag. Tilbyr håndtering av skjæringstidspunkt og filtereing på inntektskilder slik
@@ -162,7 +163,7 @@ public class InntektFilterDto {
             return false;
         }
         if (skjæringstidspunkt != null) {
-            DatoIntervallEntitet periode = inntektspost.getPeriode();
+            Intervall periode = inntektspost.getPeriode();
             if (venstreSideASkjæringstidspunkt) {
                 return periode.getFomDato().isBefore(skjæringstidspunkt.plusDays(1));
             } else {

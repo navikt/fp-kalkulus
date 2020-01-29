@@ -3,20 +3,20 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 
 public class OppgittFrilansoppdragDto {
 
     private OppgittFrilansDto frilans;
     private String oppdragsgiver;
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
 
 
     OppgittFrilansoppdragDto() {
     }
 
-    public OppgittFrilansoppdragDto(String oppdragsgiver, DatoIntervallEntitet periode) {
+    public OppgittFrilansoppdragDto(String oppdragsgiver, Intervall periode) {
         this.oppdragsgiver = oppdragsgiver;
         this.periode = periode;
     }
@@ -29,7 +29,7 @@ public class OppgittFrilansoppdragDto {
         this.frilans = frilans;
     }
 
-    void setPeriode(DatoIntervallEntitet periode) {
+    void setPeriode(Intervall periode) {
         this.periode = periode;
     }
 
@@ -57,7 +57,7 @@ public class OppgittFrilansoppdragDto {
             '}';
     }
 
-    public DatoIntervallEntitet getPeriode() {
+    public Intervall getPeriode() {
         return periode;
     }
 

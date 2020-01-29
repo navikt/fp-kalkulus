@@ -51,7 +51,6 @@ public class MapBeregningsgrunnlagFraRestTilDomene {
             .medArbforholdType(andel.getArbeidsforholdType())
             .medLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler())
             .medAktivitetStatus(andel.getAktivitetStatus())
-            .medBeregningsperiode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom())
             .medInntektskategori(andel.getInntektskategori())
             .medAndelsnr(andel.getAndelsnr())
             .medBeregnetPrÅr(andel.getBeregnetPrÅr())
@@ -74,6 +73,10 @@ public class MapBeregningsgrunnlagFraRestTilDomene {
             builder
                 .medPgi(andel.getPgiSnitt(), List.of(andel.getPgi1(), andel.getPgi2(), andel.getPgi3()));
         }
+        if (andel.getBeregningsperiodeFom() != null) {
+            builder.medBeregningsperiode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom());
+        }
+
         andel.getBgAndelArbeidsforhold()
             .map(MapBeregningsgrunnlagFraRestTilDomene::mapBgAndelArbeidsforhold)
             .ifPresent(builder::medBGAndelArbeidsforhold);

@@ -38,13 +38,14 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.rest.dto.ArbeidstakerUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.VurderMottarYtelseDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+
 
 public class VurderMottarYtelseDtoTjenesteTest {
 
@@ -135,7 +136,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
     private void byggFrilansAndel(Boolean mottarYtelse) {
         ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet(FRILANS_ORGNR);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        DatoIntervallEntitet frilansPeriode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
+        Intervall frilansPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
             .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
@@ -163,7 +164,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
     private BeregningsgrunnlagPrStatusOgAndelRestDto byggArbeidsforholdMedBgAndel(Boolean mottarYtelse) {
         ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet(ORGNR);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlag.getRegisterVersjon(), VersjonTypeDto.REGISTER);
-        DatoIntervallEntitet ansettelsesPeriode = DatoIntervallEntitet.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
+        Intervall ansettelsesPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
             .getYrkesaktivitetBuilderForType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);

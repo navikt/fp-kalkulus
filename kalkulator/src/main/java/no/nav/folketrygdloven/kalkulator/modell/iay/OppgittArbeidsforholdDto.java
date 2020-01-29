@@ -6,8 +6,8 @@ import java.util.Objects;
 import javax.persistence.Convert;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 /**
  * Entitetsklasse for oppgitte arbeidsforhold.

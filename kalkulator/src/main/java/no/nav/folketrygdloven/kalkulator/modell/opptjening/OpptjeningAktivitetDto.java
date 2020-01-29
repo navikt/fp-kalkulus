@@ -4,11 +4,12 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class OpptjeningAktivitetDto {
 
-    private DatoIntervallEntitet periode;
+    private Intervall periode;
     private OpptjeningAktivitetType aktivitetType;
     private ReferanseType aktivitetReferanseType = ReferanseType.UDEFINERT;
     private String aktivitetReferanse;
@@ -29,7 +30,7 @@ public class OpptjeningAktivitetDto {
         Objects.requireNonNull(tom, "tom"); //$NON-NLS-1$
         Objects.requireNonNull(aktivitetType, "aktivitetType"); //$NON-NLS-1$
         Objects.requireNonNull(klassifisering, "klassifisering"); //$NON-NLS-1$
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.periode = Intervall.fraOgMedTilOgMed(fom, tom);
 
         this.aktivitetType = aktivitetType;
         this.klassifisering = klassifisering;
@@ -44,7 +45,7 @@ public class OpptjeningAktivitetDto {
     /** copy constructor - kun data uten metadata som aktiv/endretAv etc. */
     public OpptjeningAktivitetDto(OpptjeningAktivitetDto annen) {
 
-        this.periode = DatoIntervallEntitet.fraOgMedTilOgMed(annen.getFom(), annen.getTom());
+        this.periode = Intervall.fraOgMedTilOgMed(annen.getFom(), annen.getTom());
         this.aktivitetReferanse = annen.getAktivitetReferanse();
         this.aktivitetType = annen.getAktivitetType();
         this.klassifisering = annen.getKlassifisering();

@@ -15,14 +15,15 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.tid.ÅpenDatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     private Long andelsnr;
     private BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode;
     private AktivitetStatus aktivitetStatus;
-    private ÅpenDatoIntervallEntitet beregningsperiode;
+    private Intervall beregningsperiode;
     private OpptjeningAktivitetType arbeidsforholdType;
     private BigDecimal bruttoPrÅr;
     private BigDecimal overstyrtPrÅr;
@@ -443,7 +444,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
         public Builder medBeregningsperiode(LocalDate beregningsperiodeFom, LocalDate beregningsperiodeTom) {
             verifiserKanModifisere();
-            kladd.beregningsperiode = ÅpenDatoIntervallEntitet.fraOgMedTilOgMed(beregningsperiodeFom, beregningsperiodeTom);
+            kladd.beregningsperiode = Intervall.fraOgMedTilOgMed(beregningsperiodeFom, beregningsperiodeTom);
             return this;
         }
 

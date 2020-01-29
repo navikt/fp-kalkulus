@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 /**
  * Hjelpemetoder for å raskere sette sammen en IndexKey fra flere deler.
@@ -42,8 +43,8 @@ final class IndexKeyComposer {
             return ((Number) obj).toString();
         } else if (IndexKey.class.isAssignableFrom(objClass)) {
             return ((IndexKey) obj).getIndexKey();
-        } else if (DatoIntervallEntitet.class.isAssignableFrom(objClass)) {
-            DatoIntervallEntitet periode = (DatoIntervallEntitet) obj;
+        } else if (Intervall.class.isAssignableFrom(objClass)) {
+            Intervall periode = (Intervall) obj;
             return "[" + periode.getFomDato().format(DateTimeFormatter.ISO_DATE) + //$NON-NLS-1$
                 "," + periode.getTomDato().format(DateTimeFormatter.ISO_DATE) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
         } else if (LocalDate.class.isAssignableFrom(objClass)) {

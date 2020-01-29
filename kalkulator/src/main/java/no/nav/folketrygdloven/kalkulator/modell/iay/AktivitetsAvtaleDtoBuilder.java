@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class AktivitetsAvtaleDtoBuilder {
     private final AktivitetsAvtaleDto aktivitetsAvtale;
@@ -27,12 +26,6 @@ public class AktivitetsAvtaleDtoBuilder {
 
     public AktivitetsAvtaleDtoBuilder medPeriode(Intervall periode) {
         this.aktivitetsAvtale.setPeriode(periode);
-        return this;
-    }
-
-    //TODO(OJR) starter på og innføre nytt objekt for intervall
-    public AktivitetsAvtaleDtoBuilder medPeriode(DatoIntervallEntitet periode) {
-        this.aktivitetsAvtale.setPeriode(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
         return this;
     }
 

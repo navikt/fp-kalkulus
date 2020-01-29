@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 /**
  * Entitet som representerer Opptjening. Denne har også et sett med {@link OpptjeningAktivitetDto}.
@@ -19,7 +20,7 @@ import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 public class OpptjeningDto {
 
     private boolean aktiv = true;
-    private DatoIntervallEntitet opptjeningPeriode;
+    private Intervall opptjeningPeriode;
     private Long id;
     private List<OpptjeningAktivitetDto> opptjeningAktivitet = new ArrayList<>();
     private String opptjentPeriode;
@@ -28,12 +29,12 @@ public class OpptjeningDto {
     public OpptjeningDto(LocalDate fom, LocalDate tom) {
         Objects.requireNonNull(fom, "opptjeningsperiodeFom");
         Objects.requireNonNull(tom, "opptjeningsperiodeTom");
-        this.opptjeningPeriode = DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom);
+        this.opptjeningPeriode = Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
     /** copy-constructor. */
     public OpptjeningDto(OpptjeningDto annen) {
-        this.opptjeningPeriode = DatoIntervallEntitet.fraOgMedTilOgMed(annen.getFom(), annen.getTom());
+        this.opptjeningPeriode = Intervall.fraOgMedTilOgMed(annen.getFom(), annen.getTom());
         this.opptjentPeriode = annen.getOpptjentPeriode() == null ? null : annen.getOpptjentPeriode().toString();
         this.opptjeningAktivitet
                 .addAll(annen.getOpptjeningAktivitet().stream().map(oa -> new OpptjeningAktivitetDto(oa)).collect(Collectors.toList()));
@@ -83,7 +84,7 @@ public class OpptjeningDto {
     }
 
     /** fom/tom opptjening er gjort. */
-    public DatoIntervallEntitet getOpptjeningPeriode() {
+    public Intervall getOpptjeningPeriode() {
         return opptjeningPeriode;
     }
 

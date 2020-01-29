@@ -29,9 +29,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.BekreftetPermisjonStatus;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+
 
 public class UtledBekreftetPermisjonerTilDtoTest {
 
@@ -220,7 +221,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
 
     private AktivitetsAvtaleDtoBuilder lagAktivitetsAvtaleBuilder(YrkesaktivitetDtoBuilder yrkesaktivitetBuilder, LocalDate fom, LocalDate tom) {
         return yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder()
-            .medPeriode(DatoIntervallEntitet.fraOgMedTilOgMed(fom, tom));
+            .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom));
     }
 
     private BGAndelArbeidsforholdRestDto lagBGAndelArbeidsforhold(Optional<ArbeidsgiverMedNavn> arbeidsgiverOpt, InternArbeidsforholdRefDto ref) {

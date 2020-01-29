@@ -7,7 +7,8 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
-import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 
 public class BGAndelArbeidsforholdRestDto {
 
@@ -69,11 +70,11 @@ public class BGAndelArbeidsforholdRestDto {
         return Optional.ofNullable(arbeidsperiodeTom);
     }
 
-    public DatoIntervallEntitet getArbeidsperiode() {
+    public Intervall getArbeidsperiode() {
         if (arbeidsperiodeTom == null) {
-            return DatoIntervallEntitet.fraOgMed(arbeidsperiodeFom);
+            return Intervall.fraOgMed(arbeidsperiodeFom);
         }
-        return DatoIntervallEntitet.fraOgMedTilOgMed(arbeidsperiodeFom, arbeidsperiodeTom);
+        return Intervall.fraOgMedTilOgMed(arbeidsperiodeFom, arbeidsperiodeTom);
     }
 
     public String getArbeidsforholdOrgnr() {
