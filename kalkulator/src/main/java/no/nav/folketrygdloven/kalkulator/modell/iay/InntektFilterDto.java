@@ -12,11 +12,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektsKilde;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
 
 
 /**

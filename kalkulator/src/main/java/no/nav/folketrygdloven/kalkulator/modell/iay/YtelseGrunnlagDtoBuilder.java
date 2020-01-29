@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 
 public class YtelseGrunnlagDtoBuilder {
     private final YtelseGrunnlagDto ytelseGrunnlag;

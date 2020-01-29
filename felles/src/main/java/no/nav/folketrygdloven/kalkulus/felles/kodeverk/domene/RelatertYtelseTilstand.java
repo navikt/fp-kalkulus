@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,27 +8,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum VirksomhetType implements Kodeverdi {
+public enum RelatertYtelseTilstand implements Kodeverdi {
 
-    DAGMAMMA("DAGMAMMA", "Dagmamma i eget hjem/familiebarnehage", Inntektskategori.DAGMAMMA),
-    FISKE("FISKE", "Fiske", Inntektskategori.FISKER),
-    FRILANSER("FRILANSER", "Frilanser", Inntektskategori.FRILANSER),
-    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk", Inntektskategori.JORDBRUKER),
-    ANNEN("ANNEN", "Annen næringsvirksomhet", Inntektskategori.UDEFINERT),
-    UDEFINERT("-", "Ikke definert", Inntektskategori.UDEFINERT),
+    ÅPEN("ÅPEN", "Åpen"),
+    LØPENDE("LØPENDE", "Løpende"),
+    AVSLUTTET("AVSLUTTET", "Avsluttet"),
+    IKKE_STARTET("IKKESTARTET", "Ikke startet"),
     ;
-    private static final Map<String, VirksomhetType> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "VIRKSOMHET_TYPE";
+    private static final Map<String, RelatertYtelseTilstand> KODER = new LinkedHashMap<>();
+
+    public static final String KODEVERK = "RELATERT_YTELSE_TILSTAND";
 
     static {
         for (var v : values()) {
@@ -40,28 +39,31 @@ public enum VirksomhetType implements Kodeverdi {
 
     @JsonIgnore
     private String navn;
-    private Inntektskategori inntektskategori;
 
     private String kode;
 
-    VirksomhetType(String kode, String navn, Inntektskategori inntektskategori) {
+    private RelatertYtelseTilstand(String kode) {
+        this.kode = kode;
+    }
+
+    private RelatertYtelseTilstand(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
-        this.inntektskategori = inntektskategori;
     }
 
     @JsonCreator
-    public static VirksomhetType fraKode(@JsonProperty("kode") String kode) {
+    public static RelatertYtelseTilstand fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent VirksomhetType: " + kode);
+            throw new IllegalArgumentException("Ukjent RelatertYtelseTilstand: " + kode);
         }
         return ad;
     }
-    public static Map<String, VirksomhetType> kodeMap() {
+
+    public static Map<String, RelatertYtelseTilstand> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 
@@ -85,9 +87,5 @@ public enum VirksomhetType implements Kodeverdi {
     @Override
     public String getOffisiellKode() {
         return getKode();
-    }
-
-    public Inntektskategori getInntektskategori() {
-        return inntektskategori;
     }
 }

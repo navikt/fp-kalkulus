@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto {
 
@@ -12,8 +12,8 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto {
     public BeregningsgrunnlagFaktaOmBeregningTilfelleDto() {
     }
 
-    public BeregningsgrunnlagFaktaOmBeregningTilfelleDto(FaktaOmBeregningTilfelle p) {
-        this.faktaOmBeregningTilfelle = p;
+    public BeregningsgrunnlagFaktaOmBeregningTilfelleDto(FaktaOmBeregningTilfelle kopier) {
+        this.faktaOmBeregningTilfelle = kopier;
     }
 
     public FaktaOmBeregningTilfelle getFaktaOmBeregningTilfelle() {
@@ -46,8 +46,8 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelleDto {
             beregningsgrunnlagFaktaOmBeregningTilfelle = new BeregningsgrunnlagFaktaOmBeregningTilfelleDto();
         }
 
-        public Builder(FaktaOmBeregningTilfelle p) {
-            beregningsgrunnlagFaktaOmBeregningTilfelle = new BeregningsgrunnlagFaktaOmBeregningTilfelleDto(p);
+        public Builder(FaktaOmBeregningTilfelle oppdater) {
+            beregningsgrunnlagFaktaOmBeregningTilfelle = new BeregningsgrunnlagFaktaOmBeregningTilfelleDto(oppdater);
         }
 
         public static Builder kopier(FaktaOmBeregningTilfelle beregningsgrunnlagFaktaOmBeregningTilfelle) {

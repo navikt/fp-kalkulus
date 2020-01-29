@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 class MapNaturalytelser {
     private MapNaturalytelser() {

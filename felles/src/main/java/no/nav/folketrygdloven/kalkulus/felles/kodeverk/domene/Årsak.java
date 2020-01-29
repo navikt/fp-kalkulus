@@ -1,6 +1,6 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 
 public interface Årsak extends Kodeverdi {
 

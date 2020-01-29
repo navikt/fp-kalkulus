@@ -1,4 +1,10 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
+
+/**
+ * <p>
+ * Definerer statuser for bekreftet permisjoner
+ * </p>
+ */
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -12,21 +18,22 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum RelatertYtelseTilstand implements Kodeverdi {
+public enum BekreftetPermisjonStatus implements Kodeverdi {
 
-    ÅPEN("ÅPEN", "Åpen"),
-    LØPENDE("LØPENDE", "Løpende"),
-    AVSLUTTET("AVSLUTTET", "Avsluttet"),
-    IKKE_STARTET("IKKESTARTET", "Ikke startet"),
+    UDEFINERT("-", "UDEFINERT"),
+    BRUK_PERMISJON("BRUK_PERMISJON", "Bruk permisjonen til arbeidsforholdet"),
+    IKKE_BRUK_PERMISJON("IKKE_BRUK_PERMISJON", "Ikke bruk permisjonen til arbeidsforholdet"),
+    UGYLDIGE_PERIODER("UGYLDIGE_PERIODER", "Arbeidsforholdet inneholder permisjoner med ugyldige perioder"),
     ;
 
-    private static final Map<String, RelatertYtelseTilstand> KODER = new LinkedHashMap<>();
+    private static final Map<String, BekreftetPermisjonStatus> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "RELATERT_YTELSE_TILSTAND";
+    public static final String KODEVERK = "BEKREFTET_PERMISJON_STATUS";
 
     static {
         for (var v : values()) {
@@ -41,28 +48,28 @@ public enum RelatertYtelseTilstand implements Kodeverdi {
 
     private String kode;
 
-    private RelatertYtelseTilstand(String kode) {
+    private BekreftetPermisjonStatus(String kode) {
         this.kode = kode;
     }
 
-    private RelatertYtelseTilstand(String kode, String navn) {
+    private BekreftetPermisjonStatus(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
 
     @JsonCreator
-    public static RelatertYtelseTilstand fraKode(@JsonProperty("kode") String kode) {
+    public static BekreftetPermisjonStatus fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent RelatertYtelseTilstand: " + kode);
+            throw new IllegalArgumentException("Ukjent BekreftetPermisjonStatus: " + kode);
         }
         return ad;
     }
 
-    public static Map<String, RelatertYtelseTilstand> kodeMap() {
+    public static Map<String, BekreftetPermisjonStatus> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 

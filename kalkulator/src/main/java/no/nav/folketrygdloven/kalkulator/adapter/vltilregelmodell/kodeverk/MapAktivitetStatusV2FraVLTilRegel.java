@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk;
 
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 public class MapAktivitetStatusV2FraVLTilRegel {
     private static final Map<AktivitetStatus, AktivitetStatusV2> MAP_AKTIVITETSTATUS =

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -12,20 +12,24 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektsFormål implements Kodeverdi {
+public enum InntektspostType implements Kodeverdi {
 
     UDEFINERT("-", "Ikke definert", null),
-    FORMAAL_FORELDREPENGER("FORMAAL_FORELDREPENGER", "Formålskode for foreldrepenger", "Foreldrepenger"),
-    FORMAAL_PGI("FORMAAL_PGI", "Formålskode for PGI", "PensjonsgivendeA-inntekt"),
-    ;
+    LØNN("LØNN", "Lønn", "LONN"),
+    YTELSE("YTELSE", "Ytelse", "YTELSE"),
+    VANLIG("VANLIG", "Vanlig", "VANLIG"),
+    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "-"),
+    NÆRING_FISKE_FANGST_FAMBARNEHAGE("NÆRING_FISKE_FANGST_FAMBARNEHAGE", "Jordbruk/Skogbruk/Fiske/FamilieBarnehage", "personinntektFiskeFangstFamilebarnehage"),
+            ;
 
-    private static final Map<String, InntektsFormål> KODER = new LinkedHashMap<>();
+    private static final Map<String, InntektspostType> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "INNTEKTS_FORMAAL";
+    public static final String KODEVERK = "INNTEKTSPOST_TYPE";
 
     static {
         for (var v : values()) {
@@ -42,29 +46,29 @@ public enum InntektsFormål implements Kodeverdi {
     @JsonIgnore
     private String offisiellKode;
 
-    private InntektsFormål(String kode) {
+    private InntektspostType(String kode) {
         this.kode = kode;
     }
 
-    private InntektsFormål(String kode, String navn, String offisiellKode) {
+    private InntektspostType(String kode, String navn, String offisiellKode) {
         this.kode = kode;
         this.navn = navn;
         this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator
-    public static InntektsFormål fraKode(@JsonProperty("kode") String kode) {
+    public static InntektspostType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent InntektsFormål: " + kode);
+            throw new IllegalArgumentException("Ukjent InntektspostType: " + kode);
         }
         return ad;
     }
 
-    public static Map<String, InntektsFormål> kodeMap() {
+    public static Map<String, InntektspostType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 

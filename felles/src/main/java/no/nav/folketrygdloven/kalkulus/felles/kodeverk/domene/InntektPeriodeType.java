@@ -1,5 +1,6 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
+import java.time.Period;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,23 +13,26 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektsKilde implements Kodeverdi {
+public enum InntektPeriodeType implements Kodeverdi {
 
-    UDEFINERT("-", "Ikke definert", null),
-    INNTEKT_OPPTJENING("INNTEKT_OPPTJENING", "INNTEKT_OPPTJENING", "INNTEKT"),
-    INNTEKT_BEREGNING("INNTEKT_BEREGNING", "INNTEKT_BEREGNING", null),
-    INNTEKT_SAMMENLIGNING("INNTEKT_SAMMENLIGNING", "INNTEKT_SAMMENLIGNING", null),
-    SIGRUN("SIGRUN", "Sigrun", "SIGRUN"),
-    VANLIG("VANLIG", "Vanlig", "VANLIG"),
+    DAGLIG("DAGLG", "Daglig", "D", Period.ofDays(1)),
+    UKENTLIG("UKNLG", "Ukentlig", "U", Period.ofWeeks(1)),
+    BIUKENTLIG("14DLG", "Fjorten-daglig", "F", Period.ofWeeks(2)),
+    MÅNEDLIG("MNDLG", "Månedlig", "M", Period.ofMonths(1)),
+    ÅRLIG("AARLG", "Årlig", "Å", Period.ofYears(1)),
+    FASTSATT25PAVVIK("INNFS", "Fastsatt etter 25 prosent avvik", "X", Period.ofYears(1)),
+    PREMIEGRUNNLAG("PREMGR", "Premiegrunnlag", "Y", Period.ofYears(1)),
+    UDEFINERT("-", "Ikke definert", null, null),
     ;
 
-    private static final Map<String, InntektsKilde> KODER = new LinkedHashMap<>();
+    private static final Map<String, InntektPeriodeType> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "INNTEKTS_KILDE";
+    public static final String KODEVERK = "INNTEKT_PERIODE_TYPE";
 
     static {
         for (var v : values()) {
@@ -44,30 +48,33 @@ public enum InntektsKilde implements Kodeverdi {
     private String kode;
     @JsonIgnore
     private String offisiellKode;
+    @JsonIgnore
+    private Period periode;
 
-    private InntektsKilde(String kode) {
+    private InntektPeriodeType(String kode) {
         this.kode = kode;
     }
 
-    private InntektsKilde(String kode, String navn, String offisiellKode) {
+    private InntektPeriodeType(String kode, String navn, String offisiellKode, Period periode) {
         this.kode = kode;
         this.navn = navn;
+        this.periode = periode;
         this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator
-    public static InntektsKilde fraKode(@JsonProperty("kode") String kode) {
+    public static InntektPeriodeType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent InntektsKilde: " + kode);
+            throw new IllegalArgumentException("Ukjent InntektPeriodeType: " + kode);
         }
         return ad;
     }
 
-    public static Map<String, InntektsKilde> kodeMap() {
+    public static Map<String, InntektPeriodeType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 
@@ -86,6 +93,10 @@ public enum InntektsKilde implements Kodeverdi {
     @Override
     public String getKode() {
         return kode;
+    }
+
+    public Period getPeriode() {
+        return periode;
     }
 
     @Override

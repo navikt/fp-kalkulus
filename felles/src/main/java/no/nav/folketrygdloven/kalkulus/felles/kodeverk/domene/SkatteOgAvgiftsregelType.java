@@ -1,6 +1,5 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
-import java.time.Period;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,25 +12,30 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektPeriodeType implements Kodeverdi {
+public enum SkatteOgAvgiftsregelType implements Kodeverdi {
 
-    DAGLIG("DAGLG", "Daglig", "D", Period.ofDays(1)),
-    UKENTLIG("UKNLG", "Ukentlig", "U", Period.ofWeeks(1)),
-    BIUKENTLIG("14DLG", "Fjorten-daglig", "F", Period.ofWeeks(2)),
-    MÅNEDLIG("MNDLG", "Månedlig", "M", Period.ofMonths(1)),
-    ÅRLIG("AARLG", "Årlig", "Å", Period.ofYears(1)),
-    FASTSATT25PAVVIK("INNFS", "Fastsatt etter 25 prosent avvik", "X", Period.ofYears(1)),
-    PREMIEGRUNNLAG("PREMGR", "Premiegrunnlag", "Y", Period.ofYears(1)),
-    UDEFINERT("-", "Ikke definert", null, null),
+    SÆRSKILT_FRADRAG_FOR_SJØFOLK("SÆRSKILT_FRADRAG_FOR_SJØFOLK", "Særskilt fradrag for sjøfolk", "saerskiltFradragForSjoefolk"),
+    SVALBARD("SVALBARD", "Svalbardinntekt", "svalbard"),
+    SKATTEFRI_ORGANISASJON("SKATTEFRI_ORGANISASJON", "Skattefri Organisasjon", "skattefriOrganisasjon"),
+    NETTOLØNN_FOR_SJØFOLK("NETTOLØNN_FOR_SJØFOLK", "Nettolønn for sjøfolk", "nettoloennForSjoefolk"),
+    NETTOLØNN("NETTOLØNN", "Nettolønn", "nettoloenn"),
+    KILDESKATT_PÅ_PENSJONER("KILDESKATT_PÅ_PENSJONER", "Kildeskatt på pensjoner", "kildeskattPaaPensjoner"),
+    JAN_MAYEN_OG_BILANDENE("JAN_MAYEN_OG_BILANDENE", "Inntekt på Jan Mayen og i norske biland i Antarktis", "janMayenOgBilandene"),
+
+    UDEFINERT("-", "Udefinert", "Ikke definert"),
     ;
 
-    private static final Map<String, InntektPeriodeType> KODER = new LinkedHashMap<>();
+    private static final Map<String, SkatteOgAvgiftsregelType> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "INNTEKT_PERIODE_TYPE";
+    public static final String KODEVERK = "SKATTE_OG_AVGIFTSREGEL";
+
+    @Deprecated
+    public static final String DISCRIMINATOR = "SKATTE_OG_AVGIFTSREGEL";
 
     static {
         for (var v : values()) {
@@ -47,33 +51,30 @@ public enum InntektPeriodeType implements Kodeverdi {
     private String kode;
     @JsonIgnore
     private String offisiellKode;
-    @JsonIgnore
-    private Period periode;
 
-    private InntektPeriodeType(String kode) {
+    private SkatteOgAvgiftsregelType(String kode) {
         this.kode = kode;
     }
 
-    private InntektPeriodeType(String kode, String navn, String offisiellKode, Period periode) {
+    private SkatteOgAvgiftsregelType(String kode, String navn, String offisiellKode) {
         this.kode = kode;
         this.navn = navn;
-        this.periode = periode;
         this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator
-    public static InntektPeriodeType fraKode(@JsonProperty("kode") String kode) {
+    public static SkatteOgAvgiftsregelType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent InntektPeriodeType: " + kode);
+            throw new IllegalArgumentException("Ukjent SkatteOgAvgiftsregelType: " + kode);
         }
         return ad;
     }
 
-    public static Map<String, InntektPeriodeType> kodeMap() {
+    public static Map<String, SkatteOgAvgiftsregelType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 
@@ -92,10 +93,6 @@ public enum InntektPeriodeType implements Kodeverdi {
     @Override
     public String getKode() {
         return kode;
-    }
-
-    public Period getPeriode() {
-        return periode;
     }
 
     @Override

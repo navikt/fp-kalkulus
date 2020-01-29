@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektsKilde;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 
 public class InntektDtoBuilder {
     private final boolean oppdaterer;

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 public class EgenNæringDto {
 

@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType.BRUKERS_STATUS;
-import static no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType.PERIODISERING;
-import static no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.BRUKERS_STATUS;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.PERIODISERING;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,11 +16,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
 public class BeregningsgrunnlagDto {
 
@@ -307,10 +307,10 @@ public class BeregningsgrunnlagDto {
             verifiserKanModifisere();
             // Lagrer til begge regel-sporinger til vi har kjørt migrering
             BeregningsgrunnlagRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(SKJÆRINGSTIDSPUNKT)
-                .build(kladd);
+                    .medRegelInput(regelInput)
+                    .medRegelEvaluering(regelEvaluering)
+                    .medRegelType(SKJÆRINGSTIDSPUNKT)
+                    .build(kladd);
             return this;
         }
 
@@ -318,21 +318,21 @@ public class BeregningsgrunnlagDto {
             verifiserKanModifisere();
             // Lagrer til begge regel-sporinger til vi har kjørt migrering
             BeregningsgrunnlagRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(BRUKERS_STATUS)
-                .build(kladd);
+                    .medRegelInput(regelInput)
+                    .medRegelEvaluering(regelEvaluering)
+                    .medRegelType(BRUKERS_STATUS)
+                    .build(kladd);
             return this;
         }
 
         public Builder medRegelinputPeriodisering(String regelInput) {
             verifiserKanModifisere();
-          // Lagrer til begge regel-sporinger til vi har kjørt migrering
+            // Lagrer til begge regel-sporinger til vi har kjørt migrering
             if (regelInput != null) {
                 BeregningsgrunnlagRegelSporingDto.ny()
-                    .medRegelInput(regelInput)
-                    .medRegelType(PERIODISERING)
-                    .build(kladd);
+                        .medRegelInput(regelInput)
+                        .medRegelType(PERIODISERING)
+                        .build(kladd);
             }
             return this;
         }
@@ -354,7 +354,7 @@ public class BeregningsgrunnlagDto {
         }
 
         private void verifiserKanModifisere() {
-            if(built) {
+            if (built) {
                 throw new IllegalStateException("Er allerede bygd, kan ikke oppdatere videre: " + this.kladd);
             }
         }

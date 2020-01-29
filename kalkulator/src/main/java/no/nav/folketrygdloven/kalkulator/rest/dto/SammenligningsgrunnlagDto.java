@@ -3,7 +3,8 @@ package no.nav.folketrygdloven.kalkulator.rest.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+
 
 public class SammenligningsgrunnlagDto {
     private LocalDate sammenligningsgrunnlagFom;

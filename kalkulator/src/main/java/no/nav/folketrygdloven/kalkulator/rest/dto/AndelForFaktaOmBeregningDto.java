@@ -2,8 +2,9 @@ package no.nav.folketrygdloven.kalkulator.rest.dto;
 
 import java.math.BigDecimal;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+
 
 public class AndelForFaktaOmBeregningDto {
 

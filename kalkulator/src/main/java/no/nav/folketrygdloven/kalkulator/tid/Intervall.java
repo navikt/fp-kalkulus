@@ -14,8 +14,8 @@ import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
  */
 public class Intervall extends AbstractIntervall {
 
-    private LocalDate fomDato;
-    private LocalDate tomDato;
+    private final LocalDate fomDato;
+    private final LocalDate tomDato;
 
     @Override
     public LocalDate getFomDato() {

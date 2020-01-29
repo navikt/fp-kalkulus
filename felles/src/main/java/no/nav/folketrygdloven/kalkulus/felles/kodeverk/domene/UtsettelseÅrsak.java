@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,21 +14,23 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BeregningsgrunnlagRegelType implements Kodeverdi {
+public enum UtsettelseÅrsak implements Årsak {
 
-    SKJÆRINGSTIDSPUNKT("SKJÆRINGSTIDSPUNKT", "Fastsette skjæringstidspunkt"),
-    BRUKERS_STATUS("BRUKERS_STATUS", "Fastsette brukers status/aktivitetstatus"),
-    PERIODISERING("PERIODISERING", "Periodiser beregningsgrunnlag"),
-    UDEFINERT("-", "Ikke definert"),
+    ARBEID("ARBEID", "Arbeid"),
+    FERIE("LOVBESTEMT_FERIE", "Lovbestemt ferie"),
+    SYKDOM("SYKDOM", "Avhengig av hjelp grunnet sykdom"),
+    INSTITUSJON_SØKER("INSTITUSJONSOPPHOLD_SØKER", "Søker er innlagt i helseinstitusjon"),
+    INSTITUSJON_BARN("INSTITUSJONSOPPHOLD_BARNET", "Barn er innlagt i helseinstitusjon"),
+    UDEFINERT("-", "Ikke satt eller valgt kode"),
     ;
-    public static final String KODEVERK = "BG_REGEL_TYPE";
-    @Deprecated
-    public static final String DISCRIMINATOR = "BG_REGEL_TYPE";
-    private static final Map<String, BeregningsgrunnlagRegelType> KODER = new LinkedHashMap<>();
+    private static final Map<String, UtsettelseÅrsak> KODER = new LinkedHashMap<>();
+
+    public static final String KODEVERK = "UTSETTELSE_AARSAK_TYPE";
+
+    @Deprecated public static final String DISCRIMINATOR = "UTSETTELSE_AARSAK_TYPE";
 
     static {
         for (var v : values()) {
@@ -43,29 +45,24 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
 
     private String kode;
 
-    BeregningsgrunnlagRegelType(String kode, String navn) {
+    UtsettelseÅrsak(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
 
     @JsonCreator
-    public static BeregningsgrunnlagRegelType fraKode(@JsonProperty("kode") String kode) {
+    public static UtsettelseÅrsak fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent BeregningsgrunnlagRegelType: " + kode);
+            throw new IllegalArgumentException("Ukjent UtsettelseÅrsak: " + kode);
         }
         return ad;
     }
-
-    public static Map<String, BeregningsgrunnlagRegelType> kodeMap() {
+    public static Map<String, UtsettelseÅrsak> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet());
     }
 
     @Override
@@ -87,19 +84,18 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
 
     @Override
     public String getOffisiellKode() {
-        return getKode();
+        return this.getKode();
     }
 
     @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<BeregningsgrunnlagRegelType, String> {
-
+    public static class KodeverdiConverter implements AttributeConverter<UtsettelseÅrsak, String> {
         @Override
-        public String convertToDatabaseColumn(BeregningsgrunnlagRegelType attribute) {
+        public String convertToDatabaseColumn(UtsettelseÅrsak attribute) {
             return attribute == null ? null : attribute.getKode();
         }
 
         @Override
-        public BeregningsgrunnlagRegelType convertToEntityAttribute(String dbData) {
+        public UtsettelseÅrsak convertToEntityAttribute(String dbData) {
             return dbData == null ? null : fraKode(dbData);
         }
     }

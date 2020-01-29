@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import static no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.ArbeidsforholdHandlingType.IKKE_BRUK;
-import static no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.ArbeidsforholdHandlingType.SLÅTT_SAMMEN_MED_ANNET;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType.IKKE_BRUK;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType.SLÅTT_SAMMEN_MED_ANNET;
 
 import java.util.ArrayList;
 import java.util.Collection;

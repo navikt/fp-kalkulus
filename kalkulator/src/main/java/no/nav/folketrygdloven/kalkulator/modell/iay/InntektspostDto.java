@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.NæringsinntektType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.PensjonTrygdType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PensjonTrygdType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
 
 public class InntektspostDto {
 

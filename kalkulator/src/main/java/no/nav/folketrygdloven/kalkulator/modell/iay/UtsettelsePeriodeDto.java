@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.UtsettelseÅrsak;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.UtsettelseÅrsak;
 
 
 public class UtsettelsePeriodeDto {

@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.svp;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
+
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 class AktivitetStatusMapper {
 

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -12,20 +12,21 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum InntektsmeldingInnsendingsårsak implements Kodeverdi {
+public enum InntektsFormål implements Kodeverdi {
 
-    NY("NY", "NY"),
-    ENDRING("ENDRING", "ENDRING"),
-    UDEFINERT("-", "UDEFINERT"),
+    UDEFINERT("-", "Ikke definert", null),
+    FORMAAL_FORELDREPENGER("FORMAAL_FORELDREPENGER", "Formålskode for foreldrepenger", "Foreldrepenger"),
+    FORMAAL_PGI("FORMAAL_PGI", "Formålskode for PGI", "PensjonsgivendeA-inntekt"),
     ;
 
-    private static final Map<String, InntektsmeldingInnsendingsårsak> KODER = new LinkedHashMap<>();
+    private static final Map<String, InntektsFormål> KODER = new LinkedHashMap<>();
 
-    public static final String KODEVERK = "INNTEKTSMELDING_INNSENDINGSAARSAK";
+    public static final String KODEVERK = "INNTEKTS_FORMAAL";
 
     static {
         for (var v : values()) {
@@ -39,25 +40,32 @@ public enum InntektsmeldingInnsendingsårsak implements Kodeverdi {
     private String navn;
 
     private String kode;
+    @JsonIgnore
+    private String offisiellKode;
 
-    private InntektsmeldingInnsendingsårsak(String kode, String navn) {
+    private InntektsFormål(String kode) {
+        this.kode = kode;
+    }
+
+    private InntektsFormål(String kode, String navn, String offisiellKode) {
         this.kode = kode;
         this.navn = navn;
+        this.offisiellKode = offisiellKode;
     }
 
     @JsonCreator
-    public static InntektsmeldingInnsendingsårsak fraKode(@JsonProperty("kode") String kode) {
+    public static InntektsFormål fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent InntektsmeldingInnsendingsårsak: " + kode);
+            throw new IllegalArgumentException("Ukjent InntektsFormål: " + kode);
         }
         return ad;
     }
 
-    public static Map<String, InntektsmeldingInnsendingsårsak> kodeMap() {
+    public static Map<String, InntektsFormål> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 
@@ -80,6 +88,7 @@ public enum InntektsmeldingInnsendingsårsak implements Kodeverdi {
 
     @Override
     public String getOffisiellKode() {
-        return getKode();
+        return offisiellKode;
     }
+
 }

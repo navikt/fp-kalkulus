@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk;
 
 import java.util.EnumMap;
 
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 
 public class MapOpptjeningAktivitetFraRegelTilVL {
     private static final EnumMap<Aktivitet, OpptjeningAktivitetType> aktivitetMap =

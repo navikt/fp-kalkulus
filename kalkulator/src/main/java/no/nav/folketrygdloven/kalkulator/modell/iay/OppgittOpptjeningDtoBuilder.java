@@ -8,10 +8,10 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 public class OppgittOpptjeningDtoBuilder {
 

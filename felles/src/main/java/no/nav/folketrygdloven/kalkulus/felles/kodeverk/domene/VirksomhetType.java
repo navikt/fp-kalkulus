@@ -1,10 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk;
-
-/**
- * <p>
- * Definerer statuser for bekreftet permisjoner
- * </p>
- */
+package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,25 +8,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 
-@JsonFormat(shape = Shape.OBJECT)
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum BekreftetPermisjonStatus implements Kodeverdi {
+public enum VirksomhetType implements Kodeverdi {
 
-    UDEFINERT("-", "UDEFINERT"),
-    BRUK_PERMISJON("BRUK_PERMISJON", "Bruk permisjonen til arbeidsforholdet"),
-    IKKE_BRUK_PERMISJON("IKKE_BRUK_PERMISJON", "Ikke bruk permisjonen til arbeidsforholdet"),
-    UGYLDIGE_PERIODER("UGYLDIGE_PERIODER", "Arbeidsforholdet inneholder permisjoner med ugyldige perioder"),
+    DAGMAMMA("DAGMAMMA", "Dagmamma i eget hjem/familiebarnehage", Inntektskategori.DAGMAMMA),
+    FISKE("FISKE", "Fiske", Inntektskategori.FISKER),
+    FRILANSER("FRILANSER", "Frilanser", Inntektskategori.FRILANSER),
+    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk", Inntektskategori.JORDBRUKER),
+    ANNEN("ANNEN", "Annen næringsvirksomhet", Inntektskategori.UDEFINERT),
+    UDEFINERT("-", "Ikke definert", Inntektskategori.UDEFINERT),
     ;
+    private static final Map<String, VirksomhetType> KODER = new LinkedHashMap<>();
 
-    private static final Map<String, BekreftetPermisjonStatus> KODER = new LinkedHashMap<>();
-
-    public static final String KODEVERK = "BEKREFTET_PERMISJON_STATUS";
+    public static final String KODEVERK = "VIRKSOMHET_TYPE";
 
     static {
         for (var v : values()) {
@@ -44,31 +39,28 @@ public enum BekreftetPermisjonStatus implements Kodeverdi {
 
     @JsonIgnore
     private String navn;
+    private Inntektskategori inntektskategori;
 
     private String kode;
 
-    private BekreftetPermisjonStatus(String kode) {
-        this.kode = kode;
-    }
-
-    private BekreftetPermisjonStatus(String kode, String navn) {
+    VirksomhetType(String kode, String navn, Inntektskategori inntektskategori) {
         this.kode = kode;
         this.navn = navn;
+        this.inntektskategori = inntektskategori;
     }
 
     @JsonCreator
-    public static BekreftetPermisjonStatus fraKode(@JsonProperty("kode") String kode) {
+    public static VirksomhetType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
             return null;
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent BekreftetPermisjonStatus: " + kode);
+            throw new IllegalArgumentException("Ukjent VirksomhetType: " + kode);
         }
         return ad;
     }
-
-    public static Map<String, BekreftetPermisjonStatus> kodeMap() {
+    public static Map<String, VirksomhetType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 
@@ -92,5 +84,9 @@ public enum BekreftetPermisjonStatus implements Kodeverdi {
     @Override
     public String getOffisiellKode() {
         return getKode();
+    }
+
+    public Inntektskategori getInntektskategori() {
+        return inntektskategori;
     }
 }

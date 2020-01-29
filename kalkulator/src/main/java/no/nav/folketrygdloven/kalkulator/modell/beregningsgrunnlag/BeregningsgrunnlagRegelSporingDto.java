@@ -1,11 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType.PERIODISERING;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.PERIODISERING;
 
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagRegelType;
-
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 
 public class BeregningsgrunnlagRegelSporingDto {
 

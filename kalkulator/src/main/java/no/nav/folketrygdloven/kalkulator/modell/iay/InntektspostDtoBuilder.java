@@ -3,10 +3,10 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
 
 public class InntektspostDtoBuilder {
     private InntektspostDto inntektspost;

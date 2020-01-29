@@ -2,7 +2,8 @@ package no.nav.folketrygdloven.kalkulator.rest.dto;
 
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+
 
 public class FaktaOmBeregningDto {
 

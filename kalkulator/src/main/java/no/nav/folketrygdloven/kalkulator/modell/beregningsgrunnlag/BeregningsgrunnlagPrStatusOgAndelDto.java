@@ -9,14 +9,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
@@ -429,7 +428,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return new Builder(a, false);
         }
 
-        public Builder medAktivitetStatus(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.AktivitetStatus aktivitetStatus) {
+        public Builder medAktivitetStatus(AktivitetStatus aktivitetStatus) {
             verifiserKanModifisere();
             kladd.aktivitetStatus = Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
             if (OpptjeningAktivitetType.UDEFINERT.equals(kladd.arbeidsforholdType)) {

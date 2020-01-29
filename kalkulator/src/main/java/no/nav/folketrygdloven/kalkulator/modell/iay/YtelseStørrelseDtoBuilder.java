@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.math.BigDecimal;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektPeriodeType;
 
 public class YtelseStørrelseDtoBuilder {
     private final YtelseStørrelseDto ytelseStørrelse;

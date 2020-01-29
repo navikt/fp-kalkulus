@@ -3,10 +3,10 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
-import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 
 public class YtelseDtoBuilder {
 

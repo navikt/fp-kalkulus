@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 
 public class MapOpptjeningAktivitetTypeFraVLTilRegel {
     private static final Map<OpptjeningAktivitetType, Aktivitet> MAP_OPPTJENINGAKTIVITETTYPE_TIL_AKTIVITET;

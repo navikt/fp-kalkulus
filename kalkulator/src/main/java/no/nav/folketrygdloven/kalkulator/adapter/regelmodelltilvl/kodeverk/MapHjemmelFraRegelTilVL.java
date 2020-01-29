@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk;
 import java.util.EnumMap;
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
 class MapHjemmelFraRegelTilVL {
 

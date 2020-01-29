@@ -3,7 +3,8 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+
 
 public class BeregningsgrunnlagGrunnlagDtoBuilder {
     private BeregningsgrunnlagGrunnlagDto kladd;

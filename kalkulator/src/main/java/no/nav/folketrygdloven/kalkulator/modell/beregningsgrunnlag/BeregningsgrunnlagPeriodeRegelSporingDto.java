@@ -1,8 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.kodeverk.BeregningsgrunnlagPeriodeRegelType;
-
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 
 public class BeregningsgrunnlagPeriodeRegelSporingDto {
 
