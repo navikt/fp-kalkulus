@@ -10,8 +10,11 @@
     <version>${revision}${sha1}${changelist}</version>
 
     <modules>
-        <module>kalkulator</module>
-    </modules>
+		  <module>kalkulator</module>
+		  <module>database</module>
+		  <module>felles</module>
+	  </modules>
+
 
     <properties>
         <java.version>11</java.version> <!--Brukes av jenkins -->
@@ -193,5 +196,4 @@
             <url>https://maven.pkg.github.com/navikt/ft-kalkulus</url>
         </repository>
     </distributionManagement>
-
 </project>
