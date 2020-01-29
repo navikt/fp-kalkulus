@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste;
 
-import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentEksaktResultat;
-import static no.nav.vedtak.felles.jpa.HibernateVerktøy.hentUniktResultat;
+import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentEksaktResultat;
+import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -19,11 +19,13 @@ import org.hibernate.jpa.QueryHints;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningRefusjonOverstyringerEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
 /**
@@ -48,7 +50,7 @@ public class BeregningsgrunnlagRepository {
     }
 
     @Inject
-    public BeregningsgrunnlagRepository(@VLPersistenceUnit EntityManager entityManager) {
+    public BeregningsgrunnlagRepository(EntityManager entityManager) {
         Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
         this.entityManager = entityManager;
     }
@@ -338,5 +340,4 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlag = hentBeregningsgrunnlagGrunnlagEntitet(gammelBehandlingId);
         beregningsgrunnlag.ifPresent(orig -> lagre(nyBehandlingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.of(Kopimaskin.deepCopy(orig))), beregningsgrunnlagTilstand));
     }
-
 }

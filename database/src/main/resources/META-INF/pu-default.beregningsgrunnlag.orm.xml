@@ -24,6 +24,7 @@
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRING"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagRegelSporing" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagAktivitetStatus" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagGrunnlagEntitet" />

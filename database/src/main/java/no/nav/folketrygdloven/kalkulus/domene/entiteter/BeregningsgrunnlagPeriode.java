@@ -6,7 +6,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsg
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FORESLÅ;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.OPPDATER_GRUNNLAG_SVP;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING;
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

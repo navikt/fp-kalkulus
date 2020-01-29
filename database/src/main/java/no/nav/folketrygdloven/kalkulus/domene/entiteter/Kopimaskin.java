@@ -14,4 +14,8 @@ public class Kopimaskin {
     public static List<BeregningsgrunnlagPrStatusOgAndel> deepCopy(List<BeregningsgrunnlagPrStatusOgAndel> object) {
         throw new IllegalStateException("JEG VIL IKKE BRUKES!... Vennligst erstatt meg med -> Design Patterns: The Builder Pattern");
     }
+
+    public static BeregningsgrunnlagGrunnlagEntitet deepCopy(BeregningsgrunnlagGrunnlagEntitet orig) {
+        throw new IllegalStateException("JEG VIL IKKE BRUKES!... Vennligst erstatt meg med -> Design Patterns: The Builder Pattern");
+    }
 }
