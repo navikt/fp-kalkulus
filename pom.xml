@@ -21,6 +21,8 @@
 
 	<modules>
 		<module>kalkulator</module>
+		<module>database</module>
+		<module>felles</module>
 	</modules>
 
 	<properties>
