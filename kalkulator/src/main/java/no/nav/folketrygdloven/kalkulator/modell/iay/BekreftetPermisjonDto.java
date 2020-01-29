@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.BekreftetPermisjonStatus;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class BekreftetPermisjonDto {
 

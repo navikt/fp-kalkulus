@@ -77,7 +77,7 @@ import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 @ExtendWith(MockitoExtension.class)
 public class MapBeregningsgrunnlagFraVLTilRegelTest {

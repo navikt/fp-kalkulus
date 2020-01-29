@@ -29,7 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class BeregningsgrunnlagTestUtil {
 

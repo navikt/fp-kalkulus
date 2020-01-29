@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import org.threeten.extra.Interval;
 
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 /** Skal ersatte {@link DatoIntervallEntitet} for kalkulus
  *

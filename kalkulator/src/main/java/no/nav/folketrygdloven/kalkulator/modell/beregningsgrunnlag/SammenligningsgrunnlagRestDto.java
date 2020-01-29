@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class SammenligningsgrunnlagRestDto {
 

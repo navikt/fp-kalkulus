@@ -69,7 +69,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.vedtak.exception.TekniskException;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 import no.nav.vedtak.konfig.Tid;
 
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {

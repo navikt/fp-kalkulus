@@ -1,11 +1,7 @@
-package no.nav.vedtak.felles.jpa.tid;
+package no.nav.folketrygdloven.kalkulus.felles.tid;
 
 import java.time.LocalDate;
 
-/**
-* @deprecated flytt til egen applikasjon, trenger ikke bo i felles da det avhenger av valg om modellering av dato intervaller.
-*/
-@Deprecated(forRemoval = true)
 public class IntervalUtils extends AbstractLocalDateInterval {
 
     private LocalDate fomDato;

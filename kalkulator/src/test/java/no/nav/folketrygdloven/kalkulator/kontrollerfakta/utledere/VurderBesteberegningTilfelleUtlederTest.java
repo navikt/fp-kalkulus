@@ -19,8 +19,8 @@
 //import no.nav.folketrygdloven.beregningsgrunnlag.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 //import no.nav.folketrygdloven.beregningsgrunnlag.KLASSER_MED_AVHENGIGHETER.fp.VurderBesteberegningTilfelleUtleder;
 //
-//import no.nav.vedtak.felles.jpa.tid.AbstractLocalDateInterval;
-//import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
+//import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractLocalDateInterval;
+//import no.nav.folketrygdloven.kalkulus.felles.tid.ÅpenDatoIntervallEntitet;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //

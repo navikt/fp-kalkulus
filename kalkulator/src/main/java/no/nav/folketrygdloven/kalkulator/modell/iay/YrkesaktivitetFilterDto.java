@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.jpa.tid.AbstractLocalDateInterval;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractLocalDateInterval;
 
 /**
  * Brukt til å filtrere registrerte yrkesaktiviteter, overstyrte arbeidsforhold og frilans arbeidsforhold etter skjæringstidspunkt.

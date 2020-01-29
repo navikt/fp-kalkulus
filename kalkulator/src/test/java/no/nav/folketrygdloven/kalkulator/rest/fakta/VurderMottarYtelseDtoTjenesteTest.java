@@ -44,7 +44,7 @@ import no.nav.folketrygdloven.kalkulator.rest.dto.ArbeidstakerUtenInntektsmeldin
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.VurderMottarYtelseDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class VurderMottarYtelseDtoTjenesteTest {
 

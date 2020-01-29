@@ -39,7 +39,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 import no.nav.vedtak.konfig.Tid;
 
 public class InntektsmeldingMedRefusjonTjenesteImplTest {

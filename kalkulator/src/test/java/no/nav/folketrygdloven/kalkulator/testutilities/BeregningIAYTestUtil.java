@@ -45,7 +45,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 
 public class BeregningIAYTestUtil {

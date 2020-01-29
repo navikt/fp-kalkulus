@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.PensjonTrygdType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class InntektspostDto {
 

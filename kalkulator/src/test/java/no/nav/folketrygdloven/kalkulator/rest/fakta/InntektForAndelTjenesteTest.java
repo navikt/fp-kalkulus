@@ -37,7 +37,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 
 public class InntektForAndelTjenesteTest {

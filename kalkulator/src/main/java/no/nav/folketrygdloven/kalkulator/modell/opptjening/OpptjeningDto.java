@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 /**
  * Entitet som representerer Opptjening. Denne har også et sett med {@link OpptjeningAktivitetDto}.

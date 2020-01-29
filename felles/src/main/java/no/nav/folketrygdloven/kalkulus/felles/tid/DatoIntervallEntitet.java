@@ -1,4 +1,4 @@
-package no.nav.vedtak.felles.jpa.tid;
+package no.nav.folketrygdloven.kalkulus.felles.tid;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,6 @@ import javax.persistence.Embeddable;
 /**
  * Hibernate entitet som modellerer et dato intervall.
  */
-@Deprecated(forRemoval = true)
 @Embeddable
 public class DatoIntervallEntitet extends AbstractLocalDateInterval {
 

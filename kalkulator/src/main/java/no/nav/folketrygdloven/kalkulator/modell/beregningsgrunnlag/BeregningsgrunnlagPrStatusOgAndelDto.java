@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.vedtak.felles.jpa.tid.ÅpenDatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.ÅpenDatoIntervallEntitet;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 

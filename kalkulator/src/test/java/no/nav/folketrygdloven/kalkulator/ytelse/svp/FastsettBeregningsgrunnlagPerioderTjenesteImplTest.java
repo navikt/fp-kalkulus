@@ -2,18 +2,12 @@ package no.nav.folketrygdloven.kalkulator.ytelse.svp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +56,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 import no.nav.vedtak.konfig.Tid;
 
 @ExtendWith(MockitoExtension.class)

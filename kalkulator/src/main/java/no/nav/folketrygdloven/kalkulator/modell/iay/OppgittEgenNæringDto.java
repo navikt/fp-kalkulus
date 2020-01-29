@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.vedtak.felles.jpa.converters.BooleanToStringConverter;
+import no.nav.folketrygdloven.kalkulus.felles.converters.BooleanToStringConverter;
 
 public class OppgittEgenNæringDto {
 

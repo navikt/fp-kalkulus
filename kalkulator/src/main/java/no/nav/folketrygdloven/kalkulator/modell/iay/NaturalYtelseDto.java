@@ -7,7 +7,7 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 public class NaturalYtelseDto {
 

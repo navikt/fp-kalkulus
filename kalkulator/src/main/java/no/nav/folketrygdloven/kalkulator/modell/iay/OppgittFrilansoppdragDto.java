@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 
 public class OppgittFrilansoppdragDto {

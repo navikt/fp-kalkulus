@@ -1,4 +1,4 @@
-package no.nav.vedtak.felles.jpa.tid;
+package no.nav.folketrygdloven.kalkulus.felles.tid;
 
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;

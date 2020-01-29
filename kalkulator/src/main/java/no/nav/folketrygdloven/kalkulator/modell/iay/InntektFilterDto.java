@@ -16,7 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektsKilde;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulator.modell.iay.kodeverk.YtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.vedtak.felles.jpa.tid.DatoIntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.tid.DatoIntervallEntitet;
 
 /**
  * Filter for å hente inntekter og inntektsposter fra grunnlag. Tilbyr håndtering av skjæringstidspunkt og filtereing på inntektskilder slik

@@ -28,6 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <surefire-plugin.version>2.21</surefire-plugin.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <java.version>11</java.version>
@@ -39,7 +40,6 @@
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.version>1.2.0.Final</quarkus.platform.version>
-        <surefire-plugin.version>2.22.1</surefire-plugin.version>
     </properties>
 
     <dependencyManagement>
