@@ -54,7 +54,6 @@ public class OpprettBeregningsgrunnlagTjeneste {
                                                                       BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                       BeregningsgrunnlagDto beregningsgrunnlag) {
         return Skjæringstidspunkt.builder()
-            .medUtledetSkjæringstidspunkt(ref.getSkjæringstidspunkt().getUtledetSkjæringstidspunkt())
             .medSkjæringstidspunktOpptjening(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening())
             .medSkjæringstidspunktBeregning(beregningsgrunnlag.getSkjæringstidspunkt()).build();
     }

@@ -36,7 +36,6 @@ public class BeregningFaktaOgOverstyringHåndterer {
 
     public BeregningsgrunnlagGrunnlagDto håndter(BeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        BehandlingReferanse behandlingReferanse = input.getBehandlingReferanse();
 
         Optional<BeregningsgrunnlagDto> forrigeBg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT);
 

@@ -83,11 +83,11 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     public void setup() {
         AndelerForFaktaOmBeregningTjeneste andelerForFaktaOmBeregningTjeneste = new AndelerForFaktaOmBeregningTjeneste();
         FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(
-            FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances(),
-            andelerForFaktaOmBeregningTjeneste
+                FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances(),
+                andelerForFaktaOmBeregningTjeneste
         );
         beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
-            faktaOmBeregningDtoTjeneste
+                faktaOmBeregningDtoTjeneste
         );
         virksomhet.setNavn(VIRKSOMHET_NAVN);
     }
@@ -322,8 +322,8 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
-        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medUtledetSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
         return behandlingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
     }
 
@@ -350,23 +350,24 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private BeregningsgrunnlagRestDto lagBeregningsgrunnlag(ArbeidsgiverMedNavn arbeidsgiver) {
-        var beregningsgrunnlag = BeregningsgrunnlagRestDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medGrunnbeløp(GRUNNBELØP)
-            .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+        SammenligningsgrunnlagRestDto sammenligningsgrunnlagRestDto = SammenligningsgrunnlagRestDto.builder()
+                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
                 .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN)
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
-            .build();
+                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
+        var beregningsgrunnlag = BeregningsgrunnlagRestDto.builder()
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medGrunnbeløp(GRUNNBELØP)
+                .medSammenligningsgrunnlag(sammenligningsgrunnlagRestDto)
+                .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
+                        .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+                        .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                        .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN)
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                .build();
         BeregningsgrunnlagAktivitetStatusRestDto.builder()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medHjemmel(Hjemmel.F_14_7_8_30)
-            .build(beregningsgrunnlag);
-        SammenligningsgrunnlagRestDto.builder()
-            .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
-            .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-            .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build(beregningsgrunnlag);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medHjemmel(Hjemmel.F_14_7_8_30)
+                .build(beregningsgrunnlag);
 
 
         BeregningsgrunnlagPeriodeRestDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
@@ -375,33 +376,34 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private BeregningsgrunnlagRestDto lagBeregningsgrunnlagMedFlereAndeler(ArbeidsgiverMedNavn arbeidsgiver) {
+        SammenligningsgrunnlagRestDto sammenligningsgrunnlagRestDto = SammenligningsgrunnlagRestDto.builder()
+                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
         var beregningsgrunnlag = BeregningsgrunnlagRestDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medGrunnbeløp(GRUNNBELØP)
-            .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
-                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT)
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
-            .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
-                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
-                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL)
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
-            .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
-                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
-                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_SN)
-                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medSammenligningsgrunnlag(sammenligningsgrunnlagRestDto)
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
+                        .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+                        .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                        .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_AT)
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
+                        .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
+                        .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                        .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_FL)
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusRestDto.builder()
+                        .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
+                        .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                        .medSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_SN)
+                        .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
+                .build();
         BeregningsgrunnlagAktivitetStatusRestDto.builder()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medHjemmel(Hjemmel.F_14_7_8_30)
-            .build(beregningsgrunnlag);
-        SammenligningsgrunnlagRestDto.builder()
-            .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
-            .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-            .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build(beregningsgrunnlag);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medHjemmel(Hjemmel.F_14_7_8_30)
+                .build(beregningsgrunnlag);
 
 
         BeregningsgrunnlagPeriodeRestDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
@@ -411,65 +413,65 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeRestDto beregningsgrunnlagPeriode, ArbeidsgiverMedNavn arbeidsgiver) {
         BGAndelArbeidsforholdRestDto.Builder bga = BGAndelArbeidsforholdRestDto
-            .builder()
-            .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
-            .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
-            .medArbeidsgiver(arbeidsgiver);
+                .builder()
+                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
+                .medArbeidsgiver(arbeidsgiver);
 
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medBGAndelArbeidsforhold(bga)
-            .medInntektskategori(INNTEKTSKATEGORI)
-            .medAndelsnr(ANDELSNR)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
-            .medBeregnetPrÅr(BRUTTO_PR_AAR)
-            .medAvkortetPrÅr(AVKORTET_PR_AAR)
-            .medRedusertPrÅr(REDUSERT_PR_AAR)
-            .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
-            .build(beregningsgrunnlagPeriode);
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(ANDELSNR)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(BRUTTO_PR_AAR)
+                .medAvkortetPrÅr(AVKORTET_PR_AAR)
+                .medRedusertPrÅr(REDUSERT_PR_AAR)
+                .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
+                .build(beregningsgrunnlagPeriode);
     }
 
     private BeregningsgrunnlagPeriodeRestDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagRestDto beregningsgrunnlag) {
         return BeregningsgrunnlagPeriodeRestDto.builder()
-            .medBeregningsgrunnlagPeriode(ANDEL_FOM, null)
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(ANDEL_FOM, null)
+                .build(beregningsgrunnlag);
     }
 
     private void buildBgPrStatusOgAndelForMangeAndeler(BeregningsgrunnlagPeriodeRestDto beregningsgrunnlagPeriode, ArbeidsgiverMedNavn arbeidsgiver) {
         BGAndelArbeidsforholdRestDto.Builder bga = BGAndelArbeidsforholdRestDto
-            .builder()
-            .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
-            .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
-            .medArbeidsgiver(arbeidsgiver);
+                .builder()
+                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
+                .medArbeidsgiver(arbeidsgiver);
 
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medBGAndelArbeidsforhold(bga)
-            .medInntektskategori(INNTEKTSKATEGORI)
-            .medAndelsnr(ANDELSNR)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
-            .medBeregnetPrÅr(BRUTTO_PR_AAR)
-            .medAvkortetPrÅr(AVKORTET_PR_AAR)
-            .medRedusertPrÅr(REDUSERT_PR_AAR)
-            .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
-            .build(beregningsgrunnlagPeriode);
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(ANDELSNR)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(BRUTTO_PR_AAR)
+                .medAvkortetPrÅr(AVKORTET_PR_AAR)
+                .medRedusertPrÅr(REDUSERT_PR_AAR)
+                .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
+                .build(beregningsgrunnlagPeriode);
 
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medBGAndelArbeidsforhold(bga)
-            .medInntektskategori(INNTEKTSKATEGORI)
-            .medAndelsnr(ANDELSNR+1)
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
-            .medBeregnetPrÅr(BRUTTO_PR_AAR)
-            .build(beregningsgrunnlagPeriode);
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(ANDELSNR + 1)
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(BRUTTO_PR_AAR)
+                .build(beregningsgrunnlagPeriode);
 
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medBGAndelArbeidsforhold(bga)
-            .medInntektskategori(INNTEKTSKATEGORI)
-            .medAndelsnr(ANDELSNR+3)
-            .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .medPgi(PGI_SNITT, List.of())
-            .build(beregningsgrunnlagPeriode);
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(ANDELSNR + 3)
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medPgi(PGI_SNITT, List.of())
+                .build(beregningsgrunnlagPeriode);
     }
 
     private BeregningsgrunnlagRestDto lagBehandlingMedBgOgOpprettFagsakRelasjon(ArbeidsgiverMedNavn arbeidsgiver) {
@@ -481,7 +483,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .medRegisterAktiviteter(beregningAktiviteter)
                 .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
 
-        this.opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, Periode.of( SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)), arbeidsgiver.getOrgnr());
+        this.opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, Periode.of(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)), arbeidsgiver.getOrgnr());
 
         return beregningsgrunnlag;
     }
@@ -491,10 +493,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         var beregningsgrunnlag = lagBeregningsgrunnlagMedFlereAndeler(arbeidsgiver);
 
         this.grunnlag = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(beregningAktiviteter)
-            .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medRegisterAktiviteter(beregningAktiviteter)
+                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
 
-        this.opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, Periode.of( SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)), arbeidsgiver.getOrgnr());
+        this.opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, Periode.of(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)), arbeidsgiver.getOrgnr());
 
         return beregningsgrunnlag;
     }
@@ -505,11 +507,11 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private BeregningAktivitetAggregatRestDto lagBeregningAktiviteter(BeregningAktivitetAggregatRestDto.Builder builder, ArbeidsgiverMedNavn arbeidsgiver) {
         return builder.medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitet(BeregningAktivitetRestDto.builder()
-                .medArbeidsgiver(arbeidsgiver)
-                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-                .medPeriode(Intervall.fraOgMedTilOgMed(ANDEL_FOM, ANDEL_TOM))
-                .build())
-            .build();
+                .leggTilAktivitet(BeregningAktivitetRestDto.builder()
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                        .medPeriode(Intervall.fraOgMedTilOgMed(ANDEL_FOM, ANDEL_TOM))
+                        .build())
+                .build();
     }
 }

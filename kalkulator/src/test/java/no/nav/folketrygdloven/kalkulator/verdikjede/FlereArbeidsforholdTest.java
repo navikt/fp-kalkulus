@@ -915,7 +915,6 @@ public class FlereArbeidsforholdTest {
         return behandlingReferanse.medSkjæringstidspunkt(
             Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medUtledetSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
                 .medFørsteUttaksdato(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusDays(1))
                 .build());

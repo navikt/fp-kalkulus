@@ -147,7 +147,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     private static BehandlingReferanse lagReferanseMedSkjæringstidspunkt(BehandlingReferanse behandlingReferanse) {
         return behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medUtledetSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
+            .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
             .build());
     }
 

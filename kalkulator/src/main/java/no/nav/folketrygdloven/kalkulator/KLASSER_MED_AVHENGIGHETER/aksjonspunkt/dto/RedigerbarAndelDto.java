@@ -25,6 +25,26 @@ public class RedigerbarAndelDto {
         // Jackson
     }
 
+    public RedigerbarAndelDto(Long andelsnr,
+                              String arbeidsgiverId,
+                              String arbeidsforholdId,
+                              Boolean nyAndel,
+                              AktivitetStatus aktivitetStatus,
+                              OpptjeningAktivitetType arbeidsforholdType,
+                              Boolean lagtTilAvSaksbehandler,
+                              LocalDate beregningsperiodeFom,
+                              LocalDate beregningsperiodeTom) {
+        this.andelsnr = andelsnr;
+        this.arbeidsgiverId = arbeidsgiverId;
+        this.arbeidsforholdId = arbeidsforholdId;
+        this.nyAndel = nyAndel;
+        this.aktivitetStatus = aktivitetStatus;
+        this.arbeidsforholdType = arbeidsforholdType;
+        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
+        this.beregningsperiodeFom = beregningsperiodeFom;
+        this.beregningsperiodeTom = beregningsperiodeTom;
+    }
+
     public RedigerbarAndelDto(Boolean nyAndel,
                               String arbeidsgiverId, String internArbeidsforholdId,
                               Long andelsnr,

@@ -286,10 +286,5 @@ public class BeregningsgrunnlagRestDto {
             Objects.requireNonNull(kladd.skjæringstidspunkt, "skjæringstidspunkt");
         }
 
-        public Builder medSammenligningsgrunnlag(SammenligningsgrunnlagRestDto.Builder builder) {
-            SammenligningsgrunnlagRestDto sammenligningsgrunnlagDto = builder.build(kladd);
-            kladd.sammenligningsgrunnlag = sammenligningsgrunnlagDto;
-            return this;
-        }
     }
 }

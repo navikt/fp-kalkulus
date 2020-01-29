@@ -112,26 +112,11 @@ public class SammenligningsgrunnlagRestDto {
             return this;
         }
 
-        public Builder medAvvikPromille(Long avvikPromille) {
-            if(avvikPromille != null) {
-                sammenligningsgrunnlagMal.avvikPromille = avvikPromille;
-            }
-            return this;
-        }
-
         public Builder medAvvikPromilleNy(BigDecimal avvikPromille) {
             if(avvikPromille != null) {
                 sammenligningsgrunnlagMal.avvikPromilleNy = avvikPromille;
             }
             return this;
-        }
-
-        public SammenligningsgrunnlagRestDto build(BeregningsgrunnlagRestDto beregningsgrunnlag) {
-            sammenligningsgrunnlagMal.beregningsgrunnlag = beregningsgrunnlag;
-            verifyStateForBuild();
-            BeregningsgrunnlagRestDto.Builder.oppdater(Optional.of(beregningsgrunnlag))
-                .medSammenligningsgrunnlag(sammenligningsgrunnlagMal);
-            return sammenligningsgrunnlagMal;
         }
 
         public SammenligningsgrunnlagRestDto build() {
@@ -140,7 +125,6 @@ public class SammenligningsgrunnlagRestDto {
         }
 
         public void verifyStateForBuild() {
-            Objects.requireNonNull(sammenligningsgrunnlagMal.beregningsgrunnlag, "beregningsgrunnlag");
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode, "sammenligningsperiodePeriode");
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getFomDato(), "sammenligningsperiodeFom");
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getTomDato(), "sammenligningsperiodeTom");

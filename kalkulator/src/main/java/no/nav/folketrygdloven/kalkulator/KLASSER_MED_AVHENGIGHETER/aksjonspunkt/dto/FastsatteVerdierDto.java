@@ -17,6 +17,21 @@ public class FastsatteVerdierDto {
     private Boolean skalHaBesteberegning;
 
     public FastsatteVerdierDto(Integer refusjon,
+                               Integer refusjonPrÅr,
+                               Integer fastsattBeløp,
+                               Integer fastsattÅrsbeløp,
+                               Inntektskategori inntektskategori,
+                               Boolean skalHaBesteberegning) {
+        this.refusjon = refusjon;
+        this.refusjonPrÅr = refusjonPrÅr;
+        this.fastsattBeløp = fastsattBeløp;
+        this.fastsattÅrsbeløp = fastsattÅrsbeløp;
+        this.inntektskategori = inntektskategori;
+        this.skalHaBesteberegning = skalHaBesteberegning;
+    }
+
+
+    public FastsatteVerdierDto(Integer refusjon,
                                Integer fastsattBeløp,
                                Inntektskategori inntektskategori,
                                Boolean skalHaBesteberegning) {

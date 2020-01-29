@@ -22,7 +22,6 @@ public class BehandlingReferanseMock extends BehandlingReferanse {
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
             .medSkjæringstidspunktBeregning(skjæringstidspunkt)
             .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
-            .medUtledetSkjæringstidspunkt(skjæringstidspunkt)
             .medFørsteUttaksdato(skjæringstidspunkt.plusDays(1))
             .build();
     }
@@ -30,11 +29,6 @@ public class BehandlingReferanseMock extends BehandlingReferanse {
     @Override
     public FagsakYtelseType getFagsakYtelseType() {
         return FagsakYtelseType.FORELDREPENGER;
-    }
-
-    @Override
-    public LocalDate getUtledetSkjæringstidspunkt() {
-        return skjæringstidspunkt.getUtledetSkjæringstidspunkt();
     }
 
     @Override

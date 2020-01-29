@@ -107,32 +107,22 @@ public class BehandlingReferanse {
         return aktørId;
     }
 
-    public LocalDate getUtledetSkjæringstidspunkt() {
-        // precondition
-        sjekkSkjæringstidspunkt();
-        return skjæringstidspunkt.getUtledetSkjæringstidspunkt();
-    }
-
     public Skjæringstidspunkt getSkjæringstidspunkt() {
-        sjekkSkjæringstidspunkt();
         return skjæringstidspunkt;
     }
 
     public LocalDate getSkjæringstidspunktBeregning() {
         // precondition
-        sjekkSkjæringstidspunkt();
         return skjæringstidspunkt.getSkjæringstidspunktBeregning();
     }
 
     public LocalDate getSkjæringstidspunktOpptjening() {
         // precondition
-        sjekkSkjæringstidspunkt();
         return skjæringstidspunkt.getSkjæringstidspunktOpptjening();
     }
 
     public LocalDate getFørsteUttaksdato() {
         // precondition
-        sjekkSkjæringstidspunkt();
         return skjæringstidspunkt.getFørsteUttaksdato();
     }
 
@@ -172,13 +162,6 @@ public class BehandlingReferanse {
         ;
     }
 
-    /**
-     * Hvis skjæringstidspunkt ikke er satt, så kastes NPE ved bruk. Utvikler-feil
-     */
-    private void sjekkSkjæringstidspunkt() {
-        Objects.requireNonNull(skjæringstidspunkt,
-            "Utvikler-feil: skjæringstidspunkt er ikke satt på BehandlingReferanse. Sørg for at det er satt ifht. anvendelse");
-    }
 
     @Override
     public String toString() {
@@ -201,7 +184,7 @@ public class BehandlingReferanse {
             getOriginalBehandlingId(),
             getBehandlingStatus(),
             Skjæringstidspunkt.builder()
-                .medUtledetSkjæringstidspunkt(utledetSkjæringstidspunkt)
+                .medSkjæringstidspunktBeregning(utledetSkjæringstidspunkt)
                 .build());
     }
 

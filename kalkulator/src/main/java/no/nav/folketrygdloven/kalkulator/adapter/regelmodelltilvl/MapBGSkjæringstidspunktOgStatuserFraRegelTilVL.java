@@ -54,9 +54,9 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
         LocalDate skjæringstidspunktForBeregning = regelModell.getSkjæringstidspunktForBeregning();
 
         Grunnbeløp grunnbeløp = grunnbeløpSatser.stream()
-            .filter(g -> Periode.of(g.getFom(), g.getTom()).inneholder(ref.getSkjæringstidspunktOpptjening()))
+            .filter(g -> Periode.of(g.getFom(), g.getTom()).inneholder(ref.getFørsteUttaksdato()))
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Fant ikke grunnbeløp for gitt dato " + ref.getSkjæringstidspunktOpptjening()));
+            .orElseThrow(() -> new IllegalStateException("Fant ikke grunnbeløp for gitt dato " + ref.getFørsteUttaksdato()));
 
         var beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(skjæringstidspunktForBeregning)

@@ -129,7 +129,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         Optional<BGAndelArbeidsforholdDto> arbeidsforholdOpt = finnRiktigArbeidsforholdFraGrunnlag(korrektPeriode, endretAndel);
         if (arbeidsforholdOpt.isPresent()) {
             var arbeidsforhold = arbeidsforholdOpt.get();
-            BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver)
+            BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder().medArbeidsgiver(arbeidsgiver)
                 .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
                 .medRefusjonskravPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
                 .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())

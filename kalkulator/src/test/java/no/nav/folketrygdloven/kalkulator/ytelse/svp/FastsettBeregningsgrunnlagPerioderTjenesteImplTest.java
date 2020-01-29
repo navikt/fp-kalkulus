@@ -62,7 +62,6 @@ import no.nav.vedtak.konfig.Tid;
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder()
-        .medUtledetSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
         .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
         .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
         .build();

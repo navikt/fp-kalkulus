@@ -105,6 +105,7 @@ public class BeregningsgrunnlagTjeneste {
                 input.getInntektsmeldinger());
             return BeregningResultatAggregat.Builder.fra(input)
                 .medAksjonspunkter(aksjonspunkter)
+                .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
                 .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
                 .build();
         }

@@ -122,7 +122,6 @@ public class ForeslåBeregningsgrunnlagSNTest {
     private static BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
         return behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medUtledetSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
             .build());
     }
 }
