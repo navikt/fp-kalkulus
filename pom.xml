@@ -15,7 +15,8 @@
 		  <module>felles</module>
           <module>kontrakt</module>
           <module>domenetjenester</module>
-	  </modules>
+          <module>migreringer</module>
+    </modules>
 
 
     <properties>
@@ -23,6 +24,7 @@
         <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN
         </argLine> <!-- default argLine for surefire-plugin -->
         <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
+        <felles.version>1.3.1-20191206111422-3a1aed3</felles.version>
 
         <revision>1.0</revision>
         <sha1></sha1>
@@ -52,6 +54,13 @@
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.foreldrepenger.felles</groupId>
+                <artifactId>felles</artifactId>
+                <version>${felles.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
