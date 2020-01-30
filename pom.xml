@@ -13,6 +13,7 @@
 		  <module>kalkulator</module>
 		  <module>database</module>
 		  <module>felles</module>
+          <module>kontrakt</module>
 	  </modules>
 
 
