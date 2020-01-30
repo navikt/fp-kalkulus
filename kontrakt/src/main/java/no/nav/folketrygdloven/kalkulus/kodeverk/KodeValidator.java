@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.kodeverk;
+package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 /** Plugin interface som kan benyttes sammen en jackson parser for å validere kodeverk lokalt ifht. hva som er støttet. */
 public interface KodeValidator {

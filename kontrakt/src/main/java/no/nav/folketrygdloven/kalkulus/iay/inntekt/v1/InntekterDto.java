@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.iay.inntekt;
+package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;

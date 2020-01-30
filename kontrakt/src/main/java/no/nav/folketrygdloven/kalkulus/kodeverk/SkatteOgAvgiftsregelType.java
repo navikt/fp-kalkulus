@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.kodeverk;
+package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Objects;
 
@@ -9,18 +9,20 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class SkatteOgAvgiftsregelType extends Kodeverk {
+    static final String KODEVERK = "SKATTE_OG_AVGIFTSREGEL";
 
-public class InntektspostType extends Kodeverk {
-    static final String KODEVERK = "INNTEKTSPOST_TYPE";
+    /** EKsempel konstant. Nettolønn. */
+    public static final SkatteOgAvgiftsregelType NETTOLØNN = new SkatteOgAvgiftsregelType("NETTOLØNN");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    @Size(min = 3, max = 50)
+    @Size(min = 5, max = 100)
     @NotNull
     private String kode;
 
     @JsonCreator
-    public InntektspostType(@JsonProperty(value = "kode", required = true) String kode) {
+    public SkatteOgAvgiftsregelType(@JsonProperty(value = "kode", required = true) String kode) {
         Objects.requireNonNull(kode, "kode");
         this.kode = kode;
     }

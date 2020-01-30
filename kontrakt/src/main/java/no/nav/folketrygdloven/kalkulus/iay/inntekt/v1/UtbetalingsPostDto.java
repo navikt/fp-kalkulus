@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.iay.inntekt;
+package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.v1.felles.Periode;
-import no.nav.folketrygdloven.v1.kodeverk.InntektspostType;
-import no.nav.folketrygdloven.v1.kodeverk.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.v1.kodeverk.UtbetaltYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)

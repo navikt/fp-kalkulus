@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.iay;
+package no.nav.folketrygdloven.kalkulus.felles.v1;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

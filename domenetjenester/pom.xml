@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+        <artifactId>kalkulus</artifactId>
+        <version>${revision}${sha1}${changelist}</version>
+    </parent>
+
+    <artifactId>domenetjenester</artifactId>
+    <version>${revision}${sha1}${changelist}</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>felles</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>kontrakt</artifactId>
+        </dependency>
+    </dependencies>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>2.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>felles</artifactId>
+                <version>${revision}${sha1}${changelist}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+                <artifactId>kontrakt</artifactId>
+                <version>${revision}${sha1}${changelist}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

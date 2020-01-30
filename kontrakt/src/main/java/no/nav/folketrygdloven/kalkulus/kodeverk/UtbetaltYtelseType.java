@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.kodeverk;
+package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.kodeverk;
+package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Objects;
 
@@ -9,14 +9,13 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Kodeverk fra inntektskomponenten. Inneholder meta-informasjon om utbetaling (eks. Nav har utbetalt en ytelse). */
-public class UtbetaltYtelseFraOffentligeType extends Kodeverk implements UtbetaltYtelseType {
-    public static final String KODEVERK = "YTELSE_FRA_OFFENTLIGE";
-
-    /**
-     * eksempel verdi
-     */
-    public static final no.nav.abakus.iaygrunnlag.kodeverk.UtbetaltYtelseFraOffentligeType FORELDREPENGER = new no.nav.abakus.iaygrunnlag.kodeverk.UtbetaltYtelseFraOffentligeType("FORELDREPENGER");
+/**
+ * Næringsinntekter rapportert av NAV.
+ * <p>
+ * Eks, sykepenger ved sykepengerforsikring
+ */
+public class UtbetaltNæringsYtelseType extends Kodeverk implements UtbetaltYtelseType {
+    public static final String KODEVERK = "NÆRINGSINNTEKT_TYPE";
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
@@ -25,7 +24,7 @@ public class UtbetaltYtelseFraOffentligeType extends Kodeverk implements Utbetal
     private String kode;
 
     @JsonCreator
-    public UtbetaltYtelseFraOffentligeType(@JsonProperty(value = "kode", required = true) String kode) {
+    public UtbetaltNæringsYtelseType(@JsonProperty(value = "kode", required = true) String kode) {
         Objects.requireNonNull(kode, "kode");
         this.kode = kode;
     }

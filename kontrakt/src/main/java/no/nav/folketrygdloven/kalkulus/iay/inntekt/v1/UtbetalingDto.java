@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.iay.inntekt;
+package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,8 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.v1.iay.Aktør;
-import no.nav.folketrygdloven.v1.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)

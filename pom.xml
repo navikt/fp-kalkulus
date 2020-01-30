@@ -14,6 +14,7 @@
 		  <module>database</module>
 		  <module>felles</module>
           <module>kontrakt</module>
+          <module>domenetjenester</module>
 	  </modules>
 
 

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.v1.felles;
+package no.nav.folketrygdloven.kalkulus.felles.v1;
 
 import java.time.LocalDate;
 import java.util.Objects;
