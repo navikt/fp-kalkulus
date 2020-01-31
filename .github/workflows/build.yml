@@ -1,0 +1,44 @@
+name: Bygg og release
+
+on:
+  push:
+    branches:
+      - master         # Push events on master branch
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Build & Deploy
+        shell: bash
+        run: |
+          set -x
+          echo "Building $(echo $GITHUB_SHA | cut -c1-7)"
+          mvn jacoco:prepare-agent deploy -e --batch-mode --settings ./.github/.m2/settings.xml -Dmaven.wagon.http.pool=false --file pom.xml -Dchangelist= -Dsha1=-$(TZ="Europe/Oslo" date +%Y%m%d%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7) -DdeployAtEnd=true -Djacoco.destFile=$(pwd)/target/jacoco.exec
+          mvn jacoco:report sonar:sonar -e --batch-mode --settings ./.github/.m2/settings.xml --file pom.xml -Djacoco.dataFile=$(pwd)/target/jacoco.exec -Dsonar.projectKey="navikt_ft-kalkulus" -Dsonar.host.url='https://sonarcloud.io' -Dsonar.organization=navit -Dsonar.login=${SONAR_TOKEN}
+          echo "::set-env name=MVN_VERSION::$(mvn help:evaluate --batch-mode --settings ./.github/.m2/settings.xml --file .flattened -Dexpression=project.version -q -DforceStdout)"
+          echo "Deployed artifacts"
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.MVN_VERSION }}
+          release_name: Release ${{ env.MVN_VERSION }}
+          draft: false
+          prerelease: false
+

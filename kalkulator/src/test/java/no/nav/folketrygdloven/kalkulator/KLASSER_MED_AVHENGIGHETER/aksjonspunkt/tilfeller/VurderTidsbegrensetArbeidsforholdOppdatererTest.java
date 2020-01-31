@@ -11,10 +11,12 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
@@ -34,8 +36,11 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
-@QuarkusTest
+@EnableWeld
 public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
+
+    @WeldSetup
+    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld().addPackages(true, FaktaOmBeregningTilfellerOppdaterer.class));
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);

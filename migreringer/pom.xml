@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-        <artifactId>kalkulus</artifactId>
+        <artifactId>ftkalkulus</artifactId>
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 

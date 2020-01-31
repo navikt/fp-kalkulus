@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>kalkulus</artifactId>
         <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+        <artifactId>ftkalkulus</artifactId>
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
@@ -39,99 +39,53 @@
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-feil</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>felles</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
-            <artifactId>felles-util</artifactId>
+            <artifactId>felles-db</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.threeten</groupId>
             <artifactId>threeten-extra</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-testutilities</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>felles</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
-    </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>no.nav.folketrygdloven</groupId>
-                <artifactId>beregningsgrunnlag-regelmodell</artifactId>
-                <version>2.1-20200121130215-ad804eb</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.fpsak.nare</groupId>
-                <artifactId>fpsak-nare-core</artifactId>
-                <version>2.0_20191116160206_e67afc2</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.fpsak.tidsserie</groupId>
-                <artifactId>fpsak-tidsserie</artifactId>
-                <version>2.1-20200123110022-e75fb59</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.foreldrepenger.felles</groupId>
-                <artifactId>felles-feil</artifactId>
-                <version>1.5-20200128110304-f499e8c</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.foreldrepenger.felles</groupId>
-                <artifactId>felles-util</artifactId>
-                <version>1.5-20200128110304-f499e8c</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>3.26.0-GA</version>
-            </dependency>
-            <dependency>
-                <groupId>org.threeten</groupId>
-                <artifactId>threeten-extra</artifactId>
-                <version>1.5.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>3.2.4</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-testutilities</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+    <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>felles</artifactId>
                 <version>${revision}${sha1}${changelist}</version>
             </dependency>
         </dependencies>
-    </dependencyManagement>
 </project>
