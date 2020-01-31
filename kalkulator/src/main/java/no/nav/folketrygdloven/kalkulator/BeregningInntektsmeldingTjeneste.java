@@ -44,7 +44,7 @@ public class BeregningInntektsmeldingTjeneste {
         if (refKravFraEndring.isPresent()) {
             return refKravFraEndring.get().getVerdi();
         }
-        if (inntektsmelding.getRefusjonOpphører() != null && inntektsmelding.getRefusjonOpphører().isAfter(periode.getFomDato())) {
+        if (inntektsmelding.getRefusjonOpphører() != null && !inntektsmelding.getRefusjonOpphører().isBefore(periode.getFomDato())) {
             return inntektsmelding.getRefusjonBeløpPerMnd().getVerdi();
         }
         return BigDecimal.ZERO;
