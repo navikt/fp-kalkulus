@@ -240,7 +240,7 @@ create table if not exists  BG_SG_PR_STATUS(ID BIGINT NOT NULL,
                                             AVVIK_PROMILLE_NY NUMERIC(27,10) NOT NULL);
 
 create table if not exists  GR_BEREGNINGSGRUNNLAG(ID BIGINT NOT NULL,
-                                                  BEHANDLING_ID BIGINT NOT NULL,
+                                                  KOBLING_ID BIGINT NOT NULL,
                                                   BEREGNINGSGRUNNLAG_ID BIGINT,
                                                   VERSJON BIGINT DEFAULT 0 NOT NULL,
                                                   OPPRETTET_AV VARCHAR(20) DEFAULT 'VL' NOT NULL,
@@ -267,6 +267,29 @@ create table if not exists  SAMMENLIGNINGSGRUNNLAG(ID BIGINT NOT NULL,
                                                    AVVIK_PROMILLE BIGINT,
                                                    AVVIK_PROMILLE_NY NUMERIC(27,10) NOT NULL);
 
+create table KOBLING
+(
+    ID                     BIGINT                              not null,
+    REFERANSE_ID           UUID                                not null,
+    YTELSE_TYPE            VARCHAR(100)                        not null,
+    KL_YTELSE_TYPE         VARCHAR(100) default 'FAGSAK_YTELSE_TYPE',
+    BRUKER_AKTOER_ID       varchar(50)                         not null,
+    VERSJON                BIGINT       default 0              not null,
+    OPPRETTET_AV           VARCHAR(20)  default 'VL'           not null,
+    OPPRETTET_TID          TIMESTAMP(3) default localtimestamp not null,
+    ENDRET_AV              VARCHAR(20),
+    ENDRET_TID             TIMESTAMP(3),
+    constraint PK_KOBLING
+        primary key (ID),
+    constraint UIDX_KOBLING_1
+        unique (REFERANSE_ID)
+);
+
+comment on table KOBLING is 'Holder referansen som kalles på fra av eksternt system';
+comment on column KOBLING.ID is 'Primærnøkkel';
+comment on column KOBLING.REFERANSE_ID is 'Referansenøkkel som eksponeres lokalt';
+comment on column KOBLING.YTELSE_TYPE is 'Hvilken ytelse komplekset henger under';
+comment on column KOBLING.BRUKER_AKTOER_ID is 'Aktøren koblingen gjelder for';
 
 -- Indekser
 create  index IDX_BEREGNINGSGRUNNLAG_02 on BEREGNINGSGRUNNLAG (SKJARINGSTIDSPUNKT);
@@ -302,8 +325,9 @@ create  index IDX_GR_BEREGNINGSGRUNNLAG_02 on GR_BEREGNINGSGRUNNLAG (REGISTER_AK
 create  index IDX_GR_BEREGNINGSGRUNNLAG_03 on GR_BEREGNINGSGRUNNLAG (SAKSBEHANDLET_AKTIVITETER_ID);
 create  index IDX_GR_BEREGNINGSGRUNNLAG_04 on GR_BEREGNINGSGRUNNLAG (BA_OVERSTYRINGER_ID);
 create  index IDX_GR_BEREGNINGSGRUNNLAG_05 on GR_BEREGNINGSGRUNNLAG (BR_OVERSTYRINGER_ID);
-create  index IDX_GR_BEREGNINGSGRUNNLAG_6 on GR_BEREGNINGSGRUNNLAG (BEHANDLING_ID);
+create  index IDX_GR_BEREGNINGSGRUNNLAG_6 on GR_BEREGNINGSGRUNNLAG (KOBLING_ID);
 create  index IDX_GR_BEREGNINGSGRUNNLAG_7 on GR_BEREGNINGSGRUNNLAG (BEREGNINGSGRUNNLAG_ID);
+create index IDX_KOBLING_1 on KOBLING (referanse_id);
 
 -- Primærnøkler
 create UNIQUE index PK_BEREGNINGSGRUNNLAG on BEREGNINGSGRUNNLAG (ID);
@@ -362,6 +386,7 @@ alter table GR_BEREGNINGSGRUNNLAG add constraint FK_GR_BEREGNINGSGRUNNLAG_3 fore
 alter table GR_BEREGNINGSGRUNNLAG add constraint FK_GR_BEREGNINGSGRUNNLAG_4 foreign key (SAKSBEHANDLET_AKTIVITETER_ID) references BG_AKTIVITETER(ID);
 alter table GR_BEREGNINGSGRUNNLAG add constraint FK_GR_BEREGNINGSGRUNNLAG_5 foreign key (BA_OVERSTYRINGER_ID) references BG_AKTIVITET_OVERSTYRINGER(ID);
 alter table GR_BEREGNINGSGRUNNLAG add constraint FK_GR_BEREGNINGSGRUNNLAG_6 foreign key (BR_OVERSTYRINGER_ID) references BG_REFUSJON_OVERSTYRINGER(ID);
+alter table GR_BEREGNINGSGRUNNLAG add constraint FK_GR_BEREGNINGSGRUNNLAG_7 foreign key (KOBLING_ID) references KOBLING(ID);
 
 -- Kommentar på tabeller
 comment on table SAMMENLIGNINGSGRUNNLAG is 'Sammenligningsgrunnlag';
@@ -369,7 +394,7 @@ comment on table BEREGNINGSGRUNNLAG_PERIODE is 'Beregningsgrunnlagsperiode';
 comment on table BEREGNINGSGRUNNLAG is 'Aggregat for beregningsgrunnlag';
 comment on table BG_SG_PR_STATUS is 'Sammenligningsgrunnlag pr status';
 comment on table BG_REGEL_SPORING is 'Tabell som lagrer regelsporinger for beregningsgrunnlag';
-comment on table GR_BEREGNINGSGRUNNLAG is 'Tabell som kobler et beregningsgrunnlag til behandling';
+comment on table GR_BEREGNINGSGRUNNLAG is 'Tabell som kobler et beregningsgrunnlag til koblingen';
 comment on table BG_REFUSJON_OVERSTYRINGER is 'Tabell som knytter BG_REFUSJON_OVERSTYRING til GR_BEREGNINGSGRUNNLAG';
 comment on table BG_REFUSJON_OVERSTYRING is 'Overstyringer av aktiviteter som er relevant for beregning';
 comment on table BG_PR_STATUS_OG_ANDEL is 'Beregningsgrunnlag pr status og andel';
@@ -390,8 +415,8 @@ comment on column GR_BEREGNINGSGRUNNLAG.STEG_OPPRETTET is 'Hvilket steg eller vu
 comment on column GR_BEREGNINGSGRUNNLAG.REGISTER_AKTIVITETER_ID is 'Aktiviteter relevant for beregning før saksbehandlers vurdering';
 comment on column GR_BEREGNINGSGRUNNLAG.ID is 'Primary Key';
 comment on column GR_BEREGNINGSGRUNNLAG.BR_OVERSTYRINGER_ID is 'Overstyringer av refusjon';
-comment on column GR_BEREGNINGSGRUNNLAG.BEREGNINGSGRUNNLAG_ID is 'FK:BEREGNINGSGRUNNLAG Fremmednøkkel til tabell som knytter beregningsgrunnlagforekomsten til behandling';
-comment on column GR_BEREGNINGSGRUNNLAG.BEHANDLING_ID is 'FK: BEHANDLING Fremmednøkkel for kobling til behandling';
+comment on column GR_BEREGNINGSGRUNNLAG.BEREGNINGSGRUNNLAG_ID is 'FK:BEREGNINGSGRUNNLAG Fremmednøkkel til tabell som knytter beregningsgrunnlagforekomsten til koblingen';
+comment on column GR_BEREGNINGSGRUNNLAG.KOBLING_ID is 'FK: KOBLING Fremmednøkkel til koblingen som forbindes med beregningsgrunnlaget';
 comment on column GR_BEREGNINGSGRUNNLAG.BA_OVERSTYRINGER_ID is 'Overstyringer av beregningaktiviteter';
 comment on column BG_SG_PR_STATUS.SAMMENLIGNINGSPERIODE_TOM is 'Tom-dato for sammenligningsperiode';
 comment on column BG_SG_PR_STATUS.SAMMENLIGNINGSPERIODE_FOM is 'Fom-dato for sammenligningsperiode';
@@ -536,3 +561,4 @@ create sequence if not exists SEQ_BG_REFUSJON_OVERSTYRINGER increment by 50 minv
 create sequence if not exists SEQ_BG_REGEL_SPORING increment by 50 minvalue 1000000;
 create sequence if not exists SEQ_BG_SG_PR_STATUS increment by 50 minvalue 1000000;
 create sequence if not exists SEQ_SAMMENLIGNINGSGRUNNLAG increment by 50 minvalue 1000000;
+CREATE SEQUENCE SEQ_KOBLING MINVALUE 1 MAXVALUE 999999999999999999 INCREMENT BY 50 START WITH 1368400 NO CYCLE;
