@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>no.nav.folketrygdloven.kalkulus</groupId>
@@ -41,11 +42,6 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>felles</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-db</artifactId>
         </dependency>
@@ -73,19 +69,9 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.foreldrepenger.felles</groupId>
-            <artifactId>felles-testutilities</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-junit5</artifactId>
             <scope>test</scope>
         </dependency>
-    <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>felles</artifactId>
-                <version>${revision}${sha1}${changelist}</version>
-            </dependency>
-        </dependencies>
+    </dependencies>
 </project>

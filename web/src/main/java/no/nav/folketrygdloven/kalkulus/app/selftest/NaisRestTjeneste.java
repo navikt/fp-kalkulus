@@ -42,7 +42,7 @@ public class NaisRestTjeneste {
     @Path("isAlive")
     @Operation(description = "sjekker om poden lever", tags = "nais", hidden = true)
     public Response isAlive() {
-        if (starterService.isKafkaAlive()) {
+        if (true) { //TODO FIXME
             logger.debug("Application is alive.");
             return Response
                 .ok(RESPONSE_OK)
@@ -60,7 +60,7 @@ public class NaisRestTjeneste {
     @Path("isReady")
     @Operation(description = "sjekker om poden er klar", tags = "nais", hidden = true)
     public Response isReady() {
-        if (starterService.isKafkaAlive()) {
+        if (true) { //TODO FIXME
             logger.debug("Application is alive.");
             return Response
                 .ok(RESPONSE_OK)

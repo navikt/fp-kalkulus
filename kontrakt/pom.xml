@@ -11,7 +11,6 @@
     </parent>
 
     <artifactId>kontrakt</artifactId>
-    <version>${revision}${sha1}${changelist}</version>
 
     <dependencies>
         <dependency>

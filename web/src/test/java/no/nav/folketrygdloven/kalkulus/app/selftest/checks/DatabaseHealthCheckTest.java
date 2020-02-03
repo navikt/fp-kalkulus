@@ -5,16 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.naming.NameNotFoundException;
 
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-
-import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 
 @Ignore
 public class DatabaseHealthCheckTest {
-    @Rule
-    public final UnittestRepositoryRule repositoryRule = new UnittestRepositoryRule();
-
 
     @Test
     public void test_check_healthy() {

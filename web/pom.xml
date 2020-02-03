@@ -140,6 +140,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
         <!-- Server -->
         <dependency>
             <groupId>org.picketbox</groupId>
@@ -238,6 +242,14 @@
             <artifactId>logback-syslog4j</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>felles</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>kontrakt</artifactId>
+        </dependency>
         <!-- Test avhengigheter -->
 <!--        <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
@@ -296,13 +308,14 @@
         </dependency>
         <!-- Må gjenta her for å få riktig scope (kolliderer ellers med dependencyManagement -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-junit5</artifactId>
             <scope>test</scope>
         </dependency>
 

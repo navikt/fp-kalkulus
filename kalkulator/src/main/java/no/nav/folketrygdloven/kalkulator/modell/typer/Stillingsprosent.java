@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.typer;
 
-import static no.nav.vedtak.util.Objects.check;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -108,5 +106,11 @@ public class Stillingsprosent implements Serializable, IndexKey, TraverseValue {
 
     public boolean erNulltall() {
         return verdi != null && verdi.intValue() == 0;
+    }
+
+    private static void check(boolean check, String message, Object... params) {
+        if (!check) {
+            throw new IllegalArgumentException(String.format(message, params));
+        }
     }
 }

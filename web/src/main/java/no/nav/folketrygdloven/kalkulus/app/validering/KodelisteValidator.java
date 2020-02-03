@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import javax.validation.ConstraintValidatorContext;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeliste;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeliste;
 
 public class KodelisteValidator extends KodeverkValidator<Kodeliste> {
 

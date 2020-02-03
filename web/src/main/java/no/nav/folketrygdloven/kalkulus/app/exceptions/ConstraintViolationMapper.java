@@ -8,12 +8,10 @@ import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
 
         Set<ConstraintViolation<?>> constraintViolations = exception.getConstraintViolations();
         for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            String feltNavn = getFeltNavn(constraintViolation.getPropertyPath());
+            String feltNavn = constraintViolation.getPropertyPath().toString();
             feilene.add(new FeltFeilDto(feltNavn, constraintViolation.getMessage(), null));
         }
         Feil feil;
@@ -45,10 +43,6 @@ public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViol
             .entity(new FeilDto(feil.getFeilmelding(), feilene))
             .type(MediaType.APPLICATION_JSON)
             .build();
-    }
-
-    private String getFeltNavn(Path propertyPath) {
-        return propertyPath instanceof PathImpl ? ((PathImpl) propertyPath).getLeafNode().toString() : null;
     }
 
 }

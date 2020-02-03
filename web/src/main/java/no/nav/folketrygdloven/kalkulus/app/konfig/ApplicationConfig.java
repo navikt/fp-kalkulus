@@ -21,14 +21,6 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
-import no.nav.folketrygdloven.kalkulus.iay.tjeneste.ArbeidsforholdRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.iay.tjeneste.GrunnlagRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.iay.tjeneste.InntektsmeldingerRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.iay.tjeneste.OppgittOpptjeningRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.tjeneste.KodeverkRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.registerdata.tjeneste.RegisterdataRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.vedtak.tjeneste.YtelseRestTjeneste;
-import no.nav.vedtak.felles.prosesstask.rest.ProsessTaskRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -65,15 +57,8 @@ public class ApplicationConfig extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
-
-        classes.add(ProsessTaskRestTjeneste.class);
-        classes.add(RegisterdataRestTjeneste.class);
-        classes.add(InntektsmeldingerRestTjeneste.class);
-        classes.add(OppgittOpptjeningRestTjeneste.class);
-        classes.add(KodeverkRestTjeneste.class);
-        classes.add(GrunnlagRestTjeneste.class);
-        classes.add(ArbeidsforholdRestTjeneste.class);
-        classes.add(YtelseRestTjeneste.class);
+        //TODO REST må legges inn her.
+        //classes.add(YtelseRestTjeneste.class);
         classes.add(OpenApiResource.class);
 
         classes.add(ConstraintViolationMapper.class);

@@ -15,8 +15,9 @@ import javax.validation.ValidatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Kodeliste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.KodeverkTabell;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeliste;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.KodeverkTabell;
+
 
 public class KodeverkValidatorTest {
 
@@ -82,6 +83,16 @@ public class KodeverkValidatorTest {
     static class KodeverkT extends KodeverkTabell {
         public KodeverkT(String kode) {
             super(kode);
+        }
+
+        @Override
+        public String getOffisiellKode() {
+            return getOffisiellKode();
+        }
+
+        @Override
+        public String getKodeverk() {
+            return getKodeverk();
         }
     }
 
