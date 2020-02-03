@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.domene.entiteter;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
@@ -33,8 +33,8 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
-    @Column(name = "behandling_id", nullable = false, updatable = false, unique = true)
-    private Long behandlingId;
+    @Column(name = "kobling_id", nullable = false, updatable = false, unique = true)
+    private Long koblingId;
 
     @OneToOne
     @JoinColumn(name = "beregningsgrunnlag_id", updatable = false, unique = true)
@@ -79,8 +79,8 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
         return id;
     }
 
-    public Long getBehandlingId() {
-        return behandlingId;
+    public Long getKoblingId() {
+        return koblingId;
     }
 
     public Optional<BeregningsgrunnlagEntitet> getBeregningsgrunnlag() {
@@ -149,8 +149,8 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
         this.aktiv = aktiv;
     }
 
-    void setBehandlingId(Long behandlingId) {
-        this.behandlingId = behandlingId;
+    void setKoblingId(Long koblingId) {
+        this.koblingId = koblingId;
     }
 
     void setBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlag) {

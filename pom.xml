@@ -12,12 +12,13 @@
 
     <modules>
         <module>felles</module>
-        <!--  <module>database</module>-->
         <module>web</module>
         <module>kalkulator</module>
         <module>kontrakt</module>
         <module>domenetjenester</module>
+        <module>database</module>
         <module>migreringer</module>
+
     </modules>
 
 

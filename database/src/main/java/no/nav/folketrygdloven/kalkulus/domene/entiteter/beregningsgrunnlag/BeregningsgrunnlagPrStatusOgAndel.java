@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.domene.entiteter;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,7 +30,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
-
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;

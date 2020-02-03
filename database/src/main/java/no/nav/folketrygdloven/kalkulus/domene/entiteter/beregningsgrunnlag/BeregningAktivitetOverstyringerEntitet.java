@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.domene.entiteter;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.ArrayList;
 import java.util.Collections;

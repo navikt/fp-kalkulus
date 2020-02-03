@@ -23,26 +23,28 @@
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRINGER" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRINGER"/>
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRING"/>
 
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagRegelSporing" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagAktivitetStatus" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagGrunnlagEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagPeriode" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagPeriodeRegelSporing" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagPeriodeÅrsak" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BGAndelArbeidsforhold" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagPrStatusOgAndel" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.Sammenligningsgrunnlag" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.SammenligningsgrunnlagPrStatus" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagFaktaOmBeregningTilfelle" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagFrilansAndel" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningsgrunnlagArbeidstakerAndel" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetAggregatEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetOverstyringerEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningAktivitetOverstyringEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningRefusjonOverstyringerEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningRefusjonOverstyringEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagRegelSporing" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeRegelSporing" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeÅrsak" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagFaktaOmBeregningTilfelle" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagFrilansAndel" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndel" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet" />
+
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
 
 </entity-mappings>

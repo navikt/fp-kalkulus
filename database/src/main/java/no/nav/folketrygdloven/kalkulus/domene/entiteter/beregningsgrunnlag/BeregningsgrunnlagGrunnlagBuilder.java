@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.domene.entiteter;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -49,13 +49,13 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         return this;
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet build(Long behandlingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+    public BeregningsgrunnlagGrunnlagEntitet build(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         if(built) {
             return kladd;
         }
-        Objects.requireNonNull(behandlingId);
+        Objects.requireNonNull(koblingId);
         Objects.requireNonNull(beregningsgrunnlagTilstand);
-        kladd.setBehandlingId(behandlingId);
+        kladd.setKoblingId(koblingId);
         kladd.setBeregningsgrunnlagTilstand(beregningsgrunnlagTilstand);
         built = true;
         return kladd;

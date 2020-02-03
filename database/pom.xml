@@ -20,15 +20,4 @@
             <artifactId>felles</artifactId>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>felles</artifactId>
-                <version>${revision}${sha1}${changelist}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 </project>

@@ -11,7 +11,9 @@
     </parent>
 
     <artifactId>domenetjenester</artifactId>
+    <packaging>jar</packaging>
     <name>Kalkulus :: Domenetjenester</name>
+    <version>${revision}${sha1}${changelist}</version>
 
     <dependencies>
         <dependency>

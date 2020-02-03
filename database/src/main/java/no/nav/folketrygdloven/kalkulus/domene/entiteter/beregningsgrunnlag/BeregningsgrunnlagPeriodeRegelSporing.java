@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.domene.entiteter;
+package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -14,8 +14,8 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 
 @Entity(name = "BeregningsgrunnlagPeriodeRegelSporing")
 @Table(name = "BG_PERIODE_REGEL_SPORING")

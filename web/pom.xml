@@ -11,7 +11,7 @@
 
     <artifactId>web</artifactId>
     <packaging>jar</packaging>
-    <name>Kalkulus :: Web :: Applikasjon</name>
+    <name>Kalkulus :: Web</name>
 
     <properties>
         <geronimo.jaspi.version>2.0.0</geronimo.jaspi.version>
