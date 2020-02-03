@@ -1,0 +1,13 @@
+{
+  "schemas": [
+    {
+      "datasource": "defaultDS",
+      "user": "ftkalkulus_unit",
+      "password": "ftkalkulus_unit",
+      "schema": "public",
+      "url": "jdbc:postgresql://127.0.0.1:5432/ftkalkulus_unit",
+      "default": true,
+      "migrationScriptsFilesystemRoot": "migreringer/src/main/resources/db/migration/"
+    }
+  ]
+}

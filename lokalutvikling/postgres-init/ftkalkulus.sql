@@ -1,5 +1,5 @@
 CREATE DATABASE ftkalkulus_unit;
-CREATE USER ftkalkulus_unit WITH PASSWORD 'fpabakus_unit';
+CREATE USER ftkalkulus_unit WITH PASSWORD 'ftkalkulus_unit';
 GRANT ALL PRIVILEGES ON DATABASE ftkalkulus_unit TO ftkalkulus_unit;
 
 CREATE DATABASE ftkalkulus;
