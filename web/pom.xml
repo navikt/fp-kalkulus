@@ -266,6 +266,14 @@
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>java.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.xml.ws</groupId>
+                    <artifactId>jaxws-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -318,7 +326,11 @@
             <artifactId>weld-junit5</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.naming.NameNotFoundException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@Ignore
+@Disabled
 public class DatabaseHealthCheckTest {
 
     @Test

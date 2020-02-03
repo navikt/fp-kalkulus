@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.codahale.metrics.health.HealthCheck;
 
@@ -23,7 +23,7 @@ public class SelftestServiceTest {
     private SelftestService service; // objektet vi tester
     private Selftests mockSelftests;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockSelftests = mock(Selftests.class);
         service = new SelftestService(mockSelftests);

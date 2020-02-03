@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.sikkerhet;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Properties;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +46,11 @@ public class PropertySetter {
         public void setProperties(PropertySetter ps, String key1, String value1, String key2, String value2) {
             Properties p = (Properties) System.getProperties().clone();
 
-            Assert.assertFalse(value1.equals(p.getProperty(key1)));
-            Assert.assertFalse(value2.equals(p.getProperty(key2)));
+            assertFalse(value1.equals(p.getProperty(key1)));
+            assertFalse(value2.equals(p.getProperty(key2)));
             ps.setOn(p);
-            Assert.assertTrue(value1.equals(p.getProperty(key1)));
-            Assert.assertTrue(value2.equals(p.getProperty(key2)));
+            assertTrue(value1.equals(p.getProperty(key1)));
+            assertTrue(value2.equals(p.getProperty(key2)));
         }
 
         public void overwriteProperties(PropertySetter ps, String key1, String value1, String key2, String value2) {
@@ -56,11 +58,11 @@ public class PropertySetter {
             p.setProperty(key1, "verdi");
             p.setProperty(key2, "verdi");
 
-            Assert.assertFalse(value1.equals(p.getProperty(key1)));
-            Assert.assertFalse(value2.equals(p.getProperty(key2)));
+            assertFalse(value1.equals(p.getProperty(key1)));
+            assertFalse(value2.equals(p.getProperty(key2)));
             ps.setOn(p);
-            Assert.assertTrue(value1.equals(p.getProperty(key1)));
-            Assert.assertTrue(value2.equals(p.getProperty(key2)));
+            assertTrue(value1.equals(p.getProperty(key1)));
+            assertTrue(value2.equals(p.getProperty(key2)));
         }
     }
 }

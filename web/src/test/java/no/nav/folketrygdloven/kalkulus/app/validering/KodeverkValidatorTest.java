@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.app.validering;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,9 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeliste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.KodeverkTabell;
@@ -23,7 +25,7 @@ public class KodeverkValidatorTest {
 
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         @SuppressWarnings("resource")
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();

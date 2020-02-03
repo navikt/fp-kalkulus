@@ -13,11 +13,11 @@
     <modules>
         <module>felles</module>
         <!--  <module>database</module>-->
+        <module>web</module>
         <module>kalkulator</module>
         <module>kontrakt</module>
         <module>domenetjenester</module>
         <module>migreringer</module>
-        <module>web</module>
     </modules>
 
 
@@ -43,11 +43,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.10.2</jackson.version>
 
-        <prometheus.version>0.8.1</prometheus.version>
         <fpsak.nare.version>2.0_20191116160206_e67afc2</fpsak.nare.version>
         <fpsak.tidsserie.version>2.1-20200123110022-e75fb59</fpsak.tidsserie.version>
         <beregningsgrunnlag.regelmodell.version>2.1-20200121130215-ad804eb</beregningsgrunnlag.regelmodell.version>
         <felles.version>1.5-20200129062021-08b720c</felles.version>
+        <prometheus.version>0.8.1</prometheus.version>
+        <junit.version>5.6.0</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -111,6 +112,12 @@
                 <artifactId>felles-testutilities</artifactId>
                 <version>${felles.version}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>no.nav.foreldrepenger.felles</groupId>
@@ -173,13 +180,19 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.6.0</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.6.0</version>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -342,23 +355,16 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-datatype-jdk8</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-junit5</artifactId>
                 <version>2.0.1.Final</version>
                 <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>3.0.1-b11</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -366,7 +372,7 @@
     <dependencies>
 
     </dependencies>
-  
+
     <build>
         <pluginManagement>
             <plugins>

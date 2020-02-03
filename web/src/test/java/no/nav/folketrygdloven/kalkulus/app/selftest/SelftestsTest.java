@@ -9,19 +9,26 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 
 import no.nav.folketrygdloven.kalkulus.app.selftest.checks.ExtHealthCheck;
-import no.nav.vedtak.felles.testutilities.cdi.CdiRunner;
+import no.nav.vedtak.konfig.KonfigVerdi;
 
-@RunWith(CdiRunner.class)
+@EnableWeld
 public class SelftestsTest {
+
+    @WeldSetup
+    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld()
+            .addPackage(true, ExtHealthCheck.class)
+            .addPackage(true, KonfigVerdi.class));
 
     @Inject
     @Any
@@ -29,7 +36,7 @@ public class SelftestsTest {
 
     private Selftests selftests;
 
-    @Before
+    @BeforeEach
     public void setup() {
         HealthCheckRegistry registry = Mockito.mock(HealthCheckRegistry.class);
 

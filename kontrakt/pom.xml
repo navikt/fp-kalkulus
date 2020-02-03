@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>kontrakt</artifactId>
+    <name>Kalkulus :: Kontrakt</name>
 
     <dependencies>
         <dependency>

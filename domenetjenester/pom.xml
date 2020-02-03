@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>domenetjenester</artifactId>
-    <version>${revision}${sha1}${changelist}</version>
+    <name>Kalkulus :: Domenetjenester</name>
 
     <dependencies>
         <dependency>
