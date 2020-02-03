@@ -3,6 +3,6 @@
     "datasource": "defaultDS",
     "user": "ftkalkulus",
     "password": "ftkalkulus",
-    "url": "jdbc:postgresql://127.0.0.1:5432/ftkalkulus"
+    "url": "jdbc:postgresql://127.0.0.1:5433/ftkalkulus"
   }
 ]
