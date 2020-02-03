@@ -1,7 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.opptjening.v1;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+package no.nav.folketrygdloven.kalkulus.iay.arbeid.v1;
 
 import java.util.List;
 
@@ -11,24 +8,25 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
+@JsonInclude(value = Include.NON_ABSENT, content = Include.ALWAYS)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class OpptjeningAktiviteterDto {
+public class ArbeidDto {
 
 
-    @JsonProperty(value = "perioder", required = true)
-    @Valid
+    @JsonProperty("yrkesaktiviteter")
     @NotNull
-    private List<OpptjeningPeriodeDto> perioder;
+    @Valid
+    private List<YrkesaktivitetDto> yrkesaktiviteter;
 
-    public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotNull List<OpptjeningPeriodeDto> perioder) {
-        this.perioder = perioder;
+    public ArbeidDto(@NotNull @Valid List<YrkesaktivitetDto> yrkesaktiviteter) {
+        this.yrkesaktiviteter = yrkesaktiviteter;
     }
 
-    public List<OpptjeningPeriodeDto> getPerioder() {
-        return perioder;
+    public List<YrkesaktivitetDto> getYrkesaktiviteter() {
+        return yrkesaktiviteter;
     }
 }

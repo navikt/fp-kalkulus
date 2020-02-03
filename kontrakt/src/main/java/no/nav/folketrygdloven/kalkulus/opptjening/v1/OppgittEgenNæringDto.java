@@ -1,0 +1,109 @@
+package no.nav.folketrygdloven.kalkulus.opptjening.v1;
+
+
+import java.math.BigDecimal;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+public class OppgittEgenNæringDto {
+
+    @JsonProperty(value = "periode")
+    @Valid
+    @NotNull
+    private Periode periode;
+
+    @JsonProperty(value = "aktør")
+    @Valid
+    private Aktør aktør;
+
+    @JsonProperty(value = "virksomhetType")
+    @Valid
+    private VirksomhetType virksomhetType;
+
+    @JsonProperty(value = "nyoppstartet")
+    @Valid
+    @NotNull
+    private Boolean nyoppstartet;
+
+    @JsonProperty(value = "varigEndring")
+    @Valid
+    @NotNull
+    private Boolean varigEndring;
+
+    @JsonProperty(value = "nærRelasjon")
+    @Valid
+    @NotNull
+    private Boolean nærRelasjon;
+
+    @JsonProperty(value = "nyIArbeidslivet")
+    @Valid
+    @NotNull
+    private Boolean nyIArbeidslivet;
+
+    @JsonProperty(value = "bruttoInntekt")
+    @Valid
+    @NotNull
+    private BigDecimal bruttoInntekt;
+
+    public OppgittEgenNæringDto(@Valid @NotNull Periode periode,
+                                @Valid Aktør aktør,
+                                @Valid VirksomhetType virksomhetType,
+                                @Valid @NotNull Boolean nyoppstartet,
+                                @Valid @NotNull Boolean varigEndring,
+                                @Valid @NotNull Boolean nærRelasjon,
+                                @Valid @NotNull Boolean nyIArbeidslivet,
+                                @Valid @NotNull BigDecimal bruttoInntekt) {
+
+        this.periode = periode;
+        this.aktør = aktør;
+        this.virksomhetType = virksomhetType;
+        this.nyoppstartet = nyoppstartet;
+        this.varigEndring = varigEndring;
+        this.nærRelasjon = nærRelasjon;
+        this.nyIArbeidslivet = nyIArbeidslivet;
+        this.bruttoInntekt = bruttoInntekt;
+    }
+
+    public Periode getPeriode() {
+        return periode;
+    }
+
+    public Aktør getAktør() {
+        return aktør;
+    }
+
+    public VirksomhetType getVirksomhetType() {
+        return virksomhetType;
+    }
+
+    public Boolean getNyoppstartet() {
+        return nyoppstartet;
+    }
+
+    public Boolean getVarigEndring() {
+        return varigEndring;
+    }
+
+    public Boolean getNærRelasjon() {
+        return nærRelasjon;
+    }
+
+    public Boolean getNyIArbeidslivet() {
+        return nyIArbeidslivet;
+    }
+
+    public BigDecimal getBruttoInntekt() {
+        return bruttoInntekt;
+    }
+}
