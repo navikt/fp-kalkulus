@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,9 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
         FastsettMånedsinntektUtenInntektsmeldingDto fastsettMånedsinntektDto = dto.getFastsattUtenInntektsmelding();
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
         List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeleriFørstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
-            .getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
-            .collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
+                .collect(Collectors.toList());
         List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> andelListe = fastsettMånedsinntektDto.getAndelListe();
         settInntektForAllePerioder(beregningsgrunnlag, forrigeBg, arbeidstakerAndeleriFørstePeriode, andelListe);
     }
@@ -63,19 +64,20 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
 
     private Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagAndel, BeregningsgrunnlagPeriodeDto periode) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(andel -> andel.gjelderSammeArbeidsforhold(beregningsgrunnlagAndel)).findFirst();
+                .filter(andel -> Objects.equals(andel.getArbeidsforholdRef(), beregningsgrunnlagAndel.getArbeidsforholdRef())
+                        && Objects.equals(andel.getArbeidsgiver(), beregningsgrunnlagAndel.getArbeidsgiver())).findFirst();
     }
 
     private Optional<BeregningsgrunnlagPeriodeDto> finnForrigePeriode(Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagPeriodeDto periode) {
         return forrigeBg.stream()
-            .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
-            .filter(p -> periode.getPeriode().inkluderer(p.getPeriode().getFomDato())).findFirst();
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> periode.getPeriode().inkluderer(p.getPeriode().getFomDato())).findFirst();
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto finnKorrektAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler, FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
         return arbeidstakerAndeler.stream()
-            .filter(bgAndel -> dtoAndel.getAndelsnr().equals(bgAndel.getAndelsnr()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Fant ikke andel for andelsnr " + dtoAndel.getAndelsnr()));
+                .filter(bgAndel -> dtoAndel.getAndelsnr().equals(bgAndel.getAndelsnr()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Fant ikke andel for andelsnr " + dtoAndel.getAndelsnr()));
     }
 }

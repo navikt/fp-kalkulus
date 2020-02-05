@@ -52,18 +52,16 @@ public class BeregningInntektsmeldingTjeneste {
 
     public static Optional<BigDecimal> finnRefusjonskravPrÅrIPeriodeForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                              Intervall periode,
-                                                                             Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                             LocalDate skjæringstidspunkt) {
-        return finnInntektsmeldingForAndel(andel, inntektsmeldinger, skjæringstidspunkt)
+                                                                             Collection<InntektsmeldingDto> inntektsmeldinger) {
+        return finnInntektsmeldingForAndel(andel, inntektsmeldinger)
             .map(im -> finnRefusjonskravIPeriode(im, periode))
             .map(ref -> ref.multiply(BigDecimal.valueOf(MND_I_1_ÅR)));
     }
 
     public static Optional<InntektsmeldingDto> finnInntektsmeldingForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                           Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                           LocalDate skjæringstidspunkt) {
+                                                                           Collection<InntektsmeldingDto> inntektsmeldinger) {
         return inntektsmeldinger.stream()
-            .filter(im -> andel.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef(), skjæringstidspunkt))
+            .filter(im -> andel.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
             .findFirst();
     }
 

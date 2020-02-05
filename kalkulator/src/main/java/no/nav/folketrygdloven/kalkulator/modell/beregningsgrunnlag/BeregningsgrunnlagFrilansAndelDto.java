@@ -29,6 +29,10 @@ public class BeregningsgrunnlagFrilansAndelDto {
         return nyoppstartet;
     }
 
+    void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
+        this.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -59,8 +63,8 @@ public class BeregningsgrunnlagFrilansAndelDto {
         return new BeregningsgrunnlagFrilansAndelDto.Builder();
     }
 
-    public static BeregningsgrunnlagFrilansAndelDto.Builder builder(BeregningsgrunnlagFrilansAndelDto eksisterendeBGFrilansAndel) {
-        return new BeregningsgrunnlagFrilansAndelDto.Builder(eksisterendeBGFrilansAndel);
+    public static Builder builder(BeregningsgrunnlagFrilansAndelDto eksisterendeBGFrilansAndel) {
+        return eksisterendeBGFrilansAndel == null ? new Builder() : new Builder(eksisterendeBGFrilansAndel);
     }
 
     public static class Builder {
@@ -88,7 +92,7 @@ public class BeregningsgrunnlagFrilansAndelDto {
             return new Builder(beregningsgrunnlagFrilansAndel, true);
         }
 
-        BeregningsgrunnlagFrilansAndelDto.Builder medMottarYtelse(Boolean mottarYtelse) {
+        public BeregningsgrunnlagFrilansAndelDto.Builder medMottarYtelse(Boolean mottarYtelse) {
             beregningsgrunnlagFrilansAndelMal.mottarYtelse = mottarYtelse;
             return this;
         }
@@ -101,6 +105,10 @@ public class BeregningsgrunnlagFrilansAndelDto {
         public BeregningsgrunnlagFrilansAndelDto build(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
             beregningsgrunnlagFrilansAndelMal.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
             verifyStateForBuild(beregningsgrunnlagPrStatusOgAndel);
+            return beregningsgrunnlagFrilansAndelMal;
+        }
+
+        public BeregningsgrunnlagFrilansAndelDto build() {
             return beregningsgrunnlagFrilansAndelMal;
         }
 

@@ -171,6 +171,84 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
             .build();
     }
 
+    /**
+     * Simulerer at vi har 2 arbeidsforhold i samme organisasjon
+     * Arbeidsforhold1 avslutter dagen før skjæringstidspunktet og har andel med arbeidsforholdId lik null (skal ikkje ha refusjon)
+     * Arbeidsforhold2 er aktivt på skjæringstidspunktet og skal ha refusjon (har arbeidsforholdId ulik null)
+     */
+    @Test
+    public void skal_ikkje_sette_refusjon_for_andeler_som_slutter_dagen_før_skjæringstidspunktet() {
+        // Arrange
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .build(beregningsgrunnlag);
+
+        InternArbeidsforholdRefDto arbeidsforholdRef = InternArbeidsforholdRefDto.nyRef();
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORG_NUMMER);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef))
+                .build(periode);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
+                .build(periode);
+
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+
+        InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingRef.getAktørId());
+        aktørArbeidBuilder
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef())
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)))))
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdRef)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusMonths(10)))));
+        oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
+        iayGrunnlagBuilder.medData(oppdatere);
+
+        BigDecimal refusjon = BigDecimal.valueOf(23987);
+        var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, arbeidsforholdRef, SKJÆRINGSTIDSPUNKT, refusjon.intValue());
+        iayGrunnlagBuilder.medInntektsmeldinger(im1);
+
+        // Act
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
+                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+
+        // Assert
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(perioder).hasSize(1);
+        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, Intervall.TIDENES_ENDE);
+        Optional<BGAndelArbeidsforholdDto> bgArbeidsforholdMedRef = perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(a -> a.getArbeidsforholdRef().isPresent() && a.getArbeidsforholdRef().get().equals(arbeidsforholdRef))
+                .flatMap(a -> a.getBgAndelArbeidsforhold().stream())
+                .findFirst();
+        assertThat(bgArbeidsforholdMedRef).hasValueSatisfying(bga -> assertThat(bga.getRefusjonskravPrÅr()).isEqualByComparingTo(refusjon.multiply(ANTALL_MÅNEDER_I_ÅR)));
+
+        Optional<BGAndelArbeidsforholdDto> bgArbeidsforholdUtenRef = perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(a -> a.getArbeidsforholdRef().isPresent() && !a.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold())
+                .flatMap(a -> a.getBgAndelArbeidsforhold().stream())
+                .findFirst();
+        assertThat(bgArbeidsforholdUtenRef).hasValueSatisfying(bga -> assertThat(bga.getRefusjonskravPrÅr()).isNull());
+    }
+
     @Test
     public void ikkeLagPeriodeForRefusjonHvisKunEnInntektsmeldingIngenEndringIRefusjon() {
         // Arrange

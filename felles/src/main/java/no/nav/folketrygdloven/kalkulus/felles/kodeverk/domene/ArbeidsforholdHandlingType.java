@@ -9,6 +9,7 @@ package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -35,6 +36,8 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi {
     BRUK_MED_OVERSTYRT_PERIODE("BRUK_MED_OVERSTYRT_PERIODE", "Bruk arbeidsforholdet med overstyrt periode"),
     INNTEKT_IKKE_MED_I_BG("INNTEKT_IKKE_MED_I_BG", "Inntekten til arbeidsforholdet skal ikke være med i beregningsgrunnlaget"),
     ;
+
+    private static final Set<ArbeidsforholdHandlingType> MED_OVERSTYRT_PERIODE = Set.of(BRUK_MED_OVERSTYRT_PERIODE, BASERT_PÅ_INNTEKTSMELDING, LAGT_TIL_AV_SAKSBEHANDLER);
 
     private static final Map<String, ArbeidsforholdHandlingType> KODER = new LinkedHashMap<>();
 
@@ -98,6 +101,10 @@ public enum ArbeidsforholdHandlingType implements Kodeverdi {
     @Override
     public String getOffisiellKode() {
         return getKode();
+    }
+
+    public boolean erPeriodeOverstyrt() {
+        return MED_OVERSTYRT_PERIODE.contains(this);
     }
 
 }

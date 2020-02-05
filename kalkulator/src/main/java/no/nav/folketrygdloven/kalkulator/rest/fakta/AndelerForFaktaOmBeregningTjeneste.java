@@ -51,7 +51,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
     private AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
         var ref = input.getBehandlingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
-        Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger, input.getSkjæringstidspunktForBeregning());
+        Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger);
         AndelForFaktaOmBeregningDto andelDto = new AndelForFaktaOmBeregningDto();
         andelDto.setFastsattBelop(FinnInntektForVisning.finnInntektForPreutfylling(andel));
         andelDto.setInntektskategori(andel.getInntektskategori());

@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.MottarYtelseDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.VurderMottarYtelseTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -47,15 +48,19 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
         nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
             .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .filter(nyAndel -> nyAndel.gjelderSammeArbeidsforhold(andel))
-            .forEach(nyAndel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(nyAndel)
-                .medMottarYtelse(mottarYtelse, nyAndel.getAktivitetStatus()));
+            .forEach(nyAndel -> {
+                BeregningsgrunnlagPrStatusOgAndelDto.Builder oppdatere = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(nyAndel);
+                oppdatere.medBeregningsgrunnlagArbeidstakerAndel(oppdatere.getBeregningsgrunnlagArbeidstakerAndelBuilder().medMottarYtelse(mottarYtelse).build());
+            });
     }
 
     private void settMottarYtelseForFrilans(BeregningsgrunnlagDto nyttBeregningsgrunnlag, MottarYtelseDto mottarYtelseDto) {
         nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .filter(andel -> andel.getAktivitetStatus().erFrilanser())
-            .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)
-                .medMottarYtelse(mottarYtelseDto.getFrilansMottarYtelse(), andel.getAktivitetStatus()));
+            .forEach(andel -> {
+                BeregningsgrunnlagPrStatusOgAndelDto.Builder oppdatere = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel);
+                oppdatere.medBeregningsgrunnlagFrilansAndel(oppdatere.getBeregningsgrunnlagFrilansAndelBuilder().medMottarYtelse(mottarYtelseDto.getFrilansMottarYtelse()).build());
+            });
     }
 
 }

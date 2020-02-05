@@ -7,6 +7,7 @@ public class BeregningsgrunnlagArbeidstakerAndelRestDto {
 
     private BeregningsgrunnlagPrStatusOgAndelRestDto beregningsgrunnlagPrStatusOgAndel;
     private Boolean mottarYtelse;
+    private boolean harInntektsmelding = false;
 
     private BeregningsgrunnlagArbeidstakerAndelRestDto() {
     }
@@ -20,7 +21,7 @@ public class BeregningsgrunnlagArbeidstakerAndelRestDto {
     }
 
     public static BeregningsgrunnlagArbeidstakerAndelRestDto.Builder builder(BeregningsgrunnlagArbeidstakerAndelRestDto eksisterendeBGArbeidstakerAndel) {
-        return new BeregningsgrunnlagArbeidstakerAndelRestDto.Builder(eksisterendeBGArbeidstakerAndel);
+        return eksisterendeBGArbeidstakerAndel == null ? new Builder() : new BeregningsgrunnlagArbeidstakerAndelRestDto.Builder(eksisterendeBGArbeidstakerAndel);
     }
 
     public BeregningsgrunnlagPrStatusOgAndelRestDto getBeregningsgrunnlagPrStatusOgAndel() {
@@ -29,6 +30,14 @@ public class BeregningsgrunnlagArbeidstakerAndelRestDto {
 
     public Boolean getMottarYtelse() {
         return mottarYtelse;
+    }
+
+    public boolean getHarInntektsmelding() {
+        return harInntektsmelding;
+    }
+
+    public void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelRestDto beregningsgrunnlagPrStatusOgAndel) {
+        this.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
     }
 
     @Override
@@ -85,9 +94,18 @@ public class BeregningsgrunnlagArbeidstakerAndelRestDto {
             return this;
         }
 
+        public BeregningsgrunnlagArbeidstakerAndelRestDto.Builder medHarInntektsmelding(boolean harInntektsmelding) {
+            beregningsgrunnlagArbeidstakerAndelMal.harInntektsmelding = harInntektsmelding;
+            return this;
+        }
+
         public BeregningsgrunnlagArbeidstakerAndelRestDto build(BeregningsgrunnlagPrStatusOgAndelRestDto beregningsgrunnlagPrStatusOgAndel) {
             beregningsgrunnlagArbeidstakerAndelMal.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
             verifyStateForBuild(beregningsgrunnlagPrStatusOgAndel);
+            return beregningsgrunnlagArbeidstakerAndelMal;
+        }
+
+        public BeregningsgrunnlagArbeidstakerAndelRestDto build() {
             return beregningsgrunnlagArbeidstakerAndelMal;
         }
 

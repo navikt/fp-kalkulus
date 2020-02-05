@@ -40,7 +40,7 @@ public class FaktaOmBeregningDtoTjeneste {
         faktaOmBeregningDto.setAndelerForFaktaOmBeregning(andelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
 
         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon = input.getIayGrunnlag().getArbeidsforholdInformasjon();
-        AvklarAktiviteterDtoTjeneste.lagAvklarAktiviteterDto(input.getSkjæringstidspunktForBeregning(), registerAktivitetAggregat,
+        AvklarAktiviteterDtoTjeneste.lagAvklarAktiviteterDto(registerAktivitetAggregat,
             saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto);
         BeregningsgrunnlagRestDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
         if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {

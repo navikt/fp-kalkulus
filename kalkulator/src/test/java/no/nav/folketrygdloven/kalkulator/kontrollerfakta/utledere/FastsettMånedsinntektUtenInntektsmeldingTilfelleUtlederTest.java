@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -42,6 +43,57 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(null, grunnlag);
         assertThat(tilfelle).isNotPresent();
     }
+
+    @Test
+    public void skal_gi_tilfelle_om_beregningsgrunnlag_har_andeler_for_samme_virksomhet_med_og_uten_referanse() {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)))
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)).medArbeidsforholdRef(InternArbeidsforholdRefDto.nyRef()))
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(bg).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+
+
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(grunnlag);
+        assertThat(tilfelle).isPresent();
+    }
+
+    @Test
+    public void skal_ikkje_gi_tilfelle_om_beregningsgrunnlag_kun_har_andeler_for_samme_virksomhet_med_referanse() {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)).medArbeidsforholdRef(InternArbeidsforholdRefDto.nyRef()))
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)).medArbeidsforholdRef(InternArbeidsforholdRefDto.nyRef()))
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(bg).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+
+
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(grunnlag);
+        assertThat(tilfelle).isNotPresent();
+    }
+
 
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(boolean medKunstigArbeid) {

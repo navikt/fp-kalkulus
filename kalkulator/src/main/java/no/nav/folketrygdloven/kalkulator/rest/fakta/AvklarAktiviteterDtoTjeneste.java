@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.rest.dto.AvklarAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 
+
 @ApplicationScoped
 public class AvklarAktiviteterDtoTjeneste {
 
@@ -27,25 +28,22 @@ public class AvklarAktiviteterDtoTjeneste {
 
     /**
      * Modifiserer dto for fakta om beregning og setter dto for avklaring av aktiviteter på denne.
-     *
-     * @param skjæringstidspunkt             Skjæringstidspunkt for beregning
-     * @param registerAktivitetAggregat      aggregat for registeraktiviteter
+     *  @param registerAktivitetAggregat      aggregat for registeraktiviteter
      * @param saksbehandletAktivitetAggregat aggregat for saksbehandlede aktiviteter
      * @param faktaOmBeregningDto            Dto for fakta om beregning som modifiseres
      */
-    static void lagAvklarAktiviteterDto(LocalDate skjæringstidspunkt,
-                                        BeregningAktivitetAggregatRestDto registerAktivitetAggregat,
+    static void lagAvklarAktiviteterDto(BeregningAktivitetAggregatRestDto registerAktivitetAggregat,
                                         Optional<BeregningAktivitetAggregatRestDto> saksbehandletAktivitetAggregat,
                                         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
                                         FaktaOmBeregningDto faktaOmBeregningDto) {
         AvklarAktiviteterDto avklarAktiviteterDto = new AvklarAktiviteterDto();
         List<BeregningAktivitetRestDto> beregningAktiviteter = registerAktivitetAggregat.getBeregningAktiviteter();
         List<BeregningAktivitetRestDto> saksbehandletAktiviteter = saksbehandletAktivitetAggregat
-            .map(BeregningAktivitetAggregatRestDto::getBeregningAktiviteter)
-            .orElse(Collections.emptyList());
+                .map(BeregningAktivitetAggregatRestDto::getBeregningAktiviteter)
+                .orElse(Collections.emptyList());
 
         avklarAktiviteterDto.setAktiviteterTomDatoMapping(map(beregningAktiviteter, saksbehandletAktiviteter,
-            skjæringstidspunkt, arbeidsforholdInformasjon));
+                registerAktivitetAggregat.getSkjæringstidspunktOpptjening(), arbeidsforholdInformasjon));
         faktaOmBeregningDto.setAvklarAktiviteter(avklarAktiviteterDto);
     }
 
@@ -63,17 +61,17 @@ public class AvklarAktiviteterDtoTjeneste {
     private static List<AktivitetTomDatoMappingDto> map(List<BeregningAktivitetRestDto> beregningAktiviteter, List<BeregningAktivitetRestDto> saksbehandletAktiviteter,
                                                         LocalDate skjæringstidspunkt, Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon) {
         Map<LocalDate, List<BeregningAktivitetDto>> collect = beregningAktiviteter.stream()
-            .map(aktivitet -> MapBeregningAktivitetDto.mapBeregningAktivitet(aktivitet, saksbehandletAktiviteter, arbeidsforholdInformasjon))
-            .collect(Collectors.groupingBy(beregningAktivitetDto -> finnTidligste(beregningAktivitetDto.getTom().plusDays(1), skjæringstidspunkt), Collectors.toList()));
+                .map(aktivitet -> MapBeregningAktivitetDto.mapBeregningAktivitet(aktivitet, saksbehandletAktiviteter, arbeidsforholdInformasjon))
+                .collect(Collectors.groupingBy(beregningAktivitetDto -> finnTidligste(beregningAktivitetDto.getTom().plusDays(1), skjæringstidspunkt), Collectors.toList()));
         return collect.entrySet().stream()
-            .map(entry -> {
-                AktivitetTomDatoMappingDto dto = new AktivitetTomDatoMappingDto();
-                dto.setTom(entry.getKey());
-                dto.setAktiviteter(entry.getValue());
-                return dto;
-            })
-            .sorted(Comparator.comparing(AktivitetTomDatoMappingDto::getTom).reversed())
-            .collect(Collectors.toList());
+                .map(entry -> {
+                    AktivitetTomDatoMappingDto dto = new AktivitetTomDatoMappingDto();
+                    dto.setTom(entry.getKey());
+                    dto.setAktiviteter(entry.getValue());
+                    return dto;
+                })
+                .sorted(Comparator.comparing(AktivitetTomDatoMappingDto::getTom).reversed())
+                .collect(Collectors.toList());
     }
 
     private static LocalDate finnTidligste(LocalDate tom, LocalDate skjæringstidspunkt) {

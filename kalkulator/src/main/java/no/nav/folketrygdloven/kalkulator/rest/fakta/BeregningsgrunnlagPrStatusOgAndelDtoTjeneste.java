@@ -71,7 +71,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
         BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag);
         LocalDate skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
-        Optional<InntektsmeldingDto> inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger, skjæringstidspunktForBeregning);
+        Optional<InntektsmeldingDto> inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger);
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmelding, iayGrunnlag).ifPresent(dto::setArbeidsforhold);
         dto.setDagsats(andel.getDagsats());
         dto.setOriginalDagsatsFraTilstøtendeYtelse(andel.getOrginalDagsatsFraTilstøtendeYtelse());
@@ -117,7 +117,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     }
 
     private static boolean skalGrunnlagFastsettes(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel){
-        if(finnesIngenSammenligningsgrunnlagPrStatus(input, andel)){
+        if(finnesIngenSammenligningsgrunnlagPrStatus(input)){
             return skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(input, andel, input.getBeregningsgrunnlag().getSammenligningsgrunnlag());
         }
 
@@ -139,7 +139,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
     }
 
-    private static boolean finnesIngenSammenligningsgrunnlagPrStatus(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel){
+    private static boolean finnesIngenSammenligningsgrunnlagPrStatus(BeregningsgrunnlagRestInput input){
         return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().isEmpty();
     }
 

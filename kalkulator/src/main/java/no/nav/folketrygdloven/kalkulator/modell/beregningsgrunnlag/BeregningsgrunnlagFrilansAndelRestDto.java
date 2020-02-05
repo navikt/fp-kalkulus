@@ -29,6 +29,10 @@ public class BeregningsgrunnlagFrilansAndelRestDto {
         return nyoppstartet;
     }
 
+    void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelRestDto beregningsgrunnlagPrStatusOgAndel) {
+        this.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -60,7 +64,7 @@ public class BeregningsgrunnlagFrilansAndelRestDto {
     }
 
     public static BeregningsgrunnlagFrilansAndelRestDto.Builder builder(BeregningsgrunnlagFrilansAndelRestDto eksisterendeBGFrilansAndel) {
-        return new BeregningsgrunnlagFrilansAndelRestDto.Builder(eksisterendeBGFrilansAndel);
+        return eksisterendeBGFrilansAndel == null ? new Builder() : new BeregningsgrunnlagFrilansAndelRestDto.Builder(eksisterendeBGFrilansAndel);
     }
 
     public static class Builder {
@@ -101,6 +105,10 @@ public class BeregningsgrunnlagFrilansAndelRestDto {
         public BeregningsgrunnlagFrilansAndelRestDto build(BeregningsgrunnlagPrStatusOgAndelRestDto beregningsgrunnlagPrStatusOgAndel) {
             beregningsgrunnlagFrilansAndelMal.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
             verifyStateForBuild(beregningsgrunnlagPrStatusOgAndel);
+            return beregningsgrunnlagFrilansAndelMal;
+        }
+
+        public BeregningsgrunnlagFrilansAndelRestDto build() {
             return beregningsgrunnlagFrilansAndelMal;
         }
 

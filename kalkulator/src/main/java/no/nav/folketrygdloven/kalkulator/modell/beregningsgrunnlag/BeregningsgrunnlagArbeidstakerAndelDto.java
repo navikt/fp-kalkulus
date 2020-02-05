@@ -7,6 +7,7 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
 
     private BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel;
     private Boolean mottarYtelse;
+    private boolean harInntektsmelding = false;
 
     private BeregningsgrunnlagArbeidstakerAndelDto() {
     }
@@ -15,12 +16,12 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
         this.mottarYtelse = eksisterendeBGArbeidstakerAndelMal.mottarYtelse;
     }
 
-    public static BeregningsgrunnlagArbeidstakerAndelDto.Builder builder() {
+    public static Builder builder() {
         return new BeregningsgrunnlagArbeidstakerAndelDto.Builder();
     }
 
-    public static BeregningsgrunnlagArbeidstakerAndelDto.Builder builder(BeregningsgrunnlagArbeidstakerAndelDto eksisterendeBGArbeidstakerAndel) {
-        return new BeregningsgrunnlagArbeidstakerAndelDto.Builder(eksisterendeBGArbeidstakerAndel);
+    public static Builder builder(BeregningsgrunnlagArbeidstakerAndelDto eksisterendeBGArbeidstakerAndel) {
+        return eksisterendeBGArbeidstakerAndel == null ? new Builder() : new Builder(eksisterendeBGArbeidstakerAndel);
     }
 
     public BeregningsgrunnlagPrStatusOgAndelDto getBeregningsgrunnlagPrStatusOgAndel() {
@@ -29,6 +30,14 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
 
     public Boolean getMottarYtelse() {
         return mottarYtelse;
+    }
+
+    public boolean getHarInntektsmelding() {
+        return harInntektsmelding;
+    }
+
+    void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
+        this.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
     }
 
     @Override
@@ -79,7 +88,10 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
             return new Builder(beregningsgrunnlagArbeidstakerAndel, true);
         }
 
-
+        public BeregningsgrunnlagArbeidstakerAndelDto.Builder medHarInntektsmelding(boolean harInntektsmelding) {
+            beregningsgrunnlagArbeidstakerAndelMal.harInntektsmelding = harInntektsmelding;
+            return this;
+        }
         public BeregningsgrunnlagArbeidstakerAndelDto.Builder medMottarYtelse(Boolean mottarYtelse) {
             beregningsgrunnlagArbeidstakerAndelMal.mottarYtelse = mottarYtelse;
             return this;
@@ -88,6 +100,10 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
         public BeregningsgrunnlagArbeidstakerAndelDto build(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
             beregningsgrunnlagArbeidstakerAndelMal.beregningsgrunnlagPrStatusOgAndel = beregningsgrunnlagPrStatusOgAndel;
             verifyStateForBuild(beregningsgrunnlagPrStatusOgAndel);
+            return beregningsgrunnlagArbeidstakerAndelMal;
+        }
+
+        public BeregningsgrunnlagArbeidstakerAndelDto build() {
             return beregningsgrunnlagArbeidstakerAndelMal;
         }
 

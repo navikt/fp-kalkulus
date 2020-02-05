@@ -42,7 +42,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         List<FordelBeregningsgrunnlagAndelDto> endringAndeler = new ArrayList<>();
         for (BeregningsgrunnlagPrStatusOgAndelRestDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, periode);
-            RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning());
+            RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
             var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
             endringAndel.setNyttArbeidsforhold(FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()));
             endringAndel.setArbeidsforholdType(andel.getArbeidsforholdType());
@@ -61,14 +61,14 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
         endringAndel.setFordeltPrAar(andel.getFordeltPrÅr());
-        settBeløpFraInntektsmelding(andel, input.getInntektsmeldinger(), endringAndel, input.getSkjæringstidspunktForBeregning());
+        settBeløpFraInntektsmelding(andel, input.getInntektsmeldinger(), endringAndel);
         return endringAndel;
     }
 
     private static void settBeløpFraInntektsmelding(BeregningsgrunnlagPrStatusOgAndelRestDto andel,
                                                     Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                    FordelBeregningsgrunnlagAndelDto endringAndel, LocalDate skjæringstidspunkt) {
-        Optional<InntektsmeldingDto> inntektsmeldingOpt = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger, skjæringstidspunkt);
+                                                    FordelBeregningsgrunnlagAndelDto endringAndel) {
+        Optional<InntektsmeldingDto> inntektsmeldingOpt = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger);
         inntektsmeldingOpt.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
     }
 

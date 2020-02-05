@@ -9,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -68,7 +69,10 @@ public class MapBeregningsgrunnlagFraRestTilDomene {
             .medAvkortetRefusjonPrÅr(andel.getAvkortetRefusjonPrÅr())
             .medMaksimalRefusjonPrÅr(andel.getMaksimalRefusjonPrÅr())
             .medOrginalDagsatsFraTilstøtendeYtelse(andel.getOrginalDagsatsFraTilstøtendeYtelse())
-            .medÅrsbeløpFraTilstøtendeYtelse(andel.getÅrsbeløpFraTilstøtendeYtelseVerdi());
+            .medÅrsbeløpFraTilstøtendeYtelse(andel.getÅrsbeløpFraTilstøtendeYtelseVerdi())
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder()
+                        .medMottarYtelse(andel.mottarYtelse().orElse(null))
+                        .medHarInntektsmelding(andel.harInntektsmelding()).build());
         if (andel.getPgiSnitt() != null && andel.getPgi1() != null && andel.getPgi2() != null && andel.getPgi3() != null) {
             builder
                 .medPgi(andel.getPgiSnitt(), List.of(andel.getPgi1(), andel.getPgi2(), andel.getPgi3()));

@@ -212,7 +212,7 @@ public class YrkesaktivitetFilterDto {
         ArbeidsforholdHandlingType handling = overstyring.getHandling();
 
         List<ArbeidsforholdOverstyrtePerioderDto> overstyrtePerioder = overstyring.getArbeidsforholdOverstyrtePerioder();
-        if ((ArbeidsforholdHandlingType.BRUK_MED_OVERSTYRT_PERIODE.equals(handling) || ArbeidsforholdHandlingType.LAGT_TIL_AV_SAKSBEHANDLER.equals(handling)) && !overstyrtePerioder.isEmpty()) {
+        if (handling.erPeriodeOverstyrt() && !overstyrtePerioder.isEmpty()) {
             Set<AktivitetsAvtaleDto> avtaler = new LinkedHashSet<>();
             overstyrtePerioder.forEach(overstyrtPeriode -> yaAvtaler.stream()
                 .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)

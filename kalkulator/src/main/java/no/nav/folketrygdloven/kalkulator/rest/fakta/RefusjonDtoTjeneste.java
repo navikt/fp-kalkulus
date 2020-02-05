@@ -4,7 +4,6 @@ import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRes
 import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapPeriode;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,17 +68,15 @@ public class RefusjonDtoTjeneste {
      * @param periode Periode korresponderende til en beregningsgrunnlagperiode
      * @param endringAndel Dto for andel
      * @param inntektsmeldinger
-     * @param skjæringstidspunkt
      */
     public static void settRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelRestDto andel,
                                          Intervall periode,
                                          FordelBeregningsgrunnlagAndelDto endringAndel,
-                                         Collection<InntektsmeldingDto> inntektsmeldinger,
-                                         LocalDate skjæringstidspunkt) {
+                                         Collection<InntektsmeldingDto> inntektsmeldinger) {
         if (andel.getLagtTilAvSaksbehandler()) {
             endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal.ZERO);
         } else {
-            Optional<BigDecimal> refusjonsKravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(mapAndel(andel), periode, inntektsmeldinger, skjæringstidspunkt);
+            Optional<BigDecimal> refusjonsKravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(mapAndel(andel), periode, inntektsmeldinger);
             refusjonsKravPrÅr.ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
         }
         endringAndel.setRefusjonskravPrAar(andel.getBgAndelArbeidsforhold()

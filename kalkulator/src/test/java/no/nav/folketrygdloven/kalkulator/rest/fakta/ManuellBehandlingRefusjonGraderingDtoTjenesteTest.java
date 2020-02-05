@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
@@ -46,14 +47,14 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     @BeforeEach
     public void setUp() {
         aktivitetAggregatEntitet = BeregningAktivitetAggregatRestDto.builder()
-            .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER))
-            .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER2))
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING).build();
+                .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER))
+                .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER2))
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING).build();
     }
 
     private BeregningAktivitetRestDto lagAktivitet(ArbeidsgiverMedNavn arbeidsgiver) {
         return BeregningAktivitetRestDto.builder()
-            .medArbeidsgiver(arbeidsgiver).medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1))).build();
+                .medArbeidsgiver(arbeidsgiver).medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1))).build();
     }
 
     @Test
@@ -66,8 +67,8 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandling = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(aktivitetAggregatEntitet,
-            new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING);
+                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
         // Assert
         assertThat(kreverManuellBehandling).isTrue();
@@ -82,9 +83,9 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandlingAvRefusjon = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereRefusjon(
-            aktivitetAggregatEntitet,
-            new AktivitetGradering(graderinger),
-            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP), SKJÆRINGSTIDSPUNKT_OPPTJENING);
+                aktivitetAggregatEntitet,
+                new AktivitetGradering(graderinger),
+                bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP), SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
         // Assert
         assertThat(kreverManuellBehandlingAvRefusjon).isTrue();
@@ -92,34 +93,36 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
     private no.nav.folketrygdloven.kalkulator.gradering.AndelGradering lagGradering() {
         return no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.builder()
-            .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), BigDecimal.valueOf(50)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
-            .medAndelsnr(ANDELSNR2).build();
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), BigDecimal.valueOf(50)))
+                .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+                .medAndelsnr(ANDELSNR2).build();
     }
 
     private BeregningsgrunnlagRestDto lagBeregningsgrunnlagFørFordeling() {
         BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(new Beløp(GRUNNBELØP))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(new Beløp(GRUNNBELØP))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .build();
         BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(bg);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(bg);
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregnetPrÅr(BigDecimal.ZERO)
-            .build(periode);
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelRestDto.builder().medHarInntektsmelding(true).build())
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.TEN)
+                .build(periode);
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medAndelsnr(ANDELSNR2)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregnetPrÅr(BigDecimal.ZERO)
-            .build(periode);
+                .medAndelsnr(ANDELSNR2)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelRestDto.builder().medHarInntektsmelding(false).build())
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.TEN)
+                .build(periode);
         return bg;
     }
 

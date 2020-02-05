@@ -217,6 +217,17 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         if (!Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver), Optional.of(arbeidsgiver))) {
             return false;
         }
+        if (this.getArbeidsforholdRef().isEmpty() || !this.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()) {
+            boolean harPeriodeAndelForSammeArbeidsgiverMedReferanse = this.beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                    .stream()
+                    .filter(a -> a.getAktivitetStatus().erArbeidstaker())
+                    .filter(a -> a.getArbeidsgiver().isPresent() && a.getArbeidsgiver().get().equals(arbeidsgiver))
+                    .anyMatch(a -> a.getArbeidsforholdRef().isPresent() && a.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold());
+
+            if (harPeriodeAndelForSammeArbeidsgiverMedReferanse) {
+                return false;
+            }
+        }
         return  bgAndelArbeidsforholdOpt.get().getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
     }
 

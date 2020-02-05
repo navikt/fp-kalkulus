@@ -137,7 +137,7 @@ public class FordelBeregningsgrunnlagTjeneste {
                                                                                      BeregningsgrunnlagPeriodeDto periode,
                                                                                      Beløp grunnbeløp, LocalDate skjæringstidspunkt) {
         boolean harGraderingIBGPeriode = !hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).isEmpty();
-        BigDecimal refusjonskravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode.getPeriode(), inntektsmeldinger, skjæringstidspunkt).orElse(BigDecimal.ZERO);
+        BigDecimal refusjonskravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode.getPeriode(), inntektsmeldinger).orElse(BigDecimal.ZERO);
 
         boolean harRefusjonIPerioden = refusjonskravPrÅr.compareTo(BigDecimal.ZERO) != 0;
 
@@ -167,18 +167,17 @@ public class FordelBeregningsgrunnlagTjeneste {
             }
         }
 
-        if (harAndelerMedAAPOgRefusjonOverstigerInntekt(andel, harNoenAndelerMedAap, periode.getPeriode(), inntektsmeldinger, skjæringstidspunkt)) {
+        if (harAndelerMedAAPOgRefusjonOverstigerInntekt(andel, harNoenAndelerMedAap, periode.getPeriode(), inntektsmeldinger)) {
             return Optional.of(VurderManuellBehandling.REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP);
         }
         return Optional.empty();
     }
 
     private static boolean harAndelerMedAAPOgRefusjonOverstigerInntekt(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                boolean harNoenAndelerMedAap,
-                                                                Intervall periode,
-                                                                Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                LocalDate skjæringstidspunkt) {
-        BigDecimal refusjonskravForAndelIPeriode = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode, inntektsmeldinger, skjæringstidspunkt).orElse(BigDecimal.ZERO);
+                                                                       boolean harNoenAndelerMedAap,
+                                                                       Intervall periode,
+                                                                       Collection<InntektsmeldingDto> inntektsmeldinger) {
+        BigDecimal refusjonskravForAndelIPeriode = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode, inntektsmeldinger).orElse(BigDecimal.ZERO);
         return harNoenAndelerMedAap && harHøyereRefusjonEnnInntekt(refusjonskravForAndelIPeriode, andel);
     }
 
