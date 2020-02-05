@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
@@ -72,7 +74,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
             .build());
 
         var beregningsgrunnlagPeriode = lagBeregningsgrunnlagPeriode(skjæringstidspunkt, null);
-        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.ARBEIDSTAKER, BigDecimal.ZERO);
+        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.ARBEIDSTAKER, BigDecimal.ZERO, SKJÆRINGSTIDSPUNKT.minusYears(1), Intervall.TIDENES_ENDE);
 
         // Act
 
@@ -298,7 +300,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
             .build());
 
         var beregningsgrunnlagPeriode = lagBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null);
-        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.ARBEIDSTAKER, BigDecimal.ZERO);
+        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.ARBEIDSTAKER, BigDecimal.ZERO, SKJÆRINGSTIDSPUNKT.minusYears(1), Intervall.TIDENES_ENDE);
 
         // Act
         boolean harAndelerMedGraderingUtenGrunnlag = harAndelerMedGraderingUtenGrunnlag(aktivitetGradering);
@@ -389,6 +391,28 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
         assertThat(harAndelerMedGraderingUtenGrunnlag).isFalse();
     }
 
+    @Test
+    public void skalIkkeSlåUtNårDetManglerBGMenGraderingErUtenforArbeidsperiode() {
+        // Arrange
+        LocalDate skjæringstidspunkt = SKJÆRINGSTIDSPUNKT;
+        LocalDate graderingFom = skjæringstidspunkt;
+        LocalDate graderingTom = skjæringstidspunkt.plusMonths(4);
+
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medGradering(graderingFom, graderingTom, 50)
+                .build());
+
+        var beregningsgrunnlagPeriode = lagBeregningsgrunnlagPeriode(skjæringstidspunkt, null);
+        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.ARBEIDSTAKER, BigDecimal.ZERO, graderingFom.minusYears(3), graderingFom.minusDays(1));
+
+        // Act
+        boolean harAndelerMedGraderingUtenGrunnlag = harAndelerMedGraderingUtenGrunnlag(aktivitetGradering);
+
+        // Assert
+        assertThat(harAndelerMedGraderingUtenGrunnlag).isFalse();
+    }
 
     private List<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelerMedGraderingUtenBG(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
         return GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag, aktivitetGradering);
@@ -403,12 +427,19 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
     }
 
     private void lagBeregningsgrunnlagAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, AktivitetStatus aktivitetStatus, BigDecimal redusertPrÅr) {
+        lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, aktivitetStatus, redusertPrÅr, null, null);
+    }
+
+    private void lagBeregningsgrunnlagAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, AktivitetStatus aktivitetStatus, BigDecimal redusertPrÅr, LocalDate arbeidsperiodeFom, LocalDate arbeidsperiodeTom) {
 
         BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(aktivitetStatus).build(beregningsgrunnlag);
-        BGAndelArbeidsforholdDto.Builder bgAndelBuilder = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver);
+        BGAndelArbeidsforholdDto.Builder bgAndelBuilder = BGAndelArbeidsforholdDto.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsperiodeFom(arbeidsperiodeFom)
+                .medArbeidsperiodeTom(arbeidsperiodeTom);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
-            .medAktivitetStatus(aktivitetStatus)
-            .medRedusertPrÅr(redusertPrÅr);
+                .medAktivitetStatus(aktivitetStatus)
+                .medRedusertPrÅr(redusertPrÅr);
 
         if (aktivitetStatus.erArbeidstaker()) {
             andelBuilder.medBGAndelArbeidsforhold(bgAndelBuilder);

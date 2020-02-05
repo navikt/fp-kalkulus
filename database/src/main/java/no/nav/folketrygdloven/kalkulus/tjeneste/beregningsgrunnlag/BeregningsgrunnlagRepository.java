@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
@@ -314,4 +315,43 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlag = hentBeregningsgrunnlagGrunnlagEntitet(gammelkoblingId);
         beregningsgrunnlag.ifPresent(orig -> lagre(nykoblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.of(Kopimaskin.deepCopy(orig))), beregningsgrunnlagTilstand));
     }
+
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagForPreutfylling(Long behandlingId, Optional<Long> originalBehandlingId,
+                                                                                             BeregningsgrunnlagTilstand forrigeTilstand, BeregningsgrunnlagTilstand nesteTilstand) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBeregningsgrunnlag = hentBeregningsgrunnlagGrunnlagEntitet(behandlingId);
+
+        if (sisteBeregningsgrunnlag.isEmpty()) {
+            return Optional.empty();
+        }
+
+        BeregningsgrunnlagTilstand gjeldendeTilstand = sisteBeregningsgrunnlag.get().getBeregningsgrunnlagTilstand();
+
+        if (gjeldendeTilstand.erFør(nesteTilstand) || gjeldendeTilstand.equals(nesteTilstand)) {
+            return sisteBeregningsgrunnlag;
+        }
+
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagMedNesteTilstandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(behandlingId, nesteTilstand);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagMedForrigeTiltandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(behandlingId, forrigeTilstand);
+
+        if (grunnlagMedForrigeTiltandOpt.isEmpty() && originalBehandlingId.isPresent()) {
+            grunnlagMedForrigeTiltandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(originalBehandlingId.get(), forrigeTilstand);
+        }
+
+        if (grunnlagMedNesteTilstandOpt.isEmpty()) {
+            return grunnlagMedForrigeTiltandOpt;
+        }
+
+        BeregningsgrunnlagGrunnlagEntitet forrigeTilstandGrunnlag = grunnlagMedForrigeTiltandOpt
+                .orElseThrow(() -> new IllegalArgumentException("Mangler beregningsgrunnlag med tilstand: " + forrigeTilstand + " for behandling " + behandlingId));
+
+        LocalDateTime nesteTilstandOpprettetTidspunkt = grunnlagMedNesteTilstandOpt.get().getOpprettetTidspunkt();
+        LocalDateTime forrigeTilstandOpprettetTitdspunkt = forrigeTilstandGrunnlag.getOpprettetTidspunkt();
+
+        if (nesteTilstandOpprettetTidspunkt.isAfter(forrigeTilstandOpprettetTitdspunkt)) {
+            return grunnlagMedNesteTilstandOpt;
+        }
+
+        return grunnlagMedForrigeTiltandOpt;
+    }
+
 }

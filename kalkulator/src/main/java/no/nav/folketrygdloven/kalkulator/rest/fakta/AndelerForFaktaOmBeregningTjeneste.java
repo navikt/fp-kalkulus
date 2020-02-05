@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -25,10 +26,15 @@ import no.nav.folketrygdloven.kalkulator.rest.dto.AndelForFaktaOmBeregningDto;
 @ApplicationScoped
 public class AndelerForFaktaOmBeregningTjeneste {
 
-
     List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagRestInput input) {
-        var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
-        BeregningsgrunnlagRestDto beregningsgrunnlag = input.getBeregningsgrunnlag();
+        BeregningsgrunnlagGrunnlagRestDto gjeldendeGrunnlag;
+        if (input.getFaktaOmBeregningPreutfyllingsgrunnlag().isPresent()) {
+            gjeldendeGrunnlag = input.getFaktaOmBeregningPreutfyllingsgrunnlag().get();
+        } else {
+            gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        }
+        var beregningAktivitetAggregat = gjeldendeGrunnlag.getGjeldendeAktiviteter();
+        BeregningsgrunnlagRestDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));;
         List<BeregningsgrunnlagPrStatusOgAndelRestDto> andelerIFørstePeriode = beregningsgrunnlag
             .getBeregningsgrunnlagPerioder()
             .get(0)

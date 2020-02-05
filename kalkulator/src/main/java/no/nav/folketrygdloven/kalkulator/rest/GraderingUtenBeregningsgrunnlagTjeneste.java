@@ -9,10 +9,14 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class GraderingUtenBeregningsgrunnlagTjeneste {
 
@@ -34,7 +38,7 @@ public class GraderingUtenBeregningsgrunnlagTjeneste {
         andelGradering.getGraderinger().forEach(gradering ->{
             Optional<BeregningsgrunnlagPeriodeRestDto> korrektBGPeriode = finnTilsvarendeBGPeriode(gradering, beregningsgrunnlag.getBeregningsgrunnlagPerioder());
             Optional<BeregningsgrunnlagPrStatusOgAndelRestDto> korrektBGAndel = korrektBGPeriode.flatMap(p -> finnTilsvarendeAndelIPeriode(andelGradering, p));
-            if (korrektBGAndel.isPresent() && harIkkeTilkjentBGEtterRedusering(korrektBGAndel.get())) {
+            if (korrektBGAndel.isPresent() && harIkkeTilkjentBGEtterRedusering(korrektBGAndel.get()) && arbeidsforholdErAktivtIGraderingsperiode(gradering, korrektBGAndel.get())) {
                 andeler.add(korrektBGAndel.get());
             }
         });
@@ -62,4 +66,10 @@ public class GraderingUtenBeregningsgrunnlagTjeneste {
     private static Optional<BeregningsgrunnlagPeriodeRestDto> finnTilsvarendeBGPeriode(Gradering gradering, List<BeregningsgrunnlagPeriodeRestDto> beregningsgrunnlagPerioder) {
         return beregningsgrunnlagPerioder.stream().filter(p -> gradering.getPeriode().overlapper(p.getPeriode())).findFirst();
     }
+
+    private static boolean arbeidsforholdErAktivtIGraderingsperiode(Gradering gradering, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+        Optional<Intervall> arbeidsperiode = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdRestDto::getArbeidsperiode);
+        return arbeidsperiode.map(ap -> ap.overlapper(gradering.getPeriode())).orElse(true);
+    }
+
 }

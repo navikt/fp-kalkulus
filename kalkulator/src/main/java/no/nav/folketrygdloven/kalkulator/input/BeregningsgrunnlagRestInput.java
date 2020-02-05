@@ -42,6 +42,9 @@ public class BeregningsgrunnlagRestInput {
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
     private List<RefusjonskravDatoDto> refusjonskravDatoer = new ArrayList<>();
 
+    /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
+    private BeregningsgrunnlagGrunnlagRestDto faktaOmBeregningPreutfyllingsgrunnlag;
+
     private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagRestDto> tilstandHistorikk = new HashMap<>();
 
     public Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagRestDto> getTilstandHistorikk() {
@@ -81,6 +84,19 @@ public class BeregningsgrunnlagRestInput {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
+    public BeregningsgrunnlagRestInput(BehandlingReferanse behandlingReferanse,
+                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                       AktivitetGradering aktivitetGradering,
+                                       List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                       BeregningsgrunnlagGrunnlagRestDto faktaOmBeregningPreutfyllingsgrunnlag) {
+        this.behandlingReferanse = Objects.requireNonNull(behandlingReferanse, "behandlingReferanse");
+        this.iayGrunnlag = iayGrunnlag;
+        this.aktivitetGradering = aktivitetGradering;
+        this.refusjonskravDatoer = refusjonskravDatoer;
+        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
+        this.faktaOmBeregningPreutfyllingsgrunnlag = faktaOmBeregningPreutfyllingsgrunnlag;
+    }
     private BeregningsgrunnlagRestInput(BeregningsgrunnlagRestInput input) {
         this(input.getBehandlingReferanse(), input.getIayGrunnlag(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
@@ -141,6 +157,9 @@ public class BeregningsgrunnlagRestInput {
         return refusjonskravDatoer;
     }
 
+    public Optional<BeregningsgrunnlagGrunnlagRestDto> getFaktaOmBeregningPreutfyllingsgrunnlag() {
+        return Optional.ofNullable(faktaOmBeregningPreutfyllingsgrunnlag);
+    }
 
     /** Sjekk fagsakytelsetype før denne kalles. */
     @SuppressWarnings("unchecked")

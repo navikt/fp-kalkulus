@@ -23,17 +23,16 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagTilstand implements Kodeverdi {
 
-    OPPRETTET("OPPRETTET", "Opprettet"),
-    FASTSATT_BEREGNINGSAKTIVITETER("FASTSATT_BEREGNINGSAKTIVITETER", "Fastsatt beregningsaktiviteter"),
-    OPPDATERT_MED_ANDELER("OPPDATERT_MED_ANDELER", "Oppdatert med andeler"),
-    KOFAKBER_UT("KOFAKBER_UT", "Kontroller fakta beregningsgrunnlag - Ut"),
-    FORESLÅTT("FORESLÅTT", "Foreslått"),
-    FORESLÅTT_UT("FORESLÅTT_UT", "Foreslått ut"),
-    OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", "Tilstand for splittet periode med refusjon og gradering"),
-    FASTSATT_INN("FASTSATT_INN", "Fastsatt - Inn"),
-    FASTSATT("FASTSATT", "Fastsatt"),
-    FORS_BERGRUNN_INN("FORS_BERGRUNN_INN", "Foreslå beregningsgrunnlag - Inngang"),
-    UDEFINERT("-", "Ikke definert"),
+    OPPRETTET("OPPRETTET", "Opprettet", true),
+    FASTSATT_BEREGNINGSAKTIVITETER("FASTSATT_BEREGNINGSAKTIVITETER", "Fastsatt beregningsaktiviteter", false),
+    OPPDATERT_MED_ANDELER("OPPDATERT_MED_ANDELER", "Oppdatert med andeler", true),
+    KOFAKBER_UT("KOFAKBER_UT", "Kontroller fakta beregningsgrunnlag - Ut", false),
+    FORESLÅTT("FORESLÅTT", "Foreslått", true),
+    FORESLÅTT_UT("FORESLÅTT_UT", "Foreslått ut", false),
+    OPPDATERT_MED_REFUSJON_OG_GRADERING("OPPDATERT_MED_REFUSJON_OG_GRADERING", "Tilstand for splittet periode med refusjon og gradering", true),
+    FASTSATT_INN("FASTSATT_INN", "Fastsatt - Inn", false),
+    FASTSATT("FASTSATT", "Fastsatt", true),
+    UDEFINERT("-", "Ikke definert", false),
     ;
     public static final String KODEVERK = "BEREGNINGSGRUNNLAG_TILSTAND";
 
@@ -66,10 +65,12 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     @JsonIgnore
     private String navn;
     private String kode;
+    private boolean obligatoriskTilstand;
 
-    BeregningsgrunnlagTilstand(String kode, String navn) {
+    BeregningsgrunnlagTilstand(String kode, String navn, boolean obligatoriskTilstand) {
         this.kode = kode;
         this.navn = navn;
+        this.obligatoriskTilstand = obligatoriskTilstand;
     }
 
     @JsonCreator
@@ -118,6 +119,10 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     @Override
     public String getOffisiellKode() {
         return getKode();
+    }
+
+    public boolean erObligatoriskTilstand() {
+        return this.obligatoriskTilstand;
     }
 
     @Converter(autoApply = true)
