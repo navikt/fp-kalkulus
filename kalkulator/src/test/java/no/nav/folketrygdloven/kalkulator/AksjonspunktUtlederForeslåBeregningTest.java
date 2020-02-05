@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningTy
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 
 public class AksjonspunktUtlederForeslåBeregningTest {

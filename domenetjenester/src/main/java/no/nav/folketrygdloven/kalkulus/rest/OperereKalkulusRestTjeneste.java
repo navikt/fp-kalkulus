@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.Transaction;
-import no.nav.folketrygdloven.kalkulus.request.BeregnRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 
 @OpenAPIDefinition(tags = @Tag(name = "operere-kalkulus"))
@@ -28,12 +28,12 @@ public class OperereKalkulusRestTjeneste {
 
 
     @POST
-    @Path("/beregn")
+    @Path("/start-beregn")
     @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
     })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response beregn(@NotNull @Valid BeregnRequest spesifikasjon) {
+    public Response beregn(@NotNull @Valid StartBeregningRequest spesifikasjon) {
 
         return Response.accepted().build();
     }

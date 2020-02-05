@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;

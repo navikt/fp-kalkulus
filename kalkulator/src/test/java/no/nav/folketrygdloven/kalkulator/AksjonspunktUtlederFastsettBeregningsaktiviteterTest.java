@@ -35,7 +35,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;

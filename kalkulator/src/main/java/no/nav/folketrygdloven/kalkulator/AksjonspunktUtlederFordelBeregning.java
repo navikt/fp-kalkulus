@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 
 public class AksjonspunktUtlederFordelBeregning {

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class InntektspostType extends Kodeverk {
+public class InntektspostType extends Kodeverk{
     static final String KODEVERK = "INNTEKTSPOST_TYPE";
 
     @JsonProperty(value = "kode", required = true, index = 1)

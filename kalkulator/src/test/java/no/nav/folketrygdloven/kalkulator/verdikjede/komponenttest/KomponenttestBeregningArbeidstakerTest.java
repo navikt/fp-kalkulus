@@ -44,7 +44,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningArbeidsgiverTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;

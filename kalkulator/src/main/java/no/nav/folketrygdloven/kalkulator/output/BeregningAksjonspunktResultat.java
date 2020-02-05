@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+
 public class BeregningAksjonspunktResultat {
 
     private BeregningAksjonspunktDefinisjon beregningAksjonspunktDefinisjon;
