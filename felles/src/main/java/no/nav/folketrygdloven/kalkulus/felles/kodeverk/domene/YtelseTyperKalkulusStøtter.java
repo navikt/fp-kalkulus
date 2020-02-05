@@ -45,10 +45,7 @@ public enum YtelseTyperKalkulusStøtter implements Kodeverdi {
     SVANGERSKAPSPENGER("SVP", "Svangerskapspenger"),
 
     /** Folketrygdloven K15 ytelser. */
-    ENSLIG_FORSØRGER("EF", "Enslig forsørger"),
-
-    UDEFINERT("-", "Ikke definert"),
-    ;
+    ENSLIG_FORSØRGER("EF", "Enslig forsørger");
 
     public static final String KODEVERK = "FAGSAK_YTELSE_TYPE"; //$NON-NLS-1$
 

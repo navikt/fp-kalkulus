@@ -333,6 +333,7 @@ create table KOBLING
     YTELSE_TYPE       VARCHAR(100)                        not null,
     KL_YTELSE_TYPE    VARCHAR(100) default 'FAGSAK_YTELSE_TYPE',
     BRUKER_AKTOER_ID  varchar(50)                         not null,
+    SAKSNUMMER        varchar(19)                         not null,
     VERSJON           BIGINT       default 0              not null,
     OPPRETTET_AV      VARCHAR(20)  default 'VL'           not null,
     OPPRETTET_TID     TIMESTAMP(3) default localtimestamp not null,
@@ -349,6 +350,7 @@ comment on column KOBLING.ID is 'Primærnøkkel';
 comment on column KOBLING.KOBLING_REFERANSE is 'Referansenøkkel som eksponeres lokalt';
 comment on column KOBLING.YTELSE_TYPE is 'Hvilken ytelse komplekset henger under';
 comment on column KOBLING.BRUKER_AKTOER_ID is 'Aktøren koblingen gjelder for';
+COMMENT ON COLUMN KOBLING.SAKSNUMMER IS 'Saksnummer til saken koblingen gjelder for';
 
 -- Indekser
 create index IDX_BEREGNINGSGRUNNLAG_02 on BEREGNINGSGRUNNLAG (SKJARINGSTIDSPUNKT);
@@ -387,6 +389,8 @@ create index IDX_GR_BEREGNINGSGRUNNLAG_05 on GR_BEREGNINGSGRUNNLAG (BR_OVERSTYRI
 create index IDX_GR_BEREGNINGSGRUNNLAG_6 on GR_BEREGNINGSGRUNNLAG (KOBLING_ID);
 create index IDX_GR_BEREGNINGSGRUNNLAG_7 on GR_BEREGNINGSGRUNNLAG (BEREGNINGSGRUNNLAG_ID);
 create index IDX_KOBLING_1 on KOBLING (KOBLING_REFERANSE);
+create index IDX_KOBLING_2 on KOBLING (SAKSNUMMER);
+create index IDX_KOBLING_3 on KOBLING (YTELSE_TYPE, KL_YTELSE_TYPE);
 
 -- Primærnøkler
 create UNIQUE index PK_BEREGNINGSGRUNNLAG on BEREGNINGSGRUNNLAG (ID);
@@ -657,4 +661,4 @@ create sequence if not exists SEQ_BG_REFUSJON_OVERSTYRINGER increment by 50 minv
 create sequence if not exists SEQ_BG_REGEL_SPORING increment by 50 minvalue 1000000;
 create sequence if not exists SEQ_BG_SG_PR_STATUS increment by 50 minvalue 1000000;
 create sequence if not exists SEQ_SAMMENLIGNINGSGRUNNLAG increment by 50 minvalue 1000000;
-CREATE SEQUENCE SEQ_KOBLING MINVALUE 1 MAXVALUE 999999999999999999 INCREMENT BY 50 START WITH 1368400 NO CYCLE;
+create sequence if not exists SEQ_KOBLING MINVALUE 1 MAXVALUE 999999999999999999 INCREMENT BY 50 START WITH 1368400 NO CYCLE;

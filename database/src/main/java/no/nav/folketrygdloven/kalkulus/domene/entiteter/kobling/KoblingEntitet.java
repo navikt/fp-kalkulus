@@ -53,7 +53,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     @Convert(converter = YtelseTyperKalkulusStøtter.KodeverdiConverter.class)
     @Column(name="ytelse_type", nullable = false)
-    private YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.UDEFINERT;
+    private YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter;
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
@@ -66,10 +66,12 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     public KoblingEntitet() {
     }
 
-    public KoblingEntitet(Saksnummer saksnummer, KoblingReferanse koblingReferanse, AktørId aktørId) {
+    public KoblingEntitet(KoblingReferanse koblingReferanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter, Saksnummer saksnummer, AktørId aktørId) {
         Objects.requireNonNull(saksnummer, "saksnummer");
         Objects.requireNonNull(koblingReferanse, "koblingReferanse");
         Objects.requireNonNull(aktørId, "aktørId");
+        Objects.requireNonNull(ytelseTyperKalkulusStøtter, "ytelseTyperKalkulusStøtter");
+        this.ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(ytelseTyperKalkulusStøtter.getKode());
         this.saksnummer = saksnummer;
         this.koblingReferanse = koblingReferanse;
         this.aktørId = aktørId;
