@@ -21,10 +21,34 @@ Team Duplo
 
 
 ### Spørsmål
-- Slack for oppsett og utvikling på laptop: \#ft-kalkulus
-- Hjelpeside med oppskrifter for utvikling på laptop på [Confluence - NAV intern](https://confluence.adeo.no/pages/viewpage.action?pageId=329047065)
+* Slack for oppsett og utvikling på laptop: \#ft-kalkulus
+* Hjelpeside med oppskrifter for utvikling på laptop på [Confluence - NAV intern](https://confluence.adeo.no/pages/viewpage.action?pageId=329047065)
 
 
 ### Utviklingshåndbok
 [Utviklingoppsett](https://confluence.adeo.no/display/LVF/60+Utviklingsoppsett)
 [Utviklerhåndbok, Kodestandard, osv](https://confluence.adeo.no/pages/viewpage.action?pageId=190254327)
+
+## How To
+* Starte opp lokal database
+```
+docker-compose up -d
+```
+* Stanse lokal database
+```
+docker-compose down
+```
+* Bygge lokalt
+
+```
+./mvnw clean install
+```
+
+## Teknologistakk
+* Java 11
+* Postgres 11.5
+* Hibernate
+* Weld SE
+* Jetty
+* Junit 5
+* Maven 3.6.3
