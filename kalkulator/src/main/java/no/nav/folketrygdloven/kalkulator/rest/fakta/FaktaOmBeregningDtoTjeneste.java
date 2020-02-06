@@ -22,6 +22,8 @@ public class FaktaOmBeregningDtoTjeneste {
     private List<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenester;
     private AndelerForFaktaOmBeregningTjeneste andelerForFaktaOmBeregningTjeneste;
 
+    FaktaOmBeregningDtoTjeneste() {
+    }
 
     @Inject
     public FaktaOmBeregningDtoTjeneste(@Any Instance<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenesteInstance,

@@ -51,7 +51,7 @@ public class SelftestsTest {
         @SuppressWarnings("unchecked")
         Instance<ExtHealthCheck> testInstance = Mockito.mock(Instance.class);
         Mockito.doReturn(checks.iterator()).when(testInstance).iterator();
-        selftests = new Selftests(registry, testInstance, "fpabakus");
+        selftests = new Selftests(registry, testInstance, "ftkalkulus");
     }
 
     @Test

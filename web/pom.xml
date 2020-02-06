@@ -39,7 +39,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>6.1.4</version>
+                <version>6.2.1</version>
             </dependency>
             <dependency>
                 <groupId>javax.validation</groupId>
@@ -47,6 +47,16 @@
                 <version>2.0.1.Final</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-basics</artifactId>
+                <version>1.11.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-basics-runtime</artifactId>
+                <version>1.11.1</version>
+            </dependency>
             <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>swagger-ui</artifactId>
@@ -56,7 +66,36 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>migreringer</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>domenetjenester</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>kalkulator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>felles</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>kontrakt</artifactId>
+        </dependency>
+        <!-- Test avhengigheter -->
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>migreringer</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <!-- REST + WebService -->
 <!--        <dependency>
             <groupId>no.nav.folketrygdloven.felles.integrasjon</groupId>
@@ -208,6 +247,19 @@
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
         </dependency>
 
+        <dependency>
+            <!-- Trengs for REST grensesnitt -->
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-validator-provider</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- Trengs for REST grensesnitt -->
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-cdi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Metrics, logging, helse- og selftest -->
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
@@ -241,22 +293,6 @@
             <groupId>com.papertrailapp</groupId>
             <artifactId>logback-syslog4j</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>felles</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kontrakt</artifactId>
-        </dependency>
-        <!-- Test avhengigheter -->
-<!--        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>-->
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-testutilities</artifactId>
@@ -265,14 +301,6 @@
                 <exclusion>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>java.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.xml.ws</groupId>
-                    <artifactId>jaxws-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
