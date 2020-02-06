@@ -6,9 +6,9 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
 
     private Integer bruttoBeregningsgrunnlag;
 
-
-    public VurderVarigEndringEllerNyoppstartetSNDto(boolean erVarigEndretNaering) {
+    public VurderVarigEndringEllerNyoppstartetSNDto(boolean erVarigEndretNaering, Integer bruttoBeregningsgrunnlag) {
         this.erVarigEndretNaering = erVarigEndretNaering;
+        this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }
 
     public boolean getErVarigEndretNaering() {

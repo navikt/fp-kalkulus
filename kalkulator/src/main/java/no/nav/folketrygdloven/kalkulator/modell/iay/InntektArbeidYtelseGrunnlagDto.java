@@ -1,9 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
 public class InntektArbeidYtelseGrunnlagDto {
 
@@ -22,7 +24,7 @@ public class InntektArbeidYtelseGrunnlagDto {
     private InntektsmeldingAggregatDto inntektsmeldinger;
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
     private boolean aktiv = true;
-    private List<ArbeidsgiverOpplysningerDto> ArbeidsgiverOpplysningerDto = new ArrayList<>();
+    private Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = new HashMap<>();
 
     InntektArbeidYtelseGrunnlagDto() {
         // for hibernate
@@ -187,8 +189,12 @@ public class InntektArbeidYtelseGrunnlagDto {
         Optional.ofNullable(inntektsmeldinger).ifPresent(it -> it.taHensynTilBetraktninger(this.arbeidsforholdInformasjon));
     }
 
-    void setArbeidsgiverOpplysningerDto(List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysningerDto) {
-        ArbeidsgiverOpplysningerDto = arbeidsgiverOpplysningerDto;
+    void setArbeidsgiverOpplysninger(Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
+    }
+
+    void leggTilArbeidsgiverOpplysninger(Arbeidsgiver arbeidsgiver, ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto) {
+        arbeidsgiverOpplysninger.put(arbeidsgiver, arbeidsgiverOpplysningerDto);
     }
 
     @Override
@@ -212,7 +218,7 @@ public class InntektArbeidYtelseGrunnlagDto {
         saksbehandlet = null;
     }
 
-    public List<ArbeidsgiverOpplysningerDto> getArbeidsgiverOpplysningerDto() {
-        return ArbeidsgiverOpplysningerDto;
+    public Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> getArbeidsgiverOpplysninger() {
+        return arbeidsgiverOpplysninger;
     }
 }

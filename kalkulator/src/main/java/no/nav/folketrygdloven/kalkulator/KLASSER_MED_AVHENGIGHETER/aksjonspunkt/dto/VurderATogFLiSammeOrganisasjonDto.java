@@ -6,6 +6,10 @@ public class VurderATogFLiSammeOrganisasjonDto {
 
     private List<VurderATogFLiSammeOrganisasjonAndelDto> vurderATogFLiSammeOrganisasjonAndelListe;
 
+    public VurderATogFLiSammeOrganisasjonDto(List<VurderATogFLiSammeOrganisasjonAndelDto> vurderATogFLiSammeOrganisasjonAndelListe) {
+        this.vurderATogFLiSammeOrganisasjonAndelListe = vurderATogFLiSammeOrganisasjonAndelListe;
+    }
+
     public List<VurderATogFLiSammeOrganisasjonAndelDto> getVurderATogFLiSammeOrganisasjonAndelListe() {
         return vurderATogFLiSammeOrganisasjonAndelListe;
     }

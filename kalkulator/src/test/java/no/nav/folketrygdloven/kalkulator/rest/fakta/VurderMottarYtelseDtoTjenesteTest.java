@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.rest.dto.ArbeidstakerUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
@@ -188,7 +189,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(inntektArbeidYtelseGrunnlag)
             .medData(oppdatere)
             .medInformasjon(ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty()).leggTil(arbeidsforholdOverstyringDtoBuilder).build())
-            .medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(ORGNR, "Arbeidsgiveren", null)))
+            .leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(ORGNR), new ArbeidsgiverOpplysningerDto(ORGNR, "Arbeidsgiveren", null))
         .build();
 
         return BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()

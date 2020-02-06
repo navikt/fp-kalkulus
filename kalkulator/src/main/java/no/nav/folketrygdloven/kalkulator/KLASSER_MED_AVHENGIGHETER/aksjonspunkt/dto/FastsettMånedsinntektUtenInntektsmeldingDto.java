@@ -6,6 +6,13 @@ public class FastsettMånedsinntektUtenInntektsmeldingDto {
 
     private List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> andelListe;
 
+    public FastsettMånedsinntektUtenInntektsmeldingDto() {
+    }
+
+    public FastsettMånedsinntektUtenInntektsmeldingDto(List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> andelListe) {
+        this.andelListe = andelListe;
+    }
+
     public List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> getAndelListe() {
         return andelListe;
     }

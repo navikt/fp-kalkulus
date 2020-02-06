@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagDto;
@@ -160,7 +161,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(andel).medBeregnetPrÅr(beregnetEtterFastsattSteg);
 
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1))));
+        builder.leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(virksomhet.getIdentifikator()), new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
 
         // Act
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
@@ -173,7 +174,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     public void skal_teste_at_beregningsgrunnlagDto_beregningsgrunnlagperiode_får_korrekte_verdier() {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(virksomhet);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1))));
+        builder.leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(virksomhet.getIdentifikator()), new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
 
         // Assert
@@ -203,7 +204,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         ArbeidsgiverMedNavn person = ArbeidsgiverMedNavn.person(AktørId.dummy());
         lagBehandlingMedBgOgOpprettFagsakRelasjon(person);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1))));
+        builder.leggTilArbeidsgiverOpplysninger(Arbeidsgiver.person(person.getAktørId()), new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1)));
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
 
         // Assert

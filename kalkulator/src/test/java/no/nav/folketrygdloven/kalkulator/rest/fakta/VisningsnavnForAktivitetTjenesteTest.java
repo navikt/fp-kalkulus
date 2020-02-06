@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,7 +89,9 @@ public class VisningsnavnForAktivitetTjenesteTest {
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode);
 
-        when(iayGrunnlagMock.getArbeidsgiverOpplysningerDto()).thenReturn(List.of(new ArbeidsgiverOpplysningerDto(ORGNR, VIRKSOMHET_NAVN)));
+        HashMap<Arbeidsgiver, ArbeidsgiverOpplysningerDto> map = new HashMap<>();
+        map.put(Arbeidsgiver.virksomhet(VIRKSOMHETEN.getOrgnr()), new ArbeidsgiverOpplysningerDto(ORGNR, VIRKSOMHET_NAVN));
+        when(iayGrunnlagMock.getArbeidsgiverOpplysninger()).thenReturn(map);
 
         // Act
         String visningsnavn = VisningsnavnForAktivitetTjeneste.lagVisningsnavn(ref, iayGrunnlagMock, andel);
@@ -109,7 +112,9 @@ public class VisningsnavnForAktivitetTjenesteTest {
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode);
 
-        when(iayGrunnlagMock.getArbeidsgiverOpplysningerDto()).thenReturn(List.of(new ArbeidsgiverOpplysningerDto(ORGNR, VIRKSOMHET_NAVN)));
+        HashMap<Arbeidsgiver, ArbeidsgiverOpplysningerDto> map = new HashMap<>();
+        map.put(Arbeidsgiver.virksomhet(VIRKSOMHETEN.getOrgnr()), new ArbeidsgiverOpplysningerDto(ORGNR, VIRKSOMHET_NAVN));
+        when(iayGrunnlagMock.getArbeidsgiverOpplysninger()).thenReturn(map);
 
         // Act
         String visningsnavn = VisningsnavnForAktivitetTjeneste.lagVisningsnavn(ref, iayGrunnlagMock, andel);
@@ -143,7 +148,9 @@ public class VisningsnavnForAktivitetTjenesteTest {
         when(overstyring.getArbeidsgiverNavn()).thenReturn(KUNSTIG_VIRKSOMHET_NAVN);
         when(overstyring.getArbeidsgiver()).thenReturn(Arbeidsgiver.fra(KUNSTIG_VIRKSOMHET));
         when(iayGrunnlag.getArbeidsforholdOverstyringer()).thenReturn(List.of(overstyring));
-        when(iayGrunnlag.getArbeidsgiverOpplysningerDto()).thenReturn(List.of(new ArbeidsgiverOpplysningerDto(KUNSTIG_VIRKSOMHET.getOrgnr(), KUNSTIG_VIRKSOMHET_NAVN)));
+        HashMap<Arbeidsgiver, ArbeidsgiverOpplysningerDto> map = new HashMap<>();
+        map.put(Arbeidsgiver.virksomhet(KUNSTIG_VIRKSOMHET.getOrgnr()), new ArbeidsgiverOpplysningerDto(KUNSTIG_VIRKSOMHET.getOrgnr(), KUNSTIG_VIRKSOMHET_NAVN));
+        when(iayGrunnlag.getArbeidsgiverOpplysninger()).thenReturn(map);
         return iayGrunnlag;
     }
 }

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -102,7 +103,9 @@ public class BeregningsgrunnlagDtoUtil {
     }
 
     private static void mapArbeidsgiver(BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, ArbeidsgiverMedNavn arbeidsgiver, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = inntektArbeidYtelseGrunnlag.getArbeidsgiverOpplysningerDto().stream().filter(opplysnigner -> arbeidsgiver.getIdentifikator().equals(opplysnigner.getIdentifikator()))
+        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = inntektArbeidYtelseGrunnlag.getArbeidsgiverOpplysninger().entrySet()
+                .stream().filter(entry -> arbeidsgiver.getIdentifikator().equals(entry.getKey().getIdentifikator()))
+                .map(Map.Entry::getValue)
             .findFirst();
         if (opplysningerDto.isPresent()) {
             if (arbeidsgiver.getErVirksomhet()) {

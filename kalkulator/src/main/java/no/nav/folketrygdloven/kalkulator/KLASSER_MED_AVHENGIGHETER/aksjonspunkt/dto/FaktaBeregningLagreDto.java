@@ -23,6 +23,37 @@ public class FaktaBeregningLagreDto {
     private VurderMilitærDto vurderMilitaer;
     private List<RefusjonskravPrArbeidsgiverVurderingDto> refusjonskravGyldighet;
 
+    public FaktaBeregningLagreDto(VurderNyoppstartetFLDto vurderNyoppstartetFL,
+                                  VurderTidsbegrensetArbeidsforholdDto vurderTidsbegrensetArbeidsforhold,
+                                  VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto vurderNyIArbeidslivet,
+                                  FastsettMånedsinntektFLDto fastsettMaanedsinntektFL,
+                                  VurderLønnsendringDto vurdertLonnsendring,
+                                  FastsettMånedsinntektUtenInntektsmeldingDto fastsattUtenInntektsmelding,
+                                  VurderATogFLiSammeOrganisasjonDto vurderATogFLiSammeOrganisasjon,
+                                  BesteberegningFødendeKvinneDto besteberegningAndeler,
+                                  List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+                                  FastsettBgKunYtelseDto kunYtelseFordeling,
+                                  VurderEtterlønnSluttpakkeDto vurderEtterlønnSluttpakke,
+                                  FastsettEtterlønnSluttpakkeDto fastsettEtterlønnSluttpakke,
+                                  MottarYtelseDto mottarYtelse,
+                                  VurderMilitærDto vurderMilitaer,
+                                  List<RefusjonskravPrArbeidsgiverVurderingDto> refusjonskravGyldighet) {
+        this.vurderNyoppstartetFL = vurderNyoppstartetFL;
+        this.vurderTidsbegrensetArbeidsforhold = vurderTidsbegrensetArbeidsforhold;
+        this.vurderNyIArbeidslivet = vurderNyIArbeidslivet;
+        this.fastsettMaanedsinntektFL = fastsettMaanedsinntektFL;
+        this.vurdertLonnsendring = vurdertLonnsendring;
+        this.fastsattUtenInntektsmelding = fastsattUtenInntektsmelding;
+        this.vurderATogFLiSammeOrganisasjon = vurderATogFLiSammeOrganisasjon;
+        this.besteberegningAndeler = besteberegningAndeler;
+        this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
+        this.kunYtelseFordeling = kunYtelseFordeling;
+        this.vurderEtterlønnSluttpakke = vurderEtterlønnSluttpakke;
+        this.fastsettEtterlønnSluttpakke = fastsettEtterlønnSluttpakke;
+        this.mottarYtelse = mottarYtelse;
+        this.vurderMilitaer = vurderMilitaer;
+        this.refusjonskravGyldighet = refusjonskravGyldighet;
+    }
 
     public FaktaBeregningLagreDto(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;

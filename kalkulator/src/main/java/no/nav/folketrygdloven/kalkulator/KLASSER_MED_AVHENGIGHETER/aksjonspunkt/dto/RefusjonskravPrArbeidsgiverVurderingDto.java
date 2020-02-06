@@ -6,6 +6,10 @@ public class RefusjonskravPrArbeidsgiverVurderingDto {
 
     private boolean skalUtvideGyldighet;
 
+    public RefusjonskravPrArbeidsgiverVurderingDto(String arbeidsgiverId, boolean skalUtvideGyldighet) {
+        this.arbeidsgiverId = arbeidsgiverId;
+        this.skalUtvideGyldighet = skalUtvideGyldighet;
+    }
 
     public String getArbeidsgiverId() {
         return arbeidsgiverId;

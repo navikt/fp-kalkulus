@@ -102,9 +102,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
     private FaktaBeregningLagreDto lagDto(boolean skalUtvideGyldighet) {
         FaktaBeregningLagreDto dto = new FaktaBeregningLagreDto(List.of(FaktaOmBeregningTilfelle.VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT));
 
-        RefusjonskravPrArbeidsgiverVurderingDto ref1 = new RefusjonskravPrArbeidsgiverVurderingDto();
-        ref1.setArbeidsgiverId(VIRKSOMHET.getIdentifikator());
-        ref1.setSkalUtvideGyldighet(skalUtvideGyldighet);
+        RefusjonskravPrArbeidsgiverVurderingDto ref1 = new RefusjonskravPrArbeidsgiverVurderingDto(VIRKSOMHET.getIdentifikator(), skalUtvideGyldighet);
         dto.setRefusjonskravGyldighet(List.of(ref1));
         return dto;
     }

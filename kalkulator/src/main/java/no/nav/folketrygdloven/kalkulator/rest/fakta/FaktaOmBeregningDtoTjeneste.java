@@ -22,7 +22,8 @@ public class FaktaOmBeregningDtoTjeneste {
     private List<FaktaOmBeregningTilfelleDtoTjeneste> dtoTjenester;
     private AndelerForFaktaOmBeregningTjeneste andelerForFaktaOmBeregningTjeneste;
 
-    FaktaOmBeregningDtoTjeneste() {
+    public FaktaOmBeregningDtoTjeneste() {
+        // CDI
     }
 
     @Inject

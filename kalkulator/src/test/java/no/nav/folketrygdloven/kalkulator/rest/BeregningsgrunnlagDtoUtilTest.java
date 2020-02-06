@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -146,7 +147,7 @@ public class BeregningsgrunnlagDtoUtilTest {
             .build(periode);
 
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1))));
+        builder.leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(virksomhet.getIdentifikator()), new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
 
         Optional<BeregningsgrunnlagArbeidsforholdDto> arbeidsforhold = BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), builder.build());
         assertThat(arbeidsforhold.isPresent()).isTrue();
@@ -172,7 +173,7 @@ public class BeregningsgrunnlagDtoUtilTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(person))
             .build(periode);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.medArbeidsgiverOpplysningerDto(List.of(new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1))));
+        builder.leggTilArbeidsgiverOpplysninger(Arbeidsgiver.person(person.getAktørId()), new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1)));
 
         Optional<BeregningsgrunnlagArbeidsforholdDto> arbeidsforhold = BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), builder.build());
         assertThat(arbeidsforhold.isPresent()).isTrue();
