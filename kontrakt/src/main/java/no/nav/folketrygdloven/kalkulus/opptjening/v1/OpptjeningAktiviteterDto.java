@@ -6,6 +6,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -21,10 +22,10 @@ public class OpptjeningAktiviteterDto {
 
     @JsonProperty(value = "perioder", required = true)
     @Valid
-    @NotNull
+    @NotEmpty
     private List<OpptjeningPeriodeDto> perioder;
 
-    public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotNull List<OpptjeningPeriodeDto> perioder) {
+    public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotEmpty List<OpptjeningPeriodeDto> perioder) {
         this.perioder = perioder;
     }
 

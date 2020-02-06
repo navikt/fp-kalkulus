@@ -9,8 +9,8 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ArbeidType extends Kodeverk{
-    static final String KODEVERK = "ARBEID_TYPE";
+public class AktivitetStatus extends Kodeverk{
+    static final String KODEVERK = "AKTIVITET_STATUS";
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
@@ -19,7 +19,7 @@ public class ArbeidType extends Kodeverk{
     private String kode;
 
     @JsonCreator
-    public ArbeidType(@JsonProperty(value = "kode", required = true) String kode) {
+    public AktivitetStatus(@JsonProperty(value = "kode", required = true) String kode) {
         Objects.requireNonNull(kode, "kode");
         this.kode = kode;
     }
