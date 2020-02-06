@@ -456,7 +456,14 @@ public class BeregningsgrunnlagPrStatusOgAndelRestDto {
 
         public Builder medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelRestDto beregningsgrunnlagArbeidstakerAndelDto) {
             verifiserKanModifisere();
-            kladd.beregningsgrunnlagArbeidstakerAndel = beregningsgrunnlagArbeidstakerAndelDto;
+            kladd.setBeregningsgrunnlagArbeidstakerAndel(beregningsgrunnlagArbeidstakerAndelDto);
+            return this;
+        }
+
+
+        public Builder medBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelRestDto beregningsgrunnlagFrilansAndelDto) {
+            verifiserKanModifisere();
+            kladd.setBeregningsgrunnlagFrilansAndel(beregningsgrunnlagFrilansAndelDto);
             return this;
         }
 
@@ -537,49 +544,6 @@ public class BeregningsgrunnlagPrStatusOgAndelRestDto {
         public Builder medNyIArbeidslivet(Boolean nyIArbeidslivet) {
             verifiserKanModifisere();
             kladd.nyIArbeidslivet = nyIArbeidslivet;
-            return this;
-        }
-
-        public Builder medMottarYtelse(Boolean mottarYtelse, AktivitetStatus aktivitetStatus) {
-            verifiserKanModifisere();
-            kladd.aktivitetStatus = aktivitetStatus;
-            if (kladd.aktivitetStatus.erFrilanser()) {
-                if (kladd.beregningsgrunnlagFrilansAndel == null) {
-                    kladd.beregningsgrunnlagFrilansAndel = BeregningsgrunnlagFrilansAndelRestDto.builder()
-                            .medMottarYtelse(mottarYtelse)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagFrilansAndelRestDto.Builder.oppdatere(kladd.beregningsgrunnlagFrilansAndel)
-                    .medMottarYtelse(mottarYtelse);
-                }
-            } else if (kladd.aktivitetStatus.erArbeidstaker()) {
-                if (kladd.beregningsgrunnlagArbeidstakerAndel == null) {
-                    kladd.beregningsgrunnlagArbeidstakerAndel = BeregningsgrunnlagArbeidstakerAndelRestDto.builder()
-                            .medMottarYtelse(mottarYtelse)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagArbeidstakerAndelRestDto.Builder.oppdatere(kladd.beregningsgrunnlagArbeidstakerAndel)
-                    .medMottarYtelse(mottarYtelse);
-                }
-            }
-            return this;
-        }
-
-        public Builder medNyoppstartet(Boolean nyoppstartet, AktivitetStatus aktivitetStatus) {
-            verifiserKanModifisere();
-            kladd.aktivitetStatus = aktivitetStatus;
-            if (kladd.aktivitetStatus.erFrilanser()) {
-                if (kladd.beregningsgrunnlagFrilansAndel == null) {
-                    kladd.beregningsgrunnlagFrilansAndel = BeregningsgrunnlagFrilansAndelRestDto.builder()
-                            .medNyoppstartet(nyoppstartet)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagFrilansAndelRestDto.builder(kladd.beregningsgrunnlagFrilansAndel)
-                    .medNyoppstartet(nyoppstartet);
-                }
-            } else {
-                throw new IllegalArgumentException("Andel må vere frilans for å sette nyoppstartet");
-            }
             return this;
         }
 

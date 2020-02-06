@@ -92,7 +92,7 @@ public class BeregningsgrunnlagFrilansAndelRestDto {
             return new Builder(beregningsgrunnlagFrilansAndel, true);
         }
 
-        BeregningsgrunnlagFrilansAndelRestDto.Builder medMottarYtelse(Boolean mottarYtelse) {
+        public BeregningsgrunnlagFrilansAndelRestDto.Builder medMottarYtelse(Boolean mottarYtelse) {
             beregningsgrunnlagFrilansAndelMal.mottarYtelse = mottarYtelse;
             return this;
         }

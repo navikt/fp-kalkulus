@@ -19,6 +19,8 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagFrilansAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
@@ -70,16 +72,16 @@ public class VurderMottarYtelseDtoTjenesteTest {
     @BeforeEach
     public void setUp() {
         beregningsgrunnlag = BeregningsgrunnlagRestDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(BigDecimal.valueOf(91425L))
-            .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE))
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(BigDecimal.valueOf(91425L))
+                .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE))
+                .build();
         periode = BeregningsgrunnlagPeriodeRestDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(beregningsgrunnlag);
         grunnlag = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .build(BeregningsgrunnlagTilstand.OPPRETTET);
         dtoTjeneste = new VurderMottarYtelseDtoTjeneste();
     }
 
@@ -92,7 +94,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
 
         // Act
         var input = new BeregningsgrunnlagRestInput(behandlingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-            .medBeregningsgrunnlagGrunnlag(grunnlag);
+                .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         dtoTjeneste.lagDto(input, dto);
 
@@ -118,7 +120,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
 
         // Act
         var input = new BeregningsgrunnlagRestInput(behandlingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-            .medBeregningsgrunnlagGrunnlag(grunnlag);
+                .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, dto);
 
         // Assert
@@ -140,26 +142,26 @@ public class VurderMottarYtelseDtoTjenesteTest {
         Intervall frilansPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
-            .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+                .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         yrkesaktivitetBuilderForType
-            .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(frilansPeriode))
-        .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver));
+                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(frilansPeriode))
+                .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver));
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilderForType);
         oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
         BeregningIAYTestUtil.byggInntektForBehandling(behandlingReferanse.getAktørId(),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, mapArbeidsgiver(arbeidsgiver));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, mapArbeidsgiver(arbeidsgiver));
 
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(oppdatere)
-            .medOppgittOpptjening(BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(false, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10)))
-            .build();
+                .medData(oppdatere)
+                .medOppgittOpptjening(BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(false, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10)))
+                .build();
 
         BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medInntektskategori(Inntektskategori.FRILANSER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
-            .medMottarYtelse(mottarYtelse, AktivitetStatus.FRILANSER)
-            .build(this.periode);
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medInntektskategori(Inntektskategori.FRILANSER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
+                .medBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelRestDto.builder().medMottarYtelse(mottarYtelse).build())
+                .build(this.periode);
     }
 
     private BeregningsgrunnlagPrStatusOgAndelRestDto byggArbeidsforholdMedBgAndel(Boolean mottarYtelse) {
@@ -168,37 +170,37 @@ public class VurderMottarYtelseDtoTjenesteTest {
         Intervall ansettelsesPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
-            .getYrkesaktivitetBuilderForType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+                .getYrkesaktivitetBuilderForType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
         yrkesaktivitetBuilderForType
-            .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver))
-            .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode))
-            .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode)
-                .medErAnsettelsesPeriode(false)
-                .medSisteLønnsendringsdato(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2)));
+                .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver))
+                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode))
+                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode)
+                        .medErAnsettelsesPeriode(false)
+                        .medSisteLønnsendringsdato(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2)));
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilderForType);
         oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
         oppdatere.medNyInternArbeidsforholdRef(mapArbeidsgiver(arbeidsgiver), EKSTERN_ARB_ID);
 
         ArbeidsforholdOverstyringDtoBuilder arbeidsforholdOverstyringDtoBuilder = ArbeidsforholdOverstyringDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver))
-            .medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING);
+                .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver))
+                .medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING);
 
         BeregningIAYTestUtil.byggInntektForBehandling(behandlingReferanse.getAktørId(),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, mapArbeidsgiver(arbeidsgiver));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, mapArbeidsgiver(arbeidsgiver));
 
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(inntektArbeidYtelseGrunnlag)
-            .medData(oppdatere)
-            .medInformasjon(ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty()).leggTil(arbeidsforholdOverstyringDtoBuilder).build())
-            .leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(ORGNR), new ArbeidsgiverOpplysningerDto(ORGNR, "Arbeidsgiveren", null))
-        .build();
+                .medData(oppdatere)
+                .medInformasjon(ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty()).leggTil(arbeidsforholdOverstyringDtoBuilder).build())
+                .leggTilArbeidsgiverOpplysninger(Arbeidsgiver.virksomhet(ORGNR), new ArbeidsgiverOpplysningerDto(ORGNR, "Arbeidsgiveren", null))
+                .build();
 
         return BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medMottarYtelse(mottarYtelse, AktivitetStatus.ARBEIDSTAKER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(arbeidsgiver))
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelRestDto.builder().medMottarYtelse(mottarYtelse).build())
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(arbeidsgiver))
+                .build(periode);
     }
 
 
