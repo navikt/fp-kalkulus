@@ -145,18 +145,26 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     private Comparator<YrkesaktivitetDto> refusjonFørstComparator(Collection<InntektsmeldingDto> inntektsmeldinger) {
         return (y1, y2) -> {
             boolean y1HarRefusjon = inntektsmeldinger.stream()
-                    .filter(im -> y1.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                    .anyMatch(im -> (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || im.getEndringerRefusjon().size() > 0);
+                    .filter(im -> gjelderInntektsmeldingFor(y1, im))
+                    .anyMatch(this::harRefusjon);
             boolean y2HarRefusjon = inntektsmeldinger.stream()
-                    .filter(im -> y2.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                    .anyMatch(im -> (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || im.getEndringerRefusjon().size() > 0);
+                    .filter(im -> gjelderInntektsmeldingFor(y2, im))
+                    .anyMatch(this::harRefusjon);
             if (y1HarRefusjon && !y2HarRefusjon) {
-                return 1;
-            } else if (y2HarRefusjon && !y1HarRefusjon) {
                 return -1;
+            } else if (y2HarRefusjon && !y1HarRefusjon) {
+                return 1;
             }
             return 0;
         };
+    }
+
+    private boolean harRefusjon(InntektsmeldingDto im) {
+        return (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || im.getEndringerRefusjon().size() > 0;
+    }
+
+    private boolean gjelderInntektsmeldingFor(YrkesaktivitetDto yrkesaktivitet, InntektsmeldingDto im) {
+        return yrkesaktivitet.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
     }
 
     private Optional<LocalDate> utledStartdatoPermisjon(LocalDate skjæringstidspunktBeregning, Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya, Periode ansettelsesPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

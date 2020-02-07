@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
+import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -36,6 +37,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
@@ -65,13 +68,68 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
     }
 
     @Test
+    void skal_sortere_på_refusjon() {
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
+        InternArbeidsforholdRefDto arbeidsforholdId2 = InternArbeidsforholdRefDto.nyRef();
+        InternArbeidsforholdRefDto arbeidsforholdId = InternArbeidsforholdRefDto.nyRef();
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder register = registerBuilder
+                .leggTilAktørArbeid(registerBuilder.getAktørArbeidBuilder(behandlingReferanse.getAktørId())
+                        .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                                .medArbeidsgiver(arbeidsgiver)
+                                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny()
+                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusMonths(10)))
+                                        .medErAnsettelsesPeriode(true))
+                                .medArbeidsforholdId(arbeidsforholdId))
+                        .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                                .medArbeidsgiver(arbeidsgiver)
+                                .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny()
+                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusMonths(10)))
+                                        .medErAnsettelsesPeriode(true))
+                                .medArbeidsforholdId(arbeidsforholdId2)));
+        iayGrunnlagBuilder.medData(register);
+        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(arbeidsforholdId)
+                .medRefusjon(BigDecimal.TEN).build();
+        iayGrunnlagBuilder.medInntektsmeldinger(im);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, arbeidsforholdId);
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
+        var iayGrunnlag = iayGrunnlagBuilder.build();
+        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag,
+                null,
+                new AktivitetGradering(List.of(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medGradering(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), 50)
+                .medArbeidsgiver(arbeidsgiver)
+                .medAndelsnr(1L).build())), opprett(behandlingReferanse, iayGrunnlag), null);
+
+        // Act
+        PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
+
+        assertThat(regelmodell.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(2);
+        ArbeidsforholdOgInntektsmelding mappetMedRefusjon = regelmodell.getArbeidsforholdOgInntektsmeldinger().stream()
+                .filter(a -> a.getArbeidsforhold().getArbeidsforholdId().equals(arbeidsforholdId.getReferanse())).findFirst().get();
+        assertThat(mappetMedRefusjon.getRefusjoner()).hasSize(1);
+        assertThat(mappetMedRefusjon.getGraderinger()).hasSize(1);
+        ArbeidsforholdOgInntektsmelding mappetUtenRefusjon = regelmodell.getArbeidsforholdOgInntektsmeldinger().stream()
+                .filter(a -> a.getArbeidsforhold().getArbeidsforholdId() == null).findFirst().get();
+        assertThat(mappetUtenRefusjon.getRefusjoner()).hasSize(0);
+        assertThat(mappetUtenRefusjon.getGraderinger()).hasSize(0);
+    }
+
+    @Test
     public void map_utenGraderingEllerRefusjon() {
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteter(iayGrunnlagBuilder, List.of(ORGNR));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var iayGrunnlag = iayGrunnlagBuilder.build();
         var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
@@ -90,7 +148,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         leggTilYrkesaktiviteter(iayGrunnlagBuilder, List.of(ORGNR));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
@@ -119,7 +177,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         leggTilYrkesaktiviteter(iayGrunnlagBuilder, List.of(ORGNR));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BigDecimal inntekt = BigDecimal.valueOf(20000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
@@ -152,7 +210,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
 
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BigDecimal inntekt = BigDecimal.valueOf(60000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
@@ -183,7 +241,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteter(iayGrunnlagBuilder, List.of(ORGNR));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var aktivitetGradering = new AktivitetGradering(List.of(
@@ -224,7 +282,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
 
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
@@ -315,8 +373,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         return builder.build();
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Arbeidsgiver arbeidsgiver, BehandlingReferanse referanse,
-                                                                BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Arbeidsgiver arbeidsgiver,
+                                                                BeregningAktivitetAggregatDto beregningAktivitetAggregat, InternArbeidsforholdRefDto arbeidsforholdRef) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
@@ -328,6 +386,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medBeregnetPrÅr(BigDecimal.TEN)
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                                .medArbeidsforholdRef(arbeidsforholdRef)
                             .medArbeidsgiver(arbeidsgiver))))
             .build();
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
