@@ -81,4 +81,20 @@ public class StartBeregningRequest {
     @JsonProperty(value = "ytelsespesifiktGrunnlag")
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag;
+
+    public StartBeregningRequest(@Valid @NotNull UUID koblingReferanse,
+                                 @NotNull @Pattern(regexp = "^[A-Za-z0-9_\\.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                 @NotNull @Valid PersonIdent aktør, @NotNull @Valid YtelseTyperKalkulusStøtter ytelseSomSkalBeregnes,
+                                 @NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
+                                 @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                 @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter) {
+
+        this.koblingReferanse = koblingReferanse;
+        this.saksnummer = saksnummer;
+        this.aktør = aktør;
+        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.grunnbeløpsatser = grunnbeløpsatser;
+        this.iayGrunnlag = iayGrunnlag;
+        this.opptjeningAktiviteter = opptjeningAktiviteter;
+    }
 }

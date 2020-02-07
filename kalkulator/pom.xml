@@ -14,19 +14,18 @@
     <name>Kalkulus :: Kalkulator</name>
 
     <dependencies>
-        <!-- Domenetjenester avhengigheter -->
-        <dependency>
-            <groupId>no.nav.folketrygdloven</groupId>
-            <artifactId>beregningsgrunnlag-regelmodell</artifactId>
-        </dependency>
-
-        <!-- felles i kalkulus -->
+        <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>felles</artifactId>
         </dependency>
 
-        <!-- NARE: Java regelmodell -->
+        <!-- Eksterne avhengigheter til andre NAV-prosjekter-->
+        <dependency>
+            <groupId>no.nav.folketrygdloven</groupId>
+            <artifactId>beregningsgrunnlag-regelmodell</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>no.nav.fpsak.nare</groupId>
             <artifactId>fpsak-nare-core</artifactId>
@@ -45,15 +44,17 @@
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-db</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.threeten</groupId>
-            <artifactId>threeten-extra</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-testutilities</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Eksterne avhengigheter til andre prosjekter-->
+        <dependency>
+            <groupId>org.threeten</groupId>
+            <artifactId>threeten-extra</artifactId>
         </dependency>
 
         <dependency>

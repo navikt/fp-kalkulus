@@ -15,6 +15,7 @@
     <name>Kalkulus :: Kontrakt</name>
 
     <dependencies>
+        <!-- Eksterne avhengigheter til andre prosjekter-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -24,16 +25,4 @@
             <artifactId>validation-api</artifactId>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>2.0.1.Final</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-
 </project>

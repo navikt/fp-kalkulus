@@ -15,13 +15,28 @@
     <name>Kalkulus :: Database</name>
 
     <dependencies>
+        <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>felles</artifactId>
         </dependency>
 
         <dependency>
-            <!-- for Bean validation -->
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>migreringer</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Eksterne avhengigheter til andre NAV-prosjekter-->
+        <dependency>
+            <groupId>no.nav.foreldrepenger.felles</groupId>
+            <artifactId>felles-testutilities</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Eksterne avhengigheter til andre prosjekter-->
+        <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
@@ -29,19 +44,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.foreldrepenger.felles</groupId>
-            <artifactId>felles-testutilities</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

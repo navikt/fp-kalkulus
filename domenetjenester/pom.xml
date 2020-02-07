@@ -16,10 +16,7 @@
     <version>${revision}${sha1}${changelist}</version>
 
     <dependencies>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-        </dependency>
+        <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>felles</artifactId>
@@ -28,27 +25,25 @@
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>kontrakt</artifactId>
         </dependency>
+
+        <!-- Eksterne avhengigheter til andre prosjekter-->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>felles</artifactId>
-                <version>${revision}${sha1}${changelist}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kontrakt</artifactId>
-                <version>${revision}${sha1}${changelist}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 </project>

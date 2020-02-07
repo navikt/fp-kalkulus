@@ -13,6 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OpptjeningAktivitetType extends Kodeverk {
     static final String KODEVERK = "OPPTJENING_AKTIVITET_TYPE";
 
+
+    public static final OpptjeningAktivitetType ARBEID = new OpptjeningAktivitetType("ARBEID");
+
+
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     @Size(min = 3, max = 50)

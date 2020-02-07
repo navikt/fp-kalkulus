@@ -19,6 +19,7 @@
     </properties>
 
     <dependencies>
+        <!-- Eksterne avhengigheter til andre NAV-prosjekter-->
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>
             <artifactId>felles-db</artifactId>
