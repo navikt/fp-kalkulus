@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -250,7 +251,17 @@ public class FordelBeregningsgrunnlagTjeneste {
             .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))
             .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1)))
             .noneMatch(
-                beregningAktivitet -> beregningAktivitet.gjelderFor(arbeidsforhold.getArbeidsgiver(), arbeidsforhold.getArbeidsforholdRef()));
+                beregningAktivitet -> matcherArbeidsgiver(arbeidsforhold, beregningAktivitet) && matcherReferanse(arbeidsforhold, beregningAktivitet));
+    }
+
+    private static boolean matcherReferanse(BGAndelArbeidsforholdDto arbeidsforhold, BeregningAktivitetDto beregningAktivitet) {
+        String andelRef = arbeidsforhold.getArbeidsforholdRef().getReferanse();
+        String aktivitetRef = beregningAktivitet.getArbeidsforholdRef().getReferanse();
+        return Objects.equals(andelRef, aktivitetRef);
+    }
+
+    private static boolean matcherArbeidsgiver(BGAndelArbeidsforholdDto arbeidsforhold, BeregningAktivitetDto beregningAktivitet) {
+        return Objects.equals(arbeidsforhold.getArbeidsgiver(), beregningAktivitet.getArbeidsgiver());
     }
 
     public static BigDecimal hentBeløpForAndelSomErGjeldendeForFordeling(BeregningsgrunnlagPrStatusOgAndelDto andel) {
