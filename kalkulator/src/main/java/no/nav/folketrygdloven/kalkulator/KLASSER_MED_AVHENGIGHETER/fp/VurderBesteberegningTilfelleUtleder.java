@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.utledere.TilfelleUtleder;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -18,6 +19,10 @@ public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+        FagsakYtelseType fagsakYtelseType = input.getFagsakYtelseType();
+        if (!fagsakYtelseType.equals(FagsakYtelseType.FORELDREPENGER)) {
+            return Optional.empty();
+        }
         boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))
             .getAktivitetStatuser()
             .stream()
