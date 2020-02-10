@@ -47,7 +47,6 @@ import no.nav.vedtak.util.FPDateUtil;
 public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
 
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
-    private static final String AUTOPUNKT_TOGGLE_MANGLENDE_ARBEIDSFORHOLD = "fpsak.autopunkter.manglendeArbeidsforhold";
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private BehandlingReferanse ref;
 
@@ -175,80 +174,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         );
     }
 
-    @Test
-    public void skalUtledeAutopunktVentPåManglendeArbeidsforholdNårManglerArbeidsforholdOgSTPForOpptjeningIJanuarOgToggleErPå() {
-        // Arrange
-        var aktiviteteter = BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER);
-        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.of(2019, Month.DECEMBER, 15)).leggTilAktivitetStatus(aktiviteteter).build();
-        var  beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(LocalDate.of(2020, Month.JANUARY, 5))
-            .build();
-        // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(true), erOverstyrt);
-        // Assert
-        assertThat(resultater).hasSize(1);
-        assertThat(resultater).anySatisfy(resultat ->
-            assertThat(resultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM)
-        );
-    }
-
-    @Test
-    public void skalIkkeUtledeAutopunktVentPåManglendeArbeidsforholdNårManglerArbeidsforholdOgStpForOpptjeningIJanuarOgToggleErAv() {
-        // Arrange
-        var aktiviteteter = BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER);
-        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.of(2019, Month.DECEMBER, 15)).leggTilAktivitetStatus(aktiviteteter).build();
-        var  beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(LocalDate.of(2020, Month.JANUARY, 5))
-            .build();
-        // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt);
-        // Assert
-        assertThat(resultater).hasSize(0);
-    }
-
-    @Test
-    public void skalIkkeUtledeAutopunktVentPåManglendeArbeidsforholdNårManglerArbeidsforholdOgSTPForOpptjeningIJanuarOgFrilansOgToggleErPå() {
-        // Arrange
-        var aktiviteteter = BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER);
-        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.of(2019, Month.DECEMBER, 15)).leggTilAktivitetStatus(aktiviteteter).build();
-        var  beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(LocalDate.of(2020, Month.JANUARY, 5))
-            .build();
-        // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(true), erOverstyrt);
-        // Assert
-        assertThat(resultater).hasSize(0);
-    }
-
-    @Test
-    public void skalIkkeUtledeAutopunktVentPåManglendeArbeidsforholdNårManglerArbeidsforholdOgStpForOpptjeningIkkeErIJanuarOgToggleErPå() {
-        // Arrange
-        var aktiviteteter = BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER);
-        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.of(2019, Month.DECEMBER, 15)).leggTilAktivitetStatus(aktiviteteter).build();
-        var  beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(LocalDate.of(2020, Month.FEBRUARY, 5))
-            .build();
-        // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(true), erOverstyrt);
-        // Assert
-        assertThat(resultater).hasSize(0);
-    }
-
-    @Test
-    public void skalIkkeUtledeAutopunktVentPåManglendeArbeidsforholdNårStpErLikForOpptjeningOgBeregningOgToggleErPå() {
-        // Arrange
-        var stp = LocalDate.of(2020, Month.FEBRUARY, 5);
-        var aktiviteteter = BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER);
-        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(stp).leggTilAktivitetStatus(aktiviteteter).build();
-        var  beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(stp)
-            .build();
-        // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(true), erOverstyrt);
-        // Assert
-        assertThat(resultater).hasSize(0);
-    }
-
     private BeregningsgrunnlagInput lagBeregningsgrunnlagInput(int rapporteringsfrist) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
         beregningsgrunnlagInput.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, rapporteringsfrist);
@@ -257,7 +182,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
 
     private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput(boolean toggleManglendeArbeidsforhold) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
-        beregningsgrunnlagInput.leggTilToggle(AUTOPUNKT_TOGGLE_MANGLENDE_ARBEIDSFORHOLD, toggleManglendeArbeidsforhold);
         return beregningsgrunnlagInput;
     }
 
