@@ -3,7 +3,9 @@ package no.nav.folketrygdloven.kalkulator.ytelse.svp;
 import static no.nav.folketrygdloven.kalkulator.ytelse.svp.AktivitetStatusMapper.mapAktivitetStatus;
 import static no.nav.folketrygdloven.kalkulator.ytelse.svp.FinnAndelsnrForTilrettelegging.finnAndelsnrIFørstePeriode;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapAndelGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
@@ -43,6 +46,36 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
     public MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger() {
         // For CDI
+    }
+
+    @Override
+    protected Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
+        var grunnlag = input.getBeregningsgrunnlagGrunnlag();
+        LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
+                .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+                .getSkjæringstidspunkt();
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterBekreftetPermisjon.finn(input.getIayGrunnlag(), ya, ansettelsesPeriode, skjæringstidspunktBeregning);
+        if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = input.getYtelsespesifiktGrunnlag();
+        List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad = svangerskapspengerGrunnlag.getTilretteleggingMedUtbelingsgrad();
+        Optional<LocalDate> førsteDatoMedUtbetalingOpt = tilretteleggingMedUtbelingsgrad.stream()
+                .filter(trl -> trl.getTilretteleggingArbeidsforhold().getArbeidsgiver().map(ag -> ag.getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator())).orElse(false)
+                        && trl.getTilretteleggingArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()))
+                .flatMap(trl -> trl.getPeriodeMedUtbetalingsgrad().stream())
+                .filter(periodeMedUtbetalingsgradDto -> periodeMedUtbetalingsgradDto.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) != 0)
+                .map(PeriodeMedUtbetalingsgradDto::getPeriode)
+                .map(Intervall::getFomDato)
+                .min(Comparator.naturalOrder());
+
+        if (førsteDatoMedUtbetalingOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        LocalDate førsteDagEtterPermisjon = førstedagEtterBekreftetPermisjonOpt.get();
+        LocalDate førsteDatoMedUtbetaling = førsteDatoMedUtbetalingOpt.get();
+        return førsteDagEtterPermisjon.isAfter(førsteDatoMedUtbetaling) ? førstedagEtterBekreftetPermisjonOpt : førsteDatoMedUtbetalingOpt;
     }
 
     @Override
