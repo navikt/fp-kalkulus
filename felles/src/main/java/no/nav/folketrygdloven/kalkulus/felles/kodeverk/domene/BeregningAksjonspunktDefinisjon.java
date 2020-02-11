@@ -46,6 +46,7 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("7020","Vent på siste meldekort for AAP eller DP-mottaker"),
     AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", "Autopunkt ulike startdatoer svangerskapspenger"),
     AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027","Autopunkt delvis SVP og refusjon"),
+    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
     UNDEFINED,
     ;
 
