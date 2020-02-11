@@ -28,7 +28,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     /**
-     * Abakus intern kobling_id.
+     * Kalkulus intern kobling_id.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_KOBLING")

@@ -25,6 +25,14 @@
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>kontrakt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>kalkulator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
+            <artifactId>database</artifactId>
+        </dependency>
 
         <!-- Eksterne avhengigheter til andre prosjekter-->
         <dependency>

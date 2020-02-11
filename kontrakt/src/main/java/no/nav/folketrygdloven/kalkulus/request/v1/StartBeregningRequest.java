@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
 
@@ -53,7 +53,7 @@ public class StartBeregningRequest {
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
-    private YtelseTyperKalkulusStøtter ytelseSomSkalBeregnes;
+    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
     @JsonProperty(value = "aktivitetGradering")
     @Valid
@@ -84,7 +84,7 @@ public class StartBeregningRequest {
 
     public StartBeregningRequest(@Valid @NotNull UUID koblingReferanse,
                                  @NotNull @Pattern(regexp = "^[A-Za-z0-9_\\.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
-                                 @NotNull @Valid PersonIdent aktør, @NotNull @Valid YtelseTyperKalkulusStøtter ytelseSomSkalBeregnes,
+                                 @NotNull @Valid PersonIdent aktør, @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                  @NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
                                  @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                  @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter) {
@@ -96,5 +96,45 @@ public class StartBeregningRequest {
         this.grunnbeløpsatser = grunnbeløpsatser;
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
+    }
+
+    public UUID getKoblingReferanse() {
+        return koblingReferanse;
+    }
+
+    public String getSaksnummer() {
+        return saksnummer;
+    }
+
+    public PersonIdent getAktør() {
+        return aktør;
+    }
+
+    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+        return ytelseSomSkalBeregnes;
+    }
+
+    public AktivitetGraderingDto getAktivitetGradering() {
+        return aktivitetGradering;
+    }
+
+    public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
+        return refusjonskravDatoer;
+    }
+
+    public List<GrunnbeløpDto> getGrunnbeløpsatser() {
+        return grunnbeløpsatser;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {
+        return iayGrunnlag;
+    }
+
+    public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
+        return opptjeningAktiviteter;
+    }
+
+    public YtelsespesifiktGrunnlagDto getYtelsespesifiktGrunnlag() {
+        return ytelsespesifiktGrunnlag;
     }
 }

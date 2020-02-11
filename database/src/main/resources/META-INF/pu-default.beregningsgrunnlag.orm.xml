@@ -22,6 +22,7 @@
     <sequence-generator name="SEQ_BG_AKTIVITET_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_AKTIVITET_OVERSTYRING"/>
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRINGER" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRINGER"/>
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRING"/>
+    <sequence-generator name="SEQ_KALKULATOR_INPUT" allocation-size="50" sequence-name="SEQ_KALKULATOR_INPUT"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
@@ -46,5 +47,6 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet" />
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />
 
 </entity-mappings>

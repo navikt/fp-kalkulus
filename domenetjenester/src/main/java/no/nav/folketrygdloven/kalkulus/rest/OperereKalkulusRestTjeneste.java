@@ -6,6 +6,7 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursResourceAttributt.FAG
 import java.util.Collections;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.POST;
@@ -18,7 +19,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.nav.folketrygdloven.kalkulus.beregning.BeregningTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.Transaction;
+import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -30,11 +39,19 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 public class OperereKalkulusRestTjeneste {
 
 
+    private KoblingTjeneste koblingTjeneste;
+    private BeregningTjeneste beregningTjeneste;
+    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+
     public OperereKalkulusRestTjeneste() {
         // for CDI
     }
 
-
+    @Inject
+    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningTjeneste beregningTjeneste) {
+        this.koblingTjeneste = koblingTjeneste;
+        this.beregningTjeneste = beregningTjeneste;
+    }
 
     @POST
     @Path("/start-beregn")
@@ -46,6 +63,16 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequest spesifikasjon) {
+
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
+        var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+
+        KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
+//        kalkulatorInputTjeneste.lagInput(koblingEntitet.getId(), )
+
+
         TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
 
         return Response.ok(tilstandResponse).build();

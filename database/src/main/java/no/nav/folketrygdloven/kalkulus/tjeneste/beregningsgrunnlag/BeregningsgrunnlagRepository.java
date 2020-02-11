@@ -6,17 +6,20 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.jpa.QueryHints;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
@@ -354,4 +357,14 @@ public class BeregningsgrunnlagRepository {
         return grunnlagMedForrigeTiltandOpt;
     }
 
+    public void lagre(KalkulatorInputEntitet input) {
+        entityManager.persist(input);
+        entityManager.flush();
+    }
+
+    public KalkulatorInputEntitet hentKalkulatorInput(Long koblingId) {
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId", KalkulatorInputEntitet.class);
+        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
+        return hentEksaktResultat(query);
+    }
 }

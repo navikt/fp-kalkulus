@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeliste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.KodeverkTabell;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.KalkulusPersistenceUnit;
 import no.nav.vedtak.felles.jpa.VLPersistenceUnit;
 
 @ApplicationScoped
