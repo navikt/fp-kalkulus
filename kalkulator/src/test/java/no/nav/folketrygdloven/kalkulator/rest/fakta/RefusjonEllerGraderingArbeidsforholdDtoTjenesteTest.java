@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
@@ -46,7 +45,6 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
     private final ArbeidsgiverMedNavn arbeidsgiver1 = ArbeidsgiverMedNavn.virksomhet(ORGNR);
 
-    private final FordelBeregningsgrunnlagTjeneste refusjonOgGraderingTjeneste = mock(FordelBeregningsgrunnlagTjeneste.class);
     private final BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = mock(BeregningAktivitetAggregatRestDto.class);
 
     private BeregningsgrunnlagRestDto beregningsgrunnlag;

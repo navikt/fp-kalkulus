@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
@@ -40,7 +40,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
             .get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
-            .filter(a -> !FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(mapAndel(a), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()))
+            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(mapAndel(a), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()))
             .collect(Collectors.toList());
         return andelerIFørstePeriode.stream()
             .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))

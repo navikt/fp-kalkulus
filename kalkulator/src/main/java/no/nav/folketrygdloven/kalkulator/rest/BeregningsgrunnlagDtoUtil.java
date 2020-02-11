@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
@@ -49,7 +49,7 @@ public class BeregningsgrunnlagDtoUtil {
         andelDto.setInntektskategori(andel.getInntektskategori());
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         andelDto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
-        List<Gradering> graderingForAndelIPeriode = FordelBeregningsgrunnlagTjeneste.hentGraderingerForAndelIPeriode(mapAndel(andel), aktivitetGradering, periode.getPeriode()).stream()
+        List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(mapAndel(andel), aktivitetGradering, periode.getPeriode()).stream()
             .sorted().collect(Collectors.toList());
         finnArbeidsprosenterIPeriode(graderingForAndelIPeriode, andel.getBeregningsgrunnlagPeriode().getPeriode()).forEach(andelDto::leggTilAndelIArbeid);
         lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)

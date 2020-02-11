@@ -11,14 +11,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelingTilfelle;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste.VurderManuellBehandling;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -73,7 +76,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .build(periode);
         // Act
-        boolean tilkomEtter = FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         // Assert
         assertThat(tilkomEtter).isFalse();
@@ -97,7 +100,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .build(periode2);
         // Act
-        boolean tilkomEtter = FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
         // Assert
         assertThat(tilkomEtter).isTrue();
     }
@@ -116,10 +119,10 @@ public class RefusjonOgGraderingTjenesteTest {
             .medStatus(AktivitetStatus.FRILANSER)
             .medGradering(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(18).minusDays(1), 50)
             .build());
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.FL_ELLER_SN_TILKOMMER);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FL_ELLER_SN_TILKOMMER));
     }
 
     @Test
@@ -139,10 +142,10 @@ public class RefusjonOgGraderingTjenesteTest {
             .medGradering(fom, tom, 50)
             .build());
 
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.FL_ELLER_SN_TILKOMMER);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FL_ELLER_SN_TILKOMMER));
     }
 
     @Test
@@ -157,10 +160,10 @@ public class RefusjonOgGraderingTjenesteTest {
         lagAAPAndel(periode1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP));
     }
 
     @Test
@@ -175,10 +178,10 @@ public class RefusjonOgGraderingTjenesteTest {
         lagAAPAndel(periode1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(inntektsmelding));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(inntektsmelding));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
     }
 
     @Test
@@ -198,18 +201,17 @@ public class RefusjonOgGraderingTjenesteTest {
 
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(beregningsgrunnlag,
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(beregningsgrunnlag,
             beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
     }
 
     // Gradering: Ja
     // Refusjon: Nei
     // Tilkom etter skjæringstidspunktet: Ja
     // Returnerer true
-
     @Test
     public void returnererTrueForGraderingOgArbeidsforholdetTilkomEtterSkjæringstidpunktet() {
         // Arrange
@@ -227,17 +229,17 @@ public class RefusjonOgGraderingTjenesteTest {
             .medArbeidsforholdRef(arbId)
             .medGradering(fom, tom, 50)
             .build());
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.NYTT_ARBEIDSFORHOLD);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
     }
+
     // Gradering: Ja
     // Refusjon: Nei
     // Tilkom etter skjæringstidspunktet: Nei
     // Total refusjon under 6G
     // Returnerer false
-
     @Test
     public void returnererTrueForGraderingGjeldendeBruttoBGStørreEnnNullBeregningsgrunnlagsandelAvkortetTilNull() {
         // Arrange
@@ -251,17 +253,17 @@ public class RefusjonOgGraderingTjenesteTest {
         setAktivitetFørStp(arbeidsgiver1, arbId1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
     }
+
     // Gradering: Ja
     // Refusjon: Nei
     // Total refusjon større enn 6G for alle arbeidsforhold
     // Tilkom etter skjæringstidspunktet: Nei
     // Returnerer True
-
     @Test
     public void returnererTrueForGraderingGjeldendeBruttoBGLikNullTotalRefusjonStørreEnn6G() {
         // Arrange
@@ -287,17 +289,18 @@ public class RefusjonOgGraderingTjenesteTest {
             .medArbeidsforholdRef(arbId1)
             .medGradering(fom, tom, 50)
             .build());
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G));
+
     }
+
     // Gradering: Ja
     // Refusjon: Nei
     // Total refusjon mindre enn 6G for alle arbeidsforhold
     // Tilkom etter skjæringstidspunktet: Nei
     // Returnerer True
-
     @Test
     public void returnererFalseForGraderingGjeldendeBruttoBGLikNullTotalRefusjonMindreEnn6G() {
         // Arrange
@@ -316,10 +319,11 @@ public class RefusjonOgGraderingTjenesteTest {
         setAktivitetFørStp(arbeidsgiver2, arbId2);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1, im2));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1, im2));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
+
     }
     // Gradering: Ja
     // Refusjon: Ja
@@ -337,16 +341,16 @@ public class RefusjonOgGraderingTjenesteTest {
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
         lagAndel(arbeidsgiver1, 100, periode1, true, null, BigDecimal.valueOf(10), arbId1);
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.NYTT_ARBEIDSFORHOLD);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
     }
+
     // Gradering: Ja
     // Refusjon: Ja
     // Tilkom etter skjæringstidspunktet: Nei
     // Returnerer False
-
     // FIXME: Seier at den skal ha gradering, men sender inn INGEN_GRADERING
     @Test
     public void returnererFalseForGraderingOgRefusjon() {
@@ -360,10 +364,10 @@ public class RefusjonOgGraderingTjenesteTest {
         setAktivitetFørStp(arbeidsgiver1, arbId1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
     }
     // Gradering: Nei
     // Refusjon: Ja
@@ -380,16 +384,16 @@ public class RefusjonOgGraderingTjenesteTest {
         lagAndel(arbeidsgiver1, 1000, periode1, true, null, BigDecimal.valueOf(10), arbId1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.NYTT_ARBEIDSFORHOLD);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
     }
+
     // Gradering: Nei
     // Refusjon: Ja
     // Tilkom etter skjæringstidspunktet: Nei
     // Returnerer False
-
     @Test
     public void returnererFalseForRefusjonGjeldendeBruttoBGStørreEnn0() {
         // Arrange
@@ -401,10 +405,10 @@ public class RefusjonOgGraderingTjenesteTest {
         setAktivitetFørStp(arbeidsgiver1, arbId1);
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).isEmpty();
+        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
     }
 
 
@@ -430,10 +434,11 @@ public class RefusjonOgGraderingTjenesteTest {
             .build());
 
         // Act
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = FordelBeregningsgrunnlagTjeneste.vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelerMedTilfeller = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.get()).isEqualTo(VurderManuellBehandling.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0);
+        assertThat(andelerMedTilfeller.containsValue(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0));
     }
 
     @Test
@@ -452,10 +457,10 @@ public class RefusjonOgGraderingTjenesteTest {
             .leggTilGradering(fom, tom, BigDecimal.valueOf(50))
             .build());
 
-        Optional<VurderManuellBehandling> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG).contains(VurderManuellBehandling.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0);
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0));
     }
 
     private void setAktivitetFørStp(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
@@ -473,8 +478,9 @@ public class RefusjonOgGraderingTjenesteTest {
         aktivitetList.addAll(aktiviteterFørStp);
     }
 
-    private Optional<VurderManuellBehandling> vurderManuellBehandling(BeregningsgrunnlagDto bg, BeregningAktivitetAggregatDto beregningAktivitetAggregat, AktivitetGradering aktivitetGradering, Collection<InntektsmeldingDto> inntektsmeldinger) {
-        return FordelBeregningsgrunnlagTjeneste.vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, inntektsmeldinger);
+    private Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(BeregningsgrunnlagDto bg, BeregningAktivitetAggregatDto beregningAktivitetAggregat, AktivitetGradering aktivitetGradering, Collection<InntektsmeldingDto> inntektsmeldinger) {
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, beregningAktivitetAggregat, aktivitetGradering, inntektsmeldinger);
+        return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {

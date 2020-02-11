@@ -9,20 +9,26 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelingGraderingTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelingTilfelle;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.rest.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FordelBeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.GraderingEllerRefusjonDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -35,18 +41,11 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
 
     public static List<FordelBeregningsgrunnlagArbeidsforholdDto> lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(BeregningsgrunnlagRestInput input, Beløp grunnbeløp, LocalDate skjæringstidspunktForBeregning) {
         List<BeregningsgrunnlagPeriodeRestDto> perioder = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
-        var aktivitetGradering = input.getAktivitetGradering();
-        var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = FordelBeregningsgrunnlagTilfelleInput.fraBeregningsgrunnlagRestInput(input);
+
         List<BeregningsgrunnlagPrStatusOgAndelRestDto> beregningsgrunnlagPrStatusOgAndel = perioder.stream()
             .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-            .filter(andel -> FordelBeregningsgrunnlagTjeneste.vurderManuellBehandlingForAndel(
-                mapPeriode(andel.getBeregningsgrunnlagPeriode()),
-                mapAndel(andel),
-                aktivitetGradering,
-                MapBeregningsgrunnlagFraRestTilDomene.mapAktivitetAggregat(beregningAktivitetAggregat),
-                input.getInntektsmeldinger(),
-                grunnbeløp,
-                skjæringstidspunktForBeregning).isPresent())
+            .filter(andel -> andelHarTilfelleForFordeling(andel, fordelingInput))
             .filter(andel -> Boolean.FALSE.equals(andel.getLagtTilAvSaksbehandler()))
             .distinct()
             .collect(Collectors.toList());
@@ -57,6 +56,13 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
             .map(Optional::get)
             .filter(af -> !af.getPerioderMedGraderingEllerRefusjon().isEmpty())
             .collect(Collectors.toList());
+    }
+
+    private static boolean andelHarTilfelleForFordeling(BeregningsgrunnlagPrStatusOgAndelRestDto andel, FordelBeregningsgrunnlagTilfelleInput fordelingInput) {
+        BeregningsgrunnlagPeriodeRestDto restPeriode = andel.getBeregningsgrunnlagPeriode();
+        BeregningsgrunnlagPeriodeDto domenePeriode = mapPeriode(restPeriode);
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(domenePeriode, fordelingInput);
+        return periodeTilfelleMap.keySet().stream().anyMatch(key -> Objects.equals(key.getAndelsnr(), andel.getAndelsnr()));
     }
 
     private static Optional<FordelBeregningsgrunnlagArbeidsforholdDto> mapTilEndretArbeidsforholdDto(BeregningsgrunnlagRestInput input,
@@ -137,7 +143,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
     private static void settEndretArbeidsforholdForSøktGradering(BeregningsgrunnlagPrStatusOgAndelRestDto distinctAndel,
                                                                  FordelBeregningsgrunnlagArbeidsforholdDto endretArbeidsforhold,
                                                                  AktivitetGradering aktivitetGradering) {
-        List<Gradering> graderingerForArbeidsforhold = FordelBeregningsgrunnlagTjeneste.hentGraderingerForAndel(mapAndel(distinctAndel), aktivitetGradering);
+        List<Gradering> graderingerForArbeidsforhold = FordelingGraderingTjeneste.hentGraderingerForAndel(mapAndel(distinctAndel), aktivitetGradering);
         graderingerForArbeidsforhold.forEach(gradering -> {
             GraderingEllerRefusjonDto graderingDto = new GraderingEllerRefusjonDto(false, true);
             Intervall periode = gradering.getPeriode();

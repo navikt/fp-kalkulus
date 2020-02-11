@@ -17,8 +17,8 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -44,7 +44,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, periode);
             RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
             var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
-            endringAndel.setNyttArbeidsforhold(FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()));
+            endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()));
             endringAndel.setArbeidsforholdType(andel.getArbeidsforholdType());
             endringAndeler.add(endringAndel);
         }

@@ -68,16 +68,13 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
             .skalSaksbehandlerRedigereInntekt(beregningAktivitetAggregat,
                 aktivitetGradering,
                 periode,
-                input.getInntektsmeldinger(),
-                grunnbeløp,
-                input.getSkjæringstidspunktForBeregning()));
+                input.getInntektsmeldinger()));
         fordelBGPeriode.setSkalKunneEndreRefusjon(ManuellBehandlingRefusjonGraderingDtoTjeneste
             .skalSaksbehandlerRedigereRefusjon(beregningAktivitetAggregat,
                 aktivitetGradering,
                 periode,
                 input.getInntektsmeldinger(),
-                grunnbeløp,
-                input.getSkjæringstidspunktForBeregning()));
+                grunnbeløp));
         RefusjonDtoTjeneste.slåSammenRefusjonForAndelerISammeArbeidsforhold(fordelAndeler);
         return fordelAndeler;
     }

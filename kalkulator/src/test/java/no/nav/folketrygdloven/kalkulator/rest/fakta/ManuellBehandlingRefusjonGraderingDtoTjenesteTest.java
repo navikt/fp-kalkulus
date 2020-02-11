@@ -67,8 +67,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandling = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(aktivitetAggregatEntitet,
-                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP),
-                SKJÆRINGSTIDSPUNKT_OPPTJENING);
+            new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger);
 
         // Assert
         assertThat(kreverManuellBehandling).isTrue();
@@ -83,9 +82,9 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandlingAvRefusjon = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereRefusjon(
-                aktivitetAggregatEntitet,
-                new AktivitetGradering(graderinger),
-                bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP), SKJÆRINGSTIDSPUNKT_OPPTJENING);
+            aktivitetAggregatEntitet,
+            new AktivitetGradering(graderinger),
+            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(kreverManuellBehandlingAvRefusjon).isTrue();

@@ -3,11 +3,10 @@ package no.nav.folketrygdloven.kalkulator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste.VurderManuellBehandling;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -26,19 +25,20 @@ public class AksjonspunktUtlederFordelBeregning {
                                                                          AktivitetGradering aktivitetGradering,
                                                                          Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultater = new ArrayList<>();
-        if (utledAksjonspunktFordelBG(ref, beregningsgrunnlagGrunnlag, aktivitetGradering, inntektsmeldinger).isPresent()) {
+        if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, aktivitetGradering, inntektsmeldinger)) {
             BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
             aksjonspunktResultater.add(aksjonspunktResultat);
         }
         return aksjonspunktResultater;
     }
 
-    private static Optional<VurderManuellBehandling> utledAksjonspunktFordelBG(@SuppressWarnings("unused") BehandlingReferanse ref,
-                                                                        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                                        AktivitetGradering aktivitetGradering,
-                                                                        Collection<InntektsmeldingDto> inntektsmeldinger) {
+    private static boolean harTilfellerForFordeling(@SuppressWarnings("unused") BehandlingReferanse ref,
+                                                    BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
+                                                    AktivitetGradering aktivitetGradering,
+                                                    Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Mangler beregningsgrunnlagGrunnlag"));
-        return FordelBeregningsgrunnlagTjeneste.vurderManuellBehandling(beregningsgrunnlag, beregningsgrunnlagGrunnlag.getGjeldendeAktiviteter(), aktivitetGradering, inntektsmeldinger);
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(beregningsgrunnlag, beregningsgrunnlagGrunnlag.getGjeldendeAktiviteter(), aktivitetGradering, inntektsmeldinger);
+        return FordelBeregningsgrunnlagTilfelleTjeneste.harTilfelleForFordeling(fordelingInput);
     }
 }

@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusRestDto;
@@ -94,7 +94,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setLonnsendringIBeregningsperioden(andel.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdRestDto::erLønnsendringIBeregningsperioden).orElse(null));
         dto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
-        dto.setErTilkommetAndel(FordelBeregningsgrunnlagTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), skjæringstidspunktForBeregning));
+        dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), skjæringstidspunktForBeregning));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettes(input, andel));
         }

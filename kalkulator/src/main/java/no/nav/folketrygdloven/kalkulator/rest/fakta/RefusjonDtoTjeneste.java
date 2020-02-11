@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.fordeling.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
@@ -53,7 +53,7 @@ public class RefusjonDtoTjeneste {
     }
 
     private static boolean harGraderingOgIkkeRefusjon(BeregningsgrunnlagPrStatusOgAndelRestDto andelFraOppdatert, BeregningsgrunnlagPeriodeRestDto periode, AktivitetGradering aktivitetGradering) {
-        List<Gradering> graderingForAndelIPeriode = FordelBeregningsgrunnlagTjeneste.hentGraderingerForAndelIPeriode(mapAndel(andelFraOppdatert), aktivitetGradering, periode.getPeriode());
+        List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(mapAndel(andelFraOppdatert), aktivitetGradering, periode.getPeriode());
         boolean andelHarGradering = !graderingForAndelIPeriode.isEmpty();
         BigDecimal refusjon = andelFraOppdatert.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdRestDto::getRefusjonskravPrÅr)
