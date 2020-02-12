@@ -34,7 +34,7 @@ public class StartBeregningRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
-    @Pattern(regexp = "^[A-Za-z0-9_\\.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
+    @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
     private String saksnummer;
 
@@ -54,11 +54,14 @@ public class StartBeregningRequest {
     @Valid
     private KalkulatorInputDto kalkulatorInputDto;
 
-
+    protected StartBeregningRequest() {
+        // default ctor
+    }
 
     public StartBeregningRequest(@Valid @NotNull UUID koblingReferanse,
-                                 @NotNull @Pattern(regexp = "^[A-Za-z0-9_\\.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
-                                 @NotNull @Valid PersonIdent aktør, @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                 @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                 @NotNull @Valid PersonIdent aktør,
+                                 @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                  @NotNull @Valid KalkulatorInputDto kalkulatorInputDto) {
 
         this.koblingReferanse = koblingReferanse;

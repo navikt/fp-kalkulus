@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Validation;
 
@@ -19,27 +20,30 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 
-public class KalkulatorInputDtoMapperTest {
+public class JsonMapperTest {
 
 
-    private static final ObjectWriter WRITER = KalkulatorInputMapper.getMapper().writerWithDefaultPrettyPrinter();
-    private static final ObjectReader READER = KalkulatorInputMapper.getMapper().reader();
+    private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
+    private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("945748931");
 
 
     @Test
-    void skal_generere_og_validere_roundtrip_mega_kalkulator_input_json() throws Exception {
+    void skal_generere_og_validere_roundtrip_kalkulator_input_json() throws Exception {
 
         KalkulatorInputDto grunnlag = byggKalkulatorInput();
 
@@ -52,6 +56,29 @@ public class KalkulatorInputDtoMapperTest {
         assertThat(roundTripped.getIayGrunnlag()).isNotNull();
         validateResult(roundTripped);
     }
+
+    @Test
+    public void skal_generere_og_validere_roundtrip_av_start_beregning_request() throws Exception {
+        //arrange
+        String saksnummer = "1234";
+        UUID randomUUID = UUID.randomUUID();
+        AktørIdPersonident dummy = AktørIdPersonident.dummy();
+        KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
+
+        StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
+
+        String json = WRITER.writeValueAsString(spesifikasjon);
+        System.out.println(json);
+
+        StartBeregningRequest roundTripped = READER.forType(StartBeregningRequest.class).readValue(json);
+
+        assertThat(roundTripped).isNotNull();
+        assertThat(roundTripped.getAktør()).isEqualTo(dummy);
+        assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
+        assertThat(roundTripped.getKoblingReferanse()).isEqualByComparingTo(randomUUID);
+        validateResult(roundTripped);
+    }
+
 
     private KalkulatorInputDto byggKalkulatorInput() {
         GraderingDto graderingDto = new GraderingDto(periode, BigDecimal.valueOf(100));

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.KodeValidator;
 
-public class KalkulatorInputMapper {
+public class JsonMapper {
 
     private static final ObjectMapper OM;
 
