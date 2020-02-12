@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
 
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.AvklarteAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.BeregningsaktivitetLagreDto;
@@ -8,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto.Builder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -38,22 +40,27 @@ public class AvklarAktiviteterHåndterer {
 
         BeregningAktivitetOverstyringerDto.Builder overstyringAggregatBuilder = BeregningAktivitetOverstyringerDto.builder();
         aktiviteter.forEach(overstyrtDto -> {
-                BeregningAktivitetOverstyringDto overstyring = lagOverstyring(overstyrtDto, input.getBeregningsgrunnlagGrunnlag().getRegisterAktiviteter()
-                    .getBeregningAktiviteter().stream()
-                    .filter(a -> a.getNøkkel().equals(overstyrtDto.getNøkkel()))
-                    .findFirst()
-                    .map(BeregningAktivitetDto::getArbeidsgiver)
-                    .orElseThrow(IllegalStateException::new));
+                BeregningAktivitetOverstyringDto overstyring = lagOverstyring(overstyrtDto, getArbeidsgiver(input, overstyrtDto));
                 overstyringAggregatBuilder.leggTilOverstyring(overstyring);
             });
         return grunnlagBuilder.medOverstyring(overstyringAggregatBuilder.build()).build(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
     }
 
-    private static BeregningAktivitetOverstyringDto lagOverstyring(BeregningsaktivitetLagreDto overstyrtDto, Arbeidsgiver arbeidsgiver) {
-        return BeregningAktivitetOverstyringDto.builder()
+    private static Optional<Arbeidsgiver> getArbeidsgiver(BeregningsgrunnlagInput input, BeregningsaktivitetLagreDto overstyrtDto) {
+        return input.getBeregningsgrunnlagGrunnlag().getRegisterAktiviteter()
+                .getBeregningAktiviteter().stream()
+                .filter(a -> a.getNøkkel().equals(overstyrtDto.getNøkkel()))
+                .findFirst()
+                .map(BeregningAktivitetDto::getArbeidsgiver);
+    }
+
+    private static BeregningAktivitetOverstyringDto lagOverstyring(BeregningsaktivitetLagreDto overstyrtDto, Optional<Arbeidsgiver> arbeidsgiver) {
+        Builder builder = BeregningAktivitetOverstyringDto.builder();
+        arbeidsgiver.ifPresent(builder::medArbeidsgiver);
+
+        return builder
             .medHandling(mapTilHandlingType(overstyrtDto))
             .medArbeidsforholdRef(InternArbeidsforholdRefDto.ref(overstyrtDto.getArbeidsforholdRef()))
-            .medArbeidsgiver(arbeidsgiver)
             .medPeriode(overstyrtDto.getTom() == null ? Intervall.fraOgMed(overstyrtDto.getFom()) : Intervall.fraOgMedTilOgMed(overstyrtDto.getFom(), overstyrtDto.getTom()))
             .medOpptjeningAktivitetType(overstyrtDto.getOpptjeningAktivitetType())
             .build();
