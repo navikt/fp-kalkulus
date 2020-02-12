@@ -24,7 +24,7 @@ public class YtelsespesifiktGrunnlagDto {
     @Valid
     @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
     @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
-    private BigDecimal dekningsgrad;
+    private final BigDecimal dekningsgrad;
 
     @JsonProperty(value = "kvalifisererTilBesteberegning")
     @Valid
@@ -34,9 +34,8 @@ public class YtelsespesifiktGrunnlagDto {
     @JsonProperty(value = "grunnbeløpMilitærHarKravPå")
     @Valid
     @NotNull
-    private Integer grunnbeløpMilitærHarKravPå;
+    private final Integer grunnbeløpMilitærHarKravPå;
 
-    @JsonCreator
     public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad, @Valid @NotNull Integer grunnbeløpMilitærHarKravPå) {
         this.dekningsgrad = dekningsgrad;
         this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;

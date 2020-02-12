@@ -1,21 +1,19 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
@@ -24,7 +22,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
-import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 
 
 public class OperereKalkulusRestTjenesteTest {
@@ -46,7 +43,9 @@ public class OperereKalkulusRestTjenesteTest {
         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlagDto = new InntektArbeidYtelseGrunnlagDto();
         OpptjeningAktiviteterDto opptjeningAktiviteterDto = new OpptjeningAktiviteterDto(List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon, new InternArbeidsforholdRefDto("Dummy"))));
 
-        StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, grunnbeløpDtos, inntektArbeidYtelseGrunnlagDto, opptjeningAktiviteterDto);
+        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløpDtos, inntektArbeidYtelseGrunnlagDto, opptjeningAktiviteterDto);
+
+        StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
 
 //        //act
 //        Response beregn = restTjeneste.beregn(spesifikasjon);

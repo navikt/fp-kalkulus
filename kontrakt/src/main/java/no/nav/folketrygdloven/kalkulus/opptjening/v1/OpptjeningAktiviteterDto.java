@@ -25,6 +25,10 @@ public class OpptjeningAktiviteterDto {
     @NotEmpty
     private List<OpptjeningPeriodeDto> perioder;
 
+    protected OpptjeningAktiviteterDto() {
+        // default ctor
+    }
+
     public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotEmpty List<OpptjeningPeriodeDto> perioder) {
         this.perioder = perioder;
     }

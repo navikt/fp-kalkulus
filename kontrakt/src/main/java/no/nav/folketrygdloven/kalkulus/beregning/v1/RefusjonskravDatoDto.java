@@ -20,22 +20,21 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class RefusjonskravDatoDto {
 
-    @JsonProperty
+    @JsonProperty(value = "arbeidsgiver")
     @Valid
     @NotNull
-    private Aktør arbeidsgiver;
+    private final Aktør arbeidsgiver;
 
-    @JsonProperty
+    @JsonProperty(value = "førsteDagMedRefusjonskrav")
     @Valid
     @NotNull
-    private LocalDate førsteDagMedRefusjonskrav;
+    private final LocalDate førsteDagMedRefusjonskrav;
 
-    @JsonProperty
+    @JsonProperty(value = "førsteInnsendingAvRefusjonskrav")
     @Valid
     @NotNull
-    private LocalDate førsteInnsendingAvRefusjonskrav;
+    private final LocalDate førsteInnsendingAvRefusjonskrav;
 
-    @JsonCreator
     public RefusjonskravDatoDto(@Valid @NotNull Aktør arbeidsgiver,
                                 @Valid @NotNull LocalDate førsteDagMedRefusjonskrav,
                                 @Valid @NotNull LocalDate førsteInnsendingAvRefusjonskrav) {

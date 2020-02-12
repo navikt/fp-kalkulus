@@ -37,6 +37,9 @@ public class GrunnbeløpDto {
     @NotNull
     private BigDecimal gVerdi;
 
+    public GrunnbeløpDto() {
+        // default ctor
+    }
 
     public GrunnbeløpDto(@Valid @NotNull Periode periode, @Valid @NotNull BigDecimal gSnitt, @Valid @NotNull BigDecimal gVerdi) {
         this.periode = periode;

@@ -22,21 +22,22 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 public class GraderingDto {
 
 
-    @JsonProperty("periode")
+    @JsonProperty(value = "periode")
     @Valid
     @NotNull
     private Periode periode;
 
-    @JsonProperty("arbeidstidProsent")
+    @JsonProperty(value = "arbeidstidProsent")
     @Valid
     @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
     @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
     private BigDecimal arbeidstidProsent;
 
+    protected GraderingDto() {
+        // default ctor
+    }
 
-    @JsonCreator
-    public GraderingDto(@Valid @NotNull Periode periode,
-                        @Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal arbeidstidProsent) {
+    public GraderingDto(@Valid @NotNull Periode periode, @Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal arbeidstidProsent) {
         this.periode = periode;
         this.arbeidstidProsent = arbeidstidProsent;
     }

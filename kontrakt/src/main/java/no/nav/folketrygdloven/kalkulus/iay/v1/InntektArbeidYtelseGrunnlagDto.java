@@ -46,4 +46,61 @@ public class InntektArbeidYtelseGrunnlagDto {
     @Valid
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
 
+    public InntektArbeidYtelseGrunnlagDto() {
+    }
+
+
+    public InntektArbeidYtelseGrunnlagDto medArbeidDto(ArbeidDto arbeidDto) {
+        this.arbeidDto = arbeidDto;
+        return this;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto medInntekterDto(InntekterDto inntekterDto) {
+        this.inntekterDto = inntekterDto;
+        return this;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto medArbeidDto(YtelserDto ytelserDto) {
+        this.ytelserDto = ytelserDto;
+        return this;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto medOppgittOpptjeningDto(OppgittOpptjeningDto oppgittOpptjening) {
+        this.oppgittOpptjening = oppgittOpptjening;
+        return this;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto medInntektsmeldingerDto(InntektsmeldingerDto inntektsmeldinger) {
+        this.inntektsmeldinger = inntektsmeldinger;
+        return this;
+    }
+
+    public InntektArbeidYtelseGrunnlagDto medArbeidsforholdInformasjonDto(ArbeidsforholdInformasjonDto arbeidsforholdInformasjon) {
+        this.arbeidsforholdInformasjon = arbeidsforholdInformasjon;
+        return this;
+    }
+
+    public ArbeidDto getArbeidDto() {
+        return arbeidDto;
+    }
+
+    public InntekterDto getInntekterDto() {
+        return inntekterDto;
+    }
+
+    public YtelserDto getYtelserDto() {
+        return ytelserDto;
+    }
+
+    public OppgittOpptjeningDto getOppgittOpptjening() {
+        return oppgittOpptjening;
+    }
+
+    public InntektsmeldingerDto getInntektsmeldinger() {
+        return inntektsmeldinger;
+    }
+
+    public ArbeidsforholdInformasjonDto getArbeidsforholdInformasjon() {
+        return arbeidsforholdInformasjon;
+    }
 }

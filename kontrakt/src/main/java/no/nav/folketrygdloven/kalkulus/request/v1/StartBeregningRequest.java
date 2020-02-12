@@ -1,10 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -15,14 +13,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
 
 /**
@@ -55,47 +48,24 @@ public class StartBeregningRequest {
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
-    @JsonProperty(value = "aktivitetGradering")
-    @Valid
-    private AktivitetGraderingDto aktivitetGradering;
 
-    @JsonProperty(value = "refusjonskravDatoer")
-    @Valid
-    private List<RefusjonskravDatoDto> refusjonskravDatoer;
-
-    @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
-    @NotEmpty
-    @Valid
-    private List<GrunnbeløpDto> grunnbeløpsatser;
-
-    @JsonProperty(value = "iayGrunnlag", required = true)
+    @JsonProperty(value = "kalkulatorInput", required = true)
     @NotNull
     @Valid
-    private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
+    private KalkulatorInputDto kalkulatorInputDto;
 
-    @JsonProperty(value = "opptjeningAktiviteter", required = true)
-    @NotNull
-    @Valid
-    private OpptjeningAktiviteterDto opptjeningAktiviteter;
 
-    @JsonProperty(value = "ytelsespesifiktGrunnlag")
-    @Valid
-    private YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag;
 
     public StartBeregningRequest(@Valid @NotNull UUID koblingReferanse,
                                  @NotNull @Pattern(regexp = "^[A-Za-z0-9_\\.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                  @NotNull @Valid PersonIdent aktør, @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                 @NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
-                                 @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                 @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter) {
+                                 @NotNull @Valid KalkulatorInputDto kalkulatorInputDto) {
 
         this.koblingReferanse = koblingReferanse;
         this.saksnummer = saksnummer;
         this.aktør = aktør;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
-        this.grunnbeløpsatser = grunnbeløpsatser;
-        this.iayGrunnlag = iayGrunnlag;
-        this.opptjeningAktiviteter = opptjeningAktiviteter;
+        this.kalkulatorInputDto = kalkulatorInputDto;
     }
 
     public UUID getKoblingReferanse() {
@@ -114,27 +84,7 @@ public class StartBeregningRequest {
         return ytelseSomSkalBeregnes;
     }
 
-    public AktivitetGraderingDto getAktivitetGradering() {
-        return aktivitetGradering;
-    }
-
-    public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
-        return refusjonskravDatoer;
-    }
-
-    public List<GrunnbeløpDto> getGrunnbeløpsatser() {
-        return grunnbeløpsatser;
-    }
-
-    public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {
-        return iayGrunnlag;
-    }
-
-    public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
-        return opptjeningAktiviteter;
-    }
-
-    public YtelsespesifiktGrunnlagDto getYtelsespesifiktGrunnlag() {
-        return ytelsespesifiktGrunnlag;
+    public KalkulatorInputDto getKalkulatorInputDto() {
+        return kalkulatorInputDto;
     }
 }

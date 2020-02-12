@@ -6,33 +6,40 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class AndelGraderingDto {
 
-
-    @JsonProperty
+    @JsonProperty(value = "aktivitetStatus")
     @Valid
     @NotNull
     private AktivitetStatus aktivitetStatus;
 
-    @JsonProperty
+    @JsonProperty(value = "arbeidsgiver")
     @Valid
     @NotNull
     private Aktør arbeidsgiver;
 
-    @JsonProperty
+    @JsonProperty(value = "arbeidsforholdRef")
     @Valid
     private InternArbeidsforholdRefDto arbeidsforholdRef;
 
-    @JsonProperty
+    @JsonProperty(value = "graderinger")
     @Valid
     @NotEmpty
     private List<GraderingDto> graderinger;
+
+    protected AndelGraderingDto() {
+        // default ctor
+    }
 
     public AndelGraderingDto(@Valid @NotNull AktivitetStatus aktivitetStatus,
                              @Valid @NotNull Aktør arbeidsgiver,
@@ -57,7 +64,9 @@ public class AndelGraderingDto {
         return arbeidsforholdRef;
     }
 
+    @JsonProperty(value = "graderinger")
     public List<GraderingDto> getGraderinger() {
         return graderinger;
     }
+
 }
