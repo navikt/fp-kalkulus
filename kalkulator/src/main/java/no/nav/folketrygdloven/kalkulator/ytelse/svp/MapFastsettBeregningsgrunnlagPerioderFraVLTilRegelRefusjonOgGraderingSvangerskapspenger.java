@@ -108,6 +108,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     }
 
     private boolean erAnsattIPerioden(BehandlingReferanse ref, AndelGradering g, YrkesaktivitetFilterDto filter) {
+        if (g.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
+            // Antar SN er aktiv i hele uttaksperioden
+            return true;
+        }
         Optional<YrkesaktivitetDto> yrkesaktivitet = FinnYrkesaktiviteterForBeregningTjeneste.finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(ref, filter)
                 .stream()
                 .filter(ya -> ya.gjelderFor(g.getArbeidsgiver(), g.getArbeidsforholdRef()))
