@@ -52,7 +52,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         LocalDate førsteInnsendingAvRefusjonskrav = SKJÆRINGSTIDSPUNKT.plusMonths(4);
         LocalDate førsteMuligDatoMedRefusjonFørAksjonspunkt = førsteInnsendingAvRefusjonskrav.minusMonths(3).withDayOfMonth(1);
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
-        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav);
+        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
@@ -73,7 +73,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         // Arrange
         LocalDate førsteInnsendingAvRefusjonskrav = SKJÆRINGSTIDSPUNKT.plusMonths(4);
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
-        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav);
+        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
@@ -107,8 +107,8 @@ public class VurderRefusjonTilfelleOppdatererTest {
         return dto;
     }
 
-    private RefusjonskravDatoDto lagArbeidsgiverSøktForSent(LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav) {
-        return new RefusjonskravDatoDto(VIRKSOMHET, førsteDagMedRefusjonskrav, førsteInnsendingAvRefusjonskrav);
+    private RefusjonskravDatoDto lagArbeidsgiverSøktForSent(LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav, boolean harRefusjonFraStart) {
+        return new RefusjonskravDatoDto(VIRKSOMHET, førsteDagMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, harRefusjonFraStart);
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag() {

@@ -1,0 +1,25 @@
+Lokalt databaseoppsett for windows uten docker
+1) Legg til postgres (C:\Program Files\PostgreSQL\12\bin) i pathvariabelen i miljøvariabler
+2) I eit kommandovindu med administratortilganger kjør følgende kommandoer:
+	initdb -D \kalkulus\data
+	pg_ctl -D \kalkulus\data -o "-p 5433" -l \kalkulus\logs start
+	createuser --port=5433 -s postgres
+3) Åpne appen SQL SHELL (pqsl) ved å søke etter den i windows søkefeltet. Gjør følgende valg
+	Server [localhost]: (trykk enter)
+	Database [postgres]: (trykk enter)
+	Port [5432]: 5433
+	Username [postgres]: (trykk enter)
+Du får sannsynligvis beskjeden
+WARNING: Console code page (850) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+4) Når logget inn som bruker postgres i psql, kjør kommandoene i skriptet ftkalkulus.sql:
+CREATE DATABASE ftkalkulus_unit;
+CREATE USER ftkalkulus_unit WITH PASSWORD 'ftkalkulus_unit';
+GRANT ALL PRIVILEGES ON DATABASE ftkalkulus_unit TO ftkalkulus_unit;
+
+CREATE DATABASE ftkalkulus;
+CREATE USER ftkalkulus WITH PASSWORD 'ftkalkulus';
+GRANT ALL PRIVILEGES ON DATABASE ftkalkulus TO ftkalkulus;

@@ -314,7 +314,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         List<RefusjonskravDatoDto> refusjonskravDatoDtoer = List.of(new RefusjonskravDatoDto(Arbeidsgiver.virksomhet(ORG_NUMMER),
-            SKJÆRINGSTIDSPUNKT, LocalDate.of(2019, Month.MAY, 2)));
+            SKJÆRINGSTIDSPUNKT, LocalDate.of(2019, Month.MAY, 2), true));
 
         // Act
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef,

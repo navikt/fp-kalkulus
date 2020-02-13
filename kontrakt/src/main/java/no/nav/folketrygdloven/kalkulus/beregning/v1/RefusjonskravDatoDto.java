@@ -23,25 +23,36 @@ public class RefusjonskravDatoDto {
     @JsonProperty(value = "arbeidsgiver")
     @Valid
     @NotNull
-    private final Aktør arbeidsgiver;
+    private Aktør arbeidsgiver;
 
     @JsonProperty(value = "førsteDagMedRefusjonskrav")
     @Valid
     @NotNull
-    private final LocalDate førsteDagMedRefusjonskrav;
+    private LocalDate førsteDagMedRefusjonskrav;
 
     @JsonProperty(value = "førsteInnsendingAvRefusjonskrav")
     @Valid
     @NotNull
-    private final LocalDate førsteInnsendingAvRefusjonskrav;
+    private LocalDate førsteInnsendingAvRefusjonskrav;
+
+    @JsonProperty(value = "harRefusjonFraStart")
+    @Valid
+    @NotNull
+    private Boolean harRefusjonFraStart;
 
     public RefusjonskravDatoDto(@Valid @NotNull Aktør arbeidsgiver,
                                 @Valid @NotNull LocalDate førsteDagMedRefusjonskrav,
-                                @Valid @NotNull LocalDate førsteInnsendingAvRefusjonskrav) {
+                                @Valid @NotNull LocalDate førsteInnsendingAvRefusjonskrav,
+                                @Valid @NotNull Boolean harRefusjonFraStart) {
 
         this.arbeidsgiver = arbeidsgiver;
         this.førsteDagMedRefusjonskrav = førsteDagMedRefusjonskrav;
         this.førsteInnsendingAvRefusjonskrav = førsteInnsendingAvRefusjonskrav;
+        this.harRefusjonFraStart = harRefusjonFraStart;
+    }
+
+    protected RefusjonskravDatoDto() {
+        // jackson
     }
 
     public Aktør getArbeidsgiver() {
@@ -54,5 +65,9 @@ public class RefusjonskravDatoDto {
 
     public LocalDate getFørsteInnsendingAvRefusjonskrav() {
         return førsteInnsendingAvRefusjonskrav;
+    }
+
+    public boolean harRefusjonFraStart() {
+        return harRefusjonFraStart;
     }
 }

@@ -4,7 +4,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -18,26 +22,45 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     public static boolean erNyttArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                BeregningAktivitetAggregatDto aktivitetAggregat,
                                                LocalDate skjæringstidspunkt) {
-        if (!andel.getBgAndelArbeidsforhold().isPresent()) {
+        if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
             return false;
         }
-        BGAndelArbeidsforholdDto arbeidsforhold = andel.getBgAndelArbeidsforhold().get();
+        return erNyttArbeidsforhold(andel.getArbeidsgiver().get(), andel.getArbeidsforholdRef().get(), aktivitetAggregat, skjæringstidspunkt);
+    }
+
+    public static boolean erNyttArbeidsforhold(YrkesaktivitetDto yrkesaktivitetDto,
+                                               BeregningAktivitetAggregatDto aktivitetAggregat,
+                                               LocalDate skjæringstidspunkt) {
+        if (!ArbeidType.ORDINÆRT_ARBEIDSFORHOLD.equals(yrkesaktivitetDto.getArbeidType())) {
+            return false;
+        }
         var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
         return beregningAktiviteter.stream()
                 .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))
                 .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1)))
                 .noneMatch(
-                        beregningAktivitet -> matcherReferanse(arbeidsforhold, beregningAktivitet) && matcherArbeidsgiver(arbeidsforhold, beregningAktivitet));
+                        beregningAktivitet -> yrkesaktivitetDto.getArbeidsforholdRef().gjelderFor(beregningAktivitet.getArbeidsforholdRef()) && matcherArbeidsgiver(yrkesaktivitetDto.getArbeidsgiver(), beregningAktivitet));
     }
 
-    private static boolean matcherReferanse(BGAndelArbeidsforholdDto arbeidsforhold, BeregningAktivitetDto beregningAktivitet) {
-        String andelRef = arbeidsforhold.getArbeidsforholdRef().getReferanse();
+    public static boolean erNyttArbeidsforhold(Arbeidsgiver arbeidsgiver,
+                                               InternArbeidsforholdRefDto arbeidsforholdRef,
+                                               BeregningAktivitetAggregatDto aktivitetAggregat,
+                                               LocalDate skjæringstidspunkt) {
+        var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
+        return beregningAktiviteter.stream()
+                .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))
+                .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1)))
+                .noneMatch(
+                        beregningAktivitet -> matcherReferanse(arbeidsforholdRef, beregningAktivitet) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
+    }
+
+    private static boolean matcherReferanse(InternArbeidsforholdRefDto internArbeidsforholdRef, BeregningAktivitetDto beregningAktivitet) {
         String aktivitetRef = beregningAktivitet.getArbeidsforholdRef().getReferanse();
-        return Objects.equals(andelRef, aktivitetRef);
+        return Objects.equals(internArbeidsforholdRef.getReferanse(), aktivitetRef);
     }
 
-    private static boolean matcherArbeidsgiver(BGAndelArbeidsforholdDto arbeidsforhold, BeregningAktivitetDto beregningAktivitet) {
-        return Objects.equals(arbeidsforhold.getArbeidsgiver(), beregningAktivitet.getArbeidsgiver());
+    private static boolean matcherArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningAktivitetDto beregningAktivitet) {
+        return Objects.equals(arbeidsgiver, beregningAktivitet.getArbeidsgiver());
     }
 
     public static boolean erNyFLSNAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningAktivitetAggregatDto aktivitetAggregat, LocalDate skjæringstidspunkt) {

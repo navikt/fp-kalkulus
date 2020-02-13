@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,8 +10,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusjonskravgyldighet.LagArbeidsgiverForSentRefusjonskravMap;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -35,25 +36,16 @@ public class InntektsmeldingMedRefusjonTjeneste {
         Map<YrkesaktivitetDto, Optional<RefusjonskravDatoDto>> yrkesaktivitetDatoMap = map(yrkesaktiviteterForBeregning, refusjonskravDatoer);
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
-
-        Set<Arbeidsgiver> resultat = new HashSet<>();
-
-        for (Map.Entry<YrkesaktivitetDto, Optional<RefusjonskravDatoDto>> entry : yrkesaktivitetDatoMap.entrySet()) {
-            if (entry.getValue().isPresent()) {
-                YrkesaktivitetDto yrkesaktivitet = entry.getKey();
-
-                if (harArbeidsgiverSendtInnInntektsmeldingMedUgyldigRefusjonskrav(entry.getValue().get(), skjæringstidspunktBeregning)) {
-                    resultat.add(yrkesaktivitet.getArbeidsgiver());
-                }
-            }
-        }
-        return resultat;
+        BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
+        Map<Arbeidsgiver, Boolean> harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lag(yrkesaktivitetDatoMap, gjeldendeAktiviteter, skjæringstidspunktBeregning);
+        return finnArbeidsgivereSomHarSøktForSent(harSøktForSentMap);
     }
 
-    private static boolean harArbeidsgiverSendtInnInntektsmeldingMedUgyldigRefusjonskrav(RefusjonskravDatoDto refusjonsdato, LocalDate skjæringstidspunktBeregning) {
-            LocalDate førsteDagMedRefusjon = refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(skjæringstidspunktBeregning);
-            LocalDate førsteLovligeDatoForRefusjon = refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(3).withDayOfMonth(1);
-            return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
+    private static Set<Arbeidsgiver> finnArbeidsgivereSomHarSøktForSent(Map<Arbeidsgiver, Boolean> harSøktForSentMap) {
+        return harSøktForSentMap.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     public static Optional<LocalDate> finnFørsteLovligeDatoForRefusjonFørOverstyring(BeregningsgrunnlagInput input, Arbeidsgiver arbeidsgiver) {

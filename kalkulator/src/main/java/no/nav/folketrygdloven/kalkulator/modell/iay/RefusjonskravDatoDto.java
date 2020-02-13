@@ -13,9 +13,32 @@ public class RefusjonskravDatoDto {
 
     private LocalDate førsteInnsendingAvRefusjonskrav;
 
+    private boolean harRefusjonFraStart = false;
+
     RefusjonskravDatoDto() {
     }
 
+    /**
+     * @param arbeidsgiver arbeidsgiver med refusjon
+     * @param førsteDagMedRefusjonskrav første dag med refusjon som oppgitt i inntektsmelding
+     * @param førsteInnsendingAvRefusjonskrav første innsendelse av refusjonskrav
+     * @param harRefusjonFraStart Angir om første dag med refusjon er lik første dag med ytelse
+     */
+    public RefusjonskravDatoDto(Arbeidsgiver arbeidsgiver, LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav, boolean harRefusjonFraStart) {
+        this.arbeidsgiver = arbeidsgiver;
+        this.førsteDagMedRefusjonskrav = førsteDagMedRefusjonskrav;
+        this.førsteInnsendingAvRefusjonskrav = førsteInnsendingAvRefusjonskrav;
+        this.harRefusjonFraStart = harRefusjonFraStart;
+    }
+
+    /**
+     * For bakoverkompabilitet
+     *
+     * @param arbeidsgiver arbeidsgiver med refusjon
+     * @param førsteDagMedRefusjonskrav første dag med refusjon som oppgitt i inntektsmelding
+     * @param førsteInnsendingAvRefusjonskrav første innsendelse av refusjonskrav
+     */
+    @Deprecated
     public RefusjonskravDatoDto(Arbeidsgiver arbeidsgiver, LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav) {
         this.arbeidsgiver = arbeidsgiver;
         this.førsteDagMedRefusjonskrav = førsteDagMedRefusjonskrav;
@@ -26,6 +49,7 @@ public class RefusjonskravDatoDto {
         this.arbeidsgiver = refusjonskravDato.getArbeidsgiver();
         this.førsteDagMedRefusjonskrav = refusjonskravDato.førsteDagMedRefusjonskrav;
         this.førsteInnsendingAvRefusjonskrav = refusjonskravDato.førsteInnsendingAvRefusjonskrav;
+        this.harRefusjonFraStart = refusjonskravDato.harRefusjonFraStart;
     }
 
     /**
@@ -44,5 +68,9 @@ public class RefusjonskravDatoDto {
 
     public LocalDate getFørsteInnsendingAvRefusjonskrav() {
         return førsteInnsendingAvRefusjonskrav;
+    }
+
+    public boolean harRefusjonFraStart() {
+        return harRefusjonFraStart;
     }
 }

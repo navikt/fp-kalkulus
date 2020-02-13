@@ -14,7 +14,7 @@ public class OpprettRefusjondatoerFraInntektsmeldinger {
 
     public static List<RefusjonskravDatoDto> opprett(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return iayGrunnlag.getInntektsmeldinger().map(ims -> ims.getAlleInntektsmeldinger().stream()
-            .map(im -> new RefusjonskravDatoDto(im.getArbeidsgiver(), im.getStartDatoPermisjon().orElse(ref.getSkjæringstidspunktBeregning()), ref.getSkjæringstidspunktBeregning()))
+            .map(im -> new RefusjonskravDatoDto(im.getArbeidsgiver(), im.getStartDatoPermisjon().orElse(ref.getSkjæringstidspunktBeregning()), ref.getSkjæringstidspunktBeregning(), im.getStartDatoPermisjon().map(d -> d.equals(ref.getSkjæringstidspunktBeregning())).orElse(true)))
             .collect(Collectors.toList())
         ).orElse(List.of());
     }
@@ -22,7 +22,7 @@ public class OpprettRefusjondatoerFraInntektsmeldinger {
     public static List<RefusjonskravDatoDto> opprett(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, Map<Arbeidsgiver, LocalDate> førsteInnsendingsdatoMap) {
         return iayGrunnlag.getInntektsmeldinger().map(ims -> ims.getAlleInntektsmeldinger().stream()
             .map(im -> new RefusjonskravDatoDto(im.getArbeidsgiver(), im.getStartDatoPermisjon().orElse(ref.getSkjæringstidspunktBeregning()),
-                førsteInnsendingsdatoMap.containsKey(im.getArbeidsgiver()) ? førsteInnsendingsdatoMap.get(im.getArbeidsgiver()) : ref.getSkjæringstidspunktBeregning()))
+                førsteInnsendingsdatoMap.containsKey(im.getArbeidsgiver()) ? førsteInnsendingsdatoMap.get(im.getArbeidsgiver()) : ref.getSkjæringstidspunktBeregning(),  im.getStartDatoPermisjon().map(d -> d.equals(ref.getSkjæringstidspunktBeregning())).orElse(true)))
             .collect(Collectors.toList())
         ).orElse(List.of());
     }
