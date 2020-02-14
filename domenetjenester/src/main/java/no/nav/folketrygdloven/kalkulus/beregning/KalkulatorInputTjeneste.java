@@ -20,4 +20,14 @@ public class KalkulatorInputTjeneste {
         return null;
 
     }
+
+    public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId) {
+
+//        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput();
+
+
+        return null;
+
+    }
+
 }

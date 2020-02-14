@@ -1,0 +1,17 @@
+package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
+
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+
+public class KalkulatorTilIAYMapper {
+    public static InternArbeidsforholdRef mapArbeidsforholdRed(InternArbeidsforholdRefDto arbeidsforholdRef) {
+        return InternArbeidsforholdRef.ref(arbeidsforholdRef.getReferanse());
+    }
+
+    public static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver arbeidsgiver) {
+        return arbeidsgiver.getErVirksomhet() ? Arbeidsgiver.virksomhet(arbeidsgiver.getOrgnr()) :
+            Arbeidsgiver.fra(new AktørId(arbeidsgiver.getAktørId().getId()));
+    }
+}

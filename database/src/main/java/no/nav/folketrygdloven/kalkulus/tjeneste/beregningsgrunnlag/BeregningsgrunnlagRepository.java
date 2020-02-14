@@ -224,8 +224,9 @@ public class BeregningsgrunnlagRepository {
         lagreOgFlush(koblingId, builder.build(koblingId, beregningsgrunnlagTilstand));
     }
 
-    private void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
+    public void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
+        Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
         Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         if (tidligereAggregat.isPresent()) {
             tidligereAggregat.get().setAktiv(false);

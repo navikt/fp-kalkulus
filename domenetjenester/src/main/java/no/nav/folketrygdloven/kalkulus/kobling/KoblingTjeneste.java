@@ -52,6 +52,11 @@ public class KoblingTjeneste {
         return repository.hentForKoblingId(koblingId);
     }
 
+    public Long hentKoblingId(KoblingReferanse koblingReferanse) {
+        return repository.hentKoblingIdForKoblingReferanse(koblingReferanse);
+    }
+
+
     public KoblingLås taSkrivesLås(KoblingReferanse referanse) {
         return taSkrivesLås(repository.hentKoblingIdForKoblingReferanse(referanse));
     }
