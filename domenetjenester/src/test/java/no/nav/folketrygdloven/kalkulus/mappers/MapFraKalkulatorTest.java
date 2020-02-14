@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -8,19 +7,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Validation;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
@@ -28,56 +26,35 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 
-public class JsonMapperTest {
-
-
-    private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
+class MapFraKalkulatorTest {
 
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("945748931");
 
 
     @Test
-    void skal_generere_og_validere_roundtrip_kalkulator_input_json() throws Exception {
+    void skal_mappe_fra_kalkulator_til_beregningsgrunnlag_input() {
+        MapFraKalkulator mapFraKalkulator = new MapFraKalkulator();
 
-        KalkulatorInputDto grunnlag = byggKalkulatorInput();
-
-        String json = WRITER.writeValueAsString(grunnlag);
-        System.out.println(json);
-
-        KalkulatorInputDto roundTripped = READER.forType(KalkulatorInputDto.class).readValue(json);
-
-        assertThat(roundTripped).isNotNull();
-        assertThat(roundTripped.getIayGrunnlag()).isNotNull();
-        validateResult(roundTripped);
-    }
-
-    @Test
-    public void skal_generere_og_validere_roundtrip_av_start_beregning_request() throws Exception {
-        //arrange
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
         AktørIdPersonident dummy = AktørIdPersonident.dummy();
+
+        YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.DAGPENGER;
+        AktørId aktørId = new AktørId(dummy.getIdent());
+        Saksnummer saksnummer1 = new Saksnummer(saksnummer);
+        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, aktørId);
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
-        StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
 
-        String json = WRITER.writeValueAsString(spesifikasjon);
-        System.out.println(json);
+        BeregningsgrunnlagInput input = mapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto);
 
-        StartBeregningRequest roundTripped = READER.forType(StartBeregningRequest.class).readValue(json);
 
-        assertThat(roundTripped).isNotNull();
-        assertThat(roundTripped.getAktør()).isEqualTo(dummy);
-        assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getKoblingReferanse()).isEqualByComparingTo(randomUUID);
-        validateResult(roundTripped);
+        assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
+//        assertThat(input.getAktivitetGradering().getAndelGradering()).hasSize(1);
     }
 
 
@@ -93,18 +70,7 @@ public class JsonMapperTest {
 
         KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløp, iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
         kalkulatorInputDto.medAktivitetGradering(aktivitetGraderingDto);
-        kalkulatorInputDto.medRefusjonskravDatoer(List.of(new RefusjonskravDatoDto(organisasjon, periode.getFom(), periode.getFom().minusMonths(1), true)));
 
         return kalkulatorInputDto;
     }
-
-    private void validateResult(Object roundTripped) {
-        Assertions.assertThat(roundTripped).isNotNull();
-        try (var factory = Validation.buildDefaultValidatorFactory()) {
-            var validator = factory.getValidator();
-            var violations = validator.validate(roundTripped);
-            assertThat(violations).isEmpty();
-        }
-    }
-
 }

@@ -18,10 +18,8 @@ import no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingStatus;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.RelasjonsRolleType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -294,10 +292,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     private BehandlingReferanse nyBehandling() {
         return BehandlingReferanse.fra(
             FagsakYtelseType.FORELDREPENGER,
-            BehandlingType.FØRSTEGANGSSØKNAD,
-            RelasjonsRolleType.MORA,
-            AKTØR_ID,
-            FAGSAK_ID,
+                AKTØR_ID,
             BEHANDLING_ID,
             UUID.randomUUID(),
             Optional.empty(),
@@ -309,5 +304,4 @@ public class AvklarAktiviteterTjenesteImplTest {
     private Optional<AktørYtelseDto> getAktørYtelseFraRegister(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return iayGrunnlag.getAktørYtelseFraRegister(ref.getAktørId());
     }
-
 }

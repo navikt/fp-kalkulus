@@ -42,8 +42,9 @@ public class OperereKalkulusRestTjenesteTest {
         List<GrunnbeløpDto> grunnbeløpDtos = List.of(new GrunnbeløpDto(periode, BigDecimal.valueOf(100000), BigDecimal.valueOf(100000)));
         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlagDto = new InntektArbeidYtelseGrunnlagDto();
         OpptjeningAktiviteterDto opptjeningAktiviteterDto = new OpptjeningAktiviteterDto(List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon, new InternArbeidsforholdRefDto("Dummy"))));
+        LocalDate skjæringstidspunkt = LocalDate.now();
 
-        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløpDtos, inntektArbeidYtelseGrunnlagDto, opptjeningAktiviteterDto);
+        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløpDtos, inntektArbeidYtelseGrunnlagDto, opptjeningAktiviteterDto, skjæringstidspunkt);
 
         StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
 

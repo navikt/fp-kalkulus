@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.felles.v1;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -49,16 +50,24 @@ public class KalkulatorInputDto {
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag;
 
+    @JsonProperty(value = "skjæringstidspunkt")
+    @Valid
+    @NotNull
+    private LocalDate skjæringstidspunkt;
+
+
     protected KalkulatorInputDto() {
         // default ctor
     }
 
     public KalkulatorInputDto(@NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
                               @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                              @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter) {
+                              @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
+                              @NotNull @Valid LocalDate skjæringstidspunkt) {
         this.grunnbeløpsatser = grunnbeløpsatser;
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
+        this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
     public AktivitetGraderingDto getAktivitetGradering() {
@@ -98,5 +107,9 @@ public class KalkulatorInputDto {
     public KalkulatorInputDto medYtelsespesifiktGrunnlag(YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
         return this;
+    }
+
+    public LocalDate getSkjæringstidspunkt() {
+        return skjæringstidspunkt;
     }
 }

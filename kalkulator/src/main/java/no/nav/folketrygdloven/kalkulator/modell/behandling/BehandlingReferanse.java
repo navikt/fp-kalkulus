@@ -13,8 +13,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
  */
 public class BehandlingReferanse {
 
-    private Long fagsakId;
-
     private Long behandlingId;
 
     private FagsakYtelseType fagsakYtelseType;
@@ -23,12 +21,6 @@ public class BehandlingReferanse {
      * Søkers aktørid.
      */
     private AktørId aktørId;
-    /**
-     * Søkers rolle ifht. subjekt for ytelsen (eks. barn).
-     */
-    private RelasjonsRolleType relasjonRolle;
-
-    private BehandlingType behandlingType;
 
     /**
      * Original behandling id (i tilfelle dette f.eks er en revurdering av en annen behandling.
@@ -48,14 +40,11 @@ public class BehandlingReferanse {
     public BehandlingReferanse() {
     }
 
-    private BehandlingReferanse(FagsakYtelseType fagsakYtelseType, BehandlingType behandlingType, RelasjonsRolleType relasjonRolle, AktørId aktørId, // NOSONAR
-                                Long fagsakId, Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
+    private BehandlingReferanse(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
+                                Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
                                 BehandlingStatus behandlingStatus, Skjæringstidspunkt skjæringstidspunkt) {
         this.fagsakYtelseType = fagsakYtelseType;
-        this.behandlingType = behandlingType;
-        this.relasjonRolle = relasjonRolle;
         this.aktørId = aktørId;
-        this.fagsakId = fagsakId;
         this.behandlingId = behandlingId;
         this.behandlingUuid = behandlingUuid;
         this.originalBehandlingId = originalBehandlingId;
@@ -64,23 +53,16 @@ public class BehandlingReferanse {
     }
 
 
-    public static BehandlingReferanse fra(FagsakYtelseType fagsakYtelseType, BehandlingType behandlingType, RelasjonsRolleType relasjonRolle, AktørId aktørId, // NOSONAR
-                                          Long fagsakId, Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
+    public static BehandlingReferanse fra(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
+                                          Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
                                           BehandlingStatus behandlingStatus, Skjæringstidspunkt skjæringstidspunkt) {
         return new BehandlingReferanse(fagsakYtelseType,
-            behandlingType,
-            relasjonRolle,
-            aktørId,
-            fagsakId,
-            behandlingId,
+                aktørId,
+                behandlingId,
             behandlingUuid,
             originalBehandlingId,
             behandlingStatus,
             skjæringstidspunkt);
-    }
-
-    public Long getFagsakId() {
-        return fagsakId;
     }
 
     public Long getBehandlingId() {
@@ -126,21 +108,10 @@ public class BehandlingReferanse {
         return skjæringstidspunkt.getFørsteUttaksdato();
     }
 
-    public RelasjonsRolleType getRelasjonsRolleType() {
-        return relasjonRolle;
-    }
-
-    public BehandlingType getBehandlingType() {
-        return behandlingType;
-    }
-
-    public boolean erRevurdering() {
-        return BehandlingType.REVURDERING.equals(behandlingType);
-    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(behandlingId, originalBehandlingId, fagsakYtelseType, behandlingType, aktørId);
+        return Objects.hash(behandlingId, originalBehandlingId, fagsakYtelseType, aktørId);
     }
 
     @Override
@@ -155,8 +126,6 @@ public class BehandlingReferanse {
         return Objects.equals(behandlingId, other.behandlingId)
             && Objects.equals(aktørId, other.aktørId)
             && Objects.equals(fagsakYtelseType, other.fagsakYtelseType)
-            && Objects.equals(behandlingType, other.behandlingType)
-            && Objects.equals(relasjonRolle, other.relasjonRolle)
             && Objects.equals(originalBehandlingId, other.originalBehandlingId)
         // tar ikke med status eller skjæringstidspunkt i equals siden de kan endre seg
         ;
@@ -166,8 +135,8 @@ public class BehandlingReferanse {
     @Override
     public String toString() {
         return getClass().getSimpleName() + String.format(
-            "<behandlingId=%s, fagsakType=%s, behandlingType=%s, rolle=%s, aktørId=%s, status=%s, skjæringstidspunjkt=%s, originalBehandlingId=%s>",
-            behandlingId, fagsakYtelseType, behandlingType, relasjonRolle, aktørId, behandlingStatus, skjæringstidspunkt, originalBehandlingId);
+            "<behandlingId=%s, fagsakType=%s, aktørId=%s, status=%s, skjæringstidspunjkt=%s, originalBehandlingId=%s>",
+            behandlingId, fagsakYtelseType, aktørId, behandlingStatus, skjæringstidspunkt, originalBehandlingId);
     }
 
     /**
@@ -175,11 +144,8 @@ public class BehandlingReferanse {
      */
     public BehandlingReferanse medSkjæringstidspunkt(LocalDate utledetSkjæringstidspunkt) {
         return new BehandlingReferanse(getFagsakYtelseType(),
-            getBehandlingType(),
-            getRelasjonsRolleType(),
             getAktørId(),
-            getFagsakId(),
-            getId(),
+                getId(),
             getBehandlingUuid(),
             getOriginalBehandlingId(),
             getBehandlingStatus(),
@@ -193,11 +159,8 @@ public class BehandlingReferanse {
      */
     public BehandlingReferanse medSkjæringstidspunkt(Skjæringstidspunkt skjæringstidspunkt) {
         return new BehandlingReferanse(getFagsakYtelseType(),
-            getBehandlingType(),
-            getRelasjonsRolleType(),
             getAktørId(),
-            getFagsakId(),
-            getId(),
+                getId(),
             getBehandlingUuid(),
             getOriginalBehandlingId(),
             getBehandlingStatus(),

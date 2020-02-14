@@ -27,7 +27,6 @@ public class BeregningTilInputTjeneste {
     }
 
 
-
     private BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         Long behandlingId = input.getBehandlingReferanse().getBehandlingId();
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitetOpt = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(behandlingId);

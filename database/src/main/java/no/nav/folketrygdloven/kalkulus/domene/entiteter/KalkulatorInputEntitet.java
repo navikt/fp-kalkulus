@@ -46,4 +46,8 @@ public class KalkulatorInputEntitet extends BaseEntitet {
     public String getInput() {
         return input;
     }
+
+    public Long getKoblingId() {
+        return koblingId;
+    }
 }
