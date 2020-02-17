@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
@@ -79,9 +80,13 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagRestDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
+        Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> arbeidsgiverArbeidsgiverOpplysningerDtoMap = new HashMap<>();
+        arbeidsgiverArbeidsgiverOpplysningerDtoMap.put(arbeidsgiver, new ArbeidsgiverOpplysningerDto(arbeidsgiver.getIdentifikator(), ARBEIDSGIVER_NAVN));
+        arbeidsgiverArbeidsgiverOpplysningerDtoMap.put(arbeidsgiver2, new ArbeidsgiverOpplysningerDto(arbeidsgiver2.getIdentifikator(), ARBEIDSGIVER_NAVN2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medData(registerBuilder)
-                .medInntektsmeldinger(List.of(im1, im2)).build();
+                .medInntektsmeldinger(List.of(im1, im2))
+                .medArbeidsgiverOpplysninger(arbeidsgiverArbeidsgiverOpplysningerDtoMap).build();
         BeregningsgrunnlagRestInput input = lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
