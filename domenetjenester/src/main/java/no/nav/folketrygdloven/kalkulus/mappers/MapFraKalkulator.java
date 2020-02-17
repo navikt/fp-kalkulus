@@ -44,7 +44,7 @@ public class MapFraKalkulator {
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
 
-    public BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
+    public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
         String json = kalkulatorInputEntitet.getInput();
         KalkulatorInputDto input = null;
 
@@ -61,7 +61,7 @@ public class MapFraKalkulator {
     }
 
 
-    public BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputDto input) {
+    public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputDto input) {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
@@ -85,7 +85,7 @@ public class MapFraKalkulator {
                 mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input.getYtelsespesifiktGrunnlag()));
     }
 
-    private YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
+    private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
         YtelseTyperKalkulusStøtter yt = YtelseTyperKalkulusStøtter.fraKode(ytelseType.getKode());
         if (FORELDREPENGER == yt) {
             return new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
@@ -95,7 +95,7 @@ public class MapFraKalkulator {
         return null;
     }
 
-    private List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(List<RefusjonskravDatoDto> refusjonskravDatoer) {
+    private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(List<RefusjonskravDatoDto> refusjonskravDatoer) {
         if (refusjonskravDatoer == null) {
             return Collections.emptyList();
         }
@@ -108,7 +108,7 @@ public class MapFraKalkulator {
                 .collect(Collectors.toList());
     }
 
-    private AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
+    private static AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
         List<AndelGradering> res = new ArrayList<>();
         aktivitetGradering.getAndelGraderingDto().forEach(andel -> {
             Builder builder = AndelGradering.builder();
@@ -133,11 +133,11 @@ public class MapFraKalkulator {
 
     }
 
-    private no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
+    private static no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
         return null;
     }
 
-    private no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident aktørId) {
+    private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident aktørId) {
         return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag, aktørId);
     }
 }
