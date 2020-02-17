@@ -46,6 +46,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.BekreftetPermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
@@ -1842,6 +1844,269 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
             Arrays.asList(AktivitetStatus.ARBEIDSTAKER, AktivitetStatus.ARBEIDSTAKER, AktivitetStatus.FRILANSER));
         assertBeregningsgrunnlagPeriode(perioder.get(2), graderingTom.plusDays(1), TIDENES_ENDE, PeriodeÅrsak.GRADERING_OPPHØRER);
 
+    }
+
+    @Test
+    public void skalLageEnPeriodeNårGraderingPåVirksomhetOgAndelMedRefusjonIkkeHarNullIBruttoOgFlereArbeidsforholdISammeOrganisasjon() {
+        // Arrange
+        LocalDate graderingFom = SKJÆRINGSTIDSPUNKT.plusMonths(1);
+        LocalDate graderingTom = SKJÆRINGSTIDSPUNKT.plusMonths(2);
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .build(beregningsgrunnlag);
+
+        InternArbeidsforholdRefDto arbeidsforholdRef = InternArbeidsforholdRefDto.nyRef();
+        InternArbeidsforholdRefDto arbeidsforholdRef2 = InternArbeidsforholdRefDto.nyRef();
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORG_NUMMER);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef))
+                .medBeregnetPrÅr(BigDecimal.valueOf(40_000))
+                .build(periode);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef2))
+                .medBeregnetPrÅr(BigDecimal.ZERO)
+                .build(periode);
+
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+
+        InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingRef.getAktørId());
+        aktørArbeidBuilder
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdRef)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusYears(1)))))
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdRef2)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(15), SKJÆRINGSTIDSPUNKT.plusYears(2)))));
+        oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
+        iayGrunnlagBuilder.medData(oppdatere);
+
+        BigDecimal refusjon = BigDecimal.valueOf(23987);
+
+        InntektsmeldingDto im1 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medRefusjon(refusjon)
+                .medArbeidsforholdId(arbeidsforholdRef)
+                .medBeløp(BigDecimal.valueOf(40_000))
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(arbeidsforholdRef2)
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .medBeløp(BigDecimal.ZERO)
+                .build();
+
+        iayGrunnlagBuilder.medInntektsmeldinger(im1,im2);
+
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medGradering(graderingFom, graderingTom, 50)
+                .build());
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+                .medBeregningsgrunnlagGrunnlag(grunnlag);
+
+        // Act
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
+
+        // Assert
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(perioder).hasSize(1);
+        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, TIDENES_ENDE);
+    }
+
+    @Test
+    public void skalLageTrePerioderForRiktigAndelNårGraderingPåEtArbeidsforholdMedNullIBrutto() {
+        // Arrange
+        LocalDate graderingFom = SKJÆRINGSTIDSPUNKT.plusMonths(1);
+        LocalDate graderingTom = SKJÆRINGSTIDSPUNKT.plusMonths(2);
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .build(beregningsgrunnlag);
+
+        Arbeidsgiver arbeidsgiver1 = Arbeidsgiver.virksomhet(ORG_NUMMER);
+        Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet(ORG_NUMMER_2);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver1))
+                .medBeregnetPrÅr(BigDecimal.valueOf(500_000))
+                .build(periode);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver2))
+                .medBeregnetPrÅr(BigDecimal.ZERO)
+                .build(periode);
+        BeregningAktivitetDto aktivitetEntitet = BeregningAktivitetDto.builder().medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                .medArbeidsgiver(arbeidsgiver2)
+                .medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef())
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(23), SKJÆRINGSTIDSPUNKT.plusYears(2))).build();
+        beregningAktivitetAggregat = leggTilAktivitet(aktivitetEntitet);
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+
+        InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingRef.getAktørId());
+        aktørArbeidBuilder
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver1)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusYears(1)))))
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver2)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(23), SKJÆRINGSTIDSPUNKT.plusYears(2)))));
+        oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
+        iayGrunnlagBuilder.medData(oppdatere);
+
+        InntektsmeldingDto im1 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver1)
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .medBeløp(BigDecimal.valueOf(500_000))
+                .build();
+
+        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver2)
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .medBeløp(BigDecimal.ZERO)
+                .build();
+
+        iayGrunnlagBuilder.medInntektsmeldinger(im1,im2);
+
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medArbeidsgiver(arbeidsgiver2)
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medGradering(graderingFom, graderingTom, 50)
+                .build());
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+                .medBeregningsgrunnlagGrunnlag(grunnlag);
+
+        // Act
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
+
+        // Assert
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(perioder).hasSize(3);
+        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, graderingFom.minusDays(1));
+        assertBeregningsgrunnlagPeriode(perioder.get(1), graderingFom, graderingTom, PeriodeÅrsak.GRADERING);
+        assertBeregningsgrunnlagPeriode(perioder.get(2), graderingTom.plusDays(1), TIDENES_ENDE, PeriodeÅrsak.GRADERING_OPPHØRER);
+    }
+
+    @Test
+    public void skalLageTrePerioderNårDetIkkeErRefusjonOgAndelerHarNullIBruttoOgFlereArbeidsforholdISammeOrganisasjon() {
+        // Arrange
+        LocalDate graderingFom = SKJÆRINGSTIDSPUNKT.plusMonths(1);
+        LocalDate graderingTom = SKJÆRINGSTIDSPUNKT.plusMonths(2);
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .build(beregningsgrunnlag);
+
+        InternArbeidsforholdRefDto arbeidsforholdRef = InternArbeidsforholdRefDto.nyRef();
+        InternArbeidsforholdRefDto arbeidsforholdRef2 = InternArbeidsforholdRefDto.nyRef();
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORG_NUMMER);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef))
+                .medBeregnetPrÅr(BigDecimal.ZERO)
+                .build(periode);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef2))
+                .medBeregnetPrÅr(BigDecimal.ZERO)
+                .build(periode);
+
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+
+        InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingRef.getAktørId());
+        aktørArbeidBuilder
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdRef)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusYears(1)))))
+                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdRef2)
+                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(15), SKJÆRINGSTIDSPUNKT.plusYears(2)))));
+        oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
+        iayGrunnlagBuilder.medData(oppdatere);
+
+        InntektsmeldingDto im1 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(arbeidsforholdRef)
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .build();
+
+        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(arbeidsforholdRef2)
+                .medStartDatoPermisjon(SKJÆRINGSTIDSPUNKT)
+                .medBeløp(BigDecimal.ZERO)
+                .build();
+
+        iayGrunnlagBuilder.medInntektsmeldinger(im1,im2);
+
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medArbeidsgiver(arbeidsgiver)
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medGradering(graderingFom, graderingTom, 50)
+                .build());
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+                .medBeregningsgrunnlagGrunnlag(grunnlag);
+
+        // Act
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
+
+        // Assert
+        List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        assertThat(perioder).hasSize(3);
+        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, graderingFom.minusDays(1));
+        assertBeregningsgrunnlagPeriode(perioder.get(1), graderingFom, graderingTom, PeriodeÅrsak.GRADERING);
+        assertBeregningsgrunnlagPeriode(perioder.get(2), graderingTom.plusDays(1), TIDENES_ENDE, PeriodeÅrsak.GRADERING_OPPHØRER);
     }
 
     private BeregningAktivitetOverstyringDto lagOverstyringForAktivitet(InternArbeidsforholdRefDto arbId, Arbeidsgiver arbeidsgiver, BeregningAktivitetHandlingType handlingIkkeBenytt) {
