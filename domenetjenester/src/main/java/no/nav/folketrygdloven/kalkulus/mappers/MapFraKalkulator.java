@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
@@ -77,7 +78,7 @@ public class MapFraKalkulator {
         List<RefusjonskravDatoDto> refusjonskravDatoer = input.getRefusjonskravDatoer();
 
         return new BeregningsgrunnlagInput(ref,
-                mapFraDto(iayGrunnlag, aktørId),
+                mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId())),
                 mapFraDto(opptjeningAktiviteter),
                 mapFraDto(aktivitetGradering),
                 mapFraDto(refusjonskravDatoer),
@@ -108,7 +109,6 @@ public class MapFraKalkulator {
     }
 
     private AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
-
         List<AndelGradering> res = new ArrayList<>();
         aktivitetGradering.getAndelGraderingDto().forEach(andel -> {
             Builder builder = AndelGradering.builder();
@@ -126,6 +126,9 @@ public class MapFraKalkulator {
     }
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
+        if (arbeidsgiver == null) {
+            return null;
+        }
         return arbeidsgiver.getErOrganisasjon() ? Arbeidsgiver.virksomhet(arbeidsgiver.getIdent()) : Arbeidsgiver.person(new AktørId(arbeidsgiver.getIdent()));
 
     }
@@ -134,7 +137,7 @@ public class MapFraKalkulator {
         return null;
     }
 
-    private no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørId aktørId) {
-        return null;
+    private no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident aktørId) {
+        return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag, aktørId);
     }
 }

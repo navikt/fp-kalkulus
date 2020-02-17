@@ -60,7 +60,7 @@ public class InntektArbeidYtelseGrunnlagDto {
         return this;
     }
 
-    public InntektArbeidYtelseGrunnlagDto medArbeidDto(YtelserDto ytelserDto) {
+    public InntektArbeidYtelseGrunnlagDto medYtelserDto(YtelserDto ytelserDto) {
         this.ytelserDto = ytelserDto;
         return this;
     }
@@ -96,7 +96,7 @@ public class InntektArbeidYtelseGrunnlagDto {
         return oppgittOpptjening;
     }
 
-    public InntektsmeldingerDto getInntektsmeldinger() {
+    public InntektsmeldingerDto getInntektsmeldingDto() {
         return inntektsmeldinger;
     }
 

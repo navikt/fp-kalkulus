@@ -1,38 +1,37 @@
-package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
+package no.nav.folketrygdloven.kalkulus.felles.v1;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.DecimalMin;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class YtelserDto {
+public class BeløpDto {
 
-    @JsonProperty("ytelser")
-    @NotNull
+    @JsonProperty(value = "verdi")
     @Valid
-    private List<YtelseDto> ytelser;
+    @DecimalMin(value = "0.00", message = "verdi ${validatedValue} må være >= {value}")
+    private BigDecimal verdi;
 
-    protected YtelserDto() {
+    protected BeløpDto() {
         // default ctor
     }
 
-    public YtelserDto(@NotNull @Valid List<YtelseDto> ytelser) {
-        this.ytelser = ytelser;
+    public BeløpDto(@Valid @DecimalMin(value = "0.00", message = "verdi ${validatedValue} må være >= {value}") BigDecimal verdi) {
+        this.verdi = verdi;
     }
 
-    public List<YtelseDto> getYtelser() {
-        return ytelser;
+    public BigDecimal getVerdi() {
+        return verdi;
     }
 }

@@ -35,6 +35,11 @@ public class UtbetalingDto {
     @Valid
     private List<UtbetalingsPostDto> poster;
 
+    public UtbetalingDto(@NotNull @Valid InntektskildeType kilde, @NotNull @Valid List<UtbetalingsPostDto> poster) {
+        this.kilde = kilde;
+        this.poster = poster;
+    }
+
     protected UtbetalingDto() {
         // default ctor
     }

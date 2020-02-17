@@ -55,9 +55,10 @@ public class UtbetalingsPostDto {
     protected UtbetalingsPostDto() {
     }
 
-    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType) {
+    public UtbetalingsPostDto(Periode periode, InntektspostType inntektspostType, BigDecimal beløp) {
         Objects.requireNonNull(periode, "periode");
         Objects.requireNonNull(inntektspostType, "inntektspostType");
+        this.beløp = beløp;
         this.periode = periode;
         this.inntektspostType = inntektspostType;
     }

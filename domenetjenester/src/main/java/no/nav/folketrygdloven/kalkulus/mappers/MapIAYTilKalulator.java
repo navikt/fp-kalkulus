@@ -1,9 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
+import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -14,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
@@ -29,16 +31,24 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PensjonTrygdType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntekterDto;
+import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
@@ -47,10 +57,15 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
 
 public class MapIAYTilKalulator {
 
     public static InternArbeidsforholdRefDto mapArbeidsforholdRef(no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef) {
+        if (arbeidsforholdRef == null) {
+            return null;
+        }
         return InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse());
     }
 
@@ -63,128 +78,84 @@ public class MapIAYTilKalulator {
         InntektArbeidYtelseAggregatBuilder data = mapAggregat(iayGrunnlag, id);
         builder.medData(data);
 
+        mapInntektsmelding(iayGrunnlag.getInntektsmeldingDto());
 
+        if (iayGrunnlag.getOppgittOpptjening() != null) {
+            builder.medOppgittOpptjening(mapOppgittOpptjening(iayGrunnlag.getOppgittOpptjening()));
+        }
 
-        //iayGrunnlag.getInntektsmeldinger().ifPresent(aggregat -> builder.setInntektsmeldinger(mapInntektsmelding(aggregat, iayGrunnlag.getArbeidsforholdInformasjon())));
-        //iayGrunnlag.getArbeidsforholdInformasjon().ifPresent(arbeidsforholdInformasjon -> builder.medInformasjon(mapArbeidsforholdInformasjon(arbeidsforholdInformasjon)));
-        //iayGrunnlag.getOppgittOpptjening().ifPresent(oppgittOpptjening -> builder.medOppgittOpptjening(mapOppgittOpptjening(oppgittOpptjening)));
-        //builder.medErAktivtGrunnlag(iayGrunnlag.isAktiv());
+        builder.medErAktivtGrunnlag(true);
         return builder.build();
     }
 
-    /**
-    public static Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> mapArbeidsforholdOpplysninger(Map<Arbeidsgiver, ArbeidsgiverOpplysninger> arbeidsgiverOpplysninger, List<ArbeidsforholdOverstyring> overstyringer) {
-        Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> returnMap = new HashMap<>();
-        arbeidsgiverOpplysninger.entrySet().stream()
-            .forEach(e -> returnMap.put(mapArbeidsgiver(e.getKey()), mapOpplysning(e.getValue())));
-        overstyringer
-            .stream()
-            .findFirst()
-            .ifPresent(arbeidsforhold -> returnMap.put(mapArbeidsgiver(arbeidsforhold.getArbeidsgiver()),
-                new ArbeidsgiverOpplysningerDto(arbeidsforhold.getArbeidsgiver().getOrgnr(), arbeidsforhold.getArbeidsgiverNavn())));
-        return returnMap;
 
-    }
-
-    public  static ArbeidsgiverOpplysningerDto mapOpplysning(ArbeidsgiverOpplysninger arbeidsgiverOpplysninger) {
-        return new ArbeidsgiverOpplysningerDto(arbeidsgiverOpplysninger.getIdentifikator(), arbeidsgiverOpplysninger.getNavn(), arbeidsgiverOpplysninger.getFødselsdato());
-    }
-
-    private static OppgittOpptjeningDtoBuilder mapOppgittOpptjening(OppgittOpptjening oppgittOpptjening) {
+    private static OppgittOpptjeningDtoBuilder mapOppgittOpptjening(OppgittOpptjeningDto oppgittOpptjening) {
         OppgittOpptjeningDtoBuilder builder = OppgittOpptjeningDtoBuilder.ny();
-        oppgittOpptjening.getFrilans().ifPresent(oppgittFrilans -> builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getHarInntektFraFosterhjem(), oppgittFrilans.getErNyoppstartet(), oppgittFrilans.getHarNærRelasjon())));
-
-        oppgittOpptjening.getAnnenAktivitet().forEach(oppgittAnnenAktivitet -> builder.leggTilAnnenAktivitet(new OppgittAnnenAktivitetDto(mapDatoIntervall(oppgittAnnenAktivitet.getPeriode()), ArbeidType.fraKode(oppgittAnnenAktivitet.getArbeidType().getKode()))));
-        oppgittOpptjening.getEgenNæring().forEach(oppgittEgenNæring -> builder.leggTilEgneNæring(mapEgenNæring(oppgittEgenNæring)));
-        oppgittOpptjening.getOppgittArbeidsforhold().forEach(oppgittArbeidsforhold -> builder.leggTilOppgittArbeidsforhold(mapOppgittArbeidsforhold(oppgittArbeidsforhold)));
-
+        if (oppgittOpptjening.getFrilans() != null) {
+            no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansDto oppgittFrilans = oppgittOpptjening.getFrilans();
+            builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getHarInntektFraFosterhjem(), oppgittFrilans.getErNyoppstartet(), oppgittFrilans.getHarNærRelasjon()));
+        }
+        if (oppgittOpptjening.getEgenNæring() != null) {
+            oppgittOpptjening.getEgenNæring().forEach(egen -> builder.leggTilEgneNæring(mapEgenNæring(egen)));
+        }
         return builder;
     }
 
-    private static OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder mapOppgittArbeidsforhold(OppgittArbeidsforhold oppgittArbeidsforhold) {
-        return OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder.ny()
-            .medArbeidType(ArbeidType.fraKode(oppgittArbeidsforhold.getArbeidType().getKode()))
-            .medPeriode(mapDatoIntervall(oppgittArbeidsforhold.getPeriode()));
+    private static Intervall mapDatoIntervall(Periode periode) {
+        return Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom());
     }
 
-    private static Intervall mapDatoIntervall(no.nav.foreldrepenger.domene.tid.DatoIntervallEntitet periode) {
-        return Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato());
-    }
-     */
-
-    private static OppgittOpptjeningDtoBuilder.EgenNæringBuilder mapEgenNæring() {
-        OppgittOpptjeningDtoBuilder.EgenNæringBuilder egenNæringBuilder = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny();
-            //.medPeriode(mapDatoIntervall(oppgittEgenNæring.getPeriode()))
-            //.medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
-            //.medEndringDato(oppgittEgenNæring.getEndringDato())
-            //.medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
-            //.medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
-            //.medVarigEndring(oppgittEgenNæring.getVarigEndring())
-            //.medBegrunnelse(oppgittEgenNæring.getBegrunnelse())
-            //.medRegnskapsførerNavn(oppgittEgenNæring.getRegnskapsførerNavn())
-            //.medNærRelasjon(oppgittEgenNæring.getNærRelasjon())
-            //.medNyoppstartet(oppgittEgenNæring.getNyoppstartet())
-            //.medRegnskapsførerTlf(oppgittEgenNæring.getRegnskapsførerTlf());
-        //if (oppgittEgenNæring.getOrgnr() != null) {
-        //   egenNæringBuilder.medVirksomhet(oppgittEgenNæring.getOrgnr());
-        //}
+    private static OppgittOpptjeningDtoBuilder.EgenNæringBuilder mapEgenNæring(OppgittEgenNæringDto oppgittEgenNæring) {
+        OppgittOpptjeningDtoBuilder.EgenNæringBuilder egenNæringBuilder = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
+                .medPeriode(mapDatoIntervall(oppgittEgenNæring.getPeriode()))
+                .medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
+                .medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
+                .medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
+                .medVarigEndring(oppgittEgenNæring.getVarigEndring())
+                .medNærRelasjon(oppgittEgenNæring.getNærRelasjon())
+                .medNyoppstartet(oppgittEgenNæring.getNyoppstartet());
+        if (oppgittEgenNæring.getAktør() != null && oppgittEgenNæring.getAktør().getErOrganisasjon()) {
+            egenNæringBuilder.medVirksomhet(oppgittEgenNæring.getAktør().getIdent());
+        }
         return egenNæringBuilder;
     }
 
-    /**
-    private static ArbeidsforholdInformasjonDto mapArbeidsforholdInformasjon(ArbeidsforholdInformasjon arbeidsforholdInformasjon) {
-        ArbeidsforholdInformasjonDtoBuilder builder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.empty());
-        arbeidsforholdInformasjon.getArbeidsforholdReferanser().forEach(arbeidsforholdReferanse -> builder.leggTilNyReferanse(mapRefDto(arbeidsforholdReferanse)));
-        arbeidsforholdInformasjon.getOverstyringer().forEach(arbeidsforholdOverstyring -> builder.leggTil(mapOverstyringerDto(arbeidsforholdOverstyring)));
+    public static InntektsmeldingAggregatDto mapInntektsmelding(InntektsmeldingerDto inntektsmeldingDto) {
+        InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder builder = InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder.ny();
+        inntektsmeldingDto.getInntektsmeldinger().forEach(inntektsmelding -> builder.leggTil(mapInntektsmeldingDto(inntektsmelding)));
         return builder.build();
     }
 
-    private static BekreftetPermisjonDto mapBekreftetPermisjonDto(BekreftetPermisjon bekreftetPermisjon) {
-        return new BekreftetPermisjonDto(bekreftetPermisjon.getPeriode().getFomDato(), bekreftetPermisjon.getPeriode().getTomDato(), BekreftetPermisjonStatus.fraKode(bekreftetPermisjon.getStatus().getKode()));
-    }
-
-    private static ArbeidsforholdReferanseDto mapRefDto(ArbeidsforholdReferanse arbeidsforholdReferanse) {
-        return new ArbeidsforholdReferanseDto(mapArbeidsgiver(arbeidsforholdReferanse.getArbeidsgiver()),
-            mapArbeidsforholdRef(arbeidsforholdReferanse.getInternReferanse()),
-            mapArbeidsforholdEksternRef(arbeidsforholdReferanse.getEksternReferanse()));
-    }
-     */
-
-    public static InntektsmeldingAggregatDto mapInntektsmelding() {
-        //InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder builder = InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder.ny();
-        //aggregat.getAlleInntektsmeldinger().forEach(inntektsmelding -> builder.leggTil(mapInntektsmeldingDto(inntektsmelding)));
-        //arbeidsforholdInformasjon.ifPresent(info -> builder.medArbeidsforholdInformasjonDto(mapArbeidsforholdInformasjon(info)));
-        //return builder.build();
-        return null;
-    }
-
-    private static InntektsmeldingDto mapInntektsmeldingDto() {
+    private static InntektsmeldingDto mapInntektsmeldingDto(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto inntektsmelding) {
         InntektsmeldingDtoBuilder builder = InntektsmeldingDtoBuilder.builder();
-        //builder.medArbeidsgiver(mapArbeidsgiver(inntektsmelding.getArbeidsgiver()));
-        //builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
-        //builder.medRefusjon(inntektsmelding.getRefusjonBeløpPerMnd() == null ? null : inntektsmelding.getRefusjonBeløpPerMnd().getVerdi(), inntektsmelding.getRefusjonOpphører());
-        //builder.medBeløp(inntektsmelding.getInntektBeløp().getVerdi());
-        //inntektsmelding.getNaturalYtelser().stream().map(IAYMapperTilKalkulus::mapNaturalYtelse).forEach(builder::leggTil);
-        //inntektsmelding.getStartDatoPermisjon().ifPresent(builder::medStartDatoPermisjon);
-        //inntektsmelding.getEndringerRefusjon().forEach(refusjon -> builder.leggTil(mapRefusjon(refusjon)));
+        builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntektsmelding.getArbeidsgiver()));
+        builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
+        builder.medRefusjon(inntektsmelding.getRefusjonBeløpPerMnd() == null ? null : inntektsmelding.getRefusjonBeløpPerMnd().getVerdi(), inntektsmelding.getRefusjonOpphører());
+        builder.medBeløp(inntektsmelding.getInntektBeløp().getVerdi());
+        inntektsmelding.getNaturalYtelser().stream().map(MapIAYTilKalulator::mapNaturalYtelse).forEach(builder::leggTil);
+        if (inntektsmelding.getStartDatoPermisjon() != null) {
+            builder.medStartDatoPermisjon(inntektsmelding.getStartDatoPermisjon());
+        }
+        inntektsmelding.getEndringerRefusjon().forEach(refusjon -> builder.leggTil(mapRefusjon(refusjon)));
         return builder.build(true);
     }
 
-    private static NaturalYtelseDto mapNaturalYtelse(NaturalYtelse naturalYtelse) {
-        //return new NaturalYtelseDto(naturalYtelse.getPeriode().getFomDato(), naturalYtelse.getPeriode().getTomDato(), naturalYtelse.getBeloepPerMnd().getVerdi(), NaturalYtelseType.fraKode(naturalYtelse.getType().getKode()));
-        return null;
+    private static NaturalYtelseDto mapNaturalYtelse(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.NaturalYtelseDto naturalYtelse) {
+        return new NaturalYtelseDto(naturalYtelse.getPeriode().getFom(),
+                naturalYtelse.getPeriode().getTom(),
+                naturalYtelse.getBeløp().getVerdi(),
+                NaturalYtelseType.fraKode(naturalYtelse.getType().getKode()));
     }
 
-    private static RefusjonDto mapRefusjon() {
-       // return new RefusjonDto(refusjon.getRefusjonsbeløp().getVerdi(), refusjon.getFom());
-        return null;
+    private static RefusjonDto mapRefusjon(no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.RefusjonDto refusjon) {
+        return new RefusjonDto(refusjon.getRefusjonsbeløpMnd().getVerdi(), refusjon.getFom());
     }
 
     private static AktivitetsAvtaleDtoBuilder mapAktivitetsAvtale(AktivitetsAvtaleDto aktivitetsAvtale) {
         return AktivitetsAvtaleDtoBuilder.ny()
-            .medPeriode(Intervall.fraOgMedTilOgMed(aktivitetsAvtale.getPeriode().getFom(), aktivitetsAvtale.getPeriode().getTom()))
-            .medProsentsats(aktivitetsAvtale.getStillingsprosent())
-            .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
+                .medPeriode(Intervall.fraOgMedTilOgMed(aktivitetsAvtale.getPeriode().getFom(), aktivitetsAvtale.getPeriode().getTom()))
+                .medProsentsats(aktivitetsAvtale.getStillingsprosent())
+                .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
     }
 
 
@@ -198,8 +169,7 @@ public class MapIAYTilKalulator {
         return dtoBuilder.build();
     }
 
-
-    private static InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder mapInntekt(InntekterDto inntekterDto, AktørIdPersonident id){
+    private static InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder mapInntekt(InntekterDto inntekterDto, AktørIdPersonident id) {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder.oppdatere(Optional.empty());
         inntekterDto.getUtbetalinger().forEach(inntekt -> builder.leggTilInntekt(mapInntekt(inntekt)));
         builder.medAktørId(new AktørId(id.getIdent()));
@@ -220,9 +190,10 @@ public class MapIAYTilKalulator {
         builder.medBeløp(inntektspost.getBeløp());
         builder.medInntektspostType(inntektspost.getInntektspostType().getKode());
         builder.medPeriode(inntektspost.getPeriode().getFom(), inntektspost.getPeriode().getTom());
-        builder.medSkatteOgAvgiftsregelType(inntektspost.getSkattAvgiftType().getKode());
+        if (inntektspost.getSkattAvgiftType() != null) {
+            builder.medSkatteOgAvgiftsregelType(inntektspost.getSkattAvgiftType().getKode());
+        }
         builder.medYtelse(mapUtbetaltYtelseTypeTilGrunnlag(inntektspost.getYtelseType()));
-
         return builder;
     }
 
@@ -239,7 +210,6 @@ public class MapIAYTilKalulator {
         builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto(), id));
         builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto(), id));
         return builder;
-
     }
 
     private static InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder mapAktørYtelse(YtelserDto ytelser, AktørIdPersonident id) {
@@ -252,41 +222,74 @@ public class MapIAYTilKalulator {
 
     private static YtelseDtoBuilder mapYtelse(YtelseDto ytelse) {
         YtelseDtoBuilder builder = YtelseDtoBuilder.oppdatere(Optional.empty());
-        //ytelse.getYtelseAnvist().forEach(ytelseAnvist -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvist)));
-        //ytelse.getYtelseGrunnlag().ifPresent(ytelseGrunnlag -> builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelseGrunnlag)));
-        //builder.medBehandlingsTema(TemaUnderkategori.fraKode(ytelse.getBehandlingsTema().getKode()));
-        //builder.medKilde(Fagsystem.fraKode(ytelse.getKilde().getKode()));
-        //builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
-        //builder.medYtelseType(RelatertYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
+        if (ytelse.getYtelseAnvist() != null) {
+            ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto)));
+        }
+
+        if (ytelse.getYtelseGrunnlag() != null) {
+            builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));
+        }
+        builder.medBehandlingsTema(TemaUnderkategori.fraKode(ytelse.getTemaUnderkategori().getKode()));
+        builder.medKilde(Fagsystem.fraKode(ytelse.getKilde().getKode()));
+        builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
+        builder.medYtelseType(RelatertYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
         return builder;
     }
 
-    private static YtelseGrunnlagDto mapYtelseGrunnlag() {
+    private static YtelseGrunnlagDto mapYtelseGrunnlag(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto ytelseGrunnlag) {
         YtelseGrunnlagDtoBuilder builder = YtelseGrunnlagDtoBuilder.ny();
-       // ytelseGrunnlag.getYtelseStørrelse().forEach(ytelseStørrelse -> builder.leggTilYtelseStørrelse(mapYtelseStørrelse(ytelseStørrelse)));
-        //ytelseGrunnlag.getArbeidskategori().ifPresent(arbeidskategori -> builder.medArbeidskategori(Arbeidskategori.fraKode(arbeidskategori.getKode())));
-        //ytelseGrunnlag.getDekningsgradProsent().ifPresent(stillingsprosent -> builder.medDekningsgradProsent(stillingsprosent.getVerdi()));
-        //ytelseGrunnlag.getGraderingProsent().ifPresent(stillingsprosent -> builder.medGraderingProsent(stillingsprosent.getVerdi()));
-       // ytelseGrunnlag.getOpprinneligIdentdato().ifPresent(builder::medOpprinneligIdentdato);
-        //ytelseGrunnlag.getInntektsgrunnlagProsent().ifPresent(stillingsprosent -> builder.medInntektsgrunnlagProsent(stillingsprosent.getVerdi()));
-        //ytelseGrunnlag.getVedtaksDagsats().ifPresent(beløp -> builder.medVedtaksDagsats(beløp.getVerdi()));
+        List<no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseStørrelseDto> ytelser = ytelseGrunnlag.getYtelseStørrelse();
+        if (ytelser != null) {
+            ytelser.forEach(ytelseStørrelse -> builder.leggTilYtelseStørrelse(mapYtelseStørrelse(ytelseStørrelse)));
+        }
+        if (ytelseGrunnlag.getArbeidskategori() != null) {
+            builder.medArbeidskategori(Arbeidskategori.fraKode(ytelseGrunnlag.getArbeidskategori().getKode()));
+        }
+        if (ytelseGrunnlag.getDekningsgradProsent() != null) {
+            builder.medDekningsgradProsent(ytelseGrunnlag.getDekningsgradProsent());
+        }
+
+        if (ytelseGrunnlag.getGraderingProsent() != null) {
+            builder.medGraderingProsent(ytelseGrunnlag.getGraderingProsent());
+        }
+
+        if (ytelseGrunnlag.getOpprinneligIdentdato() != null) {
+            builder.medOpprinneligIdentdato(ytelseGrunnlag.getOpprinneligIdentdato());
+        }
+
+        if (ytelseGrunnlag.getInntektProsent() != null) {
+            builder.medInntektsgrunnlagProsent(ytelseGrunnlag.getInntektProsent());
+        }
+
+        if (ytelseGrunnlag.getVedtaksDagsats() != null) {
+            builder.medVedtaksDagsats(ytelseGrunnlag.getVedtaksDagsats().getVerdi());
+        }
+
         return builder.build();
     }
 
-    private static YtelseStørrelseDto mapYtelseStørrelse() {
+    private static YtelseStørrelseDto mapYtelseStørrelse(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseStørrelseDto ytelseStørrelse) {
         YtelseStørrelseDtoBuilder builder = YtelseStørrelseDtoBuilder.ny();
-        //builder.medBeløp(ytelseStørrelse.getBeløp().getVerdi());
-        //builder.medHyppighet(InntektPeriodeType.fraKode(ytelseStørrelse.getHyppighet().getKode()));
-        //ytelseStørrelse.getOrgnr().ifPresent(builder::medVirksomhet);
+        builder.medBeløp(ytelseStørrelse.getBeløp().getVerdi());
+        builder.medHyppighet(InntektPeriodeType.fraKode(ytelseStørrelse.getHyppighet().getKode()));
+        if (ytelseStørrelse.getAktør().getErOrganisasjon()) {
+            builder.medVirksomhet(ytelseStørrelse.getAktør().getIdent());
+        }
         return builder.build();
     }
 
-    private static YtelseAnvistDto mapYtelseAnvist() {
+    private static YtelseAnvistDto mapYtelseAnvist(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist) {
         YtelseAnvistDtoBuilder builder = YtelseAnvistDtoBuilder.ny();
-        //builder.medAnvistPeriode(Intervall.fraOgMedTilOgMed(ytelseAnvist.getAnvistFOM(), ytelseAnvist.getAnvistFOM()));
-        //ytelseAnvist.getBeløp().ifPresent(beløp -> builder.medBeløp(beløp.getVerdi()));
-        //ytelseAnvist.getDagsats().ifPresent(dagsats -> builder.medDagsats(dagsats.getVerdi()));
-        //ytelseAnvist.getUtbetalingsgradProsent().ifPresent(stillingsprosent -> builder.medUtbetalingsgradProsent(stillingsprosent.getVerdi()));
+        builder.medAnvistPeriode(Intervall.fraOgMedTilOgMed(ytelseAnvist.getAnvistPeriode().getFom(), ytelseAnvist.getAnvistPeriode().getTom()));
+        if (ytelseAnvist.getBeløp() != null) {
+            builder.medBeløp(ytelseAnvist.getBeløp().getVerdi());
+        }
+        if (ytelseAnvist.getDagsats() != null) {
+            builder.medDagsats(ytelseAnvist.getDagsats().getVerdi());
+        }
+        if (ytelseAnvist.getUtbetalingsgradProsent() != null) {
+            builder.medUtbetalingsgradProsent(ytelseAnvist.getUtbetalingsgradProsent());
+        }
         return builder.build();
     }
 

@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
 import no.nav.vedtak.util.Tuple;
 
 public class ArbeidsforholdInformasjonDtoBuilder {
@@ -28,21 +26,6 @@ public class ArbeidsforholdInformasjonDtoBuilder {
 
     public ArbeidsforholdOverstyringDtoBuilder getOverstyringBuilderFor(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto ref) {
         return kladd.getOverstyringBuilderFor(arbeidsgiver, ref);
-    }
-
-    public ArbeidsforholdInformasjonDtoBuilder tilbakestillOverstyringer() {
-        final List<ArbeidsforholdReferanseDto> collect = kladd.getArbeidsforholdReferanser().stream().filter(it -> kladd.getOverstyringer().stream()
-            .anyMatch(ov -> ov.getHandling().equals(ArbeidsforholdHandlingType.SLÅTT_SAMMEN_MED_ANNET)
-                && ov.getNyArbeidsforholdRef().gjelderFor(it.getInternReferanse())))
-            .collect(Collectors.toList());
-        collect.forEach(it -> {
-            Optional<InternArbeidsforholdRefDto> arbeidsforholdRef = kladd.finnForEksternBeholdHistoriskReferanse(it.getArbeidsgiver(), it.getEksternReferanse());
-            if (arbeidsforholdRef.isPresent()) {
-                reverserteErstattninger.add(new Tuple<>(it.getArbeidsgiver(), new Tuple<>(it.getInternReferanse(), arbeidsforholdRef.get())));
-            }
-        });
-        kladd.tilbakestillOverstyringer();
-        return this;
     }
 
     /**
