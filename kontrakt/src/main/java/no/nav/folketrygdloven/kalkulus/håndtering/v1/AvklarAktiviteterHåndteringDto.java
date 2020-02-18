@@ -1,10 +1,15 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.v1;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.AvklarteAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.rest.dto.AvklarAktiviteterDto;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
 
+    @JsonProperty("avklarteAktiviteterDto")
+    @Valid
+    @NotNull
     private AvklarteAktiviteterDto avklarteAktiviteterDto;
 
     public AvklarAktiviteterHåndteringDto(AvklarteAktiviteterDto avklarteAktiviteterDto) {
