@@ -38,19 +38,18 @@ jobs:
         run: |
           echo "Building artifacts $(echo $GITHUB_SHA | cut -c1-7)"
           echo "Building time $(TZ="Europe/Oslo" date +%Y%m%d%H%M%S)"
-          mvn jacoco:prepare-agent deploy -e --batch-mode --settings ./.github/.m2/settings.xml -Dmaven.wagon.http.pool=false --file pom.xml -Dchangelist= -Dsha1=-$(TZ="Europe/Oslo" date +%Y%m%d%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7) -Dfile.encoding=UTF-8 -DinstallAtEnd=true -DdeployAtEnd=true  -Djacoco.destFile=$(pwd)/target/jacoco.exec
+          mvn jacoco:prepare-agent deploy -e --batch-mode --settings ./.github/.m2/settings.xml -Dmaven.wagon.http.pool=false --file pom.xml -Dchangelist= -Dsha1=-$(TZ="Europe/Oslo" date +%Y%m%d%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7) -Dfile.encoding=UTF-8 -DinstallAtEnd=true -DdeployAtEnd=true -Djacoco.destFile=$(pwd)/target/jacoco.exec
           ## mvn jacoco:report sonar:sonar -e --batch-mode --settings ./.github/.m2/settings.xml --file pom.xml -Djacoco.dataFile=$(pwd)/target/jacoco.exec -Dsonar.projectKey="navikt_ft-kalkulus" -Dsonar.host.url='https://sonarcloud.io' -Dsonar.organization=navit -Dsonar.login=${SONAR_TOKEN}
           echo "Deployed artifacts"
           echo "::set-env name=TAG::$(mvn help:evaluate --batch-mode --settings ./.github/.m2/settings.xml --file .flattened -Dexpression=project.version -q -DforceStdout)"
-          echo ::set-env name=IMAGE::$IMAGE_BASE:$TAG
+          echo ::set-env name=IMAGE::$IMAGE_BASE:${{env.TAG}}
         env:
           GITHUB_USERNAME: x-access-token
           GITHUB_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           DATASOURCE_HOST: localhost
-          DATASOURCE_PORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
-
+          DATASOURCE_PORT: ${{ job.services.postgres.ports[5433] }} # get randomly assigned published port
       - name: Bygg og push docker-image
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
