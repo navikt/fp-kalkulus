@@ -50,4 +50,12 @@ public class RefusjonDto {
     public int hashCode() {
         return Objects.hash(refusjonsbeløpMnd, fom);
     }
+
+    @Override
+    public String toString() {
+        return "RefusjonDto{" +
+                "refusjonsbeløpMnd=" + refusjonsbeløpMnd +
+                ", fom=" + fom +
+                '}';
+    }
 }

@@ -193,10 +193,11 @@ public class BeregningsgrunnlagDto {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
-                "skjæringstidspunkt=" + skjæringstidspunkt + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "grunnbeløp=" + grunnbeløp + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+        return "BeregningsgrunnlagDto{" +
+                "skjæringstidspunkt=" + skjæringstidspunkt +
+                ", aktivitetStatuser=" + aktivitetStatuser +
+                ", beregningsgrunnlagPerioder=" + beregningsgrunnlagPerioder +
+                '}';
     }
 
     public static Builder builder() {

@@ -39,7 +39,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         // Skjul
     }
 
-    public static List<FordelBeregningsgrunnlagArbeidsforholdDto> lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(BeregningsgrunnlagRestInput input, Beløp grunnbeløp, LocalDate skjæringstidspunktForBeregning) {
+    public static List<FordelBeregningsgrunnlagArbeidsforholdDto> lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(BeregningsgrunnlagRestInput input, LocalDate skjæringstidspunktForBeregning) {
         List<BeregningsgrunnlagPeriodeRestDto> perioder = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         FordelBeregningsgrunnlagTilfelleInput fordelingInput = FordelBeregningsgrunnlagTilfelleInput.fraBeregningsgrunnlagRestInput(input);
 

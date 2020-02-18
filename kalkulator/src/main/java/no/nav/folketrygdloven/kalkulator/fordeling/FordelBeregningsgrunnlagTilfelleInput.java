@@ -53,6 +53,16 @@ public class FordelBeregningsgrunnlagTilfelleInput {
         return Collections.unmodifiableCollection(inntektsmeldinger);
     }
 
+    @Override
+    public String toString() {
+        return "FordelBeregningsgrunnlagTilfelleInput{" +
+                "beregningsgrunnlag=" + beregningsgrunnlag +
+                ", aktivitetAggregat=" + aktivitetAggregat +
+                ", aktivitetGradering=" + aktivitetGradering +
+                ", inntektsmeldinger=" + inntektsmeldinger +
+                '}';
+    }
+
     public static FordelBeregningsgrunnlagTilfelleInput fraBeregningsgrunnlagRestInput(BeregningsgrunnlagRestInput input) {
         BeregningsgrunnlagGrunnlagRestDto restGr = input.getBeregningsgrunnlagGrunnlag();
         BeregningsgrunnlagRestDto restBG = input.getBeregningsgrunnlag();

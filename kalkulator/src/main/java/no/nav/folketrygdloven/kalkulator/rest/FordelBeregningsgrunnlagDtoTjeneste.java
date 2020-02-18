@@ -26,7 +26,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
     public static void lagDto(BeregningsgrunnlagRestInput input,
                        FordelingDto dto) {
         FordelBeregningsgrunnlagDto bgDto = new FordelBeregningsgrunnlagDto();
-        settEndretArbeidsforholdDto(input, bgDto, input.getBeregningsgrunnlag().getGrunnbeløp());
+        settEndretArbeidsforholdDto(input, bgDto);
         bgDto.setFordelBeregningsgrunnlagPerioder(lagPerioder(input));
         dto.setFordelBeregningsgrunnlag(bgDto);
     }
@@ -51,9 +51,9 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
         return fordelBGPeriode;
     }
 
-    private static void settEndretArbeidsforholdDto(BeregningsgrunnlagRestInput input, FordelBeregningsgrunnlagDto bgDto, Beløp grunnbeløp) {
+    private static void settEndretArbeidsforholdDto(BeregningsgrunnlagRestInput input, FordelBeregningsgrunnlagDto bgDto) {
         RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, grunnbeløp, input.getSkjæringstidspunktForBeregning())
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning())
             .forEach(bgDto::leggTilArbeidsforholdTilFordeling);
     }
 

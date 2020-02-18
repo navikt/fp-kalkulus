@@ -31,8 +31,9 @@ public class BeregningAktivitetAggregatDto {
 
     @Override
     public String toString() {
-        return "BeregningAktivitetAggregat{" +
-                "skjæringstidspunktOpptjening=" + skjæringstidspunktOpptjening +
+        return "BeregningAktivitetAggregatDto{" +
+                "aktiviteter=" + aktiviteter +
+                ", skjæringstidspunktOpptjening=" + skjæringstidspunktOpptjening +
                 '}';
     }
 

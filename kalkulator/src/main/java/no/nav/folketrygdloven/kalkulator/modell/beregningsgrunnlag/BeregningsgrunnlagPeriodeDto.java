@@ -180,13 +180,15 @@ public class BeregningsgrunnlagPeriodeDto {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + //$NON-NLS-1$
-                "periode=" + periode + ", " // $NON-NLS-1$ //$NON-NLS-2$
-                + "bruttoPrÅr=" + bruttoPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "dagsats=" + dagsats + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + ">"; //$NON-NLS-1$
+        return "BeregningsgrunnlagPeriodeDto{" +
+                "beregningsgrunnlagPrStatusOgAndelList=" + beregningsgrunnlagPrStatusOgAndelList +
+                ", periode=" + periode +
+                ", bruttoPrÅr=" + bruttoPrÅr +
+                ", avkortetPrÅr=" + avkortetPrÅr +
+                ", redusertPrÅr=" + redusertPrÅr +
+                ", dagsats=" + dagsats +
+                ", beregningsgrunnlagPeriodeÅrsaker=" + beregningsgrunnlagPeriodeÅrsaker +
+                '}';
     }
 
     public static Builder builder() {

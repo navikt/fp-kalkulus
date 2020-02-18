@@ -194,14 +194,15 @@ public class InntektsmeldingDto {
 
     @Override
     public String toString() {
-        return "InntektsmeldingEntitet{" +
-            "virksomhet=" + arbeidsgiver +
-            ", arbeidsforholdId='" + arbeidsforholdRef + '\'' +
-            ", startDatoPermisjon=" + startDatoPermisjon +
-            ", inntektBeløp=" + inntektBeløp +
-            ", refusjonBeløpPerMnd=" + refusjonBeløpPerMnd +
-            ", refusjonOpphører=" + refusjonOpphører +
-            '}';
+        return "InntektsmeldingDto{" +
+                "naturalYtelser=" + naturalYtelser +
+                ", arbeidsgiver=" + arbeidsgiver +
+                ", arbeidsforholdRef=" + arbeidsforholdRef +
+                ", startDatoPermisjon=" + startDatoPermisjon +
+                ", inntektBeløp=" + inntektBeløp +
+                ", refusjonBeløpPerMnd=" + refusjonBeløpPerMnd +
+                ", refusjonOpphører=" + refusjonOpphører +
+                ", endringerRefusjon=" + endringerRefusjon +
+                '}';
     }
-
 }

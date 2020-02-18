@@ -84,7 +84,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).isEmpty();
     }
 
@@ -99,7 +99,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon()).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(0).isErRefusjon()).isTrue();
@@ -129,7 +129,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon()).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(0).isErRefusjon()).isTrue();
@@ -165,7 +165,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon()).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(0).isErRefusjon()).isTrue();
@@ -201,7 +201,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon()).hasSize(2);
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(0).isErRefusjon()).isTrue();
@@ -264,7 +264,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
@@ -354,7 +354,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(listeMedGraderingRefusjonDto).hasSize(2);
@@ -414,7 +414,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
@@ -444,7 +444,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(listeMedGraderingRefusjonDto).hasSize(1);
@@ -464,7 +464,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
-            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, new Beløp(GRUNNBELØP), input.getSkjæringstidspunktForBeregning());
+            .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).isEmpty();
     }
 
