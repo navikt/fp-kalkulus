@@ -65,7 +65,13 @@ public class BehandlingReferanse {
             skjæringstidspunkt);
     }
 
+
     public Long getBehandlingId() {
+        return behandlingId;
+    }
+
+    // skal byttes til koblingId
+    public Long getKoblingId() {
         return behandlingId;
     }
 

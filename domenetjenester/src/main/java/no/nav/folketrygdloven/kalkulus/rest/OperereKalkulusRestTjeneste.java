@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulus.beregning.BeregningTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -43,7 +43,7 @@ public class OperereKalkulusRestTjeneste {
 
 
     private KoblingTjeneste koblingTjeneste;
-    private BeregningTjeneste beregningTjeneste;
+    private BeregningStegTjeneste beregningStegTjeneste;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
 
@@ -52,9 +52,9 @@ public class OperereKalkulusRestTjeneste {
     }
 
     @Inject
-    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningTjeneste beregningTjeneste, HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste) {
+    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningStegTjeneste beregningStegTjeneste, HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
-        this.beregningTjeneste = beregningTjeneste;
+        this.beregningStegTjeneste = beregningStegTjeneste;
         this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
     }
 
@@ -76,7 +76,7 @@ public class OperereKalkulusRestTjeneste {
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
-        beregningTjeneste.fastsettBeregningsaktiviteter(input);
+        beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
 
         TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
         return Response.ok(tilstandResponse).build();
