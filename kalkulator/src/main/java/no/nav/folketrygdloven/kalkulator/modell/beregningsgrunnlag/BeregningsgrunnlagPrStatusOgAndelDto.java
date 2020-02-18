@@ -1,5 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -8,14 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
@@ -381,6 +381,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                 + "pgi3=" + pgi3 + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "årsbeløpFraTilstøtendeYtelse=" + årsbeløpFraTilstøtendeYtelse //$NON-NLS-1$
                 + "besteberegningPrÅr=" + besteberegningPrÅr //$NON-NLS-1$
+                + "bgAndelArbeidsforhold=" + bgAndelArbeidsforhold //$NON-NLS-1$
                 + ">"; //$NON-NLS-1$
     }
 
