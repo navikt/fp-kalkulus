@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -14,6 +17,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 
 public final class FordelBeregningsgrunnlagTilfelleTjeneste {
+
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FordelBeregningsgrunnlagTilfelleTjeneste.class);
+
 
     private FordelBeregningsgrunnlagTilfelleTjeneste() {
         // Skjuler default konstruktør
@@ -34,11 +41,13 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandlingForPeriode(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input) {
+        LOGGER.info("Utleder fordelingtilfelle for periode ({}) med input ({})", periode.getPeriode(), input);
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = new HashMap<>();
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             Optional<FordelingTilfelle> tilfelle = utledTilfelleForAndel(periode, input, andel);
             tilfelle.ifPresent(fordelingTilfelle -> andelTilfelleMap.put(andel, fordelingTilfelle));
         }
+        andelTilfelleMap.forEach((key, value) -> LOGGER.info("Andel ({}) krever manuell behandling av tilfelle ({})", key, value));
         return andelTilfelleMap;
     }
 
