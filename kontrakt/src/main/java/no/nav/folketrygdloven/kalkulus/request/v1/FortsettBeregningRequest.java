@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+
 
 /**
  * Spesifikasjon for å fortsette en beregning.
@@ -27,4 +30,36 @@ public class FortsettBeregningRequest {
     @Valid
     @NotNull
     private UUID koblingReferanse;
+
+    @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
+    @NotNull
+    @Valid
+    private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
+
+    @JsonProperty(value = "stegType", required = true)
+    @NotNull
+    @Valid
+    private StegType stegType;
+
+    public FortsettBeregningRequest() {
+        // default ctor
+    }
+
+    public FortsettBeregningRequest(@Valid @NotNull UUID koblingReferanse, @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes, @NotNull @Valid StegType stegType) {
+        this.koblingReferanse = koblingReferanse;
+        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.stegType = stegType;
+    }
+
+    public UUID getKoblingReferanse() {
+        return koblingReferanse;
+    }
+
+    public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
+        return ytelseSomSkalBeregnes;
+    }
+
+    public StegType getStegType() {
+        return stegType;
+    }
 }

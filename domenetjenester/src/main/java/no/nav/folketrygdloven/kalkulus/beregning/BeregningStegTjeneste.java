@@ -11,6 +11,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsg
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,11 +22,16 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
+import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 
 @ApplicationScoped
@@ -45,11 +51,11 @@ public class BeregningStegTjeneste {
     /** FastsettBeregningsaktiviteter
      *  Steg 1. FASTSETT_STP_BER
      * @param input {@link BeregningsgrunnlagInput}
-     * @return {@link BeregningAksjonspunktResultat}
+     * @return {@link TilstandResponse}
      */
-    public List<BeregningAksjonspunktResultat> fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
+    public TilstandResponse fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
-        return lagreOgKopier(input.getBehandlingReferanse(), resultat);
+        return mapTilstandResponse(lagreOgKopier(input.getBehandlingReferanse(), resultat));
     }
 
     /** KontrollerFaktaBeregningsgrunnlag
@@ -57,13 +63,13 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAksjonspunktResultat}
      */
-    public List<BeregningAksjonspunktResultat> kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+    public TilstandResponse kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeBekreftetGrunnlag = finnForrigeGrunnlagFraTilstand(input, KOFAKBER_UT);
         BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagEntitet nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER);
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetGrunnlag, nyttGrunnlag, nyttBg);
-        return beregningResultatAggregat.getBeregningAksjonspunktResultater();
+        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
     /** ForeslåBeregningsgrunnlag
@@ -71,12 +77,12 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAksjonspunktResultat}
      */
-    public List<BeregningAksjonspunktResultat> foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+    public TilstandResponse foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FORESLÅTT_UT);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, FORESLÅTT, FORESLÅTT_UT);
-        return beregningResultatAggregat.getBeregningAksjonspunktResultater();
+        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
 
@@ -85,7 +91,7 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAksjonspunktResultat}
      */
-    public List<BeregningAksjonspunktResultat> fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+    public TilstandResponse fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FASTSATT_INN);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
@@ -93,14 +99,14 @@ public class BeregningStegTjeneste {
         //TODO(OJR) hva skal vi gjøre her ESPEN?
         //BeregningsgrunnlagVilkårOgAkjonspunktResultat beregningsgrunnlagVilkårOgAkjonspunktResultat = new BeregningsgrunnlagVilkårOgAkjonspunktResultat(beregningResultatAggregat.getBeregningAksjonspunktResultater());
         //beregningsgrunnlagVilkårOgAkjonspunktResultat.setVilkårOppfylt(getVilkårResultat(beregningResultatAggregat), getRegelEvalueringVilkårvurdering(beregningResultatAggregat), getRegelInputVilkårvurdering(beregningResultatAggregat));
-        return beregningResultatAggregat.getBeregningAksjonspunktResultater();
+        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
     /** FastsettBeregningsgrunnlagSteg
      * Steg 5. FAST_BERGRUNN
      * @param input {@link BeregningsgrunnlagInput}
      */
-    public void fastsettBeregningsaktiviteters(BeregningsgrunnlagInput input) {
+    public TilstandResponse fastsettBeregningsaktiviteters(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         Long koblingId = input.getBehandlingReferanse().getKoblingId();
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag = beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag();
@@ -109,6 +115,7 @@ public class BeregningStegTjeneste {
             BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningsgrunnlag.get());
             repository.lagre(koblingId, beregningsgrunnlagEntitet, FASTSATT);
         }
+        return TilstandResponse.TOM_RESPONSE();
     }
 
     private List<BeregningAksjonspunktResultat> lagreOgKopier(BehandlingReferanse ref, BeregningResultatAggregat resultat) {
@@ -187,5 +194,26 @@ public class BeregningStegTjeneste {
         return repository
                 .hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(behandlingReferanse.getBehandlingId(), behandlingReferanse.getOriginalBehandlingId(), tilstandFraSteg)
                 .flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
+    }
+
+    private TilstandResponse mapTilstandResponse(List<BeregningAksjonspunktResultat> resultat) {
+        return new TilstandResponse(resultat.stream()
+                .map(res -> new AksjonspunktMedTilstandDto(
+                        new BeregningAksjonspunkt(res.getBeregningAksjonspunktDefinisjon().getKode()),
+                        new BeregningVenteårsak(res.getVenteårsak().getKode()),
+                        res.getVentefrist())).collect(Collectors.toList()));
+    }
+
+    public TilstandResponse beregnFor(StegType stegType, BeregningsgrunnlagInput input) {
+        if (stegType.equals(StegType.KOFAKBER)) {
+            return kontrollerFaktaBeregningsgrunnlag(input);
+        } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
+            return foreslåBeregningsgrunnlag(input);
+        } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
+            return fordelBeregningsgrunnlag(input);
+        } else if (stegType.equals(StegType.FAST_BERGRUNN)) {
+            return fastsettBeregningsaktiviteters(input);
+        }
+        throw new IllegalStateException("Kan ikke beregne for " + stegType.getKode());
     }
 }

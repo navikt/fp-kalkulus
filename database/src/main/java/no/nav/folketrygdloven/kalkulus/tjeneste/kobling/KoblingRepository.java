@@ -60,6 +60,15 @@ public class KoblingRepository {
         return query.getResultList().stream().findFirst();
     }
 
+    public KoblingEntitet hentSisteKoblingReferanseFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k " +
+                        " WHERE k.ytelseType = :ytelse and koblingReferanse = :referanse " + // NOSONAR
+                        "order by k.opprettetTidspunkt desc, k.id desc"
+                , KoblingEntitet.class);
+        query.setParameter("ytelse", ytelseType);
+        query.setParameter("referanse", referanse);
+        return HibernateVerktøy.hentEksaktResultat(query);
+    }
 
     public Long hentKoblingIdForKoblingReferanse(KoblingReferanse referanse) {
         TypedQuery<Long> query = entityManager.createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse", Long.class);

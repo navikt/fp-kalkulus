@@ -30,6 +30,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.Transaction;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -52,9 +53,10 @@ public class OperereKalkulusRestTjeneste {
     }
 
     @Inject
-    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningStegTjeneste beregningStegTjeneste, HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste) {
+    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningStegTjeneste beregningStegTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste, HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
+        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
     }
 
@@ -76,14 +78,31 @@ public class OperereKalkulusRestTjeneste {
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
-        beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
+        TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
 
-        TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
         return Response.ok(tilstandResponse).build();
     }
 
     @POST
-    @Path("/start-beregn")
+    @Path("/fortsett-beregn")
+    @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
+            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
+                    content = @Content(mediaType = "appliaction/json",
+                            schema = @Schema(implementation = TilstandResponse.class)))
+    })
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    public Response beregnVidere(@NotNull @Valid FortsettBeregningRequest spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+
+        KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
+        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
+        TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input);
+        return Response.ok(tilstandResponse).build();
+    }
+
+    @POST
+    @Path("/håndter-beregn")
     @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
             @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = "appliaction/json",

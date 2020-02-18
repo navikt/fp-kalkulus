@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.response.v1;
 
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,8 +27,11 @@ public class TilstandResponse {
 
     @JsonProperty(value = "aksjonspunktMedTilstandDto")
     @Valid
-    List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto;
+    private List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto;
 
+    public TilstandResponse() {
+        // default ctor
+    }
 
     @JsonCreator
     public TilstandResponse(@Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto) {
@@ -36,5 +40,9 @@ public class TilstandResponse {
 
     public List<AksjonspunktMedTilstandDto> getAksjonspunktMedTilstandDto() {
         return aksjonspunktMedTilstandDto;
+    }
+
+    public static TilstandResponse TOM_RESPONSE() {
+        return new TilstandResponse(Collections.emptyList());
     }
 }

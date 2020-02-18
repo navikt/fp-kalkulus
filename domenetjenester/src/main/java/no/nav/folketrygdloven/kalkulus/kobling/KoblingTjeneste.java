@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.kobling;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,6 +37,10 @@ public class KoblingTjeneste {
 
     public Optional<KoblingEntitet> hentFor(KoblingReferanse referanse) {
         return repository.hentForKoblingReferanse(referanse);
+    }
+
+    public KoblingEntitet hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
+        return repository.hentSisteKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
     }
 
     public Optional<KoblingEntitet> hentSisteFor(AktørId aktørId, Saksnummer saksnummer, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
