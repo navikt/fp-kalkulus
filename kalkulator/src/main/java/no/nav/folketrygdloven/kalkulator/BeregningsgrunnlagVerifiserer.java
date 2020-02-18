@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,18 +57,19 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static void verifiserOpprettetAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        Objects.requireNonNull(andel.getAktivitetStatus(), "Aktivitetstatus");
-        Objects.requireNonNull(andel.getAndelsnr(), "Andelsnummer");
-        Objects.requireNonNull(andel.getArbeidsforholdType(), "ArbeidsforholdType");
+        Objects.requireNonNull(andel.getAktivitetStatus(), "Aktivitetstatus " + andel.toString());
+        Objects.requireNonNull(andel.getAndelsnr(), "Andelsnummer " + andel.toString());
+        Objects.requireNonNull(andel.getArbeidsforholdType(), "ArbeidsforholdType " + andel.toString());
         if (andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER)) {
             if (andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ARBEID)) {
-                verifiserOptionalPresent(andel.getBgAndelArbeidsforhold(), "BgAndelArbeidsforhold");
+                verifiserOptionalPresent(andel.getBgAndelArbeidsforhold(), "BgAndelArbeidsforhold " + andel.toString());
             }
-            Objects.requireNonNull(andel.getBeregningsperiodeFom(), "BeregningsperiodeFom");
-            Objects.requireNonNull(andel.getBeregningsperiodeTom(), "BeregningsperiodeTom");
+            Objects.requireNonNull(andel.getBeregningsperiodeFom(), "BeregningsperiodeFom " + andel.toString());
+            Objects.requireNonNull(andel.getBeregningsperiodeTom(), "BeregningsperiodeTom " + andel.toString());
             if (andel.getBgAndelArbeidsforhold().isPresent()) {
-                Objects.requireNonNull(andel.getBgAndelArbeidsforhold().get().getArbeidsperiodeFom());
-                Objects.requireNonNull(andel.getBgAndelArbeidsforhold().get().getArbeidsperiodeTom());
+                BGAndelArbeidsforholdDto arbFor = andel.getBgAndelArbeidsforhold().get();
+                Objects.requireNonNull(arbFor.getArbeidsperiodeFom(), "arbeidsperiodeFom " + andel.toString());
+                Objects.requireNonNull(arbFor.getArbeidsperiodeTom(), "arbeidsperiodeTom " + andel.toString());
             }
         }
     }
