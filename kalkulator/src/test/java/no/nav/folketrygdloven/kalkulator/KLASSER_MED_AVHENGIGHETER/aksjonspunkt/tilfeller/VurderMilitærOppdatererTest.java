@@ -63,12 +63,13 @@ public class VurderMilitærOppdatererTest {
         // Assert
         BeregningsgrunnlagDto nyttBg = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
         Optional<BeregningsgrunnlagAktivitetStatusDto> militærStatus = nyttBg.getAktivitetStatuser().stream().filter(a -> AktivitetStatus.MILITÆR_ELLER_SIVIL.equals(a.getAktivitetStatus())).findFirst();
-        boolean harMilitærandel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .anyMatch(a -> AktivitetStatus.MILITÆR_ELLER_SIVIL.equals(a.getAktivitetStatus()));
-        Assertions.assertThat(harMilitærandel).isTrue();
+        Optional<BeregningsgrunnlagPrStatusOgAndelDto> militærAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
+            .filter(a -> AktivitetStatus.MILITÆR_ELLER_SIVIL.equals(a.getAktivitetStatus())).findAny();
+        Assertions.assertThat(militærAndel).isPresent();
         Assertions.assertThat(militærStatus).isPresent();
         assertThat(militærStatus.get().getAktivitetStatus()).isEqualTo(AktivitetStatus.MILITÆR_ELLER_SIVIL);
         assertThat(militærStatus.get().getHjemmel()).isEqualTo(Hjemmel.F_14_7);
+        assertThat(militærAndel.get().getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.UDEFINERT);
     }
 
     @Test
