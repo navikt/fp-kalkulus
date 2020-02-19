@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.util.UUID;
 
@@ -34,6 +35,13 @@ public class HåndterBeregningRequest {
     @Valid
     @NotNull
     private UUID koblingReferanse;
+
+
+    public HåndterBeregningRequest(@NotNull @Valid HåndterBeregningDto håndterBeregning,
+                                   @Valid @NotNull UUID koblingReferanse) {
+        this.håndterBeregning = håndterBeregning;
+        this.koblingReferanse = koblingReferanse;
+    }
 
     public HåndterBeregningRequest() {
         // jackson

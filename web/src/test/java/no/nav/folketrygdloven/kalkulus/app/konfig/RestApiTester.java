@@ -33,8 +33,11 @@ public class RestApiTester {
 
 
         List<Class<?>> klasser = new ArrayList<>();
+        ApplicationConfig config = new ApplicationConfig();
 
-        klasser.addAll(finnAlleRestTjenester(new ApplicationConfig()));
+        Collection<Class<?>> c = finnAlleRestTjenester(config);
+
+        klasser.addAll(c);
 
         return klasser;
     }

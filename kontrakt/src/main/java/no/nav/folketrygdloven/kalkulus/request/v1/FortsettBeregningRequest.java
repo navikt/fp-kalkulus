@@ -45,7 +45,9 @@ public class FortsettBeregningRequest {
         // default ctor
     }
 
-    public FortsettBeregningRequest(@Valid @NotNull UUID koblingReferanse, @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes, @NotNull @Valid StegType stegType) {
+    public FortsettBeregningRequest(@Valid @NotNull UUID koblingReferanse,
+                                    @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                    @NotNull @Valid StegType stegType) {
         this.koblingReferanse = koblingReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.stegType = stegType;
