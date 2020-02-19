@@ -14,3 +14,6 @@ COPY web/target/lib/*.jar ./
 
 ENV JAVA_OPTS="-Djava.security.egd=file:/dev/urandom \
     -Dlogback.configurationFile=conf/logback.xml"
+
+# Export vault properties
+COPY export-vault.sh /init-scripts/export-vault.sh
