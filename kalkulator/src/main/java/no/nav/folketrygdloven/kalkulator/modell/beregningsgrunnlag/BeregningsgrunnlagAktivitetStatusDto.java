@@ -53,8 +53,7 @@ public class BeregningsgrunnlagAktivitetStatusDto {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" + //$NON-NLS-1$
-                "beregningsgrunnlag=" + beregningsgrunnlag + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-1$ //$NON-NLS-2$
+                "aktivitetStatus=" + aktivitetStatus + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "hjemmel=" + hjemmel + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + ">"; //$NON-NLS-1$
     }
