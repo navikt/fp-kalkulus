@@ -49,7 +49,6 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         AktørId aktørId = ref.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
-        var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(input);
         var graderinger = input.getAktivitetGradering().getAndelGradering();
 
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
@@ -59,7 +58,6 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .map(MapSplittetPeriodeFraVLTilRegel::map).collect(Collectors.toList());
 
-        var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         var regelInntektsmeldinger = mapInntektsmeldinger(input, andeler);
         var regelAndelGraderinger = graderinger.stream()
                 .filter(ag -> !AktivitetStatus.ARBEIDSTAKER.equals(ag.getAktivitetStatus()))
@@ -130,10 +128,11 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         return periode.map(p -> !p.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false);
     }
 
-    private Boolean harAlleredeOpprettetAndelOgAktivitetTilkommerEtterStp(LocalDate skjæringstidspunktBeregning, LocalDate startdatoPermisjon, Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel) {
+    private Boolean harAlleredeOpprettetAndelOgAktivitetTilkommerEtterStp(LocalDate skjæringstidspunktBeregning, Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel, Periode ansettelsesPeriode) {
         return matchendeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold)
-                .map(gjelderSpesifikt -> !gjelderSpesifikt && startdatoPermisjon.isAfter(skjæringstidspunktBeregning)).orElse(false);
+                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold)
+                .map(gjelderSpesifikt -> !gjelderSpesifikt && !ansettelsesPeriode.inneholder(skjæringstidspunktBeregning)).orElse(false);
     }
 
     private Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnMatchendeAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, YrkesaktivitetDto ya) {
@@ -249,7 +248,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             LocalDate startdatoPermisjon = startdatoPermisjonOpt.get();
             ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(andeler, ya);
-            if (!harAlleredeOpprettetAndelOgAktivitetTilkommerEtterStp(skjæringstidspunktBeregning, startdatoPermisjon, matchendeAndel)) {
+            if (!harAlleredeOpprettetAndelOgAktivitetTilkommerEtterStp(skjæringstidspunktBeregning, matchendeAndel, ansettelsesPeriode)) {
                 matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
                 mapInntektsmelding(inntektsmeldinger, andelGraderinger, førsteIMMap, ya, startdatoPermisjon, builder, grunnlag.getRefusjonOverstyringer());
                 List<Gradering> graderinger = mapGradering(andelGraderinger, ya);

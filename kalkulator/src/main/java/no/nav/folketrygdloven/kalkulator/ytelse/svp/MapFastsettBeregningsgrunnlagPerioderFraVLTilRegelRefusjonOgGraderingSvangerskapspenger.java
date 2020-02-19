@@ -5,6 +5,7 @@ import static no.nav.folketrygdloven.kalkulator.ytelse.svp.FinnAndelsnrForTilret
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjenest
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnStartdatoPermisjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapAndelGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
@@ -29,6 +31,8 @@ import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -46,6 +50,18 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
     public MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger() {
         // For CDI
+    }
+
+    @Override
+    protected Optional<LocalDate> utledStartdatoPermisjon(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning, Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya, Periode ansettelsesPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = finnFørsteSøktePermisjonsdag(input, ya, ansettelsesPeriode);
+        if (førstedagEtterBekreftetPermisjonOpt.isPresent()) {
+            return førstedagEtterBekreftetPermisjonOpt;
+        }
+        Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
+                .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
+                .findFirst();
+        return matchendeInntektsmelding.flatMap(InntektsmeldingDto::getStartDatoPermisjon);
     }
 
     @Override

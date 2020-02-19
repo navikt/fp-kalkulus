@@ -161,7 +161,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER, SKJÆRINGSTIDSPUNKT, BigDecimal.ZERO, inntekt);
         var im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER_2, SKJÆRINGSTIDSPUNKT, BigDecimal.ZERO, inntekt);
 
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrette1, tilrette2), List.of());
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrette1, tilrette2));
 
         // Act
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -195,7 +195,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         BigDecimal inntekt = BigDecimal.valueOf(40000);
         var im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORG_NUMMER_2, SKJÆRINGSTIDSPUNKT, BigDecimal.ZERO, inntekt);
 
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrette1), List.of());
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrette1));
 
 
         // Act

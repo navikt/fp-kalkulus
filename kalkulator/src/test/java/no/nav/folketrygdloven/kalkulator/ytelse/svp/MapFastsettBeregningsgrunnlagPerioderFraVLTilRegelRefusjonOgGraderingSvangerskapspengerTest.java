@@ -4,25 +4,27 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -31,9 +33,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
@@ -52,6 +57,90 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvang
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("910909088");
 
     private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger();
+
+
+    @Test
+    void skal_gi_refusjon_fra_start_for_arbeid_som_har_oppgitt_feil_startdato_i_inntektsmelding() {
+
+        // Arrange
+        String orgnr = "974749866";
+        LocalDate stp = LocalDate.of(2019, 10, 16);
+        AktivitetsAvtaleDtoBuilder ansettelsesPeriode = AktivitetsAvtaleDtoBuilder.ny()
+                .medPeriode(Intervall.fraOgMed(LocalDate.of(2013, 5, 27)))
+                .medErAnsettelsesPeriode(true);
+        Intervall periode= Intervall.fraOgMed(LocalDate.of(2019, 1, 1));
+        AktivitetsAvtaleDtoBuilder aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny()
+                .medPeriode(periode)
+                .medSisteLønnsendringsdato(LocalDate.of(2018, 7, 1))
+                .medProsentsats(BigDecimal.valueOf(100))
+                .medErAnsettelsesPeriode(false);
+
+        Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(orgnr);
+        YrkesaktivitetDto yrkesaktivitet = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                .leggTilAktivitetsAvtale(aktivitetsAvtaleDtoBuilder)
+                .leggTilAktivitetsAvtale(ansettelsesPeriode)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsgiver(virksomhet)
+                .build();
+        InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
+                .leggTilAktørArbeid(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
+                        .medAktørId(REFERANSE.getAktørId())
+                        .leggTilYrkesaktivitet(yrkesaktivitet));
+
+
+        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder().medBeløp(BigDecimal.TEN).medRefusjon(BigDecimal.TEN).medArbeidsgiver(virksomhet).medStartDatoPermisjon(LocalDate.of(2019, 10, 22)).build();
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medData(registerBuilder)
+                .medInntektsmeldinger(im)
+                .build();
+
+        TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(virksomhet, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, LocalDate.of(2019, 10, 21)), BigDecimal.valueOf(100));
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetaling2 = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(LocalDate.of(2019, 10, 22), LocalDate.of(2020, 1, 19)), BigDecimal.valueOf(40));
+
+        TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling, periodeMedUtbetaling2));
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
+
+
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medAndelsnr(1L)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
+                .build();
+        BeregningsgrunnlagPeriodeDto.Builder bgperiode = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(stp, Intervall.TIDENES_ENDE)
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(andel);
+        BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(stp)
+                .medGrunnbeløp(BigDecimal.valueOf(99000))
+                .leggTilBeregningsgrunnlagPeriode(bgperiode)
+                .build();
+        BeregningsgrunnlagGrunnlagDtoBuilder bg = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatDto.builder()
+                        .medSkjæringstidspunktOpptjening(stp)
+                        .leggTilAktivitet(BeregningAktivitetDto.builder()
+                                .medPeriode(Intervall.fraOgMed(LocalDate.of(2013, 5, 27)))
+                                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                                .medArbeidsgiver(virksomhet)
+                                .build())
+                        .build())
+                .medBeregningsgrunnlag(beregningsgrunnlagDto);
+
+
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(REFERANSE, bg,
+                BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengerGrunnlag);
+
+        // Act
+        PeriodeModell map = mapper.map(input, beregningsgrunnlagDto);
+
+        // Assert
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
+        ArbeidsforholdOgInntektsmelding arbeidsforholdOgInntektsmelding = map.getArbeidsforholdOgInntektsmeldinger().get(0);
+        assertThat(arbeidsforholdOgInntektsmelding.getRefusjoner().size()).isEqualTo(1);
+        Refusjonskrav refusjonskrav = arbeidsforholdOgInntektsmelding.getRefusjoner().get(0);
+        assertThat(refusjonskrav.getPeriode().getFom()).isEqualTo(stp);
+    }
 
     @Test
     void skal_finne_første_dag_med_utbetaling_for_arbeid() {
@@ -161,14 +250,14 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvang
         TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(førsteDagMedSøktYtelse, STP.plusMonths(3)), utbetalingsgrad);
         TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling));
-        return new SvangerskapspengerGrunnlag(List.of(tilrettelegging), List.of());
+        return new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
     }
 
     private SvangerskapspengerGrunnlag lagSVPGrunnlagMedTilretteleggingIFlerePerioder(Map<Intervall, BigDecimal> periodeMedutbetalingsgrad) {
         TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetaling = periodeMedutbetalingsgrad.entrySet().stream().map(e -> new PeriodeMedUtbetalingsgradDto(e.getKey(), e.getValue())).collect(Collectors.toList());
         TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, perioderMedUtbetaling);
-        return new SvangerskapspengerGrunnlag(List.of(tilrettelegging), List.of());
+        return new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
     }
 
     private BeregningsgrunnlagGrunnlagDtoBuilder lagBgGrunnlag() {

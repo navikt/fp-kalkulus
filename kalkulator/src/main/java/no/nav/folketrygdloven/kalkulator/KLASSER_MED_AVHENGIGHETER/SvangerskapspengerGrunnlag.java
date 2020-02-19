@@ -10,14 +10,11 @@ public class SvangerskapspengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     private int dekningsgrad = 100;
     private List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad;
-    private List<SvpTilretteleggingDto> aktuelleTilrettelegginger;
     private Integer grunnbeløpMilitærHarKravPå;
 
 
-    public SvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad,
-                                      List<SvpTilretteleggingDto> aktuelleTilrettelegginger) {
+    public SvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad) {
         this.tilretteleggingMedUtbelingsgrad = tilretteleggingMedUtbelingsgrad;
-        this.aktuelleTilrettelegginger = aktuelleTilrettelegginger;
     }
 
     @Override
@@ -40,7 +37,4 @@ public class SvangerskapspengerGrunnlag implements YtelsespesifiktGrunnlag {
         return tilretteleggingMedUtbelingsgrad;
     }
 
-    public List<SvpTilretteleggingDto> getAktuelleTilrettelegginger() {
-        return aktuelleTilrettelegginger;
-    }
 }

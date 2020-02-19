@@ -170,7 +170,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
@@ -199,7 +199,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
         mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
         mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50)));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold));
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -225,7 +225,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -246,7 +246,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagNæringAndel(periode, 300_000);
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of());
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -269,7 +269,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -292,7 +292,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -320,7 +320,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
         mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
         mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50)));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold));
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -357,7 +357,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
         mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
         mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), BigDecimal.valueOf(50)));
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold));
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -398,7 +398,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, Tuple<LocalDate, BigDecimal>> mapGradering = new HashMap<>();
         mapGradering.put(ORGNR1, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100)));
         mapGradering.put(ORGNR2, new Tuple<>(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).plusDays(1), BigDecimal.valueOf(50)));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraDato(mapGradering, arbeidsforhold));
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -441,7 +441,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
         SvpGrunnlagDto tilrettelegging = lagTilrettelegging(arbeidsforhold);
 
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -478,7 +478,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, LocalDate> map = new HashMap<>();
         map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
         map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
-        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -512,7 +512,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
@@ -545,7 +545,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
@@ -574,7 +574,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, BigDecimal> map = new HashMap<>();
         map.put(ORGNR1, BigDecimal.valueOf(100));
         map.put(ORGNR2, BigDecimal.valueOf(50));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -603,7 +603,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, BigDecimal> map = new HashMap<>();
         map.put(ORGNR1, BigDecimal.valueOf(100));
         map.put(ORGNR2, BigDecimal.valueOf(50));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -632,7 +632,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, BigDecimal> map = new HashMap<>();
         map.put(ORGNR1, BigDecimal.valueOf(100));
         map.put(ORGNR2, BigDecimal.valueOf(50));
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultatMedGraderingFraSkjæringstidspunkt(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -662,7 +662,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         Map<String, LocalDate> map = new HashMap<>();
         map.put(ORGNR1, SKJÆRINGSTIDSPUNKT_BEREGNING);
         map.put(ORGNR3, SKJÆRINGSTIDSPUNKT_BEREGNING);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
@@ -692,7 +692,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         map.put(ORGNR2, SKJÆRINGSTIDSPUNKT_BEREGNING);
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
@@ -718,7 +718,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         var uttakResultat = lagUttakResultat(BigDecimal.valueOf(45));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(uttakResultat, tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(uttakResultat);
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
@@ -743,7 +743,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
 
         // Act
@@ -768,7 +768,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -791,7 +791,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -814,7 +814,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
 
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of());
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -840,7 +840,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -868,7 +868,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -894,7 +894,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         SvpGrunnlagDto tilrettelegging = lagTilretteleggingFrilans();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -921,7 +921,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -952,7 +952,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -985,7 +985,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -1016,7 +1016,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID2, periodeMedUtbetalingsgradArbeid2);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -1077,7 +1077,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), null, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
         TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), null, periodeMedUtbetalingsgradArbeid2);
-        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2), tilrettelegging);
+        var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
@@ -1160,10 +1160,9 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusMonths(3)), utbetalingsgrad);
     }
 
-    private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad, SvpGrunnlagDto tilrettelegging) {
+    private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad) {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(
-            tilretteleggingMedUtbelingsgrad,
-            new TilretteleggingFilterDto(tilrettelegging).getAktuelleTilretteleggingerFiltrert()
+            tilretteleggingMedUtbelingsgrad
         );
         svangerskapspengerGrunnlag.setGrunnbeløpMilitærHarKravPå(45000);
         return svangerskapspengerGrunnlag;
