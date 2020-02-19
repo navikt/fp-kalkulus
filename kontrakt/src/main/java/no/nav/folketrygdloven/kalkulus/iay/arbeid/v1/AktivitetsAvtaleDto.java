@@ -36,6 +36,9 @@ public class AktivitetsAvtaleDto {
     @DecimalMax(value = "1000.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
     private BigDecimal stillingsprosent;
 
+    protected AktivitetsAvtaleDto() {
+        // default ctor
+    }
 
     public AktivitetsAvtaleDto(@Valid @NotNull Periode periode,
                                @Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "1000.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal stillingsprosent) {

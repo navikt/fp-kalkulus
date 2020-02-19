@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
 
 
-//TODO(OJR) ønsker kanskje selv at kalkulus selv henter dette fra abakus i fremtiden
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -47,8 +46,8 @@ public class InntektArbeidYtelseGrunnlagDto {
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
 
     public InntektArbeidYtelseGrunnlagDto() {
+        // default ctor
     }
-
 
     public InntektArbeidYtelseGrunnlagDto medArbeidDto(ArbeidDto arbeidDto) {
         this.arbeidDto = arbeidDto;

@@ -50,6 +50,10 @@ public class YtelseDto {
     @Valid
     private TemaUnderkategori temaUnderkategori;
 
+    protected YtelseDto() {
+        // default ctor
+    }
+
     public YtelseDto(@Valid YtelseGrunnlagDto ytelseGrunnlag,
                      @Valid Set<YtelseAnvistDto> ytelseAnvist,
                      @Valid RelatertYtelseType relatertYtelseType,

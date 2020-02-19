@@ -55,6 +55,9 @@ public class InntektsmeldingDto {
     @Valid
     private BeløpDto refusjonBeløpPerMnd;
 
+    protected InntektsmeldingDto() {
+        // default ctor
+    }
 
     public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver, @Valid @NotNull BeløpDto inntektBeløp, @Valid List<NaturalYtelseDto> naturalYtelser, @Valid List<RefusjonDto> endringerRefusjon, @Valid InternArbeidsforholdRefDto arbeidsforholdRef, @Valid LocalDate startDatoPermisjon, @Valid LocalDate refusjonOpphører, @Valid BeløpDto refusjonBeløpPerMnd) {
         this.arbeidsgiver = arbeidsgiver;

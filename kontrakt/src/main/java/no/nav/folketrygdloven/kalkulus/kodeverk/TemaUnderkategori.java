@@ -15,7 +15,7 @@ public class TemaUnderkategori extends Kodeverk {
     public static TemaUnderkategori FORELDREPENGER = new TemaUnderkategori("FP");
 
     @JsonProperty(value = "kode", required = true, index = 1)
-    @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
+    @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     @Size(min = 2, max = 50)
     @NotNull
     private final String kode;

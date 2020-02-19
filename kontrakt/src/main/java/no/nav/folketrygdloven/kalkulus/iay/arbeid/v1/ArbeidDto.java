@@ -22,6 +22,10 @@ public class ArbeidDto {
     @Valid
     private List<YrkesaktivitetDto> yrkesaktiviteter;
 
+    protected ArbeidDto() {
+        // default ctor
+    }
+
     public ArbeidDto(@NotNull @Valid List<YrkesaktivitetDto> yrkesaktiviteter) {
         this.yrkesaktiviteter = yrkesaktiviteter;
     }

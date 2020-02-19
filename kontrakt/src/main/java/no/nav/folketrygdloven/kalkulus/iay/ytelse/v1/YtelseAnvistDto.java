@@ -34,6 +34,17 @@ public class YtelseAnvistDto {
     @Valid
     private BigDecimal utbetalingsgradProsent;
 
+    public YtelseAnvistDto() {
+        // default ctor
+    }
+
+    public YtelseAnvistDto(@Valid Periode anvistPeriode, @Valid BeløpDto beløp, @Valid BeløpDto dagsats, @Valid BigDecimal utbetalingsgradProsent) {
+        this.anvistPeriode = anvistPeriode;
+        this.beløp = beløp;
+        this.dagsats = dagsats;
+        this.utbetalingsgradProsent = utbetalingsgradProsent;
+    }
+
     public Periode getAnvistPeriode() {
         return anvistPeriode;
     }

@@ -46,6 +46,10 @@ public class YrkesaktivitetDto {
     @Valid
     private String navnArbeidsgiverUtland;
 
+    protected YrkesaktivitetDto() {
+        // default ctor
+    }
+
     public YrkesaktivitetDto(@Valid @NotNull Aktør arbeidsgiver,
                              @Valid @NotNull InternArbeidsforholdRefDto abakusReferanse,
                              @Valid @NotNull ArbeidType arbeidType,

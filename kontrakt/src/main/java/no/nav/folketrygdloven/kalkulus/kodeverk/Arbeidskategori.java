@@ -10,12 +10,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Arbeidskategori extends Kodeverk {
+    static final String KODEVERK = "ARBEIDSKATEGORI";
+    public static final Arbeidskategori FRILANSER = new Arbeidskategori("FRILANSER");
+
     @JsonProperty(value = "kode", required = true, index = 1)
-    @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
-    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")@Size(min = 2, max = 50)
     @NotNull
     private String kode;
-    private String kodeverk;
 
     @JsonCreator
     public Arbeidskategori(@JsonProperty(value = "kode", required = true) String kode) {
@@ -30,6 +31,6 @@ public class Arbeidskategori extends Kodeverk {
 
     @Override
     public String getKodeverk() {
-        return kodeverk;
+        return KODEVERK;
     }
 }
