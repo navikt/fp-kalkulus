@@ -54,14 +54,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
     @Override
     protected Optional<LocalDate> utledStartdatoPermisjon(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning, Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya, Periode ansettelsesPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = finnFørsteSøktePermisjonsdag(input, ya, ansettelsesPeriode);
-        if (førstedagEtterBekreftetPermisjonOpt.isPresent()) {
-            return førstedagEtterBekreftetPermisjonOpt;
-        }
-        Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-                .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                .findFirst();
-        return matchendeInntektsmelding.flatMap(InntektsmeldingDto::getStartDatoPermisjon);
+        return finnFørsteSøktePermisjonsdag(input, ya, ansettelsesPeriode);
     }
 
     @Override
