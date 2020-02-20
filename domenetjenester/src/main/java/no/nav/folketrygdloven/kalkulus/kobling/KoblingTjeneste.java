@@ -43,6 +43,11 @@ public class KoblingTjeneste {
         return repository.hentSisteKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
     }
 
+
+    public Long hentKoblingId(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
+        return repository.hentFor(referanse, ytelseType);
+    }
+
     public Optional<KoblingEntitet> hentSisteFor(AktørId aktørId, Saksnummer saksnummer, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
         return repository.hentSisteKoblingReferanseFor(aktørId, saksnummer, ytelseTyperKalkulusStøtter);
     }

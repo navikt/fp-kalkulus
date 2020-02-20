@@ -76,6 +76,13 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query).orElse(null);
     }
 
+    public Long hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseType = :ytelse", Long.class);
+        query.setParameter("referanse", referanse);
+        query.setParameter("ytelse", ytelseType);
+        return HibernateVerktøy.hentUniktResultat(query).orElse(null);
+    }
+
     public void lagre(KoblingEntitet nyKobling) {
         Optional<KoblingEntitet> eksisterendeKobling = hentForKoblingReferanse(nyKobling.getKoblingReferanse());
 
