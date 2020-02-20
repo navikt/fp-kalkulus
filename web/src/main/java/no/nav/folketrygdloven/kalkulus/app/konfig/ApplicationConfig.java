@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
+import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
@@ -58,10 +59,12 @@ public class ApplicationConfig extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
-        //TODO REST må legges inn her.
-        //classes.add(YtelseRestTjeneste.class);
-        classes.add(OperereKalkulusRestTjeneste.class);
 
+        //kalkulus rest
+        classes.add(OperereKalkulusRestTjeneste.class);
+        classes.add(HentKalkulusRestTjeneste.class);
+
+        //andre tjenester
         classes.add(OpenApiResource.class);
         classes.add(ConstraintViolationMapper.class);
         classes.add(JsonMappingExceptionMapper.class);
