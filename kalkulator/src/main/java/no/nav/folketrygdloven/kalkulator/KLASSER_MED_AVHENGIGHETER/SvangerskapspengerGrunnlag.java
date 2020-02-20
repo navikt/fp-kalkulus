@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.svp.SvpTilretteleggingDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
 
 public class SvangerskapspengerGrunnlag implements YtelsespesifiktGrunnlag {
