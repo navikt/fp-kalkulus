@@ -14,6 +14,7 @@ public class BeregningsgrunnlagArbeidstakerAndelDto {
 
     public BeregningsgrunnlagArbeidstakerAndelDto(BeregningsgrunnlagArbeidstakerAndelDto eksisterendeBGArbeidstakerAndelMal) {
         this.mottarYtelse = eksisterendeBGArbeidstakerAndelMal.mottarYtelse;
+        this.harInntektsmelding = eksisterendeBGArbeidstakerAndelMal.harInntektsmelding;
     }
 
     public static Builder builder() {

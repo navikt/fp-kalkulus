@@ -116,7 +116,7 @@ public class MapBeregningsgrunnlagFraRestTilDomene {
 
     private static BeregningsgrunnlagPeriodeDto.Builder mapPeriodeBuilder(BeregningsgrunnlagPeriodeRestDto beregningsgrunnlagPeriode) {
         BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom())
+            .medBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom())
             .medAvkortetPrÅr(beregningsgrunnlagPeriode.getAvkortetPrÅr())
             .medRedusertPrÅr(beregningsgrunnlagPeriode.getRedusertPrÅr())
             .medBruttoPrÅr(beregningsgrunnlagPeriode.getBruttoPrÅr());
