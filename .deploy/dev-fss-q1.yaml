@@ -54,8 +54,8 @@ spec:
           kvPath: serviceuser/data/test/srvftkalkulus
         - mountPath: /var/run/secrets/nais.io/ldap
           kvPath: serviceuser/data/test/srvssolinux
-          #  - mountPath: /var/run/secrets/nais.io/vault
-          #    kvPath: /kv/preprod/fss/ftkalkulus/q1
+        - mountPath: /var/run/secrets/nais.io/vault
+          kvPath: /kv/preprod/fss/ftkalkulus/q1
   sidecar: true # refresh token
   env:
     - name: LOADBALANCER_FQDN
