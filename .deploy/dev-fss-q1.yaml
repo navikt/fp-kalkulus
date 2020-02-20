@@ -85,5 +85,5 @@ spec:
     - name: DEFAULTDS_USERNAME
       value: ftkalkulus-q1
     - name: DEFAULTDS_URL
-      value: jdbc:postgresql://b27dbvl007.preprod.local:5432/ftkalkulus-q1
+      value: jdbc:postgresql://b27dbvl009.preprod.local:5432/ftkalkulus-q1
     # Eksterne systemer
