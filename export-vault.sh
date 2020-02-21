@@ -23,4 +23,3 @@ then
   export LDAP_PASSWORD=$(cat /var/run/secrets/nais.io/ldap/password)
   echo "Setting LDAP_PASSWORD"
 fi
-

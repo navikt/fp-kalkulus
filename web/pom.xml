@@ -251,13 +251,11 @@
             <!-- Trengs for REST grensesnitt -->
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!-- Trengs for REST grensesnitt -->
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Metrics, logging, helse- og selftest -->
