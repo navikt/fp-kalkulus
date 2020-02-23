@@ -26,10 +26,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class FortsettBeregningRequest {
 
-    @JsonProperty(value = "referanse", required = true)
+    @JsonProperty(value = "eksternReferanse", required = true)
     @Valid
     @NotNull
-    private UUID koblingReferanse;
+    private UUID eksternReferanse;
 
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
@@ -45,16 +45,16 @@ public class FortsettBeregningRequest {
         // default ctor
     }
 
-    public FortsettBeregningRequest(@Valid @NotNull UUID koblingReferanse,
+    public FortsettBeregningRequest(@Valid @NotNull UUID eksternReferanse,
                                     @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                     @NotNull @Valid StegType stegType) {
-        this.koblingReferanse = koblingReferanse;
+        this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.stegType = stegType;
     }
 
-    public UUID getKoblingReferanse() {
-        return koblingReferanse;
+    public UUID getEksternReferanse() {
+        return eksternReferanse;
     }
 
     public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {

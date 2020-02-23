@@ -32,9 +32,9 @@ public class ApplicationConfig extends Application {
     public ApplicationConfig() {
         OpenAPI oas = new OpenAPI();
         Info info = new Info()
-            .title("Vedtaksløsningen - Kalkulus")
+            .title("Kalkulus")
             .version("1.0")
-            .description("REST grensesnitt for Vedtaksløsningen.");
+            .description("REST grensesnitt for Kalkulus.");
 
         oas.info(info)
             .addServersItem(new Server()
@@ -43,7 +43,7 @@ public class ApplicationConfig extends Application {
             .openAPI(oas)
             .prettyPrint(true)
             .scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner")
-            .resourcePackages(Stream.of("no.nav.vedtak", "no.nav.foreldrepenger")
+            .resourcePackages(Stream.of("no.nav.folketrygdloven")
                 .collect(Collectors.toSet()));
 
         try {

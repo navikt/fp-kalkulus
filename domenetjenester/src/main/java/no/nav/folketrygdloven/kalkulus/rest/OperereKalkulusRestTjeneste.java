@@ -107,7 +107,7 @@ public class OperereKalkulusRestTjeneste {
     })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
@@ -170,16 +170,16 @@ public class OperereKalkulusRestTjeneste {
 
 
         @JsonCreator
-        public FortsettBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UUID koblingReferanse,
+        public FortsettBeregningRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
                                                @JsonProperty(value = "saksnummer", required = true) @NotNull @Valid StegType stegType,
                                                @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(koblingReferanse, ytelseSomSkalBeregnes, stegType);
+            super(eksternReferanse, ytelseSomSkalBeregnes, stegType);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getEksternReferanse());
             return abacDataAttributter;
         }
     }

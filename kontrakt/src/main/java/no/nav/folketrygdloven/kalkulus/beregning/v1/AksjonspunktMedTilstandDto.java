@@ -22,12 +22,12 @@ public class AksjonspunktMedTilstandDto {
     @NotNull
     private BeregningAksjonspunkt beregningAksjonspunktDefinisjon;
 
-    @JsonProperty(value = "beregningAksjonspunktDefinisjon")
+    @JsonProperty(value = "venteårsak")
     @Valid
     @NotNull
     private BeregningVenteårsak venteårsak;
 
-    @JsonProperty(value = "beregningAksjonspunktDefinisjon")
+    @JsonProperty(value = "ventefrist")
     @Valid
     @NotNull
     private LocalDateTime ventefrist;
