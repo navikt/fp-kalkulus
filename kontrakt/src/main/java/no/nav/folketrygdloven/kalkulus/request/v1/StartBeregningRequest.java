@@ -52,7 +52,7 @@ public class StartBeregningRequest {
     @JsonProperty(value = "kalkulatorInput", required = true)
     @NotNull
     @Valid
-    private KalkulatorInputDto kalkulatorInputDto;
+    private KalkulatorInputDto kalkulatorInput;
 
     protected StartBeregningRequest() {
         // default ctor
@@ -62,13 +62,13 @@ public class StartBeregningRequest {
                                  @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                  @NotNull @Valid PersonIdent aktør,
                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                 @NotNull @Valid KalkulatorInputDto kalkulatorInputDto) {
+                                 @NotNull @Valid KalkulatorInputDto kalkulatorInput) {
 
         this.koblingReferanse = koblingReferanse;
         this.saksnummer = saksnummer;
         this.aktør = aktør;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
-        this.kalkulatorInputDto = kalkulatorInputDto;
+        this.kalkulatorInput = kalkulatorInput;
     }
 
     public UUID getKoblingReferanse() {
@@ -87,7 +87,7 @@ public class StartBeregningRequest {
         return ytelseSomSkalBeregnes;
     }
 
-    public KalkulatorInputDto getKalkulatorInputDto() {
-        return kalkulatorInputDto;
+    public KalkulatorInputDto getKalkulatorInput() {
+        return kalkulatorInput;
     }
 }

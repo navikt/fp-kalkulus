@@ -1,7 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.app.jackson;
 
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -40,7 +44,22 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
         std.addValue(KodeValidator.class, KodeValidator.HAPPY_VALIDATOR);
         objectMapper.setInjectableValues(std);
 
-        objectMapper.registerSubtypes(getJsonTypeNameClasses());
+        Collection<Class<?>> restClasses = new RestImplementationClasses().getImplementationClasses();
+
+        Set<Class<?>> scanClasses = new LinkedHashSet<>(restClasses);
+
+        // avled code location fra klassene
+        scanClasses
+                .stream()
+                .map(c -> {
+                    try {
+                        return c.getProtectionDomain().getCodeSource().getLocation().toURI();
+                    } catch (URISyntaxException e) {
+                        throw new IllegalArgumentException("Ikke en URI for klasse: " + c, e);
+                    }
+                })
+                .distinct()
+                .forEach(uri -> objectMapper.registerSubtypes(getJsonTypeNameClasses(uri)));
     }
 
     public static Module defaultModule() {
@@ -64,15 +83,10 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
     /**
      * Scan subtyper dynamisk fra WAR slik at superklasse slipper å deklarere @JsonSubtypes.
      */
-    public static List<Class<?>> getJsonTypeNameClasses() {
-        Class<JacksonJsonConfig> cls = JacksonJsonConfig.class;
+    public static List<Class<?>> getJsonTypeNameClasses(URI uri) {
         IndexClasses indexClasses;
-        try {
-            indexClasses = IndexClasses.getIndexFor(cls.getProtectionDomain().getCodeSource().getLocation().toURI());
-            return indexClasses.getClassesWithAnnotation(JsonTypeName.class);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Kunne ikke konvertere CodeSource location til URI", e);
-        }
+        indexClasses = IndexClasses.getIndexFor(uri);
+        return indexClasses.getClassesWithAnnotation(JsonTypeName.class);
     }
 
     public ObjectMapper getObjectMapper() {

@@ -51,7 +51,7 @@ public class FordelBeregningsgrunnlagTjeneste {
     }
 
     private static String toJson(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> regelPerioder) {
-        return JacksonJsonConfig.toJson(regelPerioder, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(regelPerioder, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 
 }

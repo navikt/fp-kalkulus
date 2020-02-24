@@ -31,7 +31,7 @@ public class KalkulatorInputDto {
     @Valid
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
-    @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
+    @JsonProperty(value = "grunnbeløpsatser", required = true)
     @NotEmpty
     @Valid
     private List<GrunnbeløpDto> grunnbeløpsatser;

@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ArbeidType extends Kodeverk{
@@ -20,7 +19,10 @@ public class ArbeidType extends Kodeverk{
     @NotNull
     private String kode;
 
-    @JsonCreator
+    protected ArbeidType() {
+        // default ctor
+    }
+
     public ArbeidType(@JsonProperty(value = "kode", required = true) String kode) {
         Objects.requireNonNull(kode, "kode");
         this.kode = kode;

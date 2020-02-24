@@ -27,7 +27,7 @@ public class YrkesaktivitetDto {
     @NotNull
     private Aktør arbeidsgiver;
 
-    @JsonProperty("internArbeidsforholdRefDto")
+    @JsonProperty("abakusReferanse")
     @Valid
     @NotNull
     private InternArbeidsforholdRefDto abakusReferanse;

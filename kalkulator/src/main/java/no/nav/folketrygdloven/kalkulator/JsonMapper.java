@@ -12,7 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import no.nav.vedtak.feil.Feil;
 
-public class JacksonJsonConfig {
+public class JsonMapper {
 
     private static final ObjectMapper OM = new ObjectMapper();
 
@@ -26,7 +26,7 @@ public class JacksonJsonConfig {
         OM.registerModule(new JavaTimeModule());
     }
 
-    private JacksonJsonConfig() {
+    private JsonMapper() {
         // skjul public constructor
     }
 

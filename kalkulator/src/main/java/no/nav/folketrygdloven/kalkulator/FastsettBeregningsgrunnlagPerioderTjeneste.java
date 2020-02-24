@@ -79,6 +79,6 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
     }
 
     private String toJson(Object o) {
-        return JacksonJsonConfig.toJson(o, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(o, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 }

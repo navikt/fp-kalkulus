@@ -41,6 +41,6 @@ public class FastsettSkjæringstidspunktOgStatuser {
     }
 
     private static String toJson(AktivitetStatusModell grunnlag) {
-        return JacksonJsonConfig.toJson(grunnlag, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(grunnlag, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 }

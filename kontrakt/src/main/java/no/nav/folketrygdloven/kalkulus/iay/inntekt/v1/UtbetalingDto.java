@@ -28,15 +28,15 @@ public class UtbetalingDto {
     @JsonProperty(value = "inntektsKilde", required = true)
     @NotNull
     @Valid
-    private InntektskildeType kilde;
+    private InntektskildeType inntektsKilde;
 
     @JsonProperty(value = "utbetalingsPoster", required = true)
     @NotNull
     @Valid
     private List<UtbetalingsPostDto> poster;
 
-    public UtbetalingDto(@NotNull @Valid InntektskildeType kilde, @NotNull @Valid List<UtbetalingsPostDto> poster) {
-        this.kilde = kilde;
+    public UtbetalingDto(@NotNull @Valid InntektskildeType inntektsKilde, @NotNull @Valid List<UtbetalingsPostDto> poster) {
+        this.inntektsKilde = inntektsKilde;
         this.poster = poster;
     }
 
@@ -45,7 +45,7 @@ public class UtbetalingDto {
     }
 
     public UtbetalingDto(InntektskildeType kilde) {
-        this.kilde = Objects.requireNonNull(kilde, "kilde");
+        this.inntektsKilde = Objects.requireNonNull(kilde, "kilde");
     }
 
     public UtbetalingDto(String kilde) {
@@ -57,7 +57,7 @@ public class UtbetalingDto {
     }
 
     public InntektskildeType getKilde() {
-        return kilde;
+        return inntektsKilde;
     }
 
     public List<UtbetalingsPostDto> getPoster() {
@@ -90,12 +90,12 @@ public class UtbetalingDto {
             return false;
         var other = this.getClass().cast(obj);
 
-        return Objects.equals(this.kilde, other.kilde)
+        return Objects.equals(this.inntektsKilde, other.inntektsKilde)
             && Objects.equals(arbeidsgiver, other.arbeidsgiver);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kilde, arbeidsgiver);
+        return Objects.hash(inntektsKilde, arbeidsgiver);
     }
 }

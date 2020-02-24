@@ -11,8 +11,11 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -52,6 +55,7 @@ import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
+@Produces(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "operere-kalkulus"))
 @Path("/kalkulus/v1")
 @ApplicationScoped
@@ -76,10 +80,11 @@ public class OperereKalkulusRestTjeneste {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start-beregn")
     @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
             @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
-                    content = @Content(mediaType = "appliaction/json",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
@@ -99,10 +104,11 @@ public class OperereKalkulusRestTjeneste {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/fortsett-beregn")
     @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
             @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
-                    content = @Content(mediaType = "appliaction/json",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
@@ -117,10 +123,11 @@ public class OperereKalkulusRestTjeneste {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/håndter-beregn")
     @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
             @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
-                    content = @Content(mediaType = "appliaction/json",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
@@ -145,9 +152,9 @@ public class OperereKalkulusRestTjeneste {
         public StartBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UUID koblingReferanse,
                                             @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                             @JsonProperty(value = "aktør", required = true) @NotNull @Valid PersonIdent aktør,
-                                            @JsonProperty(value = "kalkulatorInputDto", required = true) @NotNull @Valid KalkulatorInputDto kalkulatorInputDto,
+                                            @JsonProperty(value = "kalkulatorInput", required = true) @NotNull @Valid KalkulatorInputDto kalkulatorInput,
                                             @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(koblingReferanse, saksnummer, aktør, ytelseSomSkalBeregnes, kalkulatorInputDto);
+            super(koblingReferanse, saksnummer, aktør, ytelseSomSkalBeregnes, kalkulatorInput);
         }
 
         @Override

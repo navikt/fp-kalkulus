@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -24,7 +23,7 @@ public class YtelsespesifiktGrunnlagDto {
     @Valid
     @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
     @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
-    private final BigDecimal dekningsgrad;
+    private BigDecimal dekningsgrad;
 
     @JsonProperty(value = "kvalifisererTilBesteberegning")
     @Valid
@@ -34,7 +33,11 @@ public class YtelsespesifiktGrunnlagDto {
     @JsonProperty(value = "grunnbeløpMilitærHarKravPå")
     @Valid
     @NotNull
-    private final Integer grunnbeløpMilitærHarKravPå;
+    private Integer grunnbeløpMilitærHarKravPå;
+
+    protected YtelsespesifiktGrunnlagDto() {
+        // default ctor
+    }
 
     public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad, @Valid @NotNull Integer grunnbeløpMilitærHarKravPå) {
         this.dekningsgrad = dekningsgrad;
