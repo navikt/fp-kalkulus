@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 
 @Entity(name = "BeregningsgrunnlagPrStatusOgAndel")
@@ -129,9 +130,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @ChangeTracked
     private Beløp årsbeløpFraTilstøtendeYtelse;
 
+    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "ny_i_arbeidslivet")
     private Boolean nyIArbeidslivet;
 
+    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "fastsatt_av_saksbehandler", nullable = false)
     private Boolean fastsattAvSaksbehandler = false;
 
@@ -142,6 +145,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name="inntektskategori", nullable = false)
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
 
+    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "lagt_til_av_saksbehandler", nullable = false)
     private Boolean lagtTilAvSaksbehandler = false;
 

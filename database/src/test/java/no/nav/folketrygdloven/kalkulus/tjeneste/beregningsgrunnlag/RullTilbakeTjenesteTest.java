@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.vedtak.felles.testutilities.db.RepositoryRule;
 
+
 public class RullTilbakeTjenesteTest {
 
     @Rule
