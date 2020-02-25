@@ -5,6 +5,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyper
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.SVANGERSKAPSPENGER;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
@@ -23,10 +27,12 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingStatus;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
@@ -68,7 +74,9 @@ public class MapFraKalkulator {
         FagsakYtelseType foreldrepenger = FagsakYtelseType.FORELDREPENGER;
         AktørId aktørId = new AktørId(kobling.getAktørId().getId());
         BehandlingStatus avsluttet = BehandlingStatus.AVSLUTTET;
-        Skjæringstidspunkt build = Skjæringstidspunkt.builder().medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
+        Skjæringstidspunkt build = Skjæringstidspunkt.builder()
+                .medFørsteUttaksdato(skjæringstidspunkt)
+                .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
 
         var ref = BehandlingReferanse.fra(foreldrepenger, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), avsluttet, build);
 
@@ -77,12 +85,16 @@ public class MapFraKalkulator {
         OpptjeningAktiviteterDto opptjeningAktiviteter = input.getOpptjeningAktiviteter();
         List<RefusjonskravDatoDto> refusjonskravDatoer = input.getRefusjonskravDatoer();
 
-        return new BeregningsgrunnlagInput(ref,
+        BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
                 mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId())),
                 mapFraDto(opptjeningAktiviteter),
                 mapFraDto(aktivitetGradering),
                 mapFraDto(refusjonskravDatoer),
                 mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input.getYtelsespesifiktGrunnlag()));
+
+        utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+
+        return utenGrunnbeløp.medGrunnbeløpsatser(mapFraDto(input.getGrunnbeløpsatser()));
     }
 
     private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
@@ -95,7 +107,7 @@ public class MapFraKalkulator {
         return null;
     }
 
-    private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(List<RefusjonskravDatoDto> refusjonskravDatoer) {
+    private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {
         if (refusjonskravDatoer == null) {
             return Collections.emptyList();
         }
@@ -134,10 +146,30 @@ public class MapFraKalkulator {
     }
 
     private static no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
-        return null;
+        return new no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto(
+        opptjeningAktiviteter.getPerioder().stream().map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.nyPeriode(
+                OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
+                new Periode(opptjeningPeriodeDto.getPeriode().getFom(), opptjeningPeriodeDto.getPeriode().getTom()),
+                opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                opptjeningPeriodeDto.getArbeidsgiver().getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                opptjeningPeriodeDto.getAbakusReferanse() != null  ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse()) : null
+        )).collect(Collectors.toList()));
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident aktørId) {
         return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag, aktørId);
+    }
+
+    private static List<Grunnbeløp> mapFraDto(List<GrunnbeløpDto> grunnbeløpsatser) {
+
+        List<Grunnbeløp> collect = grunnbeløpsatser.stream().map(grunnbeløpDto ->
+                new Grunnbeløp(
+                        grunnbeløpDto.getPeriode().getFom(),
+                        grunnbeløpDto.getPeriode().getTom(),
+                        grunnbeløpDto.getgVerdi().longValue(),
+                        grunnbeløpDto.getgSnitt().longValue()))
+                .collect(Collectors.toList());
+
+        return collect;
     }
 }

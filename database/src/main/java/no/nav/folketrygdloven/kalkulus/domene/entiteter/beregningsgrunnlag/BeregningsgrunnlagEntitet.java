@@ -20,7 +20,6 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,7 +41,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "Beregningsgrunnlag")
 @Table(name = "BEREGNINGSGRUNNLAG")
@@ -105,7 +103,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     private List<BeregningsgrunnlagFaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = new ArrayList<>();
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "overstyrt", nullable = false)
     private boolean overstyrt = false;
 

@@ -20,7 +20,7 @@ public class KoblingTjeneste {
     private KoblingRepository repository;
     private LåsRepository låsRepository;
 
-    KoblingTjeneste() {
+    public KoblingTjeneste() {
     }
 
     @Inject

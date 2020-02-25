@@ -2,17 +2,20 @@
   "koblingReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "saksnummer": "34534958",
   "aktør": {
-    "identType": "34534534763"
+    "identType": "AKTØRID",
+    "ident": "3453453476323"
   },
   "kalkulatorInput": {
     "aktivitetGradering": {
       "andelGraderingDto": [
         {
           "aktivitetStatus": {
-            "kode": "AT"
+            "kode": "AT",
+            "kodeverk": "AKTIVITET_STATUS"
           },
           "arbeidsgiver": {
-            "identType": "910909088"
+            "identType": "ORGNUMMER",
+            "ident": "910909088"
           },
           "arbeidsforholdRef": {
             "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -32,7 +35,8 @@
     "refusjonskravDatoer": [
       {
         "arbeidsgiver": {
-          "identType": "910909088"
+          "identType": "ORGNUMMER",
+          "ident": "910909088"
         },
         "førsteDagMedRefusjonskrav": "2020-02-24",
         "førsteInnsendingAvRefusjonskrav": "2020-02-24",
@@ -54,13 +58,15 @@
         "yrkesaktiviteter": [
           {
             "arbeidsgiver": {
-              "identType": "910909088"
+              "identType": "ORGNUMMER",
+              "ident": "910909088"
             },
-            "internArbeidsforholdRefDto": {
+            "abakusReferanse": {
               "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             },
             "arbeidType": {
-              "kode": "ORDINÆRT_ARBEIDSFORHOLD"
+              "kode": "ORDINÆRT_ARBEIDSFORHOLD",
+              "kodeverk": "ARBEID_TYPE"
             },
             "aktivitetsAvtaler": [
               {
@@ -86,15 +92,18 @@
         "utbetalinger": [
           {
             "arbeidsgiver": {
-              "identType": "910909088"
+              "identType": "ORGNUMMER",
+              "ident": "910909088"
             },
             "inntektsKilde": {
-              "kode": "INNTEKT_BEREGNING"
+              "kode": "INNTEKT_BEREGNING",
+              "kodeverk": "INNTEKTS_KILDE"
             },
             "utbetalingsPoster": [
               {
                 "inntektspostType": {
-                  "kode": "LØNN"
+                  "kode": "LØNN",
+                  "kodeverk": "INNTEKTSPOST_TYPE"
                 },
                 "periode": {
                   "fom": "2018-02-24",
@@ -113,12 +122,13 @@
         "inntektsmeldinger": [
           {
             "arbeidsgiver": {
-              "identType": "910909088"
+              "identType": "ORGNUMMER",
+              "ident": "910909088"
             },
             "inntektBeløp": {
               "verdi": 45000
             },
-           "arbeidsforholdRef": {
+            "arbeidsforholdRef": {
               "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
             },
             "startDatoPermisjon": "2020-02-24",
@@ -132,18 +142,32 @@
       "perioder": [
         {
           "opptjeningAktivitetType": {
-            "kode": "ARBEID"
+            "kode": "ARBEID",
+            "kodeverk": "OPPTJENING_AKTIVITET_TYPE"
           },
           "periode": {
             "fom": "2018-02-24",
             "tom": "2022-02-24"
           },
           "arbeidsgiver": {
-            "identType": "910909088"
+            "identType": "ORGNUMMER",
+            "ident": "910909088"
           },
           "abakusReferanse": {
             "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
+        },
+        {
+          "opptjeningAktivitetType": {
+            "kode": "AAP",
+            "kodeverk": "OPPTJENING_AKTIVITET_TYPE"
+          },
+          "periode": {
+            "fom": "2018-02-24",
+            "tom": "2022-02-24"
+          },
+          "arbeidsgiver": null,
+          "abakusReferanse": null
         }
       ]
     },
@@ -155,7 +179,8 @@
     "skjæringstidspunkt": "2020-02-24"
   },
   "ytelseSomSkalBeregnes": {
-    "kode": "FP"
+    "kode": "FP",
+    "kodeverk": "YTELSE_TYPE"
   },
   "referanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 }

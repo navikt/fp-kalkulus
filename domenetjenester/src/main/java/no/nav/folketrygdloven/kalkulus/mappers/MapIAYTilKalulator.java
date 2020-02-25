@@ -132,11 +132,15 @@ public class MapIAYTilKalulator {
         builder.medArbeidsforholdId(mapArbeidsforholdRef(inntektsmelding.getArbeidsforholdRef()));
         builder.medRefusjon(inntektsmelding.getRefusjonBeløpPerMnd() == null ? null : inntektsmelding.getRefusjonBeløpPerMnd().getVerdi(), inntektsmelding.getRefusjonOpphører());
         builder.medBeløp(inntektsmelding.getInntektBeløp().getVerdi());
-        inntektsmelding.getNaturalYtelser().stream().map(MapIAYTilKalulator::mapNaturalYtelse).forEach(builder::leggTil);
+        if (inntektsmelding.getNaturalYtelser() != null) {
+            inntektsmelding.getNaturalYtelser().stream().map(MapIAYTilKalulator::mapNaturalYtelse).forEach(builder::leggTil);
+        }
         if (inntektsmelding.getStartDatoPermisjon() != null) {
             builder.medStartDatoPermisjon(inntektsmelding.getStartDatoPermisjon());
         }
-        inntektsmelding.getEndringerRefusjon().forEach(refusjon -> builder.leggTil(mapRefusjon(refusjon)));
+        if (inntektsmelding.getEndringerRefusjon() != null) {
+            inntektsmelding.getEndringerRefusjon().forEach(refusjon -> builder.leggTil(mapRefusjon(refusjon)));
+        }
         return builder.build(true);
     }
 
@@ -206,9 +210,15 @@ public class MapIAYTilKalulator {
 
     private static InntektArbeidYtelseAggregatBuilder mapAggregat(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto grunnlagDto, AktørIdPersonident id) {
         InntektArbeidYtelseAggregatBuilder builder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        builder.leggTilAktørArbeid(mapArbeid(grunnlagDto.getArbeidDto(), id));
-        builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto(), id));
-        builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto(), id));
+        if (grunnlagDto.getArbeidDto() != null) {
+            builder.leggTilAktørArbeid(mapArbeid(grunnlagDto.getArbeidDto(), id));
+        }
+        if (grunnlagDto.getInntekterDto() != null) {
+            builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto(), id));
+        }
+        if (grunnlagDto.getYtelserDto() != null) {
+            builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto(), id));
+        }
         return builder;
     }
 

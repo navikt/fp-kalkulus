@@ -15,7 +15,9 @@ public class NaturalYtelseType extends Kodeverk {
     @Size(min = 2, max = 50)
     @NotNull
     private String kode;
-    private String kodeverk;
+
+    public static final String KODEVERK = "NATURAL_YTELSE_TYPE";
+
 
     @JsonCreator
     public NaturalYtelseType(@JsonProperty(value = "kode", required = true) String kode) {
@@ -30,7 +32,7 @@ public class NaturalYtelseType extends Kodeverk {
 
     @Override
     public String getKodeverk() {
-        return kodeverk;
+        return KODEVERK;
     }
 
 }

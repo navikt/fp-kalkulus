@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TemaUnderkategori extends Kodeverk {
-    private static final String KODEVERK = "TEMA_UNDERKATEGORI";
+    public static final String KODEVERK = "TEMA_UNDERKATEGORI";
 
     public static TemaUnderkategori FORELDREPENGER = new TemaUnderkategori("FP");
 

@@ -2,11 +2,13 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
+@ApplicationScoped
 public class RullTilbakeTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;

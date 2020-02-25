@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RelatertYtelseTilstand extends Kodeverk{
-    public static final String KODEVERK = "RELATERT_YTELSE_TYPE";
+    public static final String KODEVERK = "RELATERT_YTELSE_TILSTAND";
 
     public static RelatertYtelseTilstand ÅPEN = new RelatertYtelseTilstand("ÅPEN");
 
