@@ -33,19 +33,26 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 
 @ApplicationScoped
 public class BeregningStegTjeneste {
     private static final String UTVIKLER_FEIL_SKAL_HA_BEREGNINGSGRUNNLAG_HER = "Utvikler-feil: skal ha beregningsgrunnlag her";
     private static final Supplier<IllegalStateException> INGEN_BG_EXCEPTION_SUPPLIER = () -> new IllegalStateException(UTVIKLER_FEIL_SKAL_HA_BEREGNINGSGRUNNLAG_HER);
 
-    private final BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
-    private final BeregningsgrunnlagRepository repository;
+    private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
+    private BeregningsgrunnlagRepository repository;
+    private RullTilbakeTjeneste rullTilbakeTjeneste;
+
+    BeregningStegTjeneste() {
+        // CDI
+    }
 
     @Inject
-    public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository) {
+    public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository, RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
+        this.rullTilbakeTjeneste = rullTilbakeTjeneste;
     }
 
     /** FastsettBeregningsaktiviteter
@@ -204,7 +211,8 @@ public class BeregningStegTjeneste {
                         res.getVentefrist())).collect(Collectors.toList()));
     }
 
-    public TilstandResponse beregnFor(StegType stegType, BeregningsgrunnlagInput input) {
+    public TilstandResponse beregnFor(StegType stegType, BeregningsgrunnlagInput input, Long koblingId) {
+        rullTilbakeTjeneste.rullTilbakeTilTilstandFørVedBehov(koblingId, MapStegTilTilstand.map(stegType));
         if (stegType.equals(StegType.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag(input);
         } else if (stegType.equals(StegType.FORS_BERGRUNN)) {

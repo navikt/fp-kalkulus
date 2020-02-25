@@ -12,10 +12,12 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
+import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilBGMapper;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 
@@ -23,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.Beregningsgru
 public class HåndtererApplikasjonTjeneste {
 
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+    private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
 
     public HåndtererApplikasjonTjeneste() {
@@ -30,15 +33,24 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     @Inject
-    public HåndtererApplikasjonTjeneste(KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+    public HåndtererApplikasjonTjeneste(KalkulatorInputTjeneste kalkulatorInputTjeneste, RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.rullTilbakeTjeneste = rullTilbakeTjeneste;
+        this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
     }
 
     public void håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+        rullTilbakeVedBehov(koblingId, håndterBeregningDto);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndterBeregningDto.getKode().getKode());
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningHåndterer.håndter(håndterBeregningDto, kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId));
         BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(grunnlag);
         beregningsgrunnlagRepository.lagreOgFlush(koblingId, beregningsgrunnlagGrunnlagEntitet);
+    }
+
+    private void rullTilbakeVedBehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+        HåndteringKode kode = håndterBeregningDto.getKode();
+        BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(kode);
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, tilstand);
     }
 
     @SuppressWarnings("unchecked")

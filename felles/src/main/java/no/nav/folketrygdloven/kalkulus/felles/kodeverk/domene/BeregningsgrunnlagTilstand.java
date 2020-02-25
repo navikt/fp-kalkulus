@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.AttributeConverter;
@@ -41,8 +43,13 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
 
     private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();
 
+    /**
+     * Rekkefølge tilstandene opptrer i løsningen.
+     *
+     * IKKE ENDRE REKKEFØLGE AV TILSTANDER UTEN Å ENDRE REKKEFØLGE AV LAGRING.
+     */
     private static final List<BeregningsgrunnlagTilstand> tilstandRekkefølge = Collections.unmodifiableList(
-        List.of(
+    List.of(
         OPPRETTET,
         FASTSATT_BEREGNINGSAKTIVITETER,
         OPPDATERT_MED_ANDELER,
@@ -92,6 +99,32 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     public static void main(String[] args) {
         System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
     }
+
+    public static BeregningsgrunnlagTilstand finnFørste() {
+        return tilstandRekkefølge.get(0);
+    }
+
+
+    public static Optional<BeregningsgrunnlagTilstand> finnForrigeObligatoriskTilstand(BeregningsgrunnlagTilstand tilstand) {
+        int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
+        if (tilstandIndex == 0) {
+            return Optional.empty();
+        }
+        int id = tilstandIndex - 1;
+        while (!tilstandRekkefølge.get(id).obligatoriskTilstand && id > 0) {
+            id = id - 1;
+        }
+        BeregningsgrunnlagTilstand forrigeObligatoriskTilstand = tilstandRekkefølge.get(id);
+        return Optional.of(forrigeObligatoriskTilstand);
+    }
+
+    public static Optional<BeregningsgrunnlagTilstand> finnForrigeTilstand(BeregningsgrunnlagTilstand tilstand) {
+        int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
+        BeregningsgrunnlagTilstand forrigeTilstand = tilstandRekkefølge.get(tilstandIndex-1);
+        return Optional.of(forrigeTilstand);
+    }
+
+
 
     public boolean erFør(BeregningsgrunnlagTilstand that) {
         int thisIndex = tilstandRekkefølge.indexOf(this);

@@ -17,7 +17,6 @@ import javax.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BeregningsgrunnlagArbeidstakerAndel")
 @Table(name = "BG_ARBEIDSTAKER_ANDEL")
@@ -32,7 +31,6 @@ public class BeregningsgrunnlagArbeidstakerAndel extends BaseEntitet {
     @JoinColumn(name = "BG_PR_STATUS_ANDEL_ID", nullable = false, updatable = false)
     private BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "MOTTAR_YTELSE")
     private Boolean mottarYtelse;
 

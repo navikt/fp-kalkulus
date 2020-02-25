@@ -118,7 +118,7 @@ public class OperereKalkulusRestTjeneste {
 
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
-        TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input);
+        TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
         return Response.ok(tilstandResponse).build();
     }
 
@@ -135,6 +135,7 @@ public class OperereKalkulusRestTjeneste {
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
+
         håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
         TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
         return Response.ok(tilstandResponse).build();

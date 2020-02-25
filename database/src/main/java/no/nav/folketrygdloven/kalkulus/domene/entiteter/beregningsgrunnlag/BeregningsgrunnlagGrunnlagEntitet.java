@@ -19,7 +19,6 @@ import javax.persistence.Version;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BeregningsgrunnlagGrunnlagEntitet")
 @Table(name = "GR_BEREGNINGSGRUNNLAG")
@@ -56,7 +55,6 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     @JoinColumn(name = "br_overstyringer_id", updatable = false, unique = true)
     private BeregningRefusjonOverstyringerEntitet refusjonOverstyringer;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 

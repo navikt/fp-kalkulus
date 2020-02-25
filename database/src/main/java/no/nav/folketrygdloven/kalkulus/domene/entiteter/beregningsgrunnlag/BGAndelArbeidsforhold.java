@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiv
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BGAndelArbeidsforhold")
 @Table(name = "BG_ANDEL_ARBEIDSFORHOLD")
@@ -57,11 +56,9 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Column(name = "naturalytelse_tilkommet_pr_aar")
     private BigDecimal naturalytelseTilkommetPrÅr;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "tidsbegrenset_arbeidsforhold")
     private Boolean erTidsbegrensetArbeidsforhold;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "loennsendring_i_perioden")
     private Boolean lønnsendringIBeregningsperioden;
 
