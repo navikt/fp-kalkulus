@@ -143,6 +143,39 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvang
     }
 
     @Test
+    void skal_returnere_skjæringstidspunkt_om_første_søkte_permisjonsdag_er_før_skjæringstidspunkt() {
+        // Arrange
+        Intervall periode = Intervall.fraOgMedTilOgMed(STP.minusMonths(10), STP.plusMonths(10));
+        Periode ansettelsesperiode = Periode.of(periode.getFomDato(), periode.getTomDato());
+        AktivitetsAvtaleDtoBuilder aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny()
+                .medPeriode(periode)
+                .medErAnsettelsesPeriode(true);
+        YrkesaktivitetDto yrkesaktivitet = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                .leggTilAktivitetsAvtale(aktivitetsAvtaleDtoBuilder)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsgiver(VIRKSOMHET)
+                .build();
+        InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
+                .leggTilAktørArbeid(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
+                        .medAktørId(REFERANSE.getAktørId())
+                        .leggTilYrkesaktivitet(yrkesaktivitet));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medData(registerBuilder)
+                .build();
+        LocalDate førsteDagMedUtbetaling = STP.minusMonths(1);
+        SvangerskapspengerGrunnlag svangerskapspengeGrunnlag = lagSVPGrunnlagMedTilrettelegging(førsteDagMedUtbetaling, BigDecimal.TEN);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(REFERANSE, lagBgGrunnlag(),
+                BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengeGrunnlag);
+
+        // Act
+        Optional<LocalDate> førsteSøktePermisjonsdag = mapper.utledStartdatoPermisjon(input, STP, List.of(), yrkesaktivitet, ansettelsesperiode, iayGrunnlag);
+
+        // Assert
+        assertThat(førsteSøktePermisjonsdag).isPresent();
+        assertThat(førsteSøktePermisjonsdag.get()).isEqualTo(STP);
+    }
+
+    @Test
     void skal_finne_første_dag_med_utbetaling_for_arbeid() {
         // Arrange
         Intervall periode = Intervall.fraOgMedTilOgMed(STP.minusMonths(10), STP.plusMonths(10));
