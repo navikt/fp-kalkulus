@@ -27,7 +27,11 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     public static boolean harTilfelleForFordeling(FordelBeregningsgrunnlagTilfelleInput input) {
-        return !vurderManuellBehandling(input).isEmpty();
+        LOGGER.info("Utleder fordelingtilfelle for input ({})", input);
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = vurderManuellBehandling(input);
+        andelTilfelleMap.forEach((key, value) -> LOGGER.info("Andel ({}) krever manuell behandling av tilfelle ({})", key, value));
+        return !andelTilfelleMap.isEmpty();
+
     }
 
     public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(FordelBeregningsgrunnlagTilfelleInput input) {
@@ -41,13 +45,11 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandlingForPeriode(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input) {
-        LOGGER.info("Utleder fordelingtilfelle for periode ({}) med input ({})", periode.getPeriode(), input);
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = new HashMap<>();
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             Optional<FordelingTilfelle> tilfelle = utledTilfelleForAndel(periode, input, andel);
             tilfelle.ifPresent(fordelingTilfelle -> andelTilfelleMap.put(andel, fordelingTilfelle));
         }
-        andelTilfelleMap.forEach((key, value) -> LOGGER.info("Andel ({}) krever manuell behandling av tilfelle ({})", key, value));
         return andelTilfelleMap;
     }
 
