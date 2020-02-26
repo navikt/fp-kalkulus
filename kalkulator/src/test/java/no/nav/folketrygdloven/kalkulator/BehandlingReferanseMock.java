@@ -17,6 +17,15 @@ public class BehandlingReferanseMock extends BehandlingReferanse {
         super();
     }
 
+    public BehandlingReferanseMock(LocalDate skjæringstidspunktBeregning, LocalDate skjæringstidspunktOpptjening) {
+        super();
+        this.skjæringstidspunkt = Skjæringstidspunkt.builder()
+                .medSkjæringstidspunktBeregning(skjæringstidspunktBeregning)
+                .medSkjæringstidspunktOpptjening(skjæringstidspunktOpptjening)
+                .medFørsteUttaksdato(skjæringstidspunktOpptjening.plusDays(1))
+                .build();
+    }
+
     public BehandlingReferanseMock(LocalDate skjæringstidspunkt) {
         super();
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()

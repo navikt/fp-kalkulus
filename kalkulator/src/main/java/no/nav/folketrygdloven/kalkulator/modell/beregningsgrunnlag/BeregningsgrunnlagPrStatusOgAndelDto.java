@@ -176,6 +176,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             && Objects.equals(this.getArbeidsforholdType(), arbeidsforholdType);
     }
 
+    public Optional<BeregningsgrunnlagArbeidstakerAndelDto> getBeregningsgrunnlagArbeidstakerAndel() {
+        return Optional.ofNullable(beregningsgrunnlagArbeidstakerAndel);
+    }
+
     public OpptjeningAktivitetType getArbeidsforholdType() {
         return arbeidsforholdType;
     }
