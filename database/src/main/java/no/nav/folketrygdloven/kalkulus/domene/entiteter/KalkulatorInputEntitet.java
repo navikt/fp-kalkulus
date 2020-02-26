@@ -34,6 +34,9 @@ public class KalkulatorInputEntitet extends BaseEntitet {
     @Column(name = "input", nullable = false, updatable = false)
     private String input;
 
+    @Column(name = "aktiv", nullable = false)
+    private boolean aktiv = true;
+
     public KalkulatorInputEntitet() {
         // for hibernate
     }
@@ -41,6 +44,10 @@ public class KalkulatorInputEntitet extends BaseEntitet {
     public KalkulatorInputEntitet(Long koblingId, String input) {
         this.koblingId = koblingId;
         this.input = input;
+    }
+
+    public void setAktiv(boolean aktiv) {
+        this.aktiv = aktiv;
     }
 
     public String getInput() {

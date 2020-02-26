@@ -1,11 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class BeregningsgrunnlagRepositoryTest {
 
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
 
-        repository.lagre(input);
+        repository.lagreOgSjekkStatus(input);
 
         KalkulatorInputEntitet resultat = repository.hentKalkulatorInput(koblingId);
 

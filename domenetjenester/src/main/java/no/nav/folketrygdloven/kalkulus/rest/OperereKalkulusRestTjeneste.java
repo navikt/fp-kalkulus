@@ -37,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
@@ -49,6 +50,7 @@ import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
@@ -66,17 +68,24 @@ public class OperereKalkulusRestTjeneste {
     private BeregningStegTjeneste beregningStegTjeneste;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
+    private RullTilbakeTjeneste rullTilbakeTjeneste;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
     }
 
     @Inject
-    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningStegTjeneste beregningStegTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste, HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste) {
+    public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
+                                       BeregningStegTjeneste beregningStegTjeneste,
+                                       KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                       HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
+                                       RullTilbakeTjeneste rullTilbakeTjeneste) {
+
         this.koblingTjeneste = koblingTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
+        this.rullTilbakeTjeneste = rullTilbakeTjeneste;
     }
 
     @POST
@@ -97,10 +106,16 @@ public class OperereKalkulusRestTjeneste {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
-        kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), spesifikasjon.getKalkulatorInput());
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
-        TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
 
+        boolean inputHarEndretSeg = kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), spesifikasjon.getKalkulatorInput());
+
+        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
+
+        if (inputHarEndretSeg) {
+            rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingEntitet.getId(), BeregningsgrunnlagTilstand.OPPRETTET);
+        }
+
+        TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
         return Response.ok(tilstandResponse).build();
     }
 

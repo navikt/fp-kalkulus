@@ -74,7 +74,7 @@ public class KalkulatorInputTjeneste {
         throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException();
     }
 
-    public void lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
+    public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
         String input = null;
         try {
             input = WRITER.writeValueAsString(kalkulatorInput);
@@ -83,7 +83,7 @@ public class KalkulatorInputTjeneste {
         }
 
         if (input != null) {
-            beregningsgrunnlagRepository.lagre(new KalkulatorInputEntitet(koblingId, input));
+            return beregningsgrunnlagRepository.lagreOgSjekkStatus(new KalkulatorInputEntitet(koblingId, input));
         } else {
             throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusKlarteIkkeLagreNedInput(koblingId).toException();
         }

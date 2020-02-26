@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.api.configuration.ClassicConfiguration;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -16,6 +22,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class JettyDevDbKonfigurasjon {
     private static final ObjectMapper OM;
+
+    private static final String location = "classpath:/db/migration/";
 
     static {
         OM = new ObjectMapper();
@@ -43,6 +51,22 @@ public class JettyDevDbKonfigurasjon {
         ObjectReader reader = JettyDevDbKonfigurasjon.OM.readerFor(JettyDevDbKonfigurasjon.class);
         try (MappingIterator<JettyDevDbKonfigurasjon> iterator = reader.readValues(file)) {
             return iterator.readAll();
+        }
+    }
+
+
+    public static void kjørMigreringForDev(final DataSource dataSource) {
+        ClassicConfiguration conf = new ClassicConfiguration();
+        conf.setDataSource(dataSource);
+        conf.setLocationsAsStrings(location);
+        conf.setBaselineOnMigrate(true);
+        Flyway flyway = new Flyway(conf);
+        try {
+            flyway.migrate();
+        } catch (FlywayException fwe) {
+            fwe.printStackTrace();
+            flyway.clean();
+            flyway.migrate();
         }
     }
 

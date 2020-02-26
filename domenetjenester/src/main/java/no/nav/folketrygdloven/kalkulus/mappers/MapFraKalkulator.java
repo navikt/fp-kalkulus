@@ -100,7 +100,10 @@ public class MapFraKalkulator {
     private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
         YtelseTyperKalkulusStøtter yt = YtelseTyperKalkulusStøtter.fraKode(ytelseType.getKode());
         if (FORELDREPENGER == yt) {
-            return new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
+            ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
+            //TODO(OJR) lag builder?
+            foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(ytelsespesifiktGrunnlag.getGrunnbeløpMilitærHarKravPå());
+            return foreldrepengerGrunnlag;
         } else if (SVANGERSKAPSPENGER == yt) {
             throw new IllegalStateException("Støtter ikke denne ennå");
         }

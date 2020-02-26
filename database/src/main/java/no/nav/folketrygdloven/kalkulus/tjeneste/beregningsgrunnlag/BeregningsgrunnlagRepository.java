@@ -356,20 +356,35 @@ public class BeregningsgrunnlagRepository {
         return grunnlagMedForrigeTiltandOpt;
     }
 
-    public void lagre(KalkulatorInputEntitet input) {
+    public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {
+        Optional<KalkulatorInputEntitet> inputEntitetOptional = hentHvisEksitererKalkulatorInput(input.getKoblingId());
+
+        if (inputEntitetOptional.isPresent()) {
+            KalkulatorInputEntitet utdaterInput = inputEntitetOptional.get();
+            // ingen endring i input trenger ikke lagre
+            if (input.getInput().equals(utdaterInput.getInput())) {
+                return false;
+            } else {
+                utdaterInput.setAktiv(false);
+                entityManager.persist(utdaterInput);
+            }
+        }
         entityManager.persist(input);
         entityManager.flush();
+        return true;
     }
 
     public KalkulatorInputEntitet hentKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId", KalkulatorInputEntitet.class);
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv", KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
+        query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentEksaktResultat(query);
     }
 
     public Optional<KalkulatorInputEntitet> hentHvisEksitererKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId", KalkulatorInputEntitet.class);
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv", KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
+        query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
 }

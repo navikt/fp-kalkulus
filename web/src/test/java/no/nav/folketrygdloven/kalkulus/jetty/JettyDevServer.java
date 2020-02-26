@@ -2,8 +2,11 @@ package no.nav.folketrygdloven.kalkulus.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -16,12 +19,16 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
+import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
+import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
+import no.nav.vedtak.util.env.Environment;
 
 public class JettyDevServer extends JettyServer {
     private static final String VTP_ARGUMENT = "--vtp";
@@ -30,6 +37,10 @@ public class JettyDevServer extends JettyServer {
     private static final String KEYSTORE_PASSW_PROP = "no.nav.modig.security.appcert.password";
     private static final String KEYSTORE_PATH_PROP = "no.nav.modig.security.appcert.keystore";
     private static boolean vtp;
+
+    private static final Environment ENV = Environment.current();
+
+    private static final Logger log = LoggerFactory.getLogger(JettyDevServer.class);
 
     public JettyDevServer() {
         super(new JettyDevKonfigurasjon());
@@ -82,6 +93,18 @@ public class JettyDevServer extends JettyServer {
     protected void konfigurer() throws Exception {
         konfigurerLogback();
         super.konfigurer();
+    }
+
+    @Override
+    protected void migrerDatabaser() {
+        DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
+                1);
+        try {
+            JettyDevDbKonfigurasjon.kjørMigreringForDev(migreringDs);
+            migreringDs.getConnection().close();
+        } catch (SQLException e) {
+            log.warn("Klarte ikke stenge connection etter migrering", e);
+        }
     }
 
     protected void konfigurerLogback() throws IOException {

@@ -109,7 +109,7 @@
                   "fom": "2018-02-24",
                   "tom": "2022-02-24"
                 },
-                "beløp": 45000,
+                "beløp": 1200000,
                 "ytelseType": {
                   "kodeverk": null
                 }
@@ -126,7 +126,7 @@
               "ident": "910909088"
             },
             "inntektBeløp": {
-              "verdi": 45000
+              "verdi": 100000
             },
             "arbeidsforholdRef": {
               "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"

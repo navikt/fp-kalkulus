@@ -1,0 +1,11 @@
+{
+  "eksternReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "stegType": {
+    "kode": "FORS_BERGRUNN",
+    "kodeverk": "STEG_TYPE"
+  },
+  "ytelseSomSkalBeregnes": {
+    "kode": "FP",
+    "kodeverk": "YTELSE_TYPE"
+  }
+}
