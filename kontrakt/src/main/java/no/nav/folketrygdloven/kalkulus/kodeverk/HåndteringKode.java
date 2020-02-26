@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class HåndteringKode extends Kodeverk {
 
+    public static final String KODEVERK = "HÅNDTERING_KODE";
+
     public static final HåndteringKode AVKLAR_AKTIVITETER = new HåndteringKode("5052");
     public static final HåndteringKode FAKTA_OM_BEREGNING = new HåndteringKode("5058");
     public static final HåndteringKode FAKTA_OM_FORDELING = new HåndteringKode("5046");
@@ -24,7 +26,6 @@ public class HåndteringKode extends Kodeverk {
     @Size(min = 2, max = 50)
     @NotNull
     private String kode;
-    private String kodeverk;
 
     @JsonCreator
     public HåndteringKode(@JsonProperty(value = "kode", required = true) String kode) {
@@ -39,6 +40,6 @@ public class HåndteringKode extends Kodeverk {
 
     @Override
     public String getKodeverk() {
-        return kodeverk;
+        return KODEVERK;
     }
 }

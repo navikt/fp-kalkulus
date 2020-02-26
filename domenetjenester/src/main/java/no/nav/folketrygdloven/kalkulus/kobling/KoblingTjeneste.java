@@ -43,9 +43,12 @@ public class KoblingTjeneste {
         return repository.hentSisteKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
     }
 
-
     public Long hentKoblingId(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
-        return repository.hentFor(referanse, ytelseType);
+        Optional<Long> koblingId = repository.hentFor(referanse, ytelseType);
+        if (koblingId.isPresent()) {
+            return koblingId.get();
+        }
+        throw new IllegalStateException("Kalkulus kjenner ikke til kombinasjonen av eksternRef:" + referanse.getReferanse() + " og ytelseType:" + ytelseType.getNavn());
     }
 
     public Optional<KoblingEntitet> hentSisteFor(AktørId aktørId, Saksnummer saksnummer, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {

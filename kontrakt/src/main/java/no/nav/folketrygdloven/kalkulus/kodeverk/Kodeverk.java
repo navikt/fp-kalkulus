@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = BeregningVenteårsak.class, name = BeregningVenteårsak.KODEVERK),
         @JsonSubTypes.Type(value = Fagsystem.class, name = Fagsystem.KODEVERK),
         @JsonSubTypes.Type(value = FaktaOmBeregningTilfelle.class, name = FaktaOmBeregningTilfelle.KODEVERK),
+        @JsonSubTypes.Type(value = HåndteringKode.class, name = HåndteringKode.KODEVERK),
         @JsonSubTypes.Type(value = Inntektskategori.class, name = Inntektskategori.KODEVERK),
         @JsonSubTypes.Type(value = InntektskildeType.class, name = InntektskildeType.KODEVERK),
         @JsonSubTypes.Type(value = InntektspostType.class, name = InntektspostType.KODEVERK),

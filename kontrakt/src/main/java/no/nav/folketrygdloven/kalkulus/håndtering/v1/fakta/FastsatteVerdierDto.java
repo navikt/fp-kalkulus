@@ -15,17 +15,17 @@ public class FastsatteVerdierDto {
     @NotNull
     private Integer refusjonPrÅr;
 
-    @JsonProperty("erLønnsendringIBeregningsperioden")
+    @JsonProperty("fastsattÅrsbeløp")
     @Valid
     @NotNull
     private Integer fastsattÅrsbeløp;
 
-    @JsonProperty("erLønnsendringIBeregningsperioden")
+    @JsonProperty("inntektskategori")
     @Valid
     @NotNull
     private Inntektskategori inntektskategori;
 
-    @JsonProperty("erLønnsendringIBeregningsperioden")
+    @JsonProperty("skalHaBesteberegning")
     @Valid
     @NotNull
     private Boolean skalHaBesteberegning;

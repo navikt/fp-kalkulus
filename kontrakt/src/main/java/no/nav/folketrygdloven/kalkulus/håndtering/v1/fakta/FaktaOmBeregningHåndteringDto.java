@@ -1,18 +1,38 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
+
+    public static final String IDENT_TYPE = "FAKTA";
 
     @JsonProperty("fakta")
     @Valid
     @NotNull
     private FaktaBeregningLagreDto fakta;
+
+    public FaktaOmBeregningHåndteringDto() {
+        // default ctor
+    }
+
+    @Override
+    public String getIdentType() {
+        return IDENT_TYPE;
+    }
 
     public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
         this.fakta = fakta;
@@ -21,4 +41,6 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
     public FaktaBeregningLagreDto getFakta() {
         return fakta;
     }
+
+
 }

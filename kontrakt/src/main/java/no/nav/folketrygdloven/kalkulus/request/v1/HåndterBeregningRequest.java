@@ -31,16 +31,16 @@ public class HåndterBeregningRequest {
     @Valid
     private HåndterBeregningDto håndterBeregning;
 
-    @JsonProperty(value = "referanse", required = true)
+    @JsonProperty(value = "eksternReferanse", required = true)
     @Valid
     @NotNull
-    private UUID koblingReferanse;
+    private UUID eksternReferanse;
 
 
     public HåndterBeregningRequest(@NotNull @Valid HåndterBeregningDto håndterBeregning,
-                                   @Valid @NotNull UUID koblingReferanse) {
+                                   @Valid @NotNull UUID eksternReferanse) {
         this.håndterBeregning = håndterBeregning;
-        this.koblingReferanse = koblingReferanse;
+        this.eksternReferanse = eksternReferanse;
     }
 
     public HåndterBeregningRequest() {
@@ -51,7 +51,7 @@ public class HåndterBeregningRequest {
         return håndterBeregning;
     }
 
-    public UUID getKoblingReferanse() {
-        return koblingReferanse;
+    public UUID getEksternReferanse() {
+        return eksternReferanse;
     }
 }

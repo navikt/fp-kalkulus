@@ -113,7 +113,7 @@ public class KalkulatorTilEntitetMapper {
         return IntervallEntitet.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato());
     }
 
-    public static BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagFraKalkulus) {
+    public static BeregningsgrunnlagGrunnlagEntitet mapGrunnlag(Long koblingId, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagFraKalkulus, BeregningsgrunnlagTilstand tilstand) {
         BeregningsgrunnlagGrunnlagBuilder oppdatere = BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty());
 
         beregningsgrunnlagFraKalkulus.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto)));
@@ -122,7 +122,7 @@ public class KalkulatorTilEntitetMapper {
         beregningsgrunnlagFraKalkulus.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
         beregningsgrunnlagFraKalkulus.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
 
-        return oppdatere.buildUtenIdOgTilstand();
+        return oppdatere.build(koblingId, tilstand);
     }
 
     private static BeregningAktivitetAggregatEntitet mapRegisterAktiviteter(BeregningAktivitetAggregatDto registerAktiviteter) {

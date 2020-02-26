@@ -1,61 +1,71 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
 
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class RedigerbarAndelDto {
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("andelsnr")
     @Valid
     @NotNull
     private Long andelsnr;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("arbeidsgiverId")
     @Valid
     @NotNull
     private String arbeidsgiverId;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("arbeidsforholdId")
     @Valid
     @NotNull
     private String arbeidsforholdId;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("nyAndel")
     @Valid
     @NotNull
     private Boolean nyAndel;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("aktivitetStatus")
     @Valid
     @NotNull
     private AktivitetStatus aktivitetStatus;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("arbeidsforholdType")
     @Valid
     @NotNull
     private OpptjeningAktivitetType arbeidsforholdType;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("lagtTilAvSaksbehandler")
     @Valid
     @NotNull
     private Boolean lagtTilAvSaksbehandler;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("beregningsperiodeFom")
     @Valid
     @NotNull
     private LocalDate beregningsperiodeFom;
 
-    @JsonProperty("forrigeArbeidsinntektPrÅr")
+    @JsonProperty("beregningsperiodeTom")
     @Valid
     @NotNull
     private LocalDate beregningsperiodeTom;

@@ -118,9 +118,14 @@ public class OperereKalkulusRestTjeneste {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId());
+        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
-        return Response.ok(tilstandResponse).build();
+
+        if (tilstandResponse.getAksjonspunktMedTilstandDto().isEmpty()) {
+            return Response.noContent().build();
+        } else {
+            return Response.ok(tilstandResponse).build();
+        }
     }
 
     @POST
@@ -134,7 +139,7 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
 
         håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
@@ -180,7 +185,7 @@ public class OperereKalkulusRestTjeneste {
 
         @JsonCreator
         public FortsettBeregningRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                               @JsonProperty(value = "saksnummer", required = true) @NotNull @Valid StegType stegType,
+                                               @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType,
                                                @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
             super(eksternReferanse, ytelseSomSkalBeregnes, stegType);
         }
@@ -203,16 +208,16 @@ public class OperereKalkulusRestTjeneste {
 
 
         @JsonCreator
-        public HåndterBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true)  @NotNull @Valid HåndterBeregningDto håndterBeregning,
-                                            @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @Valid @NotNull UUID koblingReferanse) {
-            super(håndterBeregning, koblingReferanse);
+        public HåndterBeregningRequestAbacDto(@JsonProperty(value = "håndterBeregning", required = true) @NotNull @Valid HåndterBeregningDto håndterBeregning,
+                                              @JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse) {
+            super(håndterBeregning, eksternReferanse);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
 
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getEksternReferanse());
             return abacDataAttributter;
         }
     }

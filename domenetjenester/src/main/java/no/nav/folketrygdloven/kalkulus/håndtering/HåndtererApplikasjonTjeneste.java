@@ -13,13 +13,13 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
-import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
@@ -43,7 +43,8 @@ public class HåndtererApplikasjonTjeneste {
         rullTilbakeVedBehov(koblingId, håndterBeregningDto);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndterBeregningDto.getKode().getKode());
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningHåndterer.håndter(håndterBeregningDto, kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId));
-        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(grunnlag);
+        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, grunnlag, MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode()));
+
         beregningsgrunnlagRepository.lagreOgFlush(koblingId, beregningsgrunnlagGrunnlagEntitet);
     }
 

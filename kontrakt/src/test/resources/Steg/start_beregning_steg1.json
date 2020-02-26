@@ -156,18 +156,6 @@
           "abakusReferanse": {
             "abakusReferanse": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
-        },
-        {
-          "opptjeningAktivitetType": {
-            "kode": "AAP",
-            "kodeverk": "OPPTJENING_AKTIVITET_TYPE"
-          },
-          "periode": {
-            "fom": "2018-02-24",
-            "tom": "2022-02-24"
-          },
-          "arbeidsgiver": null,
-          "abakusReferanse": null
         }
       ]
     },

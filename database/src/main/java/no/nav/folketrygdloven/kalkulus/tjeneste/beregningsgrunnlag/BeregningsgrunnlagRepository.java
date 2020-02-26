@@ -6,14 +6,12 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.jpa.QueryHints;
@@ -30,8 +28,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 
 /**
  * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for revurdering. Ignorerer om grunnlaget er aktivt eller ikke.
@@ -369,5 +365,11 @@ public class BeregningsgrunnlagRepository {
         TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId", KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
         return hentEksaktResultat(query);
+    }
+
+    public Optional<KalkulatorInputEntitet> hentHvisEksitererKalkulatorInput(Long koblingId) {
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId", KalkulatorInputEntitet.class);
+        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
+        return hentUniktResultat(query);
     }
 }

@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
+import no.nav.vedtak.feil.FeilFactory;
 
 @ApplicationScoped
 public class KalkulatorInputTjeneste {
@@ -44,9 +46,15 @@ public class KalkulatorInputTjeneste {
     }
 
     public BeregningsgrunnlagInput lagInput(Long koblingId) {
+        Objects.requireNonNull(koblingId, "Denne kan ikke være null");
+
         KoblingEntitet koblingEntitet = koblingRepository.hentForKoblingId(koblingId);
-        KalkulatorInputEntitet kalkulatorInputEntitet = beregningsgrunnlagRepository.hentKalkulatorInput(koblingId);
-        return MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputEntitet);
+        Optional<KalkulatorInputEntitet> inputEntitetOptional = beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(koblingId);
+        if (inputEntitetOptional.isPresent()) {
+            KalkulatorInputEntitet kalkulatorInputEntitet = inputEntitetOptional.get();
+            return MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputEntitet);
+        }
+        throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException();
     }
 
     public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId) {
@@ -63,10 +71,10 @@ public class KalkulatorInputTjeneste {
             BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = beregningsgrunnlagGrunnlagEntitet.get();
             return input.medBeregningsgrunnlagGrunnlag(BehandlingslagerTilKalkulusMapper.mapGrunnlag(grunnlagEntitet, inntektsmeldingDtos));
         }
-        throw new IllegalStateException("Utviklerfeil!!!, ikke kall meg når jeg ikke har beregningsgrunnlag");
+        throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException();
     }
 
-    public void lagreKalkulatorInput(Long id, KalkulatorInputDto kalkulatorInput) {
+    public void lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
         String input = null;
         try {
             input = WRITER.writeValueAsString(kalkulatorInput);
@@ -75,9 +83,9 @@ public class KalkulatorInputTjeneste {
         }
 
         if (input != null) {
-            beregningsgrunnlagRepository.lagre(new KalkulatorInputEntitet(id, input));
+            beregningsgrunnlagRepository.lagre(new KalkulatorInputEntitet(koblingId, input));
         } else {
-            throw new IllegalStateException("Klarte ikke lagre ned input for koblingId " + id);
+            throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusKlarteIkkeLagreNedInput(koblingId).toException();
         }
     }
 }

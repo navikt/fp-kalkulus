@@ -62,7 +62,7 @@ public class KoblingRepository {
 
     public KoblingEntitet hentSisteKoblingReferanseFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery("FROM Kobling k " +
-                        " WHERE k.ytelseType = :ytelse and koblingReferanse = :referanse " + // NOSONAR
+                        " WHERE k.ytelseTyperKalkulusStøtter = :ytelse and koblingReferanse = :referanse " + // NOSONAR
                         "order by k.opprettetTidspunkt desc, k.id desc"
                 , KoblingEntitet.class);
         query.setParameter("ytelse", ytelseType);
@@ -76,11 +76,11 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query).orElse(null);
     }
 
-    public Long hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
-        TypedQuery<Long> query = entityManager.createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseType = :ytelse", Long.class);
+    public Optional<Long> hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseTyperKalkulusStøtter = :ytelse", Long.class);
         query.setParameter("referanse", referanse);
         query.setParameter("ytelse", ytelseType);
-        return HibernateVerktøy.hentUniktResultat(query).orElse(null);
+        return HibernateVerktøy.hentUniktResultat(query);
     }
 
     public void lagre(KoblingEntitet nyKobling) {

@@ -73,7 +73,7 @@ public class BeregningStegTjeneste {
     public TilstandResponse kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeBekreftetGrunnlag = finnForrigeGrunnlagFraTilstand(input, KOFAKBER_UT);
-        BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag());
+        BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(input.getBehandlingReferanse().getKoblingId(), beregningResultatAggregat.getBeregningsgrunnlagGrunnlag(), OPPDATERT_MED_ANDELER);
         BeregningsgrunnlagEntitet nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER);
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetGrunnlag, nyttGrunnlag, nyttBg);
         return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
@@ -126,7 +126,7 @@ public class BeregningStegTjeneste {
     }
 
     private List<BeregningAksjonspunktResultat> lagreOgKopier(BehandlingReferanse ref, BeregningResultatAggregat resultat) {
-        BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag());
+        BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(ref.getKoblingId(), resultat.getBeregningsgrunnlagGrunnlag(), BeregningsgrunnlagTilstand.OPPRETTET);
         Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeBekreftetGrunnlag = repository.hentSisteBeregningsgrunnlagGrunnlagEntitet(
                 ref.getBehandlingId(),
                 BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
@@ -207,7 +207,7 @@ public class BeregningStegTjeneste {
         return new TilstandResponse(resultat.stream()
                 .map(res -> new AksjonspunktMedTilstandDto(
                         new BeregningAksjonspunkt(res.getBeregningAksjonspunktDefinisjon().getKode()),
-                        new BeregningVenteårsak(res.getVenteårsak().getKode()),
+                        res.getVenteårsak() != null ? new BeregningVenteårsak(res.getVenteårsak().getKode()) : null,
                         res.getVentefrist())).collect(Collectors.toList()));
     }
 

@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -30,19 +30,18 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.Transaction;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "hent-kalkulus"))
 @Path("/kalkulus/v1")
 @ApplicationScoped
@@ -63,7 +62,8 @@ public class HentKalkulusRestTjeneste {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
     }
 
-    @GET
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/hentFastsatt")
@@ -92,9 +92,9 @@ public class HentKalkulusRestTjeneste {
 
 
         @JsonCreator
-        public HentBeregningsgrunnlagRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UUID koblingReferanse,
+        public HentBeregningsgrunnlagRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
                                                @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(koblingReferanse, ytelseSomSkalBeregnes);
+            super(eksternReferanse, ytelseSomSkalBeregnes);
         }
 
         @Override

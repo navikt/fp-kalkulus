@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -13,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 
@@ -27,10 +24,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class HentBeregningsgrunnlagRequest {
 
-    @JsonProperty(value = "referanse", required = true)
+    @JsonProperty(value = "eksternReferanse", required = true)
     @Valid
     @NotNull
-    private UUID koblingReferanse;
+    private UUID eksternReferanse;
 
 
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
@@ -43,15 +40,15 @@ public class HentBeregningsgrunnlagRequest {
         // default ctor
     }
 
-    public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID koblingReferanse,
+    public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
                                          @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
 
-        this.koblingReferanse = koblingReferanse;
+        this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
     }
 
     public UUID getKoblingReferanse() {
-        return koblingReferanse;
+        return eksternReferanse;
     }
 
     public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
