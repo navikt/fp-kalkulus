@@ -26,7 +26,7 @@ public final class FinnAnsettelsesPeriode {
      * @param skjæringstidspunkt
      * @return Periode {@link Periode}
      */
-    public static Periode getMinMaksPeriode(Collection< AktivitetsAvtaleDto > ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
             .stream()
             .filter(ap -> !ap.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))

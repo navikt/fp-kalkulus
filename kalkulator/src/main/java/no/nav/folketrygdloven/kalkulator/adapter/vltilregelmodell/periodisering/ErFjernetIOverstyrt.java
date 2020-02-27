@@ -1,11 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 
@@ -24,12 +26,18 @@ public class ErFjernetIOverstyrt {
             .filter(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning.minusDays(1)))
             .collect(Collectors.toList());
         if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder)) {
-            return erFjernet(yrkesaktivitet, aktivitetAggregatEntitet);
+            return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(filter.getBekreftedePermisjonerForYrkesaktivitet(yrkesaktivitet), skjæringstidspunktBeregning);
         }
         return false;
     }
 
-    private static boolean erFjernet(YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+    private static boolean varIkkeIPermisjonPåSkjæringstidspunkt(Collection<ArbeidsforholdOverstyringDto> bekreftedePermisjonerForYa, LocalDate skjæringstidspunktBeregning) {
+        return bekreftedePermisjonerForYa.stream()
+                .filter(os -> os.getBekreftetPermisjon().isPresent())
+                .noneMatch(os -> os.getBekreftetPermisjon().get().getPeriode().inkluderer(skjæringstidspunktBeregning));
+    }
+
+    private static boolean liggerIkkeIBGAktivitetAggregat(YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         return beregningAktivitetAggregat.getBeregningAktiviteter().stream()
             .noneMatch(beregningAktivitet -> beregningAktivitet.gjelderFor(yrkesaktivitet.getArbeidsgiver(), yrkesaktivitet.getArbeidsforholdRef()));
     }
