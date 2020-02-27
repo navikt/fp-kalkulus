@@ -4,7 +4,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.util.Objects;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,7 +16,6 @@ import javax.persistence.Version;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.verktøy.BooleanToStringConverter;
 
 @Entity(name = "BeregningsgrunnlagFrilansAndel")
 @Table(name = "BG_FRILANS_ANDEL")
@@ -36,11 +34,9 @@ public class BeregningsgrunnlagFrilansAndel extends BaseEntitet {
     @JoinColumn(name = "BG_PR_STATUS_ANDEL_ID", nullable = false, updatable = false)
     private BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "MOTTAR_YTELSE")
     private Boolean mottarYtelse;
 
-    @Convert(converter = BooleanToStringConverter.class)
     @Column(name = "NYOPPSTARTET")
     private Boolean nyoppstartet;
 
