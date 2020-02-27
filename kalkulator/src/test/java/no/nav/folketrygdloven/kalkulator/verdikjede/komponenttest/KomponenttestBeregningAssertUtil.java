@@ -11,9 +11,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 
 class KomponenttestBeregningAssertUtil {
 
@@ -80,5 +82,13 @@ class KomponenttestBeregningAssertUtil {
         assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(rapportertInntekt);
         assertThat(sammenligningsgrunnlag.getAvvikPromilleNy().compareTo(avvik)).isEqualTo(0);
 
+    }
+
+    static void assertSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, BigDecimal rapportertInntekt,
+                                             BigDecimal avvik, SammenligningsgrunnlagType sammenligningsgrunnlagType){
+
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr()).isEqualTo(rapportertInntekt);
+        assertThat(sammenligningsgrunnlag.getAvvikPromilleNy().compareTo(avvik)).isEqualTo(0);
+        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(sammenligningsgrunnlagType);
     }
 }

@@ -92,7 +92,14 @@ public class SammenligningsgrunnlagPrStatusDto {
     }
 
     void setBeregningsgrunnlagDto(BeregningsgrunnlagDto beregningsgrunnlagDto) {
+        verifiserUnikhet(beregningsgrunnlagDto);
         this.beregningsgrunnlag = beregningsgrunnlagDto;
+    }
+
+    private void verifiserUnikhet(BeregningsgrunnlagDto beregningsgrunnlag) {
+        if (beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().stream().anyMatch(sg -> sg.sammenligningsgrunnlagType.equals(this.sammenligningsgrunnlagType))) {
+            throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + this.sammenligningsgrunnlagType + " fordi det allerede er lagt til.");
+        }
     }
 
     public static class Builder {
@@ -157,10 +164,8 @@ public class SammenligningsgrunnlagPrStatusDto {
             Objects.requireNonNull(sammenligningsgrunnlagMal.sammenligningsperiode.getTomDato(), "sammenligningsperiodeTom");
             Objects.requireNonNull(sammenligningsgrunnlagMal.rapportertPrÅr, "rapportertPrÅr");
             Objects.requireNonNull(sammenligningsgrunnlagMal.avvikPromille, "avvikPromille");
-            if (sammenligningsgrunnlagMal.beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().stream().anyMatch(sg -> sg.sammenligningsgrunnlagType.equals(sammenligningsgrunnlagMal.sammenligningsgrunnlagType))) {
-                throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + sammenligningsgrunnlagMal.sammenligningsgrunnlagType + " fordi det allerede er lagt til.");
-            }
         }
+
     }
 
 }

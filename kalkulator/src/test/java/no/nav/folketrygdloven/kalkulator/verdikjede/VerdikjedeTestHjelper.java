@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -50,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 
 
 public class VerdikjedeTestHjelper {
@@ -79,7 +81,10 @@ public class VerdikjedeTestHjelper {
     void verifiserBeregningsgrunnlagBasis(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, Hjemmel hjemmel) {
         assertThat(beregningsgrunnlagRegelResultat.getAksjonspunkter()).isEmpty();
         verifiserBeregningsgrunnlagBasis(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), hjemmel);
+    }
 
+    void verifiserBeregningsgrunnlagHjemmel(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, Hjemmel hjemmel) {
+        verifiserBeregningsgrunnlagBasis(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), hjemmel);
     }
 
     void verifiserSammenligningsgrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag, double rapportertPrÅr, LocalDate fom, LocalDate tom,
@@ -88,6 +93,15 @@ public class VerdikjedeTestHjelper {
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(fom);
         assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(tom);
         assertThat(sammenligningsgrunnlag.getAvvikPromilleNy().compareTo(avvikPromille)).isEqualTo(0);
+    }
+
+    void verifiserSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, double rapportertPrÅr, LocalDate fom, LocalDate tom,
+                                                 double avvikPromille, SammenligningsgrunnlagType sammenligningsgrunnlagType) {
+        assertThat(sammenligningsgrunnlag.getRapportertPrÅr().doubleValue()).isEqualTo(rapportertPrÅr, within(0.01));
+        assertThat(sammenligningsgrunnlag.getSammenligningsperiodeFom()).isEqualTo(fom);
+        assertThat(sammenligningsgrunnlag.getSammenligningsperiodeTom()).isEqualTo(tom);
+        assertThat(sammenligningsgrunnlag.getAvvikPromilleNy().doubleValue()).isEqualTo(avvikPromille, within(0.1));
+        assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(sammenligningsgrunnlagType);
     }
 
     void verifiserBGATførAvkorting(BeregningsgrunnlagPeriodeDto periode, List<Double> bgListe, List<String> virksomheterOrgnr) {

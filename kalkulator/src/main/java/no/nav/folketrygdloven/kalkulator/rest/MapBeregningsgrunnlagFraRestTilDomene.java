@@ -160,7 +160,8 @@ public class MapBeregningsgrunnlagFraRestTilDomene {
         return SammenligningsgrunnlagPrStatusDto.builder()
             .medSammenligningsperiode(sammenligningsgrunnlag.getSammenligningsperiodeFom(), sammenligningsgrunnlag.getSammenligningsperiodeTom())
             .medRapportertPrÅr(sammenligningsgrunnlag.getRapportertPrÅr())
-            .medAvvikPromille(sammenligningsgrunnlag.getAvvikPromille());
+            .medAvvikPromille(sammenligningsgrunnlag.getAvvikPromille())
+            .medSammenligningsgrunnlagType(sammenligningsgrunnlag.getSammenligningsgrunnlagType());
     }
 
     public static BeregningsgrunnlagGrunnlagDto mapBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagRestDto beregningsgrunnlagGrunnlag) {

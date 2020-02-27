@@ -88,6 +88,19 @@ public class BeregningsgrunnlagInputTestUtil {
         return inputMedGrunnbeløp;
     }
 
+    public static BeregningsgrunnlagInput lagInputMedIAYOgOpptjeningsaktiviteterMedTogglePå(BehandlingReferanse behandlingReferanse,
+                                                                                 OpptjeningAktiviteterDto opptjeningAktiviteterDto,
+                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad, int grunnbeløpMilitærHarKravPå) {
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(dekningsgrad, false);
+        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(grunnbeløpMilitærHarKravPå);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
+                AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+        input.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNING, true);
+        BeregningsgrunnlagInput inputMedGrunnbeløp = input.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedGrunnbeløp;
+    }
+
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(BehandlingReferanse behandlingReferanse,
                                                                              BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                              BeregningsgrunnlagTilstand tilstand,
