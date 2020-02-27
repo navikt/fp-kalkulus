@@ -58,7 +58,7 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 @Produces(MediaType.APPLICATION_JSON)
-@OpenAPIDefinition(tags = @Tag(name = "operere-kalkulus"))
+@OpenAPIDefinition(tags = @Tag(name = "beregn"))
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transaction
@@ -90,9 +90,10 @@ public class OperereKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/start-beregn")
-    @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
+    @Path("/start")
+    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn",
+            summary = ("Starter en beregning basert på gitt input."),
+            responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })
@@ -121,9 +122,10 @@ public class OperereKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/fortsett-beregn")
-    @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
+    @Path("/fortsett")
+    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn",
+            summary = ("Fortsetter en beregning basert på stegInput."),
+            responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })
@@ -145,9 +147,10 @@ public class OperereKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/håndter-beregn")
-    @Operation(description = "Utfører bereninig basert på reqest", tags = "operere-kalkulus", responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
+    @Path("/oppdater")
+    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn",
+            summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt."),
+            responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
     })

@@ -42,7 +42,7 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 @Produces(MediaType.APPLICATION_JSON)
-@OpenAPIDefinition(tags = @Tag(name = "hent-kalkulus"))
+@OpenAPIDefinition(tags = @Tag(name = "beregningsgrunnlag"))
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transaction
@@ -66,7 +66,7 @@ public class HentKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
-    @Path("/hentFastsatt")
+    @Path("/fastsatt")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
