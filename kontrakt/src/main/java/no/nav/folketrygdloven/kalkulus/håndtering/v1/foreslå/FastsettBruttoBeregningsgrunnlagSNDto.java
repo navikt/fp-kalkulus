@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

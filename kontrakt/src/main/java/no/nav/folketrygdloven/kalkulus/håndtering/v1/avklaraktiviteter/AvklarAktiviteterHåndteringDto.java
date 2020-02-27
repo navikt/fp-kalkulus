@@ -1,9 +1,7 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
-import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -13,21 +11,34 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class AvklarteAktiviteterDto {
+public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
+    public static final String IDENT_TYPE = "5052";
 
-    @JsonProperty("beregningsaktivitetLagreDtoList")
+    @JsonProperty("avklarteAktiviteterDto")
     @Valid
     @NotNull
-    private List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList;
+    private AvklarteAktiviteterDto avklarteAktiviteterDto;
 
-    public AvklarteAktiviteterDto(List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) { // NOSONAR
-        this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
+    public AvklarAktiviteterHåndteringDto() {
+        // default ctor
     }
 
-    public List<BeregningsaktivitetLagreDto> getBeregningsaktivitetLagreDtoList() {
-        return beregningsaktivitetLagreDtoList;
+    public AvklarAktiviteterHåndteringDto(AvklarteAktiviteterDto avklarteAktiviteterDto) {
+        this.avklarteAktiviteterDto = avklarteAktiviteterDto;
     }
+
+    @Override
+    public String getIdentType() {
+        return IDENT_TYPE;
+    }
+
+    public AvklarteAktiviteterDto getAvklarteAktiviteterDto() {
+        return avklarteAktiviteterDto;
+    }
+
 }

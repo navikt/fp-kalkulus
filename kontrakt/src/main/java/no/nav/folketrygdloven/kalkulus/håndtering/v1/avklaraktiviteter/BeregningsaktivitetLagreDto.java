@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;

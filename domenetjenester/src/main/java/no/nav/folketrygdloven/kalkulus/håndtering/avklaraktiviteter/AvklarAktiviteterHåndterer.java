@@ -1,10 +1,12 @@
-package no.nav.folketrygdloven.kalkulus.håndtering;
+package no.nav.folketrygdloven.kalkulus.håndtering.avklaraktiviteter;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.AvklarAktiviteterHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
+import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.mappers.OppdatererDtoMapper;
 
 @ApplicationScoped

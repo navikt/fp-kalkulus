@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
@@ -12,21 +12,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
+public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends HåndterBeregningDto {
 
-    public static final String IDENT_TYPE = "5058";
+    public static final String IDENT_TYPE = "5039";
 
-    @JsonProperty("fakta")
+    @JsonProperty("vurderVarigEndringEllerNyoppstartetSNDto")
     @Valid
     @NotNull
-    private FaktaBeregningLagreDto fakta;
+    private VurderVarigEndringEllerNyoppstartetSNDto vurderVarigEndringEllerNyoppstartetSNDto;
 
-    public FaktaOmBeregningHåndteringDto() {
+    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
         // default ctor
     }
 
@@ -35,13 +34,11 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
         return IDENT_TYPE;
     }
 
-    public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
-        this.fakta = fakta;
+    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetSNDto vurderVarigEndringEllerNyoppstartetSNDto) {
+        this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetSNDto;
     }
 
-    public FaktaBeregningLagreDto getFakta() {
-        return fakta;
+    public VurderVarigEndringEllerNyoppstartetSNDto getVurderVarigEndringEllerNyoppstartetSNDto() {
+        return vurderVarigEndringEllerNyoppstartetSNDto;
     }
-
-
 }

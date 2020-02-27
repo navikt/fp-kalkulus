@@ -1,0 +1,31 @@
+package no.nav.folketrygdloven.kalkulus.beregning;
+
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.lang.reflect.Field;
+
+import org.junit.jupiter.api.Test;
+
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
+
+public class MapStegTilTilstandTest {
+
+    @Test
+    public void alle_steg_skal_være_mappet_til_en_tilstand() {
+        Field[] felter = StegType.class.getDeclaredFields();
+        for (Field felt : felter) {
+            if (felt.getType().getName().equals(StegType.class.getName())) {
+                try {
+                    StegType stegType = (StegType) felt.get(null);
+                    BeregningsgrunnlagTilstand tilstand = MapStegTilTilstand.map(stegType);
+                    assertThat(tilstand).isNotNull();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+}

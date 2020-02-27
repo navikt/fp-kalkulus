@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
@@ -11,23 +11,22 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
-    public static final String IDENT_TYPE = "AVKLAR";
+public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBeregningDto {
 
-    @JsonProperty("avklarteAktiviteterDto")
+    public static final String IDENT_TYPE = "5042";
+
+    @JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto")
     @Valid
     @NotNull
-    private AvklarteAktiviteterDto avklarteAktiviteterDto;
+    private FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto;
 
-    public AvklarAktiviteterHåndteringDto() {
+    public FastsettBruttoBeregningsgrunnlagSNHåndteringDto() {
         // default ctor
-    }
-
-    public AvklarAktiviteterHåndteringDto(AvklarteAktiviteterDto avklarteAktiviteterDto) {
-        this.avklarteAktiviteterDto = avklarteAktiviteterDto;
     }
 
     @Override
@@ -35,8 +34,12 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
         return IDENT_TYPE;
     }
 
-    public AvklarteAktiviteterDto getAvklarteAktiviteterDto() {
-        return avklarteAktiviteterDto;
+    public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@Valid @NotNull FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto) {
+        this.fastsettBruttoBeregningsgrunnlagSNDto = fastsettBruttoBeregningsgrunnlagSNDto;
+    }
+
+    public FastsettBruttoBeregningsgrunnlagSNDto getFastsettBruttoBeregningsgrunnlagSNDto() {
+        return fastsettBruttoBeregningsgrunnlagSNDto;
     }
 
 }

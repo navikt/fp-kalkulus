@@ -19,7 +19,10 @@ public class HåndteringKode extends Kodeverk {
     public static final HåndteringKode FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET_KODE = new HåndteringKode("5049");
     public static final HåndteringKode FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD_KODE = new HåndteringKode("5047");
     public static final HåndteringKode FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS_KODE = new HåndteringKode("5038");
+    public static final HåndteringKode FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE_KODE = new HåndteringKode("5042");
     public static final HåndteringKode VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE_KODE = new HåndteringKode("5039");
+    public static final HåndteringKode OVERSTYRING_AV_BEREGNINGSAKTIVITETER_KODE = new HåndteringKode("6014");
+    public static final HåndteringKode OVERSTYRING_AV_BEREGNINGSGRUNNLAG_KODE = new HåndteringKode("6015");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")

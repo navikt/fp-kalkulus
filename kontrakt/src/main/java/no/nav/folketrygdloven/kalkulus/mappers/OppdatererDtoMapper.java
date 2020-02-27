@@ -8,9 +8,9 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.rest.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.AvklarteAktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.BeregningsaktivitetLagreDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarteAktiviteterDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.ArbeidstakerandelUtenIMMottarYtelseDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.BesteberegningFødendeKvinneAndelDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.BesteberegningFødendeKvinneDto;
@@ -19,13 +19,13 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattBrukersAndel
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsatteAndelerTidsbegrensetDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattePerioderTidsbegrensetDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.FastsettBGTidsbegrensetArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FastsettBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettBgKunYtelseDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.FastsettBruttoBeregningsgrunnlagSNDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettEtterlønnSluttpakkeDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettMånedsinntektFLDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
@@ -43,7 +43,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderMilitærDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderNyoppstartetFLDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderTidsbegrensetArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderVarigEndringEllerNyoppstartetSNDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderteArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
