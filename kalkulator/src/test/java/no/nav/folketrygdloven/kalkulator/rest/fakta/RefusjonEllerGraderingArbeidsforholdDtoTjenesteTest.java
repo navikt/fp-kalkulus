@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapArbeidsgiver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,16 +20,15 @@ import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FordelBeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -43,16 +41,16 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_REF = InternArbeidsforholdRefDto.namedRef("TEST-REF");
     public static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(600000);
 
-    private final ArbeidsgiverMedNavn arbeidsgiver1 = ArbeidsgiverMedNavn.virksomhet(ORGNR);
+    private final Arbeidsgiver arbeidsgiver1 = Arbeidsgiver.virksomhet(ORGNR);
 
-    private final BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = mock(BeregningAktivitetAggregatRestDto.class);
+    private final BeregningAktivitetAggregatDto beregningAktivitetAggregat = mock(BeregningAktivitetAggregatDto.class);
 
-    private BeregningsgrunnlagRestDto beregningsgrunnlag;
-    private BeregningsgrunnlagPrStatusOgAndelRestDto arbeidstakerAndel;
-    private BGAndelArbeidsforholdRestDto.Builder arbeidsforholdBuilder;
-    private BeregningsgrunnlagPeriodeRestDto periode;
+    private BeregningsgrunnlagDto beregningsgrunnlag;
+    private BeregningsgrunnlagPrStatusOgAndelDto arbeidstakerAndel;
+    private BGAndelArbeidsforholdDto.Builder arbeidsforholdBuilder;
+    private BeregningsgrunnlagPeriodeDto periode;
     private BehandlingReferanse referanse = new BehandlingReferanseMock();
-    private BeregningsgrunnlagGrunnlagRestDto grunnlagEntitet;
+    private BeregningsgrunnlagGrunnlagDto grunnlagEntitet;
 
     @BeforeEach
     public void setUp() {
@@ -61,19 +59,19 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         when(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening()).thenReturn(SKJÆRINGSTIDSPUNKT_OPPTJENING);
         when(beregningAktivitetAggregat.getBeregningAktiviteter()).thenReturn(Collections.emptyList());
 
-        beregningsgrunnlag = BeregningsgrunnlagRestDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(GRUNNBELØP)
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(GRUNNBELØP)
             .build();
-        periode = BeregningsgrunnlagPeriodeRestDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+        periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
-        arbeidsforholdBuilder = BGAndelArbeidsforholdRestDto
+        arbeidsforholdBuilder = BGAndelArbeidsforholdDto
             .builder()
             .medArbeidsgiver(arbeidsgiver1)
             .medArbeidsforholdRef(ARBEIDSFORHOLD_REF);
-        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder)
             .build(periode);
-        grunnlagEntitet = mock(BeregningsgrunnlagGrunnlagRestDto.class);
+        grunnlagEntitet = mock(BeregningsgrunnlagGrunnlagDto.class);
         when(grunnlagEntitet.getBeregningsgrunnlag()).thenReturn(Optional.of(beregningsgrunnlag));
         when(grunnlagEntitet.getGjeldendeAktiviteter()).thenReturn(beregningAktivitetAggregat);
     }
@@ -92,7 +90,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     // Søker refusjon lik 10
     @Test
     public void skal_lage_dto_med_refusjon_for_refusjon_i_heile_perioden() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
         var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
@@ -115,14 +113,14 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     // Opphører refusjon
     @Test
     public void skal_lage_dto_med_refusjon_for_refusjon_med_opphør() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.REFUSJON_OPPHØRER)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, null).build(beregningsgrunnlag);
         andelIAndrePeriode.build(andrePeriode);
-        BeregningsgrunnlagPeriodeRestDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
+        BeregningsgrunnlagPeriodeDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
         var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
@@ -146,16 +144,16 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     // Søker refusjon lik 10
     @Test
     public void skal_lage_dto_med_refusjon_for_tilkommet_refusjon() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, null).build(beregningsgrunnlag);
         andelIAndrePeriode.medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(andrePeriode);
-        BeregningsgrunnlagPeriodeRestDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+        BeregningsgrunnlagPeriodeDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF));
@@ -181,17 +179,17 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     // Søker refusjon lik 10
     @Test
     public void skal_lage_dto_med_refusjon_for_endret_refusjon() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, null).build(beregningsgrunnlag);
         andelIAndrePeriode
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(andrePeriode);
-        BeregningsgrunnlagPeriodeRestDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+        BeregningsgrunnlagPeriodeDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ONE));
@@ -229,31 +227,31 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         // Arrange
 
         // Tredje periode (endring i refusjon)
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelITredjePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelITredjePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate tredjePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(2);
-        BeregningsgrunnlagPeriodeRestDto tredjePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto tredjePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)
             .medBeregningsgrunnlagPeriode(tredjePeriodeFom, null).build(beregningsgrunnlag);
         andelITredjePeriode
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(tredjePeriode);
 
         // Andre periode (opphør)
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.REFUSJON_OPPHØRER)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, tredjePeriodeFom.minusDays(1)).build(beregningsgrunnlag);
         andelIAndrePeriode
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(andrePeriode);
 
-        BeregningsgrunnlagPeriodeRestDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+        BeregningsgrunnlagPeriodeDto.oppdater(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ONE));
@@ -298,51 +296,51 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         // Arrange
         InternArbeidsforholdRefDto arbeidsforholdId2 = InternArbeidsforholdRefDto.nyRef();
         // Tredje periode (endring i refusjon)
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelITredjePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelITredjePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate tredjePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(2);
-        BeregningsgrunnlagPeriodeRestDto tredjePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto tredjePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)
             .medBeregningsgrunnlagPeriode(tredjePeriodeFom, null).build(beregningsgrunnlag);
         andelITredjePeriode
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(tredjePeriode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(arbeidsforholdId2).medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(tredjePeriode);
 
         // Andre periode (opphør)
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.REFUSJON_OPPHØRER)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, tredjePeriodeFom.minusDays(1)).build(beregningsgrunnlag);
         andelIAndrePeriode
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(andrePeriode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(arbeidsforholdId2).medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(andrePeriode);
 
-        BeregningsgrunnlagPeriodeRestDto.builder(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+        BeregningsgrunnlagPeriodeDto.builder(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.TEN));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(arbeidsforholdId2).medRefusjonskravPrÅr(BigDecimal.ZERO))
@@ -385,26 +383,26 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         var arbeidsforholdId2 = InternArbeidsforholdRefDto.nyRef();
 
         // Andre periode
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier(arbeidstakerAndel);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelIAndrePeriode = BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel);
         LocalDate andrePeriodeFom = periode.getBeregningsgrunnlagPeriodeFom().plusMonths(1);
-        BeregningsgrunnlagPeriodeRestDto andrePeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto andrePeriode = BeregningsgrunnlagPeriodeDto.builder()
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)
             .medBeregningsgrunnlagPeriode(andrePeriodeFom, null).build(beregningsgrunnlag);
         andelIAndrePeriode
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(andrePeriode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.ny()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(arbeidsforholdId2).medRefusjonskravPrÅr(BigDecimal.TEN))
             .build(andrePeriode);
 
         // Første periode
-        BeregningsgrunnlagPeriodeRestDto.builder(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto
+        BeregningsgrunnlagPeriodeDto.builder(periode).medBeregningsgrunnlagPeriode(periode.getBeregningsgrunnlagPeriodeFom(), andrePeriodeFom.minusDays(1));
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ZERO));
@@ -432,7 +430,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         LocalDate graderingTOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2);
         Intervall graderingPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, graderingTOM);
         AndelGradering andelGradering = AndelGradering.builder()
-            .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver1))
+            .medArbeidsgiver(arbeidsgiver1)
             .medArbeidsforholdRef(ARBEIDSFORHOLD_REF)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
             .leggTilGradering(new AndelGradering.Gradering(graderingPeriode, BigDecimal.TEN))
@@ -458,7 +456,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
 
     @Test
     public void skal_ikkje_lage_dto_for_andel_med_lagt_til_av_saksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto.Builder.oppdatere(arbeidstakerAndel).medLagtTilAvSaksbehandler(true);
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel).medLagtTilAvSaksbehandler(true);
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
         var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);

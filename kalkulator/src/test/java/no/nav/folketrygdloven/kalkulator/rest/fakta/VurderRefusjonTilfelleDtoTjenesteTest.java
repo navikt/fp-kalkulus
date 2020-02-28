@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +19,15 @@ import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -36,7 +37,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -72,21 +72,21 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         // Arrange
         Map<Arbeidsgiver, LocalDate> førsteInnsendingMap = new HashMap<>();
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        BeregningAktivitetAggregatRestDto aktivitetAggregat = leggTilAktivitet(registerBuilder, List.of(ORGNR, ORGNR2));
+        BeregningAktivitetAggregatDto aktivitetAggregat = leggTilAktivitet(registerBuilder, List.of(ORGNR, ORGNR2));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
         førsteInnsendingMap.put(arbeidsgiver, SKJÆRINGSTIDSPUNKT.plusMonths(4));
         InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
-        BeregningsgrunnlagGrunnlagRestDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
-        Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> arbeidsgiverArbeidsgiverOpplysningerDtoMap = new HashMap<>();
-        arbeidsgiverArbeidsgiverOpplysningerDtoMap.put(arbeidsgiver, new ArbeidsgiverOpplysningerDto(arbeidsgiver.getIdentifikator(), ARBEIDSGIVER_NAVN));
-        arbeidsgiverArbeidsgiverOpplysningerDtoMap.put(arbeidsgiver2, new ArbeidsgiverOpplysningerDto(arbeidsgiver2.getIdentifikator(), ARBEIDSGIVER_NAVN2));
+        BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
+        List<ArbeidsgiverOpplysningerDto> arbeidsgiverArbeidsgiverOpplysningerDtoList = new ArrayList<>();
+        arbeidsgiverArbeidsgiverOpplysningerDtoList.add(new ArbeidsgiverOpplysningerDto(arbeidsgiver.getIdentifikator(), ARBEIDSGIVER_NAVN));
+        arbeidsgiverArbeidsgiverOpplysningerDtoList.add(new ArbeidsgiverOpplysningerDto(arbeidsgiver2.getIdentifikator(), ARBEIDSGIVER_NAVN2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medData(registerBuilder)
                 .medInntektsmeldinger(List.of(im1, im2))
-                .medArbeidsgiverOpplysninger(arbeidsgiverArbeidsgiverOpplysningerDtoMap).build();
+                .medArbeidsgiverOpplysninger(arbeidsgiverArbeidsgiverOpplysningerDtoList).build();
         BeregningsgrunnlagRestInput input = lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
@@ -100,41 +100,41 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
 
     }
 
-    private BeregningsgrunnlagGrunnlagRestDtoBuilder byggGrunnlag(BeregningAktivitetAggregatRestDto aktivitetAggregat, List<Arbeidsgiver> arbeidsgivere) {
-        return BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+    private BeregningsgrunnlagGrunnlagDtoBuilder byggGrunnlag(BeregningAktivitetAggregatDto aktivitetAggregat, List<Arbeidsgiver> arbeidsgivere) {
+        return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(aktivitetAggregat)
                 .medBeregningsgrunnlag(lagBeregningsgrunnlag(arbeidsgivere.stream().map(a -> {
-                    ArbeidsgiverMedNavn virksomhet = ArbeidsgiverMedNavn.virksomhet(a.getOrgnr());
+                    Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(a.getOrgnr());
                     virksomhet.setNavn(arbeidsgiverNavnMap.get(a.getOrgnr()));
                     return virksomhet;
                 }).collect(Collectors.toList())));
     }
 
-    private BeregningsgrunnlagRestDto lagBeregningsgrunnlag(List<ArbeidsgiverMedNavn> ags) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag(List<Arbeidsgiver> ags) {
 
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilFaktaOmBeregningTilfeller(List.of(FaktaOmBeregningTilfelle.VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT))
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .build(bg);
-        ags.forEach(ag -> BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        ags.forEach(ag -> BeregningsgrunnlagPrStatusOgAndelDto.kopier()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ag))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag))
                 .build(periode)
         );
         return bg;
     }
 
-    private BeregningAktivitetAggregatRestDto leggTilAktivitet(InntektArbeidYtelseAggregatBuilder iayAggregatBuilder, List<String> orgnr) {
+    private BeregningAktivitetAggregatDto leggTilAktivitet(InntektArbeidYtelseAggregatBuilder iayAggregatBuilder, List<String> orgnr) {
         Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
                 .medAktørId(behandlingReferanse.getAktørId());
-        BeregningAktivitetAggregatRestDto.Builder aktivitetAggregatBuilder = BeregningAktivitetAggregatRestDto.builder()
+        BeregningAktivitetAggregatDto.Builder aktivitetAggregatBuilder = BeregningAktivitetAggregatDto.builder()
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);
         for (String nr : orgnr) {
             leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, nr);
-            ArbeidsgiverMedNavn virksomhet = ArbeidsgiverMedNavn.virksomhet(nr);
+            Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(nr);
             virksomhet.setNavn(arbeidsgiverNavnMap.get(nr));
             aktivitetAggregatBuilder.leggTilAktivitet(lagAktivitet(arbeidsperiode1, virksomhet));
         }
@@ -142,8 +142,8 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         return aktivitetAggregatBuilder.build();
     }
 
-    private BeregningAktivitetRestDto lagAktivitet(Intervall arbeidsperiode1, ArbeidsgiverMedNavn ag) {
-        return BeregningAktivitetRestDto.builder().medArbeidsgiver(ag).medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medPeriode(Intervall.fraOgMedTilOgMed(arbeidsperiode1.getFomDato(), arbeidsperiode1.getTomDato())).build();
+    private BeregningAktivitetDto lagAktivitet(Intervall arbeidsperiode1, Arbeidsgiver ag) {
+        return BeregningAktivitetDto.builder().medArbeidsgiver(ag).medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medPeriode(Intervall.fraOgMedTilOgMed(arbeidsperiode1.getFomDato(), arbeidsperiode1.getTomDato())).build();
     }
 
     private void leggTilYrkesaktivitet(Intervall arbeidsperiode, InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder, String orgnr) {
@@ -159,13 +159,13 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
 
 
     public static BeregningsgrunnlagRestInput lagInputMedBeregningsgrunnlagOgIAY(BehandlingReferanse behandlingReferanse,
-                                                                             BeregningsgrunnlagGrunnlagRestDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                              BeregningsgrunnlagTilstand tilstand,
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                              Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
         BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag,
                 AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
-        BeregningsgrunnlagGrunnlagRestDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
+        BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagRestInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         return inputMedBeregningsgrunnlag;

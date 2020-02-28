@@ -35,7 +35,7 @@ class FinnInntektFraYtelse {
         }
 
         Optional<YtelseDto> nyesteVedtak = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(mapTilYtelseType(aktivitetStatus)));
-        if (!nyesteVedtak.isPresent()) {
+        if (nyesteVedtak.isEmpty()) {
             return Optional.empty();
         }
 

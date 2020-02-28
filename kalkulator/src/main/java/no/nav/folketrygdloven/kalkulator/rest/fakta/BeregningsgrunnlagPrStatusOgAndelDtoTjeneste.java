@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
 import static java.util.stream.Collectors.toList;
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapAktivitetAggregat;
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapAndel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,10 +14,9 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.rest.BeregningsgrunnlagDtoUtil;
@@ -44,10 +41,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     }
 
     public static List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagRestInput input,
-                                                                                                     List<BeregningsgrunnlagPrStatusOgAndelRestDto> beregningsgrunnlagPrStatusOgAndelList) {
+                                                                                                     List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> usortertDtoList = new ArrayList<>();
-        for (BeregningsgrunnlagPrStatusOgAndelRestDto andel : beregningsgrunnlagPrStatusOgAndelList) {
+        for (no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel : beregningsgrunnlagPrStatusOgAndelList) {
             BeregningsgrunnlagPrStatusOgAndelDto dto = lagDto(input, andel);
             usortertDtoList.add(dto);
         }
@@ -64,14 +61,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelDto lagDto(BeregningsgrunnlagRestInput input,
-                                                               BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+                                                               no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var iayGrunnlag = input.getIayGrunnlag();
         var inntektsmeldinger = input.getInntektsmeldinger();
         var ref = input.getBehandlingReferanse();
         var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
         BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag);
         LocalDate skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
-        Optional<InntektsmeldingDto> inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger);
+        Optional<InntektsmeldingDto> inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmelding, iayGrunnlag).ifPresent(dto::setArbeidsforhold);
         dto.setDagsats(andel.getDagsats());
         dto.setOriginalDagsatsFraTilstøtendeYtelse(andel.getOrginalDagsatsFraTilstøtendeYtelse());
@@ -89,12 +86,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         dto.setErTidsbegrensetArbeidsforhold(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdRestDto::getErTidsbegrensetArbeidsforhold).orElse(null));
+            .map(BGAndelArbeidsforholdDto::getErTidsbegrensetArbeidsforhold).orElse(null));
         dto.setErNyIArbeidslivet(andel.getNyIArbeidslivet());
         dto.setLonnsendringIBeregningsperioden(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdRestDto::erLønnsendringIBeregningsperioden).orElse(null));
+            .map(BGAndelArbeidsforholdDto::erLønnsendringIBeregningsperioden).orElse(null));
         dto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
-        dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(mapAndel(andel), mapAktivitetAggregat(beregningAktivitetAggregat), skjæringstidspunktForBeregning));
+        dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettes(input, andel));
         }
@@ -116,12 +113,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return dto;
     }
 
-    private static boolean skalGrunnlagFastsettes(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel){
+    private static boolean skalGrunnlagFastsettes(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
         if(finnesIngenSammenligningsgrunnlagPrStatus(input)){
             return skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(input, andel, input.getBeregningsgrunnlag().getSammenligningsgrunnlag());
         }
 
-        Optional<SammenligningsgrunnlagPrStatusRestDto> sammenligningsgrunnlagIkkeSplittet = input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
+        Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagIkkeSplittet = input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
             .filter(s -> s.getSammenligningsgrunnlagType().equals(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN))
             .findAny();
 
@@ -143,8 +140,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().isEmpty();
     }
 
-    private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
-        Optional<SammenligningsgrunnlagPrStatusRestDto> sammenligningsgrunnlagPrStatus =  input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
+    private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatus =  input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
             .filter(s -> AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType())))
             .findAny();
         if(sammenligningsgrunnlagPrStatus.isPresent()){
@@ -153,7 +150,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return Boolean.TRUE.equals(andel.getNyIArbeidslivet());
     }
 
-    private static boolean  skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel, SammenligningsgrunnlagPrStatusRestDto sammenligningsgrunnlagPrStatus){
+    private static boolean  skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
+                                                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus){
         if(finnesSelvstendigNæringsdrivendeAndel(input)) {
             if(andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
                 return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy()) || Boolean.TRUE.equals(andel.getNyIArbeidslivet());
@@ -164,7 +163,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
-    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel, SammenligningsgrunnlagRestDto sammenligningsgrunnlag){
+    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
+                                                                                  no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                                  no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto sammenligningsgrunnlag){
         if(finnesSelvstendigNæringsdrivendeAndel(input)) {
             if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
                 return finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(sammenligningsgrunnlag) || Boolean.TRUE.equals(andel.getNyIArbeidslivet());
@@ -175,7 +176,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(sammenligningsgrunnlag);
     }
 
-    private static boolean finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(SammenligningsgrunnlagRestDto sammenligningsgrunnlag){
+    private static boolean finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(SammenligningsgrunnlagDto sammenligningsgrunnlag){
         if(sammenligningsgrunnlag != null){
             return erAvvikStørreEnn25Prosent(sammenligningsgrunnlag.getAvvikPromilleNy());
         }
@@ -187,7 +188,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     }
 
     private static boolean finnesSelvstendigNæringsdrivendeAndel(BeregningsgrunnlagRestInput input){
-        List<BeregningsgrunnlagPrStatusOgAndelRestDto> beregningsgrunnlagPrStatusOgAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         return beregningsgrunnlagPrStatusOgAndel.stream().anyMatch(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende());
     }
 

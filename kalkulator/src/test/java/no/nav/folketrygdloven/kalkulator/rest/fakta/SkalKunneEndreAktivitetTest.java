@@ -9,29 +9,29 @@ import java.time.Month;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 
 public class SkalKunneEndreAktivitetTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
-    private BeregningsgrunnlagRestDto beregningsgrunnlag;
-    private BeregningsgrunnlagPeriodeRestDto periode;
+    private BeregningsgrunnlagDto beregningsgrunnlag;
+    private BeregningsgrunnlagPeriodeDto periode;
 
 
     @BeforeEach
     public void setUp() {
-        beregningsgrunnlag = BeregningsgrunnlagRestDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(BigDecimal.valueOf(600000)).build();
-        periode = BeregningsgrunnlagPeriodeRestDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(BigDecimal.valueOf(600000)).build();
+        periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
     }
 
     @Test
     public void skalIkkjeKunneEndreAktivitetOmLagtTilAvSaksbehandlerOgDagpenger() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medLagtTilAvSaksbehandler(true)
             .build(periode);
@@ -43,7 +43,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @Test
     public void skalIkkjeKunneEndreAktivitetOmIkkjeLagtTilAvSaksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto frilans = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medLagtTilAvSaksbehandler(false)
             .build(periode);
@@ -55,7 +55,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @Test
     public void skalKunneEndreAktivitetOmLagtTilAvSaksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelRestDto frilans = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medLagtTilAvSaksbehandler(true)
             .build(periode);

@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.rest.fakta;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
  */
 public final class FinnÅrsinntektvisningstall {
 
-    public static Optional<BigDecimal> finn(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    public static Optional<BigDecimal> finn(BeregningsgrunnlagDto beregningsgrunnlag) {
 
         if (beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
             return Optional.empty();
@@ -37,13 +37,13 @@ public final class FinnÅrsinntektvisningstall {
         return Optional.ofNullable(førstePeriode(beregningsgrunnlag).getBeregnetPrÅr());
     }
 
-    private static Optional<BigDecimal> finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(BeregningsgrunnlagRestDto beregningsgrunnlag) {
-        Optional<BeregningsgrunnlagPrStatusOgAndelRestDto> snAndelOpt = førstePeriode(beregningsgrunnlag).getBeregningsgrunnlagPrStatusOgAndelList().stream()
+    private static Optional<BigDecimal> finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(BeregningsgrunnlagDto beregningsgrunnlag) {
+        Optional<BeregningsgrunnlagPrStatusOgAndelDto> snAndelOpt = førstePeriode(beregningsgrunnlag).getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
             .findFirst();
 
         if (snAndelOpt.isPresent()) {
-            BeregningsgrunnlagPrStatusOgAndelRestDto snAndel = snAndelOpt.get();
+            BeregningsgrunnlagPrStatusOgAndelDto snAndel = snAndelOpt.get();
 
             if (snAndel.getNyIArbeidslivet() == null || Boolean.FALSE.equals(snAndel.getNyIArbeidslivet())) {
                 return Optional.ofNullable(snAndel.getPgiSnitt());
@@ -52,20 +52,20 @@ public final class FinnÅrsinntektvisningstall {
         return Optional.empty();
     }
 
-    private static boolean harBesteberegningtilfelle(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private static boolean harBesteberegningtilfelle(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE);
     }
 
-    private static boolean erSelvstendigNæringsdrivende(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private static boolean erSelvstendigNæringsdrivende(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getAktivitetStatuser().stream()
             .anyMatch(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende());
     }
 
-    private static BeregningsgrunnlagPeriodeRestDto førstePeriode(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private static BeregningsgrunnlagPeriodeDto førstePeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
     }
 
-    private static boolean harStatusKunYtelse(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private static boolean harStatusKunYtelse(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getAktivitetStatuser().stream()
             .anyMatch(a -> AktivitetStatus.KUN_YTELSE.equals(a.getAktivitetStatus()));
     }

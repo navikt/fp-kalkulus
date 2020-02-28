@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapArbeidsgiver;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
@@ -12,10 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
@@ -27,7 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
@@ -43,9 +42,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_er_present(){
 
         // Arrange
-        ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet("1");
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
-        BGAndelArbeidsforholdRestDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
+        BGAndelArbeidsforholdDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
         LocalDate fom = SKJÆRINGSTIDSPUNKT.minusDays(1);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.plusDays(1);
 
@@ -55,7 +54,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(mapArbeidsgiver(arbeidsgiver), ref);
+        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref);
         informasjonBuilder.leggTil(overstyringBuilder);
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagGrunnlag(aktørArbeidBuilder, Optional.of(informasjonBuilder.build()));
@@ -72,9 +71,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     public void skal_returne_empty_hvis_bekreftet_permisjon_slutter_før_stp(){
 
         // Arrange
-        ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet("1");
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
-        BGAndelArbeidsforholdRestDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
+        BGAndelArbeidsforholdDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
         LocalDate fom = SKJÆRINGSTIDSPUNKT.minusYears(1);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.minusDays(1);
 
@@ -84,7 +83,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(mapArbeidsgiver(arbeidsgiver), ref)
+        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
             .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
         informasjonBuilder.leggTil(overstyringBuilder);
 
@@ -102,9 +101,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     public void skal_returne_empty_hvis_bekreftet_permisjon_starter_etter_stp(){
 
         // Arrange
-        ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet("1");
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
-        BGAndelArbeidsforholdRestDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
+        BGAndelArbeidsforholdDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
         LocalDate fom = SKJÆRINGSTIDSPUNKT.plusDays(1);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.plusYears(1);
 
@@ -114,7 +113,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(mapArbeidsgiver(arbeidsgiver), ref)
+        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
             .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
         informasjonBuilder.leggTil(overstyringBuilder);
 
@@ -132,9 +131,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_har_status_BRUK_PERMISJON(){
 
         // Arrange
-        ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet("1");
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
-        BGAndelArbeidsforholdRestDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
+        BGAndelArbeidsforholdDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
         LocalDate fom = SKJÆRINGSTIDSPUNKT.plusDays(1);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.plusYears(1);
 
@@ -144,7 +143,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(mapArbeidsgiver(arbeidsgiver), ref)
+        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
             .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.IKKE_BRUK_PERMISJON));
         informasjonBuilder.leggTil(overstyringBuilder);
 
@@ -162,9 +161,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     public void skal_returne_permisjonDto(){
 
         // Arrange
-        ArbeidsgiverMedNavn arbeidsgiver = ArbeidsgiverMedNavn.virksomhet("1");
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("1");
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
-        BGAndelArbeidsforholdRestDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
+        BGAndelArbeidsforholdDto bgAndelArbeidsforhold = lagBGAndelArbeidsforhold(Optional.of(arbeidsgiver), ref);
         LocalDate fom = SKJÆRINGSTIDSPUNKT.minusDays(1);
         LocalDate tom = SKJÆRINGSTIDSPUNKT.plusDays(1);
 
@@ -174,7 +173,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(mapArbeidsgiver(arbeidsgiver), ref)
+        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
             .medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
         informasjonBuilder.leggTil(overstyringBuilder);
 
@@ -210,10 +209,10 @@ public class UtledBekreftetPermisjonerTilDtoTest {
     }
 
     private YrkesaktivitetDtoBuilder lagYrkesaktivitetBuilder(YrkesaktivitetDtoBuilder yrkesaktivitetBuilder, AktivitetsAvtaleDtoBuilder aktivitetsAvtale,
-                                                              ArbeidsgiverMedNavn arbeidsgiver, InternArbeidsforholdRefDto ref) {
+                                                              Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto ref) {
         yrkesaktivitetBuilder
             .medArbeidsforholdId(ref)
-            .medArbeidsgiver(mapArbeidsgiver(arbeidsgiver))
+            .medArbeidsgiver(arbeidsgiver)
             .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
             .leggTilAktivitetsAvtale(aktivitetsAvtale);
         return yrkesaktivitetBuilder;
@@ -224,18 +223,18 @@ public class UtledBekreftetPermisjonerTilDtoTest {
             .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom));
     }
 
-    private BGAndelArbeidsforholdRestDto lagBGAndelArbeidsforhold(Optional<ArbeidsgiverMedNavn> arbeidsgiverOpt, InternArbeidsforholdRefDto ref) {
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+    private BGAndelArbeidsforholdDto lagBGAndelArbeidsforhold(Optional<Arbeidsgiver> arbeidsgiverOpt, InternArbeidsforholdRefDto ref) {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .medGrunnbeløp(BigDecimal.valueOf(500_000))
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(bg);
-        BGAndelArbeidsforholdRestDto.Builder builder = BGAndelArbeidsforholdRestDto.builder()
+        BGAndelArbeidsforholdDto.Builder builder = BGAndelArbeidsforholdDto.builder()
             .medArbeidsforholdRef(ref);
         arbeidsgiverOpt.ifPresent(builder::medArbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(builder)
             .build(periode);

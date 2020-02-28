@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapAndel;
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapPeriode;
-
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,9 +11,9 @@ import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagArbeidsforholdDto;
@@ -42,21 +39,21 @@ public class RefusjonDtoTjeneste {
      * @param grunnbeløp
      * @return Returnerer true om andel har gradering (uten refusjon) og total refusjon i perioden er større enn 6G, ellers false
      */
-    static boolean skalKunneEndreRefusjon(BeregningsgrunnlagPrStatusOgAndelRestDto andelFraOppdatert,
-                                          BeregningsgrunnlagPeriodeRestDto periode, AktivitetGradering aktivitetGradering,
+    static boolean skalKunneEndreRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andelFraOppdatert,
+                                          BeregningsgrunnlagPeriodeDto periode, AktivitetGradering aktivitetGradering,
                                           Collection<InntektsmeldingDto> inntektsmeldinger,
                                           Beløp grunnbeløp) {
         if (harGraderingOgIkkeRefusjon(andelFraOppdatert, periode, aktivitetGradering)) {
-            return BeregningInntektsmeldingTjeneste.erTotaltRefusjonskravStørreEnnEllerLikSeksG(mapPeriode(periode), inntektsmeldinger, grunnbeløp);
+            return BeregningInntektsmeldingTjeneste.erTotaltRefusjonskravStørreEnnEllerLikSeksG(periode, inntektsmeldinger, grunnbeløp);
         }
         return false;
     }
 
-    private static boolean harGraderingOgIkkeRefusjon(BeregningsgrunnlagPrStatusOgAndelRestDto andelFraOppdatert, BeregningsgrunnlagPeriodeRestDto periode, AktivitetGradering aktivitetGradering) {
-        List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(mapAndel(andelFraOppdatert), aktivitetGradering, periode.getPeriode());
+    private static boolean harGraderingOgIkkeRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andelFraOppdatert, BeregningsgrunnlagPeriodeDto periode, AktivitetGradering aktivitetGradering) {
+        List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andelFraOppdatert, aktivitetGradering, periode.getPeriode());
         boolean andelHarGradering = !graderingForAndelIPeriode.isEmpty();
         BigDecimal refusjon = andelFraOppdatert.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdRestDto::getRefusjonskravPrÅr)
+            .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
             .orElse(BigDecimal.ZERO);
         boolean andelHarRefusjon = refusjon.compareTo(BigDecimal.ZERO) > 0;
         return andelHarGradering && !andelHarRefusjon;
@@ -69,18 +66,18 @@ public class RefusjonDtoTjeneste {
      * @param endringAndel Dto for andel
      * @param inntektsmeldinger
      */
-    public static void settRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelRestDto andel,
+    public static void settRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                          Intervall periode,
                                          FordelBeregningsgrunnlagAndelDto endringAndel,
                                          Collection<InntektsmeldingDto> inntektsmeldinger) {
         if (andel.getLagtTilAvSaksbehandler()) {
             endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal.ZERO);
         } else {
-            Optional<BigDecimal> refusjonsKravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(mapAndel(andel), periode, inntektsmeldinger);
+            Optional<BigDecimal> refusjonsKravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode, inntektsmeldinger);
             refusjonsKravPrÅr.ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
         }
         endringAndel.setRefusjonskravPrAar(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdRestDto::getRefusjonskravPrÅr)
+            .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
             .orElse(BigDecimal.ZERO));
     }
 

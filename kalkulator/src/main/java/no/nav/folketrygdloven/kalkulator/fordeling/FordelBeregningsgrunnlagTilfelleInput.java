@@ -1,19 +1,15 @@
 package no.nav.folketrygdloven.kalkulator.fordeling;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+
+import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 /**
  * Input for å utlede tilfelle for fordel beregningsgrunnlag
@@ -64,13 +60,11 @@ public class FordelBeregningsgrunnlagTilfelleInput {
     }
 
     public static FordelBeregningsgrunnlagTilfelleInput fraBeregningsgrunnlagRestInput(BeregningsgrunnlagRestInput input) {
-        BeregningsgrunnlagGrunnlagRestDto restGr = input.getBeregningsgrunnlagGrunnlag();
-        BeregningsgrunnlagRestDto restBG = input.getBeregningsgrunnlag();
-        BeregningsgrunnlagDto domeneBG = MapBeregningsgrunnlagFraRestTilDomene.mapBeregningsgrunnlag(restBG);
-        BeregningAktivitetAggregatDto domeneAktiviteter = MapBeregningsgrunnlagFraRestTilDomene.mapAktivitetAggregat(restGr.getGjeldendeAktiviteter());
+        BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
+        BeregningsgrunnlagDto bg = input.getBeregningsgrunnlag();
         AktivitetGradering aktivitetGradering = input.getAktivitetGradering();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
-        return new FordelBeregningsgrunnlagTilfelleInput(domeneBG, domeneAktiviteter, aktivitetGradering, inntektsmeldinger);
+        return new FordelBeregningsgrunnlagTilfelleInput(bg, grunnlag.getGjeldendeAktiviteter(), aktivitetGradering, inntektsmeldinger);
     }
 
     private void verifyStateForBuild() {

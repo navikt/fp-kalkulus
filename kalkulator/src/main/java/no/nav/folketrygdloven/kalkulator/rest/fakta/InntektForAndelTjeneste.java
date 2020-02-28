@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapArbeidsgiver;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -13,8 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
@@ -23,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 class InntektForAndelTjeneste {
@@ -34,7 +30,7 @@ class InntektForAndelTjeneste {
         // Hide pulbic constructor
     }
 
-    static BigDecimal finnSnittinntektForArbeidstakerIBeregningsperioden(InntektFilterDto filter, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    static BigDecimal finnSnittinntektForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         LocalDate fraDato = andel.getBeregningsperiodeFom();
         LocalDate tilDato = andel.getBeregningsperiodeTom();
         long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
@@ -42,7 +38,7 @@ class InntektForAndelTjeneste {
         return totalBeløp.divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN);
     }
 
-    private static BigDecimal finnTotalbeløpIBeregningsperioden(InntektFilterDto filter, BeregningsgrunnlagPrStatusOgAndelRestDto andel, LocalDate tilDato,
+    private static BigDecimal finnTotalbeløpIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, LocalDate tilDato,
                                                                 Long beregningsperiodeLengdeIMnd) {
         if (filter.isEmpty()) {
             return BigDecimal.ZERO;
@@ -56,7 +52,7 @@ class InntektForAndelTjeneste {
         return totalBeløp.get();
     }
 
-    static BigDecimal finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(InntektFilterDto filter, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    static BigDecimal finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         if (filter.isEmpty()) {
             return BigDecimal.ZERO;
         }
@@ -68,13 +64,13 @@ class InntektForAndelTjeneste {
         return totalBeløp.multiply(faktor);
     }
 
-    private static InntektFilterDto finnInntekterForAndel(BeregningsgrunnlagPrStatusOgAndelRestDto andel, InntektFilterDto filter) {
-        Optional<ArbeidsgiverMedNavn> arbeidsgiver = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdRestDto::getArbeidsgiver);
-        if (!arbeidsgiver.isPresent()) {
+    private static InntektFilterDto finnInntekterForAndel(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, InntektFilterDto filter) {
+        Optional<Arbeidsgiver> arbeidsgiver = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver);
+        if (arbeidsgiver.isEmpty()) {
             return InntektFilterDto.EMPTY;
         }
         return filter.filterBeregningsgrunnlag()
-            .filter(mapArbeidsgiver(arbeidsgiver.get()));
+            .filter(arbeidsgiver.get());
     }
 
     private static BigDecimal summerInntekterIBeregningsperioden(LocalDate tilDato, Collection<InntektspostDto> inntektsposter, Long beregningsperiodeLengdeIMnd) {
@@ -94,7 +90,7 @@ class InntektForAndelTjeneste {
     }
 
     static Optional<BigDecimal> finnSnittAvFrilansinntektIBeregningsperioden(AktørId aktørId, InntektArbeidYtelseGrunnlagDto grunnlag,
-                                                                             BeregningsgrunnlagPrStatusOgAndelRestDto frilansAndel, LocalDate skjæringstidspunkt) {
+                                                                             no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto frilansAndel, LocalDate skjæringstidspunkt) {
         var filter = new InntektFilterDto(grunnlag.getAktørInntektFraRegister(aktørId)).før(skjæringstidspunkt);
         if (!filter.isEmpty()) {
             LocalDate fraDato = frilansAndel.getBeregningsperiodeFom();

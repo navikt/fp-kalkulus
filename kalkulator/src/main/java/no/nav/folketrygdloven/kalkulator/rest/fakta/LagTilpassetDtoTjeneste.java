@@ -10,13 +10,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelATDto;
-import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelFLDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelSNDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelYtelseDto;
@@ -34,13 +32,13 @@ class LagTilpassetDtoTjeneste  {
     private LagTilpassetDtoTjeneste() {
     }
 
-    static BeregningsgrunnlagPrStatusOgAndelDto opprettTilpassetDTO(BehandlingReferanse ref,
-                                                                    BeregningsgrunnlagPrStatusOgAndelRestDto andel,
-                                                                    InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    static no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto opprettTilpassetDTO(BehandlingReferanse ref,
+                                                                                                               no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                                                               InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
             return opprettSNDto(andel, inntektArbeidYtelseGrunnlag);
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
-            && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdRestDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
+            && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
             return opprettATDto(andel);
 
         } else if (AktivitetStatus.FRILANSER.equals(andel.getAktivitetStatus())) {
@@ -48,11 +46,11 @@ class LagTilpassetDtoTjeneste  {
         } else if (AktivitetStatus.DAGPENGER.equals(andel.getAktivitetStatus()) || AktivitetStatus.ARBEIDSAVKLARINGSPENGER.equals(andel.getAktivitetStatus())) {
             return opprettYtelseDto(ref, inntektArbeidYtelseGrunnlag, andel);
         } else {
-            return new BeregningsgrunnlagPrStatusOgAndelDto();
+            return new no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto();
         }
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto opprettSNDto(BeregningsgrunnlagPrStatusOgAndelRestDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    private static no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto opprettSNDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         //Merk, PGI verdier ligger i kronologisk synkende rekkefølge og er pgi fra årene i beregningsperioden
         BeregningsgrunnlagPrStatusOgAndelSNDto dtoSN = new BeregningsgrunnlagPrStatusOgAndelSNDto();
 
@@ -71,7 +69,7 @@ class LagTilpassetDtoTjeneste  {
         return dtoSN;
     }
 
-    private static List<PgiDto> lagPgiDto(BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    private static List<PgiDto> lagPgiDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         LocalDate beregningsperiodeTom = andel.getBeregningsperiodeTom();
         if (beregningsperiodeTom == null) {
             return Collections.emptyList();
@@ -83,14 +81,14 @@ class LagTilpassetDtoTjeneste  {
         return liste;
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto opprettATDto(BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    private static no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagPrStatusOgAndelDto opprettATDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelATDto dtoAT = new BeregningsgrunnlagPrStatusOgAndelATDto();
         dtoAT.setBortfaltNaturalytelse(andel.getBgAndelArbeidsforhold().orElseThrow().getNaturalytelseBortfaltPrÅr().orElseThrow());
         return dtoAT;
     }
 
 
-    private static BeregningsgrunnlagPrStatusOgAndelFLDto opprettFLDto(BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    private static BeregningsgrunnlagPrStatusOgAndelFLDto opprettFLDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelFLDto dtoFL = new BeregningsgrunnlagPrStatusOgAndelFLDto();
         dtoFL.setErNyoppstartet(andel.erNyoppstartet().orElse(null));
         return dtoFL;
@@ -98,7 +96,7 @@ class LagTilpassetDtoTjeneste  {
 
     private static BeregningsgrunnlagPrStatusOgAndelYtelseDto opprettYtelseDto(BehandlingReferanse ref,
                                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
-                                                                               BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+                                                                               no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelYtelseDto dtoYtelse = new BeregningsgrunnlagPrStatusOgAndelYtelseDto();
         Optional<BigDecimal> årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekort(ref, andel.getAktivitetStatus(), inntektArbeidYtelseGrunnlag);
         if (!årsbeløpFraMeldekort.isPresent()) {

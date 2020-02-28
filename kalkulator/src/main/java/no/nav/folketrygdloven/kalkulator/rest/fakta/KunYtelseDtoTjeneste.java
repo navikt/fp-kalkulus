@@ -7,9 +7,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
@@ -28,7 +28,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
     @Override
     public void lagDto(BeregningsgrunnlagRestInput input,
                        FaktaOmBeregningDto faktaOmBeregningDto) {
-        BeregningsgrunnlagRestDto beregningsgrunnlag = input.getBeregningsgrunnlag();
+        BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         if (beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE)) {
             faktaOmBeregningDto.setKunYtelse(lagKunYtelseDto(input));
         }
@@ -44,7 +44,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         return dto;
     }
 
-    private Boolean harBesteberegning(BeregningsgrunnlagRestDto beregningsgrunnlag, BeregningsgrunnlagTilstand aktivTilstand) {
+    private Boolean harBesteberegning(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand aktivTilstand) {
         if (aktivTilstand.erFør(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
             return null;
         }
@@ -52,8 +52,8 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
             .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()).anyMatch(andel -> andel.getBesteberegningPrÅr() != null);
     }
 
-    private void settVerdier(KunYtelseDto dto, BeregningsgrunnlagRestDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        BeregningsgrunnlagPeriodeRestDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+    private void settVerdier(KunYtelseDto dto, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         periode.getBeregningsgrunnlagPrStatusOgAndelList().forEach(andel -> {
             AndelMedBeløpDto brukersAndel = new AndelMedBeløpDto();
             brukersAndel.initialiserStandardAndelProperties(andel, inntektArbeidYtelseGrunnlag);
@@ -62,7 +62,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         });
     }
 
-    private BigDecimal finnFastsattMånedsbeløp(BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    private BigDecimal finnFastsattMånedsbeløp(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getBeregnetPrÅr() != null ?
             andel.getBeregnetPrÅr().divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP) : null;
     }

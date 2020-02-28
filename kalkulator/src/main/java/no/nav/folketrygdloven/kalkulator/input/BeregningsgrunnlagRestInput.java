@@ -11,12 +11,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
@@ -34,43 +36,44 @@ public class BeregningsgrunnlagRestInput {
     private BehandlingReferanse behandlingReferanse;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
-    private BeregningsgrunnlagGrunnlagRestDto beregningsgrunnlagGrunnlag;
+    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
-    private BeregningsgrunnlagGrunnlagRestDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
+    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
     private List<RefusjonskravDatoDto> refusjonskravDatoer = new ArrayList<>();
 
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
-    private BeregningsgrunnlagGrunnlagRestDto faktaOmBeregningPreutfyllingsgrunnlag;
+    private BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag;
 
-    private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagRestDto> tilstandHistorikk = new HashMap<>();
+    private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk = new HashMap<>();
 
-    public Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagRestDto> getTilstandHistorikk() {
-        return tilstandHistorikk;
-    }
-
-    public void setTilstandHistorikk(Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagRestDto> tilstandHistorikk) {
+    public void setTilstandHistorikk(Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk) {
         this.tilstandHistorikk = tilstandHistorikk;
     }
 
-    public void leggTilBeregningsgrunnlagIHistorikk(BeregningsgrunnlagGrunnlagRestDto grunnlag, BeregningsgrunnlagTilstand tilstand) {
+    public void leggTilBeregningsgrunnlagIHistorikk(BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagTilstand tilstand) {
         this.tilstandHistorikk.put(tilstand, grunnlag);
     }
 
-    public Optional<BeregningsgrunnlagRestDto> hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand tilstand) {
-        return Optional.ofNullable(tilstandHistorikk.get(tilstand)).flatMap(BeregningsgrunnlagGrunnlagRestDto::getBeregningsgrunnlag);
-    }
-
-    public Optional<BeregningsgrunnlagGrunnlagRestDto> hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand tilstand) {
-        return Optional.ofNullable(tilstandHistorikk.get(tilstand));
-    }
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
+
+    public BeregningsgrunnlagRestInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        this.behandlingReferanse = input.getBehandlingReferanse();
+        InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(input.getIayGrunnlag());
+        arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
+        this.iayGrunnlag = oppdatere.build();
+        this.aktivitetGradering = input.getAktivitetGradering();
+        this.refusjonskravDatoer = input.getRefusjonskravDatoer();
+        this.ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
+        this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
+    }
 
     public BeregningsgrunnlagRestInput(BehandlingReferanse behandlingReferanse,
                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -89,7 +92,7 @@ public class BeregningsgrunnlagRestInput {
                                        AktivitetGradering aktivitetGradering,
                                        List<RefusjonskravDatoDto> refusjonskravDatoer,
                                        YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                       BeregningsgrunnlagGrunnlagRestDto faktaOmBeregningPreutfyllingsgrunnlag) {
+                                       BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag) {
         this.behandlingReferanse = Objects.requireNonNull(behandlingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.aktivitetGradering = aktivitetGradering;
@@ -114,15 +117,15 @@ public class BeregningsgrunnlagRestInput {
         return behandlingReferanse;
     }
 
-    public BeregningsgrunnlagGrunnlagRestDto getBeregningsgrunnlagGrunnlag() {
+    public BeregningsgrunnlagGrunnlagDto getBeregningsgrunnlagGrunnlag() {
         return beregningsgrunnlagGrunnlag;
     }
 
-    public BeregningsgrunnlagRestDto getBeregningsgrunnlag() {
+    public BeregningsgrunnlagDto getBeregningsgrunnlag() {
         return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
     }
 
-    public Optional<BeregningsgrunnlagGrunnlagRestDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
+    public Optional<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
         return Optional.ofNullable(beregningsgrunnlagGrunnlagFraForrigeBehandling);
     }
 
@@ -157,7 +160,7 @@ public class BeregningsgrunnlagRestInput {
         return refusjonskravDatoer;
     }
 
-    public Optional<BeregningsgrunnlagGrunnlagRestDto> getFaktaOmBeregningPreutfyllingsgrunnlag() {
+    public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningPreutfyllingsgrunnlag() {
         return Optional.ofNullable(faktaOmBeregningPreutfyllingsgrunnlag);
     }
 
@@ -167,21 +170,21 @@ public class BeregningsgrunnlagRestInput {
         return (V) ytelsespesifiktGrunnlag;
     }
 
-    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagRestDto grunnlag) {
+    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagRestInput(this);
         newInput.beregningsgrunnlagGrunnlag = grunnlag;
         newInput = grunnlag.getBeregningsgrunnlag()
-            .map(BeregningsgrunnlagRestDto::getSkjæringstidspunkt)
+            .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);
         return newInput;
     }
 
-    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagRestDto grunnlag) {
+    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagRestInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
         newInput = grunnlag.getBeregningsgrunnlag()
-            .map(BeregningsgrunnlagRestDto::getSkjæringstidspunkt)
+            .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);
         return newInput;

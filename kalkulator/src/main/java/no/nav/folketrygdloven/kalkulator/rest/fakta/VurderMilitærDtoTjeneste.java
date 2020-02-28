@@ -5,7 +5,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.VurderMilitærDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -20,7 +20,7 @@ public class VurderMilitærDtoTjeneste implements FaktaOmBeregningTilfelleDtoTje
 
     @Override
     public void lagDto(BeregningsgrunnlagRestInput input, FaktaOmBeregningDto faktaOmBeregningDto) {
-        List<BeregningsgrunnlagAktivitetStatusRestDto> aktivitetStatuser = input.getBeregningsgrunnlag().getAktivitetStatuser();
+        List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = input.getBeregningsgrunnlag().getAktivitetStatuser();
         BeregningsgrunnlagTilstand aktivTilstand = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand();
         VurderMilitærDto dto;
         if (aktivTilstand.erFør(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {

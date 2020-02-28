@@ -10,8 +10,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -36,16 +36,16 @@ public class FaktaOmBeregningDtoTjeneste {
     public Optional<FaktaOmBeregningDto> lagDto(BeregningsgrunnlagRestInput input) {
         FaktaOmBeregningDto faktaOmBeregningDto = new FaktaOmBeregningDto();
         var grunnlagEntitet = input.getBeregningsgrunnlagGrunnlag();
-        BeregningAktivitetAggregatRestDto registerAktivitetAggregat = Optional.ofNullable(grunnlagEntitet.getRegisterAktiviteter())
+        BeregningAktivitetAggregatDto registerAktivitetAggregat = Optional.ofNullable(grunnlagEntitet.getRegisterAktiviteter())
             .orElse(grunnlagEntitet.getGjeldendeAktiviteter());
-        Optional<BeregningAktivitetAggregatRestDto> saksbehandletAktivitetAggregat = grunnlagEntitet.getOverstyrteEllerSaksbehandletAktiviteter();
+        Optional<BeregningAktivitetAggregatDto> saksbehandletAktivitetAggregat = grunnlagEntitet.getOverstyrteEllerSaksbehandletAktiviteter();
 
         faktaOmBeregningDto.setAndelerForFaktaOmBeregning(andelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
 
         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon = input.getIayGrunnlag().getArbeidsforholdInformasjon();
         AvklarAktiviteterDtoTjeneste.lagAvklarAktiviteterDto(registerAktivitetAggregat,
-            saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto);
-        BeregningsgrunnlagRestDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
+            saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
+        BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
         if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
             List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
             faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller);
@@ -54,7 +54,7 @@ public class FaktaOmBeregningDtoTjeneste {
         return Optional.of(faktaOmBeregningDto);
     }
 
-    private boolean skalVurdereFaktaForATFL(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private boolean skalVurdereFaktaForATFL(BeregningsgrunnlagDto beregningsgrunnlag) {
         return !beregningsgrunnlag.getFaktaOmBeregningTilfeller().isEmpty();
     }
 

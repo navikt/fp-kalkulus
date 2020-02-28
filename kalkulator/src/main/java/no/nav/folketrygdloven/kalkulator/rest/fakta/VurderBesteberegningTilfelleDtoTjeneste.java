@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.rest.fakta;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.VurderBesteberegningDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -26,18 +26,18 @@ public class VurderBesteberegningTilfelleDtoTjeneste implements FaktaOmBeregning
         settVerdier(input.getBeregningsgrunnlag(), aktivTilstand, faktaOmBeregningDto);
     }
 
-    private void settVerdier(BeregningsgrunnlagRestDto bg, BeregningsgrunnlagTilstand aktivTilstand, FaktaOmBeregningDto faktaOmBeregningDto) {
+    private void settVerdier(BeregningsgrunnlagDto bg, BeregningsgrunnlagTilstand aktivTilstand, FaktaOmBeregningDto faktaOmBeregningDto) {
         VurderBesteberegningDto vurderBesteberegning = new VurderBesteberegningDto();
         vurderBesteberegning.setSkalHaBesteberegning(harBesteberegning(bg, aktivTilstand));
         faktaOmBeregningDto.setVurderBesteberegning(vurderBesteberegning);
     }
 
-    private boolean harBgTilfelle(BeregningsgrunnlagRestDto beregningsgrunnlag) {
+    private boolean harBgTilfelle(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.VURDER_BESTEBEREGNING)
             || beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE);
     }
 
-    private Boolean harBesteberegning(BeregningsgrunnlagRestDto beregningsgrunnlag, BeregningsgrunnlagTilstand aktivTilstand) {
+    private Boolean harBesteberegning(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand aktivTilstand) {
         if (aktivTilstand.erFør(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
             return null;
         }

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapArbeidsgiver;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -13,15 +12,15 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FordelBeregningsgrunnlagAndelDto;
@@ -35,9 +34,9 @@ public class RefusjonDtoTjenesteImplTest {
 
     private final static InternArbeidsforholdRefDto ARB_ID = InternArbeidsforholdRefDto.nyRef();
     private final static String ORGNR = "123456780";
-    private final static ArbeidsgiverMedNavn ARBEIDSGIVER = ArbeidsgiverMedNavn.virksomhet(ORGNR);
+    private final static Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ORGNR);
     private final static String ORGNR_2 = "3242521";
-    private final static ArbeidsgiverMedNavn ARBEIDSGIVER2 = ArbeidsgiverMedNavn.virksomhet(ORGNR_2);
+    private final static Arbeidsgiver ARBEIDSGIVER2 = Arbeidsgiver.virksomhet(ORGNR_2);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100_000);
     private static final BigDecimal SEKS_G = GRUNNBELØP.multiply(BigDecimal.valueOf(6));
 
@@ -45,26 +44,26 @@ public class RefusjonDtoTjenesteImplTest {
     @Test
     public void skal_ikkje_kunne_endre_refusjon_for_andel_uten_gradering_og_uten_refusjon() {
         //Arrange
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER))
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
             .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
         .build(periode);
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of(InntektsmeldingDtoBuilder.builder()
             .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+            .medArbeidsgiver(ARBEIDSGIVER2)
             .build());
 
         // Act
@@ -77,32 +76,32 @@ public class RefusjonDtoTjenesteImplTest {
     @Test
     public void skal_ikkje_kunne_endre_refusjon_for_andel_med_gradering_og_med_refusjon() {
         //Arrange
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
         BigDecimal refPrMnd = BigDecimal.valueOf(100);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
                 .medRefusjonskravPrÅr(refPrMnd.multiply(BigDecimal.valueOf(12))))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
             .build(periode);
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(refPrMnd.multiply(BigDecimal.valueOf(12)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .build();
         InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+            .medArbeidsgiver(ARBEIDSGIVER2)
             .build();
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
@@ -116,31 +115,31 @@ public class RefusjonDtoTjenesteImplTest {
     @Test
     public void skal_ikkje_kunne_endre_refusjon_for_andel_med_gradering_og_uten_refusjon_totalrefusjon_under_6G() {
         //Arrange
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
                 .medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G.subtract(BigDecimal.valueOf(100))))
             .build(periode);
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .build();
         InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(SEKS_G.subtract(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+            .medArbeidsgiver(ARBEIDSGIVER2)
             .build();
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
@@ -154,26 +153,26 @@ public class RefusjonDtoTjenesteImplTest {
     @Test
     public void skal_kunne_endre_refusjon_for_andel_med_gradering_og_uten_refusjon_totalrefusjon_lik_6G() {
         //Arrange
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
                 .medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G))
             .build(periode);
 
         AndelGradering andelGradering = AndelGradering.builder()
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
             .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, Tid.TIDENES_ENDE, BigDecimal.TEN))
@@ -181,11 +180,11 @@ public class RefusjonDtoTjenesteImplTest {
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .build();
         InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(SEKS_G)
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+            .medArbeidsgiver(ARBEIDSGIVER2)
             .build();
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
@@ -201,26 +200,26 @@ public class RefusjonDtoTjenesteImplTest {
     @Test
     public void skal_kunne_endre_refusjon_for_andel_med_gradering_og_uten_refusjon_totalrefusjon_over_6G() {
         //Arrange
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto andel = BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
                 .medRefusjonskravPrÅr(BigDecimal.ZERO))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
                 .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
             .build(periode);
 
         AndelGradering andelGradering = AndelGradering.builder()
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .medArbeidsforholdRef(ARB_ID)
             .medStatus(AktivitetStatus.ARBEIDSTAKER)
             .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, Tid.TIDENES_ENDE, BigDecimal.TEN))
@@ -228,11 +227,11 @@ public class RefusjonDtoTjenesteImplTest {
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER))
+            .medArbeidsgiver(ARBEIDSGIVER)
             .build();
         InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
             .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(mapArbeidsgiver(ARBEIDSGIVER2))
+            .medArbeidsgiver(ARBEIDSGIVER2)
             .build();
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 

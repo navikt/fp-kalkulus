@@ -9,12 +9,12 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
@@ -25,8 +25,8 @@ public class FinnÅrsinntektvisningstallTest {
 
     @Test
     public void skal_ikke_sette_visningstall_hvis_ingen_perioder_på_grunnlaget() {
-        BeregningsgrunnlagRestDto grunnlag = BeregningsgrunnlagRestDto.builder()
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+        BeregningsgrunnlagDto grunnlag = BeregningsgrunnlagDto.builder()
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
@@ -38,7 +38,7 @@ public class FinnÅrsinntektvisningstallTest {
     @Test
     public void skal_sette_visningstall_lik_brutto_første_periode() {
         BigDecimal bruttoFørstePeriode = BigDecimal.valueOf(500000);
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagVanlig(bruttoFørstePeriode);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagVanlig(bruttoFørstePeriode);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
@@ -50,7 +50,7 @@ public class FinnÅrsinntektvisningstallTest {
     public void skal_sette_visningstall_lik_pgisnitt_hvis_selvstendig_næringsdrivende_og_ikke_ny_i_arblivet() {
         BigDecimal pgi= BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, false);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
@@ -62,7 +62,7 @@ public class FinnÅrsinntektvisningstallTest {
     public void skal_ikke_returnere_visningstall_hvis_sn_mned_ny_i_arbliv() {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, false);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
@@ -74,7 +74,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, true);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, true);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
@@ -87,7 +87,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, true);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, true);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
@@ -97,28 +97,28 @@ public class FinnÅrsinntektvisningstallTest {
 
     @Test
     public void skal_håndtere_nullverdier() {
-        BeregningsgrunnlagRestDto grunnlag = lagBeregningsgrunnlagSN(null, null, false, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(null, null, false, false);
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
 
         assertThat(visningstall).isEmpty();
     }
 
-    private BeregningsgrunnlagRestDto lagBeregningsgrunnlagVanlig(BigDecimal bruttoFørstePeriode) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagVanlig(BigDecimal bruttoFørstePeriode) {
 
-        BeregningsgrunnlagRestDto grunnlag = BeregningsgrunnlagRestDto.builder()
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+        BeregningsgrunnlagDto grunnlag = BeregningsgrunnlagDto.builder()
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
-        BeregningsgrunnlagPeriodeRestDto aktivPeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdRestDto.builder().medArbeidsgiver(ArbeidsgiverMedNavn.virksomhet(ORGNR)))
+            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)))
             .medBeregnetPrÅr(bruttoFørstePeriode)
             .build(aktivPeriode);
 
@@ -126,19 +126,19 @@ public class FinnÅrsinntektvisningstallTest {
 
     }
 
-    private BeregningsgrunnlagRestDto lagBeregningsgrunnlagSN(BigDecimal pgiSnitt, BigDecimal bruttoPrÅrAndel, boolean nyIArbliv, boolean medBesteberegning) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagSN(BigDecimal pgiSnitt, BigDecimal bruttoPrÅrAndel, boolean nyIArbliv, boolean medBesteberegning) {
 
-        BeregningsgrunnlagRestDto grunnlag = BeregningsgrunnlagRestDto.builder()
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+        BeregningsgrunnlagDto grunnlag = BeregningsgrunnlagDto.builder()
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
             .leggTilFaktaOmBeregningTilfeller(medBesteberegning ? Collections.singletonList(FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE) : Collections.emptyList())
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
-        BeregningsgrunnlagPeriodeRestDto aktivPeriode = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBeregnetPrÅr(bruttoPrÅrAndel)

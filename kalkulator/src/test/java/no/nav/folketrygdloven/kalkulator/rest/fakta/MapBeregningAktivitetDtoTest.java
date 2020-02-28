@@ -8,11 +8,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
-import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class MapBeregningAktivitetDtoTest {
@@ -22,12 +21,12 @@ public class MapBeregningAktivitetDtoTest {
     @Test
     public void nyAktivitetIDetteGrunnlaget() {
         // Arrange
-        BeregningAktivitetRestDto beregningAktivitet = lagAktivitet(AKTØRID_1);
-        List<BeregningAktivitetRestDto> saksbehandledeAktiviteter = List.of();
+        BeregningAktivitetDto beregningAktivitet = lagAktivitet(AKTØRID_1);
+        List<BeregningAktivitetDto> saksbehandledeAktiviteter = List.of();
 
         // Act
-        BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty());
+        no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
+            Optional.empty(), List.of());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isNull();
@@ -36,12 +35,12 @@ public class MapBeregningAktivitetDtoTest {
     @Test
     public void aldriSaksbehandletEllerIngenAktiviteterIForrigeSaksbehandlet() {
         // Arrange
-        BeregningAktivitetRestDto beregningAktivitet = lagAktivitet(AKTØRID_1);
-        List<BeregningAktivitetRestDto> saksbehandledeAktiviteter = List.of();
+        BeregningAktivitetDto beregningAktivitet = lagAktivitet(AKTØRID_1);
+        List<BeregningAktivitetDto> saksbehandledeAktiviteter = List.of();
 
         // Act
-        BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty());
+        no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
+            Optional.empty(), List.of());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isNull();
@@ -50,12 +49,12 @@ public class MapBeregningAktivitetDtoTest {
     @Test
     public void saksbehandletIDetteGrunnlagetSattTilBenytt() {
         // Arrange
-        BeregningAktivitetRestDto beregningAktivitet = lagAktivitet(AKTØRID_1);
-        List<BeregningAktivitetRestDto> saksbehandledeAktiviteter = List.of(lagAktivitet(AKTØRID_1));
+        BeregningAktivitetDto beregningAktivitet = lagAktivitet(AKTØRID_1);
+        List<BeregningAktivitetDto> saksbehandledeAktiviteter = List.of(lagAktivitet(AKTØRID_1));
 
         // Act
-        BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty());
+        no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
+            Optional.empty(), List.of());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isTrue();
@@ -64,22 +63,22 @@ public class MapBeregningAktivitetDtoTest {
     @Test
     public void saksbehandletIDetteGrunnlagetSattTilIkkeBenytt() {
         // Arrange
-        BeregningAktivitetRestDto beregningAktivitet = lagAktivitet(AKTØRID_1);
-        List<BeregningAktivitetRestDto> saksbehandledeAktiviteter = List.of(lagAktivitet(AKTØRID_2));
+        BeregningAktivitetDto beregningAktivitet = lagAktivitet(AKTØRID_1);
+        List<BeregningAktivitetDto> saksbehandledeAktiviteter = List.of(lagAktivitet(AKTØRID_2));
 
         // Act
-        BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty());
+        no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
+            Optional.empty(), List.of());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isFalse();
     }
 
-    private BeregningAktivitetRestDto lagAktivitet(AktørId aktørId) {
-        return BeregningAktivitetRestDto.builder()
+    private BeregningAktivitetDto lagAktivitet(AktørId aktørId) {
+        return BeregningAktivitetDto.builder()
             .medPeriode(Intervall.fraOgMed(LocalDate.now()))
             .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-            .medArbeidsgiver(ArbeidsgiverMedNavn.fra(aktørId))
+            .medArbeidsgiver(Arbeidsgiver.fra(aktørId))
             .build();
     }
 

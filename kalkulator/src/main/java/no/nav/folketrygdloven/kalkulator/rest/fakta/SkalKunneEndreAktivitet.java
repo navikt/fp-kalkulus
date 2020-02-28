@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 
@@ -18,7 +18,7 @@ public class SkalKunneEndreAktivitet {
      * @param andel Ein gitt beregningsgrunnlagsandel
      * @return boolean som seier om andel/aktivitet skal kunne endres i gui
      */
-    public static Boolean skalKunneEndreAktivitet(BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    public static Boolean skalKunneEndreAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getLagtTilAvSaksbehandler() && !andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER);
     }
 

@@ -95,7 +95,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
 
-    private BeregningsgrunnlagPeriodeDto getBeregningsgrunnlagPeriode() {
+    public BeregningsgrunnlagPeriodeDto getBeregningsgrunnlagPeriode() {
         return beregningsgrunnlagPeriode;
     }
 
@@ -175,6 +175,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef), internArbeidsforholdRefDto)
             && Objects.equals(this.getArbeidsforholdType(), arbeidsforholdType);
     }
+
+    public boolean harInntektsmelding() {
+        return beregningsgrunnlagArbeidstakerAndel != null && beregningsgrunnlagArbeidstakerAndel.getHarInntektsmelding();
+    }
+
 
     public Optional<BeregningsgrunnlagArbeidstakerAndelDto> getBeregningsgrunnlagArbeidstakerAndel() {
         return Optional.ofNullable(beregningsgrunnlagArbeidstakerAndel);

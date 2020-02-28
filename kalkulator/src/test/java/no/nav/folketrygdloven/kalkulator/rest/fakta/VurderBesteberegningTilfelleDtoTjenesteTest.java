@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.ArbeidsgiverMedNavn;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -33,14 +33,14 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
 
     private static final LocalDate STP = LocalDate.of(2019, 1, 1);
     private static final Intervall OPPTJENINGSPERIODE = Intervall.fraOgMedTilOgMed(STP.minusYears(1), STP.plusYears(10));
-    private static final BGAndelArbeidsforholdRestDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdRestDto.builder();
+    private static final BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder();
     private VurderBesteberegningTilfelleDtoTjeneste dtoTjeneste;
 
     @BeforeEach
     public void setUp() {
         var orgnr = "347289324";
         bgAndelArbeidsforholdBuilder
-            .medArbeidsgiver(ArbeidsgiverMedNavn.virksomhet(orgnr));
+            .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr));
         dtoTjeneste = new VurderBesteberegningTilfelleDtoTjeneste();
     }
 
@@ -49,9 +49,9 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Arrange
         var beregningAktiviteter = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(STP, OPPTJENINGSPERIODE,
             OpptjeningAktivitetType.ARBEID);
-        var beregningsgrunnlag = BeregningsgrunnlagRestDto.builder().medSkjæringstidspunkt(STP)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
-        var grunnlag = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(STP)
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
+        var grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .medRegisterAktiviteter(beregningAktiviteter)
             .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
@@ -73,15 +73,15 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Arrange
         var beregningAktiviteter = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(STP, OPPTJENINGSPERIODE,
             OpptjeningAktivitetType.ARBEID);
-        var beregningsgrunnlag = BeregningsgrunnlagRestDto.builder().medSkjæringstidspunkt(STP)
+        var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(STP)
             .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_BESTEBEREGNING))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
-        var periode = BeregningsgrunnlagPeriodeRestDto.builder().medBeregningsgrunnlagPeriode(STP, null).build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
+        var periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(STP, null).build(beregningsgrunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder)
             .medInntektskategori(Inntektskategori.JORDBRUKER)
             .build(periode);
-        var grunnlag = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+        var grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .medRegisterAktiviteter(beregningAktiviteter)
             .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);

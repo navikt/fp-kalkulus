@@ -15,14 +15,14 @@ import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.rest.dto.AndelMedBeløpDto;
@@ -52,7 +52,7 @@ public class KunYtelseDtoTjenesteTest {
         Intervall periode = Intervall.fraOgMedTilOgMed(
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
@@ -71,7 +71,7 @@ public class KunYtelseDtoTjenesteTest {
     @Test
     public void fødende_kvinne_med_dagpenger() {
         // Arrange
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
 
@@ -90,7 +90,7 @@ public class KunYtelseDtoTjenesteTest {
     @Test
     public void adopsjon_kvinne_med_dagpenger() {
         // Arrange
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
 
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
@@ -107,14 +107,14 @@ public class KunYtelseDtoTjenesteTest {
         assertThat(kunytelse.getErBesteberegning()).isNull();
     }
 
-    private BeregningAktivitetAggregatRestDto beregningAktivitetSykepengerOgDagpenger() {
-        BeregningAktivitetAggregatRestDto.Builder builder = BeregningAktivitetAggregatRestDto.builder()
+    private BeregningAktivitetAggregatDto beregningAktivitetSykepengerOgDagpenger() {
+        BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-        builder.leggTilAktivitet(BeregningAktivitetRestDto.builder()
+        builder.leggTilAktivitet(BeregningAktivitetDto.builder()
             .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)))
             .medOpptjeningAktivitetType(OpptjeningAktivitetType.SYKEPENGER)
             .build());
-        builder.leggTilAktivitet(BeregningAktivitetRestDto.builder()
+        builder.leggTilAktivitet(BeregningAktivitetDto.builder()
             .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8).minusDays(1)))
             .medOpptjeningAktivitetType(OpptjeningAktivitetType.DAGPENGER)
             .build());
@@ -124,7 +124,7 @@ public class KunYtelseDtoTjenesteTest {
     @Test
     public void mann_med_dagpenger() {
         // Arrange
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
@@ -143,7 +143,7 @@ public class KunYtelseDtoTjenesteTest {
     @Test
     public void skal_sette_verdier_om_forrige_grunnlag_var_kun_ytelse() {
         // Arrange
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = beregningAktivitetSykepengerOgDagpenger();
         var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlagMedLagtTilAndel(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
         // Act
@@ -171,7 +171,7 @@ public class KunYtelseDtoTjenesteTest {
         Intervall periode = Intervall.fraOgMedTilOgMed(
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag  = lagForrigeBeregningsgrunnlag(true, beregningAktivitetAggregat);
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
 
@@ -199,7 +199,7 @@ public class KunYtelseDtoTjenesteTest {
         Intervall periode = Intervall.fraOgMedTilOgMed(
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
-        BeregningAktivitetAggregatRestDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag  = lagForrigeBeregningsgrunnlag(false, beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
@@ -231,71 +231,71 @@ public class KunYtelseDtoTjenesteTest {
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.UDEFINERT);
     }
 
-    private BeregningsgrunnlagGrunnlagRestDto lagForrigeBeregningsgrunnlag(boolean medBesteberegning, BeregningAktivitetAggregatRestDto beregningAktivitetAggregat) {
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+    private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlag(boolean medBesteberegning, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
             .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode1 = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medLagtTilAvSaksbehandler(false)
             .medBesteberegningPrÅr(medBesteberegning ? BigDecimal.valueOf(BRUTTO_PR_ÅR) : null)
             .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_ÅR))
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .build(periode1);
 
-        var builder = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+        var builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)
                 .medRegisterAktiviteter(beregningAktivitetAggregat);
 
         return builder.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
     }
 
-    private BeregningsgrunnlagGrunnlagRestDto lagBeregningsgrunnlag(BeregningAktivitetAggregatRestDto beregningAktivitetAggregat) {
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
             .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode1 = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medLagtTilAvSaksbehandler(false)
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .build(periode1);
 
-        var builder = BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+        var builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)
                 .medRegisterAktiviteter(beregningAktivitetAggregat);
 
         return builder.build(BeregningsgrunnlagTilstand.OPPRETTET);
     }
 
-    private BeregningsgrunnlagGrunnlagRestDto lagForrigeBeregningsgrunnlagMedLagtTilAndel(BeregningAktivitetAggregatRestDto beregningAktivitetAggregat) {
-        BeregningsgrunnlagRestDto bg = BeregningsgrunnlagRestDto.builder()
+    private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlagMedLagtTilAndel(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
             .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusRestDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.KUN_YTELSE))
             .build();
-        BeregningsgrunnlagPeriodeRestDto periode1 = BeregningsgrunnlagPeriodeRestDto.builder()
+        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medLagtTilAvSaksbehandler(false)
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .build(periode1);
-        BeregningsgrunnlagPrStatusOgAndelRestDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
             .medLagtTilAvSaksbehandler(true)
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .build(periode1);
 
-        return BeregningsgrunnlagGrunnlagRestDtoBuilder.oppdatere(Optional.empty())
+        return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
                 .build(BeregningsgrunnlagTilstand.OPPRETTET);

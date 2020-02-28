@@ -3,12 +3,11 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
 public class InntektArbeidYtelseGrunnlagDtoBuilder {
 
@@ -104,13 +103,13 @@ public class InntektArbeidYtelseGrunnlagDtoBuilder {
         return this;
     }
 
-    public InntektArbeidYtelseGrunnlagDtoBuilder medArbeidsgiverOpplysninger(Map<Arbeidsgiver, ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+    public InntektArbeidYtelseGrunnlagDtoBuilder medArbeidsgiverOpplysninger(List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
         kladd.setArbeidsgiverOpplysninger(arbeidsgiverOpplysninger);
         return this;
     }
 
-    public InntektArbeidYtelseGrunnlagDtoBuilder leggTilArbeidsgiverOpplysninger(Arbeidsgiver arbeidsgiver, ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto) {
-        kladd.leggTilArbeidsgiverOpplysninger(arbeidsgiver, arbeidsgiverOpplysningerDto);
+    public InntektArbeidYtelseGrunnlagDtoBuilder leggTilArbeidsgiverOpplysninger(ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto) {
+        kladd.leggTilArbeidsgiverOpplysninger(arbeidsgiverOpplysningerDto);
         return this;
     }
 

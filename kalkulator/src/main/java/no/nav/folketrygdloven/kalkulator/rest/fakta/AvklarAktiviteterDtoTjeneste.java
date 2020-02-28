@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetRestDto;
+import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.AktivitetTomDatoMappingDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.AvklarAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.rest.dto.FaktaOmBeregningDto;
 
 
@@ -28,22 +28,23 @@ public class AvklarAktiviteterDtoTjeneste {
 
     /**
      * Modifiserer dto for fakta om beregning og setter dto for avklaring av aktiviteter på denne.
-     *  @param registerAktivitetAggregat      aggregat for registeraktiviteter
+     * @param registerAktivitetAggregat      aggregat for registeraktiviteter
      * @param saksbehandletAktivitetAggregat aggregat for saksbehandlede aktiviteter
      * @param faktaOmBeregningDto            Dto for fakta om beregning som modifiseres
+     * @param arbeidsgiverOpplysninger
      */
-    static void lagAvklarAktiviteterDto(BeregningAktivitetAggregatRestDto registerAktivitetAggregat,
-                                        Optional<BeregningAktivitetAggregatRestDto> saksbehandletAktivitetAggregat,
+    static void lagAvklarAktiviteterDto(BeregningAktivitetAggregatDto registerAktivitetAggregat,
+                                        Optional<BeregningAktivitetAggregatDto> saksbehandletAktivitetAggregat,
                                         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
-                                        FaktaOmBeregningDto faktaOmBeregningDto) {
+                                        FaktaOmBeregningDto faktaOmBeregningDto, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
         AvklarAktiviteterDto avklarAktiviteterDto = new AvklarAktiviteterDto();
-        List<BeregningAktivitetRestDto> beregningAktiviteter = registerAktivitetAggregat.getBeregningAktiviteter();
-        List<BeregningAktivitetRestDto> saksbehandletAktiviteter = saksbehandletAktivitetAggregat
-                .map(BeregningAktivitetAggregatRestDto::getBeregningAktiviteter)
+        List<BeregningAktivitetDto> beregningAktiviteter = registerAktivitetAggregat.getBeregningAktiviteter();
+        List<BeregningAktivitetDto> saksbehandletAktiviteter = saksbehandletAktivitetAggregat
+                .map(BeregningAktivitetAggregatDto::getBeregningAktiviteter)
                 .orElse(Collections.emptyList());
 
         avklarAktiviteterDto.setAktiviteterTomDatoMapping(map(beregningAktiviteter, saksbehandletAktiviteter,
-                registerAktivitetAggregat.getSkjæringstidspunktOpptjening(), arbeidsforholdInformasjon));
+                registerAktivitetAggregat.getSkjæringstidspunktOpptjening(), arbeidsforholdInformasjon, arbeidsgiverOpplysninger));
         faktaOmBeregningDto.setAvklarAktiviteter(avklarAktiviteterDto);
     }
 
@@ -56,12 +57,13 @@ public class AvklarAktiviteterDtoTjeneste {
      * @param beregningAktiviteter     registeraktiviteter
      * @param saksbehandletAktiviteter saksbehandlede aktiviteter
      * @param skjæringstidspunkt       Skjæringstidspunkt for beregning
+     * @param arbeidsgiverOpplysninger
      * @return Liste med mappingobjekter som knytter eit mulig skjæringstidspunkt for beregning til eit sett med aktiviteter
      */
-    private static List<AktivitetTomDatoMappingDto> map(List<BeregningAktivitetRestDto> beregningAktiviteter, List<BeregningAktivitetRestDto> saksbehandletAktiviteter,
-                                                        LocalDate skjæringstidspunkt, Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon) {
-        Map<LocalDate, List<BeregningAktivitetDto>> collect = beregningAktiviteter.stream()
-                .map(aktivitet -> MapBeregningAktivitetDto.mapBeregningAktivitet(aktivitet, saksbehandletAktiviteter, arbeidsforholdInformasjon))
+    private static List<AktivitetTomDatoMappingDto> map(List<BeregningAktivitetDto> beregningAktiviteter, List<BeregningAktivitetDto> saksbehandletAktiviteter,
+                                                        LocalDate skjæringstidspunkt, Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        Map<LocalDate, List<no.nav.folketrygdloven.kalkulator.rest.dto.BeregningAktivitetDto>> collect = beregningAktiviteter.stream()
+                .map(aktivitet -> MapBeregningAktivitetDto.mapBeregningAktivitet(aktivitet, saksbehandletAktiviteter, arbeidsforholdInformasjon, arbeidsgiverOpplysninger))
                 .collect(Collectors.groupingBy(beregningAktivitetDto -> finnTidligste(beregningAktivitetDto.getTom().plusDays(1), skjæringstidspunkt), Collectors.toList()));
         return collect.entrySet().stream()
                 .map(entry -> {

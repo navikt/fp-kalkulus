@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.rest.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapAktivitetAggregat;
-import static no.nav.folketrygdloven.kalkulator.rest.MapBeregningsgrunnlagFraRestTilDomene.mapAndel;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +10,9 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelRestDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRestDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -27,20 +24,20 @@ import no.nav.folketrygdloven.kalkulator.rest.dto.AndelForFaktaOmBeregningDto;
 public class AndelerForFaktaOmBeregningTjeneste {
 
     List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagRestInput input) {
-        BeregningsgrunnlagGrunnlagRestDto gjeldendeGrunnlag;
+        BeregningsgrunnlagGrunnlagDto gjeldendeGrunnlag;
         if (input.getFaktaOmBeregningPreutfyllingsgrunnlag().isPresent()) {
             gjeldendeGrunnlag = input.getFaktaOmBeregningPreutfyllingsgrunnlag().get();
         } else {
             gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         }
         var beregningAktivitetAggregat = gjeldendeGrunnlag.getGjeldendeAktiviteter();
-        BeregningsgrunnlagRestDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));;
-        List<BeregningsgrunnlagPrStatusOgAndelRestDto> andelerIFørstePeriode = beregningsgrunnlag
+        BeregningsgrunnlagDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));;
+        List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIFørstePeriode = beregningsgrunnlag
             .getBeregningsgrunnlagPerioder()
             .get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
-            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(mapAndel(a), mapAktivitetAggregat(beregningAktivitetAggregat), input.getSkjæringstidspunktForBeregning()))
+            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(a, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()))
             .collect(Collectors.toList());
         return andelerIFørstePeriode.stream()
             .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))
@@ -48,10 +45,10 @@ public class AndelerForFaktaOmBeregningTjeneste {
 
     }
 
-    private AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelRestDto andel) {
+    private AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var ref = input.getBehandlingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
-        Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(mapAndel(andel), inntektsmeldinger);
+        Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
         AndelForFaktaOmBeregningDto andelDto = new AndelForFaktaOmBeregningDto();
         andelDto.setFastsattBelop(FinnInntektForVisning.finnInntektForPreutfylling(andel));
         andelDto.setInntektskategori(andel.getInntektskategori());
