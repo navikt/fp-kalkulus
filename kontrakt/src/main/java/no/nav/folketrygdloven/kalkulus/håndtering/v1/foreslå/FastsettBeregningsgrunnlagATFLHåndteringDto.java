@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
+package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
@@ -15,11 +15,15 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattePerioderTidsbegrensetDto;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FastsettBeregningsgrunnlagATFLDto {
+public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregningDto {
 
+    public static final String IDENT_TYPE = "5038";
 
     @Valid
     @Size(max = 100)
@@ -34,17 +38,22 @@ public class FastsettBeregningsgrunnlagATFLDto {
     private List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder;
 
 
-    FastsettBeregningsgrunnlagATFLDto() {
+    FastsettBeregningsgrunnlagATFLHåndteringDto() {
         // For Jackson
     }
 
+    @Override
+    public String getIdentType() {
+        return IDENT_TYPE;
+    }
 
-    public FastsettBeregningsgrunnlagATFLDto(List<InntektPrAndelDto> inntektPrAndelList, Integer inntektFrilanser) { // NOSONAR
+
+    public FastsettBeregningsgrunnlagATFLHåndteringDto(List<InntektPrAndelDto> inntektPrAndelList, Integer inntektFrilanser) { // NOSONAR
         this.inntektPrAndelList = new ArrayList<>(inntektPrAndelList);
         this.inntektFrilanser = inntektFrilanser;
     }
 
-    public FastsettBeregningsgrunnlagATFLDto(Integer inntektFrilanser) { // NOSONAR
+    public FastsettBeregningsgrunnlagATFLHåndteringDto(Integer inntektFrilanser) { // NOSONAR
         this.inntektFrilanser = inntektFrilanser;
     }
 

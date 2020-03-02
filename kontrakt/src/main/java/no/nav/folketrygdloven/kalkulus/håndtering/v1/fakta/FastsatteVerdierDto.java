@@ -36,7 +36,6 @@ public class FastsatteVerdierDto {
 
     @JsonProperty("skalHaBesteberegning")
     @Valid
-    @NotNull
     private Boolean skalHaBesteberegning;
 
     public FastsatteVerdierDto(@Valid @NotNull Integer refusjonPrÅr, @Valid @NotNull Integer fastsattÅrsbeløp, @Valid @NotNull Inntektskategori inntektskategori, @Valid @NotNull Boolean skalHaBesteberegning) {
@@ -45,6 +44,14 @@ public class FastsatteVerdierDto {
         this.inntektskategori = inntektskategori;
         this.skalHaBesteberegning = skalHaBesteberegning;
     }
+
+
+    public FastsatteVerdierDto(@Valid @NotNull Integer refusjonPrÅr, @Valid @NotNull Integer fastsattÅrsbeløp, @Valid @NotNull Inntektskategori inntektskategori) {
+        this.refusjonPrÅr = refusjonPrÅr;
+        this.fastsattÅrsbeløp = fastsattÅrsbeløp;
+        this.inntektskategori = inntektskategori;
+    }
+
 
     public Integer getRefusjonPrÅr() {
         return refusjonPrÅr;
