@@ -58,8 +58,8 @@ spec:
           kvPath: /kv/preprod/fss/ftkalkulus/t4
   sidecar: true # refresh token
   env:
-    - name: LOADBALANCER_FQDN
-      value: ftkalkulus-t4.nais.preprod.local
+    - name: LOADBALANCER_URL
+      value: https://ftkalkulus-t4.nais.preprod.local
     - name: ABAC_PDP_ENDPOINT_URL
       value: https://wasapp-t4.adeo.no/asm-pdp/authorize
     - name: SECURITYTOKENSERVICE_URL

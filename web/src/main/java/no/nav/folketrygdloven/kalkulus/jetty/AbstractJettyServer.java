@@ -33,14 +33,6 @@ import no.nav.vedtak.sikkerhetsfilter.SecurityFilter;
 abstract class AbstractJettyServer {
 
     /**
-     * AbstractNetworkConnector#getHost()
-     *
-     * @see ServerConnector#openAcceptChannel()
-     */
-    //TODO (u139158): Trenger vi egentlig å sette denne? Spec ser ut til å si at det er eq med null, settes den default til null eller binder den mot et interface?
-
-    protected static final String SERVER_HOST = "0.0.0.0";
-    /**
      * nedstrippet sett med Jetty configurations for raskere startup.
      */
     protected static final Configuration[] CONFIGURATIONS = new Configuration[]{
@@ -57,13 +49,13 @@ abstract class AbstractJettyServer {
     }
 
     protected void bootStrap() throws Exception {
-        konfigurerMiljø();
-        migrerDatabaser();
         konfigurer();
+        migrerDatabaser();
         start(appKonfigurasjon);
     }
 
     protected void konfigurer() throws Exception {
+        konfigurerMiljø();
         konfigurerSikkerhet();
         konfigurerJndi();
     }
@@ -106,7 +98,6 @@ abstract class AbstractJettyServer {
         List<Connector> connectors = new ArrayList<>();
         ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(createHttpConfiguration()));
         httpConnector.setPort(appKonfigurasjon.getServerPort());
-        httpConnector.setHost(SERVER_HOST);
         connectors.add(httpConnector);
 
         return connectors;
@@ -117,7 +108,10 @@ abstract class AbstractJettyServer {
         webAppContext.setParentLoaderPriority(true);
 
         // må hoppe litt bukk for å hente web.xml fra classpath i stedet for fra filsystem.
-        String descriptor = Resource.newClassPathResource("/WEB-INF/web.xml").getURI().toURL().toExternalForm();
+        String descriptor;
+        try (var resource = Resource.newClassPathResource("/WEB-INF/web.xml")) {
+            descriptor = resource.getURI().toURL().toExternalForm();
+        }
         webAppContext.setDescriptor(descriptor);
         webAppContext.setBaseResource(createResourceCollection());
         webAppContext.setContextPath(appKonfigurasjon.getContextPath());
