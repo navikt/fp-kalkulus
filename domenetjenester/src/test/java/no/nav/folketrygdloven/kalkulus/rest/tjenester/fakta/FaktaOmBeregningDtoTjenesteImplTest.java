@@ -32,9 +32,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -45,7 +44,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaO
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KortvarigeArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.TilstøtendeYtelseAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.VurderBesteberegningDto;
 
 public class FaktaOmBeregningDtoTjenesteImplTest {
@@ -59,7 +57,6 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
     public void setUp() {
         Instance<FaktaOmBeregningTilfelleDtoTjeneste> tjenesteInstances = mock(Instance.class);
         List<FaktaOmBeregningTilfelleDtoTjeneste> tjenester = new ArrayList<>();
-        tjenester.add(lagDtoTjenesteMock(setBesteberegingAndelConsumer()));
         tjenester.add(lagDtoTjenesteMock(setFrilansAndelConsumer()));
         tjenester.add(lagDtoTjenesteMock(atflSammeOrgConsumer()));
         tjenester.add(lagDtoTjenesteMock(kunYtelseConsumer()));
@@ -104,7 +101,6 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste.lagDto(input);
 
         // Assert
-        assertThat(dto.orElseThrow().getBesteberegningAndeler()).hasSize(1);
         assertThat(dto.get().getFrilansAndel().getAndelsnr()).isEqualTo(1);
         assertThat(dto.get().getArbeidstakerOgFrilanserISammeOrganisasjonListe()).hasSize(1);
         assertThat(dto.get().getKunYtelse().getAndeler()).hasSize(1);
@@ -186,13 +182,6 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
 
     private FaktaOmBeregningTilfelleDtoTjeneste lagDtoTjenesteMock(Consumer<FaktaOmBeregningDto> dtoConsumer) {
         return (input, faktaOmBeregningDto) -> dtoConsumer.accept(faktaOmBeregningDto);
-    }
-
-    private Consumer<FaktaOmBeregningDto> setBesteberegingAndelConsumer() {
-        return (dto) -> {
-            TilstøtendeYtelseAndelDto andel = new TilstøtendeYtelseAndelDto();
-            dto.setBesteberegningAndeler(Collections.singletonList(andel));
-        };
     }
 
     private Consumer<FaktaOmBeregningDto> setFrilansAndelConsumer() {

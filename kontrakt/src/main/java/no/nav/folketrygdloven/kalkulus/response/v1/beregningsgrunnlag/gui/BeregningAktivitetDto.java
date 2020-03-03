@@ -1,22 +1,48 @@
 package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningAktivitetDto {
 
+    @JsonProperty(value = "arbeidsgiverNavn")
     private String arbeidsgiverNavn;
+
+    @JsonProperty(value = "arbeidsgiverId")
     private String arbeidsgiverId;
+
+    @JsonProperty(value = "eksternArbeidsforholdId")
     private String eksternArbeidsforholdId;
+
+    @JsonProperty(value = "fom")
     private LocalDate fom;
+
+    @JsonProperty(value = "tom")
     private LocalDate tom;
+
     /** For virksomheter - orgnr. For personlige arbeidsgiver - aktørId. */
+    @JsonProperty(value = "arbeidsforholdId")
     private String arbeidsforholdId;
+
+    @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
+
+    @JsonProperty(value = "aktørIdString")
     private String aktørIdString;
+
+    @JsonProperty(value = "skalBrukes")
     private Boolean skalBrukes;
 
     public BeregningAktivitetDto() {

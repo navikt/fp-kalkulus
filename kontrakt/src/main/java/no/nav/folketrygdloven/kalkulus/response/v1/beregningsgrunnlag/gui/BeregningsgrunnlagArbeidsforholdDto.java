@@ -1,28 +1,66 @@
 package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørId;
+import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagArbeidsforholdDto {
 
+    @JsonProperty(value = "arbeidsgiverNavn")
     private String arbeidsgiverNavn;
+
+    @JsonProperty(value = "arbeidsgiverId")
     private String arbeidsgiverId;
+
+    @JsonProperty(value = "startdato")
     private LocalDate startdato;
+
+    @JsonProperty(value = "opphoersdato")
     private LocalDate opphoersdato;
+
+    @JsonProperty(value = "arbeidsforholdId")
     private String arbeidsforholdId;
+
+    @JsonProperty(value = "eksternArbeidsforholdId")
     private String eksternArbeidsforholdId;
+
+    @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
+
+    @JsonProperty(value = "aktørId")
     private AktørId aktørId;
+
+    @JsonProperty(value = "aktørIdPersonIdent")
+    private AktørIdPersonident aktørIdPersonIdent;
+
+    @JsonProperty(value = "refusjonPrAar")
     private BigDecimal refusjonPrAar;
+
+    @JsonProperty(value = "belopFraInntektsmeldingPrMnd")
     private BigDecimal belopFraInntektsmeldingPrMnd;
+
+    @JsonProperty(value = "organisasjonstype")
     private Organisasjonstype organisasjonstype;
+
+    @JsonProperty(value = "naturalytelseBortfaltPrÅr")
     private BigDecimal naturalytelseBortfaltPrÅr;
+
+    @JsonProperty(value = "naturalytelseTilkommetPrÅr")
     private BigDecimal naturalytelseTilkommetPrÅr;
 
     public BeregningsgrunnlagArbeidsforholdDto() {
@@ -83,6 +121,14 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     public AktørId getAktørId() {
         return aktørId;
+    }
+
+    public AktørIdPersonident getAktørIdPersonIdent() {
+        return aktørIdPersonIdent;
+    }
+
+    public void setAktørIdPersonIdent(AktørIdPersonident aktørIdPersonIdent) {
+        this.aktørIdPersonIdent = aktørIdPersonIdent;
     }
 
     public BigDecimal getRefusjonPrAar() {

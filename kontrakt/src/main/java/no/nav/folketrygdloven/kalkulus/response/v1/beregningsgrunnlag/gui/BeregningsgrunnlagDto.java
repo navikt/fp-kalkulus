@@ -6,9 +6,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -18,22 +22,78 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagDto {
 
+    @JsonProperty(value = "skjaeringstidspunktBeregning")
+    @NotNull
+    @Valid
     private LocalDate skjaeringstidspunktBeregning;
+
+    @JsonProperty(value = "skjæringstidspunkt")
+    @NotNull
+    @Valid
     private LocalDate skjæringstidspunkt;
+
+    @JsonProperty(value = "aktivitetStatus")
+    @NotNull
+    @Valid
     private List<AktivitetStatus> aktivitetStatus;
+
+    @JsonProperty(value = "beregningsgrunnlagPeriode")
+    @NotNull
+    @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPeriode;
+
+    @JsonProperty(value = "sammenligningsgrunnlag")
+    @NotNull
+    @Valid
     private SammenligningsgrunnlagDto sammenligningsgrunnlag;
+
+    @JsonProperty(value = "sammenligningsgrunnlagPrStatus")
+    @Valid
     private List<SammenligningsgrunnlagDto> sammenligningsgrunnlagPrStatus;
+
+    @JsonProperty(value = "ledetekstBrutto")
+    @Valid
     private String ledetekstBrutto;
+
+    @JsonProperty(value = "ledetekstAvkortet")
+    @Valid
     private String ledetekstAvkortet;
+
+    @JsonProperty(value = "ledetekstRedusert")
+    @NotNull
+    @Valid
     private String ledetekstRedusert;
+
+    @JsonProperty(value = "halvG")
+    @Valid
     private Double halvG;
+
+    @JsonProperty(value = "grunnbeløp")
+    @Valid
     private BigDecimal grunnbeløp;
+
+    @JsonProperty(value = "faktaOmBeregning")
+    @Valid
     private FaktaOmBeregningDto faktaOmBeregning;
+
+    @JsonProperty(value = "andelerMedGraderingUtenBG")
+    @Valid
     private List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG;
+
+    @JsonProperty(value = "hjemmel")
+    @Valid
     private Hjemmel hjemmel;
+
+    @JsonProperty(value = "faktaOmFordeling")
+    @Valid
     private FordelingDto faktaOmFordeling;
+
+    @JsonProperty(value = "årsinntektVisningstall")
+    @Valid
     private BigDecimal årsinntektVisningstall;
+
+    @JsonProperty(value = "dekningsgrad")
+    @Valid
     private int dekningsgrad;
 
     public BeregningsgrunnlagDto() {

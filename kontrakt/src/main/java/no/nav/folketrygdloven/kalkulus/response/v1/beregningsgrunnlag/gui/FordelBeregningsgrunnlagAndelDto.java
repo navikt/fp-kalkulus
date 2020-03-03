@@ -1,20 +1,43 @@
 package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
 
     private static final int MÅNEDER_I_1_ÅR = 12;
+
+    @JsonProperty(value = "fordelingForrigeBehandlingPrAar")
     private BigDecimal fordelingForrigeBehandlingPrAar;
+
+    @JsonProperty(value = "refusjonskravPrAar")
     private BigDecimal refusjonskravPrAar = BigDecimal.ZERO;
+
+    @JsonProperty(value = "fordeltPrAar")
     private BigDecimal fordeltPrAar;
+
+    @JsonProperty(value = "belopFraInntektsmeldingPrAar")
     private BigDecimal belopFraInntektsmeldingPrAar;
+
+    @JsonProperty(value = "refusjonskravFraInntektsmeldingPrAar")
     private BigDecimal refusjonskravFraInntektsmeldingPrAar;
+
+    @JsonProperty(value = "nyttArbeidsforhold")
     private boolean nyttArbeidsforhold;
+
+    @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
 
     public FordelBeregningsgrunnlagAndelDto(FaktaOmBeregningAndelDto superDto) {

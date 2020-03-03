@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørId;
+import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
@@ -115,6 +116,7 @@ public class BeregningsgrunnlagDtoUtil {
                 }
             } else if (arbeidsgiver.erAktørId()) {
                 arbeidsforhold.setAktørId(new AktørId(arbeidsgiver.getAktørId().getId()));
+                arbeidsforhold.setAktørIdPersonIdent(new AktørIdPersonident(arbeidsgiver.getAktørId().getId()));
                 String fødselsdato = opplysningerDto.get().getFødselsdato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                 arbeidsforhold.setArbeidsgiverId(fødselsdato);
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
