@@ -11,12 +11,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 
 public class BeregningUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(BeregningUtils.class);
 
     private static final Period MELDEKORT_PERIODE_UTV = Period.parse("P30D");
 
@@ -32,11 +36,14 @@ public class BeregningUtils {
     }
 
     public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, LocalDate skjæringstidspunkt, Set<RelatertYtelseType> ytelseTyper) {
+        LOG.info("Finner siste meldekort for vedtak " + sisteVedtak + " på skjæringstidspunkt " + skjæringstidspunkt + " for ytelser " + ytelseTyper);
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
         List<YtelseAnvistDto> alleMeldekort = ytelseFilter.getFiltrertYtelser().stream()
             .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
             .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
+
+        LOG.info("Antall meldekort funnet: " + alleMeldekort.size());
 
         Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
             .filter(ytelseAnvist -> sisteVedtakFom.minus(MELDEKORT_PERIODE_UTV).isBefore(ytelseAnvist.getAnvistTOM()))
@@ -47,10 +54,12 @@ public class BeregningUtils {
             return Optional.empty();
         }
 
+        LOG.info("Fant meldekort " + sisteMeldekort.get());
         // Vi er nødt til å sjekke om vi har flere meldekort med samme periode
         List<YtelseAnvistDto> alleMeldekortMedPeriode = alleMeldekortMedPeriode(sisteMeldekort.get().getAnvistFOM(), sisteMeldekort.get().getAnvistTOM(), alleMeldekort);
 
         if (alleMeldekortMedPeriode.size() > 1) {
+            LOG.info("Fant " +alleMeldekortMedPeriode.size() + " meldekort med samme periode som " + sisteMeldekort.get());
             return finnMeldekortSomGjelderForVedtak(alleMeldekortMedPeriode, sisteVedtak);
         }
 
