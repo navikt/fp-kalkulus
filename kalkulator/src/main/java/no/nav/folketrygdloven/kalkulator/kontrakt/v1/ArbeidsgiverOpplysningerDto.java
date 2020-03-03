@@ -2,6 +2,10 @@ package no.nav.folketrygdloven.kalkulator.kontrakt.v1;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class ArbeidsgiverOpplysningerDto {
 
     private final String identifikator;

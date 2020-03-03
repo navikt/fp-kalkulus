@@ -7,7 +7,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.mappers.OppdatererDtoMapper;
+import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = OverstyrBeregningsaktiviteterDto.class, adapter = BeregningHåndterer.class)

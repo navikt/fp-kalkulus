@@ -3,7 +3,9 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -69,9 +71,12 @@ public class MapIAYTilKalulator {
         return InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse());
     }
 
-    public static EksternArbeidsforholdRef mapArbeidsforholdEksternRef(EksternArbeidsforholdRef arbeidsforholdRef) {
-        return EksternArbeidsforholdRef.ref(arbeidsforholdRef.getReferanse());
+    public static List<ArbeidsgiverOpplysningerDto> mapArbeidsgiverOpplysninger(List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        return arbeidsgiverOpplysninger.stream().map(a -> new ArbeidsgiverOpplysningerDto(a.getIdentifikator(), a.getNavn(), a.getFødselsdato()))
+                .collect(Collectors.toList());
     }
+
+
 
     public static InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident id) {
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();

@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
 
-import static no.nav.folketrygdloven.kalkulus.mappers.OppdatererDtoMapper.mapFastsettBeregningsgrunnlagATFLDto;
+import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapFastsettBeregningsgrunnlagATFLDto;
 
 import javax.enterprise.context.ApplicationScoped;
 

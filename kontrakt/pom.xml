@@ -16,10 +16,6 @@
 
     <dependencies>
         <!-- Interne avhengigheter -->
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulator</artifactId>
-        </dependency>
 
         <!-- Eksterne avhengigheter til andre prosjekter-->
         <dependency>

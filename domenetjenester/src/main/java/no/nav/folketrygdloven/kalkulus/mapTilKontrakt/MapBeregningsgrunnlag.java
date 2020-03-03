@@ -15,12 +15,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BGAndelArbeidsforhold;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.Sammenligningsgrunnlag;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BGAndelArbeidsforhold;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.Sammenligningsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.SammenligningsgrunnlagPrStatusDto;
 
 public class MapBeregningsgrunnlag {
 
@@ -95,7 +95,7 @@ public class MapBeregningsgrunnlag {
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode(),
+                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getFomDato(), beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getTomDato()),
                 new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),

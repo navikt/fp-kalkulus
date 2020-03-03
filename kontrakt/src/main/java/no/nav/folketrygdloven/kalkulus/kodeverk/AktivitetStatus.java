@@ -13,6 +13,11 @@ public class AktivitetStatus extends Kodeverk{
     static final String KODEVERK = "AKTIVITET_STATUS";
 
     public static final AktivitetStatus ARBEIDSTAKER = new AktivitetStatus("AT");
+    public static final AktivitetStatus BRUKERS_ANDEL = new AktivitetStatus("BA");
+    public static final AktivitetStatus KUN_YTELSE = new AktivitetStatus("KUN_YTELSE");
+    public static final AktivitetStatus FRILANSER = new AktivitetStatus("FL");
+    public static final AktivitetStatus SELVSTENDIG_NÆRINGSDRIVENDE = new AktivitetStatus("SN");
+
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")

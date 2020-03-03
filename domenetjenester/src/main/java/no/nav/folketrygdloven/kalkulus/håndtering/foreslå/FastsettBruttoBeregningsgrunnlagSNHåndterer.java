@@ -6,10 +6,8 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.mappers.OppdatererDtoMapper;
+import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, adapter = BeregningHåndterer.class)

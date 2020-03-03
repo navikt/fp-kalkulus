@@ -16,6 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class SammenligningsgrunnlagType extends Kodeverk {
     public static final String KODEVERK = "SAMMENLIGNINGSGUNNLAG_TYPE";
+    public static final SammenligningsgrunnlagType SAMMENLIGNING_AT = new SammenligningsgrunnlagType("SAMMENLIGNING_AT");
+    public static final SammenligningsgrunnlagType SAMMENLIGNING_FL = new SammenligningsgrunnlagType("SAMMENLIGNING_FL");
+    public static final SammenligningsgrunnlagType SAMMENLIGNING_SN = new SammenligningsgrunnlagType("SAMMENLIGNING_SN");
+    public static final SammenligningsgrunnlagType SAMMENLIGNING_ATFL_SN = new SammenligningsgrunnlagType("SAMMENLIGNING_ATFL_SN");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
@@ -120,7 +120,7 @@ public class RedigerbarAndelDto {
         Objects.requireNonNull(arbeidsforholdType, "arbeidsforholdType");
         this.nyAndel = nyAndel;
         this.arbeidsgiverId = arbeidsgiverId;
-        this.arbeidsforholdId = arbeidsforholdId == null ? null : arbeidsforholdId.getReferanse();
+        this.arbeidsforholdId = arbeidsforholdId == null ? null : arbeidsforholdId.getAbakusReferanse();
         this.andelsnr = andelsnr;
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.aktivitetStatus = aktivitetStatus;
@@ -144,7 +144,7 @@ public class RedigerbarAndelDto {
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdId() {
-        return InternArbeidsforholdRefDto.ref(arbeidsforholdId);
+        return new InternArbeidsforholdRefDto(arbeidsforholdId);
     }
 
     public String getArbeidsgiverId() {

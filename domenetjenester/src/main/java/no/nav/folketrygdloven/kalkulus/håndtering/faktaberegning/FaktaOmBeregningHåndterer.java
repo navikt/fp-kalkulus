@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
-import static no.nav.folketrygdloven.kalkulus.mappers.OppdatererDtoMapper.mapTilFaktaOmBeregningLagreDto;
+import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapTilFaktaOmBeregningLagreDto;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
