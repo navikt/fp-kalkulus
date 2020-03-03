@@ -163,7 +163,7 @@ public class FordelRefusjonTjeneste {
 
         FordelRefusjonTjenesteFeil FACTORY = FeilFactory.create(FordelRefusjonTjenesteFeil.class);
 
-        @TekniskFeil(feilkode = "FP-401711", feilmelding = "Fant ikke bgAndelArbeidsforhold for arbeidsgiverId %s og arbeidsforholdId %s", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-401711", feilmelding = "Fant ikke bgAndelArbeidsforhold for arbeidsgiverId %s og arbeidsforholdId %s", logLevel = LogLevel.WARN)
         Feil fantIkkeArbeidsforhold(String arbeidsgiverId, String arbeidsforholdId);
     }
 

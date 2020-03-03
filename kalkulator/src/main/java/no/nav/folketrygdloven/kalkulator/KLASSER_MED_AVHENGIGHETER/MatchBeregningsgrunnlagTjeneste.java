@@ -138,10 +138,10 @@ public class MatchBeregningsgrunnlagTjeneste {
 
         MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil FACTORY = FeilFactory.create(MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil.class);
 
-        @TekniskFeil(feilkode = "FP-401644", feilmelding = "Finner ikke andelen for eksisterende grunnlag.", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-401644", feilmelding = "Finner ikke andelen for eksisterende grunnlag.", logLevel = LogLevel.WARN)
         Feil finnerIkkeAndelFeil();
 
-        @TekniskFeil(feilkode = "FP-401692", feilmelding = "Fant flere enn 1 matchende periode i gjeldende grunnlag.", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-401692", feilmelding = "Fant flere enn 1 matchende periode i gjeldende grunnlag.", logLevel = LogLevel.WARN)
         Feil fantFlereEnn1Periode();
     }
 

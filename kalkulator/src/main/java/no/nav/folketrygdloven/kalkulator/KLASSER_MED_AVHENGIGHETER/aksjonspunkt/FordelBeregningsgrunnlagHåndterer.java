@@ -203,7 +203,7 @@ public class FordelBeregningsgrunnlagHåndterer {
 
         FordelBeregningsgrunnlagHåndtererFeil FACTORY = FeilFactory.create(FordelBeregningsgrunnlagHåndtererFeil.class);
 
-        @TekniskFeil(feilkode = "FP-401647", feilmelding = "Finner ikke periode for eksisterende grunnlag. Behandling  %s", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-401647", feilmelding = "Finner ikke periode for eksisterende grunnlag. Behandling  %s", logLevel = LogLevel.WARN)
         Feil finnerIkkePeriodeFeil(long behandlingId);
     }
 

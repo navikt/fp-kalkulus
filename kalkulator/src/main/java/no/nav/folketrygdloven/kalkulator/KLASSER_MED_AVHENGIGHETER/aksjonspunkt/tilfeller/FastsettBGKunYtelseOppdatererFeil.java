@@ -10,6 +10,6 @@ interface FastsettBGKunYtelseOppdatererFeil extends DeklarerteFeil {
 
     FastsettBGKunYtelseOppdatererFeil FACTORY = FeilFactory.create(FastsettBGKunYtelseOppdatererFeil.class); //NOSONAR
 
-    @TekniskFeil(feilkode = "FP-401646", feilmelding = "Finner ikke andelen for eksisterende grunnlag.", logLevel = LogLevel.WARN)
+    @TekniskFeil(feilkode = "FT-401646", feilmelding = "Finner ikke andelen for eksisterende grunnlag.", logLevel = LogLevel.WARN)
     Feil finnerIkkeAndelFeil();
 }

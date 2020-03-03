@@ -47,7 +47,7 @@ public class VurderTidsbegrensetArbeidsforholdOppdaterer implements FaktaOmBereg
 
         VurderTidsbegrensetArbeidsforholdOppdatererFeil FACTORY = FeilFactory.create(VurderTidsbegrensetArbeidsforholdOppdatererFeil.class);
 
-        @TekniskFeil(feilkode = "FP-238175", feilmelding = "Finner ikke andelen for eksisterende grunnlag", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-238175", feilmelding = "Finner ikke andelen for eksisterende grunnlag", logLevel = LogLevel.WARN)
         Feil finnerIkkeAndelFeil();
     }
 

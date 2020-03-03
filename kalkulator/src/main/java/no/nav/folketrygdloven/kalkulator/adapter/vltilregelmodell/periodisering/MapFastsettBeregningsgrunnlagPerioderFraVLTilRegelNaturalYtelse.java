@@ -77,7 +77,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
     private interface TjenesteFeil extends DeklarerteFeil {
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse.TjenesteFeil FEILFACTORY = FeilFactory.create(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse.TjenesteFeil.class);
 
-        @TekniskFeil(feilkode = "FP-370605", feilmelding = "Kan bare utvide med nye perioder når det fra før finnes 1 periode, fant %s", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-370605", feilmelding = "Kan bare utvide med nye perioder når det fra før finnes 1 periode, fant %s", logLevel = LogLevel.WARN)
         Feil kanIkkeUtvideMedNyePerioder(int antallPerioder);
     }
 }

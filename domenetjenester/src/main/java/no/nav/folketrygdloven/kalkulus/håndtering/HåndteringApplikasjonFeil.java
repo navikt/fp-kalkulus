@@ -11,15 +11,15 @@ import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
 public interface HåndteringApplikasjonFeil extends DeklarerteFeil {
     HåndteringApplikasjonFeil FACTORY = FeilFactory.create(HåndteringApplikasjonFeil.class);
 
-    @TekniskFeil(feilkode = "FP-770743",
+    @TekniskFeil(feilkode = "FT-770745",
         feilmelding = "Finner ikke håndtering for aksjonspunkt med kode: %s", logLevel = WARN)
     Feil kanIkkeFinneHåndterer(String aksjonspunktKode);
 
-    @TekniskFeil(feilkode = "FP-475766",
+    @TekniskFeil(feilkode = "FT-475766",
         feilmelding = "Finner ikke overstyringshåndterer for DTO: %s", logLevel = WARN)
     Feil kanIkkeFinneOverstyringshåndterer(String dtoNavn);
 
-    @TekniskFeil(feilkode = "FP-605445",
+    @TekniskFeil(feilkode = "FT-605445",
         feilmelding = "Kan ikke aktivere aksjonspunkt med kode: %s", logLevel = LogLevel.ERROR)
     Feil kanIkkeAktivereAksjonspunkt(String aksjonspunktKode);
 }

@@ -187,13 +187,13 @@ public final class BeregningsgrunnlagVerifiserer {
     private interface BeregningsgrunnlagVerifisererFeil extends DeklarerteFeil {
         BeregningsgrunnlagVerifisererFeil FEILFACTORY = FeilFactory.create(BeregningsgrunnlagVerifisererFeil.class);
 
-        @TekniskFeil(feilkode = "FP-370742", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", logLevel = LogLevel.ERROR)
+        @TekniskFeil(feilkode = "FT-370742", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", logLevel = LogLevel.ERROR)
         Feil verifiserIkkeTomListeFeil(String obj);
 
-        @TekniskFeil(feilkode = "FP-370743", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", logLevel = LogLevel.ERROR)
+        @TekniskFeil(feilkode = "FT-370743", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", logLevel = LogLevel.ERROR)
         Feil verifiserOptionalPresentFeil(String obj);
 
-        @TekniskFeil(feilkode = "FP-370746", feilmelding = "Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", logLevel = LogLevel.WARN)
+        @TekniskFeil(feilkode = "FT-370746", feilmelding = "Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", logLevel = LogLevel.WARN)
         Feil graderingUtenBG(String andelStatus);
 
     }
