@@ -104,7 +104,7 @@ public class JsonMapperTest {
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
         assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getKoblingReferanse().getReferanse()).isEqualTo(koblingReferanse.getReferanse());
+        assertThat(roundTripped.getEksternReferanse().getReferanse()).isEqualTo(koblingReferanse.getReferanse());
         validateResult(roundTripped);
     }
 

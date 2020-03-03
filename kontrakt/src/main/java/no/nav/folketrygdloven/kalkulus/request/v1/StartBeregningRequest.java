@@ -70,7 +70,7 @@ public class StartBeregningRequest {
         this.kalkulatorInput = kalkulatorInput;
     }
 
-    public UuidDto getKoblingReferanse() {
+    public UuidDto getEksternReferanse() {
         return eksternReferanse;
     }
 

@@ -102,7 +102,7 @@ public class OperereKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
 
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse().getReferanse());
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse().getReferanse());
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -175,19 +175,19 @@ public class OperereKalkulusRestTjeneste {
     public static class StartBeregningRequestAbacDto extends StartBeregningRequest implements AbacDto {
 
         @JsonCreator
-        public StartBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UuidDto koblingReferanse,
+        public StartBeregningRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UuidDto eksternReferanse,
                                             @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                             @JsonProperty(value = "aktør", required = true) @NotNull @Valid PersonIdent aktør,
                                             @JsonProperty(value = "kalkulatorInput", required = true) @NotNull @Valid KalkulatorInputDto kalkulatorInput,
                                             @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(koblingReferanse, saksnummer, aktør, ytelseSomSkalBeregnes, kalkulatorInput);
+            super(eksternReferanse, saksnummer, aktør, ytelseSomSkalBeregnes, kalkulatorInput);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
 
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getEksternReferanse());
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, getAktør().getIdent());
         }
