@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.LønnsendringTjeneste;
@@ -36,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.rest.tjenester.BeregningsgrunnlagDtoUtil;
 // TODO (Safir) Denne bør splittes opp til tre klasser: ei klasse for ATFL i samme org, ei for frilanser og ei for AT med lønnsendring (uten inntektsmelding)
 @ApplicationScoped
 public class FaktaOmBeregningAndelDtoTjeneste {
+    private static final Logger logger = LoggerFactory.getLogger(FaktaOmBeregningAndelDtoTjeneste.class);
 
     static Optional<FaktaOmBeregningAndelDto> lagFrilansAndelDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
@@ -130,8 +134,12 @@ public class FaktaOmBeregningAndelDtoTjeneste {
             .collect(Collectors.toList());
         List<FaktaOmBeregningAndelDto> arbeidsforholdMedLønnsendringUtenIMDtoList = new ArrayList<>();
         for (YrkesaktivitetDto yrkesaktivitet : aktiviteterMedLønnsendring) {
-            BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = finnKorrektAndelFraArbeidsgiver(andeler, yrkesaktivitet.getArbeidsgiver());
-            FaktaOmBeregningAndelDto dto = lagArbeidsforholdUtenInntektsmeldingDto(korrektAndel, inntektArbeidYtelseGrunnlag);
+            Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = finnKorrektAndelFraArbeidsgiver(andeler, yrkesaktivitet.getArbeidsgiver());
+            if(!korrektAndel.isPresent()){
+                logger.info("Aktivitet med lønnsendring ={}, andeler={}", aktiviteterMedLønnsendring, andeler);
+                throw new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten");
+            }
+            FaktaOmBeregningAndelDto dto = lagArbeidsforholdUtenInntektsmeldingDto(korrektAndel.get(), inntektArbeidYtelseGrunnlag);
             arbeidsforholdMedLønnsendringUtenIMDtoList.add(dto);
         }
         return arbeidsforholdMedLønnsendringUtenIMDtoList;
@@ -146,14 +154,13 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         return dto;
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto finnKorrektAndelFraArbeidsgiver(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, Arbeidsgiver arbeidsgiver) {
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnKorrektAndelFraArbeidsgiver(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, Arbeidsgiver arbeidsgiver) {
         return andeler.stream()
             .filter(andel -> andel.getBgAndelArbeidsforhold()
                 .map(BGAndelArbeidsforholdDto::getArbeidsgiver)
                 .map(ag -> ag.equals(arbeidsgiver))
                 .orElse(false))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten"));
+            .findFirst();
     }
 
     private static Optional<InntektsmeldingDto> finnRiktigInntektsmelding(Map<String, List<InntektsmeldingDto>> inntektsmeldingMap, String virksomhetOrgnr,
