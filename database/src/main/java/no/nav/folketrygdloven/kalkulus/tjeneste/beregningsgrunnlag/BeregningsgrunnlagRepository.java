@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
@@ -229,6 +231,10 @@ public class BeregningsgrunnlagRepository {
         if (tidligereAggregat.isPresent()) {
             tidligereAggregat.get().setAktiv(false);
             entityManager.persist(tidligereAggregat.get());
+        }
+        if (nyttGrunnlag.getGrunnlagReferanse() == null) {
+            // lag ny referanse
+            nyttGrunnlag.setGrunnlagReferanse(new GrunnlagReferanse(UUID.randomUUID()));
         }
         lagreGrunnlag(nyttGrunnlag);
         entityManager.flush();

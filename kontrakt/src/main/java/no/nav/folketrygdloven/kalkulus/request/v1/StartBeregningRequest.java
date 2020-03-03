@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
-import java.util.UUID;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -13,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -27,10 +26,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public class StartBeregningRequest {
 
-    @JsonProperty(value = "referanse", required = true)
+    @JsonProperty(value = "eksternReferanse", required = true)
     @Valid
     @NotNull
-    private UUID koblingReferanse;
+    private UuidDto eksternReferanse;
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
@@ -58,21 +57,21 @@ public class StartBeregningRequest {
         // default ctor
     }
 
-    public StartBeregningRequest(@Valid @NotNull UUID koblingReferanse,
+    public StartBeregningRequest(@Valid @NotNull UuidDto eksternReferanse,
                                  @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                  @NotNull @Valid PersonIdent aktør,
                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                  @NotNull @Valid KalkulatorInputDto kalkulatorInput) {
 
-        this.koblingReferanse = koblingReferanse;
+        this.eksternReferanse = eksternReferanse;
         this.saksnummer = saksnummer;
         this.aktør = aktør;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.kalkulatorInput = kalkulatorInput;
     }
 
-    public UUID getKoblingReferanse() {
-        return koblingReferanse;
+    public UuidDto getKoblingReferanse() {
+        return eksternReferanse;
     }
 
     public String getSaksnummer() {

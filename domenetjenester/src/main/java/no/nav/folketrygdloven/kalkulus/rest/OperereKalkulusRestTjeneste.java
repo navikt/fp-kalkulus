@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
@@ -101,7 +102,7 @@ public class OperereKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
 
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse().getReferanse());
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -174,7 +175,7 @@ public class OperereKalkulusRestTjeneste {
     public static class StartBeregningRequestAbacDto extends StartBeregningRequest implements AbacDto {
 
         @JsonCreator
-        public StartBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UUID koblingReferanse,
+        public StartBeregningRequestAbacDto(@JsonProperty(value = "koblingReferanse", required = true) @Valid @NotNull UuidDto koblingReferanse,
                                             @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                             @JsonProperty(value = "aktør", required = true) @NotNull @Valid PersonIdent aktør,
                                             @JsonProperty(value = "kalkulatorInput", required = true) @NotNull @Valid KalkulatorInputDto kalkulatorInput,

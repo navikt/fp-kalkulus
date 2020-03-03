@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +19,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.NaturalId;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
+import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
@@ -34,6 +41,14 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
 
     @Column(name = "kobling_id", nullable = false, updatable = false, unique = true)
     private Long koblingId;
+
+    @NaturalId
+    @DiffIgnore
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "referanse", column = @Column(name = "grunnlag_referanse", updatable = false, unique = true))
+    })
+    private GrunnlagReferanse grunnlagReferanse;
 
     @OneToOne
     @JoinColumn(name = "beregningsgrunnlag_id", updatable = false, unique = true)
@@ -177,5 +192,13 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
 
     void setRefusjonOverstyringer(BeregningRefusjonOverstyringerEntitet refusjonOverstyringer) {
         this.refusjonOverstyringer = refusjonOverstyringer;
+    }
+
+    public GrunnlagReferanse getGrunnlagReferanse() {
+        return grunnlagReferanse;
+    }
+
+    public void setGrunnlagReferanse(GrunnlagReferanse grunnlagReferanse) {
+        this.grunnlagReferanse = grunnlagReferanse;
     }
 }

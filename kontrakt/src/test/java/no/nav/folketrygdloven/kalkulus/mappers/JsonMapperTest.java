@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
@@ -89,11 +90,11 @@ public class JsonMapperTest {
     public void skal_generere_og_validere_roundtrip_av_start_beregning_request() throws Exception {
         //arrange
         String saksnummer = "1234";
-        UUID randomUUID = UUID.randomUUID();
         AktørIdPersonident dummy = AktørIdPersonident.dummy();
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
-        StartBeregningRequest spesifikasjon = new StartBeregningRequest(randomUUID, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
+        UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
+        StartBeregningRequest spesifikasjon = new StartBeregningRequest(koblingReferanse, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
 
         String json = WRITER.writeValueAsString(spesifikasjon);
         System.out.println(json);
@@ -103,7 +104,7 @@ public class JsonMapperTest {
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
         assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getKoblingReferanse()).isEqualByComparingTo(randomUUID);
+        assertThat(roundTripped.getKoblingReferanse().getReferanse()).isEqualTo(koblingReferanse.getReferanse());
         validateResult(roundTripped);
     }
 
