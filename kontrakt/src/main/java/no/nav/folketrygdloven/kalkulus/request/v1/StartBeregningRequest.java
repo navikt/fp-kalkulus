@@ -57,11 +57,11 @@ public class StartBeregningRequest {
         // default ctor
     }
 
-    public StartBeregningRequest(@Valid @NotNull UuidDto eksternReferanse,
-                                 @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
-                                 @NotNull @Valid PersonIdent aktør,
-                                 @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                 @NotNull @Valid KalkulatorInputDto kalkulatorInput) {
+    public StartBeregningRequest(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UuidDto eksternReferanse,
+                                 @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                 @JsonProperty(value = "aktør", required = true) @NotNull @Valid PersonIdent aktør,
+                                 @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                 @JsonProperty(value = "kalkulatorInput", required = true) @NotNull @Valid KalkulatorInputDto kalkulatorInput) {
 
         this.eksternReferanse = eksternReferanse;
         this.saksnummer = saksnummer;
