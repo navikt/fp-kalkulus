@@ -43,7 +43,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.rest.tjenester.BeregningsgrunnlagDtoTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
