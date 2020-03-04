@@ -88,7 +88,7 @@ public class MapFraKalkulator {
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
                 mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId())),
                 mapFraDto(opptjeningAktiviteter),
-                mapFraDto(aktivitetGradering),
+                aktivitetGradering != null ? mapFraDto(aktivitetGradering) : null,
                 mapFraDto(refusjonskravDatoer),
                 mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input.getYtelsespesifiktGrunnlag()));
 
