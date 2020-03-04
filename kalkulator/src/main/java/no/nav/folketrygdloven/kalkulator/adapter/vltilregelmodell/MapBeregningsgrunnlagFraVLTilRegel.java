@@ -88,8 +88,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
         sammenligningsgrunnlagMap.forEach(builder::medSammenligningsgrunnlagPrStatus);
+        boolean harVærtBesteberegnet = beregningsgrunnlag.getFaktaOmBeregningTilfeller().stream()
+                .anyMatch(tilfelle -> FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE.equals(FaktaOmBeregningTilfelle.fraKode(tilfelle.getKode())));
         return builder
             .medInntektsgrunnlag(inntektsgrunnlag)
+            .medBesteberegnet(harVærtBesteberegnet)
             .medSkjæringstidspunkt(skjæringstidspunkt)
             .medAktivitetStatuser(aktivitetStatuser)
             .medBeregningsgrunnlagPerioder(perioder)
