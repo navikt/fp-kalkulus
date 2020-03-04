@@ -112,6 +112,23 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 
+
+    /**
+     * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
+     * @param koblingId en koblingId
+     * @param grunnlagReferanse en referanse til et lagret grunnlag
+     * @return Hvis det finnes en aktiv {@link BeregningsgrunnlagGrunnlagEntitet} returneres denne
+     */
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForReferanse(Long koblingId, UUID grunnlagReferanse) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                        "where grunnlag.koblingId=:koblingId " +
+                        "and grunnlag.grunnlagReferanse.referanse = :referanse", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
+        query.setParameter("referanse", grunnlagReferanse); //$NON-NLS-1$
+        return hentUniktResultat(query);
+    }
+
     /**
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
      * @param koblingId en koblingId

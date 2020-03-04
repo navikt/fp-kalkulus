@@ -39,8 +39,10 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagGrunnlagForReferanseRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
@@ -97,6 +99,61 @@ public class HentKalkulusRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent BeregningsgrunnlagGrunnlag for angitt grunnlagsreferanse", summary = ("Returnerer BeregningsgrunnlagGrunnlag for grunnlagsreferanse."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @Path("/grunnlagForReferanse")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentBeregningsgrunnlagGrunnlagForReferanse(@NotNull @Valid HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId, spesifikasjon.getGrunnlagReferanse());
+        return beregningsgrunnlagGrunnlagEntitet.stream()
+                .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
+                .map(bgDto -> Response.ok(bgDto).build())
+                .findFirst()
+                .orElse(Response.noContent().build());
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @Path("/grunnlag")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        return beregningsgrunnlagGrunnlagEntitet.stream()
+                .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
+                .map(bgDto -> Response.ok(bgDto).build())
+                .findFirst()
+                .orElse(Response.noContent().build());
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @Path("/aktivtBeregningsgrunnlag")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentAktivtBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        return beregningsgrunnlagGrunnlagEntitet.stream()
+                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+                .map(MapDetaljertBeregningsgrunnlag::map)
+                .map(bgDto -> Response.ok(bgDto).build())
+                .findFirst()
+                .orElse(Response.noContent().build());
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/beregningsgrunnlag")
@@ -110,6 +167,33 @@ public class HentKalkulusRestTjeneste {
         BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(beregningsgrunnlagInput, arbeidsgiverOpplysninger);
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(restInput);
         return Response.ok(beregningsgrunnlagDto).build();
+    }
+
+
+
+    /**
+     * Json bean med Abac.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto extends HentBeregningsgrunnlagGrunnlagForReferanseRequest implements AbacDto {
+
+
+        @JsonCreator
+        public HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
+                                                    @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                    @JsonProperty(value = "grunnlagReferanse", required = true) @NotNull @Valid UUID grunnlagReferanse
+                                                    ) {
+            super(eksternReferanse, ytelseSomSkalBeregnes, grunnlagReferanse);
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
+            return abacDataAttributter;
+        }
     }
 
     /**

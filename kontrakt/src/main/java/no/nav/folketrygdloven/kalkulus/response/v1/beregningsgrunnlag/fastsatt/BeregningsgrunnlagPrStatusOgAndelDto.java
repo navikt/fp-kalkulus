@@ -155,4 +155,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return beregningArbeidsforhold.map(BGAndelArbeidsforhold::getArbeidsgiver);
     }
 
+    public BigDecimal getRedusertRefusjonPrÅr() {
+        return redusertRefusjonPrÅr;
+    }
+
+    public BigDecimal getRedusertBrukersAndelPrÅr() {
+        return redusertBrukersAndelPrÅr;
+    }
 }

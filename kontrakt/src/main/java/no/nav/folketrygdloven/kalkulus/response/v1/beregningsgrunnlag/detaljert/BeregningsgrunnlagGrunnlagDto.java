@@ -1,0 +1,105 @@
+package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert;
+
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
+public class BeregningsgrunnlagGrunnlagDto {
+
+    @JsonProperty(value = "beregningsgrunnlag")
+    @Valid
+    private BeregningsgrunnlagDto beregningsgrunnlag;
+
+    @JsonProperty(value = "registerAktiviteter")
+    @NotNull
+    @Valid
+    private BeregningAktivitetAggregatDto registerAktiviteter;
+
+    @JsonProperty(value = "saksbehandletAktiviteter")
+    @Valid
+    private BeregningAktivitetAggregatDto saksbehandletAktiviteter;
+
+    @JsonProperty(value = "overstyringer")
+    @Valid
+    private BeregningAktivitetOverstyringerDto overstyringer;
+
+    @JsonProperty(value = "refusjonOverstyringer")
+    @Valid
+    private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
+
+    @JsonProperty(value = "aktiv")
+    @NotNull
+    private Boolean aktiv = true;
+
+    @JsonProperty(value = "aktiv")
+    @NotNull
+    @Valid
+    private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;
+
+
+    public BeregningsgrunnlagGrunnlagDto(@Valid BeregningsgrunnlagDto beregningsgrunnlag,
+                                         @NotNull @Valid BeregningAktivitetAggregatDto registerAktiviteter,
+                                         @Valid BeregningAktivitetAggregatDto saksbehandletAktiviteter,
+                                         @Valid BeregningAktivitetOverstyringerDto overstyringer,
+                                         @Valid BeregningRefusjonOverstyringerDto refusjonOverstyringer,
+                                         @NotNull Boolean aktiv,
+                                         @NotNull @Valid BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        this.beregningsgrunnlag = beregningsgrunnlag;
+        this.registerAktiviteter = registerAktiviteter;
+        this.saksbehandletAktiviteter = saksbehandletAktiviteter;
+        this.overstyringer = overstyringer;
+        this.refusjonOverstyringer = refusjonOverstyringer;
+        this.aktiv = aktiv;
+        this.beregningsgrunnlagTilstand = beregningsgrunnlagTilstand;
+    }
+
+
+    public BeregningsgrunnlagDto getBeregningsgrunnlag() {
+        return beregningsgrunnlag;
+    }
+
+    public BeregningAktivitetAggregatDto getRegisterAktiviteter() {
+        return registerAktiviteter;
+    }
+
+    public BeregningAktivitetAggregatDto getSaksbehandletAktiviteter() {
+        return saksbehandletAktiviteter;
+    }
+
+    public BeregningAktivitetOverstyringerDto getOverstyringer() {
+        return overstyringer;
+    }
+
+    public BeregningRefusjonOverstyringerDto getRefusjonOverstyringer() {
+        return refusjonOverstyringer;
+    }
+
+    public Boolean getAktiv() {
+        return aktiv;
+    }
+
+    public BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {
+        return beregningsgrunnlagTilstand;
+    }
+}
