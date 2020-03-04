@@ -171,8 +171,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public boolean matchUtenInntektskategori(AktivitetStatus aktivitetStatus, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internArbeidsforholdRefDto, OpptjeningAktivitetType arbeidsforholdType) {
         return Objects.equals(this.getAktivitetStatus(), aktivitetStatus)
-            && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver), arbeidsgiver)
-            && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef), internArbeidsforholdRefDto)
+            && this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).map(a -> Objects.equals(a, arbeidsgiver)).orElse(arbeidsgiver == null)
+            && this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).map(ref -> Objects.equals(ref, internArbeidsforholdRefDto)).orElse(internArbeidsforholdRefDto == null || internArbeidsforholdRefDto.getReferanse() == null)
             && Objects.equals(this.getArbeidsforholdType(), arbeidsforholdType);
     }
 
