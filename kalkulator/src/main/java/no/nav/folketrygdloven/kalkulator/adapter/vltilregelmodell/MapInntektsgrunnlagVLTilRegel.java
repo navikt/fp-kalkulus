@@ -38,8 +38,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class MapInntektsgrunnlagVLTilRegel {
     private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
@@ -149,13 +149,13 @@ public class MapInntektsgrunnlagVLTilRegel {
                                                             LocalDate skjæringstidspunkt) {
 
         Optional<YtelseDto> nyesteVedtakForDagsats = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt,
-                Set.of(RelatertYtelseType.DAGPENGER, RelatertYtelseType.ARBEIDSAVKLARINGSPENGER));
+                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
         if (nyesteVedtakForDagsats.isEmpty()) {
             return;
         }
 
         Optional<YtelseAnvistDto> sisteUtbetalingFørStp = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats.get(), skjæringstidspunkt,
-                Set.of(RelatertYtelseType.DAGPENGER, RelatertYtelseType.ARBEIDSAVKLARINGSPENGER));
+                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
         BigDecimal dagsats = nyesteVedtakForDagsats.get().getYtelseGrunnlag().flatMap(YtelseGrunnlagDto::getVedtaksDagsats).map(Beløp::getVerdi)
                 .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
         BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)

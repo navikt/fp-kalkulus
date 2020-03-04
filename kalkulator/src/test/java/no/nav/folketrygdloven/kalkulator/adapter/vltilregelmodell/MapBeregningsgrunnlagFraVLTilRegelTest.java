@@ -65,13 +65,13 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
@@ -118,7 +118,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(behandlingReferanse.getAktørId());
-        YtelseDtoBuilder ytelse = lagYtelse(RelatertYtelseType.DAGPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
             skjæring.minusMonths(1).plusDays(1),
             skjæring.plusMonths(6),
             new BigDecimal(MELDEKORTSATS1),
@@ -126,7 +126,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
             skjæring.minusMonths(1).plusDays(2),
             skjæring.minusMonths(1).plusDays(16));
         aktørYtelseBuilder.leggTilYtelse(ytelse);
-        ytelse = lagYtelse(RelatertYtelseType.DAGPENGER, aktørYtelseBuilder,
+        ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
             skjæring.minusMonths(3),
             skjæring.minusMonths(1),
             new BigDecimal(MELDEKORTSATS2),
@@ -142,7 +142,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(behandlingReferanse.getAktørId());
-        YtelseDtoBuilder ytelse = lagYtelse(RelatertYtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
+        YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
             skjæring.minusWeeks(2),
             skjæring.plusMonths(6),
             new BigDecimal(MELDEKORTSATS1),
@@ -155,13 +155,13 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         return behandlingReferanse;
     }
 
-    private YtelseDtoBuilder lagYtelse(RelatertYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
+    private YtelseDtoBuilder lagYtelse(FagsakYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
                                        LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
         YtelseDtoBuilder ytelselseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(Fagsystem.FPSAK, relatertYtelseType);
         ytelselseBuilder.tilbakestillAnvisteYtelser();
         return ytelselseBuilder.medKilde(Fagsystem.ARENA)
-            .medYtelseType(RelatertYtelseType.DAGPENGER)
+            .medYtelseType(FagsakYtelseType.DAGPENGER)
             .medBehandlingsTema(TemaUnderkategori.UDEFINERT)
             .medStatus(RelatertYtelseTilstand.AVSLUTTET)
             .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))

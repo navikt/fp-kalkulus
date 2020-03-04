@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.skjæringstidspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType.ARBEID;
 import static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType.VENTELØNN_VARTPENGER;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
@@ -35,7 +36,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
@@ -265,7 +265,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     private InntektArbeidYtelseGrunnlagDto lagAktørYtelse(Tuple<Periode, Integer>... meldekortPerioder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder.getAktørYtelseBuilder(AKTØR_ID);
-        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(Fagsystem.ARENA, RelatertYtelseType.ARBEIDSAVKLARINGSPENGER);
+        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(Fagsystem.ARENA, ARBEIDSAVKLARINGSPENGER);
         ytelseBuilder.medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(6), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1)));
         ytelseBuilder.medStatus(RelatertYtelseTilstand.LØPENDE);
         if (meldekortPerioder != null && meldekortPerioder.length > 0) {

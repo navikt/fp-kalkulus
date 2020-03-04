@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.Period;
 import java.util.Collections;
 import java.util.List;
@@ -33,13 +32,13 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 import no.nav.vedtak.util.FPDateUtil;
 
@@ -123,7 +122,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
     public void skalUtledeAutopunktVentPåMeldekort() {
         // Arrange
         YtelseDtoBuilder yb = YtelseDtoBuilder.oppdatere(Optional.empty());
-        YtelseDto ytelse = yb.medYtelseType(RelatertYtelseType.DAGPENGER)
+        YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.DAGPENGER)
             .medPeriode(Intervall.fraOgMed(FPDateUtil.iDag().minusMonths(2)))
             .medKilde(Fagsystem.ARENA)
             .medStatus(RelatertYtelseTilstand.LØPENDE)

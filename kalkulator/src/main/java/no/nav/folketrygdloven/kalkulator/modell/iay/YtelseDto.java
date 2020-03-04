@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 
 public class YtelseDto {
 
     private YtelseGrunnlagDto ytelseGrunnlag;
-    private RelatertYtelseType relatertYtelseType = RelatertYtelseType.UDEFINERT;
+    private FagsakYtelseType relatertYtelseType = FagsakYtelseType.UDEFINERT;
     private Intervall periode;
     private RelatertYtelseTilstand status;
     private Fagsystem kilde;
@@ -49,11 +49,11 @@ public class YtelseDto {
         return IndexKey.createKey(periode, relatertYtelseType);
     }
 
-    public RelatertYtelseType getRelatertYtelseType() {
+    public FagsakYtelseType getRelatertYtelseType() {
         return relatertYtelseType;
     }
 
-    void setRelatertYtelseType(RelatertYtelseType relatertYtelseType) {
+    void setRelatertYtelseType(FagsakYtelseType relatertYtelseType) {
         this.relatertYtelseType = relatertYtelseType;
     }
 

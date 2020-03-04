@@ -19,16 +19,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 
 /**
  * <h3>Internt kodeverk</h3>
  * Definerer aktiviteter benyttet til å vurdere Opptjening.
  * <p>
- * Kodeverket sammenstiller data fra {@link ArbeidType} og {@link RelatertYtelseType}.<br>
+ * Kodeverket sammenstiller data fra {@link ArbeidType} og {@link FagsakYtelseType}.<br>
  * Senere benyttes dette i mapping til bla. Beregningsgrunnlag.
  */
 
@@ -38,7 +38,7 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
 
     ARBEIDSAVKLARING("AAP", "Arbeidsavklaringspenger",
             Set.of(),
-            Set.of(RelatertYtelseType.ARBEIDSAVKLARINGSPENGER),
+            Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER),
             Set.of()),
     ARBEID("ARBEID", "Arbeid",
             Set.of(ArbeidType.FORENKLET_OPPGJØRSORDNING, ArbeidType.MARITIMT_ARBEIDSFORHOLD, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD),
@@ -46,11 +46,11 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
             Set.of()),
     DAGPENGER("DAGPENGER", "Dagpenger",
             Set.of(),
-            Set.of(RelatertYtelseType.DAGPENGER),
+            Set.of(FagsakYtelseType.DAGPENGER),
             Set.of()),
     FORELDREPENGER("FORELDREPENGER", "Foreldrepenger",
             Set.of(),
-            Set.of(RelatertYtelseType.FORELDREPENGER),
+            Set.of(FagsakYtelseType.FORELDREPENGER),
             Set.of()),
     FRILANS("FRILANS", "Frilans",
             Set.of(ArbeidType.FRILANSER),
@@ -83,11 +83,11 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
             Set.of()),
     SVANGERSKAPSPENGER("SVANGERSKAPSPENGER", "Svangerskapspenger",
             Set.of(),
-            Set.of(RelatertYtelseType.SVANGERSKAPSPENGER),
+            Set.of(FagsakYtelseType.SVANGERSKAPSPENGER),
             Set.of()),
     SYKEPENGER("SYKEPENGER", "Sykepenger",
             Set.of(),
-            Set.of(RelatertYtelseType.SYKEPENGER),
+            Set.of(FagsakYtelseType.SYKEPENGER),
             Set.of()),
     VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger",
             Set.of(ArbeidType.VENTELØNN_VARTPENGER),
@@ -113,7 +113,7 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
     private static final Map<String, OpptjeningAktivitetType> KODER = new LinkedHashMap<>();
 
     private static final Map<OpptjeningAktivitetType, Set<ArbeidType>> INDEKS_OPPTJ_ARBEID = new LinkedHashMap<>();
-    private static final Map<OpptjeningAktivitetType, Set<RelatertYtelseType>> INDEKS_OPPTJ_RELYT = new LinkedHashMap<>();
+    private static final Map<OpptjeningAktivitetType, Set<FagsakYtelseType>> INDEKS_OPPTJ_RELYT = new LinkedHashMap<>();
     private static final Map<OpptjeningAktivitetType, Set<TemaUnderkategori>> INDEKS_OPPTJ_TEMAUN = new LinkedHashMap<>();
 
     public static final String KODEVERK = "OPPTJENING_AKTIVITET_TYPE";
@@ -142,15 +142,15 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
     private Set<ArbeidType> arbeidType;
 
     @JsonIgnore
-    private RelatertYtelseType relatertYtelseType;
+    private FagsakYtelseType relatertYtelseType;
 
     @JsonIgnore
     private Set<TemaUnderkategori> temaUnderkategori;
 
     @JsonIgnore
-    private Set<RelatertYtelseType> relaterYtelseType;
+    private Set<FagsakYtelseType> relaterYtelseType;
 
-    private OpptjeningAktivitetType(String kode, String navn, Set<ArbeidType> arbeidType, Set<RelatertYtelseType> relaterYtelseType,
+    private OpptjeningAktivitetType(String kode, String navn, Set<ArbeidType> arbeidType, Set<FagsakYtelseType> relaterYtelseType,
                                     Set<TemaUnderkategori> temaUnderkategori) {
         this.kode = kode;
         this.navn = navn;
@@ -219,7 +219,7 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
         return Collections.unmodifiableMap(INDEKS_OPPTJ_ARBEID);
     }
 
-    public static Map<OpptjeningAktivitetType, Set<RelatertYtelseType>> hentTilRelatertYtelseTyper() {
+    public static Map<OpptjeningAktivitetType, Set<FagsakYtelseType>> hentTilRelatertYtelseTyper() {
         return Collections.unmodifiableMap(INDEKS_OPPTJ_RELYT);
     }
 
@@ -241,7 +241,7 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
             .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toSet())));
     }
 
-    public static Map<RelatertYtelseType, Set<OpptjeningAktivitetType>> hentFraRelatertYtelseTyper() {
+    public static Map<FagsakYtelseType, Set<OpptjeningAktivitetType>> hentFraRelatertYtelseTyper() {
         return hentTilRelatertYtelseTyper().entrySet().stream()
             .flatMap(entry -> entry.getValue().stream()
                 .map(v -> new AbstractMap.SimpleEntry<>(v, entry.getKey())))

@@ -36,11 +36,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
@@ -215,7 +215,7 @@ public class BeregningIAYTestUtil {
                                              LocalDate tom, // NOSONAR - brukes bare til test
                                              RelatertYtelseTilstand relatertYtelseTilstand,
                                              String saksnummer,
-                                             RelatertYtelseType ytelseType,
+                                             FagsakYtelseType ytelseType,
                                              List<YtelseStørrelseDto> ytelseStørrelseList,
                                              Arbeidskategori arbeidskategori,
                                              Periode... meldekortPerioder) {

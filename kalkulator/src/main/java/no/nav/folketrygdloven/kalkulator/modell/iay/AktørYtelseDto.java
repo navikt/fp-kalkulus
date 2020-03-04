@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class AktørYtelseDto {
 
@@ -61,7 +61,7 @@ public class AktørYtelseDto {
         return aktørId != null || ytelser != null && !ytelser.isEmpty();
     }
 
-    YtelseDtoBuilder getYtelseBuilderForType(Fagsystem fagsystem, RelatertYtelseType type) {
+    YtelseDtoBuilder getYtelseBuilderForType(Fagsystem fagsystem, FagsakYtelseType type) {
         Optional<YtelseDto> ytelse = getAlleYtelser().stream()
             .filter(ya -> ya.getKilde().equals(fagsystem) && ya.getRelatertYtelseType().equals(type))
             .findFirst();

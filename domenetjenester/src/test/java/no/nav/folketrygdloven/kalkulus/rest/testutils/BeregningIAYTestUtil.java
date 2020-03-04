@@ -1,50 +1,22 @@
 package no.nav.folketrygdloven.kalkulus.rest.testutils;
 
-import static java.util.Collections.singletonList;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittAnnenAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OpptjeningsnøkkelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 
 public class BeregningIAYTestUtil {

@@ -22,13 +22,53 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FagsakYtelseType implements Kodeverdi {
 
-    ENGANGSTØNAD("ES", "Engangsstønad"),
-    FORELDREPENGER("FP", "Foreldrepenger"),
-    SVANGERSKAPSPENGER("SVP", "Svangerskapspenger"),
+    /**
+     * Folketrygdloven K4 ytelser.
+     */
+    DAGPENGER("DAG", "Dagpenger", "DAGPENGER"),
+
+    /**
+     * Folketrygdloven K8 ytelser.
+     */
+    SYKEPENGER("SP", "Sykepenger", "SYKEPENGER"),
+
+    /**
+     * Folketrygdloven K9 ytelser.
+     */
+    PLEIEPENGER_SYKT_BARN("PSB", "Pleiepenger sykt barn"),
+    PLEIEPENGER_NÆRSTÅENDE("PPN", "Pleiepenger nærstående"),
+    OMSORGSPENGER("OMP", "Omsorgspenger"),
+    OPPLÆRINGSPENGER("OLP", "Opplæringspenger"),
+
+    /**
+     * @deprecated Gammel infotrygd kode for K9 ytelser. Må tolkes om til ovenstående sammen med TemaUnderkategori.
+     */
+    @Deprecated
+    PÅRØRENDESYKDOM("PS", "Pårørende sykdom", "PÅRØRENDESYKDOM"),
+
+    /**
+     * Folketrygdloven K11 ytelser.
+     */
+    ARBEIDSAVKLARINGSPENGER("AAP", "Arbeidsavklaringspenger", "ARBEIDSAVKLARINGSPENGER"),
+
+    /**
+     * Folketrygdloven K14 ytelser.
+     */
+    ENGANGSTØNAD("ES", "Engangsstønad", "ENGANGSSTØNAD"),
+    FORELDREPENGER("FP", "Foreldrepenger", "FORELDREPENGER"),
+    SVANGERSKAPSPENGER("SVP", "Svangerskapspenger", "SVANGERSKAPSPENGER"),
+
+    /**
+     * Folketrygdloven K15 ytelser.
+     */
+    ENSLIG_FORSØRGER("EF", "Enslig forsørger", "ENSLIG_FORSØRGER"),
+
     UDEFINERT("-", "Ikke definert"),
-    ;
+    ;;
 
     public static final String KODEVERK = "FAGSAK_YTELSE"; //$NON-NLS-1$
+
+    private static final Map<String, FagsakYtelseType> KODER_FPSAK = new LinkedHashMap<>();
 
     private static final Map<String, FagsakYtelseType> KODER = new LinkedHashMap<>();
 
@@ -40,13 +80,17 @@ public enum FagsakYtelseType implements Kodeverdi {
         }
     }
 
-    public enum YtelseType {
-        ES, FP, SVP;
+    static {
+        for (var v : values()) {
+            if (v.fpsakKode != null && KODER_FPSAK.putIfAbsent(v.fpsakKode, v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.kode);
+            }
+        }
     }
 
     @JsonIgnore
     private String navn;
-
+    private String fpsakKode;
     private String kode;
 
     private FagsakYtelseType(String kode) {
@@ -58,6 +102,12 @@ public enum FagsakYtelseType implements Kodeverdi {
         this.navn = navn;
     }
 
+    private FagsakYtelseType(String kode, String navn, String fpsakKode) {
+        this.kode = kode;
+        this.navn = navn;
+        this.fpsakKode = fpsakKode;
+    }
+
     @JsonCreator
     public static FagsakYtelseType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {
@@ -65,13 +115,21 @@ public enum FagsakYtelseType implements Kodeverdi {
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent FagsakYtelseType: " + kode);
+            // håndter diff mellom k9 og fpsak
+            ad = KODER_FPSAK.get(kode);
+            if (ad == null) {
+                throw new IllegalArgumentException("Ukjent FagsakYtelseType: " + kode);
+            }
         }
         return ad;
     }
 
     public static Map<String, FagsakYtelseType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(KODER.keySet());
     }
 
     @JsonProperty
@@ -87,50 +145,17 @@ public enum FagsakYtelseType implements Kodeverdi {
     }
 
     @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @Override
     public String getOffisiellKode() {
         return getKode();
     }
 
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet());
+    @Override
+    public String getNavn() {
+        return navn;
     }
 
-    /**
-     * @deprecated Ikke switch på dette i koden. Marker heller klasse og pakke for angitt ytelse (eks. behandlingssteg, aksjonspuntutleder,
-     *             kompletthetsjekk).
-     *             Til nød bruk en negativ guard
-     *             <code>if(!ENGANGSSTØNAD.getKode().equals(this.getKode())) throw IllegalStateException("No trespassing in this code"); </code>
-     */
-    @Deprecated
-    public final boolean gjelderEngangsstønad() {
-        return ENGANGSTØNAD.getKode().equals(this.getKode());
-    }
-
-    /**
-     * @deprecated Ikke switch på dette i koden. Marker heller klasse og pakke for angitt ytelse (eks. behandlingssteg, aksjonspuntutleder,
-     *             kompletthetsjekk)
-     *             Til nød bruk en negativ guard
-     *             <code>if(!FORELDREPENGER.getKode().equals(this.getKode())) throw IllegalStateException("No trespassing in this code"); </code>
-     */
-    @Deprecated
-    public final boolean gjelderForeldrepenger() {
-        return FORELDREPENGER.getKode().equals(this.getKode());
-    }
-
-    /**
-     * @deprecated Ikke switch på dette i koden. Marker heller klasse og pakke for angitt ytelse (eks. behandlingssteg, aksjonspuntutleder,
-     *             kompletthetsjekk)
-     *             Til nød bruk en negativ guard
-     *             <code>if(!SVANGERSKAPSPENGER.getKode().equals(this.getKode())) throw IllegalStateException("No trespassing in this code"); </code>
-     */
-    @Deprecated
-    public final boolean gjelderSvangerskapspenger() {
-        return SVANGERSKAPSPENGER.getKode().equals(this.getKode());
+    public enum YtelseType {
+        ES, FP, SVP;
     }
 
     @Converter(autoApply = true)

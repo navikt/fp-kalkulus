@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator;
 
-import static no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType.ARBEIDSAVKLARINGSPENGER;
-import static no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType.DAGPENGER;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
 
@@ -43,21 +40,21 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
     private static boolean harLøpendeVedtakOgSendtInnMeldekortNylig(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
         List<YtelseDto> aapOgDPYtelser = getAAPogDPYtelser(aktørYtelse, skjæringstidspunkt);
         boolean hattAAPSiste4Mnd = hattGittYtelseIGittPeriode(aapOgDPYtelser, skjæringstidspunkt.minusMonths(4).withDayOfMonth(1),
-            ARBEIDSAVKLARINGSPENGER);
-        Predicate<List<YtelseDto>> hattDPSiste10Mnd = ytelser -> hattGittYtelseIGittPeriode(ytelser, skjæringstidspunkt.minusMonths(10), DAGPENGER);
+                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        Predicate<List<YtelseDto>> hattDPSiste10Mnd = ytelser -> hattGittYtelseIGittPeriode(ytelser, skjæringstidspunkt.minusMonths(10), FagsakYtelseType.DAGPENGER);
 
         if (!hattAAPSiste4Mnd && !hattDPSiste10Mnd.test(aapOgDPYtelser)) {
             return false;
         }
 
-        RelatertYtelseType ytelseType = hattAAPSiste4Mnd ? ARBEIDSAVKLARINGSPENGER : DAGPENGER;
+        FagsakYtelseType ytelseType = hattAAPSiste4Mnd ? FagsakYtelseType.ARBEIDSAVKLARINGSPENGER : FagsakYtelseType.DAGPENGER;
         return aapOgDPYtelser.stream()
             .filter(ytelse -> ytelseType.equals(ytelse.getRelatertYtelseType()))
             .anyMatch(ytelse -> ytelse.getPeriode().getFomDato().isBefore(skjæringstidspunkt)
                 && !ytelse.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)));
     }
 
-    private static boolean hattGittYtelseIGittPeriode(List<YtelseDto> aapOgDPYtelser, LocalDate hattYtelseFom, RelatertYtelseType ytelseType) {
+    private static boolean hattGittYtelseIGittPeriode(List<YtelseDto> aapOgDPYtelser, LocalDate hattYtelseFom, FagsakYtelseType ytelseType) {
         return aapOgDPYtelser.stream()
             .filter(ytelse -> ytelseType.equals(ytelse.getRelatertYtelseType()))
             .flatMap(ytelse -> ytelse.getYtelseAnvist().stream())
@@ -67,7 +64,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
     private static List<YtelseDto> getAAPogDPYtelser(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
         var filter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
         var ytelser = filter.getFiltrertYtelser().stream()
-            .filter(ytelse -> ARBEIDSAVKLARINGSPENGER.equals(ytelse.getRelatertYtelseType()) || DAGPENGER.equals(ytelse.getRelatertYtelseType()))
+            .filter(ytelse -> FagsakYtelseType.ARBEIDSAVKLARINGSPENGER.equals(ytelse.getRelatertYtelseType()) || FagsakYtelseType.DAGPENGER.equals(ytelse.getRelatertYtelseType()))
             .collect(Collectors.toList());
         return ytelser;
     }

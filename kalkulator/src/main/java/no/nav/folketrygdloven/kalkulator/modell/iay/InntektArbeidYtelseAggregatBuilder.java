@@ -12,8 +12,8 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 
 /**
@@ -319,7 +319,7 @@ public class InntektArbeidYtelseAggregatBuilder {
             return this;
         }
 
-        public YtelseDtoBuilder getYtelselseBuilderForType(Fagsystem fagsystem, RelatertYtelseType type) {
+        public YtelseDtoBuilder getYtelselseBuilderForType(Fagsystem fagsystem, FagsakYtelseType type) {
             return kladd.getYtelseBuilderForType(fagsystem, type);
         }
 

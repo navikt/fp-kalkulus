@@ -15,8 +15,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 
 class FinnInntektFraYtelse {
@@ -43,14 +43,14 @@ class FinnInntektFraYtelse {
         return Optional.of(finnÅrsbeløp(nyesteVedtak.get(), nyesteMeldekort));
     }
 
-    private static RelatertYtelseType mapTilYtelseType(AktivitetStatus aktivitetStatus) {
+    private static FagsakYtelseType mapTilYtelseType(AktivitetStatus aktivitetStatus) {
         if (AktivitetStatus.DAGPENGER.equals(aktivitetStatus)) {
-            return RelatertYtelseType.DAGPENGER;
+            return FagsakYtelseType.DAGPENGER;
         }
         if (AktivitetStatus.ARBEIDSAVKLARINGSPENGER.equals(aktivitetStatus)) {
-            return RelatertYtelseType.ARBEIDSAVKLARINGSPENGER;
+            return FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
         }
-        return RelatertYtelseType.UDEFINERT;
+        return FagsakYtelseType.UDEFINERT;
     }
 
     private static BigDecimal finnÅrsbeløp(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {

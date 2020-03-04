@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class BeregningUtils {
     private static final Logger LOG = LoggerFactory.getLogger(BeregningUtils.class);
@@ -28,14 +28,14 @@ public class BeregningUtils {
 
     private BeregningUtils() {}
 
-    public static Optional<YtelseDto> sisteVedtakFørStpForType(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, Set<RelatertYtelseType> ytelseTyper) {
+    public static Optional<YtelseDto> sisteVedtakFørStpForType(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> ytelseTyper) {
         return ytelseFilter.getFiltrertYtelser().stream()
             .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
             .filter(ytelse -> !skjæringstidspunkt.isBefore(ytelse.getPeriode().getFomDato()))
             .max(Comparator.comparing(YtelseDto::getPeriode).thenComparing(ytelse -> ytelse.getPeriode().getTomDato()));
     }
 
-    public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, LocalDate skjæringstidspunkt, Set<RelatertYtelseType> ytelseTyper) {
+    public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> ytelseTyper) {
         LOG.info("Finner siste meldekort for vedtak " + sisteVedtak + " på skjæringstidspunkt " + skjæringstidspunkt + " for ytelser " + ytelseTyper);
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
