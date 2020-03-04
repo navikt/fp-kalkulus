@@ -50,7 +50,7 @@ public class BeregningsgrunnlagPeriodeRegelSporing extends BaseEntitet {
         return id;
     }
 
-    BeregningsgrunnlagPeriodeRegelType getRegelType() {
+    public BeregningsgrunnlagPeriodeRegelType getRegelType() {
         return regelType;
     }
 

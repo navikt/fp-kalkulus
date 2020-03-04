@@ -2,10 +2,12 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -60,13 +63,21 @@ public class BeregningsgrunnlagDto {
     @JsonProperty(value = "overstyrt")
     private boolean overstyrt;
 
+    @JsonProperty(value = "regelSporingMap")
+    @Valid
+    private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> regelSporingMap;
+
+    @JsonProperty(value = "grunnbeløp")
+    @Valid
+    private BigDecimal grunnbeløp;
+
     public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
                                  @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
                                  @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
                                  @Valid Sammenligningsgrunnlag sammenligningsgrunnlag,
                                  @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
-                                 boolean overstyrt) {
+                                 boolean overstyrt, Map<BeregningsgrunnlagRegelType, @Valid BeregningsgrunnlagRegelSporing> regelSporingMap, @Valid BigDecimal grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
@@ -74,6 +85,8 @@ public class BeregningsgrunnlagDto {
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
         this.overstyrt = overstyrt;
+        this.regelSporingMap = regelSporingMap;
+        this.grunnbeløp = grunnbeløp;
     }
 
     public LocalDate getSkjæringstidspunkt() {
@@ -109,4 +122,11 @@ public class BeregningsgrunnlagDto {
         return overstyrt;
     }
 
+    public Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> getRegelSporingMap() {
+        return regelSporingMap;
+    }
+
+    public BigDecimal getGrunnbeløp() {
+        return grunnbeløp;
+    }
 }

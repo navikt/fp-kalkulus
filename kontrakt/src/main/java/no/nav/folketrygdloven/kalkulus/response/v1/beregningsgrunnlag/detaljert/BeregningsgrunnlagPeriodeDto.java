@@ -5,6 +5,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -41,10 +43,6 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private BigDecimal avkortetPrÅr;
 
-    @JsonProperty(value = "fordeltPrÅr")
-    @Valid
-    private BigDecimal fordeltPrÅr;
-
     @JsonProperty(value = "redusertPrÅr")
     @Valid
     private BigDecimal redusertPrÅr;
@@ -58,7 +56,10 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private List<PeriodeÅrsak> periodeÅrsaker;
 
-    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
+    @JsonProperty(value = "regelSporingMap")
+    private Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap;
+
+    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -66,6 +67,7 @@ public class BeregningsgrunnlagPeriodeDto {
         this.redusertPrÅr = redusertPrÅr;
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
+        this.regelSporingMap = regelSporingMap;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {

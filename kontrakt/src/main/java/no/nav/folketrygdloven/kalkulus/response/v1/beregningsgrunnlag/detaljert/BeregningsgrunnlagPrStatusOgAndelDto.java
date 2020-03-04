@@ -26,6 +26,11 @@ import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
+    @JsonProperty(value = "andelsnr")
+    @NotNull
+    @Valid
+    private Long andelsnr;
+
     @JsonProperty(value = "aktivitetStatus")
     @NotNull
     @Valid
@@ -134,7 +139,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "nyoppstartet")
     private Boolean nyoppstartet;
 
-    public BeregningsgrunnlagPrStatusOgAndelDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
+    public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr, @NotNull @Valid AktivitetStatus aktivitetStatus,
                                                 @NotNull @Valid Periode beregningsperiode,
                                                 @NotNull @Valid OpptjeningAktivitetType arbeidsforholdType,
                                                 @NotNull @Valid BigDecimal bruttoPrÅr,
@@ -164,6 +169,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                                                 Long orginalDagsatsFraTilstøtendeYtelse,
                                                 Boolean mottarYtelse,
                                                 Boolean nyoppstartet) {
+        this.andelsnr = andelsnr;
         this.aktivitetStatus = aktivitetStatus;
         this.beregningsperiode = beregningsperiode;
         this.arbeidsforholdType = arbeidsforholdType;
@@ -340,5 +346,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public Boolean getNyoppstartet() {
         return nyoppstartet;
+    }
+
+    public Long getAndelsnr() {
+        return andelsnr;
     }
 }
