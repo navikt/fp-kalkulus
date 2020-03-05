@@ -236,7 +236,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         assertThat(resultat.getAksjonspunkter()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
             BigDecimal.valueOf(81.004455200d), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
@@ -626,7 +626,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         assertThat(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe()).hasSize(1);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
             BigDecimal.valueOf(81.004455200), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
@@ -648,7 +648,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
             BigDecimal.valueOf(500L), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
     }
 

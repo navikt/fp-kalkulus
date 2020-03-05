@@ -154,8 +154,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-                bg, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).minusMonths(1).withDayOfMonth(1),
-                SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+                bg, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Act 3: fordel beregningsgrunnlag
         resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
@@ -232,8 +232,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).minusMonths(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Arrange 2: Overstyring
         periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -326,8 +326,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Arrange 2: Overstyring
         periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -410,8 +410,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Arrange 2: Overstyring
         periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -501,8 +501,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Act 3: fordel beregningsgrunnlag
         resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
@@ -585,8 +585,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Act 3: fordel beregningsgrunnlag
         resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
@@ -681,8 +681,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Act 3: fordel beregningsgrunnlag
         resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
@@ -786,8 +786,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Act 3: fordel beregningsgrunnlag
         resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
@@ -869,8 +869,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserPeriode(periodeEtter1, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periodeEtter1, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(beregningsgrunnlagEtter1.getSammenligningsgrunnlagPrStatusListe().get(0),
-            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
 
         // Arrange 2: Overstyring
         double overstyrt = 700000.0;

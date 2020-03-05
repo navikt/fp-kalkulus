@@ -144,8 +144,8 @@ public class FrilanserMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(1),
                 sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 659.25, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -249,8 +249,8 @@ public class FrilanserMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).minusMonths(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusMonths(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(1),
                 sammenligningFrilanser, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 783.33, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -358,8 +358,8 @@ public class FrilanserMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
-            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(1).withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
+            0, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 1000, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(1),
                 sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 770.4, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
