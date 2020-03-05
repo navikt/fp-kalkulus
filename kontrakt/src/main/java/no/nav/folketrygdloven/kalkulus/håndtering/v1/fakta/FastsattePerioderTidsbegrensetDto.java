@@ -34,6 +34,10 @@ public class FastsattePerioderTidsbegrensetDto {
     @NotNull
     private List<FastsatteAndelerTidsbegrensetDto> fastsatteTidsbegrensedeAndeler;
 
+    public FastsattePerioderTidsbegrensetDto() {
+        // def ctc
+    }
+
     public FastsattePerioderTidsbegrensetDto(@Valid @NotNull LocalDate periodeFom, @Valid @NotNull LocalDate periodeTom, @Valid @NotNull List<FastsatteAndelerTidsbegrensetDto> fastsatteTidsbegrensedeAndeler) {
         this.periodeFom = periodeFom;
         this.periodeTom = periodeTom;

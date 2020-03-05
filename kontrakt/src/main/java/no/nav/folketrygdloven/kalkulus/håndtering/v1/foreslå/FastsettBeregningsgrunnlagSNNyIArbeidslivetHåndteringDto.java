@@ -7,11 +7,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -25,17 +27,15 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
     @NotNull
     private FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
 
-    public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto() {
-        // default ctor
+    @JsonCreator
+    public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
+        super(new HåndteringKode(IDENT_TYPE));
+        this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
-    }
-
-    public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
-        this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
     }
 
     public FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto() {

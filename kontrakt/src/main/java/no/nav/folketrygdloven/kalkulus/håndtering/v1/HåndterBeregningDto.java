@@ -16,6 +16,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FaktaOmFordelingHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBeregningsgrunnlagSNHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
@@ -29,6 +34,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
         @JsonSubTypes.Type(value = OverstyrBeregningsaktiviteterDto.class, name = OverstyrBeregningsaktiviteterDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = OverstyrBeregningsgrunnlagHåndteringDto.class, name = OverstyrBeregningsgrunnlagHåndteringDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = FaktaOmFordelingHåndteringDto.class, name = FaktaOmFordelingHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagATFLHåndteringDto.class, name = FastsettBeregningsgrunnlagATFLHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.IDENT_TYPE),
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

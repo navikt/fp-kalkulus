@@ -97,7 +97,7 @@ public class OperereKalkulusRestTjeneste {
             responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
-    })
+            })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
@@ -129,7 +129,7 @@ public class OperereKalkulusRestTjeneste {
             responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
-    })
+            })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
@@ -139,11 +139,7 @@ public class OperereKalkulusRestTjeneste {
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 
-        if (tilstandResponse.getAksjonspunktMedTilstandDto().isEmpty()) {
-            return Response.noContent().build();
-        } else {
-            return Response.ok(tilstandResponse).build();
-        }
+        return Response.ok(tilstandResponse).build();
     }
 
     @POST
@@ -154,7 +150,7 @@ public class OperereKalkulusRestTjeneste {
             responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
-    })
+            })
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {

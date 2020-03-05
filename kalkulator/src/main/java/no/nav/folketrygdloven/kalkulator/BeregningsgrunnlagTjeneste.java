@@ -77,7 +77,7 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var ytelseType = input.getFagsakYtelseType();
-        var fullføre = FagsakYtelseTypeRef.Lookup.find(fullføreBeregningsgrunnlag, ytelseType).orElseThrow();
+        FullføreBeregningsgrunnlag fullføre = FagsakYtelseTypeRef.Lookup.find(fullføreBeregningsgrunnlag, ytelseType).orElseThrow();
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
             .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT)

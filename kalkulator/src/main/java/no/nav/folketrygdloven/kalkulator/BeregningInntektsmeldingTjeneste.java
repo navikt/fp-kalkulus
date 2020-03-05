@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -66,6 +65,9 @@ public class BeregningInntektsmeldingTjeneste {
     }
 
     public static Optional<AndelGradering> finnGraderingForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering) {
+        if (aktivitetGradering == null) {
+            return Optional.empty();
+        }
         return aktivitetGradering.getAndelGradering().stream()
             .filter(andelGradering -> andelGradering.matcher(andel))
             .findFirst();

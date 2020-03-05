@@ -26,7 +26,11 @@ public class InntektPrAndelDto {
     @NotNull
     private Long andelsnr;
 
-    public InntektPrAndelDto(Integer inntekt, Long andelsnr) {
+    public InntektPrAndelDto() {
+        //def ctc
+    }
+
+    public InntektPrAndelDto(@JsonProperty("inntekt") @Valid @NotNull Integer inntekt, @JsonProperty("andelsnr") @Valid @NotNull Long andelsnr) {
         this.inntekt = inntekt;
         this.andelsnr = andelsnr;
     }

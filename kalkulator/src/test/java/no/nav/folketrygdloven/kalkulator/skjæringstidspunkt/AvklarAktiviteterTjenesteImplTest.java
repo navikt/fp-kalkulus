@@ -18,8 +18,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingStatus;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -38,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 import no.nav.vedtak.util.Tuple;
 
@@ -296,7 +295,6 @@ public class AvklarAktiviteterTjenesteImplTest {
             BEHANDLING_ID,
             UUID.randomUUID(),
             Optional.empty(),
-            BehandlingStatus.UTREDES,
             Skjæringstidspunkt.builder().medFørsteUttaksdato(SKJÆRINGSTIDSPUNKT_BEREGNING).build()
         );
     }

@@ -74,9 +74,7 @@ class MapFraKalkulatorTest {
 
         BeregningsgrunnlagInput input = mapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto);
 
-
         assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
-//        assertThat(input.getAktivitetGradering().getAndelGradering()).hasSize(1);
     }
 
 

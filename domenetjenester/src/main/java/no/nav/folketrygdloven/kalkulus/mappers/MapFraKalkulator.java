@@ -18,14 +18,13 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Builder;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingStatus;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
@@ -38,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
@@ -71,14 +71,13 @@ public class MapFraKalkulator {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
-        FagsakYtelseType foreldrepenger = FagsakYtelseType.FORELDREPENGER;
+        FagsakYtelseType ytelseType = FagsakYtelseType.fraKode(kobling.getYtelseTyperKalkulusStøtter().getKode());
         AktørId aktørId = new AktørId(kobling.getAktørId().getId());
-        BehandlingStatus avsluttet = BehandlingStatus.AVSLUTTET;
         Skjæringstidspunkt build = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(skjæringstidspunkt)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
 
-        var ref = BehandlingReferanse.fra(foreldrepenger, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), avsluttet, build);
+        var ref = BehandlingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
 
         AktivitetGraderingDto aktivitetGradering = input.getAktivitetGradering();
         var iayGrunnlag = input.getIayGrunnlag();
@@ -107,7 +106,7 @@ public class MapFraKalkulator {
         } else if (SVANGERSKAPSPENGER == yt) {
             throw new IllegalStateException("Støtter ikke denne ennå");
         }
-        return null;
+        return new StandardGrunnlag();
     }
 
     private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {

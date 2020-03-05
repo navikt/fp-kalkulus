@@ -9,11 +9,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -27,11 +29,9 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
     private List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList;
 
 
-    public OverstyrBeregningsaktiviteterDto() {
-        // default ctor
-    }
-
+    @JsonCreator
     public OverstyrBeregningsaktiviteterDto(@Valid @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
+        super(new HåndteringKode(IDENT_TYPE));
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 

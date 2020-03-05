@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 
 /**
@@ -32,8 +33,6 @@ public class BehandlingReferanse {
      */
     private Skjæringstidspunkt skjæringstidspunkt;
 
-    private BehandlingStatus behandlingStatus;
-
     /** Eksternt refererbar UUID for behandling. */
     private UUID behandlingUuid;
 
@@ -41,27 +40,23 @@ public class BehandlingReferanse {
     }
 
     private BehandlingReferanse(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
-                                Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
-                                BehandlingStatus behandlingStatus, Skjæringstidspunkt skjæringstidspunkt) {
+                                Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId, Skjæringstidspunkt skjæringstidspunkt) {
         this.fagsakYtelseType = fagsakYtelseType;
         this.aktørId = aktørId;
         this.behandlingId = behandlingId;
         this.behandlingUuid = behandlingUuid;
         this.originalBehandlingId = originalBehandlingId;
-        this.behandlingStatus = behandlingStatus;
         this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
 
     public static BehandlingReferanse fra(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
-                                          Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId,
-                                          BehandlingStatus behandlingStatus, Skjæringstidspunkt skjæringstidspunkt) {
+                                          Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId, Skjæringstidspunkt skjæringstidspunkt) {
         return new BehandlingReferanse(fagsakYtelseType,
                 aktørId,
                 behandlingId,
             behandlingUuid,
             originalBehandlingId,
-            behandlingStatus,
             skjæringstidspunkt);
     }
 
@@ -132,17 +127,15 @@ public class BehandlingReferanse {
         return Objects.equals(behandlingId, other.behandlingId)
             && Objects.equals(aktørId, other.aktørId)
             && Objects.equals(fagsakYtelseType, other.fagsakYtelseType)
-            && Objects.equals(originalBehandlingId, other.originalBehandlingId)
-        // tar ikke med status eller skjæringstidspunkt i equals siden de kan endre seg
-        ;
+            && Objects.equals(originalBehandlingId, other.originalBehandlingId);
     }
 
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + String.format(
-            "<behandlingId=%s, fagsakType=%s, aktørId=%s, status=%s, skjæringstidspunjkt=%s, originalBehandlingId=%s>",
-            behandlingId, fagsakYtelseType, aktørId, behandlingStatus, skjæringstidspunkt, originalBehandlingId);
+            "<behandlingId=%s, fagsakType=%s, aktørId=%s, skjæringstidspunjkt=%s, originalBehandlingId=%s>",
+            behandlingId, fagsakYtelseType, aktørId, skjæringstidspunkt, originalBehandlingId);
     }
 
     /**
@@ -154,7 +147,6 @@ public class BehandlingReferanse {
                 getId(),
             getBehandlingUuid(),
             getOriginalBehandlingId(),
-            getBehandlingStatus(),
             Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(utledetSkjæringstidspunkt)
                 .build());
@@ -169,12 +161,6 @@ public class BehandlingReferanse {
                 getId(),
             getBehandlingUuid(),
             getOriginalBehandlingId(),
-            getBehandlingStatus(),
             skjæringstidspunkt);
     }
-
-    public BehandlingStatus getBehandlingStatus() {
-        return behandlingStatus;
-    }
-
 }

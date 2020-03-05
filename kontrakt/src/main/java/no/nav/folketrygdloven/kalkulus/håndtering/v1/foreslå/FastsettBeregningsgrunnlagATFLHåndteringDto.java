@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,9 +13,11 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsattePerioderTidsbegrensetDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
@@ -25,38 +26,39 @@ public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregn
 
     public static final String IDENT_TYPE = "5038";
 
+    @JsonProperty(value = "inntektPrAndelList")
     @Valid
     @Size(max = 100)
     private List<InntektPrAndelDto> inntektPrAndelList;
 
+    @JsonProperty(value = "inntektFrilanser")
+    @Valid
     @Min(0)
     @Max(100 * 1000 * 1000)
     private Integer inntektFrilanser;
 
+    @JsonProperty(value = "fastsatteTidsbegrensedePerioder")
     @Valid
     @Size(max = 100)
     private List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder;
 
 
-    FastsettBeregningsgrunnlagATFLHåndteringDto() {
+    protected FastsettBeregningsgrunnlagATFLHåndteringDto() {
         // For Jackson
+    }
+    public FastsettBeregningsgrunnlagATFLHåndteringDto(@Valid @Size(max = 100) List<InntektPrAndelDto> inntektPrAndelList,
+                                                       @JsonProperty(value = "inntektFrilanser") @Valid @Min(0) @Max(100 * 1000 * 1000) Integer inntektFrilanser,
+                                                       @JsonProperty(value = "fastsatteTidsbegrensedePerioder") @Valid @Size(max = 100) List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder) {
+        super(new HåndteringKode(IDENT_TYPE));
+        this.inntektPrAndelList = inntektPrAndelList;
+        this.inntektFrilanser = inntektFrilanser;
+        this.fastsatteTidsbegrensedePerioder = fastsatteTidsbegrensedePerioder;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
     }
-
-
-    public FastsettBeregningsgrunnlagATFLHåndteringDto(List<InntektPrAndelDto> inntektPrAndelList, Integer inntektFrilanser) { // NOSONAR
-        this.inntektPrAndelList = new ArrayList<>(inntektPrAndelList);
-        this.inntektFrilanser = inntektFrilanser;
-    }
-
-    public FastsettBeregningsgrunnlagATFLHåndteringDto(Integer inntektFrilanser) { // NOSONAR
-        this.inntektFrilanser = inntektFrilanser;
-    }
-
 
     public Integer getInntektFrilanser() {
         return inntektFrilanser;

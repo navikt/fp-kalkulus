@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         AktørId aktørId = ref.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
-        var graderinger = input.getAktivitetGradering().getAndelGradering();
+        var graderinger = input.getAktivitetGradering() == null ? new HashSet<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
 
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
@@ -255,7 +256,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
         var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(input);
-        var andelGraderinger = input.getAktivitetGradering().getAndelGradering();
+        var andelGraderinger = input.getAktivitetGradering() == null ? new ArrayList<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()

@@ -34,7 +34,7 @@ public class TilstandResponse {
     }
 
     @JsonCreator
-    public TilstandResponse(@Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto) {
+    public TilstandResponse(@JsonProperty(value = "aksjonspunktMedTilstandDto") @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto) {
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
     }
 

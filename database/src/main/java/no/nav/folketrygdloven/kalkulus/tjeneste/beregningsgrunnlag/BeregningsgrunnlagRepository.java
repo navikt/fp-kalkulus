@@ -390,6 +390,7 @@ public class BeregningsgrunnlagRepository {
             } else {
                 utdaterInput.setAktiv(false);
                 entityManager.persist(utdaterInput);
+                entityManager.flush();
             }
         }
         entityManager.persist(input);

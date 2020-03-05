@@ -7,12 +7,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,17 +27,15 @@ public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
     @NotNull
     private FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto;
 
-    public FaktaOmFordelingHåndteringDto() {
-        // default ctor
+    @JsonCreator
+    public FaktaOmFordelingHåndteringDto(@Valid @NotNull FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto) {
+        super(new HåndteringKode(IDENT_TYPE));
+        this.fordelBeregningsgrunnlagDto = fordelBeregningsgrunnlagDto;
     }
 
     @Override
     public String getIdentType() {
         return IDENT_TYPE;
-    }
-
-    public FaktaOmFordelingHåndteringDto(@Valid @NotNull FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto) {
-        this.fordelBeregningsgrunnlagDto = fordelBeregningsgrunnlagDto;
     }
 
     public FordelBeregningsgrunnlagDto getFordelBeregningsgrunnlagDto() {
