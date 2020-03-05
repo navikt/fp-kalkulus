@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
@@ -39,7 +42,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel.class);
     protected MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel() {
     }
 
@@ -265,6 +268,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             LocalDate startdatoPermisjon = startdatoPermisjonOpt.get();
             ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(andeler, ya);
+            logger.info("BehandlingsId={}, Inntektsmeldinger={}, matchende andel={}, ya={} ", input.getBehandlingReferanse().getBehandlingId(), input.getInntektsmeldinger(), matchendeAndel, ya);
             if (!harAndelMedInntektsmeldingUtenReferanseOgAktivitetTilkommerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel, ansettelsesPeriode, ya)) {
                 if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)) {
                     matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
