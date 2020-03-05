@@ -147,7 +147,7 @@ public class OperereKalkulusRestTjeneste {
     @Path("/oppdater")
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn",
             summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt."),
-            responses = {@ApiResponse(description = "Liste med aksjonspunkter som har oppstått",
+            responses = {@ApiResponse(description = "DETTE MÅ VI FINNE UT AV",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
@@ -158,8 +158,22 @@ public class OperereKalkulusRestTjeneste {
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
 
         håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
+        // TODO Returner forrige og aktivt beregningsgrunnlag i respons
         TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
         return Response.ok(tilstandResponse).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deaktiver")
+    @Operation(description = "Deaktiverer aktivt beregningsgrunnlag basert.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
+        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlag(koblingId);
+        return Response.ok().build();
     }
 
     /**

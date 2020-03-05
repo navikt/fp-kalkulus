@@ -27,9 +27,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.endringsresultat.ErEndringIBeregning;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.beregning.BeregningTilInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
@@ -80,7 +78,6 @@ public class UtledKalkulusRestTjeneste {
         boolean erEndring = ErEndringIBeregning.vurder(Optional.ofNullable(beregningsgrunnlag1), Optional.ofNullable(beregningsgrunnlag2));
         return Response.ok(erEndring).build();
     }
-
 
     /**
      * Json bean med Abac.
