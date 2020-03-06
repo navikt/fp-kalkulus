@@ -71,6 +71,9 @@ public class BeregningsgrunnlagDto {
     @Valid
     private BigDecimal grunnbeløp;
 
+    public BeregningsgrunnlagDto() {
+    }
+
     public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
                                  @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
                                  @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,

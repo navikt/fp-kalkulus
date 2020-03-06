@@ -80,64 +80,87 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BGAndelArbeidsforhold bgAndelArbeidsforhold;
 
     @JsonProperty(value = "overstyrtPrÅr")
+    @Valid
     private BigDecimal overstyrtPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
+    @Valid
     private BigDecimal avkortetPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
+    @Valid
     private BigDecimal redusertPrÅr;
 
     @JsonProperty(value = "beregnetPrÅr")
+    @Valid
     private BigDecimal beregnetPrÅr;
 
     @JsonProperty(value = "fordeltPrÅr")
+    @Valid
     private BigDecimal fordeltPrÅr;
 
     @JsonProperty(value = "maksimalRefusjonPrÅr")
+    @Valid
     private BigDecimal maksimalRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetRefusjonPrÅr")
+    @Valid
     private BigDecimal avkortetRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetBrukersAndelPrÅr")
+    @Valid
     private BigDecimal avkortetBrukersAndelPrÅr;
 
     @JsonProperty(value = "pgiSnitt")
+    @Valid
     private BigDecimal pgiSnitt;
 
     @JsonProperty(value = "pgi1")
+    @Valid
     private BigDecimal pgi1;
 
     @JsonProperty(value = "pgi2")
+    @Valid
     private BigDecimal pgi2;
 
     @JsonProperty(value = "pgi3")
+    @Valid
     private BigDecimal pgi3;
 
     @JsonProperty(value = "årsbeløpFraTilstøtendeYtelse")
+    @Valid
     private BigDecimal årsbeløpFraTilstøtendeYtelse;
 
     @JsonProperty(value = "nyIArbeidslivet")
+    @Valid
     private Boolean nyIArbeidslivet;
 
     @JsonProperty(value = "fastsattAvSaksbehandler")
+    @Valid
     private Boolean fastsattAvSaksbehandler = false;
 
     @JsonProperty(value = "besteberegningPrÅr")
+    @Valid
     private BigDecimal besteberegningPrÅr;
 
     @JsonProperty(value = "lagtTilAvSaksbehandler")
+    @Valid
     private Boolean lagtTilAvSaksbehandler = false;
 
     @JsonProperty(value = "orginalDagsatsFraTilstøtendeYtelse")
+    @Valid
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
     @JsonProperty(value = "mottarYtelse")
+    @Valid
     private Boolean mottarYtelse;
 
     @JsonProperty(value = "nyoppstartet")
+    @Valid
     private Boolean nyoppstartet;
+
+    public BeregningsgrunnlagPrStatusOgAndelDto() {
+    }
 
     public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr, @NotNull @Valid AktivitetStatus aktivitetStatus,
                                                 @NotNull @Valid Periode beregningsperiode,

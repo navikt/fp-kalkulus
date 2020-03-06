@@ -8,16 +8,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,6 +29,9 @@ public class BeregningRefusjonOverstyringDto {
     @NotNull
     @Valid
     private LocalDate førsteMuligeRefusjonFom;
+
+    public BeregningRefusjonOverstyringDto() {
+    }
 
     public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver, @NotNull @Valid LocalDate førsteMuligeRefusjonFom) {
         this.arbeidsgiver = arbeidsgiver;

@@ -42,6 +42,9 @@ public class SammenligningsgrunnlagPrStatusDto {
     @Valid
     private BigDecimal avvikPromilleNy;
 
+    public SammenligningsgrunnlagPrStatusDto() {
+    }
+
     public SammenligningsgrunnlagPrStatusDto(@NotNull @Valid Periode sammenligningsperiode, @NotNull @Valid SammenligningsgrunnlagType sammenligningsgrunnlagType, @NotNull @Valid BigDecimal rapportertPrÅr, @NotNull @Valid BigDecimal avvikPromilleNy) {
         this.sammenligningsperiode = sammenligningsperiode;
         this.sammenligningsgrunnlagType = sammenligningsgrunnlagType;

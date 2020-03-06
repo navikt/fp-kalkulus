@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -11,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 public class BeregningsgrunnlagPeriodeRegelSporing {
 
     @JsonProperty(value = "regelEvaluering")
+    @Valid
     private String regelEvaluering;
 
     @JsonProperty(value = "regelInput")
@@ -28,6 +29,9 @@ public class BeregningsgrunnlagPeriodeRegelSporing {
     @JsonProperty(value = "regelType")
     @NotNull
     private BeregningsgrunnlagPeriodeRegelType regelType;
+
+    public BeregningsgrunnlagPeriodeRegelSporing() {
+    }
 
     public BeregningsgrunnlagPeriodeRegelSporing(String regelEvaluering, @NotNull String regelInput, @NotNull BeregningsgrunnlagPeriodeRegelType regelType) {
         this.regelEvaluering = regelEvaluering;

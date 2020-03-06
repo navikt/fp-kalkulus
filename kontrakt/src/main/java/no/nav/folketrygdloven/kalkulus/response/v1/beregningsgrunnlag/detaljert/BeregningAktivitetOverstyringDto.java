@@ -6,7 +6,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -41,9 +40,12 @@ public class BeregningAktivitetOverstyringDto {
     @Valid
     private OpptjeningAktivitetType opptjeningAktivitetType;
 
-    @JsonProperty(value = "opptjeningAktivitetType")
+    @JsonProperty(value = "handlingType")
     @Valid
     private BeregningAktivitetHandlingType handlingType;
+
+    public BeregningAktivitetOverstyringDto() {
+    }
 
     public BeregningAktivitetOverstyringDto(@NotNull @Valid Periode periode,
                                             @Valid Arbeidsgiver arbeidsgiver,

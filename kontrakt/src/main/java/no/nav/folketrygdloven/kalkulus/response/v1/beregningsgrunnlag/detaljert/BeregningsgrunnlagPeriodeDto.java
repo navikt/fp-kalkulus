@@ -57,7 +57,11 @@ public class BeregningsgrunnlagPeriodeDto {
     private List<PeriodeÅrsak> periodeÅrsaker;
 
     @JsonProperty(value = "regelSporingMap")
+    @Valid
     private Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap;
+
+    public BeregningsgrunnlagPeriodeDto() {
+    }
 
     public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;

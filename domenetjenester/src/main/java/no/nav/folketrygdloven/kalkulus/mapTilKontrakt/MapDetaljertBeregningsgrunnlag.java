@@ -268,7 +268,7 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {
-        return new Arbeidsgiver(a.getOrgnr(), a.getAktørId().getId());
+        return new Arbeidsgiver(a.getOrgnr(), a.getAktørId() != null ? a.getAktørId().getId() : null);
     }
 
 }
