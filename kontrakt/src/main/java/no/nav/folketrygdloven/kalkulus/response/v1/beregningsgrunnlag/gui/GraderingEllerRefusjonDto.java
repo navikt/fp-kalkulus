@@ -4,6 +4,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,15 +16,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class GraderingEllerRefusjonDto {
 
+    @Valid
     @JsonProperty("erRefusjon")
     private boolean erRefusjon;
 
+    @Valid
     @JsonProperty("erGradering")
     private boolean erGradering;
 
+    @Valid
     @JsonProperty("fom")
     private LocalDate fom;
 
+    @Valid
     @JsonProperty("tom")
     private LocalDate tom;
 

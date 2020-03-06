@@ -7,7 +7,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,12 +40,12 @@ public class BeregningsgrunnlagDto {
     private LocalDate skjæringstidspunkt;
 
     @JsonProperty(value = "aktivitetStatus")
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<AktivitetStatus> aktivitetStatus;
 
     @JsonProperty(value = "beregningsgrunnlagPeriode")
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPeriode;
 
@@ -49,27 +56,37 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "sammenligningsgrunnlagPrStatus")
     @Valid
+    @Size
     private List<SammenligningsgrunnlagDto> sammenligningsgrunnlagPrStatus;
 
     @JsonProperty(value = "ledetekstBrutto")
     @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String ledetekstBrutto;
 
     @JsonProperty(value = "ledetekstAvkortet")
     @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String ledetekstAvkortet;
 
     @JsonProperty(value = "ledetekstRedusert")
     @NotNull
     @Valid
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String ledetekstRedusert;
 
     @JsonProperty(value = "halvG")
     @Valid
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private Double halvG;
 
     @JsonProperty(value = "grunnbeløp")
     @Valid
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal grunnbeløp;
 
     @JsonProperty(value = "faktaOmBeregning")
@@ -78,6 +95,7 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "andelerMedGraderingUtenBG")
     @Valid
+    @Size
     private List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG;
 
     @JsonProperty(value = "hjemmel")
@@ -90,10 +108,15 @@ public class BeregningsgrunnlagDto {
 
     @JsonProperty(value = "årsinntektVisningstall")
     @Valid
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal årsinntektVisningstall;
 
     @JsonProperty(value = "dekningsgrad")
     @Valid
+    @Min(0)
+    @Max(100)
     private int dekningsgrad;
 
     public BeregningsgrunnlagDto() {

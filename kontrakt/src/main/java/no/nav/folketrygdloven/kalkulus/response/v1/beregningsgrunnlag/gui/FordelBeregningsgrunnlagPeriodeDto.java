@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,18 +20,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FordelBeregningsgrunnlagPeriodeDto {
 
+    @Valid
     @JsonProperty(value = "fom")
     private LocalDate fom;
 
+    @Valid
     @JsonProperty(value = "tom")
     private LocalDate tom;
 
+    @Valid
     @JsonProperty(value = "fordelBeregningsgrunnlagAndeler")
+    @Size
     private List<FordelBeregningsgrunnlagAndelDto> fordelBeregningsgrunnlagAndeler = new ArrayList<>();
 
+    @Valid
     @JsonProperty(value = "harPeriodeAarsakGraderingEllerRefusjon")
     private boolean harPeriodeAarsakGraderingEllerRefusjon = false;
 
+    @Valid
     @JsonProperty(value = "skalKunneEndreRefusjon")
     private boolean skalKunneEndreRefusjon = false;
 

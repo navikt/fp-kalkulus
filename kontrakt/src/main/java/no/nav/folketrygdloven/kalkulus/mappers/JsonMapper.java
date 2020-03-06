@@ -3,14 +3,10 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.InjectableValues.Std;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import no.nav.folketrygdloven.kalkulus.kodeverk.KodeValidator;
 
 public class JsonMapper {
 
@@ -28,9 +24,6 @@ public class JsonMapper {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
 
-        Std std = new InjectableValues.Std();
-        std.addValue(KodeValidator.class, KodeValidator.HAPPY_VALIDATOR);
-        objectMapper.setInjectableValues(std);
         OM = objectMapper;
     }
 

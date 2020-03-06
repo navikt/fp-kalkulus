@@ -24,6 +24,8 @@ public class Arbeidsgiver {
     @Valid
     private String arbeidsgiverAktørId;
 
+    public Arbeidsgiver() {
+    }
 
     public Arbeidsgiver(@Valid String arbeidsgiverOrgnr, @Valid String arbeidsgiverAktørId) {
         this.arbeidsgiverOrgnr = arbeidsgiverOrgnr;

@@ -53,6 +53,9 @@ public class BGAndelArbeidsforhold {
     @Valid
     private LocalDate arbeidsperiodeTom;
 
+    public BGAndelArbeidsforhold() {
+    }
+
     public BGAndelArbeidsforhold(@NotNull @Valid Arbeidsgiver arbeidsgiver, @Valid String arbeidsforholdRef, @Valid BigDecimal refusjonskravPrÅr, @Valid BigDecimal naturalytelseBortfaltPrÅr, @Valid BigDecimal naturalytelseTilkommetPrÅr, @NotNull @Valid LocalDate arbeidsperiodeFom, @NotNull @Valid LocalDate arbeidsperiodeTom) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;

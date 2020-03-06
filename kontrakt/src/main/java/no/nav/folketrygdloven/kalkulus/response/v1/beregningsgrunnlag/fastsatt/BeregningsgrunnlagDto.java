@@ -57,14 +57,20 @@ public class BeregningsgrunnlagDto {
     @Valid
     private List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller;
 
+    @JsonProperty(value = "overstyrt")
+    @Valid
     private boolean overstyrt;
 
-    public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
-                                 @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
-                                 @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
-                                 @Valid Sammenligningsgrunnlag sammenligningsgrunnlag,
-                                 @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
-                                 @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+    public BeregningsgrunnlagDto() {
+        // jackson
+    }
+
+    public BeregningsgrunnlagDto(@JsonProperty(value = "skjæringstidspunkt") @NotNull @Valid LocalDate skjæringstidspunkt,
+                                 @JsonProperty(value = "aktivitetStatuser") @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
+                                 @JsonProperty(value = "beregningsgrunnlagPerioder") @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
+                                 @JsonProperty(value = "sammenligningsgrunnlag") @Valid Sammenligningsgrunnlag sammenligningsgrunnlag,
+                                 @JsonProperty(value = "sammenligningsgrunnlagPrStatusListe") @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
+                                 @JsonProperty(value = "faktaOmBeregningTilfeller") @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                  boolean overstyrt) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;

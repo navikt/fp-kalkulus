@@ -4,6 +4,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,33 +25,55 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class AndelForFaktaOmBeregningDto {
 
+    @Valid
     @JsonProperty(value = "belopReadOnly")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal belopReadOnly;
 
+    @Valid
     @JsonProperty(value = "fastsattBelop")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal fastsattBelop;
 
+    @Valid
     @JsonProperty(value = "inntektskategori")
     private Inntektskategori inntektskategori;
 
+    @Valid
     @JsonProperty(value = "aktivitetStatus")
     private AktivitetStatus aktivitetStatus;
 
+    @Valid
     @JsonProperty(value = "refusjonskrav")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal refusjonskrav;
 
+    @Valid
     @JsonProperty(value = "visningsnavn")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String visningsnavn;
 
+    @Valid
     @JsonProperty(value = "arbeidsforhold")
     private BeregningsgrunnlagArbeidsforholdDto arbeidsforhold;
 
+    @Valid
     @JsonProperty(value = "andelsnr")
+    @Min(0)
+    @Max(1000)
     private Long andelsnr;
 
+    @Valid
     @JsonProperty(value = "skalKunneEndreAktivitet")
     private Boolean skalKunneEndreAktivitet;
 
+    @Valid
     @JsonProperty(value = "lagtTilAvSaksbehandler")
     private Boolean lagtTilAvSaksbehandler;
 

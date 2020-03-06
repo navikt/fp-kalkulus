@@ -54,7 +54,17 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private List<PeriodeÅrsak> periodeÅrsaker;
 
-    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
+    public BeregningsgrunnlagPeriodeDto() {
+    }
+
+    public BeregningsgrunnlagPeriodeDto(@JsonProperty(value = "beregningsgrunnlagPrStatusOgAndelList") @NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList,
+                                        @JsonProperty(value = "periode") @NotNull @Valid Periode periode,
+                                        @JsonProperty(value = "bruttoPrÅr") @Valid BigDecimal bruttoPrÅr,
+                                        @JsonProperty(value = "avkortetPrÅr") @Valid BigDecimal avkortetPrÅr,
+                                        @JsonProperty(value = "redusertPrÅr") @Valid BigDecimal redusertPrÅr,
+                                        @JsonProperty(value = "dagsats") @Valid Long dagsats,
+                                        @JsonProperty(value = "periodeÅrsaker") @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
+
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;

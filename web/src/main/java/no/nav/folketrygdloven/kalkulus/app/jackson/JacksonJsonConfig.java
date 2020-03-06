@@ -13,7 +13,6 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,7 +21,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import no.nav.folketrygdloven.kalkulus.app.IndexClasses;
-import no.nav.folketrygdloven.kalkulus.kodeverk.KodeValidator;
 
 @Provider
 public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
@@ -40,9 +38,6 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
         // KodelisteSerializer og KodeverkSerializer bør i tilfelle også støtte JsonInclude.Include.*
         // objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         objectMapper.registerModule(SER_DESER);
-        InjectableValues.Std std = new InjectableValues.Std();
-        std.addValue(KodeValidator.class, KodeValidator.HAPPY_VALIDATOR);
-        objectMapper.setInjectableValues(std);
 
         Collection<Class<?>> restClasses = new RestImplementationClasses().getImplementationClasses();
 

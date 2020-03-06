@@ -5,6 +5,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,24 +24,46 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
 
     private static final int MÅNEDER_I_1_ÅR = 12;
 
+    @Valid
     @JsonProperty(value = "fordelingForrigeBehandlingPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal fordelingForrigeBehandlingPrAar;
 
+    @Valid
     @JsonProperty(value = "refusjonskravPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal refusjonskravPrAar = BigDecimal.ZERO;
 
+    @Valid
     @JsonProperty(value = "fordeltPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal fordeltPrAar;
 
+    @Valid
     @JsonProperty(value = "belopFraInntektsmeldingPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal belopFraInntektsmeldingPrAar;
 
+    @Valid
     @JsonProperty(value = "refusjonskravFraInntektsmeldingPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal refusjonskravFraInntektsmeldingPrAar;
 
+    @Valid
     @JsonProperty(value = "nyttArbeidsforhold")
     private boolean nyttArbeidsforhold;
 
+    @Valid
     @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
 

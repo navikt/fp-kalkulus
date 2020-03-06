@@ -75,6 +75,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Valid
     private BGAndelArbeidsforhold bgAndelArbeidsforhold;
 
+    public BeregningsgrunnlagPrStatusOgAndelDto() {
+    }
+
     public BeregningsgrunnlagPrStatusOgAndelDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
                                                 @NotNull @Valid Periode beregningsperiode,
                                                 @NotNull @Valid OpptjeningAktivitetType arbeidsforholdType,

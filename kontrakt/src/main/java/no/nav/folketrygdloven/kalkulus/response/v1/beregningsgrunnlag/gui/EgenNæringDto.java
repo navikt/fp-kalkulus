@@ -5,6 +5,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,43 +23,64 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class EgenNæringDto {
 
+    @Valid
     @JsonProperty("utenlandskvirksomhetsnavn")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String utenlandskvirksomhetsnavn;
 
+    @Valid
     @JsonProperty("orgnr")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String orgnr;
 
+    @Valid
     @JsonProperty("erVarigEndret")
     private boolean erVarigEndret;
 
+    @Valid
     @JsonProperty("erNyoppstartet")
     private boolean erNyoppstartet;
 
+    @Valid
     @JsonProperty("virksomhetType")
     private VirksomhetType virksomhetType;
 
+    @Valid
     @JsonProperty("begrunnelse")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String begrunnelse;
 
+    @Valid
     @JsonProperty("endringsdato")
     private LocalDate endringsdato;
 
+    @Valid
     @JsonProperty("oppstartsdato")
     private LocalDate oppstartsdato;
 
+    @Valid
     @JsonProperty("regnskapsførerNavn")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String regnskapsførerNavn;
 
+    @Valid
     @JsonProperty("regnskapsførerTlf")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String regnskapsførerTlf;
 
+    @Valid
     @JsonProperty("kanRegnskapsførerKontaktes")
     private boolean kanRegnskapsførerKontaktes;
 
+    @Valid
     @JsonProperty("erNyIArbeidslivet")
     private boolean erNyIArbeidslivet;
 
+    @Valid
     @JsonProperty("oppgittInntekt")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal oppgittInntekt;
 
     public String getOrgnr() {

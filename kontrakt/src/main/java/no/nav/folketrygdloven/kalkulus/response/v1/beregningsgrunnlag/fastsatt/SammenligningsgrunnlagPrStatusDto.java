@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.fasterxml.jackson.annotation.JsonInclude.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +41,9 @@ public class SammenligningsgrunnlagPrStatusDto {
     @NotNull
     @Valid
     private BigDecimal avvikPromilleNy;
+
+    public SammenligningsgrunnlagPrStatusDto() {
+    }
 
     public SammenligningsgrunnlagPrStatusDto(@NotNull @Valid Periode sammenligningsperiode, @NotNull @Valid SammenligningsgrunnlagType sammenligningsgrunnlagType, @NotNull @Valid BigDecimal rapportertPrÅr, @NotNull @Valid BigDecimal avvikPromilleNy) {
         this.sammenligningsperiode = sammenligningsperiode;

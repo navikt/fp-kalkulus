@@ -6,6 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,46 +27,76 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagArbeidsforholdDto {
 
+    @Valid
     @JsonProperty(value = "arbeidsgiverNavn")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverNavn;
 
+    @Valid
     @JsonProperty(value = "arbeidsgiverId")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverId;
 
+    @Valid
     @JsonProperty(value = "startdato")
     private LocalDate startdato;
 
+    @Valid
     @JsonProperty(value = "opphoersdato")
     private LocalDate opphoersdato;
 
+    @Valid
     @JsonProperty(value = "arbeidsforholdId")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsforholdId;
 
+    @Valid
     @JsonProperty(value = "eksternArbeidsforholdId")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String eksternArbeidsforholdId;
 
+    @Valid
     @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
 
+    @Valid
     @JsonProperty(value = "aktørId")
     private AktørId aktørId;
 
+    @Valid
     @JsonProperty(value = "aktørIdPersonIdent")
     private AktørIdPersonident aktørIdPersonIdent;
 
+    @Valid
     @JsonProperty(value = "refusjonPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal refusjonPrAar;
 
+    @Valid
     @JsonProperty(value = "belopFraInntektsmeldingPrMnd")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal belopFraInntektsmeldingPrMnd;
 
+    @Valid
     @JsonProperty(value = "organisasjonstype")
     private Organisasjonstype organisasjonstype;
 
+    @Valid
     @JsonProperty(value = "naturalytelseBortfaltPrÅr")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal naturalytelseBortfaltPrÅr;
 
+    @Valid
     @JsonProperty(value = "naturalytelseTilkommetPrÅr")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal naturalytelseTilkommetPrÅr;
 
     public BeregningsgrunnlagArbeidsforholdDto() {

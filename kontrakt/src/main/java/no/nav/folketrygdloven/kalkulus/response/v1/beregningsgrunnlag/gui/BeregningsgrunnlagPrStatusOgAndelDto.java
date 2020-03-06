@@ -3,11 +3,17 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -16,78 +22,139 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
+    @Valid
     @JsonProperty("aktivitetStatus")
     private AktivitetStatus aktivitetStatus;
 
+    @Valid
     @JsonProperty("beregningsperiodeFom")
     private LocalDate beregningsperiodeFom;
 
+    @Valid
     @JsonProperty("beregningsperiodeTom")
     private LocalDate beregningsperiodeTom;
 
+    @Valid
     @JsonProperty("beregnetPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal beregnetPrAar;
 
+    @Valid
     @JsonProperty("fastsattForrigePrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal fastsattForrigePrAar;
 
+    @Valid
     @JsonProperty("overstyrtPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal overstyrtPrAar;
 
+    @Valid
     @JsonProperty("bruttoPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal bruttoPrAar;
 
+    @Valid
     @JsonProperty("avkortetPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal avkortetPrAar;
 
+    @Valid
     @JsonProperty("redusertPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal redusertPrAar;
 
+    @Valid
     @JsonProperty("erTidsbegrensetArbeidsforhold")
     private Boolean erTidsbegrensetArbeidsforhold;
 
+    @Valid
     @JsonProperty("erNyIArbeidslivet")
     private Boolean erNyIArbeidslivet;
 
+    @Valid
     @JsonProperty("lonnsendringIBeregningsperioden")
     private Boolean lonnsendringIBeregningsperioden;
 
+    @Valid
     @JsonProperty("andelsnr")
+    @Min(1)
+    @Max(1000)
     private Long andelsnr;
 
+    @Valid
     @JsonProperty("besteberegningPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal besteberegningPrAar;
 
+    @Valid
     @JsonProperty("inntektskategori")
     private Inntektskategori inntektskategori;
 
+    @Valid
     @JsonProperty("arbeidsforhold")
     private BeregningsgrunnlagArbeidsforholdDto arbeidsforhold;
 
+    @Valid
     @JsonProperty("fastsattAvSaksbehandler")
     private Boolean fastsattAvSaksbehandler;
 
+    @Valid
     @JsonProperty("lagtTilAvSaksbehandler")
     private Boolean lagtTilAvSaksbehandler;
 
+    @Valid
     @JsonProperty("belopPrMndEtterAOrdningen")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal belopPrMndEtterAOrdningen;
 
+    @Valid
     @JsonProperty("belopPrAarEtterAOrdningen")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal belopPrAarEtterAOrdningen;
 
+    @Valid
     @JsonProperty("dagsats")
+    @Min(0)
+    @Max(1000000)
     private Long dagsats;
 
+    @Valid
+    @Min(0)
+    @Max(1000000)
     @JsonProperty("originalDagsatsFraTilstøtendeYtelse")
     private Long originalDagsatsFraTilstøtendeYtelse;
 
+    @Valid
     @JsonProperty("fordeltPrAar")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal fordeltPrAar;
 
+    @Valid
     @JsonProperty("erTilkommetAndel")
     private Boolean erTilkommetAndel;
 
+    @Valid
     @JsonProperty("skalFastsetteGrunnlag")
     private Boolean skalFastsetteGrunnlag;
 

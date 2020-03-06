@@ -36,6 +36,9 @@ public class Sammenligningsgrunnlag {
     @Valid
     private BigDecimal avvikPromilleNy;
 
+    public Sammenligningsgrunnlag() {
+    }
+
     public Sammenligningsgrunnlag(@NotNull @Valid Periode sammenligningsperiode, @NotNull @Valid BigDecimal rapportertPrÅr, @NotNull @Valid BigDecimal avvikPromilleNy) {
         this.sammenligningsperiode = sammenligningsperiode;
         this.rapportertPrÅr = rapportertPrÅr;

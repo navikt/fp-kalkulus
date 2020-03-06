@@ -113,7 +113,7 @@ public class MapBeregningsgrunnlag {
 
     private static BGAndelArbeidsforhold mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold bgAndelArbeidsforhold) {
         return new BGAndelArbeidsforhold(
-                new Arbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver().getOrgnr(), bgAndelArbeidsforhold.getArbeidsgiver().getAktørId().getId()),
+                new Arbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver().getOrgnr(), bgAndelArbeidsforhold.getArbeidsgiver().getAktørId() != null ? bgAndelArbeidsforhold.getArbeidsgiver().getAktørId().getId() : null),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
                 bgAndelArbeidsforhold.getRefusjonskravPrÅr(),
                 bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),

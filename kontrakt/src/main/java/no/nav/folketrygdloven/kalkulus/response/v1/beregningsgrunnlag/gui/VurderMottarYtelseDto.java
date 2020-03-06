@@ -6,6 +6,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,16 +22,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class VurderMottarYtelseDto {
 
+    @Valid
     @JsonProperty(value = "erFrilans")
     private boolean erFrilans;
 
+    @Valid
     @JsonProperty(value = "frilansMottarYtelse")
     private Boolean frilansMottarYtelse;
 
+    @Valid
     @JsonProperty(value = "frilansInntektPrMnd")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
     private BigDecimal frilansInntektPrMnd;
 
+    @Valid
     @JsonProperty(value = "arbeidstakerAndelerUtenIM")
+    @Size
     private List<ArbeidstakerUtenInntektsmeldingAndelDto> arbeidstakerAndelerUtenIM = new ArrayList<>();
 
     public boolean getErFrilans() {

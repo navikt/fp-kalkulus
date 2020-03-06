@@ -2,9 +2,6 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Objects;
 
-import javax.validation.constraints.AssertTrue;
-
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,9 +43,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class Kodeverk {
 
-    @JacksonInject
-    private KodeValidator kodeValidator;
-
     protected Kodeverk() {
         // default ctor
     }
@@ -63,10 +57,6 @@ public abstract class Kodeverk {
      */
     public abstract String getKodeverk();
 
-    @AssertTrue
-    private boolean isOk() {
-        return kodeValidator == null || kodeValidator.valider(getKodeverk(), getKode()) == null;
-    }
     @Override
     public String toString() {
         return getKodeverk() +"<"+ getKode() + ">";

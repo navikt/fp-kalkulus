@@ -4,6 +4,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,40 +19,59 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FaktaOmBeregningDto {
 
+
+    @Valid
     @JsonProperty(value = "kortvarigeArbeidsforhold")
+    @Size
     private List<KortvarigeArbeidsforholdDto> kortvarigeArbeidsforhold;
 
+    @Valid
     @JsonProperty(value = "frilansAndel")
     private FaktaOmBeregningAndelDto frilansAndel;
 
+    @Valid
     @JsonProperty(value = "kunYtelse")
     private KunYtelseDto kunYtelse;
 
+    @Valid
     @JsonProperty(value = "faktaOmBeregningTilfeller")
+    @Size
     private List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller;
 
+    @Valid
     @JsonProperty(value = "arbeidstakerOgFrilanserISammeOrganisasjonListe")
+    @Size
     private List<ATogFLISammeOrganisasjonDto> arbeidstakerOgFrilanserISammeOrganisasjonListe;
 
+    @Valid
     @JsonProperty(value = "arbeidsforholdMedLønnsendringUtenIM")
+    @Size
     private List<FaktaOmBeregningAndelDto> arbeidsforholdMedLønnsendringUtenIM;
 
+    @Valid
     @JsonProperty(value = "vurderMottarYtelse")
     private VurderMottarYtelseDto vurderMottarYtelse;
 
+    @Valid
     @JsonProperty(value = "avklarAktiviteter")
     private AvklarAktiviteterDto avklarAktiviteter;
 
+    @Valid
     @JsonProperty(value = "vurderBesteberegning")
     private VurderBesteberegningDto vurderBesteberegning;
 
+    @Valid
     @JsonProperty(value = "andelerForFaktaOmBeregning")
+    @Size
     private List<AndelForFaktaOmBeregningDto> andelerForFaktaOmBeregning;
 
+    @Valid
     @JsonProperty(value = "vurderMilitaer")
     private VurderMilitærDto vurderMilitaer;
 
+    @Valid
     @JsonProperty(value = "refusjonskravSomKommerForSentListe")
+    @Size
     private List<RefusjonskravSomKommerForSentDto> refusjonskravSomKommerForSentListe;
 
     public FaktaOmBeregningDto() {

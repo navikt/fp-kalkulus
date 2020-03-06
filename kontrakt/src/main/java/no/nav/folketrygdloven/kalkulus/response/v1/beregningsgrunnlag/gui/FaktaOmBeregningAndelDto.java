@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,25 +25,35 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FaktaOmBeregningAndelDto {
 
+    @Valid
     @JsonProperty("andelsnr")
+    @Min(0)
+    @Max(1000)
     private Long andelsnr;
 
+    @Valid
     @JsonProperty("arbeidsforhold")
     private BeregningsgrunnlagArbeidsforholdDto arbeidsforhold;
 
+    @Valid
     @JsonProperty("inntektskategori")
     private Inntektskategori inntektskategori;
 
+    @Valid
     @JsonProperty("aktivitetStatus")
     private AktivitetStatus aktivitetStatus;
 
+    @Valid
     @JsonProperty("lagtTilAvSaksbehandler")
     private Boolean lagtTilAvSaksbehandler = false;
 
+    @Valid
     @JsonProperty("fastsattAvSaksbehandler")
     private Boolean fastsattAvSaksbehandler = false;
 
+    @Valid
     @JsonProperty("andelIArbeid")
+    @Size
     private List<BigDecimal> andelIArbeid = new ArrayList<>();
 
     public FaktaOmBeregningAndelDto(Long andelsnr, BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, Inntektskategori inntektskategori, AktivitetStatus aktivitetStatus, Boolean lagtTilAvSaksbehandler, Boolean fastsattAvSaksbehandler, List<BigDecimal> andelIArbeid) {
