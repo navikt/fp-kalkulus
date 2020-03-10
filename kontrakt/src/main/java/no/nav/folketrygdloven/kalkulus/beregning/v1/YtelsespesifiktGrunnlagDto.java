@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public class YtelsespesifiktGrunnlagDto {
+public abstract class YtelsespesifiktGrunnlagDto {
 
     @JsonProperty(value = "dekningsgrad")
     @Valid
