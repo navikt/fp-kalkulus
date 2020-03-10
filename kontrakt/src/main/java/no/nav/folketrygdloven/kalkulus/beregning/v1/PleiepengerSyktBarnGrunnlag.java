@@ -44,4 +44,7 @@ public class PleiepengerSyktBarnGrunnlag extends YtelsespesifiktGrunnlagDto {
         return utbetalingsgradPrAktivitet;
     }
 
+    public static String getYtelseType() {
+        return YTELSE_TYPE;
+    }
 }
