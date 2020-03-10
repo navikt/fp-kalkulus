@@ -21,6 +21,9 @@ public class VurderNyoppstartetFLDto {
     @NotNull
     private Boolean erNyoppstartetFL;
 
+    public VurderNyoppstartetFLDto() {
+    }
+
     public VurderNyoppstartetFLDto(Boolean erNyoppstartetFL) { // NOSONAR
         this.erNyoppstartetFL = erNyoppstartetFL;
     }

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -35,6 +37,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektPeriodeType;
@@ -48,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
+import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntekterDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
@@ -75,14 +79,20 @@ public class MapIAYTilKalulator {
                 .collect(Collectors.toList());
     }
 
-
-
     public static InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident id) {
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         InntektArbeidYtelseAggregatBuilder data = mapAggregat(iayGrunnlag, id);
         builder.medData(data);
 
-        mapInntektsmelding(iayGrunnlag.getInntektsmeldingDto());
+        if (iayGrunnlag.getInntektsmeldingDto() != null) {
+            InntektsmeldingAggregatDto inntektsmeldingAggregatDto = mapInntektsmelding(iayGrunnlag.getInntektsmeldingDto());
+            builder.setInntektsmeldinger(inntektsmeldingAggregatDto);
+        }
+
+        if (iayGrunnlag.getArbeidsforholdInformasjon() != null) {
+            no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto arbeidsforholdInformasjonDto = mapArbeidsforholdInformasjon(iayGrunnlag.getArbeidsforholdInformasjon());
+            builder.medInformasjon(arbeidsforholdInformasjonDto);
+        }
 
         if (iayGrunnlag.getOppgittOpptjening() != null) {
             builder.medOppgittOpptjening(mapOppgittOpptjening(iayGrunnlag.getOppgittOpptjening()));
@@ -92,6 +102,19 @@ public class MapIAYTilKalulator {
         return builder.build();
     }
 
+    private static no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto mapArbeidsforholdInformasjon(ArbeidsforholdInformasjonDto arbeidsforholdInformasjon) {
+        ArbeidsforholdInformasjonDtoBuilder builder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.empty());
+
+        arbeidsforholdInformasjon.getOverstyringer().forEach(arbeidsforholdOverstyringDto -> {
+            ArbeidsforholdOverstyringDtoBuilder ny = ArbeidsforholdOverstyringDtoBuilder.oppdatere(Optional.empty());
+            ny.medHandling(ArbeidsforholdHandlingType.fraKode(arbeidsforholdOverstyringDto.getHandling().getKode()));
+            ny.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(arbeidsforholdOverstyringDto.getArbeidsgiver()));
+            ny.medArbeidsforholdRef(mapArbeidsforholdRef(arbeidsforholdOverstyringDto.getArbeidsforholdRefDto()));
+            builder.leggTil(ny);
+        });
+
+        return builder.build();
+    }
 
     private static OppgittOpptjeningDtoBuilder mapOppgittOpptjening(OppgittOpptjeningDto oppgittOpptjening) {
         OppgittOpptjeningDtoBuilder builder = OppgittOpptjeningDtoBuilder.ny();

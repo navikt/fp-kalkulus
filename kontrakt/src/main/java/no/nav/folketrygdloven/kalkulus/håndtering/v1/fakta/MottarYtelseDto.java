@@ -26,6 +26,9 @@ public class MottarYtelseDto {
     @Valid
     private List<ArbeidstakerandelUtenIMMottarYtelseDto> arbeidstakerUtenIMMottarYtelse;
 
+    public MottarYtelseDto() {
+    }
+
     public MottarYtelseDto(@Valid Boolean frilansMottarYtelse, @Valid List<ArbeidstakerandelUtenIMMottarYtelseDto> arbeidstakerUtenIMMottarYtelse) {
         this.frilansMottarYtelse = frilansMottarYtelse;
         this.arbeidstakerUtenIMMottarYtelse = arbeidstakerUtenIMMottarYtelse;

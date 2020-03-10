@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,7 +26,9 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
     @NotNull
     private FaktaBeregningLagreDto fakta;
 
-    @JsonCreator
+    public FaktaOmBeregningHåndteringDto() {
+    }
+
     public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
         super(new HåndteringKode(IDENT_TYPE));
         this.fakta = fakta;

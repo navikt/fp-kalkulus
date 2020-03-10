@@ -23,6 +23,9 @@ public class VurderATogFLiSammeOrganisasjonDto {
     @NotNull
     private List<VurderATogFLiSammeOrganisasjonAndelDto> vurderATogFLiSammeOrganisasjonAndelListe;
 
+    public VurderATogFLiSammeOrganisasjonDto() {
+    }
+
     public VurderATogFLiSammeOrganisasjonDto(@Valid @NotNull List<VurderATogFLiSammeOrganisasjonAndelDto> vurderATogFLiSammeOrganisasjonAndelListe) {
         this.vurderATogFLiSammeOrganisasjonAndelListe = vurderATogFLiSammeOrganisasjonAndelListe;
     }

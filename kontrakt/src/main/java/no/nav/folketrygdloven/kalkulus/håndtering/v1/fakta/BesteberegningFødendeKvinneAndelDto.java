@@ -34,6 +34,9 @@ public class BesteberegningFødendeKvinneAndelDto {
     @NotNull
     private FastsatteVerdierForBesteberegningDto fastsatteVerdier;
 
+    public BesteberegningFødendeKvinneAndelDto() {
+    }
+
     public BesteberegningFødendeKvinneAndelDto(Long andelsnr, Integer inntektPrMnd, Inntektskategori inntektskategori,
                                                boolean lagtTilAvSaksbehandler) {
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;

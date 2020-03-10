@@ -13,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -52,10 +50,10 @@ public class FaktaBeregningLagreDto {
     @Valid
     private BesteberegningFødendeKvinneDto besteberegningAndeler;
 
-    @JsonProperty("faktaOmBeregningTilfeller")
+    @JsonProperty("faktaOmBeregningTilfelleDto")
     @NotNull
     @Valid
-    private List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller;
+    private FaktaOmBeregningTilfelleDto faktaOmBeregningTilfelleDto;
 
     @JsonProperty("kunYtelseFordeling")
     @Valid
@@ -77,7 +75,7 @@ public class FaktaBeregningLagreDto {
     @Valid
     private VurderMilitærDto vurderMilitaer;
 
-    @JsonProperty("fakta")
+    @JsonProperty("refusjonskravGyldighet")
     @Valid
     private List<RefusjonskravPrArbeidsgiverVurderingDto> refusjonskravGyldighet;
 
@@ -93,7 +91,7 @@ public class FaktaBeregningLagreDto {
                                   @Valid FastsettMånedsinntektUtenInntektsmeldingDto fastsattUtenInntektsmelding,
                                   @Valid VurderATogFLiSammeOrganisasjonDto vurderATogFLiSammeOrganisasjon,
                                   @Valid BesteberegningFødendeKvinneDto besteberegningAndeler,
-                                  @NotNull @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+                                  @JsonProperty("faktaOmBeregningTilfelleDto") @NotNull @Valid FaktaOmBeregningTilfelleDto faktaOmBeregningTilfelleDto,
                                   @Valid FastsettBgKunYtelseDto kunYtelseFordeling,
                                   @Valid VurderEtterlønnSluttpakkeDto vurderEtterlønnSluttpakke,
                                   @Valid FastsettEtterlønnSluttpakkeDto fastsettEtterlønnSluttpakke,
@@ -108,17 +106,13 @@ public class FaktaBeregningLagreDto {
         this.fastsattUtenInntektsmelding = fastsattUtenInntektsmelding;
         this.vurderATogFLiSammeOrganisasjon = vurderATogFLiSammeOrganisasjon;
         this.besteberegningAndeler = besteberegningAndeler;
-        this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
+        this.faktaOmBeregningTilfelleDto = faktaOmBeregningTilfelleDto;
         this.kunYtelseFordeling = kunYtelseFordeling;
         this.vurderEtterlønnSluttpakke = vurderEtterlønnSluttpakke;
         this.fastsettEtterlønnSluttpakke = fastsettEtterlønnSluttpakke;
         this.mottarYtelse = mottarYtelse;
         this.vurderMilitaer = vurderMilitaer;
         this.refusjonskravGyldighet = refusjonskravGyldighet;
-    }
-
-    public FaktaBeregningLagreDto(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
-        this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
     }
 
     public VurderNyoppstartetFLDto getVurderNyoppstartetFL() {
@@ -153,8 +147,8 @@ public class FaktaBeregningLagreDto {
         return besteberegningAndeler;
     }
 
-    public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
-        return faktaOmBeregningTilfeller;
+    public FaktaOmBeregningTilfelleDto getFaktaOmBeregningTilfelleDto() {
+        return faktaOmBeregningTilfelleDto;
     }
 
     public FastsettBgKunYtelseDto getKunYtelseFordeling() {

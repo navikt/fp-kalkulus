@@ -21,6 +21,9 @@ public class FastsettMånedsinntektFLDto {
     @NotNull
     private Integer maanedsinntekt;
 
+    public FastsettMånedsinntektFLDto() {
+    }
+
     public FastsettMånedsinntektFLDto(Integer maanedsInntekt) { // NOSONAR
         this.maanedsinntekt = maanedsInntekt;
     }

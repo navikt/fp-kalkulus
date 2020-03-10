@@ -27,6 +27,9 @@ public class BesteberegningFødendeKvinneDto {
     @Valid
     private DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel;
 
+    public BesteberegningFødendeKvinneDto() {
+    }
+
     public BesteberegningFødendeKvinneDto(@Valid @NotNull List<BesteberegningFødendeKvinneAndelDto> besteberegningAndelListe, @Valid DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
         this.besteberegningAndelListe = besteberegningAndelListe;
         this.nyDagpengeAndel = nyDagpengeAndel;

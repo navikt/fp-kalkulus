@@ -26,6 +26,9 @@ public class FastsatteAndelerTidsbegrensetDto {
     @NotNull
     private Integer bruttoFastsattInntekt;
 
+    public FastsatteAndelerTidsbegrensetDto() {
+    }
+
     public FastsatteAndelerTidsbegrensetDto(@Valid @NotNull Long andelsnr, @Valid @NotNull Integer bruttoFastsattInntekt) {
         this.andelsnr = andelsnr;
         this.bruttoFastsattInntekt = bruttoFastsattInntekt;

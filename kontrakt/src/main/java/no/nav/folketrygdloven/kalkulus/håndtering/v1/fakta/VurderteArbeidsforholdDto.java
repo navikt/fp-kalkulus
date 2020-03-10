@@ -30,6 +30,9 @@ public class VurderteArbeidsforholdDto  {
     @Valid
     private Boolean opprinneligVerdi;
 
+    public VurderteArbeidsforholdDto() {
+    }
+
     public VurderteArbeidsforholdDto(Long andelsnr,
                                      boolean tidsbegrensetArbeidsforhold,
                                      Boolean opprinneligVerdi) {

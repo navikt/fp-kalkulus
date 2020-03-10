@@ -21,6 +21,9 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto {
     @NotNull
     private Boolean erNyIArbeidslivet;
 
+    public VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto() {
+    }
+
     public VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto(Boolean erNyIArbeidslivet) { // NOSONAR
         this.erNyIArbeidslivet = erNyIArbeidslivet;
     }

@@ -35,6 +35,9 @@ public class FastsettMånedsinntektUtenInntektsmeldingAndelDto {
     @NotNull
     private Inntektskategori inntektskategori;
 
+    public FastsettMånedsinntektUtenInntektsmeldingAndelDto() {
+    }
+
     public FastsettMånedsinntektUtenInntektsmeldingAndelDto(@Valid @NotNull Long andelsnr, @Valid @NotNull Integer fastsattBeløp, @Valid @NotNull Inntektskategori inntektskategori) {
         this.andelsnr = andelsnr;
         this.fastsattBeløp = fastsattBeløp;

@@ -26,6 +26,9 @@ public class ArbeidstakerandelUtenIMMottarYtelseDto {
     @NotNull
     private Boolean mottarYtelse;
 
+    public ArbeidstakerandelUtenIMMottarYtelseDto() {
+    }
+
     public ArbeidstakerandelUtenIMMottarYtelseDto(long andelsnr, Boolean mottarYtelse) {
         this.andelsnr = andelsnr;
         this.mottarYtelse = mottarYtelse;

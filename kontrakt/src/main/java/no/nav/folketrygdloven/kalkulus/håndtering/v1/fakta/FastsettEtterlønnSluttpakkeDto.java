@@ -21,6 +21,9 @@ public class FastsettEtterlønnSluttpakkeDto {
     @NotNull
     private Integer fastsattPrMnd;
 
+    public FastsettEtterlønnSluttpakkeDto() {
+    }
+
     public FastsettEtterlønnSluttpakkeDto(@Valid @NotNull Integer fastsattPrMnd) {
         this.fastsattPrMnd = fastsattPrMnd;
     }

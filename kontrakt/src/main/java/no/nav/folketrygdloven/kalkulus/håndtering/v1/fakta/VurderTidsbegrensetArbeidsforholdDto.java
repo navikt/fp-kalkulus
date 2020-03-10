@@ -25,6 +25,9 @@ public class VurderTidsbegrensetArbeidsforholdDto {
     @NotNull
     private List<VurderteArbeidsforholdDto> fastsatteArbeidsforhold;
 
+    public VurderTidsbegrensetArbeidsforholdDto() {
+    }
+
     public VurderTidsbegrensetArbeidsforholdDto(List<VurderteArbeidsforholdDto> fastsatteArbeidsforhold) { // NOSONAR
         this.fastsatteArbeidsforhold = new ArrayList<>(fastsatteArbeidsforhold);
     }

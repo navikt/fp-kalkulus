@@ -28,6 +28,9 @@ public class FastsettBgKunYtelseDto {
     @Valid
     private Boolean skalBrukeBesteberegning;
 
+    public FastsettBgKunYtelseDto() {
+    }
+
     public FastsettBgKunYtelseDto(List<FastsattBrukersAndel> andeler, Boolean skalBrukeBesteberegning) { // NOSONAR
         this.andeler = new ArrayList<>(andeler);
         this.skalBrukeBesteberegning = skalBrukeBesteberegning;

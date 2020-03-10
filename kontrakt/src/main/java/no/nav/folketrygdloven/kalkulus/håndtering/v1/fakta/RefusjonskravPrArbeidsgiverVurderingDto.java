@@ -26,6 +26,9 @@ public class RefusjonskravPrArbeidsgiverVurderingDto {
     @NotNull
     private boolean skalUtvideGyldighet;
 
+    public RefusjonskravPrArbeidsgiverVurderingDto() {
+    }
+
     public RefusjonskravPrArbeidsgiverVurderingDto(@Valid @NotNull String arbeidsgiverId, @Valid @NotNull boolean skalUtvideGyldighet) {
         this.arbeidsgiverId = arbeidsgiverId;
         this.skalUtvideGyldighet = skalUtvideGyldighet;

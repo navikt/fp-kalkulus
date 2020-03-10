@@ -26,6 +26,9 @@ public class VurderATogFLiSammeOrganisasjonAndelDto {
     @NotNull
     private Integer arbeidsinntekt;
 
+    public VurderATogFLiSammeOrganisasjonAndelDto() {
+    }
+
     public VurderATogFLiSammeOrganisasjonAndelDto(@Valid @NotNull Long andelsnr, @Valid @NotNull Integer arbeidsinntekt) {
         this.andelsnr = andelsnr;
         this.arbeidsinntekt = arbeidsinntekt;

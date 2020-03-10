@@ -3,44 +3,36 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
+import java.util.List;
+
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FastsatteVerdierForBesteberegningDto {
+public class FaktaOmBeregningTilfelleDto {
 
-    @JsonProperty("fastsattBeløp")
+    @JsonProperty(value = "tilfeller")
     @Valid
-    @NotNull
-    private Integer fastsattBeløp;
+    @NotEmpty
+    private List<FaktaOmBeregningTilfelle> tilfeller;
 
-    @JsonProperty("inntektskategori")
-    @Valid
-    private Inntektskategori inntektskategori;
-
-    public FastsatteVerdierForBesteberegningDto() {
+    public FaktaOmBeregningTilfelleDto(@Valid @NotEmpty List<FaktaOmBeregningTilfelle> tilfeller) {
+        this.tilfeller = tilfeller;
     }
 
-    public FastsatteVerdierForBesteberegningDto(@Valid @NotNull Integer fastsattBeløp, @Valid Inntektskategori inntektskategori) {
-        this.fastsattBeløp = fastsattBeløp;
-        this.inntektskategori = inntektskategori;
+    public FaktaOmBeregningTilfelleDto() {
     }
 
-    public Integer getFastsattBeløp() {
-        return fastsattBeløp;
+    public List<FaktaOmBeregningTilfelle> getTilfeller() {
+        return tilfeller;
     }
-
-    public Inntektskategori getInntektskategori() {
-        return inntektskategori;
-    }
-
 }

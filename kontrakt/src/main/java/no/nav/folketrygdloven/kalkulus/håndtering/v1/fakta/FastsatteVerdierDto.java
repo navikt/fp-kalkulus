@@ -38,6 +38,9 @@ public class FastsatteVerdierDto {
     @Valid
     private Boolean skalHaBesteberegning;
 
+    public FastsatteVerdierDto() {
+    }
+
     public FastsatteVerdierDto(@Valid @NotNull Integer refusjonPrÅr, @Valid @NotNull Integer fastsattÅrsbeløp, @Valid @NotNull Inntektskategori inntektskategori, @Valid @NotNull Boolean skalHaBesteberegning) {
         this.refusjonPrÅr = refusjonPrÅr;
         this.fastsattÅrsbeløp = fastsattÅrsbeløp;

@@ -21,6 +21,9 @@ public class VurderEtterlønnSluttpakkeDto {
     @NotNull
     private Boolean erEtterlønnSluttpakke;
 
+    public VurderEtterlønnSluttpakkeDto() {
+    }
+
     public VurderEtterlønnSluttpakkeDto(@Valid @NotNull Boolean erEtterlønnSluttpakke) {
         this.erEtterlønnSluttpakke = erEtterlønnSluttpakke;
     }

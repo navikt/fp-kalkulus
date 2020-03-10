@@ -21,6 +21,9 @@ public class VurderMilitærDto {
     @NotNull
     private Boolean harMilitaer;
 
+    public VurderMilitærDto() {
+    }
+
     public VurderMilitærDto(@Valid @NotNull Boolean harMilitaer) {
         this.harMilitaer = harMilitaer;
     }

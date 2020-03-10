@@ -45,6 +45,9 @@ public class FastsattBrukersAndel {
     @NotNull
     private Inntektskategori inntektskategori;
 
+    public FastsattBrukersAndel() {
+    }
+
     public FastsattBrukersAndel(@Valid @NotNull Long andelsnr, @Valid @NotNull Boolean nyAndel, @Valid @NotNull Boolean lagtTilAvSaksbehandler, @Valid @NotNull Integer fastsattBeløp, @Valid @NotNull Inntektskategori inntektskategori) {
         this.andelsnr = andelsnr;
         this.nyAndel = nyAndel;

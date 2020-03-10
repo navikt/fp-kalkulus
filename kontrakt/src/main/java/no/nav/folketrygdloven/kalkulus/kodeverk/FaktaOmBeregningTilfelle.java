@@ -23,7 +23,7 @@ public class FaktaOmBeregningTilfelle extends Kodeverk{
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 100)
     @NotNull
     private String kode;
 

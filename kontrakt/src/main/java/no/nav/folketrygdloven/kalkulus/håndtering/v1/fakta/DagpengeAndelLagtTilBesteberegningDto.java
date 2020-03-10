@@ -22,6 +22,9 @@ public class DagpengeAndelLagtTilBesteberegningDto {
     @Valid
     private FastsatteVerdierForBesteberegningDto fastsatteVerdier;
 
+    public DagpengeAndelLagtTilBesteberegningDto() {
+    }
+
     public DagpengeAndelLagtTilBesteberegningDto(int fastsattBeløp, Inntektskategori inntektskategori) {
         this.fastsatteVerdier = new FastsatteVerdierForBesteberegningDto(fastsattBeløp, inntektskategori);
     }
