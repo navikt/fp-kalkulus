@@ -5,19 +5,18 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 
-public class SvangerskapspengerGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
+public class PleiepengerSyktBarnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
     private int dekningsgrad = 100;
     private Integer grunnbeløpMilitærHarKravPå;
 
 
-    public SvangerskapspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbetalingsgrad) {
-        super(tilretteleggingMedUtbetalingsgrad);
+    public PleiepengerSyktBarnGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
+        super(tilretteleggingMedUtbelingsgrad);
     }
 
     @Override
     public int getDekningsgrad() {
-        // egentlig ikke relevant, eller alt kan sees på som alltid 100% dekning
         return dekningsgrad;
     }
 

@@ -7,13 +7,13 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
-public final class TilretteleggingArbeidsforholdDto {
+public final class UtbetalingsgradArbeidsforholdDto {
 
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto internArbeidsforholdRef;
     private UttakArbeidType uttakArbeidType;
 
-    public TilretteleggingArbeidsforholdDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internArbeidsforholdRef, UttakArbeidType uttakArbeidType) {
+    public UtbetalingsgradArbeidsforholdDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internArbeidsforholdRef, UttakArbeidType uttakArbeidType) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRef = Objects.requireNonNull(internArbeidsforholdRef, "internArbeidsforholdRef");
         this.uttakArbeidType = uttakArbeidType;
@@ -35,7 +35,7 @@ public final class TilretteleggingArbeidsforholdDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TilretteleggingArbeidsforholdDto that = (TilretteleggingArbeidsforholdDto) o;
+        UtbetalingsgradArbeidsforholdDto that = (UtbetalingsgradArbeidsforholdDto) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
             Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
             Objects.equals(uttakArbeidType, that.uttakArbeidType);

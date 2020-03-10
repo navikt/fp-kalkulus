@@ -37,8 +37,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
@@ -50,7 +50,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.vedtak.util.Tuple;
 
-public class FullføreBeregningsgrunnlagSVPImplTest {
+public class FullføreBeregningsgrunnlagUtbetalingsgradTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
@@ -72,7 +72,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
 
     @BeforeEach
     public void setup() {
-        tjeneste = new FullføreBeregningsgrunnlagSVPImpl();
+        tjeneste = new FullføreBeregningsgrunnlagUtbetalingsgrad();
         beregningsgrunnlag = lagBeregningsgrunnlagAT();
     }
 
@@ -159,7 +159,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 612_000, 612_000);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
@@ -214,7 +214,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagNæringAndel(periode, 300_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
@@ -256,7 +256,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagNæringAndel(periode, 300_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
@@ -278,7 +278,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagNæringAndel(periode, 800_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, periodeMedUtbetalingsgrad);
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
@@ -709,7 +709,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagFrilansAndel(periode, 300_000);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
 
@@ -733,7 +733,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagFrilansAndel(periode, 300_000);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
@@ -755,7 +755,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagFrilansAndel(periode, 800_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgrad);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
@@ -799,9 +799,9 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagFrilansAndel(periode, 200_000);
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 200_000, 0);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
@@ -826,9 +826,9 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagFrilansAndel(periode, 200_000);
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,800_000, 0);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
@@ -853,7 +853,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagFrilansAndel(periode, 200_000);
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,800_000, 0);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
@@ -879,7 +879,7 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 500_000, 0);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(50));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
@@ -905,11 +905,11 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1, 500_000, 500_000);
         lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1, 500_000, 200_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
@@ -937,11 +937,11 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,500_000, 500_000);
         lagAndel(periode, ORGNR2, ORGNR2_ARB_ID1,500_000, 300_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), ORGNR2_ARB_ID1, periodeMedUtbetalingsgradArbeid2);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
@@ -969,9 +969,9 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID2,300_000, 300_000);
 
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID2, periodeMedUtbetalingsgradArbeid2);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID2, periodeMedUtbetalingsgradArbeid2);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
@@ -1027,11 +1027,11 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         lagAndel(periode, ORGNR1, null, 500_000, 500_000);
         lagAndel(periode, ORGNR2, null, 500_000, 200_000);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradFrilans = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradFrilans = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.FRILANS, null, null, periodeMedUtbetalingsgradFrilans);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), null, periodeMedUtbetalingsgradArbeid);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), null, periodeMedUtbetalingsgradArbeid);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradArbeid2= lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, BigDecimal.valueOf(100));
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), null, periodeMedUtbetalingsgradArbeid2);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgradArbeid2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR2), null, periodeMedUtbetalingsgradArbeid2);
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
@@ -1078,44 +1078,44 @@ public class FullføreBeregningsgrunnlagSVPImplTest {
         return tjeneste.fullføreBeregningsgrunnlag(input);
     }
 
-    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultat(BigDecimal utbetalingsgrad) {
+    private List<UtbetalingsgradPrAktivitetDto> lagUttakResultat(BigDecimal utbetalingsgrad) {
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, utbetalingsgrad);
-        TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
+        UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORGNR1), ORGNR1_ARB_ID1, periodeMedUtbetalingsgrad);
 
         return List.of(tilretteleggingMedUtbelingsgrad);
     }
 
-    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultatMedGraderingFraDato(Map<String, Tuple<LocalDate, BigDecimal>> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+    private List<UtbetalingsgradPrAktivitetDto> lagUttakResultatMedGraderingFraDato(Map<String, Tuple<LocalDate, BigDecimal>> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
         return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
             PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(entry.getValue().getElement1(), entry.getValue().getElement2());
             return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
         }).collect(Collectors.toList());
     }
 
-    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultat(Map<String, LocalDate> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+    private List<UtbetalingsgradPrAktivitetDto> lagUttakResultat(Map<String, LocalDate> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
         return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
             PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(entry.getValue(), BigDecimal.valueOf(100));
             return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
         }).collect(Collectors.toList());
     }
 
-    private List<TilretteleggingMedUtbelingsgradDto> lagUttakResultatMedGraderingFraSkjæringstidspunkt(Map<String, BigDecimal> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
+    private List<UtbetalingsgradPrAktivitetDto> lagUttakResultatMedGraderingFraSkjæringstidspunkt(Map<String, BigDecimal> orgnrUtbetalingsgradMap, Map<String, UUID> arbeidsforhold) {
         return orgnrUtbetalingsgradMap.entrySet().stream().map(entry -> {
             PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT_BEREGNING, entry.getValue());
             return lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(entry.getKey()), arbeidsforhold.get(entry.getKey()), periodeMedUtbetalingsgrad);
         }).collect(Collectors.toList());
     }
 
-    private TilretteleggingMedUtbelingsgradDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver, UUID arbRefUuid, PeriodeMedUtbetalingsgradDto... perioder) {
-        var tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.ref(arbRefUuid), uttakArbeidType);
-        return new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(perioder));
+    private UtbetalingsgradPrAktivitetDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver, UUID arbRefUuid, PeriodeMedUtbetalingsgradDto... perioder) {
+        var tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.ref(arbRefUuid), uttakArbeidType);
+        return new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(perioder));
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, BigDecimal utbetalingsgrad) {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(skjæringstidspunkt, skjæringstidspunkt.plusMonths(3)), utbetalingsgrad);
     }
 
-    private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad) {
+    private SvangerskapspengerGrunnlag lagSvangerskapspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(
             tilretteleggingMedUtbelingsgrad
         );

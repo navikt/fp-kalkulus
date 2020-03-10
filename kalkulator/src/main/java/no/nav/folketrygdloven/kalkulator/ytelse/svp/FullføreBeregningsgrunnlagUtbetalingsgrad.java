@@ -14,20 +14,21 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.svp.RegelFinnGrenseverdi;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FullføreBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @FagsakYtelseTypeRef("SVP")
+@FagsakYtelseTypeRef("PSB")
 @ApplicationScoped
-public class FullføreBeregningsgrunnlagSVPImpl extends FullføreBeregningsgrunnlag {
+public class FullføreBeregningsgrunnlagUtbetalingsgrad extends FullføreBeregningsgrunnlag {
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {
-        var svangerskapspengerGrunnlag = (SvangerskapspengerGrunnlag)bgInput.getYtelsespesifiktGrunnlag();
+        var ytelsespesifiktGrunnlag = (UtbetalingsgradGrunnlag)bgInput.getYtelsespesifiktGrunnlag();
 
-        tilpassRegelModellForSVP(svangerskapspengerGrunnlag, beregningsgrunnlagRegel);
+        tilpassRegelModellForUtbetalingsgrad(ytelsespesifiktGrunnlag, beregningsgrunnlagRegel);
 
 
         String input = toJson(beregningsgrunnlagRegel);
@@ -75,9 +76,9 @@ public class FullføreBeregningsgrunnlagSVPImpl extends FullføreBeregningsgrunn
     }
 
 
-    private void tilpassRegelModellForSVP(SvangerskapspengerGrunnlag svpGrunnlag, Beregningsgrunnlag beregningsgrunnlagRegel) {
-        List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad = svpGrunnlag.getTilretteleggingMedUtbelingsgrad();
-        RegelmodellModifiserer.tilpassRegelModellForSVP(beregningsgrunnlagRegel, tilretteleggingMedUtbelingsgrad);
+    private void tilpassRegelModellForUtbetalingsgrad(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, Beregningsgrunnlag beregningsgrunnlagRegel) {
+        List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet();
+        RegelmodellModifiserer.tilpassRegelModellForUtbetalingsgrad(beregningsgrunnlagRegel, tilretteleggingMedUtbelingsgrad);
     }
 
 }

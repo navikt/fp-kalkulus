@@ -40,8 +40,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
@@ -95,11 +95,11 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvang
                 .medInntektsmeldinger(im)
                 .build();
 
-        TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(virksomhet, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(virksomhet, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(stp, LocalDate.of(2019, 10, 21)), BigDecimal.valueOf(100));
         PeriodeMedUtbetalingsgradDto periodeMedUtbetaling2 = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(LocalDate.of(2019, 10, 22), LocalDate.of(2020, 1, 19)), BigDecimal.valueOf(40));
 
-        TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling, periodeMedUtbetaling2));
+        UtbetalingsgradPrAktivitetDto tilrettelegging = new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling, periodeMedUtbetaling2));
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
 
 
@@ -280,16 +280,16 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvang
 
 
     private SvangerskapspengerGrunnlag lagSVPGrunnlagMedTilrettelegging(LocalDate førsteDagMedSøktYtelse, BigDecimal utbetalingsgrad) {
-        TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetaling = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(førsteDagMedSøktYtelse, STP.plusMonths(3)), utbetalingsgrad);
-        TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling));
+        UtbetalingsgradPrAktivitetDto tilrettelegging = new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(periodeMedUtbetaling));
         return new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
     }
 
     private SvangerskapspengerGrunnlag lagSVPGrunnlagMedTilretteleggingIFlerePerioder(Map<Intervall, BigDecimal> periodeMedutbetalingsgrad) {
-        TilretteleggingArbeidsforholdDto tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetaling = periodeMedutbetalingsgrad.entrySet().stream().map(e -> new PeriodeMedUtbetalingsgradDto(e.getKey(), e.getValue())).collect(Collectors.toList());
-        TilretteleggingMedUtbelingsgradDto tilrettelegging = new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, perioderMedUtbetaling);
+        UtbetalingsgradPrAktivitetDto tilrettelegging = new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, perioderMedUtbetaling);
         return new SvangerskapspengerGrunnlag(List.of(tilrettelegging));
     }
 

@@ -21,9 +21,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPe
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnStartdatoPermisjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapAndelGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -69,10 +69,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             return Optional.empty();
         }
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = input.getYtelsespesifiktGrunnlag();
-        List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad = svangerskapspengerGrunnlag.getTilretteleggingMedUtbelingsgrad();
+        List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad = svangerskapspengerGrunnlag.getUtbetalingsgradPrAktivitet();
         Optional<LocalDate> førsteDatoMedUtbetalingOpt = tilretteleggingMedUtbelingsgrad.stream()
-                .filter(trl -> trl.getTilretteleggingArbeidsforhold().getArbeidsgiver().map(ag -> ag.getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator())).orElse(false)
-                        && trl.getTilretteleggingArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()))
+                .filter(trl -> trl.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().map(ag -> ag.getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator())).orElse(false)
+                        && trl.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()))
                 .flatMap(trl -> trl.getPeriodeMedUtbetalingsgrad().stream())
                 .filter(periodeMedUtbetalingsgradDto -> periodeMedUtbetalingsgradDto.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) != 0)
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
@@ -135,12 +135,12 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     }
 
     private List<AndelGradering> hentEndringSøktYtelseSVP(BeregningsgrunnlagInput input, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
-        List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad = ((SvangerskapspengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getTilretteleggingMedUtbelingsgrad();
+        List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad = ((SvangerskapspengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getUtbetalingsgradPrAktivitet();
         return mapTilrettelegginger(tilretteleggingMedUtbelingsgrad, vlBeregningsgrunnlag);
     }
 
-    private AndelGradering mapUttak(TilretteleggingMedUtbelingsgradDto tilrettelegging, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
-        var tilretteleggingArbeidsforhold = tilrettelegging.getTilretteleggingArbeidsforhold();
+    private AndelGradering mapUttak(UtbetalingsgradPrAktivitetDto tilrettelegging, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+        var tilretteleggingArbeidsforhold = tilrettelegging.getUtbetalingsgradArbeidsforhold();
         Arbeidsgiver tilretteleggingArbeidsgiver = tilretteleggingArbeidsforhold.getArbeidsgiver().orElse(null);
         InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
         AktivitetStatus tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
@@ -167,7 +167,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     }
 
     // TODO: Denne bør vere private
-    List<AndelGradering> mapTilrettelegginger(List<TilretteleggingMedUtbelingsgradDto> tilrettelegginger, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    List<AndelGradering> mapTilrettelegginger(List<UtbetalingsgradPrAktivitetDto> tilrettelegginger, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         return tilrettelegginger.stream().map(a -> mapUttak(a, vlBeregningsgrunnlag)).collect(Collectors.toList());
     }
 

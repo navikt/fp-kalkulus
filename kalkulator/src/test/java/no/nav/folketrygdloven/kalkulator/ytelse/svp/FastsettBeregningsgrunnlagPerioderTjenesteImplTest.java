@@ -42,8 +42,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -141,7 +141,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         PeriodeMedUtbetalingsgradDto periode3 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(3),
             BigDecimal.ZERO);
 
-        TilretteleggingMedUtbelingsgradDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
+        UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
             periode1, periode2, periode3);
 
         PeriodeMedUtbetalingsgradDto periode4 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(14), SKJÆRINGSTIDSPUNKT.plusMonths(1),
@@ -149,7 +149,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         PeriodeMedUtbetalingsgradDto periode5 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(2),
             BigDecimal.valueOf(40));
 
-        TilretteleggingMedUtbelingsgradDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2),
+        UtbetalingsgradPrAktivitetDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2),
             periode4, periode5);
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), behandlingReferanse.getAktørId());
@@ -184,7 +184,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         // Arrange
         PeriodeMedUtbetalingsgradDto periode = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.valueOf(50));
 
-        TilretteleggingMedUtbelingsgradDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER), periode);
+        UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER), periode);
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2),
             behandlingReferanse.getAktørId());
@@ -262,10 +262,10 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
             .medBeregningsgrunnlagPeriode(fom, tom);
     }
 
-    private TilretteleggingMedUtbelingsgradDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver,
-                                                                                  PeriodeMedUtbetalingsgradDto... perioder) {
-        var tilretteleggingArbeidsforhold = new TilretteleggingArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.nyRef(), uttakArbeidType);
-        return new TilretteleggingMedUtbelingsgradDto(tilretteleggingArbeidsforhold, List.of(perioder));
+    private UtbetalingsgradPrAktivitetDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver,
+                                                                             PeriodeMedUtbetalingsgradDto... perioder) {
+        var tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.nyRef(), uttakArbeidType);
+        return new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(perioder));
     }
 
     private PeriodeMedUtbetalingsgradDto lagPeriodeMedUtbetaling(LocalDate skjæringstidspunkt, LocalDate tomDato, BigDecimal utbetalingsgrad) {

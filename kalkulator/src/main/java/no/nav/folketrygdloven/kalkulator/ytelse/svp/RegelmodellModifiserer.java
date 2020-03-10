@@ -11,29 +11,29 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.TilretteleggingMedUtbelingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 
 /**
  * Klasse for å modifisere regelmodellen før gjennomkjøring av regel for fastsetting av beregningsgrunnlag for svangerskapspenger
  */
-final class RegelmodellModifiserer {
+public final class RegelmodellModifiserer {
     private RegelmodellModifiserer() {
     }
 
-    static void tilpassRegelModellForSVP(Beregningsgrunnlag beregningsgrunnlagRegel, List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad) {
+    public static void tilpassRegelModellForUtbetalingsgrad(Beregningsgrunnlag beregningsgrunnlagRegel, List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         settAlleUtbetalingsgraderTil0(beregningsgrunnlagRegel);
         mapUtbetalingsgrad(beregningsgrunnlagRegel, tilretteleggingMedUtbelingsgrad);
         mapErSøktYtelseFor(beregningsgrunnlagRegel);
     }
 
 
-    private static void mapUtbetalingsgrad(Beregningsgrunnlag beregningsgrunnlagRegel, List<TilretteleggingMedUtbelingsgradDto> tilretteleggingMedUtbelingsgrad) {
+    private static void mapUtbetalingsgrad(Beregningsgrunnlag beregningsgrunnlagRegel, List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         tilretteleggingMedUtbelingsgrad.forEach(tilrettelegging -> {
             beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().forEach(bgPeriode -> {
                 BigDecimal utbetalingsgrad = getUtbetalingsgrad(tilrettelegging, bgPeriode);
-                var tilretteleggingArbeidsforhold = tilrettelegging.getTilretteleggingArbeidsforhold();
+                var tilretteleggingArbeidsforhold = tilrettelegging.getUtbetalingsgradArbeidsforhold();
                 if (UttakArbeidType.ORDINÆRT_ARBEID.equals(tilretteleggingArbeidsforhold.getUttakArbeidType())) {
                     getBGArbeidsforhold(bgPeriode).forEach(bgArbeidsforhold -> {
                         if (tilretteleggingArbeidsforhold.getArbeidsgiver().isPresent() &&
@@ -100,7 +100,7 @@ final class RegelmodellModifiserer {
             .orElse(Collections.emptyList());
     }
 
-    private static BigDecimal getUtbetalingsgrad(TilretteleggingMedUtbelingsgradDto tilretteleggingMedUtbelingsgrad, BeregningsgrunnlagPeriode bgPeriode) {
+    private static BigDecimal getUtbetalingsgrad(UtbetalingsgradPrAktivitetDto tilretteleggingMedUtbelingsgrad, BeregningsgrunnlagPeriode bgPeriode) {
         return tilretteleggingMedUtbelingsgrad.getPeriodeMedUtbetalingsgrad().stream()
             .filter(p -> p.getPeriode().inkluderer(bgPeriode.getBeregningsgrunnlagPeriode().getFom()))
             .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)

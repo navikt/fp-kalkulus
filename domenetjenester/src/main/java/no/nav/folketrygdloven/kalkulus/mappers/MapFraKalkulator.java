@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.FORELDREPENGER;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.PLEIEPENGER_SYKT_BARN;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.SVANGERSKAPSPENGER;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
@@ -105,9 +107,14 @@ public class MapFraKalkulator {
             return foreldrepengerGrunnlag;
         } else if (SVANGERSKAPSPENGER == yt) {
             throw new IllegalStateException("Støtter ikke denne ennå");
+        } else if (PLEIEPENGER_SYKT_BARN == yt) {
+            no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
+            PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
+            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(pleiepengerSyktBarnGrunnlag.getGrunnbeløpMilitærHarKravPå());
         }
         return new StandardGrunnlag();
     }
+
 
     private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {
         if (refusjonskravDatoer == null) {
