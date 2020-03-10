@@ -98,4 +98,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
           issue-number: ${{ steps.createdeployissue.outputs.number }}
-          body: /promote dev-fss t4
+          body: /promote dev-fss q1
