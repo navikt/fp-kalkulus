@@ -75,7 +75,7 @@ public class MapIAYTilKalulator {
     }
 
     public static List<ArbeidsgiverOpplysningerDto> mapArbeidsgiverOpplysninger(List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        return arbeidsgiverOpplysninger.stream().map(a -> new ArbeidsgiverOpplysningerDto(a.getIdentifikator(), a.getNavn(), a.getFødselsdato()))
+        return arbeidsgiverOpplysninger.stream().map(a -> new ArbeidsgiverOpplysningerDto(a.getAktør().getIdent(), a.getNavn(), a.getFødselsdato()))
                 .collect(Collectors.toList());
     }
 

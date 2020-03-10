@@ -23,6 +23,7 @@ public class ArbeidsforholdInformasjonDto {
 
 
     public ArbeidsforholdInformasjonDto() {
+        // default ctor
     }
 
     public ArbeidsforholdInformasjonDto(@Valid @NotEmpty List<ArbeidsforholdOverstyringDto> overstyringer) {

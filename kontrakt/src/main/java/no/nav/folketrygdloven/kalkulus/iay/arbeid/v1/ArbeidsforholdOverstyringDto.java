@@ -18,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class ArbeidsforholdOverstyringDto {
 
-
     @JsonProperty("arbeidsgiver")
     @Valid
     @NotNull
@@ -34,6 +33,7 @@ public class ArbeidsforholdOverstyringDto {
 
 
     public ArbeidsforholdOverstyringDto() {
+        // default ctor
     }
 
     public ArbeidsforholdOverstyringDto(@Valid @NotNull Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto arbeidsforholdRefDto, @Valid ArbeidsforholdHandlingType handling) {

@@ -1,6 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
+import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.READER_JSON;
+import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.WRITER_JSON;
+import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.validateResult;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -9,13 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.validation.Validation;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
@@ -59,27 +56,22 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 
-public class JsonMapperTest {
-
-
-    private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
+public class KalkulatorMapperTest {
 
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("945748931");
     private final BeløpDto beløpDto = new BeløpDto(BigDecimal.TEN);
 
-
     @Test
     void skal_generere_og_validere_roundtrip_kalkulator_input_json() throws Exception {
 
         KalkulatorInputDto grunnlag = byggKalkulatorInput();
 
-        String json = WRITER.writeValueAsString(grunnlag);
+        String json = WRITER_JSON.writeValueAsString(grunnlag);
         System.out.println(json);
 
-        KalkulatorInputDto roundTripped = READER.forType(KalkulatorInputDto.class).readValue(json);
+        KalkulatorInputDto roundTripped = READER_JSON.forType(KalkulatorInputDto.class).readValue(json);
 
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getIayGrunnlag()).isNotNull();
@@ -96,10 +88,10 @@ public class JsonMapperTest {
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
         StartBeregningRequest spesifikasjon = new StartBeregningRequest(koblingReferanse, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
 
-        String json = WRITER.writeValueAsString(spesifikasjon);
+        String json = WRITER_JSON.writeValueAsString(spesifikasjon);
         System.out.println(json);
 
-        StartBeregningRequest roundTripped = READER.forType(StartBeregningRequest.class).readValue(json);
+        StartBeregningRequest roundTripped = READER_JSON.forType(StartBeregningRequest.class).readValue(json);
 
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
@@ -139,14 +131,5 @@ public class JsonMapperTest {
         YtelseGrunnlagDto ytelseGrunnlag = new YtelseGrunnlagDto(List.of(ytelseStørrelse), Arbeidskategori.FRILANSER, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, LocalDate.now(), beløpDto);
         YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN);
         return List.of(new YtelseDto(ytelseGrunnlag, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, RelatertYtelseTilstand.ÅPEN, Fagsystem.ARENA, TemaUnderkategori.FORELDREPENGER));
-    }
-
-    private void validateResult(Object roundTripped) {
-        Assertions.assertThat(roundTripped).isNotNull();
-        try (var factory = Validation.buildDefaultValidatorFactory()) {
-            var validator = factory.getValidator();
-            var violations = validator.validate(roundTripped);
-            assertThat(violations).isEmpty();
-        }
     }
 }
