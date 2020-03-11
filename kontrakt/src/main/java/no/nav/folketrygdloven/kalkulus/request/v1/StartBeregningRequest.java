@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -47,7 +48,6 @@ public class StartBeregningRequest {
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
-
     @JsonProperty(value = "kalkulatorInput", required = true)
     @NotNull
     @Valid
@@ -88,5 +88,13 @@ public class StartBeregningRequest {
 
     public KalkulatorInputDto getKalkulatorInput() {
         return kalkulatorInput;
+    }
+
+    @AssertTrue(message = "Krever ytelsespesifikt grunnlag for ytelsen pleiepenger sykt barn")
+    private boolean isPSB() {
+        if (ytelseSomSkalBeregnes == YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN) {
+            return kalkulatorInput.getYtelsespesifiktGrunnlag() != null;
+        }
+        return true;
     }
 }

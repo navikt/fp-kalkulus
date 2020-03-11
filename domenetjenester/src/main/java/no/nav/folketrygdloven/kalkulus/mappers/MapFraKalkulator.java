@@ -110,7 +110,8 @@ public class MapFraKalkulator {
         } else if (PLEIEPENGER_SYKT_BARN == yt) {
             no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
             PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
-            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(pleiepengerSyktBarnGrunnlag.getGrunnbeløpMilitærHarKravPå());
+            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(pleiepengerYtelsesGrunnlag.getGrunnbeløpMilitærHarKravPå());
+            return pleiepengerSyktBarnGrunnlag;
         }
         return new StandardGrunnlag();
     }
