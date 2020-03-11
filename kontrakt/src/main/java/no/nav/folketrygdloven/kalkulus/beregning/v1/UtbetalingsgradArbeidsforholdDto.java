@@ -24,12 +24,10 @@ public final class UtbetalingsgradArbeidsforholdDto {
 
     @JsonProperty(value = "arbeidsgiver", required = true)
     @Valid
-    @NotNull
     private Aktør arbeidsgiver;
 
     @JsonProperty(value = "internArbeidsforholdRef", required = true)
     @Valid
-    @NotNull
     private InternArbeidsforholdRefDto internArbeidsforholdRef;
 
 
@@ -41,7 +39,7 @@ public final class UtbetalingsgradArbeidsforholdDto {
     public UtbetalingsgradArbeidsforholdDto() {
     }
 
-    public UtbetalingsgradArbeidsforholdDto(@Valid @NotNull Aktør arbeidsgiver, @Valid @NotNull InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType) {
+    public UtbetalingsgradArbeidsforholdDto(@Valid Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRef = internArbeidsforholdRef;
         this.uttakArbeidType = uttakArbeidType;
@@ -51,8 +49,8 @@ public final class UtbetalingsgradArbeidsforholdDto {
         return Optional.ofNullable(arbeidsgiver);
     }
 
-    public InternArbeidsforholdRefDto getInternArbeidsforholdRef() {
-        return internArbeidsforholdRef;
+    public Optional<InternArbeidsforholdRefDto> getInternArbeidsforholdRef() {
+        return Optional.ofNullable(internArbeidsforholdRef);
     }
 
     public UttakArbeidType getUttakArbeidType() {
