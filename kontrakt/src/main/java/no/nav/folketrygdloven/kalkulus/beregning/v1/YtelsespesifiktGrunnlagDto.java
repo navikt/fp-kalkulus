@@ -40,7 +40,6 @@ public abstract class YtelsespesifiktGrunnlagDto {
 
     @JsonProperty(value = "grunnbeløpMilitærHarKravPå")
     @Valid
-    @NotNull
     private Integer grunnbeløpMilitærHarKravPå;
 
     protected YtelsespesifiktGrunnlagDto() {

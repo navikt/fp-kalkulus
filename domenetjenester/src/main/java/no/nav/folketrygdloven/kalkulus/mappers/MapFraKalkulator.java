@@ -50,6 +50,8 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 public class MapFraKalkulator {
 
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
+    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP = 3;
+    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB = 2;
 
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
@@ -103,14 +105,14 @@ public class MapFraKalkulator {
         if (FORELDREPENGER == yt) {
             ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
             //TODO(OJR) lag builder?
-            foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(ytelsespesifiktGrunnlag.getGrunnbeløpMilitærHarKravPå());
+            foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP);
             return foreldrepengerGrunnlag;
         } else if (SVANGERSKAPSPENGER == yt) {
             throw new IllegalStateException("Støtter ikke denne ennå");
         } else if (PLEIEPENGER_SYKT_BARN == yt) {
             no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
             PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
-            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(pleiepengerYtelsesGrunnlag.getGrunnbeløpMilitærHarKravPå());
+            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB);
             return pleiepengerSyktBarnGrunnlag;
         }
         return new StandardGrunnlag();
