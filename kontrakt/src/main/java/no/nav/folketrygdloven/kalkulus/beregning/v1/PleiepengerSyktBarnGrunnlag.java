@@ -40,6 +40,12 @@ public class PleiepengerSyktBarnGrunnlag extends YtelsespesifiktGrunnlagDto {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
     }
 
+    public PleiepengerSyktBarnGrunnlag(@Valid @DecimalMin(value = "0.00", message = "dekningsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "dekningsgrad ${validatedValue} må være <= {value}") BigDecimal dekningsgrad,
+                                       @NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+        super(dekningsgrad);
+        this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
+    }
+
     public List<UtbetalingsgradPrAktivitetDto> getUtbetalingsgradPrAktivitet() {
         return utbetalingsgradPrAktivitet;
     }
