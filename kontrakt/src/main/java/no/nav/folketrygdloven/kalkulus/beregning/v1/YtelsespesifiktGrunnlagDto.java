@@ -46,7 +46,7 @@ public abstract class YtelsespesifiktGrunnlagDto {
         // default ctor
     }
 
-    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad, @Valid @NotNull Integer grunnbeløpMilitærHarKravPå) {
+    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad, @Valid Integer grunnbeløpMilitærHarKravPå) {
         this.dekningsgrad = dekningsgrad;
         this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
     }
