@@ -51,6 +51,11 @@ public abstract class YtelsespesifiktGrunnlagDto {
         this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
     }
 
+    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad) {
+        this.dekningsgrad = dekningsgrad;
+    }
+
+
     private YtelsespesifiktGrunnlagDto medBesteberegning() {
         this.kvalifisererTilBesteberegning = true;
         return this;
