@@ -133,7 +133,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         return periode.map(p -> !p.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false);
     }
 
-    private Boolean harAndelMedInntektsmeldingUtenReferanseOgAktivitetTilkommerEtterStp(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning,
+    private Boolean harAndelMedInntektsmeldingUtenReferanseOgAktivitetTilkommerEtterStp(BeregningsgrunnlagInput input, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning,
                                                                                         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel,
                                                                                         Periode ansettelsesPeriode, YrkesaktivitetDto ya) {
         if (matchendeAndel.isEmpty()) {
@@ -145,7 +145,9 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                     .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold);
             Optional<Boolean> harInntektsmelding = matchendeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBeregningsgrunnlagArbeidstakerAndel)
                     .map(BeregningsgrunnlagArbeidstakerAndelDto::getHarInntektsmelding);
-            return !gjelderSpesifikt.orElse(false) && harInntektsmelding.orElse(false);
+            boolean resultat = !gjelderSpesifikt.orElse(false) && harInntektsmelding.orElse(false);
+            logger.info("BehandlingsId={}, resultat={}, gjelderSpesifikt={}, harInntektsmelding={}", input.getBehandlingReferanse().getBehandlingId(), resultat, gjelderSpesifikt, harInntektsmelding);
+            return resultat;
         }
         return false;
     }
@@ -270,7 +272,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(andeler, ya);
             logger.info("BehandlingsId={}, Inntektsmeldinger={}, matchende andel={}, ya={} ", input.getBehandlingReferanse().getBehandlingId(), input.getInntektsmeldinger(), matchendeAndel, ya);
-            if (!harAndelMedInntektsmeldingUtenReferanseOgAktivitetTilkommerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel, ansettelsesPeriode, ya)) {
+            if (!harAndelMedInntektsmeldingUtenReferanseOgAktivitetTilkommerEtterStp(input, iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel, ansettelsesPeriode, ya)) {
                 if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)) {
                     matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
                 }
@@ -284,6 +286,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                         .medArbeidsforhold(arbeidsforhold)
                         .medStartdatoPermisjon(startdatoPermisjon)
                         .build();
+                logger.info("BehandlingsId={}, arbeidsforholdOgInntektsmelding-aktivitetsstatus={}", input.getBehandlingReferanse().getBehandlingId(), arbeidsforholdOgInntektsmelding.getAktivitetStatus());
                 arbeidGraderingOgInntektsmeldinger.add(arbeidsforholdOgInntektsmelding);
             }
         }
