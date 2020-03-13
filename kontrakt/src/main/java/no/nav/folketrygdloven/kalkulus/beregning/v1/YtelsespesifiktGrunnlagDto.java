@@ -38,17 +38,8 @@ public abstract class YtelsespesifiktGrunnlagDto {
     @NotNull
     private Boolean kvalifisererTilBesteberegning = false;
 
-    @JsonProperty(value = "grunnbeløpMilitærHarKravPå")
-    @Valid
-    private Integer grunnbeløpMilitærHarKravPå;
-
     protected YtelsespesifiktGrunnlagDto() {
         // default ctor
-    }
-
-    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad, @Valid Integer grunnbeløpMilitærHarKravPå) {
-        this.dekningsgrad = dekningsgrad;
-        this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
     }
 
     public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad) {
@@ -68,8 +59,5 @@ public abstract class YtelsespesifiktGrunnlagDto {
     public Boolean getKvalifisererTilBesteberegning() {
         return kvalifisererTilBesteberegning;
     }
-
-    public Integer getGrunnbeløpMilitærHarKravPå() {
-        return grunnbeløpMilitærHarKravPå;
-    }
+    
 }
