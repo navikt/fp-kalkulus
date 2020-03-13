@@ -49,6 +49,7 @@
         <felles.version>1.5-20200129062021-08b720c</felles.version>
         <prometheus.version>0.8.1</prometheus.version>
         <junit.version>5.6.0</junit.version>
+        <swagger.version>2.1.1</swagger.version>
     </properties>
 
     <dependencyManagement>
@@ -314,36 +315,6 @@
                 <version>1.2.2</version>
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-compat-spec-parser</artifactId>
-                <version>1.0.50</version>
-            </dependency>
-            <dependency>
-                <groupId>io.javaslang</groupId>
-                <artifactId>javaslang</artifactId>
-                <version>2.0.6</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-core</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.swagger2markup</groupId>
-                <artifactId>markup-document-builder</artifactId>
-                <version>1.1.2</version>
-            </dependency>
-            <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-healthchecks</artifactId>
                 <version>4.1.5</version>
@@ -429,6 +400,13 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>3.0.1-b11</version>
+            </dependency>
+
+            <!--Swagger-->
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

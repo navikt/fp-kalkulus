@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulus.jetty;
 
 public class JettyWebKonfigurasjon implements AppKonfigurasjon {
     private static final String CONTEXT_PATH = "/ftkalkulus";
-    private static final String SWAGGER_HASH = "sha256-RxdFeYwabXMIN/DbNb4RQ9dcMwVOL3mhiRgkBzXsoaw=";
+    private static final String SWAGGER_HASH = "sha256-/k28/Xs33wXyOXYCOpKXui8gJ/Y6nxd5AnKA9iP63/s=";
 
     private Integer serverPort;
 
