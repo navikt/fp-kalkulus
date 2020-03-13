@@ -113,5 +113,4 @@ public class JettyServer extends AbstractJettyServer {
         return new ResourceCollection(
                 Resource.newClassPathResource("/web"));
     }
-
 }
