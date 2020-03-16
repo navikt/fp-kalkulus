@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
@@ -45,7 +46,6 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGU
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagGrunnlagForReferanseRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
@@ -65,16 +65,17 @@ public class HentKalkulusRestTjeneste {
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
-    private BeregningTilInputTjeneste beregningTilInputTjeneste;
 
     public HentKalkulusRestTjeneste() {
         // for CDI
     }
 
     @Inject
-    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
+    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste, BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste, BeregningTilInputTjeneste beregningTilInputTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.beregningsgrunnlagDtoTjeneste = beregningsgrunnlagDtoTjeneste;
     }
 
     @POST
