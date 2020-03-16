@@ -71,7 +71,7 @@ public class HentKalkulusRestTjeneste {
     }
 
     @Inject
-    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, 
+    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                     KalkulatorInputTjeneste kalkulatorInputTjeneste,
                                     BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste) {

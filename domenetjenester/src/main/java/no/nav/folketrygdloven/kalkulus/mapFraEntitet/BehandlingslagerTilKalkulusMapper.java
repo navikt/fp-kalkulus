@@ -39,7 +39,7 @@ public class BehandlingslagerTilKalkulusMapper {
         beregningsgrunnlagFraFpsak.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
         beregningsgrunnlagFraFpsak.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
 
-        return oppdatere.buildUtenIdOgTilstand();
+        return oppdatere.build(beregningsgrunnlagFraFpsak.getBeregningsgrunnlagTilstand());
     }
 
 
