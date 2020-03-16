@@ -71,7 +71,10 @@ public class HentKalkulusRestTjeneste {
     }
 
     @Inject
-    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste, BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste, BeregningTilInputTjeneste beregningTilInputTjeneste) {
+    public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, 
+                                    BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                    KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                    BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;

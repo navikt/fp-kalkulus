@@ -30,12 +30,10 @@ public class KalkulatorInputTjeneste {
 
     private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
 
-    @Inject
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-
-    @Inject
     private KoblingRepository koblingRepository;
 
+    @Inject
     public KalkulatorInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingRepository koblingRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
