@@ -42,7 +42,7 @@ spec:
     sidecar: false
     paths:
       - mountPath: /var/run/secrets/nais.io/serviceuser
-        kvPath: serviceuser/data/test/srvftkalkulus
+        kvPath: serviceuser/data/dev/srvftkalkulus
       - mountPath: /var/run/secrets/nais.io/vault
         kvPath: /kv/preprod/fss/ftkalkulus/q1
   env:
@@ -52,9 +52,6 @@ spec:
       value: https://wasapp-q1.adeo.no/asm-pdp/authorize
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
-    #Systembruker
-    - name: SYSTEMBRUKER_USERNAME
-      value: srvft-kalkulus
     #OpenID
     - name: OPENIDCONNECT_ISSOHOST
       value: https://isso-q.adeo.no:443/isso/oauth2
@@ -69,12 +66,6 @@ spec:
       value: https://security-token-service.nais.preprod.local
     - name: OIDC_STS_JWKSURL
       value: https://security-token-service.nais.preprod.local/rest/v1/sts/jwks
-    #Database
-    - name: DEFAULTDS_USERNAME
-      value: ftkalkulus-q1
-    - name: DEFAULTDS_URL
-      value: jdbc:postgresql://b27dbvl009.preprod.local:5432/ftkalkulus-q1
     #Appdynamics (mer i Dockerfile)
     - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
       value: NON-PROD
-    #Eksterne systemer
