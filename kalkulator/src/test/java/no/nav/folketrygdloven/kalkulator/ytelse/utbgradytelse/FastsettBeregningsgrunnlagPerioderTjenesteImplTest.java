@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -274,7 +274,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste lagTjeneste() {
         var oversetterTilRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse();
-        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger();
+        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
         var oversetterFraRegelTilVLNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
         var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
         return new FastsettBeregningsgrunnlagPerioderTjeneste(oversetterTilRegelNaturalytelse,

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
 @ApplicationScoped
-public class FullføreBeregningsgrunnlagUtbetalingsgrad extends FullføreBeregningsgrunnlag {
+public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {

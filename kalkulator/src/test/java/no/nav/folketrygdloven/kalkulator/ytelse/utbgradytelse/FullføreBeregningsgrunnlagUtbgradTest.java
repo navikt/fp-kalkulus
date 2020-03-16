@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +50,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.vedtak.util.Tuple;
 
-public class FullføreBeregningsgrunnlagUtbetalingsgradTest {
+public class FullføreBeregningsgrunnlagUtbgradTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
@@ -72,7 +72,7 @@ public class FullføreBeregningsgrunnlagUtbetalingsgradTest {
 
     @BeforeEach
     public void setup() {
-        tjeneste = new FullføreBeregningsgrunnlagUtbetalingsgrad();
+        tjeneste = new FullføreBeregningsgrunnlagUtbgrad();
         beregningsgrunnlag = lagBeregningsgrunnlagAT();
     }
 

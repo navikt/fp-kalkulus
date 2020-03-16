@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -50,13 +50,13 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
-class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspengerTest {
+class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgradTest {
 
     public static final LocalDate STP = LocalDate.now();
     public static final BehandlingReferanse REFERANSE = new BehandlingReferanseMock(STP);
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("910909088");
 
-    private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger();
+    private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
 
 
     @Test

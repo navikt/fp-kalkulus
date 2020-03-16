@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -159,7 +159,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         var tilrettelegginger = List.of(tilrette1, tilrette2);
 
         // Act
-        var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger();
+        var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
 
         List<AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(tilrettelegginger, bg);
 
@@ -202,7 +202,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         // Act
 
-        var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingSvangerskapspenger();
+        var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
 
         List<AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(tilrettelegginger, bg);
 

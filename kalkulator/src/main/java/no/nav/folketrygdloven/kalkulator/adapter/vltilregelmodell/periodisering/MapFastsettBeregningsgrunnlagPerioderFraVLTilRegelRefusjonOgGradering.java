@@ -27,9 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
-/** Default mapper for alle ytelser. */
-@FagsakYtelseTypeRef()
-@ApplicationScoped
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     public MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering() {

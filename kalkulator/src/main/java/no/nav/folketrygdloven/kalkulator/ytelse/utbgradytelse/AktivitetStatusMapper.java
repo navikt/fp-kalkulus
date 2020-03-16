@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.ytelse.svp;
+package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;

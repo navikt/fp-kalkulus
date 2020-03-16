@@ -36,13 +36,12 @@ public class FastsettMånedsinntektUtenInntektsmeldingAndelDto {
 
     @JsonProperty("inntektskategori")
     @Valid
-    @NotNull
     private Inntektskategori inntektskategori;
 
     public FastsettMånedsinntektUtenInntektsmeldingAndelDto() {
     }
 
-    public FastsettMånedsinntektUtenInntektsmeldingAndelDto(@Valid @NotNull Long andelsnr, @Valid @NotNull Integer fastsattBeløp, @Valid @NotNull Inntektskategori inntektskategori) {
+    public FastsettMånedsinntektUtenInntektsmeldingAndelDto(@Valid @NotNull Long andelsnr, @Valid @NotNull Integer fastsattBeløp, @Valid Inntektskategori inntektskategori) {
         this.andelsnr = andelsnr;
         this.fastsattBeløp = fastsattBeløp;
         this.inntektskategori = inntektskategori;
