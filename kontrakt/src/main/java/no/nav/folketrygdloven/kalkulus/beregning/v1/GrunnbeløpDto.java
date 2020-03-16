@@ -1,9 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -29,12 +31,16 @@ public class GrunnbeløpDto {
 
     @JsonProperty(value = "gSnitt", required = true)
     @Valid
-    @NotNull
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "200000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 6, fraction = 2)
     private BigDecimal gSnitt;
 
     @JsonProperty(value = "gVerdi", required = true)
     @Valid
-    @NotNull
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "200000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 6, fraction = 2)
     private BigDecimal gVerdi;
 
     public GrunnbeløpDto() {

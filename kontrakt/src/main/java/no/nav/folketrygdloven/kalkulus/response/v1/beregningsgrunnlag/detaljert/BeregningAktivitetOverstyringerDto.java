@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class BeregningAktivitetOverstyringerDto {
 
     @JsonProperty(value = "overstyringer")
-    @NotNull
+    @Size
     @Valid
     private List<BeregningAktivitetOverstyringDto> overstyringer;
 

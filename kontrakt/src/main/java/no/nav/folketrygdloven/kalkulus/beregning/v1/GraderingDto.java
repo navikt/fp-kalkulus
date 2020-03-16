@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,15 +29,16 @@ public class GraderingDto {
 
     @JsonProperty(value = "arbeidstidProsent")
     @Valid
-    @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal arbeidstidProsent;
 
     protected GraderingDto() {
         // default ctor
     }
 
-    public GraderingDto(@Valid @NotNull Periode periode, @Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal arbeidstidProsent) {
+    public GraderingDto(@Valid @NotNull Periode periode, @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") BigDecimal arbeidstidProsent) {
         this.periode = periode;
         this.arbeidstidProsent = arbeidstidProsent;
     }

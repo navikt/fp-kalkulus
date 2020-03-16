@@ -4,6 +4,9 @@ package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 import java.math.BigDecimal;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -53,7 +56,9 @@ public class OppgittEgenNæringDto {
 
     @JsonProperty(value = "bruttoInntekt")
     @Valid
-    @NotNull
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal bruttoInntekt;
 
     public OppgittEgenNæringDto(@Valid @NotNull Periode periode,

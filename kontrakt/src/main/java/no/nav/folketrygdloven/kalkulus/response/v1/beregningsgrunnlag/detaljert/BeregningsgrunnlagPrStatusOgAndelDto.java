@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -27,7 +32,8 @@ import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "andelsnr")
-    @NotNull
+    @Min(1)
+    @Max(100)
     @Valid
     private Long andelsnr;
 
@@ -47,27 +53,36 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private OpptjeningAktivitetType arbeidsforholdType;
 
     @JsonProperty(value = "bruttoPrÅr")
-    @NotNull
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal bruttoPrÅr;
 
     @JsonProperty(value = "redusertRefusjonPrÅr")
-    @NotNull
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertRefusjonPrÅr;
 
     @JsonProperty(value = "redusertBrukersAndelPrÅr")
-    @NotNull
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     @Valid
     private BigDecimal redusertBrukersAndelPrÅr;
 
     @JsonProperty(value = "dagsatsBruker")
-    @NotNull
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long dagsatsBruker;
 
     @JsonProperty(value = "dagsatsArbeidsgiver")
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long dagsatsArbeidsgiver;
 
     @JsonProperty(value = "inntektskategori")
@@ -81,54 +96,93 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "overstyrtPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal overstyrtPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal avkortetPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertPrÅr;
 
     @JsonProperty(value = "beregnetPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal beregnetPrÅr;
 
     @JsonProperty(value = "fordeltPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal fordeltPrÅr;
 
     @JsonProperty(value = "maksimalRefusjonPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal maksimalRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetRefusjonPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal avkortetRefusjonPrÅr;
 
     @JsonProperty(value = "avkortetBrukersAndelPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal avkortetBrukersAndelPrÅr;
 
     @JsonProperty(value = "pgiSnitt")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal pgiSnitt;
 
     @JsonProperty(value = "pgi1")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal pgi1;
 
     @JsonProperty(value = "pgi2")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal pgi2;
 
     @JsonProperty(value = "pgi3")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal pgi3;
 
     @JsonProperty(value = "årsbeløpFraTilstøtendeYtelse")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal årsbeløpFraTilstøtendeYtelse;
 
     @JsonProperty(value = "nyIArbeidslivet")
@@ -141,6 +195,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "besteberegningPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal besteberegningPrÅr;
 
     @JsonProperty(value = "lagtTilAvSaksbehandler")
@@ -149,6 +206,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @JsonProperty(value = "orginalDagsatsFraTilstøtendeYtelse")
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
     @JsonProperty(value = "mottarYtelse")

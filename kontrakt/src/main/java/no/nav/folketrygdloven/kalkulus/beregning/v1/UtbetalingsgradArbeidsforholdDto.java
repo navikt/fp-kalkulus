@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -29,7 +28,6 @@ public final class UtbetalingsgradArbeidsforholdDto {
     @JsonProperty(value = "internArbeidsforholdRef", required = true)
     @Valid
     private InternArbeidsforholdRefDto internArbeidsforholdRef;
-
 
     @JsonProperty(value = "uttakArbeidType", required = true)
     @Valid

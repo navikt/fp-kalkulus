@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,7 +22,7 @@ public class OpptjeningAktiviteterDto {
 
     @JsonProperty(value = "perioder", required = true)
     @Valid
-    @NotEmpty
+    @Size(min = 1)
     private List<OpptjeningPeriodeDto> perioder;
 
     protected OpptjeningAktiviteterDto() {

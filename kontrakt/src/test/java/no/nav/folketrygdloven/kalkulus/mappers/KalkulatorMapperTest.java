@@ -78,6 +78,7 @@ public class KalkulatorMapperTest {
         validateResult(roundTripped);
     }
 
+
     @Test
     public void skal_generere_og_validere_roundtrip_av_start_beregning_request() throws Exception {
         //arrange

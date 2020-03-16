@@ -21,31 +21,40 @@ import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum UttakArbeidType implements Kodeverdi {
 
-    ORDINÆRT_ARBEID("ORDINÆRT_ARBEID", "Ordinært arbeid"),
-    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende"),
-    FRILANS("FRILANS", "Frilans"),
+    ORDINÆRT_ARBEID("ORDINÆRT_ARBEID", "Ordinært arbeid", "AT"),
+    SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "SN"),
+    FRILANS("FRILANS", "Frilans", "FL"),
     ANNET("ANNET", "Annet"),
     ;
-    private static final Map<String, UttakArbeidType> KODER = new LinkedHashMap<>();
-
     public static final String KODEVERK = "UTTAK_ARBEID_TYPE";
+    private static final Map<String, UttakArbeidType> KODER = new LinkedHashMap<>();
+    private static final Map<String, UttakArbeidType> KODER_K9 = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
                 throw new IllegalArgumentException("Duplikat : " + v.kode);
             }
+            if (KODER_K9.putIfAbsent(v.k9Kode, v) != null) {
+                throw new IllegalArgumentException("Duplikat : " + v.k9Kode);
+            }
         }
     }
 
     @JsonIgnore
     private String navn;
-
+    private String k9Kode;
     private String kode;
 
     UttakArbeidType(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
+    }
+
+    UttakArbeidType(String kode, String navn, String k9Kode) {
+        this.kode = kode;
+        this.navn = navn;
+        this.k9Kode = k9Kode;
     }
 
     @JsonCreator
@@ -55,23 +64,16 @@ public enum UttakArbeidType implements Kodeverdi {
         }
         var ad = KODER.get(kode);
         if (ad == null) {
-            throw new IllegalArgumentException("Ukjent UttakArbeidType: " + kode);
+            ad = KODER_K9.get(kode);
+            if (ad == null) {
+                throw new IllegalArgumentException("Ukjent UttakArbeidType: " + kode);
+            }
         }
         return ad;
     }
+
     public static Map<String, UttakArbeidType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonProperty
@@ -80,9 +82,24 @@ public enum UttakArbeidType implements Kodeverdi {
         return kode;
     }
 
+    @JsonProperty
+    @Override
+    public String getKodeverk() {
+        return KODEVERK;
+    }
+
     @Override
     public String getOffisiellKode() {
         return this.getKode();
+    }
+
+    @Override
+    public String getNavn() {
+        return navn;
+    }
+
+    public boolean erArbeidstakerEllerFrilans() {
+        return ORDINÆRT_ARBEID.equals(this) || FRILANS.equals(this);
     }
 
     @Converter(autoApply = true)
@@ -96,9 +113,5 @@ public enum UttakArbeidType implements Kodeverdi {
         public UttakArbeidType convertToEntityAttribute(String dbData) {
             return dbData == null ? null : fraKode(dbData);
         }
-    }
-
-    public boolean erArbeidstakerEllerFrilans() {
-        return ORDINÆRT_ARBEID.equals(this) || FRILANS.equals(this);
     }
 }

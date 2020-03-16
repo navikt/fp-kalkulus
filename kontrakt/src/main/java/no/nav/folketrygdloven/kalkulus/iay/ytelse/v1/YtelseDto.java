@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 import java.util.Set;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,6 +29,7 @@ public class YtelseDto {
 
     @JsonProperty("ytelseAnvist")
     @Valid
+    @Size
     private Set<YtelseAnvistDto> ytelseAnvist;
 
     @JsonProperty("relatertYtelseType")

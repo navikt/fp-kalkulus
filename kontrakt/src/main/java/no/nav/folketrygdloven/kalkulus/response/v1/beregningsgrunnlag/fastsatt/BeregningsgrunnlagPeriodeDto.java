@@ -7,7 +7,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -24,7 +30,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 public class BeregningsgrunnlagPeriodeDto {
 
     @JsonProperty(value = "beregningsgrunnlagPrStatusOgAndelList")
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList;
 
@@ -35,22 +41,33 @@ public class BeregningsgrunnlagPeriodeDto {
 
     @JsonProperty(value = "bruttoPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal bruttoPrÅr;
 
     @JsonProperty(value = "avkortetPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal avkortetPrÅr;
 
     @JsonProperty(value = "redusertPrÅr")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertPrÅr;
 
     @JsonProperty(value = "dagsats")
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long dagsats;
 
     @JsonProperty(value = "periodeÅrsaker")
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<PeriodeÅrsak> periodeÅrsaker;
 

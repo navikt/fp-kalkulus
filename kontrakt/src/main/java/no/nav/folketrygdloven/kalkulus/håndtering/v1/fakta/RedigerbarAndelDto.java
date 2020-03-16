@@ -8,7 +8,10 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,17 +30,18 @@ public class RedigerbarAndelDto {
 
     @JsonProperty("andelsnr")
     @Valid
-    @NotNull
+    @Min(0)
+    @Max(100)
     private Long andelsnr;
 
     @JsonProperty("arbeidsgiverId")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverId;
 
     @JsonProperty("arbeidsforholdId")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsforholdId;
 
     @JsonProperty("nyAndel")

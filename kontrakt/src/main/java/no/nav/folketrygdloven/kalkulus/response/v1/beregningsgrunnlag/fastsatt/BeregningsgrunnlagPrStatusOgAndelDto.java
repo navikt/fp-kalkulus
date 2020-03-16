@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -45,25 +50,38 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @JsonProperty(value = "bruttoPrÅr")
     @NotNull
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal bruttoPrÅr;
 
     @JsonProperty(value = "redusertRefusjonPrÅr")
     @NotNull
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertRefusjonPrÅr;
 
     @JsonProperty(value = "redusertBrukersAndelPrÅr")
     @NotNull
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertBrukersAndelPrÅr;
 
     @JsonProperty(value = "dagsatsBruker")
     @NotNull
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long dagsatsBruker;
 
     @JsonProperty(value = "dagsatsArbeidsgiver")
     @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Long dagsatsArbeidsgiver;
 
     @JsonProperty(value = "inntektskategori")

@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,7 +16,7 @@ public class AktivitetGraderingDto {
 
     @JsonProperty(value = "andelGraderingDto")
     @Valid
-    @NotEmpty
+    @Size(min = 1)
     private List<AndelGraderingDto> andelGraderingDto;
 
     protected AktivitetGraderingDto() {

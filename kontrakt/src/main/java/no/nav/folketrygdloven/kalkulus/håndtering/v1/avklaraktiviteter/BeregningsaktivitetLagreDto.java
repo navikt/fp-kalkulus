@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,17 +38,17 @@ public class BeregningsaktivitetLagreDto {
 
     @JsonProperty("oppdragsgiverOrg")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String oppdragsgiverOrg;
 
     @JsonProperty("arbeidsgiverIdentifikator")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverIdentifikator;
 
     @JsonProperty("arbeidsforholdRef")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsforholdRef;
 
     @JsonProperty("skalBrukes")

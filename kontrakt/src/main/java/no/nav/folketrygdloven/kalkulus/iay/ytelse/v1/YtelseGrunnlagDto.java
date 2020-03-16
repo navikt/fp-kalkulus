@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,6 +26,7 @@ public class YtelseGrunnlagDto {
 
     @JsonProperty(value = "ytelseStørrelse")
     @Valid
+    @Size
     private List<YtelseStørrelseDto> ytelseStørrelse;
 
     @JsonProperty(value = "arbeidskategori")
@@ -30,14 +35,23 @@ public class YtelseGrunnlagDto {
 
     @JsonProperty(value = "dekningsgradProsent")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal dekningsgradProsent;
 
     @JsonProperty(value = "graderingProsent")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal graderingProsent;
 
     @JsonProperty(value = "inntektProsent")
     @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal inntektProsent;
 
     @JsonProperty(value = "opprinneligIdentdato")

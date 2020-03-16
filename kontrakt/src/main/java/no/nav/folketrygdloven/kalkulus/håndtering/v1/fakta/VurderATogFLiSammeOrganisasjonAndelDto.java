@@ -4,6 +4,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -18,12 +20,14 @@ public class VurderATogFLiSammeOrganisasjonAndelDto {
 
     @JsonProperty("andelsnr")
     @Valid
-    @NotNull
+    @Min(1)
+    @Max(100)
     private Long andelsnr;
 
     @JsonProperty("arbeidsinntekt")
     @Valid
-    @NotNull
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Integer arbeidsinntekt;
 
     public VurderATogFLiSammeOrganisasjonAndelDto() {

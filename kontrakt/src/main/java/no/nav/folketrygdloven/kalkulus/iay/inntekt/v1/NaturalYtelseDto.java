@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,12 +20,15 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 public class NaturalYtelseDto {
 
     @JsonProperty(value = "periode")
+    @Valid
     private Periode periode;
 
     @JsonProperty(value = "beløp")
+    @Valid
     private BeløpDto beløp;
 
     @JsonProperty(value = "type")
+    @Valid
     private NaturalYtelseType type;
 
     protected NaturalYtelseDto() {

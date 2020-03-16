@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,10 +26,11 @@ public class ArbeidsgiverOpplysningerDto {
 
     @JsonProperty(value = "navn")
     @Valid
-    @NotNull
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String navn;
 
     @JsonProperty(value = "fødselsdato")
+    @Valid
     private LocalDate fødselsdato; // Fødselsdato for privatperson som arbeidsgiver
 
     public ArbeidsgiverOpplysningerDto() {

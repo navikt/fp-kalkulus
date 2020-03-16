@@ -6,7 +6,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +20,7 @@ public class FordelBeregningsgrunnlagDto {
 
     @JsonProperty("endretBeregningsgrunnlagPerioder")
     @Valid
-    @NotNull
+    @Size(min = 1)
     private List<FastsettBeregningsgrunnlagPeriodeDto> endretBeregningsgrunnlagPerioder;
 
     public FordelBeregningsgrunnlagDto(List<FastsettBeregningsgrunnlagPeriodeDto> endretBeregningsgrunnlagPerioder) { // NOSONAR

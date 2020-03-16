@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -15,8 +18,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "ytelseType", defaultImpl = Void.class)
@@ -29,8 +30,9 @@ public abstract class YtelsespesifiktGrunnlagDto {
 
     @JsonProperty(value = "dekningsgrad")
     @Valid
-    @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal dekningsgrad;
 
     @JsonProperty(value = "kvalifisererTilBesteberegning")
@@ -59,5 +61,5 @@ public abstract class YtelsespesifiktGrunnlagDto {
     public Boolean getKvalifisererTilBesteberegning() {
         return kvalifisererTilBesteberegning;
     }
-    
+
 }

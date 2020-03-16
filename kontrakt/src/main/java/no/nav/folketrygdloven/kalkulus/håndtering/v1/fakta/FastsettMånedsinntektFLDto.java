@@ -4,7 +4,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +19,8 @@ public class FastsettMånedsinntektFLDto {
 
     @JsonProperty("maanedsinntekt")
     @Valid
-    @NotNull
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Integer maanedsinntekt;
 
     public FastsettMånedsinntektFLDto() {

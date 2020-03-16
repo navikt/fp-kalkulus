@@ -4,6 +4,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,7 +25,8 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
 
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
-    @NotNull
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Integer bruttoBeregningsgrunnlag;
 
     public VurderVarigEndringEllerNyoppstartetSNDto(boolean erVarigEndretNaering, Integer bruttoBeregningsgrunnlag) {

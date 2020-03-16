@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,10 +34,12 @@ public class InntektsmeldingDto {
 
     @JsonProperty(value = "naturalYtelser")
     @Valid
+    @Size
     private List<NaturalYtelseDto> naturalYtelser;
 
     @JsonProperty(value = "endringerRefusjon")
     @Valid
+    @Size
     private List<RefusjonDto> endringerRefusjon;
 
     @JsonProperty(value = "arbeidsforholdRef")

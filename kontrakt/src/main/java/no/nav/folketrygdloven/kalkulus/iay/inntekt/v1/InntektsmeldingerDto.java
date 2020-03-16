@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +18,7 @@ public class InntektsmeldingerDto {
 
     @JsonProperty(value = "inntektsmeldinger")
     @Valid
-    @NotEmpty
+    @Size(min = 1)
     private List<InntektsmeldingDto> inntektsmeldinger;
 
     public InntektsmeldingerDto() {

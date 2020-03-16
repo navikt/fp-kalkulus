@@ -4,6 +4,7 @@ package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +20,7 @@ public class OppgittOpptjeningDto {
 
     @JsonProperty(value = "egenNæring")
     @Valid
+    @Size
     private List<OppgittEgenNæringDto> egenNæring;
 
 

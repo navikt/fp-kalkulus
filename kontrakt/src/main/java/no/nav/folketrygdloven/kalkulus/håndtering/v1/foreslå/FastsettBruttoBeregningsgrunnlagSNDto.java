@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,7 +10,8 @@ public class FastsettBruttoBeregningsgrunnlagSNDto {
 
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
-    @NotNull
+    @Min(0)
+    @Max(Long.MAX_VALUE)
     private Integer bruttoBeregningsgrunnlag;
 
     public FastsettBruttoBeregningsgrunnlagSNDto(Integer bruttoBeregningsgrunnlag) {

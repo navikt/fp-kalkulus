@@ -5,6 +5,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,9 +20,11 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 public class RefusjonDto {
 
     @JsonProperty(value = "refusjonsbeløpMnd")
+    @Valid
     private BeløpDto refusjonsbeløpMnd;
 
     @JsonProperty(value = "fom")
+    @Valid
     private LocalDate fom;
 
     protected RefusjonDto() {

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -32,8 +33,9 @@ public class AktivitetsAvtaleDto {
      */
     @JsonProperty("stillingsprosent")
     @Valid
-    @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000.00", message = "stillingsprosent ${validatedValue} må være <= {value}")
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal stillingsprosent;
 
     protected AktivitetsAvtaleDto() {
@@ -41,7 +43,7 @@ public class AktivitetsAvtaleDto {
     }
 
     public AktivitetsAvtaleDto(@Valid @NotNull Periode periode,
-                               @Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "1000.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal stillingsprosent) {
+                               @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000.00", message = "verdien ${validatedValue} må være <= {value}") BigDecimal stillingsprosent) {
         this.periode = periode;
         this.stillingsprosent = stillingsprosent;
     }

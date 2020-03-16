@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -31,7 +32,7 @@ public class UtbetalingDto {
     private InntektskildeType inntektsKilde;
 
     @JsonProperty(value = "utbetalingsPoster", required = true)
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<UtbetalingsPostDto> poster;
 

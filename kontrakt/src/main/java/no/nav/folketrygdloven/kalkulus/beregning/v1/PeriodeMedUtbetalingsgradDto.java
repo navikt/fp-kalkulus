@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -30,6 +31,7 @@ public class PeriodeMedUtbetalingsgradDto {
     @Valid
     @DecimalMin(value = "0.00", message = "utbetalingsgrad ${validatedValue} må være >= {value}")
     @DecimalMax(value = "100.00", message = "utbetalingsgrad ${validatedValue} må være <= {value}")
+    @Digits(integer = 3, fraction = 2)
     private BigDecimal utbetalingsgrad;
 
     public PeriodeMedUtbetalingsgradDto() {

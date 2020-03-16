@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ArbeidDto {
 
     @JsonProperty("yrkesaktiviteter")
-    @NotNull
+    @Size(min = 1)
     @Valid
     private List<YrkesaktivitetDto> yrkesaktiviteter;
 
