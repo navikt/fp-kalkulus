@@ -67,6 +67,11 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
     @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
 
+    public FordelBeregningsgrunnlagAndelDto() {
+        super();
+        // For deserialisering av json
+    }
+
     public FordelBeregningsgrunnlagAndelDto(FaktaOmBeregningAndelDto superDto) {
         super(superDto.getAndelsnr(), superDto.getArbeidsforhold(), superDto.getInntektskategori(),
             superDto.getAktivitetStatus(), superDto.getLagtTilAvSaksbehandler(), superDto.getFastsattAvSaksbehandler(), superDto.getAndelIArbeid());
