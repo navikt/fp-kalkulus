@@ -106,7 +106,7 @@ public class BeregningsgrunnlagRestInput {
     }
 
     public AktivitetGradering getAktivitetGradering() {
-        return aktivitetGradering;
+        return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }
 
     public AktørId getAktørId() {
