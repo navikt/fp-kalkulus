@@ -39,7 +39,7 @@ spec:
       memory: "1024Mi"
   vault:
     enabled: true
-    sidecar: true
+    sidecar: false
     paths:
       - mountPath: /var/run/secrets/nais.io/serviceuser
         kvPath: serviceuser/data/test/srvftkalkulus
@@ -74,4 +74,7 @@ spec:
       value: ftkalkulus-q1
     - name: DEFAULTDS_URL
       value: jdbc:postgresql://b27dbvl009.preprod.local:5432/ftkalkulus-q1
-    # Eksterne systemer
+    #Appdynamics (mer i Dockerfile)
+    - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+      value: NON-PROD
+    #Eksterne systemer
