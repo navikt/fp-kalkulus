@@ -23,11 +23,19 @@ public class OppdateringRespons {
     @Valid
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
 
+
+    public OppdateringRespons() {
+    }
+
+    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
+        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+    }
+
     public BeregningsgrunnlagEndring getBeregningsgrunnlagEndring() {
         return beregningsgrunnlagEndring;
     }
 
-    public void setBeregningsgrunnlagEndring(BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
-        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+    public static OppdateringRespons TOM_RESPONS() {
+        return new OppdateringRespons();
     }
 }

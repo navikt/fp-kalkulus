@@ -44,5 +44,4 @@ public class BeregningsgrunnlagPeriodeEndring {
     public Periode getPeriode() {
         return periode;
     }
-
 }

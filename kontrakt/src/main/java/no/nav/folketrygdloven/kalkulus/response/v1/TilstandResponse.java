@@ -7,7 +7,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,17 +28,29 @@ public class TilstandResponse {
     @Valid
     private List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto;
 
+    @JsonProperty(value = "vilkarOppfylt")
+    @Valid
+    private Boolean vilkarOppfylt;
+
     public TilstandResponse() {
         // default ctor
     }
 
-    @JsonCreator
     public TilstandResponse(@JsonProperty(value = "aksjonspunktMedTilstandDto") @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto) {
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
     }
 
+    public TilstandResponse medVilkårResultat(boolean resultat) {
+        vilkarOppfylt = resultat;
+        return this;
+    }
+
     public List<AksjonspunktMedTilstandDto> getAksjonspunktMedTilstandDto() {
         return aksjonspunktMedTilstandDto;
+    }
+
+    public Boolean getVilkarOppfylt() {
+        return vilkarOppfylt;
     }
 
     public static TilstandResponse TOM_RESPONSE() {

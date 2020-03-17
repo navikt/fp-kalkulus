@@ -21,11 +21,14 @@ public class BeregningsgrunnlagEndring {
     private List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer;
 
 
-    public List<BeregningsgrunnlagPeriodeEndring> getBeregningsgrunnlagPeriodeEndringer() {
-        return beregningsgrunnlagPeriodeEndringer;
+    public BeregningsgrunnlagEndring() {
     }
 
-    public void setBeregningsgrunnlagPeriodeEndringer(List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer) {
+    public BeregningsgrunnlagEndring(@Valid List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer) {
         this.beregningsgrunnlagPeriodeEndringer = beregningsgrunnlagPeriodeEndringer;
+    }
+
+    public List<BeregningsgrunnlagPeriodeEndring> getBeregningsgrunnlagPeriodeEndringer() {
+        return beregningsgrunnlagPeriodeEndringer;
     }
 }

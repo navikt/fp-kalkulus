@@ -103,10 +103,9 @@ public class BeregningStegTjeneste {
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FASTSATT_INN);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, OPPDATERT_MED_REFUSJON_OG_GRADERING, FASTSATT_INN);
-        //TODO(OJR) hva skal vi gjøre her ESPEN?
-        //BeregningsgrunnlagVilkårOgAkjonspunktResultat beregningsgrunnlagVilkårOgAkjonspunktResultat = new BeregningsgrunnlagVilkårOgAkjonspunktResultat(beregningResultatAggregat.getBeregningAksjonspunktResultater());
-        //beregningsgrunnlagVilkårOgAkjonspunktResultat.setVilkårOppfylt(getVilkårResultat(beregningResultatAggregat), getRegelEvalueringVilkårvurdering(beregningResultatAggregat), getRegelInputVilkårvurdering(beregningResultatAggregat));
-        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        boolean vilkårResultat = getVilkårResultat(beregningResultatAggregat);
+        TilstandResponse tilstandResponse = mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        return tilstandResponse.medVilkårResultat(vilkårResultat);
     }
 
     /** FastsettBeregningsgrunnlagSteg
@@ -123,6 +122,10 @@ public class BeregningStegTjeneste {
             repository.lagre(koblingId, beregningsgrunnlagEntitet, FASTSATT);
         }
         return TilstandResponse.TOM_RESPONSE();
+    }
+
+    private boolean getVilkårResultat(BeregningResultatAggregat beregningResultatAggregat) {
+        return beregningResultatAggregat.getBeregningVilkårResultat().getErVilkårOppfylt();
     }
 
     private List<BeregningAksjonspunktResultat> lagreOgKopier(BehandlingReferanse ref, BeregningResultatAggregat resultat) {
