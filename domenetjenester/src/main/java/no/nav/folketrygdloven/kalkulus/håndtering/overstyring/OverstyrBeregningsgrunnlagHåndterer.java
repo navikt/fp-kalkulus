@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
+import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
 
 @ApplicationScoped
@@ -28,8 +29,10 @@ class OverstyrBeregningsgrunnlagHåndterer implements BeregningHåndterer<Overst
     }
 
     @Override
-    public BeregningsgrunnlagGrunnlagDto håndter(OverstyrBeregningsgrunnlagHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        return beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(beregningsgrunnlagInput, mapOverstyrBeregningsgrunnlagDto(dto));
+    public HåndteringResultat håndter(OverstyrBeregningsgrunnlagHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(beregningsgrunnlagInput, mapOverstyrBeregningsgrunnlagDto(dto));
+        // TODO Lag endringresultat
+        return new HåndteringResultat(nyttGrunnlag, null);
     }
 
 }

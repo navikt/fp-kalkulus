@@ -8,6 +8,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
+import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 
 @ApplicationScoped
@@ -15,8 +16,10 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndrin
 class VurderVarigEndretNyoppstartetSNHåndterer implements BeregningHåndterer<VurderVarigEndringEllerNyoppstartetSNHåndteringDto> {
 
     @Override
-    public BeregningsgrunnlagGrunnlagDto håndter(VurderVarigEndringEllerNyoppstartetSNHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        return no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.VurderVarigEndretNyoppstartetSNHåndterer.håndter(beregningsgrunnlagInput, mapVurderVarigEndringEllerNyoppstartetSNDto(dto.getVurderVarigEndringEllerNyoppstartetSNDto()));
+    public HåndteringResultat håndter(VurderVarigEndringEllerNyoppstartetSNHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.VurderVarigEndretNyoppstartetSNHåndterer.håndter(beregningsgrunnlagInput, mapVurderVarigEndringEllerNyoppstartetSNDto(dto.getVurderVarigEndringEllerNyoppstartetSNDto()));
+        // TODO Lag endringresultat
+        return new HåndteringResultat(nyttGrunnlag, null);
     }
 
 }

@@ -5,6 +5,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 
 public interface BeregningHåndterer<T> {
 
-    public BeregningsgrunnlagGrunnlagDto håndter(T dto, BeregningsgrunnlagInput beregningsgrunnlagInput);
+    public HåndteringResultat håndter(T dto, BeregningsgrunnlagInput beregningsgrunnlagInput);
 
 }

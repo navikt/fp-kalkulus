@@ -1,0 +1,54 @@
+package no.nav.folketrygdloven.kalkulus.response.v1.håndtering;
+
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
+public class InntektskategoriEndring extends KodeverdiEndring {
+
+    public static final String KODEVERK = "INNTEKTSKATEGORI";
+
+    @JsonProperty(value = "fraVerdi")
+    @Valid
+    private Inntektskategori fraVerdi;
+
+    @JsonProperty(value = "tilVerdi")
+    @NotNull
+    @Valid
+    private Inntektskategori tilVerdi;
+
+    public InntektskategoriEndring() {
+        // For Json deserialisering
+    }
+
+    public InntektskategoriEndring(@Valid Inntektskategori fraVerdi, @NotNull @Valid Inntektskategori tilVerdi) {
+        this.fraVerdi = fraVerdi;
+        this.tilVerdi = tilVerdi;
+    }
+
+    @Override
+    public Inntektskategori getFraVerdi() {
+        return fraVerdi;
+    }
+
+    @Override
+    public Inntektskategori getTilVerdi() {
+        return tilVerdi;
+    }
+
+    @Override
+    public String getKodeverk() {
+        return KODEVERK;
+    }
+}

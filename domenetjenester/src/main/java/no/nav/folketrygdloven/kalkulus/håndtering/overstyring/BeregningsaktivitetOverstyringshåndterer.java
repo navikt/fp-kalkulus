@@ -2,10 +2,12 @@ package no.nav.folketrygdloven.kalkulus.håndtering.overstyring;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.AvklarAktiviteterHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
+import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
 
@@ -14,8 +16,10 @@ import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
 public class BeregningsaktivitetOverstyringshåndterer implements BeregningHåndterer<OverstyrBeregningsaktiviteterDto> {
 
     @Override
-    public BeregningsgrunnlagGrunnlagDto håndter(OverstyrBeregningsaktiviteterDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        return no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.AvklarAktiviteterHåndterer.håndterOverstyring(OppdatererDtoMapper.mapOverstyrBeregningsaktiviteterDto(dto.getBeregningsaktivitetLagreDtoList()), beregningsgrunnlagInput);
+    public HåndteringResultat håndter(OverstyrBeregningsaktiviteterDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = AvklarAktiviteterHåndterer.håndterOverstyring(OppdatererDtoMapper.mapOverstyrBeregningsaktiviteterDto(dto.getBeregningsaktivitetLagreDtoList()), beregningsgrunnlagInput);
+        // TODO Lag endringresultat
+        return new HåndteringResultat(nyttGrunnlag, null);
     }
 
 }

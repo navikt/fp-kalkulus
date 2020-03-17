@@ -10,7 +10,6 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -18,6 +17,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 
@@ -39,13 +39,13 @@ public class HåndtererApplikasjonTjeneste {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
     }
 
-    public void håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+    public OppdateringRespons håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
         rullTilbakeVedBehov(koblingId, håndterBeregningDto);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndterBeregningDto.getKode().getKode());
-        BeregningsgrunnlagGrunnlagDto grunnlag = beregningHåndterer.håndter(håndterBeregningDto, kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId));
-        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, grunnlag, MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode()));
-
+        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId));
+        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, resultat.getNyttGrunnlag(), MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode()));
         beregningsgrunnlagRepository.lagreOgFlush(koblingId, beregningsgrunnlagGrunnlagEntitet);
+        return resultat.getEndring();
     }
 
     private void rullTilbakeVedBehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {

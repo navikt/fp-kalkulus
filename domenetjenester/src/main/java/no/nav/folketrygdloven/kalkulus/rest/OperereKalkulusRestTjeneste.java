@@ -51,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
@@ -156,11 +157,8 @@ public class OperereKalkulusRestTjeneste {
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
-
-        håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
-        // TODO Returner forrige og aktivt beregningsgrunnlag i respons
-        TilstandResponse tilstandResponse = new TilstandResponse(Collections.emptyList());
-        return Response.ok(tilstandResponse).build();
+        OppdateringRespons respons = håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
+        return Response.ok(respons).build();
     }
 
     @POST

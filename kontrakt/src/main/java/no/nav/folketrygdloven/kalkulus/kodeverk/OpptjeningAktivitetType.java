@@ -23,7 +23,7 @@ public class OpptjeningAktivitetType extends Kodeverk {
     static final String KODEVERK = "OPPTJENING_AKTIVITET_TYPE";
 
     public static final OpptjeningAktivitetType ARBEID = new OpptjeningAktivitetType("ARBEID");
-
+    public static final OpptjeningAktivitetType ETTERLØNN_SLUTTPAKKE = new OpptjeningAktivitetType("ETTERLØNN_SLUTTPAKKE");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")

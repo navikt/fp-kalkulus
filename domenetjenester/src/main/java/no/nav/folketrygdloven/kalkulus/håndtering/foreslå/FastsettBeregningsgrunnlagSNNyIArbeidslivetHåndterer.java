@@ -5,10 +5,12 @@ import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoM
 
 import javax.enterprise.context.ApplicationScoped;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
+import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto;
 
 @ApplicationScoped
@@ -16,8 +18,10 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregning
 public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndterer implements BeregningHåndterer<FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto> {
 
     @Override
-    public BeregningsgrunnlagGrunnlagDto håndter(FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        return no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer.oppdater(beregningsgrunnlagInput, mapFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto(dto.getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto()));
+    public HåndteringResultat håndter(FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer.oppdater(beregningsgrunnlagInput, mapFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto(dto.getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto()));
+        // TODO Lag endringresultat
+        return new HåndteringResultat(nyttGrunnlag, null);
     }
 
 }
