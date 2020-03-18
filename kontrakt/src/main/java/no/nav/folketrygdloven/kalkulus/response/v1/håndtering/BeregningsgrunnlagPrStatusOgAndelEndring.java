@@ -23,6 +23,10 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
     @Valid
     private InntektEndring inntektEndring;
 
+    @JsonProperty(value = "refusjonEndring")
+    @Valid
+    private RefusjonEndring refusjonEndring;
+
     @JsonProperty(value = "inntektskategoriEndring")
     @Valid
     private InntektskategoriEndring inntektskategoriEndring;
@@ -91,6 +95,8 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         this.inntektEndring = inntektEndring;
     }
 
+
+
     public InntektskategoriEndring getInntektskategoriEndring() {
         return inntektskategoriEndring;
     }
@@ -107,6 +113,13 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         this.mottarYtelseEndring = mottarYtelseEndring;
     }
 
+    public RefusjonEndring getRefusjonEndring() {
+        return refusjonEndring;
+    }
+
+    public void setRefusjonEndring(RefusjonEndring refusjonEndring) {
+        this.refusjonEndring = refusjonEndring;
+    }
 
     public static BeregningsgrunnlagPrStatusOgAndelEndring opprettForArbeidstakerUtenArbeidsgiver(OpptjeningAktivitetType arbeidsforholdType) {
         return new BeregningsgrunnlagPrStatusOgAndelEndring(arbeidsforholdType);
