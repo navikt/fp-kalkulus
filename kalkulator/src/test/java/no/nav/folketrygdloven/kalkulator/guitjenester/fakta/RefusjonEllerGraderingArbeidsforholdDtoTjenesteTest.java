@@ -27,11 +27,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
 
@@ -80,8 +82,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     @Test
     public void skal_ikkje_lage_arbeidsforhold_dto_om_ingen_refusjon_eller_gradering() {
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
         assertThat(listeMedGraderingRefusjonDto).isEmpty();
@@ -94,8 +95,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
@@ -124,8 +124,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel).medBGAndelArbeidsforhold(arbeidsforholdBuilder.medRefusjonskravPrÅr(BigDecimal.TEN));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
@@ -160,8 +159,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
@@ -196,8 +194,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ONE));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());
@@ -215,6 +212,13 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(1).getFom())
             .isEqualTo(andrePeriode.getBeregningsgrunnlagPeriodeFom());
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(1).getTom()).isNull();
+    }
+
+    private BeregningsgrunnlagRestInput lagInputMedGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        input.leggTilBeregningsgrunnlagIHistorikk(grunnlagEntitet, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        return input;
     }
 
     // Periode 1:
@@ -258,8 +262,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ONE));
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
@@ -348,8 +351,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
             .build(periode);
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
@@ -408,8 +410,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver1)
                 .medArbeidsforholdRef(ARBEIDSFORHOLD_REF).medRefusjonskravPrÅr(BigDecimal.ZERO));
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
@@ -438,8 +439,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
             .build();
 
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, new AktivitetGradering(andelGradering), List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlagOgGradering(andelGradering, iayGrunnlag);
 
         // Act
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
@@ -455,12 +455,18 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         assertThat(listeMedGraderingRefusjonDto.get(0).getPerioderMedGraderingEllerRefusjon().get(0).getTom()).isEqualTo(graderingTOM.toString());
     }
 
+    private BeregningsgrunnlagRestInput lagInputMedGrunnlagOgGradering(AndelGradering andelGradering, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, new AktivitetGradering(andelGradering), List.of(), null)
+                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        input.leggTilBeregningsgrunnlagIHistorikk(grunnlagEntitet, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        return input;
+    }
+
     @Test
     public void skal_ikkje_lage_dto_for_andel_med_lagt_til_av_saksbehandler() {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(arbeidstakerAndel).medLagtTilAvSaksbehandler(true);
         var iayGrunnlag =  InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        var input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
-                .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
+        BeregningsgrunnlagRestInput input = lagInputMedGrunnlag(iayGrunnlag);
 
         List<FordelBeregningsgrunnlagArbeidsforholdDto> listeMedGraderingRefusjonDto = RefusjonEllerGraderingArbeidsforholdDtoTjeneste
             .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning());

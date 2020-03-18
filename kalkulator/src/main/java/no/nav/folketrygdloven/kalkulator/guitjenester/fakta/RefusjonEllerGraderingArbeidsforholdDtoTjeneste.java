@@ -55,7 +55,11 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
 
     private static boolean andelHarTilfelleForFordeling(BeregningsgrunnlagPrStatusOgAndelDto andel, FordelBeregningsgrunnlagTilfelleInput fordelingInput) {
         BeregningsgrunnlagPeriodeDto periode = andel.getBeregningsgrunnlagPeriode();
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periode, fordelingInput);
+        BeregningsgrunnlagPeriodeDto periodeFraSteg = fordelingInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> p.getPeriode().getFomDato().equals(periode.getBeregningsgrunnlagPeriodeFom()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventet å finne matchende periode"));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periodeFraSteg, fordelingInput);
         return periodeTilfelleMap.keySet().stream().anyMatch(key -> Objects.equals(key.getAndelsnr(), andel.getAndelsnr()));
     }
 

@@ -47,7 +47,7 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static boolean skalGraderePåAndelUtenBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto andel, boolean harGraderingIBGPeriode) {
-        boolean harIkkjeBeregningsgrunnlag = hentBeløpForAndelSomErGjeldendeForFordeling(andel).compareTo(BigDecimal.ZERO) == 0;
+        boolean harIkkjeBeregningsgrunnlag = andel.getBruttoPrÅr() == null || andel.getBruttoPrÅr().compareTo(BigDecimal.ZERO) == 0;
         return harGraderingIBGPeriode && harIkkjeBeregningsgrunnlag;
     }
 
@@ -56,7 +56,7 @@ public final class FordelingGraderingTjeneste {
             BigDecimal totaltBgFraArbeidstaker = periode.getBeregningsgrunnlagPrStatusOgAndelList()
                     .stream()
                     .filter(a -> a.getAktivitetStatus().erArbeidstaker())
-                    .map(FordelingGraderingTjeneste::hentBeløpForAndelSomErGjeldendeForFordeling)
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
                     .filter(Objects::nonNull)
                     .reduce(BigDecimal::add)
                     .orElse(BigDecimal.ZERO);
@@ -64,12 +64,6 @@ public final class FordelingGraderingTjeneste {
             return totaltBgFraArbeidstaker.compareTo(seksG) > 0;
         }
         return false;
-    }
-
-    private static BigDecimal hentBeløpForAndelSomErGjeldendeForFordeling(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        BigDecimal overstyrtPrÅr = andel.getOverstyrtPrÅr();
-        BigDecimal beregnetPrÅr = andel.getBeregnetPrÅr();
-        return overstyrtPrÅr == null ? beregnetPrÅr : overstyrtPrÅr;
     }
 
     private static boolean erStatusSomAvkortesVedATOver6G(BeregningsgrunnlagPrStatusOgAndelDto andel) {

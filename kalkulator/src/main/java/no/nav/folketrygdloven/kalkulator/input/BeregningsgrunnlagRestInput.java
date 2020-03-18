@@ -105,6 +105,10 @@ public class BeregningsgrunnlagRestInput {
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
     }
 
+    public Optional<BeregningsgrunnlagDto> hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand tilstand) {
+        return Optional.ofNullable(tilstandHistorikk.get(tilstand)).flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+    }
+
     public AktivitetGradering getAktivitetGradering() {
         return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }

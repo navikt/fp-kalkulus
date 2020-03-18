@@ -44,7 +44,8 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
         return Collections.emptyMap();
     }
 
-    public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandlingForPeriode(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input) {
+    public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandlingForPeriode(BeregningsgrunnlagPeriodeDto periode,
+                                                                                                                 FordelBeregningsgrunnlagTilfelleInput input) {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = new HashMap<>();
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             Optional<FordelingTilfelle> tilfelle = utledTilfelleForAndel(periode, input, andel);

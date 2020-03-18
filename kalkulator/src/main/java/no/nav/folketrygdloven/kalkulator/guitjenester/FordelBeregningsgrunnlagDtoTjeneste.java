@@ -5,11 +5,13 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagPeriodeDto;
@@ -26,6 +28,10 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
 
     public static void lagDto(BeregningsgrunnlagRestInput input,
                               FordelingDto dto) {
+        boolean harUtførtSteg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING).isPresent();
+        if (!harUtførtSteg) {
+            return;
+        }
         FordelBeregningsgrunnlagDto bgDto = new FordelBeregningsgrunnlagDto();
         settEndretArbeidsforholdDto(input, bgDto);
         bgDto.setFordelBeregningsgrunnlagPerioder(lagPerioder(input));
@@ -64,17 +70,23 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
                                                                              Beløp grunnbeløp) {
         var aktivitetGradering = input.getAktivitetGradering();
         List<FordelBeregningsgrunnlagAndelDto> fordelAndeler = FordelBeregningsgrunnlagAndelDtoTjeneste.lagEndretBgAndelListe(input, periode);
+        var forrigeBgFraSteg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                .orElseThrow(() -> new IllegalStateException("Skal ikke komme hit uten å ha utført fordel-steget"));
+        var periodeFraSteg = forrigeBgFraSteg.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> p.getPeriode().getFomDato().equals(periode.getBeregningsgrunnlagPeriodeFom())).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Skal ha matchende periode"));
+
         fordelBGPeriode.setHarPeriodeAarsakGraderingEllerRefusjon(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalSaksbehandlerRedigereInntekt(
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
-                        periode,
+                        periodeFraSteg,
                         input.getInntektsmeldinger()));
         fordelBGPeriode.setSkalKunneEndreRefusjon(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalSaksbehandlerRedigereRefusjon(
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
-                        periode,
+                        periodeFraSteg,
                         input.getInntektsmeldinger(),
                         grunnbeløp));
         RefusjonDtoTjeneste.slåSammenRefusjonForAndelerISammeArbeidsforhold(fordelAndeler);
