@@ -7,17 +7,24 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 
 @Entity(name = "BeregningsgrunnlagPeriodeRegelSporing")
+@TypeDef(
+        name = "jsonb",
+        typeClass = JsonBinaryType.class
+)
 @Table(name = "BG_PERIODE_REGEL_SPORING")
 public class BeregningsgrunnlagPeriodeRegelSporing extends BaseEntitet {
 
@@ -34,11 +41,11 @@ public class BeregningsgrunnlagPeriodeRegelSporing extends BaseEntitet {
     @JoinColumn(name = "bg_periode_id", nullable = false, updatable = false)
     private BeregningsgrunnlagPeriode beregningsgrunnlagPeriode;
 
-    @Lob
+    @Type(type = "jsonb")
     @Column(name = "regel_evaluering")
     private String regelEvaluering;
 
-    @Lob
+    @Type(type = "jsonb")
     @Column(name = "regel_input")
     private String regelInput;
 

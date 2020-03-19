@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
@@ -71,7 +72,12 @@ public class BeregningsgrunnlagRepositoryTest {
 
         Long koblingId = koblingEntitet.getId();
 
+        BeregningsgrunnlagEntitet build = BeregningsgrunnlagEntitet.builder()
+                .medSkjæringstidspunkt(LocalDate.now())
+                .medRegelinputPeriodisering(getTestJSON())
+                .build();
         BeregningsgrunnlagGrunnlagBuilder builder = BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medBeregningsgrunnlag(build)
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder().medSkjæringstidspunktOpptjening(LocalDate.now())
                         .leggTilAktivitet(BeregningAktivitetEntitet.builder().medOpptjeningAktivitetType(OpptjeningAktivitetType.FRILANS)
                                 .medPeriode(IntervallEntitet.fraOgMedTilOgMed(LocalDate.now(), LocalDate.now().plusMonths(1))).build()).build());
@@ -84,6 +90,7 @@ public class BeregningsgrunnlagRepositoryTest {
 
         assertThat(grunnlagForReferanse).isPresent();
         assertThat(grunnlagForReferanse.get()).isEqualTo(lagretGrunnlag);
+        assertThat(grunnlagForReferanse.get().getBeregningsgrunnlag().get().getRegelinputPeriodisering()).isEqualTo(getTestJSON());
     }
 
     private String getTestJSON() {
