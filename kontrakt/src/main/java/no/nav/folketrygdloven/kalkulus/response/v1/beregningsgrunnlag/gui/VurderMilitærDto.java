@@ -18,6 +18,10 @@ public class VurderMilitærDto {
     @JsonProperty(value = "harMilitaer")
     private Boolean harMilitaer;
 
+    public VurderMilitærDto() {
+        // For json deserialisering
+    }
+
     public VurderMilitærDto(Boolean harMilitaer) {
         this.harMilitaer = harMilitaer;
     }
