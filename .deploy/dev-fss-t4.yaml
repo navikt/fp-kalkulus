@@ -45,6 +45,8 @@ spec:
         kvPath: serviceuser/data/test/srvftkalkulus
       - mountPath: /var/run/secrets/nais.io/vault
         kvPath: /kv/preprod/fss/ftkalkulus/t4
+      - mountPath: /var/run/secrets/nais.io/vault
+        kvPath: /apikey/appdynamics/dev
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus-t4.nais.preprod.local
@@ -64,6 +66,3 @@ spec:
       value: https://security-token-service-t4.nais.preprod.local
     - name: OIDC_STS_JWKSURL
       value: https://security-token-service-t4.nais.preprod.local/rest/v1/sts/jwks
-    #Appdynamics (mer i Dockerfile)
-    - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
-      value: NON-PROD
