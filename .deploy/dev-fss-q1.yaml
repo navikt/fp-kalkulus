@@ -26,8 +26,8 @@ spec:
     enabled: true
     path: "/ftkalkulus/internal/metrics/prometheus"
   replicas:
-    min: 2
-    max: 3
+    min: 1
+    max: 2
     cpuThresholdPercentage: 80
   preStopHookPath: "/ftkalkulus/internal/preStop"
   resources:
@@ -45,7 +45,7 @@ spec:
         kvPath: serviceuser/data/dev/srvftkalkulus
       - mountPath: /var/run/secrets/nais.io/vault
         kvPath: /kv/preprod/fss/ftkalkulus/q1
-      - mountPath: /var/run/secrets/nais.io/vault
+      - mountPath: /var/run/secrets/nais.io/appdynamics
         kvPath: /apikey/appdynamics/dev
   env:
     - name: LOADBALANCER_URL
