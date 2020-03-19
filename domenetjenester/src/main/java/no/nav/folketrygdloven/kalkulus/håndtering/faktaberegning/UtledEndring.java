@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 public class UtledEndring {
@@ -19,12 +21,13 @@ public class UtledEndring {
         // skjul
     }
 
-    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
+    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, FaktaOmBeregningHåndteringDto dto) {
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
-        return new OppdateringRespons(beregningsgrunnlagEndring);
+        FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = UtledFaktaOmBeregningVurderinger.utled(dto, beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
+        return new OppdateringRespons(beregningsgrunnlagEndring, faktaOmBeregningVurderinger);
     }
 
     private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {

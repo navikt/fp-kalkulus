@@ -31,10 +31,6 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
     @Valid
     private InntektskategoriEndring inntektskategoriEndring;
 
-    @JsonProperty(value = "mottarYtelseEndring")
-    @Valid
-    private ToggleEndring mottarYtelseEndring;
-
     @JsonProperty(value = "aktivitetStatus")
     @NotNull
     @Valid
@@ -103,14 +99,6 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
 
     public void setInntektskategoriEndring(InntektskategoriEndring inntektskategoriEndring) {
         this.inntektskategoriEndring = inntektskategoriEndring;
-    }
-
-    public ToggleEndring getMottarYtelseEndring() {
-        return mottarYtelseEndring;
-    }
-
-    public void setMottarYtelseEndring(ToggleEndring mottarYtelseEndring) {
-        this.mottarYtelseEndring = mottarYtelseEndring;
     }
 
     public RefusjonEndring getRefusjonEndring() {

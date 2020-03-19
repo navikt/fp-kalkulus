@@ -33,7 +33,7 @@ class FaktaOmBeregningHåndterer implements BeregningHåndterer<FaktaOmBeregning
     @Override
     public HåndteringResultat håndter(FaktaOmBeregningHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndter(beregningsgrunnlagInput, mapTilFaktaOmBeregningLagreDto(dto.getFakta()));
-        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT));
+        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT), dto);
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 }

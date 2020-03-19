@@ -23,19 +23,32 @@ public class OppdateringRespons {
     @Valid
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
 
+    @JsonProperty(value = "faktaOmBeregningVurderinger")
+    @Valid
+    private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
 
     public OppdateringRespons() {
+    }
+
+    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring, @Valid FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
+        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+        this.faktaOmBeregningVurderinger = faktaOmBeregningVurderinger;
     }
 
     public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
         this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
     }
 
+    public static OppdateringRespons TOM_RESPONS() {
+        return new OppdateringRespons();
+    }
+
     public BeregningsgrunnlagEndring getBeregningsgrunnlagEndring() {
         return beregningsgrunnlagEndring;
     }
 
-    public static OppdateringRespons TOM_RESPONS() {
-        return new OppdateringRespons();
+    public FaktaOmBeregningVurderinger getFaktaOmBeregningVurderinger() {
+        return faktaOmBeregningVurderinger;
     }
+
 }
