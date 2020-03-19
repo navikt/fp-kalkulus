@@ -18,11 +18,13 @@ class UtledEndringIPeriode {
         // skjul
     }
 
-    public static Optional<BeregningsgrunnlagPeriodeEndring> utled(BeregningsgrunnlagPeriodeDto periode, Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode) {
+    public static Optional<BeregningsgrunnlagPeriodeEndring> utled(BeregningsgrunnlagPeriodeDto periode, BeregningsgrunnlagPeriodeDto periodeFraSteg, Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
+        List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraSteg = periodeFraSteg.getBeregningsgrunnlagPrStatusOgAndelList();
+
         List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode.map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).orElse(Collections.emptyList());
         BeregningsgrunnlagPeriodeEndring periodeEndring = new BeregningsgrunnlagPeriodeEndring(
-                utledAndelEndringer(andeler, forrigeAndeler),
+                utledAndelEndringer(andeler, andelerFraSteg, forrigeAndeler),
                 new Periode(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom())
                 );
         if (periodeEndring.getBeregningsgrunnlagPrStatusOgAndelEndringer().isEmpty()) {
@@ -31,11 +33,12 @@ class UtledEndringIPeriode {
         return Optional.of(periodeEndring);
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelEndring> utledAndelEndringer(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelEndring> utledAndelEndringer(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,  List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFraSteg, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
         return andeler.stream()
                 .map(a -> {
                     Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel = finnAndel(forrigeAndeler, a);
-                    return UtledEndringIAndel.utled(a, forrigeAndel);
+                    Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg = finnAndel(andelerFraSteg, a);
+                    return UtledEndringIAndel.utled(a, andelFraSteg, forrigeAndel);
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)

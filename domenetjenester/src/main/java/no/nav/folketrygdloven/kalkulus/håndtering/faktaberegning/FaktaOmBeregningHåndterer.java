@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
 import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapTilFaktaOmBeregningLagreDto;
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -33,7 +35,10 @@ class FaktaOmBeregningHåndterer implements BeregningHåndterer<FaktaOmBeregning
     @Override
     public HåndteringResultat håndter(FaktaOmBeregningHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndter(beregningsgrunnlagInput, mapTilFaktaOmBeregningLagreDto(dto.getFakta()));
-        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT), dto);
+        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)
+                .orElseThrow(() -> new IllegalStateException("Skal ha grunnlag fra steg her."));
+        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto);
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 }

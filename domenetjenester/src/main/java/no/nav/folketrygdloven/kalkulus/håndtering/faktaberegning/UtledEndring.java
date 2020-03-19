@@ -21,26 +21,32 @@ public class UtledEndring {
         // skjul
     }
 
-    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, FaktaOmBeregningHåndteringDto dto) {
+    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagGrunnlagDto grunnlagFraSteg, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, FaktaOmBeregningHåndteringDto dto) {
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
+        BeregningsgrunnlagDto bgFraSteg = grunnlagFraSteg.getBeregningsgrunnlag()
+                .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-        BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
+        BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
         FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = UtledFaktaOmBeregningVurderinger.utled(dto, beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
         return new OppdateringRespons(beregningsgrunnlagEndring, faktaOmBeregningVurderinger);
     }
 
-    private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
+    private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, BeregningsgrunnlagDto bgFraSteg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
         List<BeregningsgrunnlagPeriodeDto> perioder = beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> perioderFraSteg = bgFraSteg.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrigeBeregningsgrunnlagOpt.map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList());
-        return new BeregningsgrunnlagEndring(utledPeriodeEndringer(perioder, forrigePerioder));
+        List<BeregningsgrunnlagPeriodeEndring> beregningsgrunnlagPeriodeEndringer = utledPeriodeEndringer(perioder, perioderFraSteg, forrigePerioder);
+        return beregningsgrunnlagPeriodeEndringer.isEmpty() ? null : new BeregningsgrunnlagEndring(beregningsgrunnlagPeriodeEndringer);
     }
 
-    private static List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringer(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+    private static List<BeregningsgrunnlagPeriodeEndring> utledPeriodeEndringer(List<BeregningsgrunnlagPeriodeDto> perioder, List<BeregningsgrunnlagPeriodeDto> perioderFraSteg, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
         return perioder.stream()
                     .map(p -> {
+                        BeregningsgrunnlagPeriodeDto periodeFraSteg = finnPeriode(perioderFraSteg, p.getBeregningsgrunnlagPeriodeFom())
+                                .orElseThrow(() -> new IllegalStateException("Skal ikke ha endring i periode fra steg"));
                         Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = finnPeriode(forrigePerioder, p.getBeregningsgrunnlagPeriodeFom());
-                        return UtledEndringIPeriode.utled(p, forrigePeriode);
+                        return UtledEndringIPeriode.utled(p, periodeFraSteg, forrigePeriode);
                     })
                     .filter(Optional::isPresent)
                     .map(Optional::get)

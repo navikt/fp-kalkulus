@@ -102,6 +102,7 @@ public class BeregningsgrunnlagInput {
     private BeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
         this(input.getBehandlingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        this.tilstandHistorikk = input.getTilstandHistorikk();
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();

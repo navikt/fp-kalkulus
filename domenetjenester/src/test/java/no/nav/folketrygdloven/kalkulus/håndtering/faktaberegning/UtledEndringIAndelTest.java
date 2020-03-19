@@ -14,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
 
 public class UtledEndringIAndelTest {
 
@@ -26,10 +25,11 @@ public class UtledEndringIAndelTest {
         // Arrange
         BigDecimal inntekt = BigDecimal.TEN;
         Inntektskategori inntektskategori = Inntektskategori.FRILANSER;
+        BeregningsgrunnlagPrStatusOgAndelDto andelUtenInntektskategori = lagArbeidstakerAndel(inntekt, null);
         BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagArbeidstakerAndel(inntekt, inntektskategori);
 
         // Act
-        var endring = UtledEndringIAndel.utled(nyAndel, Optional.empty());
+        var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(andelUtenInntektskategori), Optional.empty());
 
         // Assert
         assert endring.isPresent();
@@ -53,7 +53,7 @@ public class UtledEndringIAndelTest {
         BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagArbeidstakerAndel(forrigeInntekt, forrigeInntektskategori);
 
         // Act
-        var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(forrigeAndel));
+        var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(nyAndel), Optional.of(forrigeAndel));
 
         // Assert
         assert endring.isPresent();
@@ -79,7 +79,7 @@ public class UtledEndringIAndelTest {
         BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagFrilanserAndel(forrigeInntekt, forrigeInntektskategori, forrigeMottarYtelse);
 
         // Act
-        var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(forrigeAndel));
+        var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(nyAndel), Optional.of(forrigeAndel));
 
         // Assert
         assert endring.isPresent();

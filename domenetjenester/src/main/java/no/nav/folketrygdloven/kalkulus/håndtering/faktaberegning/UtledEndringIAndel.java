@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -21,10 +22,10 @@ class UtledEndringIAndel {
         // skjul
     }
 
-    public static Optional<BeregningsgrunnlagPrStatusOgAndelEndring> utled(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
+    public static Optional<BeregningsgrunnlagPrStatusOgAndelEndring> utled(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         BeregningsgrunnlagPrStatusOgAndelEndring andelEndring = initialiserAndelEndring(andel);
         andelEndring.setInntektEndring(lagInntektEndring(andel, forrigeAndel));
-        andelEndring.setInntektskategoriEndring(utledInntektskategoriEndring(andel, forrigeAndel));
+        andelEndring.setInntektskategoriEndring(utledInntektskategoriEndring(andel, andelFraSteg, forrigeAndel));
         if (harEndringIAndel(andelEndring)) {
             return Optional.of(andelEndring);
         }
@@ -57,8 +58,8 @@ class UtledEndringIAndel {
                 new InntektEndring(forrigeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr).orElse(null), andel.getBeregnetPrÅr()) : null;
     }
 
-    private static InntektskategoriEndring utledInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return harEndringIInntektskategori(andel, forrigeAndel) ? initInntektskategoriEndring(andel, forrigeAndel) : null;
+    private static InntektskategoriEndring utledInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
+        return harEndringIInntektskategori(andel, andelFraSteg, forrigeAndel) ? initInntektskategoriEndring(andel, forrigeAndel) : null;
     }
 
     private static InntektskategoriEndring initInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
@@ -69,7 +70,10 @@ class UtledEndringIAndel {
         return new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(andel.getInntektskategori().getKode());
     }
 
-    private static Boolean harEndringIInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
+    private static Boolean harEndringIInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
+        if (forrigeAndel.isEmpty()) {
+            return andelFraSteg.map(a -> !Objects.equals(a.getInntektskategori(), andel.getInntektskategori())).orElse(true);
+        }
         return forrigeAndel.map(a -> !a.getInntektskategori().equals(andel.getInntektskategori())).orElse(true);
     }
 

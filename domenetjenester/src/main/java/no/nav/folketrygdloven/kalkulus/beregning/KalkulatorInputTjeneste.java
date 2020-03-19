@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
@@ -67,9 +68,21 @@ public class KalkulatorInputTjeneste {
                 inntektsmeldingDtos = inntektsmeldingAggregatDto.getAlleInntektsmeldinger();
             }
             BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = beregningsgrunnlagGrunnlagEntitet.get();
+            leggTilTilstandhistorikk(input);
+
             return input.medBeregningsgrunnlagGrunnlag(BehandlingslagerTilKalkulusMapper.mapGrunnlag(grunnlagEntitet, inntektsmeldingDtos));
         }
+
         throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException();
+    }
+
+    private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {
+        BeregningsgrunnlagTilstand[] tilstander = BeregningsgrunnlagTilstand.values();
+        for (BeregningsgrunnlagTilstand tilstand : tilstander) {
+            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(input.getBehandlingReferanse().getBehandlingId(), tilstand);
+            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(BehandlingslagerTilKalkulusMapper.mapGrunnlag(gr, input.getInntektsmeldinger()),
+                    BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
+        }
     }
 
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
