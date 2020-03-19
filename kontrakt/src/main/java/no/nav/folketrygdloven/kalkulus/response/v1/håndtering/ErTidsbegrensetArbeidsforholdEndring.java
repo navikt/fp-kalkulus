@@ -27,7 +27,7 @@ public class ErTidsbegrensetArbeidsforholdEndring {
     @Valid
     private String arbeidsforholdRef;
 
-    @JsonProperty(value = "erMottattYtelseEndring")
+    @JsonProperty(value = "erTidsbegrensetArbeidsforholdEndring")
     @NotNull
     @Valid
     private ToggleEndring erTidsbegrensetArbeidsforholdEndring;

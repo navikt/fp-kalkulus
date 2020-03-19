@@ -23,7 +23,7 @@ public class RefusjonskravGyldighetEndring {
     private ToggleEndring erGyldighetUtvidet;
 
 
-    @JsonProperty(value = "erGyldighetUtvidet")
+    @JsonProperty(value = "arbeidsgiver")
     @NotNull
     @Valid
     private Aktør arbeidsgiver;
