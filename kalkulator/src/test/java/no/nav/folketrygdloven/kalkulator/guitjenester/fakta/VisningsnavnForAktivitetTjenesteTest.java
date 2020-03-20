@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
@@ -45,6 +46,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
         .medNavn(KUNSTIG_VIRKSOMHET_NAVN).build();
 
     private static final String EKSTERN_ARBEIDSFORHOLD_ID = "EKSTERNREF";
+    public static final String AKTØR_ID = "1234567890987";
 
     private BehandlingReferanse ref = new BehandlingReferanseMock();
     private BeregningsgrunnlagDto beregningsgrunnlag;
@@ -122,6 +124,28 @@ public class VisningsnavnForAktivitetTjenesteTest {
         assertThat(visningsnavn).isEqualTo(VIRKSOMHET_NAVN + " (" + ORGNR + ") ..." + EKSTERN_ARBEIDSFORHOLD_ID.substring(EKSTERN_ARBEIDSFORHOLD_ID.length()-4));
     }
 
+
+    @Test
+    public void skal_lage_navn_for_privatperson_med_feilende_TPS_kall() {
+        // Arrange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.person(new AktørId(AKTØR_ID));
+        arbeidsgiver.setNavn("N/A");
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
+                .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
+
+        List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysningerDtos = new ArrayList<>();
+        arbeidsgiverOpplysningerDtos.add(new ArbeidsgiverOpplysningerDto(AKTØR_ID, "N/A"));
+        when(iayGrunnlagMock.getArbeidsgiverOpplysninger()).thenReturn(arbeidsgiverOpplysningerDtos);
+
+        // Act
+        String visningsnavn = VisningsnavnForAktivitetTjeneste.lagVisningsnavn(ref, iayGrunnlagMock, andel);
+
+        // Assert
+        assertThat(visningsnavn).isEqualTo("Privatperson" + " ..." + AKTØR_ID.substring(AKTØR_ID.length()-4));
+    }
 
     @Test
     public void skal_lage_navn_for_kunstig_virksomhet() {

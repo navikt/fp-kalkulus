@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -16,12 +17,16 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 public class VisningsnavnForAktivitetTjeneste {
 
     private static final int ANTALL_SIFFER_SOM_SKAL_VISES_AV_REFERANSE = 4;
+    public static final String PRIVATPERSON_DEFAULT_VISNING = "Privatperson";
 
     private VisningsnavnForAktivitetTjeneste() {
         // For CDI
     }
 
     public static Optional<String> finnArbeidsgiverNavn(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
+            return Optional.of(PRIVATPERSON_DEFAULT_VISNING);
+        }
         return arbeidsgiverOpplysninger.stream().filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
                 .findFirst().map(ArbeidsgiverOpplysningerDto::getNavn);
     }
@@ -29,7 +34,7 @@ public class VisningsnavnForAktivitetTjeneste {
     public static String finnArbeidsgiverIdentifikatorForVisning(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
         Optional<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysning = arbeidsgiverOpplysninger.stream().filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
                 .findFirst();
-        if (arbeidsgiverOpplysning.isEmpty()) {
+        if (arbeidsgiverOpplysning.isEmpty() || erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
             return "";
         }
         if (arbeidsgiver.getErVirksomhet()) {
@@ -64,6 +69,8 @@ public class VisningsnavnForAktivitetTjeneste {
             var eksternArbeidsforholdRef = inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon().get().finnEkstern(arbeidsgiver, bgAndelArbeidsforhold.getArbeidsforholdRef());
             var eksternArbeidsforholdId = eksternArbeidsforholdRef.getReferanse();
             return visningsnavnUtenReferanse + " ..." + finnSubstringAvReferanse(eksternArbeidsforholdId);
+        } else if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, inntektArbeidYtelseGrunnlag.getArbeidsgiverOpplysninger())) {
+            return visningsnavnUtenReferanse + " ..." + finnSubstringAvReferanse(arbeidsgiver.getIdentifikator());
         }
         return visningsnavnUtenReferanse;
     }
@@ -79,6 +86,20 @@ public class VisningsnavnForAktivitetTjeneste {
     }
 
     private static String finnVisningsnavnUtenReferanse(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        return finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).orElse("") + " (" + finnArbeidsgiverIdentifikatorForVisning(arbeidsgiver, arbeidsgiverOpplysninger) + ")";
+        String navn = finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).orElse("");
+        if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
+            return navn;
+        }
+        return navn + " (" + finnArbeidsgiverIdentifikatorForVisning(arbeidsgiver, arbeidsgiverOpplysninger) + ")";
     }
+
+    private static boolean erPrivatpersonMedFeilendeKallTilTPS(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        Optional<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysningerDto = arbeidsgiverOpplysninger.stream().filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .findFirst();
+        if (arbeidsgiverOpplysningerDto.isEmpty()) {
+            return false;
+        }
+        return !arbeidsgiver.getErVirksomhet() && arbeidsgiverOpplysningerDto.get().getFødselsdato() == null;
+    }
+
 }
