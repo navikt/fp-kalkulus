@@ -28,47 +28,41 @@ public class NaisRestTjeneste {
     private static Logger logger = LoggerFactory.getLogger(InternalApplication.class);
 
     private ApplicationServiceStarter starterService;
+    private SelftestService selftestService;
 
     public NaisRestTjeneste() {
         // CDI
     }
 
     @Inject
-    public NaisRestTjeneste(ApplicationServiceStarter starterService) {
+    public NaisRestTjeneste(ApplicationServiceStarter starterService, SelftestService selftestService) {
         this.starterService = starterService;
+        this.selftestService = selftestService;
     }
 
     @GET
     @Path("isAlive")
     @Operation(description = "sjekker om poden lever", tags = "nais", hidden = true)
     public Response isAlive() {
-        if (true) { //TODO FIXME
-            logger.debug("Application is alive.");
-            return Response
+        return Response
                 .ok(RESPONSE_OK)
                 .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
                 .build();
-        } else {
-            return Response
-                .serverError()
-                .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
-                .build();
-        }
     }
 
     @GET
     @Path("isReady")
     @Operation(description = "sjekker om poden er klar", tags = "nais", hidden = true)
     public Response isReady() {
-        if (true) { //TODO FIXME
-            logger.debug("Application is alive.");
+        if (!selftestService.kritiskTjenesteFeilet()) {
+            logger.debug("Application is ready.");
             return Response
                 .ok(RESPONSE_OK)
                 .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
                 .build();
         } else {
             return Response
-                .serverError()
+                .status(Response.Status.SERVICE_UNAVAILABLE)
                 .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
                 .build();
         }
