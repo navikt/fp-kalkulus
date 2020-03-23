@@ -1,10 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.FORELDREPENGER;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.PLEIEPENGER_SYKT_BARN;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter.SVANGERSKAPSPENGER;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +30,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
@@ -49,10 +46,9 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
 public class MapFraKalkulator {
 
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
     public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP = 3;
     public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB = 2;
-
+    private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
         String json = kalkulatorInputEntitet.getInput();
@@ -102,22 +98,26 @@ public class MapFraKalkulator {
 
     private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
         YtelseTyperKalkulusStøtter yt = YtelseTyperKalkulusStøtter.fraKode(ytelseType.getKode());
-        if (FORELDREPENGER == yt) {
-            ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
-            //TODO(OJR) lag builder?
-            foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP);
-            return foreldrepengerGrunnlag;
-        } else if (SVANGERSKAPSPENGER == yt) {
-            throw new IllegalStateException("Støtter ikke denne ennå");
-        } else if (PLEIEPENGER_SYKT_BARN == yt) {
-            no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
-            PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
-            pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB);
-            return pleiepengerSyktBarnGrunnlag;
-        }
-        return new StandardGrunnlag();
-    }
 
+        switch (yt) {
+            case FORELDREPENGER:
+                ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
+                //TODO(OJR) lag builder?
+                foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP);
+            case SVANGERSKAPSPENGER:
+                throw new IllegalStateException("Støtter ikke denne ennå");
+            case PLEIEPENGER_SYKT_BARN:
+                no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
+                PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
+                pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB);
+                return pleiepengerSyktBarnGrunnlag;
+            case OMSORGSPENGER:
+                OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
+                return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(Collections.emptyList());
+            default:
+                return new StandardGrunnlag();
+        }
+    }
 
     private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {
         if (refusjonskravDatoer == null) {
@@ -159,13 +159,13 @@ public class MapFraKalkulator {
 
     private static no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
         return new no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto(
-        opptjeningAktiviteter.getPerioder().stream().map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.nyPeriode(
-                OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
-                new Periode(opptjeningPeriodeDto.getPeriode().getFom(), opptjeningPeriodeDto.getPeriode().getTom()),
-                opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
-                opptjeningPeriodeDto.getArbeidsgiver().getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
-                opptjeningPeriodeDto.getAbakusReferanse() != null  ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse()) : null
-        )).collect(Collectors.toList()));
+                opptjeningAktiviteter.getPerioder().stream().map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.nyPeriode(
+                        OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
+                        new Periode(opptjeningPeriodeDto.getPeriode().getFom(), opptjeningPeriodeDto.getPeriode().getTom()),
+                        opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                        opptjeningPeriodeDto.getArbeidsgiver().getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                        opptjeningPeriodeDto.getAbakusReferanse() != null ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse()) : null
+                )).collect(Collectors.toList()));
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident aktørId) {
