@@ -95,7 +95,7 @@ public class MapBeregningsgrunnlag {
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getFomDato(), beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getTomDato()),
+                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom()),
                 new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
