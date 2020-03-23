@@ -31,7 +31,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
@@ -40,7 +39,6 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -314,13 +312,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         public Builder medBeregningsgrunnlagPrStatusOgAndel(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndeler) {
             verifiserKanModifisere();
             kladd.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndeler;
-            return this;
-        }
-
-        public Builder fjernAlleBeregningsgrunnlagPrStatusOgAndeler() {
-            verifiserKanModifisere();
-            List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = Kopimaskin.deepCopy(kladd.getBeregningsgrunnlagPrStatusOgAndelList());
-            beregningsgrunnlagPrStatusOgAndelList.forEach(this::fjernBeregningsgrunnlagPrStatusOgAndel);
             return this;
         }
 

@@ -21,7 +21,6 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.NaturalId;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -128,7 +127,7 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
             BeregningAktivitetAggregatEntitet.Builder overstyrtBuilder = BeregningAktivitetAggregatEntitet.builder()
                     .medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
             overstyrteAktiviteter.forEach(aktivitet -> {
-                BeregningAktivitetEntitet kopiert = Kopimaskin.deepCopy(aktivitet);
+                BeregningAktivitetEntitet kopiert = BeregningAktivitetEntitet.builder(aktivitet).build();
                 overstyrtBuilder.leggTilAktivitet(kopiert);
             });
             return Optional.of(overstyrtBuilder.build());

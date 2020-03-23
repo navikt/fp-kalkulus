@@ -26,14 +26,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.Kopimaskin;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
@@ -180,12 +178,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     public boolean isOverstyrt() {
         return overstyrt;
-    }
-
-    public BeregningsgrunnlagEntitet dypKopi() {
-        // FIXME(OleSandbu) : her settes kopi på builder og modifiseres direkte.  I tillegg kopieres for mye.
-        // Kan det skrives om?
-        return Kopimaskin.deepCopy(this);
     }
 
     @Override

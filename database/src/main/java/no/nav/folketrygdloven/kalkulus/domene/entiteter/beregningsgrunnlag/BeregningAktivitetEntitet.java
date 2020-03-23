@@ -159,6 +159,10 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey {
         return new Builder();
     }
 
+    public static Builder builder(BeregningAktivitetEntitet kopi) {
+        return new Builder(kopi);
+    }
+
     @Override
     public String getIndexKey() {
         return IndexKey.createKey(arbeidsgiver, arbeidsforholdRef);
@@ -169,6 +173,10 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey {
 
         private Builder() {
             mal = new BeregningAktivitetEntitet();
+        }
+
+        public Builder(BeregningAktivitetEntitet kopi) {
+            mal = new BeregningAktivitetEntitet(kopi);
         }
 
         public Builder medPeriode(IntervallEntitet periode) {
