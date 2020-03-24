@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   postgres:
-    image: $POSTGRES_IMAGE
+    image: postgres:12
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
@@ -11,7 +11,7 @@ services:
       - ./lokalutvikling/postgres-init:/docker-entrypoint-initdb.d/
     container_name: postgres_kalkulus
   vtp:
-    image: $VTP_IMAGE
+    image: docker.pkg.github.com/navikt/vtp/vtp
     environment:
       - "NO_NAV_MODIG_SECURITY_APPCERT_KEYSTORE=/root/.modig/keystore.jks"
       - "JAVAX_NET_SSL_TRUSTSTORE=/root/.modig/truststore.jks"

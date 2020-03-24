@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -35,7 +36,6 @@ import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.ErEndringIBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.vedtak.felles.jpa.Transaction;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -45,7 +45,7 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 @OpenAPIDefinition(tags = @Tag(name = "beregningsgrunnlag"))
 @Path("/kalkulus/v1")
 @ApplicationScoped
-@Transaction
+@Transactional
 public class UtledKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
