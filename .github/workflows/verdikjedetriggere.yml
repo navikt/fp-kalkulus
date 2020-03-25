@@ -1,4 +1,4 @@
-name: Trigger verdikjedetest
+name: Trigger beregning verdikjedetest
 
 on:
   registry_package:
@@ -8,11 +8,11 @@ jobs:
   verdikjedetriggere:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger verdikjedetester K9
+      - name: Trigger beregning verdikjedetester
         if: ${{ github.event.client_payload.github.payload.action }} == "published" && ${{ github.event.client_payload.github.payload.package.package_type }} == "docker" && ${{ github.event.client_payload.github.payload.package.package_version.version }} != "latest"
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          repository: navikt/k9-verdikjede
-          event-type: saksbehandling-verdikjede
+          repository: navikt/ft-kalkulus-verdikjede
+          event-type: beregning-verdikjede
           client-payload: '{ "trigger": "${{ github.repository }}", "version": "${{ github.event.client_payload.github.payload.package.package_version.version }}", "image": "${{ github.event.client_payload.github.payload.package.package_version.release.url }}"}'
