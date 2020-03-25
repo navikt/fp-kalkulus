@@ -89,7 +89,7 @@ public class MapIAYTilKalulator {
             builder.setInntektsmeldinger(inntektsmeldingAggregatDto);
         }
 
-        if (iayGrunnlag.getArbeidsforholdInformasjon() != null) {
+        if (iayGrunnlag.getArbeidsforholdInformasjon() != null && iayGrunnlag.getArbeidsforholdInformasjon().getOverstyringer() != null) {
             no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto arbeidsforholdInformasjonDto = mapArbeidsforholdInformasjon(iayGrunnlag.getArbeidsforholdInformasjon());
             builder.medInformasjon(arbeidsforholdInformasjonDto);
         }
