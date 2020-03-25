@@ -1,9 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -18,6 +20,9 @@ public class VisningsnavnForAktivitetTjeneste {
 
     private static final int ANTALL_SIFFER_SOM_SKAL_VISES_AV_REFERANSE = 4;
     public static final String PRIVATPERSON_DEFAULT_VISNING = "Privatperson";
+
+    private static final Logger logger = LoggerFactory.getLogger(VisningsnavnForAktivitetTjeneste.class);
+
 
     private VisningsnavnForAktivitetTjeneste() {
         // For CDI
@@ -86,6 +91,7 @@ public class VisningsnavnForAktivitetTjeneste {
     }
 
     private static String finnVisningsnavnUtenReferanse(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        logger.info("Finner visningsnavn for arbeidsgiver {} med registrerte arbeidsgiveropplysninger {}", arbeidsgiver, arbeidsgiverOpplysninger);
         String navn = finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).orElse("");
         if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
             return navn;

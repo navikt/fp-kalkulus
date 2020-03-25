@@ -35,4 +35,12 @@ public class ArbeidsgiverOpplysningerDto {
         return fødselsdato;
     }
 
+    @Override
+    public String toString() {
+        return "ArbeidsgiverOpplysningerDto{" +
+                "identifikator='" + identifikator + '\'' +
+                ", navn='" + navn + '\'' +
+                ", fødselsdato=" + fødselsdato +
+                '}';
+    }
 }
