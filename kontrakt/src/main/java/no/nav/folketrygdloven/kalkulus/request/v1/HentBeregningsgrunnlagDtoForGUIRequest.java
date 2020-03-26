@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
@@ -42,10 +44,25 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     @Valid
     private List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger;
 
+    @JsonProperty(value = "referanser")
+    @Valid
+    private Set<ArbeidsforholdReferanseDto> referanser;
+
     protected HentBeregningsgrunnlagDtoForGUIRequest() {
         // default ctor
     }
 
+    public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
+                                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,
+                                                  @Valid Set<ArbeidsforholdReferanseDto> referanser) {
+        this.eksternReferanse = eksternReferanse;
+        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
+        this.referanser = referanser;
+    }
+
+    @Deprecated
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
                                                   @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                   @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
@@ -65,5 +82,9 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
 
     public List<ArbeidsgiverOpplysningerDto> getArbeidsgiverOpplysninger() {
         return arbeidsgiverOpplysninger;
+    }
+
+    public Set<ArbeidsforholdReferanseDto> getReferanser() {
+        return referanser;
     }
 }

@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
@@ -10,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -33,6 +35,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -72,6 +75,19 @@ public class MapIAYTilKalulator {
             return null;
         }
         return InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse());
+    }
+
+    public static Set<ArbeidsforholdReferanseDto> mapArbeidsgiverReferanser(Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser) {
+
+        return referanser.stream().map(ref -> new ArbeidsforholdReferanseDto(MapFraKalkulator.mapArbeidsgiver(ref.getArbeidsgiver()),
+                                mapArbeidsforholdRef(ref.getInternReferanse()),
+                                mapEksternReferanse(ref.getEksternReferanse())))
+        .collect(Collectors.toSet());
+    }
+
+    private static EksternArbeidsforholdRef mapEksternReferanse(no.nav.folketrygdloven.kalkulus.felles.v1.EksternArbeidsforholdRef eksternReferanse) {
+        return eksternReferanse == null || eksternReferanse.getReferanse() == null ?
+                EksternArbeidsforholdRef.nullRef() : EksternArbeidsforholdRef.ref(eksternReferanse.getReferanse());
     }
 
     public static List<ArbeidsgiverOpplysningerDto> mapArbeidsgiverOpplysninger(List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {

@@ -5,6 +5,7 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursResourceAttributt.FAG
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -166,8 +167,10 @@ public class HentKalkulusRestTjeneste {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
         BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId);
+
+        Set<no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto> referanser = MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser());
         List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = MapIAYTilKalulator.mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger());
-        BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(beregningsgrunnlagInput, arbeidsgiverOpplysninger);
+        BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(beregningsgrunnlagInput, arbeidsgiverOpplysninger, referanser);
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(restInput);
         return Response.ok(beregningsgrunnlagDto).build();
     }
@@ -232,11 +235,22 @@ public class HentKalkulusRestTjeneste {
     public static class HentBeregningsgrunnlagDtoForGUIRequestAbacDto extends HentBeregningsgrunnlagDtoForGUIRequest implements AbacDto {
 
 
-        @JsonCreator
+        public HentBeregningsgrunnlagDtoForGUIRequestAbacDto() {
+            // For Json deserialisering
+        }
+
+        @Deprecated
         public HentBeregningsgrunnlagDtoForGUIRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                                    @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                      @JsonProperty(value = "arbeidsgiverOpplysninger", required = true) @NotNull @Valid List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+                                                             @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                             @JsonProperty(value = "arbeidsgiverOpplysninger", required = true) @NotNull @Valid List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
             super(eksternReferanse, ytelseSomSkalBeregnes, arbeidsgiverOpplysninger);
+        }
+
+        public HentBeregningsgrunnlagDtoForGUIRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
+                                                             @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                             @JsonProperty(value = "arbeidsgiverOpplysninger", required = true) @NotNull @Valid List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,
+                                                             @JsonProperty(value = "referanser") @Valid Set<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto> referanser) {
+            super(eksternReferanse, ytelseSomSkalBeregnes, arbeidsgiverOpplysninger, referanser);
         }
 
         @Override

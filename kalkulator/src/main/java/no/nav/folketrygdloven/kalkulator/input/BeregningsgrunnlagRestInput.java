@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
@@ -16,6 +17,9 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -63,10 +67,14 @@ public class BeregningsgrunnlagRestInput {
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
-    public BeregningsgrunnlagRestInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+    public BeregningsgrunnlagRestInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
         this.behandlingReferanse = input.getBehandlingReferanse();
         InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(input.getIayGrunnlag());
         arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
+        ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonDtoBuilder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.ofNullable(oppdatere.getInformasjon()));
+        referanser.forEach(arbeidsforholdInformasjonDtoBuilder::leggTilNyReferanse);
+        oppdatere.medInformasjon(arbeidsforholdInformasjonDtoBuilder.build());
+
         this.iayGrunnlag = oppdatere.build();
         this.aktivitetGradering = input.getAktivitetGradering();
         this.refusjonskravDatoer = input.getRefusjonskravDatoer();
