@@ -109,6 +109,7 @@ public class BeregningsgrunnlagDtoUtil {
         if (opplysningerDto.isPresent()) {
             if (arbeidsgiver.getErVirksomhet()) {
                 arbeidsforhold.setArbeidsgiverId(opplysningerDto.get().getIdentifikator());
+                arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
                 if (Organisasjonstype.erKunstig(arbeidsgiver.getOrgnr())) {
                     arbeidsforhold.setOrganisasjonstype(new no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype(Organisasjonstype.KUNSTIG.getKode()));
@@ -116,8 +117,14 @@ public class BeregningsgrunnlagDtoUtil {
             } else if (arbeidsgiver.erAktørId()) {
                 arbeidsforhold.setAktørId(new AktørId(arbeidsgiver.getAktørId().getId()));
                 arbeidsforhold.setAktørIdPersonIdent(new AktørIdPersonident(arbeidsgiver.getAktørId().getId()));
-                String fødselsdato = opplysningerDto.get().getFødselsdato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                arbeidsforhold.setArbeidsgiverId(fødselsdato);
+                LocalDate fødselsdato = opplysningerDto.get().getFødselsdato();
+                if (fødselsdato != null) {
+                    String formatertDato = fødselsdato.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                    arbeidsforhold.setArbeidsgiverId(formatertDato);
+                    arbeidsforhold.setArbeidsgiverIdVisning(formatertDato);
+                } else {
+                    arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getAktørId().getId());
+                }
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
             }
         }

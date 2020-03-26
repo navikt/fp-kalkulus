@@ -38,6 +38,11 @@ public class BeregningsgrunnlagArbeidsforholdDto {
     private String arbeidsgiverId;
 
     @Valid
+    @JsonProperty(value = "arbeidsgiverId")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    private String arbeidsgiverIdVisning;
+
+    @Valid
     @JsonProperty(value = "startdato")
     private LocalDate startdato;
 
@@ -125,6 +130,14 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     public void setArbeidsgiverId(String arbeidsgiverId) {
         this.arbeidsgiverId = arbeidsgiverId;
+    }
+
+    public String getArbeidsgiverIdVisning() {
+        return arbeidsgiverIdVisning;
+    }
+
+    public void setArbeidsgiverIdVisning(String arbeidsgiverIdVisning) {
+        this.arbeidsgiverIdVisning = arbeidsgiverIdVisning;
     }
 
     public LocalDate getStartdato() {
