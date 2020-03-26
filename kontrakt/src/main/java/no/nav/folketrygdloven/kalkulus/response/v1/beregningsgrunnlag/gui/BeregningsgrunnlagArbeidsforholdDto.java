@@ -38,7 +38,7 @@ public class BeregningsgrunnlagArbeidsforholdDto {
     private String arbeidsgiverId;
 
     @Valid
-    @JsonProperty(value = "arbeidsgiverId")
+    @JsonProperty(value = "arbeidsgiverIdVisning")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverIdVisning;
 
