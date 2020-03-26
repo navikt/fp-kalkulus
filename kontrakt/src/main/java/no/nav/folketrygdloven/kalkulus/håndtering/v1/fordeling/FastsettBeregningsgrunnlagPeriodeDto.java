@@ -35,6 +35,9 @@ public class FastsettBeregningsgrunnlagPeriodeDto {
     @NotNull
     private LocalDate tom;
 
+    public FastsettBeregningsgrunnlagPeriodeDto() {
+        // For Json deserialisering
+    }
 
     public FastsettBeregningsgrunnlagPeriodeDto(List<FastsettBeregningsgrunnlagAndelDto> andeler, LocalDate fom, LocalDate tom) { // NOSONAR
         this.andeler = andeler;

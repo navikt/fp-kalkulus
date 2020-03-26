@@ -32,6 +32,10 @@ public class GraderingEllerRefusjonDto {
     @JsonProperty("tom")
     private LocalDate tom;
 
+    public GraderingEllerRefusjonDto() {
+        // For Json serialisering
+    }
+
     public GraderingEllerRefusjonDto(boolean erRefusjon, boolean erGradering) {
         if ((erRefusjon && erGradering) || (!erRefusjon && !erGradering)) {
             throw new IllegalArgumentException("Må gjelde enten gradering eller refusjon");

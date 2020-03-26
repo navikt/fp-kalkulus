@@ -23,6 +23,10 @@ public class FordelBeregningsgrunnlagDto {
     @Size(min = 1)
     private List<FastsettBeregningsgrunnlagPeriodeDto> endretBeregningsgrunnlagPerioder;
 
+    public FordelBeregningsgrunnlagDto() {
+        // For Json deserialisering
+    }
+
     public FordelBeregningsgrunnlagDto(List<FastsettBeregningsgrunnlagPeriodeDto> endretBeregningsgrunnlagPerioder) { // NOSONAR
         this.endretBeregningsgrunnlagPerioder = endretBeregningsgrunnlagPerioder;
     }

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.iay.arbeid.v1;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -26,6 +27,11 @@ public class AktivitetsAvtaleDto {
     @NotNull
     private Periode periode;
 
+    @JsonProperty("sisteLønnsendringsdato")
+    @Valid
+    private LocalDate sisteLønnsendringsdato;
+
+
     /**
      * Det går an å ha stillingprosent mer enn 100%, men innsendingsfeil hos LPS leverandører og manglende Altinn validering
      * gjør at i noen historiske tilfeller har man akseptert innsending opp til 500% (typisk skjedd når man har tastet inn ett ukesverks antall
@@ -43,8 +49,10 @@ public class AktivitetsAvtaleDto {
     }
 
     public AktivitetsAvtaleDto(@Valid @NotNull Periode periode,
+                               @Valid LocalDate sisteLønnsendringsdato,
                                @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000.00", message = "verdien ${validatedValue} må være <= {value}") BigDecimal stillingsprosent) {
         this.periode = periode;
+        this.sisteLønnsendringsdato = sisteLønnsendringsdato;
         this.stillingsprosent = stillingsprosent;
     }
 
@@ -54,5 +62,9 @@ public class AktivitetsAvtaleDto {
 
     public BigDecimal getStillingsprosent() {
         return stillingsprosent;
+    }
+
+    public LocalDate getSisteLønnsendringsdato() {
+        return sisteLønnsendringsdato;
     }
 }

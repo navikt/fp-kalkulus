@@ -202,6 +202,7 @@ public class MapIAYTilKalulator {
         return AktivitetsAvtaleDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(aktivitetsAvtale.getPeriode().getFom(), aktivitetsAvtale.getPeriode().getTom()))
                 .medProsentsats(aktivitetsAvtale.getStillingsprosent())
+                .medSisteLønnsendringsdato(aktivitetsAvtale.getSisteLønnsendringsdato())
                 .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
     }
 

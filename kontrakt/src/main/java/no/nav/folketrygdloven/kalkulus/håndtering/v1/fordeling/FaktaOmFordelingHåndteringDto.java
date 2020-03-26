@@ -27,7 +27,10 @@ public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
     @NotNull
     private FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto;
 
-    @JsonCreator
+    public FaktaOmFordelingHåndteringDto() {
+        // For Json deserialisering
+    }
+
     public FaktaOmFordelingHåndteringDto(@Valid @NotNull FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto) {
         super(new HåndteringKode(IDENT_TYPE));
         this.fordelBeregningsgrunnlagDto = fordelBeregningsgrunnlagDto;

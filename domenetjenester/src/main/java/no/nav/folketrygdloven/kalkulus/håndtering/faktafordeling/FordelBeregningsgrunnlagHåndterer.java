@@ -16,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregnings
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 @ApplicationScoped
-@DtoTilServiceAdapter(dto = FordelBeregningsgrunnlagDto.class, adapter = BeregningHåndterer.class)
+@DtoTilServiceAdapter(dto = FaktaOmFordelingHåndteringDto.class, adapter = BeregningHåndterer.class)
 public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<FaktaOmFordelingHåndteringDto> {
 
     @Override

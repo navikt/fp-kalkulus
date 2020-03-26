@@ -43,6 +43,7 @@ public class FastsatteVerdierDto {
     private Boolean skalHaBesteberegning;
 
     public FastsatteVerdierDto() {
+        // For json deserialisering
     }
 
     public FastsatteVerdierDto(@Valid @NotNull Integer refusjonPrÅr, @Valid @NotNull Integer fastsattÅrsbeløp, @Valid @NotNull Inntektskategori inntektskategori, @Valid @NotNull Boolean skalHaBesteberegning) {

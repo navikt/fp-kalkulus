@@ -80,6 +80,7 @@ public class BeregningsgrunnlagRestInput {
         this.refusjonskravDatoer = input.getRefusjonskravDatoer();
         this.ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        this.tilstandHistorikk = input.getTilstandHistorikk();
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
     }
 

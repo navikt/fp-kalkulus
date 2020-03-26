@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = PleiepengerSyktBarnGrunnlag.class, name = PleiepengerSyktBarnGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = OmsorgspengerGrunnlag.class, name = OmsorgspengerGrunnlag.YTELSE_TYPE),
+        @JsonSubTypes.Type(value = ForeldrepengerGrunnlag.class, name = ForeldrepengerGrunnlag.YTELSE_TYPE),
 })
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public abstract class YtelsespesifiktGrunnlagDto {
@@ -47,6 +48,10 @@ public abstract class YtelsespesifiktGrunnlagDto {
         this.dekningsgrad = dekningsgrad;
     }
 
+    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad, @Valid @NotNull Boolean kvalifisererTilBesteberegning) {
+        this.dekningsgrad = dekningsgrad;
+        this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
+    }
 
     private YtelsespesifiktGrunnlagDto medBesteberegning() {
         this.kvalifisererTilBesteberegning = true;

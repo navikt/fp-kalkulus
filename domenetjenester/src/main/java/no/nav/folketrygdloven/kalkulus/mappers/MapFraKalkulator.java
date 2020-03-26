@@ -105,6 +105,7 @@ public class MapFraKalkulator {
                 ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
                 //TODO(OJR) lag builder?
                 foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP);
+                return foreldrepengerGrunnlag;
             case SVANGERSKAPSPENGER:
                 throw new IllegalStateException("Støtter ikke denne ennå");
             case PLEIEPENGER_SYKT_BARN:
