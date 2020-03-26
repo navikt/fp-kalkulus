@@ -27,7 +27,7 @@ public class KalkulatorTilBGMapper {
         Sammenligningsgrunnlag.Builder builder = Sammenligningsgrunnlag.builder();
         builder.medAvvikPromilleNy(fraKalkulus.getAvvikPromilleNy());
         builder.medRapportertPrÅr(fraKalkulus.getRapportertPrÅr());
-        builder.medSammenligningsperiode(fraKalkulus.getSammenligningsperiodeFom(), fraKalkulus.getSammenligningsperiodeFom());
+        builder.medSammenligningsperiode(fraKalkulus.getSammenligningsperiodeFom(), fraKalkulus.getSammenligningsperiodeTom());
         return builder.build();
     }
 
