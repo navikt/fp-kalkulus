@@ -35,7 +35,7 @@ public class BGMapperTilKalkulus {
         SammenligningsgrunnlagDto.Builder builder = SammenligningsgrunnlagDto.builder();
         builder.medAvvikPromilleNy(fraFpsak.getAvvikPromilleNy());
         builder.medRapportertPrÅr(fraFpsak.getRapportertPrÅr());
-        builder.medSammenligningsperiode(fraFpsak.getSammenligningsperiodeFom(), fraFpsak.getSammenligningsperiodeFom());
+        builder.medSammenligningsperiode(fraFpsak.getSammenligningsperiodeFom(), fraFpsak.getSammenligningsperiodeTom());
         return builder.build();
     }
 
