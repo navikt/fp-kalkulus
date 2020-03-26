@@ -28,6 +28,13 @@ public class OpptjeningsaktiviteterPerYtelse {
                     OpptjeningAktivitetType.DAGPENGER,
                     OpptjeningAktivitetType.ARBEIDSAVKLARING,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
+                    OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),
+            FagsakYtelseType.OMSORGSPENGER, Set.of(
+                    OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
+                    OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
+                    OpptjeningAktivitetType.DAGPENGER,
+                    OpptjeningAktivitetType.ARBEIDSAVKLARING,
+                    OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE));
 
     private Set<OpptjeningAktivitetType> ekskluderteAktiviteter;

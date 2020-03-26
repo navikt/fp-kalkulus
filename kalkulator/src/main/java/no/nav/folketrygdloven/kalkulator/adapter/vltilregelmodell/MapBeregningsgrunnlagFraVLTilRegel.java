@@ -123,6 +123,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private static int finnGrunnbeløpMilitærHarKravPå(BeregningsgrunnlagInput input) {
+
         return input.getYtelsespesifiktGrunnlag().getGrunnbeløpMilitærHarKravPå();
     }
 

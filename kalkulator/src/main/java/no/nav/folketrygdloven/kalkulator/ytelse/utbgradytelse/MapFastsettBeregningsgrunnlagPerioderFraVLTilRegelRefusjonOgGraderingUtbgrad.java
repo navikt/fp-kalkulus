@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("OMP")
 @ApplicationScoped
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad
         extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering {

@@ -44,6 +44,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     private static final Logger logger = LoggerFactory.getLogger(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel.class);
+
     protected MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel() {
     }
 

@@ -21,6 +21,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("OMP")
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 

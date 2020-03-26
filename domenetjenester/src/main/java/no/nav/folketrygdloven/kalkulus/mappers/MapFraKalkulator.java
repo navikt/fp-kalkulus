@@ -48,6 +48,7 @@ public class MapFraKalkulator {
 
     public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP = 3;
     public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB = 2;
+    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_OMP = 2;
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
@@ -113,7 +114,9 @@ public class MapFraKalkulator {
                 return pleiepengerSyktBarnGrunnlag;
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
-                return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(Collections.emptyList());
+                no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
+                kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_OMP);
+                return kalkulatorGrunnlag;
             default:
                 return new StandardGrunnlag();
         }
