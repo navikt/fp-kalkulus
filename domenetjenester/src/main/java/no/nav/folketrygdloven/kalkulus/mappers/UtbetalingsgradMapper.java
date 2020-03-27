@@ -29,7 +29,7 @@ class UtbetalingsgradMapper {
     }
 
     private static UtbetalingsgradArbeidsforholdDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
-        return new UtbetalingsgradArbeidsforholdDto(utbetalingsgradArbeidsforholdDto.getArbeidsgiver().map(MapFraKalkulator::mapArbeidsgiver).orElse(null), mapReferanse(utbetalingsgradArbeidsforholdDto), mapUttakArbeidType(utbetalingsgradArbeidsforholdDto.getUttakArbeidType()));
+        return new UtbetalingsgradArbeidsforholdDto(MapFraKalkulator.mapArbeidsgiver(utbetalingsgradArbeidsforholdDto.getArbeidsgiver()), mapReferanse(utbetalingsgradArbeidsforholdDto), mapUttakArbeidType(utbetalingsgradArbeidsforholdDto.getUttakArbeidType()));
     }
 
     private static UttakArbeidType mapUttakArbeidType(no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType uttakArbeidType) {
@@ -37,7 +37,7 @@ class UtbetalingsgradMapper {
     }
 
     private static InternArbeidsforholdRefDto mapReferanse(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
-        return utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef().isEmpty() ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef().get().getAbakusReferanse());
+        return utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef() == null || utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef().getAbakusReferanse() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef().getAbakusReferanse());
     }
 
 

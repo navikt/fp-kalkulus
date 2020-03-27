@@ -1,12 +1,18 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -16,6 +22,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * konstanter representerer definerte eksempler på kjente konstanter. Nye kan - men må ikke - legges her - såfremt
  * avsender/mottager er kjent med de og kan håndtere de.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class YtelseTyperKalkulusStøtterKontrakt extends Kodeverk {
     static final String KODEVERK = "YTELSE_TYPE";
 

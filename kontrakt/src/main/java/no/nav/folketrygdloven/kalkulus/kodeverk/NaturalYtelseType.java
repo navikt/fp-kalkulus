@@ -1,23 +1,32 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class NaturalYtelseType extends Kodeverk {
+
+    public static final String KODEVERK = "NATURAL_YTELSE_TYPE";
+
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Size(min = 2, max = 50)
     @NotNull
     private String kode;
-
-    public static final String KODEVERK = "NATURAL_YTELSE_TYPE";
-
 
     @JsonCreator
     public NaturalYtelseType(@JsonProperty(value = "kode", required = true) String kode) {

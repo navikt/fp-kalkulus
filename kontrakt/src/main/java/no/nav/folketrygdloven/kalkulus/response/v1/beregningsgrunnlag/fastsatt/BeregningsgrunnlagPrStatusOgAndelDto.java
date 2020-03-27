@@ -4,7 +4,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -143,8 +142,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
     public BigDecimal getBruttoInkludertNaturalYtelser() {
-        BigDecimal naturalytelseBortfalt = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforhold::getNaturalytelseBortfaltPrÅr).orElse(BigDecimal.ZERO);
-        BigDecimal naturalYtelseTilkommet = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforhold::getNaturalytelseTilkommetPrÅr).orElse(BigDecimal.ZERO);
+        BGAndelArbeidsforhold bgAndelArbeidsforhold = getBgAndelArbeidsforhold();
+        if (bgAndelArbeidsforhold == null) {
+            return bruttoPrÅr;
+        }
+        BigDecimal naturalytelseBortfalt = bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr() == null ? BigDecimal.ZERO : bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr();
+        BigDecimal naturalYtelseTilkommet = bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr() == null ? BigDecimal.ZERO : bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr();
         BigDecimal brutto = bruttoPrÅr != null ? bruttoPrÅr : BigDecimal.ZERO;
         return brutto.add(naturalytelseBortfalt).subtract(naturalYtelseTilkommet);
     }
@@ -167,13 +170,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return dagsatsBruker + dagsatsArbeidsgiver;
     }
 
-    public Optional<BGAndelArbeidsforhold> getBgAndelArbeidsforhold() {
-        return Optional.ofNullable(bgAndelArbeidsforhold);
+    public BGAndelArbeidsforhold getBgAndelArbeidsforhold() {
+        return bgAndelArbeidsforhold;
     }
 
-    public Optional<Arbeidsgiver> getArbeidsgiver() {
-        Optional<BGAndelArbeidsforhold> beregningArbeidsforhold = getBgAndelArbeidsforhold();
-        return beregningArbeidsforhold.map(BGAndelArbeidsforhold::getArbeidsgiver);
+    public Arbeidsgiver getArbeidsgiver() {
+        BGAndelArbeidsforhold beregningArbeidsforhold = getBgAndelArbeidsforhold();
+        return beregningArbeidsforhold == null ? null : beregningArbeidsforhold.getArbeidsgiver();
     }
 
     public BigDecimal getRedusertRefusjonPrÅr() {

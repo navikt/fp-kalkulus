@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = OpptjeningAktivitetType.class, name = OpptjeningAktivitetType.KODEVERK),
         @JsonSubTypes.Type(value = Organisasjonstype.class, name = Organisasjonstype.KODEVERK),
         @JsonSubTypes.Type(value = PeriodeÅrsak.class, name = PeriodeÅrsak.KODEVERK),
-        @JsonSubTypes.Type(value = RelatertYtelseTilstand.class, name = RelatertYtelseTilstand.KODEVERK),
         @JsonSubTypes.Type(value = RelatertYtelseType.class, name = RelatertYtelseType.KODEVERK),
         @JsonSubTypes.Type(value = SammenligningsgrunnlagType.class, name = SammenligningsgrunnlagType.KODEVERK),
         @JsonSubTypes.Type(value = SkatteOgAvgiftsregelType.class, name = SkatteOgAvgiftsregelType.KODEVERK),

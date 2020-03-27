@@ -4,7 +4,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -66,6 +65,10 @@ public class BGAndelArbeidsforhold {
         this.arbeidsperiodeTom = arbeidsperiodeTom;
     }
 
+    public Arbeidsgiver getArbeidsgiver() {
+        return arbeidsgiver;
+    }
+
     public String getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
@@ -74,28 +77,19 @@ public class BGAndelArbeidsforhold {
         return refusjonskravPrÅr;
     }
 
-    public Optional<BigDecimal> getNaturalytelseBortfaltPrÅr() {
-        return Optional.ofNullable(naturalytelseBortfaltPrÅr);
+    public BigDecimal getNaturalytelseBortfaltPrÅr() {
+        return naturalytelseBortfaltPrÅr;
     }
 
-    public Optional<BigDecimal> getNaturalytelseTilkommetPrÅr() {
-        return Optional.ofNullable(naturalytelseTilkommetPrÅr);
+    public BigDecimal getNaturalytelseTilkommetPrÅr() {
+        return naturalytelseTilkommetPrÅr;
     }
 
     public LocalDate getArbeidsperiodeFom() {
         return arbeidsperiodeFom;
     }
 
-    public Optional<LocalDate> getArbeidsperiodeTom() {
-        return Optional.ofNullable(arbeidsperiodeTom);
+    public LocalDate getArbeidsperiodeTom() {
+        return arbeidsperiodeTom;
     }
-
-    public String getArbeidsforholdOrgnr() {
-        return getArbeidsgiver().getArbeidsgiverOrgnr();
-    }
-
-    public Arbeidsgiver getArbeidsgiver() {
-        return arbeidsgiver;
-    }
-
 }

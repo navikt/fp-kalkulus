@@ -206,20 +206,19 @@ class MapBeregningsgrunnlagTest {
         return true;
     }
 
-    private static boolean arbeidsforholdMatcher(Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BGAndelArbeidsforhold> faktiskOpt, Optional<BGAndelArbeidsforhold> forventetOpt) {
-        if (faktiskOpt.isEmpty() || forventetOpt.isEmpty()) {
-            return faktiskOpt.isEmpty() == forventetOpt.isEmpty();
+    private static boolean arbeidsforholdMatcher(no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BGAndelArbeidsforhold faktisk, Optional<BGAndelArbeidsforhold> forventetOpt) {
+        if (faktisk == null || forventetOpt.isEmpty()) {
+            return faktisk == null && forventetOpt.isEmpty();
         }
-        no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BGAndelArbeidsforhold faktisk = faktiskOpt.get();
         BGAndelArbeidsforhold forventet = forventetOpt.get();
 
         if (!matcherArbeidsgiver(faktisk.getArbeidsgiver(), forventet.getArbeidsgiver())) {
             return false;
         }
-        if (!(faktisk.getNaturalytelseBortfaltPrÅr().orElse(BigDecimal.ZERO).compareTo(forventet.getNaturalytelseBortfaltPrÅr().orElse(BigDecimal.ZERO)) == 0)) {
+        if (!(Optional.ofNullable(faktisk.getNaturalytelseBortfaltPrÅr()).orElse(BigDecimal.ZERO).compareTo(forventet.getNaturalytelseBortfaltPrÅr().orElse(BigDecimal.ZERO)) == 0)) {
             return false;
         }
-        if (!(faktisk.getNaturalytelseTilkommetPrÅr().orElse(BigDecimal.ZERO).compareTo(forventet.getNaturalytelseTilkommetPrÅr().orElse(BigDecimal.ZERO)) == 0)) {
+        if (!(Optional.ofNullable(faktisk.getNaturalytelseTilkommetPrÅr()).orElse(BigDecimal.ZERO).compareTo(forventet.getNaturalytelseTilkommetPrÅr().orElse(BigDecimal.ZERO)) == 0)) {
             return false;
         }
         if (!(faktisk.getRefusjonskravPrÅr().compareTo(forventet.getRefusjonskravPrÅr()) == 0)) {
@@ -228,7 +227,7 @@ class MapBeregningsgrunnlagTest {
         if (!(Objects.equals(faktisk.getArbeidsperiodeFom(), forventet.getArbeidsperiodeFom()))) {
             return false;
         }
-        if (!(Objects.equals(faktisk.getArbeidsperiodeTom(), forventet.getArbeidsperiodeTom()))) {
+        if (!(Objects.equals(faktisk.getArbeidsperiodeTom(), forventet.getArbeidsperiodeTom().orElse(null)))) {
             return false;
         }
         if (!(Objects.equals(faktisk.getArbeidsforholdRef(), forventet.getArbeidsforholdRef().getReferanse()))) {

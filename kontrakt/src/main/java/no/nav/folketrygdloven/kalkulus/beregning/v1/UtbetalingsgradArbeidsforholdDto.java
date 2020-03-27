@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -43,12 +41,12 @@ public final class UtbetalingsgradArbeidsforholdDto {
         this.uttakArbeidType = uttakArbeidType;
     }
 
-    public Optional<Aktør> getArbeidsgiver() {
-        return Optional.ofNullable(arbeidsgiver);
+    public Aktør getArbeidsgiver() {
+        return arbeidsgiver;
     }
 
-    public Optional<InternArbeidsforholdRefDto> getInternArbeidsforholdRef() {
-        return Optional.ofNullable(internArbeidsforholdRef);
+    public InternArbeidsforholdRefDto getInternArbeidsforholdRef() {
+        return internArbeidsforholdRef;
     }
 
     public UttakArbeidType getUttakArbeidType() {
