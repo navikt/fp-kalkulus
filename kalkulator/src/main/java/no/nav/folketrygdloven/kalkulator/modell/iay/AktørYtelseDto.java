@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class AktørYtelseDto {
@@ -61,11 +61,11 @@ public class AktørYtelseDto {
         return aktørId != null || ytelser != null && !ytelser.isEmpty();
     }
 
-    YtelseDtoBuilder getYtelseBuilderForType(Fagsystem fagsystem, FagsakYtelseType type) {
+    YtelseDtoBuilder getYtelseBuilderForType(FagsakYtelseType type, Intervall periode) {
         Optional<YtelseDto> ytelse = getAlleYtelser().stream()
-            .filter(ya -> ya.getKilde().equals(fagsystem) && ya.getRelatertYtelseType().equals(type))
+            .filter(ya -> ya.getPeriode().equals(periode) && ya.getRelatertYtelseType().equals(type))
             .findFirst();
-        return YtelseDtoBuilder.oppdatere(ytelse).medYtelseType(type).medKilde(fagsystem);
+        return YtelseDtoBuilder.oppdatere(ytelse).medPeriode(periode).medYtelseType(type);
     }
 
     void leggTilYtelse(YtelseDto ytelse) {

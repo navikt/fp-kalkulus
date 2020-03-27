@@ -21,6 +21,7 @@ public class BesteberegningFødendeKvinneDto {
 
     @JsonProperty("besteberegningAndelListe")
     @Valid
+    @NotNull
     @Size(min = 1)
     private List<BesteberegningFødendeKvinneAndelDto> besteberegningAndelListe;
 
@@ -29,6 +30,7 @@ public class BesteberegningFødendeKvinneDto {
     private DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel;
 
     public BesteberegningFødendeKvinneDto() {
+        // For Json deserialisering
     }
 
     public BesteberegningFødendeKvinneDto(@Valid @NotNull List<BesteberegningFødendeKvinneAndelDto> besteberegningAndelListe, @Valid DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {

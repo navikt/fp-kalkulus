@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
@@ -30,10 +29,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -41,9 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektType;
@@ -279,57 +272,13 @@ public class MapIAYTilKalulator {
         if (ytelse.getYtelseAnvist() != null) {
             ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto)));
         }
-
-        if (ytelse.getYtelseGrunnlag() != null) {
-            builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));
+        if (ytelse.getVedtaksDagsats() != null) {
+            builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getVerdi());
         }
-        builder.medBehandlingsTema(TemaUnderkategori.fraKode(ytelse.getTemaUnderkategori().getKode()));
-        builder.medKilde(Fagsystem.fraKode(ytelse.getKilde().getKode()));
+        builder.medBehandlingsTema(ytelse.getTemaUnderkategori() == null ? TemaUnderkategori.UDEFINERT : TemaUnderkategori.fraKode(ytelse.getTemaUnderkategori().getKode()));
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(FagsakYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
         return builder;
-    }
-
-    private static YtelseGrunnlagDto mapYtelseGrunnlag(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto ytelseGrunnlag) {
-        YtelseGrunnlagDtoBuilder builder = YtelseGrunnlagDtoBuilder.ny();
-        List<no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseStørrelseDto> ytelser = ytelseGrunnlag.getYtelseStørrelse();
-        if (ytelser != null) {
-            ytelser.forEach(ytelseStørrelse -> builder.leggTilYtelseStørrelse(mapYtelseStørrelse(ytelseStørrelse)));
-        }
-        if (ytelseGrunnlag.getArbeidskategori() != null) {
-            builder.medArbeidskategori(Arbeidskategori.fraKode(ytelseGrunnlag.getArbeidskategori().getKode()));
-        }
-        if (ytelseGrunnlag.getDekningsgradProsent() != null) {
-            builder.medDekningsgradProsent(ytelseGrunnlag.getDekningsgradProsent());
-        }
-
-        if (ytelseGrunnlag.getGraderingProsent() != null) {
-            builder.medGraderingProsent(ytelseGrunnlag.getGraderingProsent());
-        }
-
-        if (ytelseGrunnlag.getOpprinneligIdentdato() != null) {
-            builder.medOpprinneligIdentdato(ytelseGrunnlag.getOpprinneligIdentdato());
-        }
-
-        if (ytelseGrunnlag.getInntektProsent() != null) {
-            builder.medInntektsgrunnlagProsent(ytelseGrunnlag.getInntektProsent());
-        }
-
-        if (ytelseGrunnlag.getVedtaksDagsats() != null) {
-            builder.medVedtaksDagsats(ytelseGrunnlag.getVedtaksDagsats().getVerdi());
-        }
-
-        return builder.build();
-    }
-
-    private static YtelseStørrelseDto mapYtelseStørrelse(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseStørrelseDto ytelseStørrelse) {
-        YtelseStørrelseDtoBuilder builder = YtelseStørrelseDtoBuilder.ny();
-        builder.medBeløp(ytelseStørrelse.getBeløp().getVerdi());
-        builder.medHyppighet(InntektPeriodeType.fraKode(ytelseStørrelse.getHyppighet().getKode()));
-        if (ytelseStørrelse.getAktør().getErOrganisasjon()) {
-            builder.medVirksomhet(ytelseStørrelse.getAktør().getIdent());
-        }
-        return builder.build();
     }
 
     private static YtelseAnvistDto mapYtelseAnvist(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist) {

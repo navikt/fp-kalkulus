@@ -7,11 +7,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
@@ -319,8 +319,8 @@ public class InntektArbeidYtelseAggregatBuilder {
             return this;
         }
 
-        public YtelseDtoBuilder getYtelselseBuilderForType(Fagsystem fagsystem, FagsakYtelseType type) {
-            return kladd.getYtelseBuilderForType(fagsystem, type);
+        public YtelseDtoBuilder getYtelselseBuilderForType(FagsakYtelseType type, Intervall periode) {
+            return kladd.getYtelseBuilderForType(type, periode);
         }
 
         public AktørYtelseBuilder leggTilYtelse(YtelseDtoBuilder builder) {

@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 import java.util.Set;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -11,9 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Fagsystem;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
@@ -23,30 +23,25 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class YtelseDto {
 
-    @JsonProperty("ytelseGrunnlag")
+
+    @JsonProperty(value = "vedtaksDagsats")
     @Valid
-    private YtelseGrunnlagDto ytelseGrunnlag;
+    private BeløpDto vedtaksDagsats;
 
     @JsonProperty("ytelseAnvist")
     @Valid
     @Size
     private Set<YtelseAnvistDto> ytelseAnvist;
 
-    @JsonProperty("relatertYtelseType")
+    @JsonProperty(value = "relatertYtelseType", required = true)
     @Valid
+    @NotNull
     private RelatertYtelseType relatertYtelseType;
 
-    @JsonProperty("periode")
+    @JsonProperty(value = "periode", required = true)
     @Valid
+    @NotNull
     private Periode periode;
-
-    @JsonProperty("status")
-    @Valid
-    private RelatertYtelseTilstand status;
-
-    @JsonProperty("kilde")
-    @Valid
-    private Fagsystem kilde;
 
     @JsonProperty("temaUnderkategori")
     @Valid
@@ -56,24 +51,16 @@ public class YtelseDto {
         // default ctor
     }
 
-    public YtelseDto(@Valid YtelseGrunnlagDto ytelseGrunnlag,
-                     @Valid Set<YtelseAnvistDto> ytelseAnvist,
-                     @Valid RelatertYtelseType relatertYtelseType,
-                     @Valid Periode periode,
-                     @Valid RelatertYtelseTilstand status,
-                     @Valid Fagsystem kilde,
+    public YtelseDto(@Valid BeløpDto vedtaksDagsats,
+                     @Valid @Size Set<YtelseAnvistDto> ytelseAnvist,
+                     @Valid @NotNull RelatertYtelseType relatertYtelseType,
+                     @Valid @NotNull Periode periode,
                      @Valid TemaUnderkategori temaUnderkategori) {
-        this.ytelseGrunnlag = ytelseGrunnlag;
+        this.vedtaksDagsats = vedtaksDagsats;
         this.ytelseAnvist = ytelseAnvist;
         this.relatertYtelseType = relatertYtelseType;
         this.periode = periode;
-        this.status = status;
-        this.kilde = kilde;
         this.temaUnderkategori = temaUnderkategori;
-    }
-
-    public YtelseGrunnlagDto getYtelseGrunnlag() {
-        return ytelseGrunnlag;
     }
 
     public Set<YtelseAnvistDto> getYtelseAnvist() {
@@ -88,15 +75,11 @@ public class YtelseDto {
         return periode;
     }
 
-    public RelatertYtelseTilstand getStatus() {
-        return status;
-    }
-
-    public Fagsystem getKilde() {
-        return kilde;
-    }
-
     public TemaUnderkategori getTemaUnderkategori() {
         return temaUnderkategori;
+    }
+
+    public BeløpDto getVedtaksDagsats() {
+        return vedtaksDagsats;
     }
 }

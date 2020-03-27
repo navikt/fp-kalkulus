@@ -18,11 +18,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class DagpengeAndelLagtTilBesteberegningDto {
 
-    @JsonProperty("nyDagpengeAndel")
+    @JsonProperty("fastsatteVerdier")
     @Valid
     private FastsatteVerdierForBesteberegningDto fastsatteVerdier;
 
     public DagpengeAndelLagtTilBesteberegningDto() {
+        // For json deserialisering
     }
 
     public DagpengeAndelLagtTilBesteberegningDto(int fastsattBeløp, Inntektskategori inntektskategori) {

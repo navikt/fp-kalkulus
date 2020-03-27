@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
@@ -35,23 +37,14 @@ public class YtelseDtoBuilder {
         return this;
     }
 
-    public YtelseDtoBuilder medStatus(RelatertYtelseTilstand relatertYtelseTilstand) {
-        ytelse.setStatus(relatertYtelseTilstand);
-        return this;
-    }
-
     public YtelseDtoBuilder medPeriode(Intervall intervallEntitet) {
         ytelse.setPeriode(intervallEntitet);
         return this;
     }
 
-    public YtelseDtoBuilder medKilde(Fagsystem kilde) {
-        ytelse.setKilde(kilde);
-        return this;
-    }
 
-    public YtelseDtoBuilder medYtelseGrunnlag(YtelseGrunnlagDto ytelseGrunnlag) {
-        ytelse.setYtelseGrunnlag(ytelseGrunnlag);
+    public YtelseDtoBuilder medVedtaksDagsats(BigDecimal vedtakDagsats) {
+        ytelse.setVedtaksDagsats(new Beløp(vedtakDagsats));
         return this;
     }
 
@@ -83,10 +76,6 @@ public class YtelseDtoBuilder {
 
     public void tilbakestillAnvisteYtelser() {
         ytelse.tilbakestillAnvisteYtelser();
-    }
-
-    public YtelseGrunnlagDtoBuilder getGrunnlagBuilder() {
-        return YtelseGrunnlagDtoBuilder.ny();
     }
 
 

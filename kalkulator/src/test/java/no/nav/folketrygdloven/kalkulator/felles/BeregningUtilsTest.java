@@ -147,8 +147,7 @@ public class BeregningUtilsTest {
     private YtelseDtoBuilder lagYtelse(FagsakYtelseType ytelsetype, LocalDate fom, LocalDate tom) {
         return YtelseDtoBuilder.oppdatere(Optional.empty())
                 .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-                .medYtelseType(ytelsetype)
-                .medStatus(RelatertYtelseTilstand.AVSLUTTET);
+                .medYtelseType(ytelsetype);
     }
 
 

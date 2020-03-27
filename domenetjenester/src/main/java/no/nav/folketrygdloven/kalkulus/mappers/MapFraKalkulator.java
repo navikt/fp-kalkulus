@@ -166,8 +166,8 @@ public class MapFraKalkulator {
                 opptjeningAktiviteter.getPerioder().stream().map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.nyPeriode(
                         OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
                         new Periode(opptjeningPeriodeDto.getPeriode().getFom(), opptjeningPeriodeDto.getPeriode().getTom()),
-                        opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
-                        opptjeningPeriodeDto.getArbeidsgiver().getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                        opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
+                        opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErPerson() ? opptjeningPeriodeDto.getArbeidsgiver().getIdent() : null,
                         opptjeningPeriodeDto.getAbakusReferanse() != null ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse()) : null
                 )).collect(Collectors.toList()));
     }

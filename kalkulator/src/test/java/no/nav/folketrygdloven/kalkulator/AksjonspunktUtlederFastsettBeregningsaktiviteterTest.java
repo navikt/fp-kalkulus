@@ -124,8 +124,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         YtelseDtoBuilder yb = YtelseDtoBuilder.oppdatere(Optional.empty());
         YtelseDto ytelse = yb.medYtelseType(FagsakYtelseType.DAGPENGER)
             .medPeriode(Intervall.fraOgMed(FPDateUtil.iDag().minusMonths(2)))
-            .medKilde(Fagsystem.ARENA)
-            .medStatus(RelatertYtelseTilstand.LØPENDE)
             .leggTilYtelseAnvist(lagYtelseAnvist(yb.getAnvistBuilder()))
             .build();
 

@@ -42,7 +42,6 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -60,12 +59,10 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OpptjeningsnøkkelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -75,7 +72,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 
 @ExtendWith(MockitoExtension.class)
@@ -158,23 +154,10 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private YtelseDtoBuilder lagYtelse(FagsakYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
                                        LocalDate fom, LocalDate tom, BigDecimal beløp, BigDecimal utbetalingsgrad,
                                        LocalDate meldekortFom, LocalDate meldekortTom) {
-        YtelseDtoBuilder ytelselseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(Fagsystem.FPSAK, relatertYtelseType);
+        YtelseDtoBuilder ytelselseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(relatertYtelseType, Intervall.fraOgMedTilOgMed(fom, tom));
         ytelselseBuilder.tilbakestillAnvisteYtelser();
-        return ytelselseBuilder.medKilde(Fagsystem.ARENA)
-            .medYtelseType(FagsakYtelseType.DAGPENGER)
-            .medBehandlingsTema(TemaUnderkategori.UDEFINERT)
-            .medStatus(RelatertYtelseTilstand.AVSLUTTET)
-            .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-            .medYtelseGrunnlag(
-                ytelselseBuilder.getGrunnlagBuilder()
-                    .medOpprinneligIdentdato(OPPRINNELIG_IDENTDATO)
-                    .medVedtaksDagsats(beløp)
-                    .medInntektsgrunnlagProsent(new BigDecimal(99.00))
-                    .medDekningsgradProsent(new BigDecimal(98.00))
-                    .leggTilYtelseStørrelse(YtelseStørrelseDtoBuilder.ny()
-                        .medBeløp(new BigDecimal(100000.50))
-                        .build())
-                    .build())
+        return ytelselseBuilder.medYtelseType(FagsakYtelseType.DAGPENGER)
+            .medVedtaksDagsats(beløp)
             .leggTilYtelseAnvist(ytelselseBuilder.getAnvistBuilder()
                 .medAnvistPeriode(Intervall.fraOgMedTilOgMed(meldekortFom, meldekortTom))
                 .medDagsats(beløp)

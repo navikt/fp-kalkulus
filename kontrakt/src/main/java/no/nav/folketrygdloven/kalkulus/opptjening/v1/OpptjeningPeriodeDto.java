@@ -23,26 +23,33 @@ public class OpptjeningPeriodeDto {
     @JsonProperty(value = "opptjeningAktivitetType", required = true)
     @Valid
     @NotNull
-    private final OpptjeningAktivitetType opptjeningAktivitetType;
+    private OpptjeningAktivitetType opptjeningAktivitetType;
 
     @JsonProperty(value = "periode", required = true)
     @Valid
     @NotNull
-    private final Periode periode;
+    private Periode periode;
 
-    @JsonProperty(value = "arbeidsgiver", required = true)
+    @JsonProperty(value = "arbeidsgiver")
     @Valid
-    @NotNull
-    private final Aktør arbeidsgiver;
+    private Aktør arbeidsgiver;
 
     @JsonProperty(value = "abakusReferanse")
     @Valid
-    private final InternArbeidsforholdRefDto abakusReferanse;
+    private InternArbeidsforholdRefDto abakusReferanse;
 
-    @JsonCreator
+    public OpptjeningPeriodeDto() {
+        // For Json deserialisering
+    }
+
+    public OpptjeningPeriodeDto(@Valid @NotNull OpptjeningAktivitetType opptjeningAktivitetType, @Valid @NotNull Periode periode) {
+        this.opptjeningAktivitetType = opptjeningAktivitetType;
+        this.periode = periode;
+    }
+
     public OpptjeningPeriodeDto(@JsonProperty(value = "opptjeningAktivitetType", required = true) @Valid @NotNull OpptjeningAktivitetType opptjeningAktivitetType,
                                 @JsonProperty(value = "periode", required = true) @Valid @NotNull Periode periode,
-                                @JsonProperty(value = "arbeidsgiver", required = true) @Valid @NotNull Aktør arbeidsgiver,
+                                @JsonProperty(value = "arbeidsgiver") @Valid Aktør arbeidsgiver,
                                 @JsonProperty(value = "abakusReferanse") @Valid InternArbeidsforholdRefDto abakusReferanse) {
 
         this.opptjeningAktivitetType = opptjeningAktivitetType;

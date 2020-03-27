@@ -37,18 +37,12 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseStørrelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Fagsystem;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -128,9 +122,7 @@ public class KalkulatorMapperTest {
     }
 
     private List<YtelseDto> byggYtelseDto() {
-        YtelseStørrelseDto ytelseStørrelse = new YtelseStørrelseDto(InntektPeriodeType.DAGLIG, organisasjon, beløpDto);
-        YtelseGrunnlagDto ytelseGrunnlag = new YtelseGrunnlagDto(List.of(ytelseStørrelse), Arbeidskategori.FRILANSER, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, LocalDate.now(), beløpDto);
         YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN);
-        return List.of(new YtelseDto(ytelseGrunnlag, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, RelatertYtelseTilstand.ÅPEN, Fagsystem.ARENA, TemaUnderkategori.FORELDREPENGER));
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, TemaUnderkategori.FORELDREPENGER));
     }
 }

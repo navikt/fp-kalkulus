@@ -12,7 +12,6 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Fagsystem;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
@@ -31,8 +30,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseStørrelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
@@ -43,7 +40,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 
@@ -210,25 +206,16 @@ public class BeregningIAYTestUtil {
     }
 
     public static AktørYtelseDto leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder,
-                                             BehandlingReferanse behandlingReferanse,
-                                             LocalDate fom,
-                                             LocalDate tom, // NOSONAR - brukes bare til test
-                                             RelatertYtelseTilstand relatertYtelseTilstand,
-                                             String saksnummer,
-                                             FagsakYtelseType ytelseType,
-                                             List<YtelseStørrelseDto> ytelseStørrelseList,
-                                             Arbeidskategori arbeidskategori,
-                                             Periode... meldekortPerioder) {
+                                                    BehandlingReferanse behandlingReferanse,
+                                                    LocalDate fom,
+                                                    LocalDate tom, // NOSONAR - brukes bare til test
+                                                    FagsakYtelseType ytelseType,
+                                                    Arbeidskategori arbeidskategori,
+                                                    Periode... meldekortPerioder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder
             .getAktørYtelseBuilder(behandlingReferanse.getAktørId());
-        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(Fagsystem.INFOTRYGD, ytelseType);
-        ytelseBuilder.medPeriode(Intervall.fraOgMedTilOgMed(fom, tom));
-        ytelseBuilder.medStatus(relatertYtelseTilstand);
-        YtelseGrunnlagDtoBuilder ytelseGrunnlagBuilder = ytelseBuilder.getGrunnlagBuilder()
-            .medArbeidskategori(arbeidskategori);
-        ytelseStørrelseList.forEach(ytelseGrunnlagBuilder::leggTilYtelseStørrelse);
-        ytelseBuilder.medYtelseGrunnlag(ytelseGrunnlagBuilder.build());
+        YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(ytelseType, Intervall.fraOgMedTilOgMed(fom, tom));
         if (meldekortPerioder != null) {
             Arrays.asList(meldekortPerioder).forEach(meldekortPeriode -> {
                 YtelseAnvistDto ytelseAnvist = lagYtelseAnvist(meldekortPeriode, ytelseBuilder);
