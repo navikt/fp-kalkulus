@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,9 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     }
 
     public List<BeregningsgrunnlagPrStatusOgAndel> getBeregningsgrunnlagPrStatusOgAndelList() {
-        return Collections.unmodifiableList(beregningsgrunnlagPrStatusOgAndelList);
+        return beregningsgrunnlagPrStatusOgAndelList.stream()
+                .sorted(Comparator.comparing(BeregningsgrunnlagPrStatusOgAndel::getAndelsnr))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public IntervallEntitet getPeriode() {
@@ -152,11 +155,15 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     }
 
     public List<BeregningsgrunnlagPeriodeÅrsak> getBeregningsgrunnlagPeriodeÅrsaker() {
-        return Collections.unmodifiableList(beregningsgrunnlagPeriodeÅrsaker);
+        return beregningsgrunnlagPeriodeÅrsaker.stream()
+                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeÅrsak::getPeriodeÅrsak))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<PeriodeÅrsak> getPeriodeÅrsaker() {
-        return beregningsgrunnlagPeriodeÅrsaker.stream().map(BeregningsgrunnlagPeriodeÅrsak::getPeriodeÅrsak).collect(Collectors.toList());
+        return getBeregningsgrunnlagPeriodeÅrsaker().stream()
+                .map(BeregningsgrunnlagPeriodeÅrsak::getPeriodeÅrsak)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     void addBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel bgPrStatusOgAndel) {

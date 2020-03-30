@@ -214,7 +214,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 beregningsgrunnlagPrStatusOgAndel.getAndelsnr(),
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getFomDato(), beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getPeriode().getTomDato()),
+                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom()),
                 new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),

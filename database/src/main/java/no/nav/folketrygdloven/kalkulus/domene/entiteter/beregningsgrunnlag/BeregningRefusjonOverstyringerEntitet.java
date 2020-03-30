@@ -2,7 +2,9 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +37,9 @@ public class BeregningRefusjonOverstyringerEntitet extends BaseEntitet {
     }
 
     public List<BeregningRefusjonOverstyringEntitet> getRefusjonOverstyringer() {
-        return Collections.unmodifiableList(overstyringer);
+        return overstyringer.stream()
+                .sorted(Comparator.comparing(BeregningRefusjonOverstyringEntitet::getArbeidsgiver))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public static Builder builder() {

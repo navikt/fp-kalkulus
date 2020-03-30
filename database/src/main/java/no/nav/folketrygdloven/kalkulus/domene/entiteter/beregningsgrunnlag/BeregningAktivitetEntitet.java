@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivite
 
 @Entity(name = "BeregningAktivitet")
 @Table(name = "BG_AKTIVITET")
-public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey {
+public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, Comparable<BeregningAktivitetEntitet> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_AKTIVITET")
@@ -166,6 +167,11 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey {
     @Override
     public String getIndexKey() {
         return IndexKey.createKey(arbeidsgiver, arbeidsforholdRef);
+    }
+
+    @Override
+    public int compareTo(BeregningAktivitetEntitet beregningAktivitetEntitet) {
+        return this.hashCode() > beregningAktivitetEntitet.hashCode() ? 1 : -1;
     }
 
     public static class Builder {

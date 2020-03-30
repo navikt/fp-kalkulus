@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /** En arbeidsgiver (enten virksomhet eller personlig arbeidsgiver). */
 @Embeddable
-public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey {
+public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey, Comparable<Arbeidsgiver> {
 
     /**
      * Kun en av denne og {@link #arbeidsgiverAktørId} kan være satt. Sett denne hvis Arbeidsgiver er en Organisasjon.
@@ -129,4 +129,10 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey {
     public static Arbeidsgiver fra(AktørId aktørId) {
         return fra(person(aktørId));
     }
+
+    @Override
+    public int compareTo(Arbeidsgiver arbeidsgiver) {
+        return this.getIdentifikator().compareTo(arbeidsgiver.getIdentifikator());
+    }
+
 }

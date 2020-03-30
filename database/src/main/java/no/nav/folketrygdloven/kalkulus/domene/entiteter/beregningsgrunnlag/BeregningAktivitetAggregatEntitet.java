@@ -3,8 +3,10 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +47,9 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
     }
 
     public List<BeregningAktivitetEntitet> getBeregningAktiviteter() {
-        return Collections.unmodifiableList(aktiviteter);
+        return aktiviteter.stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public LocalDate getSkjæringstidspunktOpptjening() {

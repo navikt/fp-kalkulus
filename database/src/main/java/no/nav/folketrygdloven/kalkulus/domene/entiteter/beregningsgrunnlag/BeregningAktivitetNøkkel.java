@@ -6,7 +6,7 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
 
 
-public class BeregningAktivitetNøkkel {
+public class BeregningAktivitetNøkkel implements Comparable<BeregningAktivitetNøkkel> {
     private OpptjeningAktivitetType opptjeningAktivitetType;
     private LocalDate fom;
     private LocalDate tom;
@@ -39,6 +39,11 @@ public class BeregningAktivitetNøkkel {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public int compareTo(BeregningAktivitetNøkkel nøkkel) {
+        return this.hashCode() > nøkkel.hashCode() ? 1 : -1;
     }
 
     public static class Builder {

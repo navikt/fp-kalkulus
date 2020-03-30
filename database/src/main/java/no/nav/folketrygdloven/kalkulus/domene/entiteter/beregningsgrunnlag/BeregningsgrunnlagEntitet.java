@@ -91,7 +91,9 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     }
 
     public List<BeregningsgrunnlagAktivitetStatus> getAktivitetStatuser() {
-        return Collections.unmodifiableList(aktivitetStatuser);
+        return aktivitetStatuser.stream()
+                .sorted(Comparator.comparing(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<BeregningsgrunnlagPeriode> getBeregningsgrunnlagPerioder() {
@@ -168,12 +170,15 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
         return faktaOmBeregningTilfeller
                 .stream()
+                .sorted(Comparator.comparing(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle))
                 .map(BeregningsgrunnlagFaktaOmBeregningTilfelle::getFaktaOmBeregningTilfelle)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public List<SammenligningsgrunnlagPrStatus> getSammenligningsgrunnlagPrStatusListe() {
-        return sammenligningsgrunnlagPrStatusListe;
+        return sammenligningsgrunnlagPrStatusListe.stream()
+                .sorted(Comparator.comparing(SammenligningsgrunnlagPrStatus::getSammenligningsgrunnlagType))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public boolean isOverstyrt() {
