@@ -214,7 +214,7 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 beregningsgrunnlagPrStatusOgAndel.getAndelsnr(),
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom()),
+                mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel),
                 new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
@@ -244,6 +244,10 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningsgrunnlagPrStatusOgAndel.mottarYtelse().orElse(null),
                 beregningsgrunnlagPrStatusOgAndel.erNyoppstartet().orElse(null)
         );
+    }
+
+    private static Periode mapBeregningsperiode(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+        return beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom() == null ? null : new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom());
     }
 
     private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
