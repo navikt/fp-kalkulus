@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -69,5 +70,31 @@ public class RefusjonskravDatoDto {
 
     public boolean harRefusjonFraStart() {
         return harRefusjonFraStart;
+    }
+
+    @Override
+    public String toString() {
+        return "RefusjonskravDatoDto{" +
+                "arbeidsgiver=" + arbeidsgiver +
+                ", førsteDagMedRefusjonskrav=" + førsteDagMedRefusjonskrav +
+                ", førsteInnsendingAvRefusjonskrav=" + førsteInnsendingAvRefusjonskrav +
+                ", harRefusjonFraStart=" + harRefusjonFraStart +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RefusjonskravDatoDto that = (RefusjonskravDatoDto) o;
+        return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
+                Objects.equals(førsteDagMedRefusjonskrav, that.førsteDagMedRefusjonskrav) &&
+                Objects.equals(førsteInnsendingAvRefusjonskrav, that.førsteInnsendingAvRefusjonskrav) &&
+                Objects.equals(harRefusjonFraStart, that.harRefusjonFraStart);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arbeidsgiver, førsteDagMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, harRefusjonFraStart);
     }
 }

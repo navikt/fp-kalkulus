@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -46,4 +47,25 @@ public class UtbetalingsgradPrAktivitetDto {
         return utbetalingsgradArbeidsforholdDto;
     }
 
+    @Override
+    public String toString() {
+        return "UtbetalingsgradPrAktivitetDto{" +
+                "utbetalingsgradArbeidsforholdDto=" + utbetalingsgradArbeidsforholdDto +
+                ", periodeMedUtbetalingsgrad=" + periodeMedUtbetalingsgrad +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UtbetalingsgradPrAktivitetDto that = (UtbetalingsgradPrAktivitetDto) o;
+        return Objects.equals(utbetalingsgradArbeidsforholdDto, that.utbetalingsgradArbeidsforholdDto) &&
+                Objects.equals(periodeMedUtbetalingsgrad, that.periodeMedUtbetalingsgrad);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(utbetalingsgradArbeidsforholdDto, periodeMedUtbetalingsgrad);
+    }
 }

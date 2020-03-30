@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -33,7 +34,7 @@ public abstract class YtelsespesifiktGrunnlagDto {
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
     @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
     @Digits(integer = 3, fraction = 2)
-    private BigDecimal dekningsgrad;
+    private BigDecimal dekningsgrad = BigDecimal.valueOf(100);
 
     @JsonProperty(value = "kvalifisererTilBesteberegning")
     @Valid
@@ -42,10 +43,6 @@ public abstract class YtelsespesifiktGrunnlagDto {
 
     protected YtelsespesifiktGrunnlagDto() {
         // default ctor
-    }
-
-    public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "stillingsprosent ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "stillingsprosent ${validatedValue} må være <= {value}") BigDecimal dekningsgrad) {
-        this.dekningsgrad = dekningsgrad;
     }
 
     public YtelsespesifiktGrunnlagDto(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad, @Valid @NotNull Boolean kvalifisererTilBesteberegning) {
@@ -66,4 +63,25 @@ public abstract class YtelsespesifiktGrunnlagDto {
         return kvalifisererTilBesteberegning;
     }
 
+    @Override
+    public String toString() {
+        return "YtelsespesifiktGrunnlagDto{" +
+                "dekningsgrad=" + dekningsgrad +
+                ", kvalifisererTilBesteberegning=" + kvalifisererTilBesteberegning +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        YtelsespesifiktGrunnlagDto that = (YtelsespesifiktGrunnlagDto) o;
+        return Objects.equals(dekningsgrad, that.dekningsgrad) &&
+                Objects.equals(kvalifisererTilBesteberegning, that.kvalifisererTilBesteberegning);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dekningsgrad, kvalifisererTilBesteberegning);
+    }
 }

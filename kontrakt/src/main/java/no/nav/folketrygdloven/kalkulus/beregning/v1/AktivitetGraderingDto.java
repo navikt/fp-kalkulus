@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -29,5 +30,25 @@ public class AktivitetGraderingDto {
 
     public List<AndelGraderingDto> getAndelGraderingDto() {
         return andelGraderingDto;
+    }
+
+    @Override
+    public String toString() {
+        return "AktivitetGraderingDto{" +
+                "andelGraderingDto=" + andelGraderingDto +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AktivitetGraderingDto that = (AktivitetGraderingDto) o;
+        return Objects.equals(andelGraderingDto, that.andelGraderingDto);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(andelGraderingDto);
     }
 }

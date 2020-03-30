@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.felles.v1;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 

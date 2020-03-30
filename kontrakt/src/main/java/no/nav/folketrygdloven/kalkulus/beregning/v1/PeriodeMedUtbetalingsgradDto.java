@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -48,6 +49,28 @@ public class PeriodeMedUtbetalingsgradDto {
 
     public BigDecimal getUtbetalingsgrad() {
         return utbetalingsgrad;
+    }
+
+    @Override
+    public String toString() {
+        return "PeriodeMedUtbetalingsgradDto{" +
+                "periode=" + periode +
+                ", utbetalingsgrad=" + utbetalingsgrad +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PeriodeMedUtbetalingsgradDto that = (PeriodeMedUtbetalingsgradDto) o;
+        return Objects.equals(periode, that.periode) &&
+                Objects.equals(utbetalingsgrad, that.utbetalingsgrad);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(periode, utbetalingsgrad);
     }
 }
 

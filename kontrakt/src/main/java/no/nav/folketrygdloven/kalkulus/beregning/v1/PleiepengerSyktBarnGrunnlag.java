@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -32,9 +33,7 @@ public class PleiepengerSyktBarnGrunnlag extends YtelsespesifiktGrunnlagDto {
         // default ctor
     }
 
-    public PleiepengerSyktBarnGrunnlag(@Valid @DecimalMin(value = "0.00", message = "dekningsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "dekningsgrad ${validatedValue} må være <= {value}") BigDecimal dekningsgrad,
-                                       @NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
-        super(dekningsgrad);
+    public PleiepengerSyktBarnGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
     }
 
@@ -44,5 +43,26 @@ public class PleiepengerSyktBarnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static String getYtelseType() {
         return YTELSE_TYPE;
+    }
+
+    @Override
+    public String toString() {
+        return "PleiepengerSyktBarnGrunnlag{" +
+                "utbetalingsgradPrAktivitet=" + utbetalingsgradPrAktivitet +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        PleiepengerSyktBarnGrunnlag that = (PleiepengerSyktBarnGrunnlag) o;
+        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet);
     }
 }

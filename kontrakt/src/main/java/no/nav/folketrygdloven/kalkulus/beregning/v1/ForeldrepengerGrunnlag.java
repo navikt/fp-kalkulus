@@ -32,4 +32,5 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     public static String getYtelseType() {
         return YTELSE_TYPE;
     }
+
 }

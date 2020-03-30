@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -34,9 +35,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     }
 
 
-    public OmsorgspengerGrunnlag(@Valid @DecimalMin(value = "0.00", message = "dekningsgrad ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "dekningsgrad ${validatedValue} må være <= {value}") BigDecimal dekningsgrad,
-                                       @NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
-        super(dekningsgrad);
+    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
     }
 
@@ -46,5 +45,26 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static String getYtelseType() {
         return YTELSE_TYPE;
+    }
+
+    @Override
+    public String toString() {
+        return "OmsorgspengerGrunnlag{" +
+                "utbetalingsgradPrAktivitet=" + utbetalingsgradPrAktivitet +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        OmsorgspengerGrunnlag that = (OmsorgspengerGrunnlag) o;
+        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet);
     }
 }

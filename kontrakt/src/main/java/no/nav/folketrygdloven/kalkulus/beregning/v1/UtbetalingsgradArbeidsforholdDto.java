@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
+
+import java.util.Objects;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -53,5 +56,27 @@ public final class UtbetalingsgradArbeidsforholdDto {
         return uttakArbeidType;
     }
 
+    @Override
+    public String toString() {
+        return "UtbetalingsgradArbeidsforholdDto{" +
+                "arbeidsgiver=" + arbeidsgiver +
+                ", internArbeidsforholdRef=" + internArbeidsforholdRef +
+                ", uttakArbeidType=" + uttakArbeidType +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UtbetalingsgradArbeidsforholdDto that = (UtbetalingsgradArbeidsforholdDto) o;
+        return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
+                Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
+                Objects.equals(uttakArbeidType, that.uttakArbeidType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arbeidsgiver, internArbeidsforholdRef, uttakArbeidType);
+    }
 }

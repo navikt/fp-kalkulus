@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -52,5 +53,29 @@ public class AksjonspunktMedTilstandDto {
 
     public LocalDateTime getVentefrist() {
         return ventefrist;
+    }
+
+    @Override
+    public String toString() {
+        return "AksjonspunktMedTilstandDto{" +
+                "beregningAksjonspunktDefinisjon=" + beregningAksjonspunktDefinisjon +
+                ", venteårsak=" + venteårsak +
+                ", ventefrist=" + ventefrist +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AksjonspunktMedTilstandDto that = (AksjonspunktMedTilstandDto) o;
+        return Objects.equals(beregningAksjonspunktDefinisjon, that.beregningAksjonspunktDefinisjon) &&
+                Objects.equals(venteårsak, that.venteårsak) &&
+                Objects.equals(ventefrist, that.ventefrist);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(beregningAksjonspunktDefinisjon, venteårsak, ventefrist);
     }
 }

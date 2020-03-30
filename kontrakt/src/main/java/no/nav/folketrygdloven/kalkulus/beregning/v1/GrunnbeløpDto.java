@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -63,5 +64,29 @@ public class GrunnbeløpDto {
 
     public BigDecimal getgVerdi() {
         return gVerdi;
+    }
+
+    @Override
+    public String toString() {
+        return "GrunnbeløpDto{" +
+                "periode=" + periode +
+                ", gSnitt=" + gSnitt +
+                ", gVerdi=" + gVerdi +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GrunnbeløpDto that = (GrunnbeløpDto) o;
+        return Objects.equals(periode, that.periode) &&
+                Objects.equals(gSnitt, that.gSnitt) &&
+                Objects.equals(gVerdi, that.gVerdi);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(periode, gSnitt, gVerdi);
     }
 }
