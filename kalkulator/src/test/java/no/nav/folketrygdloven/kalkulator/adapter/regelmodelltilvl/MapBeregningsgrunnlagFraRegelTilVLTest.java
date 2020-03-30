@@ -411,7 +411,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             .medNaturalytelseBortfaltPrÅr(BigDecimal.valueOf(87.87))
             .medAvkortetPrÅr(BigDecimal.valueOf(57.57))
             .medRedusertPrÅr(BigDecimal.valueOf(89.89))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(2600.0))
+            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(2600.0), BigDecimal.valueOf(260))
             .build();
 
         final BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold66 = BeregningsgrunnlagPrArbeidsforhold.builder()
@@ -423,7 +423,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             .medNaturalytelseBortfaltPrÅr(BigDecimal.valueOf(45.45))
             .medAvkortetPrÅr(BigDecimal.valueOf(34.34))
             .medRedusertPrÅr(BigDecimal.valueOf(65.65))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(1300.0))
+            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(1300.0), BigDecimal.valueOf(260))
             .build();
         BeregningsgrunnlagPrStatus.builder(regelBGPStatus)
             .medArbeidsforhold(regelArbeidsforhold42)

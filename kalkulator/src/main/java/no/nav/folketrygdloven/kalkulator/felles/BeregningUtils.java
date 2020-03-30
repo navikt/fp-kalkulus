@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.felles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
@@ -21,8 +21,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class BeregningUtils {
     private static final Logger LOG = LoggerFactory.getLogger(BeregningUtils.class);
-
-    private static final Period MELDEKORT_PERIODE_UTV = Period.parse("P30D");
 
     public static final BigDecimal MAX_UTBETALING_PROSENT_AAP_DAG = BigDecimal.valueOf(200);
 
@@ -35,7 +33,11 @@ public class BeregningUtils {
             .max(Comparator.comparing(YtelseDto::getPeriode).thenComparing(ytelse -> ytelse.getPeriode().getTomDato()));
     }
 
-    public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> ytelseTyper) {
+    public static Optional<YtelseAnvistDto> sisteHeleMeldekortFørStp(YtelseFilterDto ytelseFilter,
+                                                                     YtelseDto sisteVedtak,
+                                                                     LocalDate skjæringstidspunkt,
+                                                                     Set<FagsakYtelseType> ytelseTyper,
+                                                                     FagsakYtelseType ytelseType) {
         LOG.info("Finner siste meldekort for vedtak " + sisteVedtak + " på skjæringstidspunkt " + skjæringstidspunkt + " for ytelser " + ytelseTyper);
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
@@ -46,7 +48,7 @@ public class BeregningUtils {
         LOG.info("Antall meldekort funnet: " + alleMeldekort.size());
 
         Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
-            .filter(ytelseAnvist -> sisteVedtakFom.minus(MELDEKORT_PERIODE_UTV).isBefore(ytelseAnvist.getAnvistTOM()))
+            .filter(ytelseAnvist -> sisteVedtakFom.minus(KonfigTjeneste.forYtelse(ytelseType).getMeldekortPeriode()).isBefore(ytelseAnvist.getAnvistTOM()))
             .filter(ytelseAnvist -> skjæringstidspunkt.isAfter(ytelseAnvist.getAnvistTOM()))
             .max(Comparator.comparing(YtelseAnvistDto::getAnvistFOM));
 

@@ -105,7 +105,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         LocalDateTime frist = tom.plusDays(rapporteringsfrist).plusDays(1).atStartOfDay();
 
         //Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
+        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -143,7 +143,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt);
+        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -162,7 +162,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         int rapporteringsfrist = 1000;
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
+        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);

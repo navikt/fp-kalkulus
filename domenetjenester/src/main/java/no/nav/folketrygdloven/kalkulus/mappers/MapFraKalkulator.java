@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Builder;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
@@ -46,9 +47,6 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
 public class MapFraKalkulator {
 
-    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP = 3;
-    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB = 2;
-    public static final int GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_OMP = 2;
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
@@ -104,19 +102,18 @@ public class MapFraKalkulator {
             case FORELDREPENGER:
                 ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(), ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
                 //TODO(OJR) lag builder?
-                foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_FP);
-                return foreldrepengerGrunnlag;
+                foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.FORELDREPENGER).getAntallGMilitærHarKravPå().intValue());
             case SVANGERSKAPSPENGER:
                 throw new IllegalStateException("Støtter ikke denne ennå");
             case PLEIEPENGER_SYKT_BARN:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag pleiepengerYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
                 PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
-                pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_PSB);
+                pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
                 return pleiepengerSyktBarnGrunnlag;
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
                 no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
-                kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(GRUNNBELØP_MILITÆR_HAR_KRAV_PÅ_OMP);
+                kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.OMSORGSPENGER).getAntallGMilitærHarKravPå().intValue());
                 return kalkulatorGrunnlag;
             default:
                 return new StandardGrunnlag();

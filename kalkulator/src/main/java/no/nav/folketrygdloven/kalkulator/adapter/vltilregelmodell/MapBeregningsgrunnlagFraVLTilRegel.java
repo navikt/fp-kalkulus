@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Sammenlign
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -101,7 +102,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
             .medGrunnbeløpSatser(input.getGrunnbeløpsatser())
             .medMilitærIOpptjeningsperioden(erMilitærIOpptjeningsperioden)
-            .medAntallGrunnbeløpMilitærHarKravPå(finnGrunnbeløpMilitærHarKravPå(input))
+            .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
+            .medAntallGMinstekravVilkår(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår())
+            .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
+            .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
+            .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
             .build();
     }
 
@@ -120,11 +125,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             }
         });
         return periodeÅrsakerMapped;
-    }
-
-    private static int finnGrunnbeløpMilitærHarKravPå(BeregningsgrunnlagInput input) {
-
-        return input.getYtelsespesifiktGrunnlag().getGrunnbeløpMilitærHarKravPå();
     }
 
     private static Dekningsgrad finnDekningsgrad(BeregningsgrunnlagInput input) {

@@ -5,7 +5,6 @@ import static java.util.Collections.emptyList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -17,18 +16,19 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.vedtak.util.FPDateUtil;
 
 public class AksjonspunktUtlederFastsettBeregningsaktiviteter {
 
     public static List<BeregningAksjonspunktResultat> utledAksjonspunkterForFelles(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                               BeregningAktivitetAggregatDto beregningAktivitetAggregat,
-                                                                               BeregningsgrunnlagInput input,
-                                                                               boolean erOverstyrt) {
+                                                                                   BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                                                   BeregningsgrunnlagInput input,
+                                                                                   boolean erOverstyrt,
+                                                                                   FagsakYtelseType fagsakYtelseType) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getBehandlingReferanse().getAktørId());
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteter {
             return emptyList();
         }
 
-        if (no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse)) {
+        if (no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)) {
             return List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.AVKLAR_AKTIVITETER));
         }
         return emptyList();

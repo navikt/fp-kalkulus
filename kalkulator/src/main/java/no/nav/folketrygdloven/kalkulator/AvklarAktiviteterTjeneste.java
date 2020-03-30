@@ -27,9 +27,9 @@ public class AvklarAktiviteterTjeneste {
         // Skjul meg
     }
 
-    static boolean skalAvklareAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse) {
+    static boolean skalAvklareAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
         return harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat)
-            || harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse);
+            || harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse, fagsakYtelseType);
     }
 
     public static boolean harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
@@ -43,7 +43,7 @@ public class AvklarAktiviteterTjeneste {
             .anyMatch(aktivitet -> aktivitet.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.VENTELØNN_VARTPENGER));
     }
 
-    public static boolean harFullAAPPåStpMedAndreAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, Optional<AktørYtelseDto> aktørYtelse) {
+    public static boolean harFullAAPPåStpMedAndreAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
         List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser();
         if (aktivitetStatuser.stream().noneMatch(as -> as.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))) {
             return false;
@@ -52,12 +52,12 @@ public class AvklarAktiviteterTjeneste {
         if (aktivitetStatuser.size() <= 1) {
             return false;
         }
-        return hentUtbetalingsprosentAAP(aktørYtelse, skjæringstidspunkt)
+        return hentUtbetalingsprosentAAP(aktørYtelse, skjæringstidspunkt, fagsakYtelseType)
             .filter(verdi -> verdi.compareTo(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG) == 0)
             .isPresent();
     }
 
-    private static Optional<BigDecimal> hentUtbetalingsprosentAAP(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
+    private static Optional<BigDecimal> hentUtbetalingsprosentAAP(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
         var ytelseFilter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
 
         Optional<YtelseDto> nyligsteVedtak = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
@@ -65,7 +65,7 @@ public class AvklarAktiviteterTjeneste {
             return Optional.empty();
         }
 
-        Optional<YtelseAnvistDto> nyligsteMeldekort = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseAnvistDto> nyligsteMeldekort = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), fagsakYtelseType);
         return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
     }
 

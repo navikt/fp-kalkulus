@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.util;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
@@ -21,7 +22,7 @@ public final class KopierBeregningsgrunnlagUtil {
                     .medAktivitetStatus(forrigeStatus.getAktivitetStatus())
                     .medBeregningsgrunnlagPeriode(kopi)
                     .build();
-                kopierArbeidsforhold(forrigeStatus.getArbeidsforhold(), ny);
+                kopierArbeidsforhold(forrigeStatus.getArbeidsforhold(), ny, grunnlag.getYtelsedagerPrÅr());
             } else {
                 BeregningsgrunnlagPrStatus.builder()
                     .medAktivitetStatus(forrigeStatus.getAktivitetStatus())
@@ -37,14 +38,14 @@ public final class KopierBeregningsgrunnlagUtil {
     }
 
     private static void kopierArbeidsforhold(List<BeregningsgrunnlagPrArbeidsforhold> kopierFraArbeidsforholdListe,
-                                             BeregningsgrunnlagPrStatus ny) {
+                                             BeregningsgrunnlagPrStatus ny, BigDecimal ytelsedagerPrÅr) {
         for (BeregningsgrunnlagPrArbeidsforhold kopierFraArbeidsforhold : kopierFraArbeidsforholdListe) {
-            BeregningsgrunnlagPrArbeidsforhold kopiertArbeidsforhold = kopierArbeidsforhold(kopierFraArbeidsforhold);
+            BeregningsgrunnlagPrArbeidsforhold kopiertArbeidsforhold = kopierArbeidsforhold(kopierFraArbeidsforhold, ytelsedagerPrÅr);
             BeregningsgrunnlagPrStatus.builder(ny).medArbeidsforhold(kopiertArbeidsforhold);
         }
     }
 
-    private static BeregningsgrunnlagPrArbeidsforhold kopierArbeidsforhold(BeregningsgrunnlagPrArbeidsforhold kopierFraArbeidsforhold) {
+    private static BeregningsgrunnlagPrArbeidsforhold kopierArbeidsforhold(BeregningsgrunnlagPrArbeidsforhold kopierFraArbeidsforhold, BigDecimal ytelsedagerPrÅr) {
         BeregningsgrunnlagPrArbeidsforhold.Builder bgPrArbeidsforholdBuilder = BeregningsgrunnlagPrArbeidsforhold.builder()
             .medArbeidsforhold(kopierFraArbeidsforhold.getArbeidsforhold())
             .medInntektskategori(kopierFraArbeidsforhold.getInntektskategori())
@@ -55,9 +56,9 @@ public final class KopierBeregningsgrunnlagUtil {
             .medRefusjonskravPrÅr(kopierFraArbeidsforhold.getRefusjonskravPrÅr().orElse(null))
             .medMaksimalRefusjonPrÅr(kopierFraArbeidsforhold.getMaksimalRefusjonPrÅr())
             .medAvkortetRefusjonPrÅr(kopierFraArbeidsforhold.getAvkortetRefusjonPrÅr())
-            .medRedusertRefusjonPrÅr(kopierFraArbeidsforhold.getRedusertRefusjonPrÅr())
+            .medRedusertRefusjonPrÅr(kopierFraArbeidsforhold.getRedusertRefusjonPrÅr(), ytelsedagerPrÅr)
             .medAvkortetBrukersAndelPrÅr(kopierFraArbeidsforhold.getAvkortetBrukersAndelPrÅr())
-            .medRedusertBrukersAndelPrÅr(kopierFraArbeidsforhold.getRedusertBrukersAndelPrÅr())
+            .medRedusertBrukersAndelPrÅr(kopierFraArbeidsforhold.getRedusertBrukersAndelPrÅr(), ytelsedagerPrÅr)
             .medErTidsbegrensetArbeidsforhold(kopierFraArbeidsforhold.getTidsbegrensetArbeidsforhold())
             .medFastsattAvSaksbehandler(kopierFraArbeidsforhold.getFastsattAvSaksbehandler())
             .medLagtTilAvSaksbehandler(kopierFraArbeidsforhold.getLagtTilAvSaksbehandler())

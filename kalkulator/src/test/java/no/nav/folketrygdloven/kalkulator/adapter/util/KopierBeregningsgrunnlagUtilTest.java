@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
@@ -29,6 +31,9 @@ public class KopierBeregningsgrunnlagUtilTest {
             .medPeriode(Periode.of(periode.getTom().plusDays(1), null))
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET)
             .build();
+        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(orginal).medYtelsesdagerIEtÅr(BigDecimal.valueOf(260));
+        Beregningsgrunnlag.builder().medBeregningsgrunnlagPeriode(kopi).medYtelsesdagerIEtÅr(BigDecimal.valueOf(260));
+
         // Act
         KopierBeregningsgrunnlagUtil.kopierBeregningsgrunnlagPeriode(orginal, kopi);
         //Assert
@@ -97,9 +102,9 @@ public class KopierBeregningsgrunnlagUtilTest {
             .medRefusjonskravPrÅr(BigDecimal.valueOf(7))
             .medMaksimalRefusjonPrÅr(BigDecimal.valueOf(2))
             .medAvkortetRefusjonPrÅr(BigDecimal.valueOf(3))
-            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(4))
+            .medRedusertRefusjonPrÅr(BigDecimal.valueOf(4), BigDecimal.valueOf(260))
             .medAvkortetBrukersAndelPrÅr(BigDecimal.valueOf(5))
-            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(6))
+            .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(6), BigDecimal.valueOf(260))
             .medErTidsbegrensetArbeidsforhold(true)
             .medFastsattAvSaksbehandler(true)
             .build();

@@ -38,7 +38,7 @@ class FinnInntektFraYtelse {
             return Optional.empty();
         }
 
-        Optional<YtelseAnvistDto> nyesteMeldekort = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(), skjæringstidspunkt, Set.of(mapTilYtelseType(aktivitetStatus)));
+        Optional<YtelseAnvistDto> nyesteMeldekort = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(), skjæringstidspunkt, Set.of(mapTilYtelseType(aktivitetStatus)), ref.getFagsakYtelseType());
         return Optional.of(finnÅrsbeløp(nyesteVedtak.get(), nyesteMeldekort));
     }
 

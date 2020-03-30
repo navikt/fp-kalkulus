@@ -68,7 +68,8 @@ public class BeregningsgrunnlagTjeneste {
             beregningsgrunnlag,
             beregningAktivitetAggregat,
             inputOppdatertMedBg,
-            erOverstyrt);
+            erOverstyrt,
+            input.getFagsakYtelseType());
         return BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
             .medAksjonspunkter(aksjonspunkter)
             .medBeregningsgrunnlag(beregningsgrunnlag, OPPRETTET)

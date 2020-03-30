@@ -190,7 +190,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSTAKER);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty());
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -202,7 +202,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty());
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -218,7 +218,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag));
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -235,7 +235,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag));
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();

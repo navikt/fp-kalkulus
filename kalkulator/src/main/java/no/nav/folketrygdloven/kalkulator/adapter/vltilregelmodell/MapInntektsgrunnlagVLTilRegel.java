@@ -145,7 +145,8 @@ public class MapInntektsgrunnlagVLTilRegel {
 
     private static void mapTilstøtendeYtelserDagpengerOgAAP(Inntektsgrunnlag inntektsgrunnlag,
                                                             YtelseFilterDto ytelseFilter,
-                                                            LocalDate skjæringstidspunkt) {
+                                                            LocalDate skjæringstidspunkt,
+                                                            FagsakYtelseType fagsakYtelseType) {
 
         Optional<YtelseDto> nyesteVedtakForDagsats = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt,
                 Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
@@ -154,7 +155,7 @@ public class MapInntektsgrunnlagVLTilRegel {
         }
 
         Optional<YtelseAnvistDto> sisteUtbetalingFørStp = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats.get(), skjæringstidspunkt,
-                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), fagsakYtelseType);
         BigDecimal dagsats = nyesteVedtakForDagsats.get().getVedtaksDagsats().map(Beløp::getVerdi)
                 .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
         BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
@@ -274,7 +275,7 @@ public class MapInntektsgrunnlagVLTilRegel {
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(skjæringstidspunktBeregning);
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
-            mapTilstøtendeYtelserDagpengerOgAAP(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning);
+            mapTilstøtendeYtelserDagpengerOgAAP(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, referanse.getFagsakYtelseType());
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
