@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
@@ -146,15 +145,15 @@ public class BeregningsgrunnlagPeriodeDto {
         regelSporingMap.put(beregningsgrunnlagPeriodeRegelSporing.getRegelType(), beregningsgrunnlagPeriodeRegelSporing);
     }
 
-    public Beløp getTotaltRefusjonkravIPeriode() {
-        return new Beløp(beregningsgrunnlagPrStatusOgAndelList.stream()
+    public BigDecimal getTotaltRefusjonkravIPeriode() {
+        return beregningsgrunnlagPrStatusOgAndelList.stream()
             .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
             .filter(Objects::nonNull)
             .reduce(BigDecimal::add)
-            .orElse(BigDecimal.ZERO));
+            .orElse(BigDecimal.ZERO);
     }
 
     @Override

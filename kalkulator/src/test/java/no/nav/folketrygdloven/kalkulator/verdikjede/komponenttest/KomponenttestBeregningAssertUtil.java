@@ -39,10 +39,10 @@ class KomponenttestBeregningAssertUtil {
             assertThat(beregningsgrunnlagPeriode.getBruttoPrÅr()).isEqualByComparingTo(overstyrtPrÅr);
         }
         if (refusjonskravPrÅr == null){
-            assertThat(beregningsgrunnlagPeriode.getTotaltRefusjonkravIPeriode().erNulltall()).isTrue();
+            assertThat(beregningsgrunnlagPeriode.getTotaltRefusjonkravIPeriode().compareTo(BigDecimal.ZERO) == 0).isTrue();
 
         } else {
-            assertThat(beregningsgrunnlagPeriode.getTotaltRefusjonkravIPeriode().getVerdi()).isEqualByComparingTo(refusjonskravPrÅr);
+            assertThat(beregningsgrunnlagPeriode.getTotaltRefusjonkravIPeriode()).isEqualByComparingTo(refusjonskravPrÅr);
         }
         assertThat(beregningsgrunnlagPeriode.getBeregnetPrÅr()).isEqualByComparingTo(beregnetPrÅr);
         assertThat(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom()).isEqualTo(periode.getFomDato());

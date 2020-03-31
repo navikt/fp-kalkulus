@@ -36,7 +36,11 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
     }
 
     @Override
-    protected void mapInntektsmelding(Collection<InntektsmeldingDto>inntektsmeldinger, Collection<AndelGradering> andelGraderinger, Map<Arbeidsgiver, LocalDate> førsteIMMap, YrkesaktivitetDto ya, LocalDate startdatoPermisjon, ArbeidsforholdOgInntektsmelding.Builder builder, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
+    protected void mapInntektsmelding(Collection<InntektsmeldingDto>inntektsmeldinger,
+                                      Map<Arbeidsgiver, LocalDate> førsteIMMap,
+                                      YrkesaktivitetDto ya, LocalDate startdatoPermisjon,
+                                      ArbeidsforholdOgInntektsmelding.Builder builder,
+                                      Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
             .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
             .findFirst();

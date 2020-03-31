@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
@@ -37,6 +38,7 @@ public class BeregningsgrunnlagTjeneste {
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
+    private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
 
     public BeregningsgrunnlagTjeneste() {
         // CDI Proxy
@@ -46,11 +48,13 @@ public class BeregningsgrunnlagTjeneste {
     public BeregningsgrunnlagTjeneste(@Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
                                       AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
-                                      FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste) {
+                                      FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
+                                      BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtlederFaktaOmBeregning = aksjonspunktUtlederFaktaOmBeregning;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
+        this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
@@ -110,6 +114,14 @@ public class BeregningsgrunnlagTjeneste {
                 .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
                 .build();
         }
+    }
+
+    public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(BeregningsgrunnlagInput input) {
+        List<BeregningAksjonspunktResultat> beregningAksjonspunktResultats = beregningRefusjonAksjonspunktutleder.utledAksjonspunkter(input);
+        return BeregningResultatAggregat.builder()
+                .medAksjonspunkter(beregningAksjonspunktResultats)
+                .build();
+
     }
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {

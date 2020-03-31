@@ -53,6 +53,18 @@ public class BeregningsgrunnlagInput {
      */
     private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
 
+    /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
+    private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
+
+    /** Aktiviteter til grunnlag for opptjening. */
+    private final OpptjeningAktiviteterDto opptjeningAktiviteter;
+
+    private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
+
+    private Map<String, Boolean> toggles = new HashMap<>();
+
+    private Map<String, Object> konfigverdier = new HashMap<>();
+
     public Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> getTilstandHistorikk() {
         return tilstandHistorikk;
     }
@@ -72,18 +84,6 @@ public class BeregningsgrunnlagInput {
     public Optional<BeregningsgrunnlagGrunnlagDto> hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand tilstand) {
         return Optional.ofNullable(tilstandHistorikk.get(tilstand));
     }
-
-    /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
-    private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
-
-    /** Aktiviteter til grunnlag for opptjening. */
-    private final OpptjeningAktiviteterDto opptjeningAktiviteter;
-
-    private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
-
-    private Map<String, Boolean> toggles = new HashMap<>();
-
-    private Map<String, Object> konfigverdier = new HashMap<>();
 
     public BeregningsgrunnlagInput(BehandlingReferanse behandlingReferanse,
                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -234,10 +234,6 @@ public class BeregningsgrunnlagInput {
     public BeregningsgrunnlagInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
-        newInput = grunnlag.getBeregningsgrunnlag()
-            .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
-            .map(newInput::medSkjæringstidspunktForBeregning)
-            .orElse(newInput);
         return newInput;
     }
 

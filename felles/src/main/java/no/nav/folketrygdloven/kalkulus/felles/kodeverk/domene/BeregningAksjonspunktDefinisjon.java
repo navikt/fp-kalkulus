@@ -37,6 +37,7 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     VURDER_GRADERING_UTEN_BEREGNINGSGRUNNLAG("5050","Vurder gradering på andel uten beregningsgrunnlag"),
     AVKLAR_AKTIVITETER("5052","Avklar aktivitet for beregning"),
     VURDER_FAKTA_FOR_ATFL_SN("5058","Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
+    VURDER_REFUSJONSKRAV("5059", "Vurder refusjonskrav for beregningen"),
 
     // 6000 overstyring
     OVERSTYRING_AV_BEREGNINGSGRUNNLAG("6015","Overstyring av beregningsgrunnlag"),

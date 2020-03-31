@@ -89,7 +89,6 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                                                       List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger);
 
     protected abstract void mapInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                               Collection<AndelGradering> andelGraderinger,
                                                Map<Arbeidsgiver, LocalDate> førsteIMMap,
                                                YrkesaktivitetDto ya,
                                                LocalDate startdatoPermisjon,
@@ -277,10 +276,11 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                 if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)) {
                     matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
                 }
-                mapInntektsmelding(inntektsmeldinger, andelGraderinger, førsteIMMap, ya, startdatoPermisjon, builder, grunnlag.getRefusjonOverstyringer());
+                mapInntektsmelding(inntektsmeldinger, førsteIMMap, ya, startdatoPermisjon, builder, grunnlag.getRefusjonOverstyringer());
                 List<Gradering> graderinger = mapGradering(andelGraderinger, ya);
                 List<Gradering> graderingerSomSkalLeggesTil = hentGraderingerSomIkkeErLagtTilFraFør(arbeidGraderingOgInntektsmeldinger, ya, graderinger);
                 builder.medGraderinger(graderingerSomSkalLeggesTil);
+
                 Arbeidsforhold arbeidsforhold = lagArbeidsforhold(inntektsmeldinger, ya);
                 ArbeidsforholdOgInntektsmelding arbeidsforholdOgInntektsmelding = builder
                         .medAnsettelsesperiode(ansettelsesPeriode)

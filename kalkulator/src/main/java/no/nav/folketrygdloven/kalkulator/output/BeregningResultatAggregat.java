@@ -34,6 +34,9 @@ public class BeregningResultatAggregat {
         return beregningVilkårResultat;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static class Builder {
 
@@ -43,6 +46,10 @@ public class BeregningResultatAggregat {
 
         public Builder(BeregningsgrunnlagInput input) {
             this.grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
+            this.kladd = new BeregningResultatAggregat();
+        }
+
+        private Builder() {
             this.kladd = new BeregningResultatAggregat();
         }
 
@@ -67,8 +74,13 @@ public class BeregningResultatAggregat {
         }
 
         public BeregningResultatAggregat build() {
-            this.kladd.beregningsgrunnlagGrunnlag = grunnlagBuilder.build(tilstand);
-            return kladd;
+            if (this.tilstand != null && this.grunnlagBuilder != null) {
+                this.kladd.beregningsgrunnlagGrunnlag = grunnlagBuilder.build(tilstand);
+                return kladd;
+            } else if (this.kladd.beregningAksjonspunktResultater != null) {
+                return kladd;
+            }
+            throw new IllegalStateException("Må sette enten beregningsgrunnlag eller beregningaksjonspunkter på beregningresultataggregat!");
         }
 
     }
