@@ -11,7 +11,6 @@ public class AktivitetsAvtaleDto {
     private boolean erAnsettelsesPeriode = true;
     private Intervall periode;
     private LocalDate sisteLønnsendringsdato;
-    private Stillingsprosent stillingsprosent;
 
     /**
      * Setter en periode brukt til overstyring av angitt periode (avledet fra saksbehandlers vurderinger). Benyttes kun transient (ved filtrering av modellen)
@@ -120,7 +119,4 @@ public class AktivitetsAvtaleDto {
         return erAnsettelsesPeriode;
     }
 
-    void setProsentsats(Stillingsprosent prosentsats) {
-        this.stillingsprosent = prosentsats;
-    }
 }

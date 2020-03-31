@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,33 +15,18 @@ public class OppgittFrilansDto {
     @JsonProperty
     @Valid
     @NotNull
-    private Boolean harInntektFraFosterhjem;
-
-    @JsonProperty
-    @Valid
-    @NotNull
     private Boolean erNyoppstartet;
 
-    @JsonProperty
-    @Valid
-    @NotNull
-    private Boolean harNærRelasjon;
-
-    public OppgittFrilansDto(@Valid @NotNull Boolean harInntektFraFosterhjem, @Valid @NotNull Boolean erNyoppstartet, @Valid @NotNull Boolean harNærRelasjon) {
-        this.harInntektFraFosterhjem = harInntektFraFosterhjem;
-        this.erNyoppstartet = erNyoppstartet;
-        this.harNærRelasjon = harNærRelasjon;
+    public OppgittFrilansDto() {
+        // default ctor
     }
 
-    public Boolean getHarInntektFraFosterhjem() {
-        return harInntektFraFosterhjem;
+    public OppgittFrilansDto(@Valid @NotNull Boolean erNyoppstartet) {
+        this.erNyoppstartet = erNyoppstartet;
     }
 
     public Boolean getErNyoppstartet() {
         return erNyoppstartet;
     }
 
-    public Boolean getHarNærRelasjon() {
-        return harNærRelasjon;
-    }
 }

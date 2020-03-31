@@ -115,7 +115,6 @@ public class YrkesaktivitetFilterDto {
             for (var arbeidsforholdOverstyringEntitet : overstyringer) {
                 var yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                     .medArbeidsgiver(arbeidsforholdOverstyringEntitet.getArbeidsgiver())
-                    .medArbeidsgiverNavn(arbeidsforholdOverstyringEntitet.getArbeidsgiverNavn())
                     .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                     .medArbeidsforholdId(arbeidsforholdOverstyringEntitet.getArbeidsforholdRef());
                 var arbeidsforholdOverstyrtePerioder = arbeidsforholdOverstyringEntitet

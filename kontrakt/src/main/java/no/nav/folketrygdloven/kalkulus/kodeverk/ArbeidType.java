@@ -21,6 +21,7 @@ public class ArbeidType extends Kodeverk{
     static final String KODEVERK = "ARBEID_TYPE";
 
     public static final ArbeidType ORDINÆRT_ARBEIDSFORHOLD = new ArbeidType("ORDINÆRT_ARBEIDSFORHOLD");
+    public static final ArbeidType FRILANSER_OPPDRAGSTAKER_MED_MER = new ArbeidType("FRILANSER_OPPDRAGSTAKER");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")

@@ -10,6 +10,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -60,6 +61,10 @@ public class OppgittEgenNæringDto {
     @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
     @Digits(integer = 10, fraction = 2)
     private BigDecimal bruttoInntekt;
+
+    public OppgittEgenNæringDto() {
+        // default ctor
+    }
 
     public OppgittEgenNæringDto(@Valid @NotNull Periode periode,
                                 @Valid Aktør aktør,

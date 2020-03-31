@@ -72,7 +72,6 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
         AktivitetsAvtaleDtoBuilder aktivitetsAvtaleDtoBuilder = AktivitetsAvtaleDtoBuilder.ny()
                 .medPeriode(periode)
                 .medSisteLønnsendringsdato(LocalDate.of(2018, 7, 1))
-                .medProsentsats(BigDecimal.valueOf(100))
                 .medErAnsettelsesPeriode(false);
 
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(orgnr);

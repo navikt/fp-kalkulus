@@ -129,7 +129,7 @@ public class MapIAYTilKalulator {
         OppgittOpptjeningDtoBuilder builder = OppgittOpptjeningDtoBuilder.ny();
         if (oppgittOpptjening.getFrilans() != null) {
             no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansDto oppgittFrilans = oppgittOpptjening.getFrilans();
-            builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getHarInntektFraFosterhjem(), oppgittFrilans.getErNyoppstartet(), oppgittFrilans.getHarNærRelasjon()));
+            builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet()));
         }
         if (oppgittOpptjening.getEgenNæring() != null) {
             oppgittOpptjening.getEgenNæring().forEach(egen -> builder.leggTilEgneNæring(mapEgenNæring(egen)));
@@ -158,7 +158,9 @@ public class MapIAYTilKalulator {
 
     public static InntektsmeldingAggregatDto mapInntektsmelding(InntektsmeldingerDto inntektsmeldingDto) {
         InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder builder = InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder.ny();
-        inntektsmeldingDto.getInntektsmeldinger().forEach(inntektsmelding -> builder.leggTil(mapInntektsmeldingDto(inntektsmelding)));
+        if (inntektsmeldingDto.getInntektsmeldinger() != null) {
+            inntektsmeldingDto.getInntektsmeldinger().forEach(inntektsmelding -> builder.leggTil(mapInntektsmeldingDto(inntektsmelding)));
+        }
         return builder.build();
     }
 
@@ -194,7 +196,6 @@ public class MapIAYTilKalulator {
     private static AktivitetsAvtaleDtoBuilder mapAktivitetsAvtale(AktivitetsAvtaleDto aktivitetsAvtale) {
         return AktivitetsAvtaleDtoBuilder.ny()
                 .medPeriode(Intervall.fraOgMedTilOgMed(aktivitetsAvtale.getPeriode().getFom(), aktivitetsAvtale.getPeriode().getTom()))
-                .medProsentsats(aktivitetsAvtale.getStillingsprosent())
                 .medSisteLønnsendringsdato(aktivitetsAvtale.getSisteLønnsendringsdato())
                 .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
     }
@@ -205,7 +206,6 @@ public class MapIAYTilKalulator {
         yrkesaktivitet.getAktivitetsAvtaler().forEach(aktivitetsAvtale -> dtoBuilder.leggTilAktivitetsAvtale(mapAktivitetsAvtale(aktivitetsAvtale)));
         dtoBuilder.medArbeidsforholdId(mapArbeidsforholdRef(yrkesaktivitet.getAbakusReferanse()));
         dtoBuilder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(yrkesaktivitet.getArbeidsgiver()));
-        dtoBuilder.medArbeidsgiverNavn(yrkesaktivitet.getNavnArbeidsgiverUtland());
         dtoBuilder.medArbeidType(ArbeidType.fraKode(yrkesaktivitet.getArbeidType().getKode()));
         return dtoBuilder.build();
     }

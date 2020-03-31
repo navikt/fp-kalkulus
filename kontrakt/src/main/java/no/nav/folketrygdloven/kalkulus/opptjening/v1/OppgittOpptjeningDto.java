@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -23,6 +24,9 @@ public class OppgittOpptjeningDto {
     @Size
     private List<OppgittEgenNæringDto> egenNæring;
 
+    public OppgittOpptjeningDto() {
+        // Json deserialisering
+    }
 
     public OppgittOpptjeningDto(@Valid OppgittFrilansDto frilans, @Valid List<OppgittEgenNæringDto> egenNæring) {
         this.frilans = frilans;

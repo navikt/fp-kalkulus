@@ -133,8 +133,7 @@ public class MapAndelGraderingTest {
                 .medAktørId(aktørId)
                 .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                     .medArbeidsgiver(ARBEIDSGIVER)
-                    .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medProsentsats(BigDecimal.valueOf(100))
-                        .medPeriode(ansettelsesPeriode))
+                    .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode).medErAnsettelsesPeriode(false))
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(ansettelsesPeriode))))).build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
 

@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 public class YrkesaktivitetDto {
 
     private Set<AktivitetsAvtaleDto> aktivitetsAvtale = new LinkedHashSet<>();
-    private String navnArbeidsgiverUtland;
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private ArbeidType arbeidType;
@@ -29,7 +28,6 @@ public class YrkesaktivitetDto {
         this.arbeidType = kopierFra.getArbeidType();
         this.arbeidsgiver = kopierFra.getArbeidsgiver();
         this.arbeidsforholdRef = kopierFra.arbeidsforholdRef;
-        this.navnArbeidsgiverUtland = kopierFra.getNavnArbeidsgiverUtland();
 
         // NB må aksessere felt her heller en getter siden getter filtrerer
         this.aktivitetsAvtale = kopierFra.aktivitetsAvtale.stream().map(aa -> {
@@ -122,19 +120,6 @@ public class YrkesaktivitetDto {
         this.arbeidsgiver = arbeidsgiver;
     }
 
-    /**
-     * Navn på utenlands arbeidsgiver
-     *
-     * @return Navn
-     */
-    private String getNavnArbeidsgiverUtland() {
-        return navnArbeidsgiverUtland;
-    }
-
-    void setNavnArbeidsgiverUtland(String navnArbeidsgiverUtland) {
-        this.navnArbeidsgiverUtland = navnArbeidsgiverUtland;
-    }
-
     boolean erArbeidsforhold() {
         return ArbeidType.AA_REGISTER_TYPER.contains(arbeidType);
     }
@@ -148,14 +133,13 @@ public class YrkesaktivitetDto {
         }
         YrkesaktivitetDto other = (YrkesaktivitetDto) obj;
         return Objects.equals(this.getArbeidsforholdRef(), other.getArbeidsforholdRef()) &&
-            Objects.equals(this.getNavnArbeidsgiverUtland(), other.getNavnArbeidsgiverUtland()) &&
             Objects.equals(this.getArbeidType(), other.getArbeidType()) &&
             Objects.equals(this.getArbeidsgiver(), other.getArbeidsgiver());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getArbeidsforholdRef(), getNavnArbeidsgiverUtland(), getArbeidType(), getArbeidsgiver());
+        return Objects.hash(this.getArbeidsforholdRef(), getArbeidType(), getArbeidsgiver());
     }
 
     @Override

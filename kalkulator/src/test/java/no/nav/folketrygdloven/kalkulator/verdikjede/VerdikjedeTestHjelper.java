@@ -463,7 +463,6 @@ public class VerdikjedeTestHjelper {
         AktivitetsAvtaleDtoBuilder stillingsprosent = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder();
         stillingsprosent.medPeriode(alltidGyldigArbeidsforhold);
         stillingsprosent.medErAnsettelsesPeriode(false);
-        stillingsprosent.medProsentsats(BigDecimal.valueOf(100));
         yrkesaktivitetBuilder.leggTilAktivitetsAvtale(ansettelse);
         yrkesaktivitetBuilder.leggTilAktivitetsAvtale(stillingsprosent);
 

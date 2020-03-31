@@ -1,10 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class AktivitetsAvtaleDtoBuilder {
@@ -26,11 +24,6 @@ public class AktivitetsAvtaleDtoBuilder {
 
     public AktivitetsAvtaleDtoBuilder medPeriode(Intervall periode) {
         this.aktivitetsAvtale.setPeriode(periode);
-        return this;
-    }
-
-    public AktivitetsAvtaleDtoBuilder medProsentsats(BigDecimal prosentsats) {
-        this.aktivitetsAvtale.setProsentsats(new Stillingsprosent(prosentsats));
         return this;
     }
 

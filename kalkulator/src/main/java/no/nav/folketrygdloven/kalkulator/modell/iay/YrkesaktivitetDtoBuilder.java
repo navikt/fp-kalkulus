@@ -43,11 +43,6 @@ public class YrkesaktivitetDtoBuilder {
         return this;
     }
 
-    public YrkesaktivitetDtoBuilder medArbeidsgiverNavn(String navnArbeidsgiverUtland) {
-        kladd.setNavnArbeidsgiverUtland(navnArbeidsgiverUtland);
-        return this;
-    }
-
     public AktivitetsAvtaleDtoBuilder getAktivitetsAvtaleBuilder() {
         return nyAktivitetsAvtaleBuilder();
     }

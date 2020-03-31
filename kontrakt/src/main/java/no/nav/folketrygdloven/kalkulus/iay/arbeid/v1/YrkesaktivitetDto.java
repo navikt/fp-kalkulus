@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.iay.arbeid.v1;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -24,12 +25,10 @@ public class YrkesaktivitetDto {
 
     @JsonProperty("arbeidsgiver")
     @Valid
-    @NotNull
     private Aktør arbeidsgiver;
 
     @JsonProperty("abakusReferanse")
     @Valid
-    @NotNull
     private InternArbeidsforholdRefDto abakusReferanse;
 
     @JsonProperty("arbeidType")
@@ -42,26 +41,19 @@ public class YrkesaktivitetDto {
     @Size
     private List<AktivitetsAvtaleDto> aktivitetsAvtaler;
 
-    @JsonProperty("navnArbeidsgiverUtland")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="Yrkesaktivitet#navnArbeidsgiverUtland '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    @Valid
-    private String navnArbeidsgiverUtland;
-
     protected YrkesaktivitetDto() {
         // default ctor
     }
 
-    public YrkesaktivitetDto(@Valid @NotNull Aktør arbeidsgiver,
-                             @Valid @NotNull InternArbeidsforholdRefDto abakusReferanse,
+    public YrkesaktivitetDto(@Valid Aktør arbeidsgiver,
+                             @Valid InternArbeidsforholdRefDto abakusReferanse,
                              @Valid @NotNull ArbeidType arbeidType,
-                             @Valid List<AktivitetsAvtaleDto> aktivitetsAvtaler,
-                             @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "Yrkesaktivitet#navnArbeidsgiverUtland '${validatedValue}' matcher ikke tillatt pattern '{regexp}'") @Valid String navnArbeidsgiverUtland) {
+                             @Valid List<AktivitetsAvtaleDto> aktivitetsAvtaler) {
 
         this.arbeidsgiver = arbeidsgiver;
         this.abakusReferanse = abakusReferanse;
         this.arbeidType = arbeidType;
         this.aktivitetsAvtaler = aktivitetsAvtaler;
-        this.navnArbeidsgiverUtland = navnArbeidsgiverUtland;
     }
 
     public Aktør getArbeidsgiver() {
@@ -80,7 +72,11 @@ public class YrkesaktivitetDto {
         return aktivitetsAvtaler;
     }
 
-    public String getNavnArbeidsgiverUtland() {
-        return navnArbeidsgiverUtland;
+
+    @AssertTrue(message = "Må ha arbeidsgiver for arbeidtype FRILANSER_OPPDRAGSTAKER eller ORDINÆRT_ARBEIDSFORHOLD.")
+    private boolean okArbeidsgiver() {
+        return arbeidsgiver != null || !(arbeidType.equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD) || arbeidType.equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER));
     }
+
+
 }

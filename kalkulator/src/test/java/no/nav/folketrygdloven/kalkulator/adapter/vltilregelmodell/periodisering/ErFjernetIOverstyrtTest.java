@@ -131,7 +131,6 @@ class ErFjernetIOverstyrtTest {
                 .getYrkesaktivitetBuilderForType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                 .medArbeidsgiver(ag)
                 .medArbeidsforholdId(ref)
-                .medArbeidsgiverNavn("Magda Gundas Bakeri og Traktorverksted")
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMed(STP.minusYears(5))));
         ARBEID_BUILDER.leggTilYrkesaktivitet(yaBuilder);
         return yaBuilder;

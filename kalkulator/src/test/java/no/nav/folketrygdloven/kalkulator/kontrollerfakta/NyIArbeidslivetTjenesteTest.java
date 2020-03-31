@@ -135,7 +135,6 @@ public class NyIArbeidslivetTjenesteTest {
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
             .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
             .medArbeidsforholdId(arbId)
-            .medArbeidsgiverNavn("Arbeidsgiver1")
             .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr));
         yrkesaktivitetBuilder.leggTilAktivitetsAvtale(yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder(periode, true));
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilder);
