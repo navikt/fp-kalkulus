@@ -29,7 +29,7 @@ class FastsettMånedsinntektATogFLiSammeOrganisasjonOppdaterer implements FaktaO
             beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
                 BeregningsgrunnlagPrStatusOgAndelDto matchendeAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.equals(andelIFørstePeriode)).findFirst()
                     .orElseThrow(() -> new IllegalStateException("Fant ingen mactchende andel i periode med fom " + periode.getBeregningsgrunnlagPeriodeFom()));
-                BeregningsgrunnlagPrStatusOgAndelDto.kopier(matchendeAndel)
+                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(matchendeAndel)
                     .medBeregnetPrÅr(BigDecimal.valueOf(årsinntekt))
                     .medFastsattAvSaksbehandler(true);
             });

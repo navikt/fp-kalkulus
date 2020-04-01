@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -170,8 +169,42 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
     }
 
     @Override
-    public int compareTo(BeregningAktivitetEntitet beregningAktivitetEntitet) {
-        return this.hashCode() > beregningAktivitetEntitet.hashCode() ? 1 : -1;
+    public int compareTo(BeregningAktivitetEntitet o) {
+        int sammenlignFom = this.periode.getFomDato().compareTo(o.getPeriode().getFomDato());
+        boolean erFomUlik = sammenlignFom != 0;
+        if (erFomUlik) {
+            return sammenlignFom;
+        }
+
+        if (this.arbeidsgiver == null) {
+            if (o.arbeidsgiver == null) {
+                return this.opptjeningAktivitetType.compareTo(o.opptjeningAktivitetType);
+            }
+            return -1;
+        };
+
+        if (o.arbeidsgiver == null) {
+            return 1;
+        }
+
+        int sammenlignArbeidsgiverId = this.arbeidsgiver.getIdentifikator().compareTo(o.arbeidsgiver.getIdentifikator());
+        boolean erArbeidsgiverIdUlike = sammenlignArbeidsgiverId != 0;
+        if (erArbeidsgiverIdUlike) {
+            return sammenlignArbeidsgiverId;
+        }
+
+        if (this.arbeidsforholdRef.getReferanse() == null) {
+            if (o.arbeidsforholdRef.getReferanse() == null) {
+                return this.opptjeningAktivitetType.compareTo(o.opptjeningAktivitetType);
+            }
+            return -1;
+        }
+
+        if (o.arbeidsforholdRef.getReferanse() == null) {
+            return 1;
+        }
+
+        return this.arbeidsforholdRef.getReferanse().compareTo(o.arbeidsforholdRef.getReferanse());
     }
 
     public static class Builder {

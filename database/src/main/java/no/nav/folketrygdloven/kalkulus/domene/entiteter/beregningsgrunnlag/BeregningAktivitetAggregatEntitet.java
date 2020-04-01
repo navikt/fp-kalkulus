@@ -48,7 +48,7 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
 
     public List<BeregningAktivitetEntitet> getBeregningAktiviteter() {
         return aktiviteter.stream()
-                .sorted(Comparator.naturalOrder())
+                .sorted()
                 .collect(Collectors.toUnmodifiableList());
     }
 

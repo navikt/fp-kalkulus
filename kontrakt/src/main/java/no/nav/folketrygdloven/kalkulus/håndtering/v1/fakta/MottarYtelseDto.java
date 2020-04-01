@@ -6,6 +6,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -25,13 +26,14 @@ public class MottarYtelseDto {
 
     @JsonProperty("arbeidstakerUtenIMMottarYtelse")
     @Valid
+    @NotNull
     @Size()
     private List<ArbeidstakerandelUtenIMMottarYtelseDto> arbeidstakerUtenIMMottarYtelse;
 
     public MottarYtelseDto() {
     }
 
-    public MottarYtelseDto(@Valid Boolean frilansMottarYtelse, @Valid List<ArbeidstakerandelUtenIMMottarYtelseDto> arbeidstakerUtenIMMottarYtelse) {
+    public MottarYtelseDto(@Valid Boolean frilansMottarYtelse, @Valid @NotNull List<ArbeidstakerandelUtenIMMottarYtelseDto> arbeidstakerUtenIMMottarYtelse) {
         this.frilansMottarYtelse = frilansMottarYtelse;
         this.arbeidstakerUtenIMMottarYtelse = arbeidstakerUtenIMMottarYtelse;
     }
