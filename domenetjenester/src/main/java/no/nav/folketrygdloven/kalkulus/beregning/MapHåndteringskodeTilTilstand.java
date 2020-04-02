@@ -12,7 +12,7 @@ public class MapHåndteringskodeTilTilstand {
 
     static {
         map.put(HåndteringKode.AVKLAR_AKTIVITETER, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        map.put(HåndteringKode.OVERSTYRING_AV_BEREGNINGSAKTIVITETER_KODE, BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        map.put(HåndteringKode.OVERSTYRING_AV_BEREGNINGSAKTIVITETER_KODE, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         map.put(HåndteringKode.FAKTA_OM_BEREGNING, BeregningsgrunnlagTilstand.KOFAKBER_UT);
         map.put(HåndteringKode.OVERSTYRING_AV_BEREGNINGSGRUNNLAG_KODE, BeregningsgrunnlagTilstand.KOFAKBER_UT);
         map.put(HåndteringKode.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS_KODE, BeregningsgrunnlagTilstand.FORESLÅTT_UT);

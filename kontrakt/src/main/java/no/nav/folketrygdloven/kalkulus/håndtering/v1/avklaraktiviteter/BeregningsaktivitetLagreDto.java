@@ -56,6 +56,20 @@ public class BeregningsaktivitetLagreDto {
     @NotNull
     private boolean skalBrukes;
 
+    public BeregningsaktivitetLagreDto() {
+        // Json deserialisering
+    }
+
+    public BeregningsaktivitetLagreDto(@Valid @NotNull OpptjeningAktivitetType opptjeningAktivitetType, @Valid @NotNull LocalDate fom, @Valid @NotNull LocalDate tom, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String oppdragsgiverOrg, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsgiverIdentifikator, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsforholdRef, @Valid @NotNull boolean skalBrukes) {
+        this.opptjeningAktivitetType = opptjeningAktivitetType;
+        this.fom = fom;
+        this.tom = tom;
+        this.oppdragsgiverOrg = oppdragsgiverOrg;
+        this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
+        this.arbeidsforholdRef = arbeidsforholdRef;
+        this.skalBrukes = skalBrukes;
+    }
+
     public OpptjeningAktivitetType getOpptjeningAktivitetType() {
         return opptjeningAktivitetType;
     }

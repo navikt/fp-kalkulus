@@ -6,12 +6,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.BeregningsaktivitetLagreDto;
@@ -24,13 +26,19 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
     public static final String IDENT_TYPE = "6014";
 
+    @JsonProperty("beregningsaktivitetLagreDtoList")
     @Valid
+    @NotNull
     @Size(max = 1000)
     private List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList;
 
 
-    @JsonCreator
-    public OverstyrBeregningsaktiviteterDto(@Valid @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
+    public OverstyrBeregningsaktiviteterDto() {
+        super(new HåndteringKode(IDENT_TYPE));
+        // Json deserialisering
+    }
+
+    public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
         super(new HåndteringKode(IDENT_TYPE));
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
