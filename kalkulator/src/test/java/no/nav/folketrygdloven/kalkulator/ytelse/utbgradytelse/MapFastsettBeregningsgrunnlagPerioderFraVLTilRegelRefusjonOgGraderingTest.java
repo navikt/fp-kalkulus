@@ -60,7 +60,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
-        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, true);
+        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(lagAktivitetAggregat(ag1, SKJÆRINGSTIDSPUNKT.plusDays(1), SKJÆRINGSTIDSPUNKT))
@@ -90,7 +90,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
         BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
-        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, false);
+        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(lagAktivitetAggregat(ag1, SKJÆRINGSTIDSPUNKT.minusDays(1), skjæringstidspunktOpptjening))
@@ -108,7 +108,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().size()).isEqualTo(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(skjæringstidspunktOpptjening);
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isNull();
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isEqualTo(1L);
     }
 
     /**
@@ -121,7 +121,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
         BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
-        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, false);
+        BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(lagAktivitetAggregat(ag1, SKJÆRINGSTIDSPUNKT.minusDays(1), skjæringstidspunktOpptjening))
@@ -281,7 +281,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .build();
     }
 
-    private BeregningsgrunnlagDto lagBgMedEnAndel(Arbeidsgiver ag1, boolean harInntektsmelding) {
+    private BeregningsgrunnlagDto lagBgMedEnAndel(Arbeidsgiver ag1) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medGrunnbeløp(BigDecimal.valueOf(99000))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
@@ -294,7 +294,6 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.valueOf(531064))
                 .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder()
-                        .medHarInntektsmelding(harInntektsmelding)
                         .build())
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag1).medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef()))
                 .build(periodeDto);

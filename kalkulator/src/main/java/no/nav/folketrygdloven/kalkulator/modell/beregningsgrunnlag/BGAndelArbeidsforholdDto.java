@@ -211,5 +211,10 @@ public class BGAndelArbeidsforholdDto {
             bgAndelArbeidsforhold.beregningsgrunnlagPrStatusOgAndel = andel;
             return bgAndelArbeidsforhold;
         }
+
+        public BGAndelArbeidsforholdDto build() {
+            Objects.requireNonNull(bgAndelArbeidsforhold.arbeidsgiver, "arbeidsgiver");
+            return bgAndelArbeidsforhold;
+        }
     }
 }
