@@ -43,7 +43,49 @@ public class BeregningAktivitetNøkkel implements Comparable<BeregningAktivitetN
 
     @Override
     public int compareTo(BeregningAktivitetNøkkel nøkkel) {
-        return this.hashCode() > nøkkel.hashCode() ? 1 : -1;
+
+        int sammenlignFom = this.fom.compareTo(nøkkel.fom);
+        boolean fomErUlike = sammenlignFom != 0;
+        if (fomErUlike) {
+            return sammenlignFom;
+        }
+
+        int sammenlignOpptjeningType = this.opptjeningAktivitetType.compareTo(nøkkel.opptjeningAktivitetType);
+
+        boolean opptjengtypeErUlike = sammenlignOpptjeningType != 0;
+        if (opptjengtypeErUlike) {
+            return sammenlignOpptjeningType;
+        }
+
+        if (this.tom != null && nøkkel.tom != null) {
+            int sammenlignTom = this.tom.compareTo(nøkkel.tom);
+            boolean tomErUlike = sammenlignTom != 0;
+            if (tomErUlike) {
+                return sammenlignTom;
+            }
+        }
+
+        if (this.arbeidsgiverIdentifikator == null) {
+            return 1;
+        }
+
+        if (nøkkel.arbeidsgiverIdentifikator == null) {
+            return -1;
+        }
+
+        int sammenlignArbeidsgiverId = this.arbeidsgiverIdentifikator.compareTo(nøkkel.arbeidsgiverIdentifikator);
+
+        boolean arbeidsgiverIdErUlike = sammenlignArbeidsgiverId != 0;
+        if (arbeidsgiverIdErUlike) {
+            return sammenlignArbeidsgiverId;
+        }
+
+        if (nøkkel.arbeidsforholdRef != null) {
+            return 1;
+        }
+
+        return -1;
+
     }
 
     public static class Builder {
