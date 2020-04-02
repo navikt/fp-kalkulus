@@ -118,11 +118,11 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         // Arrange
         LocalDate dagensdato = LocalDate.of(2019, 2, 16);
         LocalDate skjæringstidspunktOpptjening = LocalDate.of(2019, 2, 1);
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.ARBEIDSTAKER);
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = LocalDate.of(2019, 5, 1);
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
         LocalDate meldekortFom2 = LocalDate.of(2019, 1, 12);
-        BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.ARBEIDSTAKER);
         AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
                 Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
@@ -246,8 +246,26 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         assertThat(resultat.get()).isEqualTo(dagensdato.plusDays(1));
     }
 
+    @Test
+    public void skalIkkeVentePåMeldekortNårMeldekortErMottatt() {
+        // Arrange
+        LocalDate dagensdato = LocalDate.of(2019, 2, 12);
+        LocalDate skjæringstidspunktOpptjening = LocalDate.of(2019, 2, 11);
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.ARBEIDSTAKER);
+        LocalDate fom = LocalDate.of(2018, 9, 3);
+        LocalDate tom = LocalDate.of(2019, 2, 11);
+        LocalDate meldekortFom = skjæringstidspunktOpptjening.minusDays(5);
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+
+        // Act
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+
+        //Assert
+        assertThat(resultat).isNotPresent();
+    }
+
     private Periode lagMeldekortPeriode(LocalDate fom) {
         return Periode.of(fom, fom.plusDays(13));
     }
-
 }

@@ -3,11 +3,14 @@ package no.nav.folketrygdloven.kalkulator;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
@@ -34,7 +37,28 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
         if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt()))
             return Optional.empty();
 
+        if(erSisteMeldekortMottatt(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt())){
+            return Optional.empty();
+        }
+
         return utledVenteFrist(beregningsgrunnlag.getSkjæringstidspunkt(), dagensdato);
+    }
+
+    private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
+        var ytelseFilterVedtak = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
+        Optional<YtelseDto> nyligsteVedtak = BeregningUtils.sisteVedtakFørStpForType(ytelseFilterVedtak, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, FagsakYtelseType.DAGPENGER));
+
+        var ytelseFilterMeldekort = new YtelseFilterDto(aktørYtelse);
+
+        if(opphørerYtelseDagenFørStp(nyligsteVedtak.get(), skjæringstidspunkt)){
+            Optional<YtelseAnvistDto> meldekortOpphørtYtelse = BeregningUtils.finnMeldekortSomInkludererGittDato(ytelseFilterMeldekort, nyligsteVedtak.get(),
+                    Set.of(nyligsteVedtak.get().getRelatertYtelseType()), skjæringstidspunkt.minusDays(1));
+            return meldekortOpphørtYtelse.isPresent();
+        }
+
+        Optional<YtelseAnvistDto> meldekortLøpendeYtelse = BeregningUtils.finnMeldekortSomInkludererGittDato(ytelseFilterMeldekort, nyligsteVedtak.get(),
+                Set.of(nyligsteVedtak.get().getRelatertYtelseType()), skjæringstidspunkt);
+        return meldekortLøpendeYtelse.isPresent();
     }
 
     private static boolean harLøpendeVedtakOgSendtInnMeldekortNylig(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
@@ -77,5 +101,9 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
             return Optional.of(dagensdato.plusDays(1));
         }
         return Optional.empty();
+    }
+
+    private static boolean opphørerYtelseDagenFørStp(YtelseDto nyligsteVedtak, LocalDate skjæringstidspunkt){
+        return nyligsteVedtak.getPeriode().getTomDato().isEqual(skjæringstidspunkt.minusDays(1));
     }
 }

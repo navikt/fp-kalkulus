@@ -41,9 +41,7 @@ public class BeregningUtils {
         LOG.info("Finner siste meldekort for vedtak " + sisteVedtak + " på skjæringstidspunkt " + skjæringstidspunkt + " for ytelser " + ytelseTyper);
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
-        List<YtelseAnvistDto> alleMeldekort = ytelseFilter.getFiltrertYtelser().stream()
-            .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
-            .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
+        List<YtelseAnvistDto> alleMeldekort = finnAlleMeldekort(ytelseFilter, ytelseTyper);
 
         LOG.info("Antall meldekort funnet: " + alleMeldekort.size());
 
@@ -67,6 +65,32 @@ public class BeregningUtils {
 
         return sisteMeldekort;
 
+    }
+
+    public static Optional<YtelseAnvistDto> finnMeldekortSomInkludererGittDato(YtelseFilterDto ytelseFilter, YtelseDto sisteVedtak, Set<FagsakYtelseType> ytelseTyper, LocalDate gittDato) {
+        List<YtelseAnvistDto> alleMeldekort = finnAlleMeldekort(ytelseFilter, ytelseTyper);
+
+        Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
+                .filter(ytelseAnvist -> !gittDato.isBefore(ytelseAnvist.getAnvistFOM()))
+                .filter(ytelseAnvist -> !gittDato.isAfter(ytelseAnvist.getAnvistTOM()))
+                .max(Comparator.comparing(YtelseAnvistDto::getAnvistFOM));
+
+        if (sisteMeldekort.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<YtelseAnvistDto> alleMeldekortMedPeriode = alleMeldekortMedPeriode(sisteMeldekort.get().getAnvistFOM(), sisteMeldekort.get().getAnvistTOM(), alleMeldekort);
+        if (alleMeldekortMedPeriode.size() > 1) {
+            return finnMeldekortSomGjelderForVedtak(alleMeldekortMedPeriode, sisteVedtak);
+        }
+
+        return sisteMeldekort;
+    }
+
+    private static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
+        return ytelseFilter.getFiltrertYtelser().stream()
+                .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
+                .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
     }
 
     private static List<YtelseAnvistDto> alleMeldekortMedPeriode(LocalDate anvistFOM, LocalDate anvistTOM, List<YtelseAnvistDto> alleMeldekort) {

@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.RelatertYtelseTilstand;
 
 public class BeregningUtilsTest {
 
@@ -136,6 +135,52 @@ public class BeregningUtilsTest {
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortNytt);
     }
 
+    @Test
+    public void skalFinneMeldekortVedGittDatoNårMeldekortetFinnes() {
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
+
+        YtelseAnvistDto meldekort1 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(6), SKJÆRINGSTIDSPUNKT.minusWeeks(4));
+        YtelseAnvistDto meldekort2 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(4), SKJÆRINGSTIDSPUNKT.minusWeeks(2));
+        YtelseAnvistDto meldekort3 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(2), SKJÆRINGSTIDSPUNKT.minusWeeks(0));
+        YtelseAnvistDto meldekort4 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(10), SKJÆRINGSTIDSPUNKT.minusWeeks(8));
+        YtelseAnvistDto gammeltMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(10), SKJÆRINGSTIDSPUNKT.minusWeeks(8));
+
+        YtelseDto gammelYtelse = aapGammelBuilder.leggTilYtelseAnvist(gammeltMeldekort).build();
+        YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(meldekort1)
+                .leggTilYtelseAnvist(meldekort2)
+                .leggTilYtelseAnvist(meldekort3)
+                .leggTilYtelseAnvist(meldekort4).build();
+
+        YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
+        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT);
+
+        assertThat(ytelseAnvist).isPresent();
+        assertThat(ytelseAnvist.get()).isEqualTo(meldekort3);
+    }
+
+    @Test
+    public void skalIkkeFinneMeldekortNårMeldekortVedGittDatoIkkeFinnes() {
+        YtelseDtoBuilder aapGammelBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(5), SKJÆRINGSTIDSPUNKT.minusMonths(1));
+        YtelseDtoBuilder aapYtelseNyBuilder = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusMonths(1));
+
+        YtelseAnvistDto meldekort1 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(6), SKJÆRINGSTIDSPUNKT.minusWeeks(4));
+        YtelseAnvistDto meldekort2 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(4), SKJÆRINGSTIDSPUNKT.minusWeeks(2));
+        YtelseAnvistDto meldekort3 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(2), SKJÆRINGSTIDSPUNKT.minusWeeks(0));
+        YtelseAnvistDto meldekort4 = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(10), SKJÆRINGSTIDSPUNKT.minusWeeks(8));
+        YtelseAnvistDto gammeltMeldekort = lagMeldekort(BigDecimal.valueOf(100), SKJÆRINGSTIDSPUNKT.minusWeeks(10), SKJÆRINGSTIDSPUNKT.minusWeeks(8));
+
+        YtelseDto gammelYtelse = aapGammelBuilder.leggTilYtelseAnvist(gammeltMeldekort).build();
+        YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(meldekort1)
+                .leggTilYtelseAnvist(meldekort2)
+                .leggTilYtelseAnvist(meldekort3)
+                .leggTilYtelseAnvist(meldekort4).build();
+
+        YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
+        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT.plusDays(1));
+
+        assertThat(ytelseAnvist).isEmpty();
+    }
 
     private YtelseAnvistDto lagMeldekort(BigDecimal utbetalingsgrad, LocalDate fom, LocalDate tom) {
         return YtelseDtoBuilder.oppdatere(Optional.empty()).getAnvistBuilder()
