@@ -209,7 +209,11 @@ public class FordelBeregningsgrunnlagHåndtererTest {
     }
 
     private FastsettBeregningsgrunnlagAndelDto lagFordeltAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, InternArbeidsforholdRefDto arbId, Long andelsnr, boolean nyAndel, boolean lagtTilAvSaksbehandler, Integer refusjon, Integer fastsatt, Inntektskategori inntektskategori) {
-        FastsatteVerdierDto fastsatteVerdier = new FastsatteVerdierDto(refusjon, fastsatt, inntektskategori, null);
+        FastsatteVerdierDto fastsatteVerdier = FastsatteVerdierDto.Builder.ny()
+                .medRefusjonPrÅr(refusjon == null ? null : refusjon*12)
+                .medFastsattBeløpPrMnd(fastsatt)
+                .medInntektskategori(inntektskategori)
+                .build();
         RedigerbarAndelDto andelDto = new RedigerbarAndelDto(nyAndel, ORG_NUMMER, arbId, andelsnr, lagtTilAvSaksbehandler, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
         return new FastsettBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.ARBEIDSTAKER,
             andel != null ? andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO).intValue() : null,
@@ -217,7 +221,10 @@ public class FordelBeregningsgrunnlagHåndtererTest {
     }
 
     private FastsettBeregningsgrunnlagAndelDto lagFordeltDPAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, Long andelsnr, boolean nyAndel, boolean lagtTilAvSaksbehandler, Integer fastsatt, Inntektskategori inntektskategori) {
-        FastsatteVerdierDto fastsatteVerdier = new FastsatteVerdierDto(null, fastsatt, inntektskategori, null);
+        FastsatteVerdierDto fastsatteVerdier = FastsatteVerdierDto.Builder.ny()
+                .medFastsattBeløpPrMnd(fastsatt)
+                .medInntektskategori(inntektskategori)
+                .build();
         RedigerbarAndelDto andelDto = new RedigerbarAndelDto(nyAndel, andelsnr, lagtTilAvSaksbehandler, AktivitetStatus.DAGPENGER, OpptjeningAktivitetType.DAGPENGER);
         return new FastsettBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.DAGPENGER, null,
             andel != null ? finnBrutto(andel) : null);

@@ -50,14 +50,14 @@ public class FordelRefusjonTjenesteTest {
     private final RedigerbarAndelDto ANDEL_LAGT_TIL_FORRIGE_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR2, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
     private final RedigerbarAndelDto ANDEL_NY_INFO = new RedigerbarAndelDto(true, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
 
-    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_STØRRE_ENN_0 = new FastsatteVerdierDto(null, FASTSATT, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0 = new FastsatteVerdierDto(REFUSJON, FASTSATT, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = new FastsatteVerdierDto(REFUSJON, FASTSATT /2, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = new FastsatteVerdierDto(null, FASTSATT /2, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0 = new FastsatteVerdierDto(REFUSJON, 0, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_LIK_0 = new FastsatteVerdierDto(0, 0, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = new FastsatteVerdierDto(0, FASTSATT, Inntektskategori.ARBEIDSTAKER, null);
-    private final FastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = new FastsatteVerdierDto(null, 0, Inntektskategori.ARBEIDSTAKER, null);
+    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
 
     private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(BigDecimal.ZERO);
 

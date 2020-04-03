@@ -9,82 +9,32 @@ public class FastsatteVerdierDto {
 
     private static final int MÅNEDER_I_1_ÅR = 12;
 
-    private Integer refusjon;
     private Integer refusjonPrÅr;
     private Integer fastsattBeløp;
     private Integer fastsattÅrsbeløp;
     private Inntektskategori inntektskategori;
     private Boolean skalHaBesteberegning;
 
-    public FastsatteVerdierDto(Integer refusjon,
-                               Integer refusjonPrÅr,
+    private FastsatteVerdierDto() {}
+
+    private FastsatteVerdierDto(Integer refusjonPrÅr,
                                Integer fastsattBeløp,
                                Integer fastsattÅrsbeløp,
                                Inntektskategori inntektskategori,
                                Boolean skalHaBesteberegning) {
-        this.refusjon = refusjon;
         this.refusjonPrÅr = refusjonPrÅr;
         this.fastsattBeløp = fastsattBeløp;
         this.fastsattÅrsbeløp = fastsattÅrsbeløp;
         this.inntektskategori = inntektskategori;
         this.skalHaBesteberegning = skalHaBesteberegning;
-    }
-
-
-    public FastsatteVerdierDto(Integer refusjon,
-                               Integer fastsattBeløp,
-                               Inntektskategori inntektskategori,
-                               Boolean skalHaBesteberegning) {
-        this.refusjon = refusjon;
-        this.refusjonPrÅr = refusjon == null ? null : refusjon*MÅNEDER_I_1_ÅR;
-        this.fastsattBeløp = fastsattBeløp;
-        this.inntektskategori = inntektskategori;
-        this.skalHaBesteberegning = skalHaBesteberegning;
-    }
-
-
-    public FastsatteVerdierDto(Integer fastsattÅrsbeløp,
-                               Inntektskategori inntektskategori,
-                               Boolean skalHaBesteberegning) {
-        this.fastsattBeløp = fastsattÅrsbeløp / MÅNEDER_I_1_ÅR;
-        this.fastsattÅrsbeløp = fastsattÅrsbeløp;
-        this.inntektskategori = inntektskategori;
-        this.skalHaBesteberegning = skalHaBesteberegning;
-    }
-
-    public FastsatteVerdierDto(Integer fastsattBeløp, Inntektskategori inntektskategori) {
-        this.inntektskategori = inntektskategori;
-        this.fastsattBeløp = fastsattBeløp;
-        this.fastsattÅrsbeløp = fastsattBeløp * MÅNEDER_I_1_ÅR;
-    }
-
-
-    public FastsatteVerdierDto(Integer fastsattBeløp) {
-        this.fastsattBeløp = fastsattBeløp;
-        this.fastsattÅrsbeløp = fastsattBeløp * MÅNEDER_I_1_ÅR;
-    }
-
-    public Integer getRefusjon() {
-        return refusjon;
     }
 
     public Integer getRefusjonPrÅr() {
-        if (refusjonPrÅr != null) {
-            return refusjonPrÅr;
-        }
-        return refusjon == null ? null : refusjon * MÅNEDER_I_1_ÅR;
-    }
-
-    public void setRefusjonPrÅr(Integer refusjonPrÅr) {
-        this.refusjonPrÅr = refusjonPrÅr;
+        return refusjonPrÅr;
     }
 
     public Integer getFastsattBeløp() {
         return fastsattBeløp;
-    }
-
-    public Integer getFastsattÅrsbeløp() {
-        return fastsattÅrsbeløp;
     }
 
     public BigDecimal finnEllerUtregnFastsattBeløpPrÅr() {
@@ -103,5 +53,64 @@ public class FastsatteVerdierDto {
 
     public Boolean getSkalHaBesteberegning() {
         return skalHaBesteberegning;
+    }
+
+    public static class Builder {
+
+        public Builder(FastsatteVerdierDto fastsatteVerdierDto) {
+            kladd = new FastsatteVerdierDto(
+                    fastsatteVerdierDto.refusjonPrÅr,
+                    fastsatteVerdierDto.fastsattBeløp,
+                    fastsatteVerdierDto.fastsattÅrsbeløp,
+                    fastsatteVerdierDto.inntektskategori,
+                    fastsatteVerdierDto.skalHaBesteberegning
+            );
+        }
+
+        public Builder() {
+            kladd = new FastsatteVerdierDto();
+        }
+
+        private FastsatteVerdierDto kladd;
+
+        public static Builder ny() {
+            return new Builder();
+        }
+
+        public static Builder oppdater(FastsatteVerdierDto fastsatteVerdierDto) {
+            return new Builder(fastsatteVerdierDto);
+        }
+
+        public Builder medRefusjonPrÅr(Integer refusjonPrÅr) {
+            kladd.refusjonPrÅr = refusjonPrÅr;
+            return this;
+        }
+
+        public Builder medInntektskategori(Inntektskategori inntektskategori) {
+            kladd.inntektskategori = inntektskategori;
+            return this;
+        }
+
+        public Builder medFastsattBeløpPrÅr(Integer fastsattBeløpPrÅr) {
+            kladd.fastsattÅrsbeløp = fastsattBeløpPrÅr;
+            kladd.fastsattBeløp = fastsattBeløpPrÅr / MÅNEDER_I_1_ÅR;
+            return this;
+        }
+
+        public Builder medFastsattBeløpPrMnd(Integer fastsattBeløpPrMnd) {
+            kladd.fastsattBeløp = fastsattBeløpPrMnd;
+            kladd.fastsattÅrsbeløp = fastsattBeløpPrMnd * MÅNEDER_I_1_ÅR;
+            return this;
+        }
+
+        public Builder medSkalHaBesteberegning(Boolean skalHaBesteberegning) {
+            kladd.skalHaBesteberegning = skalHaBesteberegning;
+            return this;
+        }
+
+        public FastsatteVerdierDto build() {
+            return kladd;
+        }
+
     }
 }

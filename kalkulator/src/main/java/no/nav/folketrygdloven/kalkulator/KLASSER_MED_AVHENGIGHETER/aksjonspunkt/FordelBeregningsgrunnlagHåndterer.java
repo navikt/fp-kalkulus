@@ -170,12 +170,9 @@ public class FordelBeregningsgrunnlagHåndterer {
 
     private static FastsatteVerdierDto lagVerdierMedFordeltRefusjon(Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
                                                                     FastsettBeregningsgrunnlagAndelDto endretAndel, FastsatteVerdierDto fastsatteVerdier) {
-        FastsatteVerdierDto verdierMedJustertRefusjon = new FastsatteVerdierDto(
-            fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr().intValue(),
-            fastsatteVerdier.getInntektskategori(),
-            fastsatteVerdier.getSkalHaBesteberegning());
-        verdierMedJustertRefusjon.setRefusjonPrÅr(refusjonMap.get(endretAndel) != null ? refusjonMap.get(endretAndel).intValue() : null);
-        return verdierMedJustertRefusjon;
+        return FastsatteVerdierDto.Builder.oppdater(fastsatteVerdier)
+                .medRefusjonPrÅr(refusjonMap.get(endretAndel) != null ? refusjonMap.get(endretAndel).intValue() : null)
+                .build();
     }
 
     private static BeregningsgrunnlagPeriodeDto getKorrektPeriode(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPeriodeDto> perioder,

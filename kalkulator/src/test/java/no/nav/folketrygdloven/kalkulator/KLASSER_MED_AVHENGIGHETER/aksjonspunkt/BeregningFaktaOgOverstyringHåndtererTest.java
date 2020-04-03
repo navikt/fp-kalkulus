@@ -130,7 +130,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
 
     private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1) {
         RedigerbarAndelDto andelsInfo = new RedigerbarAndelDto(false, andelsnr, false, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-        FastsatteVerdierDto fastsatteVerdier1 = new FastsatteVerdierDto(null, fastsattBeløp1, null, null);
+        FastsatteVerdierDto fastsatteVerdier1 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(fastsattBeløp1).build();
         FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, Inntektskategori.ARBEIDSTAKER, null,null);
         return List.of(andelDto1);
     }

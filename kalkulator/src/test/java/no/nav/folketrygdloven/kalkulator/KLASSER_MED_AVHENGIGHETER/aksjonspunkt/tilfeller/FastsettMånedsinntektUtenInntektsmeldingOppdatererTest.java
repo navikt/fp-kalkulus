@@ -78,7 +78,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
         // Arrange
         FastsettMånedsinntektUtenInntektsmeldingDto dto = new FastsettMånedsinntektUtenInntektsmeldingDto();
         FastsettMånedsinntektUtenInntektsmeldingAndelDto andelDto = new FastsettMånedsinntektUtenInntektsmeldingAndelDto(1L,
-            new FastsatteVerdierDto(ARBEIDSINNTEKT, null, null));
+            FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrÅr(ARBEIDSINNTEKT).build());
         List<FastsettMånedsinntektUtenInntektsmeldingAndelDto> andelListe = singletonList(andelDto);
         dto.setAndelListe(andelListe);
         FaktaBeregningLagreDto faktaLagreDto = new FaktaBeregningLagreDto(singletonList(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING));

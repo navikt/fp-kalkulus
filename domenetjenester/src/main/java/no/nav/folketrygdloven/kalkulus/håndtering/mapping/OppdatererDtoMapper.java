@@ -196,9 +196,10 @@ public class OppdatererDtoMapper {
     private static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettMånedsinntektUtenInntektsmeldingAndelDto mapAndel(FastsettMånedsinntektUtenInntektsmeldingAndelDto fastsettMånedsinntektUtenInntektsmeldingAndelDto) {
         return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettMånedsinntektUtenInntektsmeldingAndelDto(
             fastsettMånedsinntektUtenInntektsmeldingAndelDto.getAndelsnr(),
-            new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto(
-                fastsettMånedsinntektUtenInntektsmeldingAndelDto.getFastsattBeløp(),
-                fastsettMånedsinntektUtenInntektsmeldingAndelDto.getInntektskategori() == null ?  null : Inntektskategori.fraKode(fastsettMånedsinntektUtenInntektsmeldingAndelDto.getInntektskategori().getKode())));
+                no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto.Builder.ny()
+                .medFastsattBeløpPrMnd(fastsettMånedsinntektUtenInntektsmeldingAndelDto.getFastsattBeløp())
+                .medInntektskategori(fastsettMånedsinntektUtenInntektsmeldingAndelDto.getInntektskategori() == null ?  null : Inntektskategori.fraKode(fastsettMånedsinntektUtenInntektsmeldingAndelDto.getInntektskategori().getKode()))
+                .build());
     }
 
     private static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderLønnsendringDto mapVurderLønnsendringDto(VurderLønnsendringDto vurdertLonnsendring) {
@@ -322,11 +323,12 @@ public class OppdatererDtoMapper {
     }
 
     private static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto mapTilFastsatteVerdier(FastsatteVerdierDto fastsatteVerdier) {
-        return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto(
-            fastsatteVerdier.getRefusjonPrÅr(),
-            fastsatteVerdier.getFastsattÅrsbeløp(),
-            Inntektskategori.fraKode(fastsatteVerdier.getInntektskategori().getKode()),
-            fastsatteVerdier.getSkalHaBesteberegning());
+        return no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto.Builder.ny()
+                .medRefusjonPrÅr(fastsatteVerdier.getRefusjonPrÅr())
+                .medFastsattBeløpPrÅr(fastsatteVerdier.getFastsattÅrsbeløp())
+                .medInntektskategori(Inntektskategori.fraKode(fastsatteVerdier.getInntektskategori().getKode()))
+                .medSkalHaBesteberegning(fastsatteVerdier.getSkalHaBesteberegning())
+                .build();
     }
 
     private static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto mapTilRedigerbarAndelDto(RedigerbarAndelDto redigerbarAndel) {

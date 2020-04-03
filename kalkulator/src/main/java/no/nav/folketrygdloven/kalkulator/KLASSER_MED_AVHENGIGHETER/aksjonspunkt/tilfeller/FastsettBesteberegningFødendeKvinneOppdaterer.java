@@ -35,8 +35,8 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = beregningsgrunnlagBuilder.getBeregningsgrunnlag();
         for (var periode : nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
             Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = forrigeBg
-                .flatMap(beregningsgrunnlag -> beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-                    .filter(periode1 -> periode1.getPeriode().overlapper(periode.getPeriode())).findFirst());
+                    .flatMap(beregningsgrunnlag -> beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                            .filter(periode1 -> periode1.getPeriode().overlapper(periode.getPeriode())).findFirst());
             andelListe.forEach(dtoAndel -> FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(mapTilRedigerbarAndel(dtoAndel), mapTilFastsatteVerdier(dtoAndel), periode, forrigePeriode));
             if (besteberegningDto.getNyDagpengeAndel() != null) {
                 FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(lagRedigerbarAndelDtoForDagpenger(), mapTilFastsatteVerdier(besteberegningDto.getNyDagpengeAndel()), periode, forrigePeriode);
@@ -44,13 +44,17 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
         }
         if (nyttBeregningsgrunnlag.getAktivitetStatuser().stream().noneMatch(status -> AktivitetStatus.DAGPENGER.equals(status.getAktivitetStatus()))) {
             beregningsgrunnlagBuilder
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER));
+                    .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER));
         }
     }
 
     private FastsatteVerdierDto mapTilFastsatteVerdier(DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = nyDagpengeAndel.getFastsatteVerdier();
-        return new FastsatteVerdierDto(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue(), fastsatteVerdier.getInntektskategori(), true);
+        return FastsatteVerdierDto.Builder.ny()
+                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())
+                .medInntektskategori(fastsatteVerdier.getInntektskategori())
+                .medSkalHaBesteberegning(true)
+                .build();
     }
 
     private RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndelDtoForDagpenger() {
@@ -63,7 +67,11 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
 
     private FastsatteVerdierDto mapTilFastsatteVerdier(BesteberegningFødendeKvinneAndelDto dtoAndel) {
         FastsatteVerdierForBesteberegningDto fastsatteVerdier = dtoAndel.getFastsatteVerdier();
-        return new FastsatteVerdierDto(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue(), fastsatteVerdier.getInntektskategori(), fastsatteVerdier.getSkalHaBesteberegning());
+        return FastsatteVerdierDto.Builder.ny()
+                .medFastsattBeløpPrÅr(fastsatteVerdier.finnFastsattBeløpPrÅr().intValue())
+                .medInntektskategori(fastsatteVerdier.getInntektskategori())
+                .medSkalHaBesteberegning(fastsatteVerdier.getSkalHaBesteberegning())
+                .build();
     }
 
 }

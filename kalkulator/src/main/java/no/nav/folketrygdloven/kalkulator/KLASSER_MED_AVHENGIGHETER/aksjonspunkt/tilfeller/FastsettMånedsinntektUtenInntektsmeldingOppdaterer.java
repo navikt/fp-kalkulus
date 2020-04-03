@@ -55,7 +55,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
     }
 
     private FastsatteVerdierDto mapTilFastsatteVerdier(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel, FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
-        return new FastsatteVerdierDto(dtoAndel.getFastsattBeløp(), beregningsgrunnlagPrStatusOgAndel.getInntektskategori());
+        return FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(dtoAndel.getFastsattBeløp()).medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori()).build();
     }
 
     private RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndel(BeregningsgrunnlagPrStatusOgAndelDto andelForArbeidsforhold) {
