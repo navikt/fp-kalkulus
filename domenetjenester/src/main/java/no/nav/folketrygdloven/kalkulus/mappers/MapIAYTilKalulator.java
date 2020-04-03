@@ -146,6 +146,7 @@ public class MapIAYTilKalulator {
                 .medPeriode(mapDatoIntervall(oppgittEgenNæring.getPeriode()))
                 .medBruttoInntekt(oppgittEgenNæring.getBruttoInntekt())
                 .medNyIArbeidslivet(oppgittEgenNæring.getNyIArbeidslivet())
+                .medEndringDato(oppgittEgenNæring.getEndringDato())
                 .medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
                 .medVarigEndring(oppgittEgenNæring.getVarigEndring())
                 .medNærRelasjon(oppgittEgenNæring.getNærRelasjon())

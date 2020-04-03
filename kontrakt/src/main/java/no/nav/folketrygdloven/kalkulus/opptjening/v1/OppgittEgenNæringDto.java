@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -10,7 +11,6 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -45,6 +45,10 @@ public class OppgittEgenNæringDto {
     @NotNull
     private Boolean varigEndring;
 
+    @JsonProperty(value = "endringDato")
+    @Valid
+    private LocalDate endringDato;
+
     @JsonProperty(value = "nærRelasjon")
     @Valid
     @NotNull
@@ -71,6 +75,7 @@ public class OppgittEgenNæringDto {
                                 @Valid VirksomhetType virksomhetType,
                                 @Valid @NotNull Boolean nyoppstartet,
                                 @Valid @NotNull Boolean varigEndring,
+                                @Valid LocalDate endringDato,
                                 @Valid @NotNull Boolean nærRelasjon,
                                 @Valid @NotNull Boolean nyIArbeidslivet,
                                 @Valid @NotNull BigDecimal bruttoInntekt) {
@@ -80,6 +85,7 @@ public class OppgittEgenNæringDto {
         this.virksomhetType = virksomhetType;
         this.nyoppstartet = nyoppstartet;
         this.varigEndring = varigEndring;
+        this.endringDato = endringDato;
         this.nærRelasjon = nærRelasjon;
         this.nyIArbeidslivet = nyIArbeidslivet;
         this.bruttoInntekt = bruttoInntekt;
@@ -115,5 +121,9 @@ public class OppgittEgenNæringDto {
 
     public BigDecimal getBruttoInntekt() {
         return bruttoInntekt;
+    }
+
+    public LocalDate getEndringDato() {
+        return endringDato;
     }
 }
