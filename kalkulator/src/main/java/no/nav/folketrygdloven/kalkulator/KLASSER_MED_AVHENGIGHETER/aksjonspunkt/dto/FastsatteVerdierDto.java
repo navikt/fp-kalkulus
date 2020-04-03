@@ -93,13 +93,11 @@ public class FastsatteVerdierDto {
 
         public Builder medFastsattBeløpPrÅr(Integer fastsattBeløpPrÅr) {
             kladd.fastsattÅrsbeløp = fastsattBeløpPrÅr;
-            kladd.fastsattBeløp = fastsattBeløpPrÅr / MÅNEDER_I_1_ÅR;
             return this;
         }
 
         public Builder medFastsattBeløpPrMnd(Integer fastsattBeløpPrMnd) {
             kladd.fastsattBeløp = fastsattBeløpPrMnd;
-            kladd.fastsattÅrsbeløp = fastsattBeløpPrMnd * MÅNEDER_I_1_ÅR;
             return this;
         }
 

@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,11 +26,16 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
 
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
+    @NotNull
     @Min(0)
     @Max(Long.MAX_VALUE)
     private Integer bruttoBeregningsgrunnlag;
 
-    public VurderVarigEndringEllerNyoppstartetSNDto(boolean erVarigEndretNaering, Integer bruttoBeregningsgrunnlag) {
+    public VurderVarigEndringEllerNyoppstartetSNDto() {
+        // For Json deserialisering
+    }
+
+    public VurderVarigEndringEllerNyoppstartetSNDto(@Valid @NotNull boolean erVarigEndretNaering, @Valid @NotNull @Min(0) @Max(Long.MAX_VALUE) Integer bruttoBeregningsgrunnlag) {
         this.erVarigEndretNaering = erVarigEndretNaering;
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }

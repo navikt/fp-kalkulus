@@ -32,7 +32,10 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
         return IDENT_TYPE;
     }
 
-    @JsonCreator
+    public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
+        super(new HåndteringKode(IDENT_TYPE));
+    }
+
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetSNDto vurderVarigEndringEllerNyoppstartetSNDto) {
         super(new HåndteringKode(IDENT_TYPE));
         this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetSNDto;
