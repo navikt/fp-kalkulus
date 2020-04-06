@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -50,6 +49,9 @@ public class BeregningsgrunnlagRestInput {
 
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
     private BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag;
+
+    /** Alle inntektsmeldinger som ikke tilhører både revurderingen og originalbehandlingen */
+    private List<InntektsmeldingDto> inntektsmeldingdiffFraOriginalbehandling;
 
     private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk = new HashMap<>();
 
@@ -177,6 +179,10 @@ public class BeregningsgrunnlagRestInput {
         return Optional.ofNullable(faktaOmBeregningPreutfyllingsgrunnlag);
     }
 
+    public List<InntektsmeldingDto> getInntektsmeldingdiffFraOriginalbehandling() {
+        return inntektsmeldingdiffFraOriginalbehandling;
+    }
+
     /** Sjekk fagsakytelsetype før denne kalles. */
     @SuppressWarnings("unchecked")
     public <V extends YtelsespesifiktGrunnlag> V getYtelsespesifiktGrunnlag() {
@@ -201,6 +207,10 @@ public class BeregningsgrunnlagRestInput {
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);
         return newInput;
+    }
+
+    public void setInntektsmeldingDiff(List<InntektsmeldingDto> inntektsmeldingdiffFraOriginalbehandling) {
+        this.inntektsmeldingdiffFraOriginalbehandling = inntektsmeldingdiffFraOriginalbehandling;
     }
 
     private BeregningsgrunnlagRestInput medSkjæringstidspunktForBeregning(LocalDate skjæringstidspunkt) {
