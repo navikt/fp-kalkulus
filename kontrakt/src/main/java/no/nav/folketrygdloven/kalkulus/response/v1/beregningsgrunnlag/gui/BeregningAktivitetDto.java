@@ -31,6 +31,12 @@ public class BeregningAktivitetDto {
     private String arbeidsgiverId;
 
     @Valid
+    @JsonProperty(value = "arbeidsgiverIdVisning")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    private String arbeidsgiverIdVisning;
+
+
+    @Valid
     @JsonProperty(value = "eksternArbeidsforholdId")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String eksternArbeidsforholdId;
@@ -80,6 +86,14 @@ public class BeregningAktivitetDto {
 
     public void setArbeidsgiverNavn(String arbeidsgiverNavn) {
         this.arbeidsgiverNavn = arbeidsgiverNavn;
+    }
+
+    public String getArbeidsgiverIdVisning() {
+        return arbeidsgiverIdVisning;
+    }
+
+    public void setArbeidsgiverIdVisning(String arbeidsgiverIdVisning) {
+        this.arbeidsgiverIdVisning = arbeidsgiverIdVisning;
     }
 
     public String getArbeidsgiverId() {
