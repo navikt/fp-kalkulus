@@ -24,6 +24,9 @@ public enum YtelseTyperKalkulusStøtter implements Kodeverdi {
     /** Folketrygdloven K4 ytelser. */
     DAGPENGER("DAG", "Dagpenger"),
 
+    /** Ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10). */
+    FRISINN("FRISINN", "Frilans og selsvstendig næringsdrivende inntektskompensasjon"),
+
     /** Folketrygdloven K8 ytelser. */
     SYKEPENGER("SP", "Sykepenger"),
 

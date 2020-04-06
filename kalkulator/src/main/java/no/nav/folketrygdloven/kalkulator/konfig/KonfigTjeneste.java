@@ -17,6 +17,7 @@ public class KonfigTjeneste {
         STØTTDEDE_YTELSER.add(FagsakYtelseType.SVANGERSKAPSPENGER);
         STØTTDEDE_YTELSER.add(FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
         STØTTDEDE_YTELSER.add(FagsakYtelseType.OMSORGSPENGER);
+        STØTTDEDE_YTELSER.add(FagsakYtelseType.FRISINN);
     }
 
     public static Konfigverdier forYtelse(FagsakYtelseType ytelse) {
@@ -25,6 +26,8 @@ public class KonfigTjeneste {
             return new FPKonfig();
         } else if (FagsakYtelseType.SVANGERSKAPSPENGER.equals(ytelse)) {
             return new SVPKonfig();
+        } else if (FagsakYtelseType.FRISINN.equals(ytelse)) {
+            return new FRISINNKonfig();
         } else if (FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(ytelse)) {
             return new PSBKonfig();
         } else {

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = OmsorgspengerGrunnlag.class, name = OmsorgspengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = ForeldrepengerGrunnlag.class, name = ForeldrepengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = SvangerskapspengerGrunnlag.class, name = SvangerskapspengerGrunnlag.YTELSE_TYPE),
+        @JsonSubTypes.Type(value = FrisinnGrunnlag.class, name = FrisinnGrunnlag.YTELSE_TYPE),
 })
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 public abstract class YtelsespesifiktGrunnlagDto {

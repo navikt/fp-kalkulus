@@ -15,6 +15,10 @@ public class OpptjeningsaktiviteterPerYtelse {
             FagsakYtelseType.FORELDREPENGER, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD),
+            // TODO(peek) Finn ut hva som er korrekt her
+            FagsakYtelseType.FRISINN, Set.of(
+                    OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
+                    OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD),
             FagsakYtelseType.SVANGERSKAPSPENGER, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,

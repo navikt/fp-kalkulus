@@ -18,6 +18,8 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.Foreldrepenge
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Builder;
@@ -115,6 +117,10 @@ public class MapFraKalkulator {
                 PleiepengerSyktBarnGrunnlag pleiepengerSyktBarnGrunnlag = new PleiepengerSyktBarnGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(pleiepengerYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
                 pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
                 return pleiepengerSyktBarnGrunnlag;
+            case FRISINN:
+                no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnYtelseGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag;
+                FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag();
+                return frisinnGrunnlag;
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
                 no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));

@@ -28,6 +28,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class YtelseTyperKalkulusStøtterKontrakt extends Kodeverk {
     static final String KODEVERK = "YTELSE_TYPE";
 
+    /** Ytelse for kompenasasjon for koronatiltak for Selvstendig næringsdrivende og Frilansere (Anmodning 10). */
+    public static final YtelseTyperKalkulusStøtterKontrakt FRISINN = new YtelseTyperKalkulusStøtterKontrakt("FRISINN");//$NON-NLS-1$
+
     /** Folketrygdloven K4 ytelser. */
     public static final YtelseTyperKalkulusStøtterKontrakt DAGPENGER = new YtelseTyperKalkulusStøtterKontrakt("DAG");//$NON-NLS-1$
 
@@ -53,8 +56,8 @@ public class YtelseTyperKalkulusStøtterKontrakt extends Kodeverk {
 
 
     @JsonProperty(value = "kode", required = true, index = 1)
-    @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]{2,5}$", message = "Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    @Size(min = 2, max = 5)
+    @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]{2,7}$", message = "Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    @Size(min = 2, max = 7)
     @NotNull
     private String kode;
 
