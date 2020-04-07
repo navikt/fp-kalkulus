@@ -4,9 +4,9 @@ package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
-class AktivitetStatusMapper {
+public class AktivitetStatusMapper {
 
-    static AktivitetStatus mapAktivitetStatus(UttakArbeidType uttakArbeidType) {
+    public static AktivitetStatus mapAktivitetStatus(UttakArbeidType uttakArbeidType) {
         if (UttakArbeidType.ORDINÆRT_ARBEID.equals(uttakArbeidType)) {
             return AktivitetStatus.ARBEIDSTAKER;
         }

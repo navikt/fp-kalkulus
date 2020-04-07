@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
-public class GraderingEllerRefusjonDto {
+public class NyPeriodeDto {
 
     @Valid
     @JsonProperty("erRefusjon")
@@ -25,6 +25,10 @@ public class GraderingEllerRefusjonDto {
     private boolean erGradering;
 
     @Valid
+    @JsonProperty("erSøktYtelse")
+    private boolean erSøktYtelse;
+
+    @Valid
     @JsonProperty("fom")
     private LocalDate fom;
 
@@ -32,14 +36,15 @@ public class GraderingEllerRefusjonDto {
     @JsonProperty("tom")
     private LocalDate tom;
 
-    public GraderingEllerRefusjonDto() {
+    public NyPeriodeDto() {
         // For Json serialisering
     }
 
-    public GraderingEllerRefusjonDto(boolean erRefusjon, boolean erGradering) {
-        if ((erRefusjon && erGradering) || (!erRefusjon && !erGradering)) {
-            throw new IllegalArgumentException("Må gjelde enten gradering eller refusjon");
+    public NyPeriodeDto(boolean erRefusjon, boolean erGradering, boolean erSøktYtelse) {
+        if ((erRefusjon && erGradering) || (!erRefusjon && !erGradering && !erSøktYtelse)) {
+            throw new IllegalArgumentException("Må gjelde enten gradering, refusjon eller søkt ytelse");
         }
+        this.erSøktYtelse = erSøktYtelse;
         this.erGradering = erGradering;
         this.erRefusjon = erRefusjon;
     }
@@ -58,6 +63,14 @@ public class GraderingEllerRefusjonDto {
 
     public void setErGradering(boolean erGradering) {
         this.erGradering = erGradering;
+    }
+
+    public boolean isErSøktYtelse() {
+        return erSøktYtelse;
+    }
+
+    public void setErSøktYtelse(boolean erSøktYtelse) {
+        this.erSøktYtelse = erSøktYtelse;
     }
 
     public LocalDate getFom() {

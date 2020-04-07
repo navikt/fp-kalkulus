@@ -22,21 +22,21 @@ public class FordelBeregningsgrunnlagArbeidsforholdDto extends Beregningsgrunnla
     @Valid
     @JsonProperty(value = "perioderMedGraderingEllerRefusjon")
     @Size
-    private List<GraderingEllerRefusjonDto> perioderMedGraderingEllerRefusjon = new ArrayList<>();
+    private List<NyPeriodeDto> perioderMedGraderingEllerRefusjon = new ArrayList<>();
 
     @Valid
     @JsonProperty(value = "permisjon")
     private PermisjonDto permisjon;
 
-    public void leggTilPeriodeMedGraderingEllerRefusjon(GraderingEllerRefusjonDto periodeMedGraderingEllerRefusjon) {
+    public void leggTilPeriodeMedGraderingEllerRefusjon(NyPeriodeDto periodeMedGraderingEllerRefusjon) {
         this.perioderMedGraderingEllerRefusjon.add(periodeMedGraderingEllerRefusjon);
     }
 
-    public List<GraderingEllerRefusjonDto> getPerioderMedGraderingEllerRefusjon() {
+    public List<NyPeriodeDto> getPerioderMedGraderingEllerRefusjon() {
         return perioderMedGraderingEllerRefusjon;
     }
 
-    public void setPerioderMedGraderingEllerRefusjon(List<GraderingEllerRefusjonDto> perioderMedGraderingEllerRefusjon) {
+    public void setPerioderMedGraderingEllerRefusjon(List<NyPeriodeDto> perioderMedGraderingEllerRefusjon) {
         this.perioderMedGraderingEllerRefusjon = perioderMedGraderingEllerRefusjon;
     }
 
