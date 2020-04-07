@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,8 +26,10 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends Håndte
     @NotNull
     private FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto;
 
+    public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto() {
+        super(new HåndteringKode(IDENT_TYPE));
+    }
 
-    @JsonCreator
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto(@Valid @NotNull FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto) {
         super(new HåndteringKode(IDENT_TYPE));
         this.fastsettBGTidsbegrensetArbeidsforholdDto = fastsettBGTidsbegrensetArbeidsforholdDto;

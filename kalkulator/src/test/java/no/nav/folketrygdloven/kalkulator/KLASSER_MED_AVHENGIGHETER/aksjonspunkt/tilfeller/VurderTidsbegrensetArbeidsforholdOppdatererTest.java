@@ -85,20 +85,17 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
 
         VurderteArbeidsforholdDto førsteForhold = new VurderteArbeidsforholdDto(
             FØRSTE_ANDELSNR,
-            true,
-            null
+            true
         );
 
         VurderteArbeidsforholdDto andreForhold = new VurderteArbeidsforholdDto(
             ANDRE_ANDELSNR,
-            false,
-            null
+            false
         );
 
         VurderteArbeidsforholdDto tredjeForhold = new VurderteArbeidsforholdDto(
             TREDJE_ANDELSNR,
-            true,
-            null
+            true
         );
 
         return new ArrayList<>(List.of(førsteForhold, andreForhold, tredjeForhold));

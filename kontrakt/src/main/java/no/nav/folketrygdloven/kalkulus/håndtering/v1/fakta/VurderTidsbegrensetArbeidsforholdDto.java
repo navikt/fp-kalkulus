@@ -3,10 +3,10 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -22,14 +22,15 @@ public class VurderTidsbegrensetArbeidsforholdDto {
 
     @JsonProperty("fastsatteArbeidsforhold")
     @Valid
+    @NotNull
     @Size(min = 1)
     private List<VurderteArbeidsforholdDto> fastsatteArbeidsforhold;
 
     public VurderTidsbegrensetArbeidsforholdDto() {
     }
 
-    public VurderTidsbegrensetArbeidsforholdDto(List<VurderteArbeidsforholdDto> fastsatteArbeidsforhold) { // NOSONAR
-        this.fastsatteArbeidsforhold = new ArrayList<>(fastsatteArbeidsforhold);
+    public VurderTidsbegrensetArbeidsforholdDto(@Valid @NotNull @Size(min = 1) List<VurderteArbeidsforholdDto> fastsatteArbeidsforhold) {
+        this.fastsatteArbeidsforhold = fastsatteArbeidsforhold;
     }
 
     public List<VurderteArbeidsforholdDto> getFastsatteArbeidsforhold() {

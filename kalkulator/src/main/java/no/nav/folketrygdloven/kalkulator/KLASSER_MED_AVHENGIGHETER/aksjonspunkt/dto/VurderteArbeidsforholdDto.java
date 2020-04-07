@@ -4,14 +4,11 @@ public class VurderteArbeidsforholdDto  {
 
     private Long andelsnr;
     private boolean tidsbegrensetArbeidsforhold;
-    private Boolean opprinneligVerdi;
 
     public VurderteArbeidsforholdDto(Long andelsnr,
-                                     boolean tidsbegrensetArbeidsforhold,
-                                     Boolean opprinneligVerdi) {
+                                     boolean tidsbegrensetArbeidsforhold) {
         this.andelsnr = andelsnr;
         this.tidsbegrensetArbeidsforhold = tidsbegrensetArbeidsforhold;
-        this.opprinneligVerdi = opprinneligVerdi;
     }
 
     public Long getAndelsnr() {
@@ -22,7 +19,4 @@ public class VurderteArbeidsforholdDto  {
         return tidsbegrensetArbeidsforhold;
     }
 
-    public Boolean isOpprinneligVerdi() {
-        return opprinneligVerdi;
-    }
 }

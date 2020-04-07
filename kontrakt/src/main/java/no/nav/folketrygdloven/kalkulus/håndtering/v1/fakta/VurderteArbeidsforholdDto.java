@@ -20,6 +20,7 @@ public class VurderteArbeidsforholdDto  {
 
     @JsonProperty("andelsnr")
     @Valid
+    @NotNull
     @Min(1)
     @Max(100)
     private Long andelsnr;
@@ -29,19 +30,12 @@ public class VurderteArbeidsforholdDto  {
     @NotNull
     private Boolean tidsbegrensetArbeidsforhold;
 
-    @JsonProperty("opprinneligVerdi")
-    @Valid
-    private Boolean opprinneligVerdi;
-
     public VurderteArbeidsforholdDto() {
     }
 
-    public VurderteArbeidsforholdDto(Long andelsnr,
-                                     boolean tidsbegrensetArbeidsforhold,
-                                     Boolean opprinneligVerdi) {
+    public VurderteArbeidsforholdDto(@Valid @NotNull @Min(1) @Max(100) Long andelsnr, @Valid @NotNull Boolean tidsbegrensetArbeidsforhold) {
         this.andelsnr = andelsnr;
         this.tidsbegrensetArbeidsforhold = tidsbegrensetArbeidsforhold;
-        this.opprinneligVerdi = opprinneligVerdi;
     }
 
     public Long getAndelsnr() {
@@ -52,7 +46,4 @@ public class VurderteArbeidsforholdDto  {
         return tidsbegrensetArbeidsforhold;
     }
 
-    public Boolean isOpprinneligVerdi() {
-        return opprinneligVerdi;
-    }
 }
