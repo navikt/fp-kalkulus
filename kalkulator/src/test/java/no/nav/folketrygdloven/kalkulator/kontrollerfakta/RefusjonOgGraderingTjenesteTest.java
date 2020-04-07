@@ -76,7 +76,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .build(periode);
         // Act
-        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         // Assert
         assertThat(tilkomEtter).isFalse();
@@ -100,7 +100,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .build(periode2);
         // Act
-        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
         // Assert
         assertThat(tilkomEtter).isTrue();
     }
@@ -122,7 +122,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FL_ELLER_SN_TILKOMMER));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FL_ELLER_SN_TILKOMMER));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
     }
 
     @Test
@@ -175,6 +175,7 @@ public class RefusjonOgGraderingTjenesteTest {
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
         lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(13000), InternArbeidsforholdRefDto.nullRef());
         setAktivitetFørStp(arbeidsgiver1, InternArbeidsforholdRefDto.nullRef());
+        setAktivitetFørStp(OpptjeningAktivitetType.ARBEIDSAVKLARING);
         lagAAPAndel(periode1);
 
         // Act
@@ -232,7 +233,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
     }
 
     // Gradering: Ja
@@ -344,7 +345,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
     }
 
     // Gradering: Ja
@@ -387,7 +388,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NYTT_ARBEIDSFORHOLD));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
     }
 
     // Gradering: Nei

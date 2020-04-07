@@ -38,7 +38,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, periode);
             RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
             var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
-            endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()));
+            endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()));
             endringAndel.setArbeidsforholdType(new OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
             endringAndeler.add(endringAndel);
         }

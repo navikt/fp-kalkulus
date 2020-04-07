@@ -40,7 +40,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
             .get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
-            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(a, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()))
+            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(a, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()))
             .collect(Collectors.toList());
         return andelerIFørstePeriode.stream()
             .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))

@@ -92,7 +92,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setLonnsendringIBeregningsperioden(andel.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdDto::erLønnsendringIBeregningsperioden).orElse(null));
         dto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
-        dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning));
+        dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettes(input, andel));
         }

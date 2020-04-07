@@ -56,8 +56,8 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
     private static Optional<FordelingTilfelle> utledTilfelleForAndel(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         LocalDate skjæringstidspunkt = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        if (FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(andel, input.getAktivitetAggregat(), skjæringstidspunkt)) {
-            return Optional.of(FordelingTilfelle.NYTT_ARBEIDSFORHOLD);
+        if (FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, input.getAktivitetAggregat(), skjæringstidspunkt)) {
+            return Optional.of(FordelingTilfelle.NY_AKTIVITET);
         }
 
         BigDecimal refusjonForAndelIPeriode = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode.getPeriode(), input.getInntektsmeldinger()).orElse(BigDecimal.ZERO);
@@ -65,10 +65,6 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
         boolean harGraderingIBGPeriode = FordelingGraderingTjeneste.harGraderingForAndelIPeriode(andel, input.getAktivitetGradering(), periode.getPeriode());
         if (!harGraderingIBGPeriode && !andelHarRefusjonIPerioden) {
             return Optional.empty();
-        }
-
-        if (FordelTilkommetArbeidsforholdTjeneste.erNyFLSNAndel(andel, input.getAktivitetAggregat(), skjæringstidspunkt)) {
-            return Optional.of(FordelingTilfelle.FL_ELLER_SN_TILKOMMER);
         }
 
         if (FordelingGraderingTjeneste.skalGraderePåAndelUtenBeregningsgrunnlag(andel, harGraderingIBGPeriode)) {

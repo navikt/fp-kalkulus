@@ -1,8 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.fordeling;
 
 public enum FordelingTilfelle {
-    NYTT_ARBEIDSFORHOLD,
-    FL_ELLER_SN_TILKOMMER,
+    NY_AKTIVITET,
     TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G,
     REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP,
     GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0,

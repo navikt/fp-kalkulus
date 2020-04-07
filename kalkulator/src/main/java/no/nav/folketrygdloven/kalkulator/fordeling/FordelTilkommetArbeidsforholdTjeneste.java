@@ -18,13 +18,23 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
         // Skjuler default
     }
 
-    public static boolean erNyttArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                               BeregningAktivitetAggregatDto aktivitetAggregat,
-                                               LocalDate skjæringstidspunkt) {
+    public static boolean erNyAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                        BeregningAktivitetAggregatDto aktivitetAggregat,
+                                        LocalDate skjæringstidspunkt) {
         if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
-            return false;
+            return erNyAktivitetSomIkkeErArbeid(andel, aktivitetAggregat, skjæringstidspunkt);
         }
         return erNyttArbeidsforhold(andel.getArbeidsgiver().get(), andel.getArbeidsforholdRef().get(), aktivitetAggregat, skjæringstidspunkt);
+    }
+
+    private static Boolean erNyAktivitetSomIkkeErArbeid(BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningAktivitetAggregatDto aktivitetAggregat, LocalDate skjæringstidspunkt) {
+        if (!andel.getAktivitetStatus().erArbeidstaker()) {
+            var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
+            return beregningAktiviteter.stream()
+                    .filter(beregningAktivitet -> erIkkeAktivDagenFørSkjæringstidspunktet(skjæringstidspunkt, beregningAktivitet))
+                    .noneMatch(b -> MapAktivitetstatusTilOpptjeningAktivitetType.map(andel.getAktivitetStatus()).equals(b.getOpptjeningAktivitetType()));
+        }
+        return false;
     }
 
     public static boolean erNyttArbeidsforhold(YrkesaktivitetDto yrkesaktivitetDto,
@@ -47,10 +57,14 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
                                                LocalDate skjæringstidspunkt) {
         var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
         return beregningAktiviteter.stream()
-                .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))
-                .filter(beregningAktivitet -> !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1)))
+                .filter(beregningAktivitet -> erIkkeAktivDagenFørSkjæringstidspunktet(skjæringstidspunkt, beregningAktivitet))
                 .noneMatch(
                         beregningAktivitet -> matcherReferanse(arbeidsforholdRef, beregningAktivitet) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
+    }
+
+    private static boolean erIkkeAktivDagenFørSkjæringstidspunktet(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
+        return !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)) &&
+                !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1));
     }
 
     private static boolean matcherReferanse(InternArbeidsforholdRefDto internArbeidsforholdRef, BeregningAktivitetDto beregningAktivitet) {
