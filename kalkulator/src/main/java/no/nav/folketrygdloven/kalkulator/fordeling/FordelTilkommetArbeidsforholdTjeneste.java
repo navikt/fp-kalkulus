@@ -21,6 +21,9 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     public static boolean erNyAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                         BeregningAktivitetAggregatDto aktivitetAggregat,
                                         LocalDate skjæringstidspunkt) {
+        if (andel.getLagtTilAvSaksbehandler()) {
+            return false;
+        }
         if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
             return erNyAktivitetSomIkkeErArbeid(andel, aktivitetAggregat, skjæringstidspunkt);
         }

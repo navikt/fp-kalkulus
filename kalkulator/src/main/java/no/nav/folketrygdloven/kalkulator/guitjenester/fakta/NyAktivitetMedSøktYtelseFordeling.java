@@ -2,12 +2,10 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelingTilfelle;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -29,7 +27,7 @@ class NyAktivitetMedSøktYtelseFordeling {
                                                                      BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                      FordelBeregningsgrunnlagArbeidsforholdDto endringAf) {
         boolean gjelderYtelseMedUtbetalingsgrad = ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag;
-        boolean gjelderNyAktivitet = tilfelle.equals(FordelingTilfelle.NYTT_ARBEIDSFORHOLD);
+        boolean gjelderNyAktivitet = tilfelle.equals(FordelingTilfelle.NY_AKTIVITET);
         boolean harIkkeRefusjonEllerGradering = endringAf.getPerioderMedGraderingEllerRefusjon().isEmpty();
         if (harIkkeRefusjonEllerGradering && gjelderNyAktivitet && gjelderYtelseMedUtbetalingsgrad) {
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag;
