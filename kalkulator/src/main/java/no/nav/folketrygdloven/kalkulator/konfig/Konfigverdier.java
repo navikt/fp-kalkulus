@@ -7,7 +7,7 @@ public abstract class Konfigverdier {
     // Standardverdier
     private BigDecimal avviksgrenseProsent = BigDecimal.valueOf(25);
     private BigDecimal antallGØvreGrenseverdi = BigDecimal.valueOf(6);
-    private BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
+    protected BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
     private Period meldekortPeriode = Period.parse("P30D");
 
     // Verdier som ikke skal endres
