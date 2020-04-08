@@ -48,10 +48,12 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
 
     private void mapNyAndelTaHensynTilSNFL(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
         Intervall beregningsperiode;
+        // Antar at vi ikkje får nye andeler for ytelse FRISINN
+        BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
         if (nyAndel.getAktivitetStatus() != null && AktivitetStatusV2.SN.equals(nyAndel.getAktivitetStatus())) {
-            beregningsperiode = BeregningsperiodeTjeneste.fastsettBeregningsperiodeForSNAndeler(skjæringstidspunkt);
+            beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForSNAndeler(skjæringstidspunkt);
         } else {
-            beregningsperiode = BeregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
+            beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
         }
         if (nyAndelErSNEllerFl(nyAndel)) {
             AktivitetStatus aktivitetStatus = mapAktivitetStatus(nyAndel.getAktivitetStatus());

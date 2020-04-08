@@ -10,10 +10,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -24,16 +30,25 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
+@ApplicationScoped
 public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
 
-    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL() {
-        // Skjul
+    private Instance<BeregningsperiodeTjeneste> beregningperiodeTjenester;
+
+    public MapBGSkjæringstidspunktOgStatuserFraRegelTilVL() {
+        // CDI
     }
 
-    public static BeregningsgrunnlagDto mapForSkjæringstidspunktOgStatuser(
+    @Inject
+    public MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(@Any Instance<BeregningsperiodeTjeneste> beregningperiodeTjenester) {
+        this.beregningperiodeTjenester = beregningperiodeTjenester;
+    }
+
+    public BeregningsgrunnlagDto mapForSkjæringstidspunktOgStatuser(
         BehandlingReferanse ref,
         AktivitetStatusModell regelModell,
         List<RegelResultat> regelResultater,
@@ -75,14 +90,14 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(ref.getAktørId()));
 
-        opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(filter, regelModell, beregningsgrunnlagPeriode);
+        opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(ref, filter, regelModell, beregningsgrunnlagPeriode);
         return beregningsgrunnlag;
     }
 
-    private static void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(YrkesaktivitetFilterDto filter, AktivitetStatusModell regelmodell,
-                                                                                      BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+    private void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(BehandlingReferanse ref, YrkesaktivitetFilterDto filter, AktivitetStatusModell regelmodell,
+                                                                               BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         var skjæringstidspunkt = regelmodell.getSkjæringstidspunktForBeregning();
-        var beregningsperiode = BeregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
+        var beregningsperiode = lagBeregningsperiode(ref, skjæringstidspunkt);
         regelmodell.getBeregningsgrunnlagPrStatusListe().stream()
             .filter(bgps -> erATFL(bgps.getAktivitetStatus()))
             .forEach(bgps -> bgps.getArbeidsforholdList()
@@ -119,6 +134,12 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                 .medAktivitetStatus(mapAktivitetStatusfraRegelmodell(regelmodell, bgps.getAktivitetStatus()))
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(bgps.getAktivitetStatus()))
                 .build(beregningsgrunnlagPeriode));
+    }
+
+    protected Intervall lagBeregningsperiode(BehandlingReferanse ref, LocalDate skjæringstidspunkt) {
+        var periodeTjeneste = FagsakYtelseTypeRef.Lookup.find(beregningperiodeTjenester, ref.getFagsakYtelseType())
+                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
+        return periodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
     }
 
     private static boolean erATFL(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus) {

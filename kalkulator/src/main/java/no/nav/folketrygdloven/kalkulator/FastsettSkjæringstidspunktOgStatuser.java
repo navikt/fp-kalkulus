@@ -2,6 +2,9 @@ package no.nav.folketrygdloven.kalkulator;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -16,13 +19,21 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 import no.nav.folketrygdloven.skjæringstidspunkt.status.RegelFastsettStatusVedSkjæringstidspunkt;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
+@ApplicationScoped
 public class FastsettSkjæringstidspunktOgStatuser {
 
-    private FastsettSkjæringstidspunktOgStatuser() {
-        // Skjul
+    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel;
+
+    public FastsettSkjæringstidspunktOgStatuser() {
+        // CDI
     }
 
-    public static BeregningsgrunnlagDto fastsett(BehandlingReferanse ref, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
+    @Inject
+    public FastsettSkjæringstidspunktOgStatuser(MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel) {
+        this.mapFraRegel = mapFraRegel;
+    }
+
+    public BeregningsgrunnlagDto fastsett(BehandlingReferanse ref, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
 
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
@@ -37,7 +48,7 @@ public class FastsettSkjæringstidspunktOgStatuser {
         List<RegelResultat> regelResultater = List.of(
             RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt),
             RegelmodellOversetter.getRegelResultat(evaluationStatusFastsetting, inputStatusFastsetting));
-        return MapBGSkjæringstidspunktOgStatuserFraRegelTilVL.mapForSkjæringstidspunktOgStatuser(ref, regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
+        return mapFraRegel.mapForSkjæringstidspunktOgStatuser(ref, regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
     }
 
     private static String toJson(AktivitetStatusModell grunnlag) {

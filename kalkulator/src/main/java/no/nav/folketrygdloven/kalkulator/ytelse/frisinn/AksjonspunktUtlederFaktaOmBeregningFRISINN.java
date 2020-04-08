@@ -1,6 +1,4 @@
-package no.nav.folketrygdloven.kalkulator;
-
-import static java.util.Collections.singletonList;
+package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.util.List;
 import java.util.Objects;
@@ -8,46 +6,38 @@ import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.AksjonspunktUtlederFaktaOmBeregning;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
-public class AksjonspunktUtlederFaktaOmBeregning {
+@FagsakYtelseTypeRef("FRISINN")
+public class AksjonspunktUtlederFaktaOmBeregningFRISINN extends AksjonspunktUtlederFaktaOmBeregning {
 
-    protected FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste;
-
-    public AksjonspunktUtlederFaktaOmBeregning() {
-        // for CDI proxy
+    public AksjonspunktUtlederFaktaOmBeregningFRISINN() {
+        // CDI
     }
 
     @Inject
-    public AksjonspunktUtlederFaktaOmBeregning(FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste) {
-        this.faktaOmBeregningTilfelleTjeneste = faktaOmBeregningTilfelleTjeneste;
+    public AksjonspunktUtlederFaktaOmBeregningFRISINN(FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste) {
+        super(faktaOmBeregningTilfelleTjeneste);
     }
 
+    @Override
     public FaktaOmBeregningAksjonspunktResultat utledAksjonspunkterFor(BeregningsgrunnlagInput input,
                                                                        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                                        boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAksjonspunkt(input, beregningsgrunnlagGrunnlag);
-
-        if (erOverstyrt) {
-            return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
-                faktaOmBeregningTilfeller);
+        if (faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
+            throw new IllegalStateException("Kan ikke behandle FRISINN-ytelse for AT og FL i samme organisajon.");
         }
-        if (faktaOmBeregningTilfeller.isEmpty()) {
-            return FaktaOmBeregningAksjonspunktResultat.INGEN_AKSJONSPUNKTER;
-        }
-        return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)),
-            faktaOmBeregningTilfeller);
+        return FaktaOmBeregningAksjonspunktResultat.INGEN_AKSJONSPUNKTER;
     }
 }

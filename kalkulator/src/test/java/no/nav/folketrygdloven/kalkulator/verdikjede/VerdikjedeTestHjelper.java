@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -52,11 +54,15 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 
 
 public class VerdikjedeTestHjelper {
 
     static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
+    private FastsettSkjæringstidspunktOgStatuser fastsettSkjæringstidspunktOgStatuser = new FastsettSkjæringstidspunktOgStatuser(new MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(
+            new UnitTestLookupInstanceImpl<>(new BeregningsperiodeTjeneste())
+    ));
 
     public VerdikjedeTestHjelper() {
     }
@@ -510,7 +516,7 @@ public class VerdikjedeTestHjelper {
         var ref = input.getBehandlingReferanse();
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = FastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
-        BeregningsgrunnlagDto beregningsgrunnlag = FastsettSkjæringstidspunktOgStatuser.fastsett(ref,
+        BeregningsgrunnlagDto beregningsgrunnlag = fastsettSkjæringstidspunktOgStatuser.fastsett(ref,
             beregningAktivitetAggregat, input.getIayGrunnlag(), GRUNNBELØPSATSER);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag,
             BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);

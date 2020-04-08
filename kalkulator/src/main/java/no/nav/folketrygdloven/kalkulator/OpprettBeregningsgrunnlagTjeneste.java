@@ -16,14 +16,17 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 public class OpprettBeregningsgrunnlagTjeneste {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
+    private FastsettSkjæringstidspunktOgStatuser fastsettSkjæringstidspunktOgStatuser;
 
     protected OpprettBeregningsgrunnlagTjeneste() {
         // for CDI proxy
     }
 
     @Inject
-    public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste) {
+    public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
+                                             FastsettSkjæringstidspunktOgStatuser fastsettSkjæringstidspunktOgStatuser) {
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
+        this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
     }
 
     /**
@@ -40,7 +43,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
 
-        BeregningsgrunnlagDto bgMedAndeler = FastsettSkjæringstidspunktOgStatuser.fastsett(ref, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser());
+        BeregningsgrunnlagDto bgMedAndeler = fastsettSkjæringstidspunktOgStatuser.fastsett(ref, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser());
         BehandlingReferanse refMedSkjæringstidspunkt = ref
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(ref, beregningAktiviteter, bgMedAndeler));
         FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(bgMedAndeler, input.getIayGrunnlag());
@@ -59,7 +62,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
     }
 
     BeregningsgrunnlagDto fastsettSkjæringstidspunktOgStatuser(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return FastsettSkjæringstidspunktOgStatuser.fastsett(input.getBehandlingReferanse(), beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());
+        return fastsettSkjæringstidspunktOgStatuser.fastsett(input.getBehandlingReferanse(), beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());
     }
 
 }

@@ -34,7 +34,7 @@ import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktu
 @ApplicationScoped
 public class BeregningsgrunnlagTjeneste {
 
-    private AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning;
+    private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
@@ -46,12 +46,12 @@ public class BeregningsgrunnlagTjeneste {
 
     @Inject
     public BeregningsgrunnlagTjeneste(@Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
-                                      AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning,
+                                      @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
                                       BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
-        this.aksjonspunktUtlederFaktaOmBeregning = aksjonspunktUtlederFaktaOmBeregning;
+        this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
         this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
@@ -138,8 +138,8 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .build(OPPDATERT_MED_ANDELER);
-
-        FaktaOmBeregningAksjonspunktResultat aksjonspunktresultat = aksjonspunktUtlederFaktaOmBeregning.utledAksjonspunkterFor(
+        var apUtleder = FagsakYtelseTypeRef.Lookup.find(aksjonspunktUtledereFaktaOmBeregning, input.getFagsakYtelseType()).orElseThrow();
+        FaktaOmBeregningAksjonspunktResultat aksjonspunktresultat = apUtleder.utledAksjonspunkterFor(
             input,
             nyttGrunnlag,
             harOverstyrtBergningsgrunnlag(input));

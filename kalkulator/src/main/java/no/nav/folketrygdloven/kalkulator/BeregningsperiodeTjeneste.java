@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -18,21 +20,19 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
+@ApplicationScoped
+@FagsakYtelseTypeRef("*")
 public class BeregningsperiodeTjeneste {
 
     public static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
-    private BeregningsperiodeTjeneste() {
-        // Skjul
-    }
-
-    public static Intervall fastsettBeregningsperiodeForATFLAndeler(LocalDate skjæringstidspunkt) {
+    public Intervall fastsettBeregningsperiodeForATFLAndeler(LocalDate skjæringstidspunkt) {
         LocalDate fom = skjæringstidspunkt.minusMonths(3).withDayOfMonth(1);
         LocalDate tom = skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         return Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public static Intervall fastsettBeregningsperiodeForSNAndeler(LocalDate skjæringstidspunkt) {
+    public Intervall fastsettBeregningsperiodeForSNAndeler(LocalDate skjæringstidspunkt) {
         LocalDate fom = skjæringstidspunkt.minusYears(3).withDayOfMonth(1);
         LocalDate tom = skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         return Intervall.fraOgMedTilOgMed(fom, tom);

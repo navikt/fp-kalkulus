@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 
 @FagsakYtelseTypeRef("FRISINN")
 @ApplicationScoped
-public class FullføreBeregningsgrunnlagFrisinn extends FullføreBeregningsgrunnlag {
+public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunnlag {
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {

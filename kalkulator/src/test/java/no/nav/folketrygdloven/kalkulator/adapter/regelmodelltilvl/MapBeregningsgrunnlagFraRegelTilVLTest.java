@@ -16,6 +16,7 @@ import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelpe
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGPeriode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Ar
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -51,12 +53,16 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapBeregningsgrunnlagFraRegelTilVLTest {
 
     private static final String ORGNR = "974761076";
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapper = new MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(
+            new UnitTestLookupInstanceImpl<>(
+            new BeregningsperiodeTjeneste()));;
 
     @Test
     public void testMappingBGForSN() {
@@ -139,7 +145,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, skjæringstidspunkt, skjæringstidspunkt.minusYears(1), skjæringstidspunkt, null, Arbeidsgiver.person(aktørId), iayGrunnlagBuilder);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
+        BeregningsgrunnlagDto beregningsgrunnlag = mapper
             .mapForSkjæringstidspunktOgStatuser(behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), iayGrunnlagBuilder.build(), GRUNNBELØPLISTE);
 
@@ -168,7 +174,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             Arbeidsgiver.virksomhet(ORGNR), iayGrunnlagBuilder);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
+        BeregningsgrunnlagDto beregningsgrunnlag = mapper
             .mapForSkjæringstidspunktOgStatuser(behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), iayGrunnlagBuilder.build(), GRUNNBELØPLISTE);
 
@@ -194,7 +200,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         AktivitetStatusModell regelmodell = lagRegelModellSN(skjæringstidspunkt);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
+        BeregningsgrunnlagDto beregningsgrunnlag = mapper
             .mapForSkjæringstidspunktOgStatuser(behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), GRUNNBELØPLISTE);
 
@@ -238,6 +244,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         assertVLSammenligningsgrunnlagPrStatus(mappedBG.getSammenligningsgrunnlagPrStatusListe().get(0), SammenligningsgrunnlagType.SAMMENLIGNING_FL);
     }
 
+    @Test
     public void skalKasteExceptionNårManPrøverÅMappeTilSammenligningsgrunnlagTypeSomIkkeFinnes() {
         final BeregningsgrunnlagDto vlBG = buildVLBGForATOgFL();
         List<RegelResultat> regelresultater = List.of(new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing"));
@@ -246,9 +253,9 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder(resultatGrunnlag)
             .medSammenligningsgrunnlagPrStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.UDEFINERT, buildRegelSammenligningsG()).build();
 
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            MapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG);
-        });
+        assertThatThrownBy(() ->
+                MapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private void assertVLSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlag, SammenligningsgrunnlagType sammenligningsgrunnlagType){

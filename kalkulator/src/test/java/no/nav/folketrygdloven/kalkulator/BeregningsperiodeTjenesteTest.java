@@ -7,7 +7,6 @@ import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.vedtak.util.FPDateUtil;
 
 public class BeregningsperiodeTjenesteTest {
 
@@ -32,18 +30,13 @@ public class BeregningsperiodeTjenesteTest {
     private Arbeidsgiver arbeidsgiverA = Arbeidsgiver.virksomhet("123456789");
     private Arbeidsgiver arbeidsgiverB = Arbeidsgiver.virksomhet("987654321");
     private BeregningsgrunnlagInput input;
+    private BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         input = new BeregningsgrunnlagInput(behandlingReferanse, null, null, null, null, null);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-    }
-
-    @AfterAll
-    public static void after() {
-        System.clearProperty(FPDateUtil.SystemConfiguredClockProvider.PROPERTY_KEY_OFFSET_PERIODE);
-        FPDateUtil.init();
     }
 
     @Test
@@ -52,7 +45,7 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate skjæringstidspunkt = LocalDate.of(2019, 5, 15);
 
         // Act
-        Intervall periode = BeregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
+        Intervall periode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
 
         // Assert
         assertThat(periode.getFomDato()).isEqualTo(LocalDate.of(2019, 2, 1));
