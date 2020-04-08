@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 public final class FordelTilkommetArbeidsforholdTjeneste {
@@ -21,7 +22,7 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     public static boolean erNyAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                         BeregningAktivitetAggregatDto aktivitetAggregat,
                                         LocalDate skjæringstidspunkt) {
-        if (andel.getLagtTilAvSaksbehandler()) {
+        if (andel.getLagtTilAvSaksbehandler() || andel.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL)) {
             return false;
         }
         if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
