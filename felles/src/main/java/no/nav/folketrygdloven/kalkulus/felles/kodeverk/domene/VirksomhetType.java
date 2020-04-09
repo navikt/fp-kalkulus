@@ -22,6 +22,7 @@ public enum VirksomhetType implements Kodeverdi {
     FISKE("FISKE", "Fiske", Inntektskategori.FISKER),
     FRILANSER("FRILANSER", "Frilanser", Inntektskategori.FRILANSER),
     JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk", Inntektskategori.JORDBRUKER),
+    ENKELTPERSONFORETAK("ENK", "Enkeltpersonforetak", Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE),
     ANNEN("ANNEN", "Annen næringsvirksomhet", Inntektskategori.UDEFINERT),
     UDEFINERT("-", "Ikke definert", Inntektskategori.UDEFINERT),
     ;
