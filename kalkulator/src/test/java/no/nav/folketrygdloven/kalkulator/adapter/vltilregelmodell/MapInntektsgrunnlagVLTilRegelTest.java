@@ -27,12 +27,15 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapInntektsgrunnlagVLTilRegelTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("94632432");
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
 
     @Test
     public void skal_mappe_inntektsmelding_for_arbeid_med_fleire_yrkesaktiviteter() {
@@ -52,7 +55,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = MapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }
@@ -73,7 +76,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = MapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter()).isEmpty();
     }
@@ -93,7 +96,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
 
 
         // Act
-        Inntektsgrunnlag map = MapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }
@@ -112,7 +115,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = MapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }

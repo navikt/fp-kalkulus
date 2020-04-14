@@ -73,6 +73,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class MapBeregningsgrunnlagFraVLTilRegelTest {
@@ -86,7 +87,6 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
 
     private static final LocalDate FIRST_DAY_PREVIOUS_MONTH = LocalDate.now().minusMonths(1).withDayOfMonth(1);
     private static final Integer INNTEKT_BELOP = 25000;
-    private static final LocalDate OPPRINNELIG_IDENTDATO = null;
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
@@ -95,9 +95,9 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private String virksomhetB = "47";
 
     private InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder;
-
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
     private Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
-
 
     private InntektArbeidYtelseAggregatBuilder opprettForBehandling(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
@@ -256,7 +256,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, grunnlagDtoBuilder, grunnlag.getBeregningsgrunnlagTilstand(), iayGrunnlag);
-        return MapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        return mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
     }
 
     private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder leggTilInntekterFraSigrun(AktørId aktørId) {

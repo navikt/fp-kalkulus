@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
@@ -21,6 +26,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -42,8 +48,11 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 
+@ApplicationScoped
 public class MapBeregningsgrunnlagFraVLTilRegel {
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
+
+    private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
 
     private static final Map<SammenligningsgrunnlagType, AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP = Map.of(
         SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN, AktivitetStatus.ATFL_SN,
@@ -52,18 +61,23 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         SammenligningsgrunnlagType.SAMMENLIGNING_SN, AktivitetStatus.SN
     );
 
-    private MapBeregningsgrunnlagFraVLTilRegel() {
-        // skjul meg
+    public MapBeregningsgrunnlagFraVLTilRegel() {
+        // CDI
     }
 
-    public static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
+    @Inject
+    public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<MapInntektsgrunnlagVLTilRegel> inntektsmapper) {
+        this.alleInntektMappere = inntektsmapper;
+    }
+
+    public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
                                                                                                                                BeregningsgrunnlagDto Beregningsgrunnlag, BeregningsgrunnlagInput input) {
         Objects.requireNonNull(referanse, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(Beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
         return mapBeregningsgrunnlagPerioder(Beregningsgrunnlag, input);
     }
 
-    public static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
+    public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
         var ref = input.getBehandlingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");
@@ -71,11 +85,12 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         Objects.requireNonNull(beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
 
         List<AktivitetStatusMedHjemmel> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser().stream()
-            .map(MapBeregningsgrunnlagFraVLTilRegel::mapVLAktivitetStatusMedHjemmel)
+            .map(this::mapVLAktivitetStatusMedHjemmel)
             .sorted()
             .collect(Collectors.toList());
 
-        Inntektsgrunnlag inntektsgrunnlag = MapInntektsgrunnlagVLTilRegel.map(ref, input, beregningsgrunnlag.getSkjæringstidspunkt());
+        MapInntektsgrunnlagVLTilRegel inntektMapper = FagsakYtelseTypeRef.Lookup.find(alleInntektMappere, ref.getFagsakYtelseType()).orElseThrow();
+        Inntektsgrunnlag inntektsgrunnlag = inntektMapper.map(ref, input, beregningsgrunnlag.getSkjæringstidspunkt());
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
         //Sammenligningsgrunnlaget blir alltid satt inne i regel
         EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlagMap = mapSammenligningsgrunnlagPrStatus(beregningsgrunnlag);
@@ -110,7 +125,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             .build();
     }
 
-    private static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
+    private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
         if (beregningsgrunnlagPeriodeÅrsaker.isEmpty()) {
             return Collections.emptyList();
         }
@@ -127,11 +142,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return periodeÅrsakerMapped;
     }
 
-    private static Dekningsgrad finnDekningsgrad(BeregningsgrunnlagInput input) {
+    private Dekningsgrad finnDekningsgrad(BeregningsgrunnlagInput input) {
         return Dekningsgrad.fra(input.getYtelsespesifiktGrunnlag().getDekningsgrad());
     }
 
-    private static AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {
+    private AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {
         BeregningsgrunnlagHjemmel hjemmel = null;
         if (!Hjemmel.UDEFINERT.equals(vlBGAktivitetStatus.getHjemmel())) {
             try {
@@ -144,7 +159,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return new AktivitetStatusMedHjemmel(as, hjemmel);
     }
 
-    private static AktivitetStatus mapVLAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus vlBGAktivitetStatus) {
+    private AktivitetStatus mapVLAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus vlBGAktivitetStatus) {
         if (BeregningsgrunnlagUtil.erATFL(vlBGAktivitetStatus)) {
             return AktivitetStatus.ATFL;
         }
@@ -159,7 +174,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         }
     }
 
-    private static SammenligningsGrunnlag mapSammenligningsGrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag) {
+    private SammenligningsGrunnlag mapSammenligningsGrunnlag(SammenligningsgrunnlagDto sammenligningsgrunnlag) {
         return SammenligningsGrunnlag.builder()
             .medSammenligningsperiode(new Periode(
                 sammenligningsgrunnlag.getSammenligningsperiodeFom(),
@@ -169,7 +184,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             .build();
     }
 
-    private static List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag, BeregningsgrunnlagInput input) {
+    private List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag, BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPeriode> perioder = new ArrayList<>();
         vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(vlBGPeriode -> {
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
@@ -185,7 +200,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return perioder;
     }
 
-    private static List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
+    private List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
         List<BeregningsgrunnlagPrStatus> liste = new ArrayList<>();
         BeregningsgrunnlagPrStatus bgpsATFL = null;
 
@@ -204,7 +219,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return liste;
     }
 
-    private static EnumMap<AktivitetStatus, SammenligningsGrunnlag> mapSammenligningsgrunnlagPrStatus(BeregningsgrunnlagDto Beregningsgrunnlag){
+    private EnumMap<AktivitetStatus, SammenligningsGrunnlag> mapSammenligningsgrunnlagPrStatus(BeregningsgrunnlagDto Beregningsgrunnlag){
         EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsGrunnlagMap = new EnumMap<>(AktivitetStatus.class);
         for (SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus : Beregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe()){
             SammenligningsGrunnlag sammenligningsGrunnlag = SammenligningsGrunnlag.builder()
@@ -220,7 +235,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     // Ikke ATFL og TY, de har separat mapping
-    private static BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    private BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
         List<BigDecimal> pgi = (vlBGPStatus.getPgiSnitt() == null ? new ArrayList<>() :
             Arrays.asList(vlBGPStatus.getPgi1(), vlBGPStatus.getPgi2(), vlBGPStatus.getPgi3()));
@@ -243,7 +258,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             .build();
     }
 
-    private static Periode beregningsperiodeFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    private Periode beregningsperiodeFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         if (vlBGPStatus.getBeregningsperiodeFom() == null && vlBGPStatus.getBeregningsperiodeTom() == null) {
             return null;
         }
@@ -251,7 +266,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     // Felles mapping av alle statuser som mapper til ATFL
-    private static BeregningsgrunnlagPrStatus mapVLBGPStatusForATFL(BeregningsgrunnlagPeriodeDto vlBGPeriode,
+    private BeregningsgrunnlagPrStatus mapVLBGPStatusForATFL(BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                                     AktivitetStatus regelAktivitetStatus, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
 
         BeregningsgrunnlagPrStatus.Builder regelBGPStatusATFL = BeregningsgrunnlagPrStatus.builder().medAktivitetStatus(regelAktivitetStatus)
@@ -266,7 +281,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return regelBGPStatusATFL.build();
     }
 
-    private static BeregningsgrunnlagPrArbeidsforhold byggAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    private BeregningsgrunnlagPrArbeidsforhold byggAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
             .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getInntektskategori()))
@@ -289,7 +304,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return builder.build();
     }
 
-    private static boolean harHattMilitærIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+    private boolean harHattMilitærIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         Objects.requireNonNull(beregningAktivitetAggregat, "beregningAktivitetAggregat");
         return beregningAktivitetAggregat.getBeregningAktiviteter().stream()
             .map(BeregningAktivitetDto::getOpptjeningAktivitetType)

@@ -16,6 +16,9 @@ import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -33,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MilitærTest {
 
@@ -43,6 +47,10 @@ public class MilitærTest {
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
 
     private BeregningTjenesteWrapper beregningTjenesteWrapper;
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
+    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
+    private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel);
 
     @BeforeEach
     public void setup() {
@@ -69,7 +77,7 @@ public class MilitærTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7);
@@ -79,7 +87,7 @@ public class MilitærTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         assertThat(resultat.getAksjonspunkter()).isEmpty();

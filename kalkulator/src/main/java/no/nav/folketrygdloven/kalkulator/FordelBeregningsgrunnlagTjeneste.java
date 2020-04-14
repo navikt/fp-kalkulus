@@ -21,14 +21,17 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 public class FordelBeregningsgrunnlagTjeneste {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
     public FordelBeregningsgrunnlagTjeneste() {
         // CDI
     }
 
     @Inject
-    public FordelBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste) {
+    public FordelBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
+                                            MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
+        this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
     }
 
     public BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -39,7 +42,7 @@ public class FordelBeregningsgrunnlagTjeneste {
     }
 
     private BeregningsgrunnlagDto kjørRegelForOmfordeling(BeregningsgrunnlagInput input, BehandlingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag) {
-        var regelPerioder = MapBeregningsgrunnlagFraVLTilRegel.mapTilFordelingsregel(ref, beregningsgrunnlag, input);
+        var regelPerioder = mapBeregningsgrunnlagFraVLTilRegel.mapTilFordelingsregel(ref, beregningsgrunnlag, input);
         String regelinput = toJson(regelPerioder);
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : regelPerioder) {

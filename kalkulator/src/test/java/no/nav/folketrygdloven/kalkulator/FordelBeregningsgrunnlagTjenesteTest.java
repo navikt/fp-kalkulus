@@ -18,6 +18,9 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
@@ -61,10 +64,13 @@ public class FordelBeregningsgrunnlagTjenesteTest {
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
+
 
     @BeforeEach
     public void oppsett() {
-        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(lagTjeneste());
+        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(lagTjeneste(), mapBeregningsgrunnlagFraVLTilRegel);
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(iayGrunnlagBuilder, List.of(ORGNR1, ORGNR2, ORGNR3));
         BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);

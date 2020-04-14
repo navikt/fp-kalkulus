@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -23,18 +26,25 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
+@ApplicationScoped
 public class ForeslåBeregningsgrunnlag {
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
-    private ForeslåBeregningsgrunnlag() {
-        // Skjul
+    public ForeslåBeregningsgrunnlag() {
+        // CDI
     }
 
-    public static BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+    @Inject
+    public ForeslåBeregningsgrunnlag(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
+        this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
+    }
+
+    public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
         var ref = input.getBehandlingReferanse();
-        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelmodellBeregningsgrunnlag = MapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         opprettPerioderForKortvarigeArbeidsforhold(ref.getAktørId(), regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getIayGrunnlag());
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
@@ -53,7 +63,7 @@ public class ForeslåBeregningsgrunnlag {
         return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
     }
 
-    private static void opprettPerioderForKortvarigeArbeidsforhold(AktørId aktørId, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelBeregningsgrunnlag, BeregningsgrunnlagDto vlBeregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private void opprettPerioderForKortvarigeArbeidsforhold(AktørId aktørId, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelBeregningsgrunnlag, BeregningsgrunnlagDto vlBeregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var filter = getYrkesaktivitetFilter(aktørId, iayGrunnlag);
         Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarigeAktiviteter = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(aktørId, vlBeregningsgrunnlag, iayGrunnlag);
         kortvarigeAktiviteter.entrySet().stream()
@@ -63,11 +73,11 @@ public class ForeslåBeregningsgrunnlag {
             .forEach(ya -> SplittBGPerioderMedAvsluttetArbeidsforhold.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
     }
 
-    private static YrkesaktivitetFilterDto getYrkesaktivitetFilter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private YrkesaktivitetFilterDto getYrkesaktivitetFilter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return  new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
     }
 
-    private static String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
+    private String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
         return JsonMapper.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 

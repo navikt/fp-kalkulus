@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.fastsette.RegelFullføreBeregningsgrunnlag;
@@ -15,6 +16,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.svp.RegelFinnGrenseverdi
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.fpsak.nare.evaluation.Evaluation;
@@ -24,6 +26,15 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef("OMP")
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
+
+    public FullføreBeregningsgrunnlagUtbgrad() {
+        // CDI
+    }
+
+    @Inject
+    public FullføreBeregningsgrunnlagUtbgrad(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
+        super(mapBeregningsgrunnlagFraVLTilRegel);
+    }
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {

@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
@@ -37,6 +40,7 @@ import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class VurderBeregningsgrunnlagTjenesteTest {
@@ -50,6 +54,9 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     private Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
+    private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel);
 
 
     @Test
@@ -72,7 +79,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
 
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
+        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -104,7 +111,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
+        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();

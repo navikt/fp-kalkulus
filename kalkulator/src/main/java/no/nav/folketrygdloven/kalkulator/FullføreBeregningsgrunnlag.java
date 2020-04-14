@@ -8,9 +8,15 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
-public abstract class FullføreBeregningsgrunnlag {
 
-    protected FullføreBeregningsgrunnlag() {
+public abstract class FullføreBeregningsgrunnlag {
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    public FullføreBeregningsgrunnlag() {
+        // CDI
+    }
+
+    public FullføreBeregningsgrunnlag(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
+        this.mapBeregningsgrunnlagFraVLTilRegel = mapBeregningsgrunnlagFraVLTilRegel;
         //for CDI proxy
     }
 
@@ -18,7 +24,7 @@ public abstract class FullføreBeregningsgrunnlag {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
-        var beregningsgrunnlagRegel = MapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
 
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = evaluerRegelmodell(beregningsgrunnlagRegel, input);

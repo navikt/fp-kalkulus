@@ -39,6 +39,8 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
+    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag;
+    private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste;
 
     public BeregningsgrunnlagTjeneste() {
         // CDI Proxy
@@ -49,12 +51,16 @@ public class BeregningsgrunnlagTjeneste {
                                       @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
-                                      BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder) {
+                                      BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
+                                      ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag,
+                                      VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
         this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
+        this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
+        this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
@@ -90,7 +96,7 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     public BeregningResultatAggregat fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
+        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
         if (Boolean.FALSE.equals(vilkårVurderingResultat.getVilkårOppfylt())) {
             return BeregningResultatAggregat.Builder.fra(input)
@@ -125,7 +131,7 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
             .medAksjonspunkter(resultat.getAksjonspunkter())
             .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), FORESLÅTT)

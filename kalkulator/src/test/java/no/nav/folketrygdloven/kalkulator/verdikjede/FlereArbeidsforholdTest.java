@@ -20,6 +20,9 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
 import no.nav.folketrygdloven.kalkulator.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
@@ -45,6 +48,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.util.Tuple;
 
 public class FlereArbeidsforholdTest {
@@ -66,6 +70,11 @@ public class FlereArbeidsforholdTest {
 
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
     private BeregningTjenesteWrapper beregningTjenesteWrapper;
+
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
+    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
+    private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel);
 
     @BeforeEach
     public void setup() {
@@ -136,7 +145,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 1
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -150,7 +159,7 @@ public class FlereArbeidsforholdTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -213,7 +222,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
@@ -233,7 +242,7 @@ public class FlereArbeidsforholdTest {
             .build(periode);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -302,7 +311,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
@@ -322,7 +331,7 @@ public class FlereArbeidsforholdTest {
             .build(periode);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -386,7 +395,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
@@ -406,8 +415,8 @@ public class FlereArbeidsforholdTest {
             .build(periode);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
@@ -477,7 +486,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -491,7 +500,7 @@ public class FlereArbeidsforholdTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -561,7 +570,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -575,7 +584,7 @@ public class FlereArbeidsforholdTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -657,7 +666,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -671,7 +680,7 @@ public class FlereArbeidsforholdTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -762,7 +771,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -776,7 +785,7 @@ public class FlereArbeidsforholdTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -845,7 +854,7 @@ public class FlereArbeidsforholdTest {
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
@@ -866,7 +875,7 @@ public class FlereArbeidsforholdTest {
             .build(periode1));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, beregningsgrunnlagEtter1, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         beregningsgrunnlagEtter1 = fordelBeregningsgrunnlag(input, grunnlag, resultat);
@@ -885,7 +894,7 @@ public class FlereArbeidsforholdTest {
             .build(periodeEtter2));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = VurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
             nyttGrunnlag(grunnlag, beregningsgrunnlagEtter2, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         beregningsgrunnlagEtter2 = fordelBeregningsgrunnlag(input, grunnlag, resultat);

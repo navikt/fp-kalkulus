@@ -17,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -55,6 +58,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.konfig.Tid;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +89,9 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
     private static final String TOGGLE_SPLITTE_SAMMENLIGNING = "fpsak.splitteSammenligningATFL";
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
     private static BeregningsgrunnlagInput input;
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
+    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
 
     @BeforeEach
     public void setup() {
@@ -274,7 +281,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
         input.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNING, true);
 
-        return ForeslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }
 
     @Test

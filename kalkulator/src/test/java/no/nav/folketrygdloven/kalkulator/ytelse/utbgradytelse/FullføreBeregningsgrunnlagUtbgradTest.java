@@ -16,6 +16,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelGenerell;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
+
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,12 +72,14 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
     private FullføreBeregningsgrunnlag tjeneste;
     private BeregningsgrunnlagDto beregningsgrunnlag;
 
     @BeforeEach
     public void setup() {
-        tjeneste = new FullføreBeregningsgrunnlagUtbgrad();
+        tjeneste = new FullføreBeregningsgrunnlagUtbgrad(mapBeregningsgrunnlagFraVLTilRegel);
         beregningsgrunnlag = lagBeregningsgrunnlagAT();
     }
 
