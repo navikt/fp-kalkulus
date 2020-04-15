@@ -41,6 +41,7 @@ public class BeregningsgrunnlagTjeneste {
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
     private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag;
     private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste;
+    private FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
 
     public BeregningsgrunnlagTjeneste() {
         // CDI Proxy
@@ -53,7 +54,7 @@ public class BeregningsgrunnlagTjeneste {
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
                                       BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
                                       ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag,
-                                      VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste) {
+                                      VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste, FastsettBeregningAktiviteter fastsettBeregningAktiviteter) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
@@ -61,10 +62,11 @@ public class BeregningsgrunnlagTjeneste {
         this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
+        this.fastsettBeregningAktiviteter = fastsettBeregningAktiviteter;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
-        BeregningAktivitetAggregatDto beregningAktivitetAggregat = FastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
         BeregningsgrunnlagDto beregningsgrunnlag = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
         Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())

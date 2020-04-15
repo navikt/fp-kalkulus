@@ -34,6 +34,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private MapBeregningAktiviteterFraVLTilRegel mapper = new MapBeregningAktiviteterFraVLTilRegel();
 
     @Test
     public void skal_mappe_arbeidsforhold_med_virksomhetarbeidsgiver_fra_opptjening_med_info_i_iay() {
@@ -66,14 +67,14 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
                                                            InntektsmeldingDto inntektsmelding) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return MapBeregningAktiviteterFraVLTilRegel.mapForSkjæringstidspunkt(input);
+        return mapper.mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return MapBeregningAktiviteterFraVLTilRegel.mapForSkjæringstidspunkt(input);
+        return mapper.mapForSkjæringstidspunkt(input);
     }
 
     @Test
