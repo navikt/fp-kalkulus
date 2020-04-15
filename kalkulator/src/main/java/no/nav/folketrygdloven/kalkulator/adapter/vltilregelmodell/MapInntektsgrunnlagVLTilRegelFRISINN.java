@@ -2,19 +2,40 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -24,10 +45,132 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     @Inject
     public MapInntektsgrunnlagVLTilRegelFRISINN() {
-        // Skjul meg
+        // CDI
     }
 
-    void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
+    Inntektsgrunnlag map(BehandlingReferanse referanse, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+        Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
+        hentInntektArbeidYtelse(referanse, inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        return inntektsgrunnlag;
+    }
+
+    private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        filter.filterBeregningsgrunnlag()
+                .filter(i -> i.getArbeidsgiver() != null)
+                .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
+    }
+
+    private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag, InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
+                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        inntektsposter.forEach(inntektspost -> {
+
+            Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
+            if (Objects.isNull(arbeidsgiver)) {
+                throw new IllegalStateException("Arbeidsgiver må være satt.");
+            } else if (Objects.isNull(inntektspost.getPeriode().getFomDato())) {
+                throw new IllegalStateException("Inntektsperiode må være satt.");
+            } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
+                throw new IllegalStateException("Inntektsbeløp må være satt.");
+            }
+
+            inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+                    .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
+                    .medArbeidsgiver(arbeidsgiver)
+                    .medMåned(inntektspost.getPeriode().getFomDato())
+                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .build());
+        });
+    }
+
+    private Arbeidsforhold mapYrkesaktivitet(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        return erFrilanser(arbeidsgiver, yrkesaktiviteter)
+                ? Arbeidsforhold.frilansArbeidsforhold()
+                : lagNyttArbeidsforholdHosArbeidsgiver(arbeidsgiver);
+    }
+
+    private boolean erFrilanser(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        final List<ArbeidType> arbeidType = yrkesaktiviteter
+                .stream()
+                .filter(it -> it.getArbeidsgiver() != null)
+                .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .map(YrkesaktivitetDto::getArbeidType)
+                .distinct()
+                .collect(Collectors.toList());
+        boolean erFrilanser = yrkesaktiviteter.stream()
+                .map(YrkesaktivitetDto::getArbeidType)
+                .anyMatch(ArbeidType.FRILANSER::equals);
+        return (arbeidType.isEmpty() && erFrilanser) || arbeidType.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+    }
+
+    private Arbeidsforhold lagNyttArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver) {
+        if (arbeidsgiver.getErVirksomhet()) {
+            return Arbeidsforhold.nyttArbeidsforholdHosVirksomhet(arbeidsgiver.getIdentifikator());
+        } else if (arbeidsgiver.erAktørId()) {
+            return Arbeidsforhold.nyttArbeidsforholdHosPrivatperson(arbeidsgiver.getIdentifikator());
+        }
+        throw new IllegalStateException("Arbeidsgiver må være enten aktør eller virksomhet, men var: " + arbeidsgiver);
+    }
+
+    private void mapAlleYtelser(Inntektsgrunnlag inntektsgrunnlag,
+                                YtelseFilterDto ytelseFilter) {
+
+        ytelseFilter.getAlleYtelser().forEach(ytelse -> ytelse.getYtelseAnvist().stream()
+                .filter(this::harHattUtbetalingForPeriode)
+                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist))));
+    }
+
+    private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
+        return ytelse.getUtbetalingsgradProsent()
+                .map(beløp -> !beløp.erNulltall())
+                .orElse(false);
+    }
+
+    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist) {
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntekt(anvist.getBeløp().map(Beløp::getVerdi).orElse(null))
+                .medUtbetalingsgrad(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElseThrow())
+                .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
+                .build();
+    }
+
+    private void lagInntekterSN(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
+        filter.filterBeregnetSkatt().getFiltrertInntektsposter()
+                .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+                        .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
+                        .medInntekt(inntektspost.getBeløp().getVerdi())
+                        .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
+                        .build()));
+    }
+
+    private void hentInntektArbeidYtelse(BehandlingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+        AktørId aktørId = referanse.getAktørId();
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
+
+        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister(aktørId)).før(skjæringstidspunktBeregning);
+        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister(aktørId);
+        var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
+
+        if (!filter.isEmpty()) {
+            List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
+            yrkesaktiviteter.addAll(filterYaRegister.getYrkesaktiviteterForBeregning());
+            yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
+
+            lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter);
+            lagInntekterSN(inntektsgrunnlag, filter);
+        }
+
+        var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(skjæringstidspunktBeregning);
+        if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
+            mapAlleYtelser(inntektsgrunnlag, ytelseFilter);
+        }
+
+        Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
+        oppgittOpptjeningOpt.ifPresent(oppgittOpptjening -> mapOppgittOpptjening(inntektsgrunnlag, oppgittOpptjening));
+
+    }
+
+    private void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
         if (!oppgittOpptjening.getEgenNæring().isEmpty()) {
             Optional<BigDecimal> samletNæringsinntekt2019 = oppgittOpptjening.getEgenNæring().stream()
                     .filter(en -> erInntektFor2019(en.getPeriode()))

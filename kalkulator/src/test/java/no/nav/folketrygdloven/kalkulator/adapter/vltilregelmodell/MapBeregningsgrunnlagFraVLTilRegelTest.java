@@ -95,7 +95,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private String virksomhetB = "47";
 
     private InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder;
-    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelGenerell();
+    private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
     private Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
