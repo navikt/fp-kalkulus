@@ -1,10 +1,12 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
+import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,8 +58,6 @@ class MapFraKalkulatorTest {
 
     @Test
     void skal_mappe_fra_kalkulator_til_beregningsgrunnlag_input() {
-        MapFraKalkulator mapFraKalkulator = new MapFraKalkulator();
-
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
         AktørIdPersonident dummy = AktørIdPersonident.dummy();
@@ -69,7 +69,7 @@ class MapFraKalkulatorTest {
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
 
-        BeregningsgrunnlagInput input = mapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto);
+        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
 
         assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
     }

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
@@ -52,7 +54,9 @@ public class MapFraKalkulator {
 
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
-    public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputEntitet kalkulatorInputEntitet) {
+    public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
+                                                                                                 KalkulatorInputEntitet kalkulatorInputEntitet,
+                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         String json = kalkulatorInputEntitet.getInput();
         KalkulatorInputDto input = null;
 
@@ -62,14 +66,16 @@ public class MapFraKalkulator {
             e.printStackTrace();
         }
         if (input != null) {
-            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input);
+            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet);
         }
 
         throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
     }
 
 
-    public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling, KalkulatorInputDto input) {
+    public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
+                                                                                          KalkulatorInputDto input,
+                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
@@ -91,15 +97,18 @@ public class MapFraKalkulator {
                 mapFraDto(opptjeningAktiviteter),
                 aktivitetGradering != null ? mapFraDto(aktivitetGradering) : null,
                 mapFraDto(refusjonskravDatoer),
-                mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input.getYtelsespesifiktGrunnlag()));
+                mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
 
         return utenGrunnbeløp.medGrunnbeløpsatser(mapFraDto(input.getGrunnbeløpsatser()));
     }
 
-    private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType, YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag) {
+    private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,
+                                                     KalkulatorInputDto input,
+                                                     Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         YtelseTyperKalkulusStøtter yt = YtelseTyperKalkulusStøtter.fraKode(ytelseType.getKode());
+        YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
         switch (yt) {
             case FORELDREPENGER:
@@ -118,9 +127,8 @@ public class MapFraKalkulator {
                 pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
                 return pleiepengerSyktBarnGrunnlag;
             case FRISINN:
-                no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnYtelseGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag;
-                FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag();
-                return frisinnGrunnlag;
+                LocalDate idag = LocalDate.now();
+                return new FrisinnGrunnlag(UtbetalingsgradMapperFRISINN.map(input.getIayGrunnlag(), beregningsgrunnlagGrunnlagEntitet, idag));
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
                 no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));

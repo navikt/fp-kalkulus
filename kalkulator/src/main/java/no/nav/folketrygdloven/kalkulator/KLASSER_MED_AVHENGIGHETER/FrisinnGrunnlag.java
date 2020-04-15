@@ -1,15 +1,20 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import java.util.List;
 
-public class FrisinnGrunnlag implements YtelsespesifiktGrunnlag {
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+
+public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
     private final int dekningsgrad = 100;
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
 
-    public FrisinnGrunnlag() {
+    public FrisinnGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+        super(utbetalingsgradPrAktivitet);
     }
+
 
     @Override
     public int getDekningsgrad() {
