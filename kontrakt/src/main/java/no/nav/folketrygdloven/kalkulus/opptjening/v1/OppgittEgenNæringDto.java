@@ -20,7 +20,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class OppgittEgenNæringDto {
+public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
 
     @JsonProperty(value = "periode")
     @Valid
@@ -93,6 +93,11 @@ public class OppgittEgenNæringDto {
 
     public Periode getPeriode() {
         return periode;
+    }
+
+    @Override
+    public BigDecimal getInntekt() {
+        return bruttoInntekt;
     }
 
     public Aktør getAktør() {

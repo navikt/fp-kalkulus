@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -7,6 +9,7 @@ public class OppgittFrilansDto {
 
     private OppgittOpptjeningDto oppgittOpptjening;
     private boolean erNyoppstartet;
+    private List<OppgittFrilansInntektDto> oppgittFrilansInntekt = new ArrayList<>();
 
 
     public OppgittFrilansDto() {
@@ -14,6 +17,11 @@ public class OppgittFrilansDto {
 
     public OppgittFrilansDto(boolean erNyoppstartet) {
         this.erNyoppstartet = erNyoppstartet;
+    }
+
+    public OppgittFrilansDto(boolean erNyoppstartet, List<OppgittFrilansInntektDto> oppgittFrilansInntekt) {
+        this.erNyoppstartet = erNyoppstartet;
+        this.oppgittFrilansInntekt = oppgittFrilansInntekt;
     }
 
     @Override
@@ -40,6 +48,11 @@ public class OppgittFrilansDto {
     void setOppgittOpptjening(OppgittOpptjeningDto oppgittOpptjening) {
         this.oppgittOpptjening = oppgittOpptjening;
     }
+
+    public List<OppgittFrilansInntektDto> getOppgittFrilansInntekt() {
+        return oppgittFrilansInntekt;
+    }
+
 
     public void setErNyoppstartet(boolean erNyoppstartet) {
         this.erNyoppstartet = erNyoppstartet;

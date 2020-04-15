@@ -12,30 +12,32 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class OppgittFrilansInntekt {
+public class OppgittFrilansInntekt implements OppgittPeriodeInntekt {
 
     @JsonProperty("periode")
     @NotNull
     private Periode periode;
 
-    @JsonProperty("beløp")
+    @JsonProperty("inntekt")
     @NotNull
-    private BigDecimal beløp;
+    private BigDecimal inntekt;
 
     public OppgittFrilansInntekt() {
         // Json deserilaisering
     }
 
-    public OppgittFrilansInntekt(@NotNull Periode periode, @NotNull BigDecimal beløp) {
+    public OppgittFrilansInntekt(@NotNull Periode periode, @NotNull BigDecimal inntekt) {
         this.periode = periode;
-        this.beløp = beløp;
+        this.inntekt = inntekt;
     }
 
+    @Override
     public Periode getPeriode() {
         return periode;
     }
 
-    public BigDecimal getBeløp() {
-        return beløp;
+    @Override
+    public BigDecimal getInntekt() {
+        return inntekt;
     }
 }

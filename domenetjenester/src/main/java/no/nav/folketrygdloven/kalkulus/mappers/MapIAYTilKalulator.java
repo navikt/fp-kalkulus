@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
@@ -59,6 +60,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
 
 public class MapIAYTilKalulator {
@@ -129,12 +131,21 @@ public class MapIAYTilKalulator {
         OppgittOpptjeningDtoBuilder builder = OppgittOpptjeningDtoBuilder.ny();
         if (oppgittOpptjening.getFrilans() != null) {
             no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansDto oppgittFrilans = oppgittOpptjening.getFrilans();
+            if (oppgittFrilans.getOppgittFrilansInntekt() != null) {
+                List<OppgittFrilansInntektDto> oppgittInntekt = oppgittFrilans.getOppgittFrilansInntekt().stream().map(MapIAYTilKalulator::mapFrilansInntekt).collect(Collectors.toList());
+                builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet(), oppgittInntekt));
+            }
             builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet()));
         }
         if (oppgittOpptjening.getEgenNæring() != null) {
             oppgittOpptjening.getEgenNæring().forEach(egen -> builder.leggTilEgneNæring(mapEgenNæring(egen)));
         }
         return builder;
+    }
+
+    private static OppgittFrilansInntektDto mapFrilansInntekt(OppgittFrilansInntekt oppgittFrilansInntekt) {
+        Periode periode = oppgittFrilansInntekt.getPeriode();
+        return new OppgittFrilansInntektDto(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom()), oppgittFrilansInntekt.getInntekt());
     }
 
     private static Intervall mapDatoIntervall(Periode periode) {
