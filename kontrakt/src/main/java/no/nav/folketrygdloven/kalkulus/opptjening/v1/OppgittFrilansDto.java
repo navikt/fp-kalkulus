@@ -1,7 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -12,10 +15,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OppgittFrilansDto {
 
-    @JsonProperty
+    @JsonProperty("erNyoppstartet")
     @Valid
     @NotNull
     private Boolean erNyoppstartet;
+
+    @JsonProperty("oppgittFrilansInntekt")
+    @Valid
+    @Size(min = 0)
+    private List<OppgittFrilansInntekt> oppgittFrilansInntekt;
 
     public OppgittFrilansDto() {
         // default ctor
@@ -25,8 +33,17 @@ public class OppgittFrilansDto {
         this.erNyoppstartet = erNyoppstartet;
     }
 
+    public OppgittFrilansDto(@Valid @NotNull Boolean erNyoppstartet, @Valid @NotNull List<OppgittFrilansInntekt> oppgittFrilansInntekt) {
+        this.erNyoppstartet = erNyoppstartet;
+        this.oppgittFrilansInntekt = oppgittFrilansInntekt;
+    }
+
     public Boolean getErNyoppstartet() {
         return erNyoppstartet;
     }
 
+    public List<OppgittFrilansInntekt> getOppgittFrilansInntekt() {
+        return oppgittFrilansInntekt;
+    }
 }
+
