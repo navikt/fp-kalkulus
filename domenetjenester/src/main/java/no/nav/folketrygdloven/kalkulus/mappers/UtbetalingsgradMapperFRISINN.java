@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
@@ -19,10 +21,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittPeriodeInntekt;
 
 public class UtbetalingsgradMapperFRISINN {
 
@@ -91,19 +89,19 @@ public class UtbetalingsgradMapperFRISINN {
     }
 
     private static List<OppgittPeriodeInntekt> finnFrilansInntekter(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        if (iayGrunnlag.getOppgittOpptjening() == null || iayGrunnlag.getOppgittOpptjening().getFrilans() == null || iayGrunnlag.getOppgittOpptjening().getFrilans().getOppgittFrilansInntekt() == null) {
+        if (iayGrunnlag.getOppgittOpptjening().isEmpty() || iayGrunnlag.getOppgittOpptjening().get().getFrilans().isEmpty()) {
             return Collections.emptyList();
         }
-        return iayGrunnlag.getOppgittOpptjening().getFrilans().getOppgittFrilansInntekt()
+        return iayGrunnlag.getOppgittOpptjening().get().getFrilans().get().getOppgittFrilansInntekt()
                 .stream().map(i -> (OppgittPeriodeInntekt) i)
                 .collect(Collectors.toList());
     }
 
     private static List<OppgittPeriodeInntekt> finnNæringsInntekter(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        if (iayGrunnlag.getOppgittOpptjening() == null || iayGrunnlag.getOppgittOpptjening().getEgenNæring() == null) {
+        if (iayGrunnlag.getOppgittOpptjening().isEmpty()) {
             return Collections.emptyList();
     }
-        return iayGrunnlag.getOppgittOpptjening().getEgenNæring()
+        return iayGrunnlag.getOppgittOpptjening().get().getEgenNæring()
                 .stream().map(i -> (OppgittPeriodeInntekt) i)
                 .collect(Collectors.toList());
     }
@@ -160,13 +158,13 @@ public class UtbetalingsgradMapperFRISINN {
     }
 
     /**
-     * Finner total inntekt fra næringsvirksomhet i periode
+     * Finner total inntekt fra oppgitt inntektliste i oppgitt periode
      *
      * @param oppgittPeriodeInntekter Liste med oppgitt inntekt
      * @param månedsperiode Periode på 1 mnd
      * @return total inntekt fra næring i periode
      */
-    private static BigDecimal  finnTotalLøpendeInntektIPeriode(List<OppgittPeriodeInntekt> oppgittPeriodeInntekter, Intervall månedsperiode) {
+    public static BigDecimal  finnTotalLøpendeInntektIPeriode(List<OppgittPeriodeInntekt> oppgittPeriodeInntekter, Intervall månedsperiode) {
         return oppgittPeriodeInntekter.stream()
                 .filter(e -> overlapperMedMåned(månedsperiode, e))
                 .map(oppgittEgenNæringDto -> finnEffektivInntektIPeriodeForNæring(månedsperiode, oppgittEgenNæringDto)).reduce(BigDecimal::add)
@@ -174,7 +172,7 @@ public class UtbetalingsgradMapperFRISINN {
     }
 
     private static boolean overlapperMedMåned(Intervall månedsperiode, OppgittPeriodeInntekt e) {
-        return Intervall.fraOgMedTilOgMed(e.getPeriode().getFom(), e.getPeriode().getTom()).overlapper(månedsperiode);
+        return e.getPeriode().overlapper(månedsperiode);
     }
 
     /**
@@ -185,7 +183,7 @@ public class UtbetalingsgradMapperFRISINN {
      * @return total inntekt fra oppgitt næring i periode
      */
     private static BigDecimal finnEffektivInntektIPeriodeForNæring(Intervall månedsperiode, OppgittPeriodeInntekt oppgittInntekt) {
-        Periode oppgittNæringPeriode = oppgittInntekt.getPeriode();
+        Intervall oppgittNæringPeriode = oppgittInntekt.getPeriode();
         BigDecimal dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt, oppgittNæringPeriode);
         long overlappendeDager = finnAntallOverlappendeDagerIMåned(månedsperiode, oppgittNæringPeriode);
         return dagsats.multiply(BigDecimal.valueOf(overlappendeDager));
@@ -198,9 +196,9 @@ public class UtbetalingsgradMapperFRISINN {
      * @param periode periode fra næring
      * @return
      */
-    private static long finnAntallOverlappendeDagerIMåned(Intervall p, Periode periode) {
-        LocalDate størsteFom = periode.getFom().isAfter(p.getFomDato()) ? periode.getFom() : p.getFomDato();
-        LocalDate minsteTom = periode.getTom().isBefore(p.getTomDato()) ? periode.getTom() : p.getTomDato();
+    private static long finnAntallOverlappendeDagerIMåned(Intervall p, Intervall periode) {
+        LocalDate størsteFom = periode.getFomDato().isAfter(p.getFomDato()) ? periode.getFomDato() : p.getFomDato();
+        LocalDate minsteTom = periode.getTomDato().isBefore(p.getTomDato()) ? periode.getTomDato() : p.getTomDato();
         return ChronoUnit.DAYS.between(størsteFom, minsteTom.plusDays(1));
     }
 
@@ -211,8 +209,8 @@ public class UtbetalingsgradMapperFRISINN {
      * @param periode Periode
      * @return dagsats fra næring
      */
-    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt, Periode periode) {
-        long dagerIRapportertPeriode = ChronoUnit.DAYS.between(periode.getFom(), periode.getTom().plusDays(1));
+    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt, Intervall periode) {
+        long dagerIRapportertPeriode = ChronoUnit.DAYS.between(periode.getFomDato(), periode.getTomDato().plusDays(1));
         return oppgittInntekt.getInntekt().divide(BigDecimal.valueOf(dagerIRapportertPeriode), RoundingMode.HALF_UP);
     }
 }

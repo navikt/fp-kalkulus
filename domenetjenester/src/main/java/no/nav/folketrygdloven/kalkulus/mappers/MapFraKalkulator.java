@@ -92,12 +92,13 @@ public class MapFraKalkulator {
         OpptjeningAktiviteterDto opptjeningAktiviteter = input.getOpptjeningAktiviteter();
         List<RefusjonskravDatoDto> refusjonskravDatoer = input.getRefusjonskravDatoer();
 
+        no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlagMappet = mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId()));
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
-                mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId())),
+                iayGrunnlagMappet,
                 mapFraDto(opptjeningAktiviteter),
                 aktivitetGradering != null ? mapFraDto(aktivitetGradering) : null,
                 mapFraDto(refusjonskravDatoer),
-                mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, beregningsgrunnlagGrunnlagEntitet));
+                mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
 
@@ -106,6 +107,7 @@ public class MapFraKalkulator {
 
     private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,
                                                      KalkulatorInputDto input,
+                                                     no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                      Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         YtelseTyperKalkulusStøtter yt = YtelseTyperKalkulusStøtter.fraKode(ytelseType.getKode());
         YtelsespesifiktGrunnlagDto ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
@@ -128,7 +130,7 @@ public class MapFraKalkulator {
                 return pleiepengerSyktBarnGrunnlag;
             case FRISINN:
                 LocalDate idag = LocalDate.now();
-                return new FrisinnGrunnlag(UtbetalingsgradMapperFRISINN.map(input.getIayGrunnlag(), beregningsgrunnlagGrunnlagEntitet, idag));
+                return new FrisinnGrunnlag(UtbetalingsgradMapperFRISINN.map(iayGrunnlag, beregningsgrunnlagGrunnlagEntitet, idag));
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
                 no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));

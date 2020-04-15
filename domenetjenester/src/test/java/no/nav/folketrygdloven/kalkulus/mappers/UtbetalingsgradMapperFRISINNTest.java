@@ -10,9 +10,15 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -21,27 +27,23 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansDto;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
-import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
+
 
 class UtbetalingsgradMapperFRISINNTest {
 
-    public static final Organisasjon ARBEIDSGIVER = new Organisasjon("1234678230");
+    public static final Organisasjon ARBEIDSGIVER = new Organisasjon("923609016");
 
     @Test
     void skal_mappe_en_hel_måned_med_inntekt_til_100_prosent_utbetaling_ved_fullt_bortfalt_inntekt() {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal månedsinntekt = BigDecimal.valueOf(30_000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -55,9 +57,9 @@ class UtbetalingsgradMapperFRISINNTest {
         assertPeriode(april, periode1, 0);
     }
 
-    private void assertPeriode(Periode april, PeriodeMedUtbetalingsgradDto periode, int utbetalingsprosent) {
-        assertThat(periode.getPeriode().getFomDato()).isEqualTo(april.getFom());
-        assertThat(periode.getPeriode().getTomDato()).isEqualTo(april.getTom());
+    private void assertPeriode(Intervall april, PeriodeMedUtbetalingsgradDto periode, int utbetalingsprosent) {
+        assertThat(periode.getPeriode().getFomDato()).isEqualTo(april.getFomDato());
+        assertThat(periode.getPeriode().getTomDato()).isEqualTo(april.getTomDato());
         assertThat(periode.getUtbetalingsgrad().intValue()).isEqualTo(utbetalingsprosent);
     }
 
@@ -66,11 +68,12 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal månedsinntekt = BigDecimal.valueOf(30_000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -89,11 +92,12 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal månedsinntekt = BigDecimal.ZERO;
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -112,11 +116,12 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal månedsinntekt = BigDecimal.valueOf(15_000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(april, månedsinntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -135,12 +140,13 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal periodeInntekt = BigDecimal.valueOf(15_000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(
-                new Periode(april.getFom(), LocalDate.of(2020, 4, 15)), periodeInntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(
+                Intervall.fraOgMedTilOgMed(april.getFomDato(), LocalDate.of(2020, 4, 15)), periodeInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -159,12 +165,13 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal periodeInntekt = BigDecimal.valueOf(45_000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(
-                new Periode(LocalDate.of(2020, 3, 17), april.getTom()), periodeInntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(
+                Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 3, 17), april.getTomDato()), periodeInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -183,13 +190,14 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 3, 15);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedSN(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
-        Periode mars = new Periode(LocalDate.of(2020, 3, 1), LocalDate.of(2020, 3, 31));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall mars = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 3, 1), LocalDate.of(2020, 3, 31));
         BigDecimal periodeInntekt = BigDecimal.valueOf(61_0000);
-        List<OppgittEgenNæringDto> oppgittNæring = List.of(lagOppgittInntekt(
-                new Periode(LocalDate.of(2020, 3, 15), april.getTom()), periodeInntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(null, oppgittNæring));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(
+                Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 3, 15), april.getTomDato()), periodeInntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -211,11 +219,13 @@ class UtbetalingsgradMapperFRISINNTest {
         // Arrange
         LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
         Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedFL(skjæringstidspunkt, BigDecimal.valueOf(360_000));
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
-        Periode april = new Periode(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal månedsinntekt = BigDecimal.valueOf(15_000);
-        List<OppgittFrilansInntekt> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, månedsinntekt));
-        iayGrunnlag.medOppgittOpptjeningDto(new OppgittOpptjeningDto(new OppgittFrilansDto(false, oppgittFrilansInntekt), null));
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, månedsinntekt));
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
+                        .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt)))
+                .build();
 
         // Act
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, LocalDate.of(2020, 5, 6));
@@ -229,13 +239,15 @@ class UtbetalingsgradMapperFRISINNTest {
         assertPeriode(april, periode1, 50);
     }
 
-    private OppgittEgenNæringDto lagOppgittInntekt(Periode april, BigDecimal periodeInntekt) {
-        return new OppgittEgenNæringDto(april, ARBEIDSGIVER, null, false,
-                false, null, false, false, periodeInntekt);
+    private OppgittOpptjeningDtoBuilder.EgenNæringBuilder lagOppgittInntekt(Intervall april, BigDecimal periodeInntekt) {
+        return OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
+                .medPeriode(april)
+                .medVirksomhet(ARBEIDSGIVER.getIdent())
+                .medBruttoInntekt(periodeInntekt);
     }
 
-    private OppgittFrilansInntekt lagOppgittFrilansInntekt(Periode april, BigDecimal periodeInntekt) {
-        return new OppgittFrilansInntekt(april, periodeInntekt);
+    private OppgittFrilansInntektDto lagOppgittFrilansInntekt(Intervall april, BigDecimal periodeInntekt) {
+        return new OppgittFrilansInntektDto(april, periodeInntekt);
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> lagBeregningsgrunnlagMedSN(LocalDate skjæringstidspunkt, BigDecimal beregnetPrÅr) {

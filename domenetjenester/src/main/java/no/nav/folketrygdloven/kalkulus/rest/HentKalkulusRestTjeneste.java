@@ -41,11 +41,13 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagGrunnlagForReferanseRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagFRISINNDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
@@ -175,6 +177,26 @@ public class HentKalkulusRestTjeneste {
         return Response.ok(beregningsgrunnlagDto).build();
     }
 
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @Path("/frisinnGrunnlag")
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId);
+        return beregningsgrunnlagGrunnlagEntitet.stream()
+                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening()))
+                .map(bgDto -> Response.ok(bgDto).build())
+                .findFirst()
+                .orElse(Response.noContent().build());
+    }
 
 
     /**

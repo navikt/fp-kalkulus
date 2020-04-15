@@ -9,7 +9,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
-public class OppgittEgenNæringDto {
+public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
 
     private Intervall periode;
     private OrgNummer virksomhetOrgnr;
@@ -42,6 +42,11 @@ public class OppgittEgenNæringDto {
 
     public Intervall getPeriode() {
         return periode;
+    }
+
+    @Override
+    public BigDecimal getInntekt() {
+        return bruttoInntekt;
     }
 
     public VirksomhetType getVirksomhetType() {

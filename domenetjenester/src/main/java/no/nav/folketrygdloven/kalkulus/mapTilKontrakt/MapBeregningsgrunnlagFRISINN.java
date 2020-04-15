@@ -1,0 +1,109 @@
+package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.mappers.UtbetalingsgradMapperFRISINN;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagFRISINNDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagPeriodeFRISINNDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagPrStatusOgAndelFRISINNDto;
+
+public class MapBeregningsgrunnlagFRISINN {
+
+    private MapBeregningsgrunnlagFRISINN() {
+        // SKjul konstruktør
+    }
+
+    public static BeregningsgrunnlagFRISINNDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return new BeregningsgrunnlagFRISINNDto(
+                beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
+                mapAktivitetstatuser(beregningsgrunnlagEntitet),
+                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, oppgittOpptjening)
+                );
+    }
+
+    private static List<BeregningsgrunnlagPeriodeFRISINNDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(p -> MapBeregningsgrunnlagFRISINN.mapPeriode(p, oppgittOpptjening)).collect(Collectors.toList());
+    }
+
+    private static BeregningsgrunnlagPeriodeFRISINNDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return new BeregningsgrunnlagPeriodeFRISINNDto(
+                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), oppgittOpptjening),
+                new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
+                beregningsgrunnlagPeriode.getBruttoPrÅr(),
+                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                beregningsgrunnlagPeriode.getRedusertPrÅr(),
+                beregningsgrunnlagPeriode.getDagsats(),
+                beregningsgrunnlagPeriode.getPeriodeÅrsaker().stream().map(MapBeregningsgrunnlagFRISINN::mapPeriodeÅrsak).collect(Collectors.toList()));
+    }
+
+    private static no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak mapPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
+        return new no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak(periodeÅrsak.getKode());
+    }
+
+    private static List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> MapBeregningsgrunnlagFRISINN.mapAndel(a, oppgittOpptjening)).collect(Collectors.toList());
+    }
+
+    private static BeregningsgrunnlagPrStatusOgAndelFRISINNDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return new BeregningsgrunnlagPrStatusOgAndelFRISINNDto(
+                new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
+                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
+                beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
+                beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
+                finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
+                beregningsgrunnlagPrStatusOgAndel.getDagsats(),
+                new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode())
+                );
+    }
+
+    private static BigDecimal finnLøpendeInntekt(BeregningsgrunnlagPrStatusOgAndel andel, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        // Her må vi finne løpende inntekt basert på status og periode
+        IntervallEntitet periode = andel.getBeregningsgrunnlagPeriode().getPeriode();
+        if (andel.getAktivitetStatus().erFrilanser()) {
+            return UtbetalingsgradMapperFRISINN.finnTotalLøpendeInntektIPeriode(finnOppgittInntektFL(oppgittOpptjening), Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
+        } else if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
+            return UtbetalingsgradMapperFRISINN.finnTotalLøpendeInntektIPeriode(finnOppgittInntektSN(oppgittOpptjening), Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private static List<OppgittPeriodeInntekt> finnOppgittInntektFL(Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return oppgittOpptjening
+                        .filter(oo -> oo.getFrilans().isPresent())
+                        .flatMap(OppgittOpptjeningDto::getFrilans)
+                        .stream()
+                        .flatMap(oo -> oo.getOppgittFrilansInntekt().stream())
+                        .map(i -> (OppgittPeriodeInntekt) i)
+                        .collect(Collectors.toList());
+    }
+
+    private static List<OppgittPeriodeInntekt> finnOppgittInntektSN(Optional<OppgittOpptjeningDto> oppgittOpptjening) {
+        return oppgittOpptjening
+                        .filter(oo -> oo.getFrilans().isPresent())
+                        .map(OppgittOpptjeningDto::getEgenNæring)
+                        .stream()
+                        .map(i -> (OppgittPeriodeInntekt) i)
+                        .collect(Collectors.toList());
+    }
+
+
+    private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> new AktivitetStatus(a.getAktivitetStatus().getKode()))
+                    .collect(Collectors.toList());
+    }
+
+}
