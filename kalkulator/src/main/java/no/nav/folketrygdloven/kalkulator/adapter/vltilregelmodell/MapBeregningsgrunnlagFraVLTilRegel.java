@@ -191,7 +191,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                     .medskalSplitteATFL(input.isEnabled(TOGGLE, false))
-                    .medSkalVurdereAvviksvurdering(skalVurdereAvviksvurdering(input))
+                    .medSkalSjekkeRefusjonFørAvviksvurdering(skalSjekkeRefusjonFørAvviksvurdering(input))
                     .medMaksRefusjonForPeriode(finnHøyestRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning()))
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
@@ -203,7 +203,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return perioder;
     }
 
-    private boolean skalVurdereAvviksvurdering(BeregningsgrunnlagInput input) {
+    private boolean skalSjekkeRefusjonFørAvviksvurdering(BeregningsgrunnlagInput input) {
         return input.getYtelsespesifiktGrunnlag() instanceof OmsorgspengerGrunnlag;
     }
 

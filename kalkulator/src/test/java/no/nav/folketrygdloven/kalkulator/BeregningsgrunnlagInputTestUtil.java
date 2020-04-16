@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -125,6 +126,22 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null,
             AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag), svangerskapspengerGrunnlag);
+        BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
+        BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedGrunnbeløp;
+    }
+
+    public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(BehandlingReferanse behandlingReferanse,
+                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                             BeregningsgrunnlagTilstand tilstand,
+                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                             OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null,
+                AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag), omsorgspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
