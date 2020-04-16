@@ -24,66 +24,60 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 
 public class UtbetalingsgradMapperFRISINN {
 
-
-    public static final BigDecimal MND_I_1_ÅR = BigDecimal.valueOf(12);
+    public static final int VIRKEDAGER_I_ET_ÅR = 260;
 
     /**
      * Finnner utbetalingsgrader for FRISINN
      *
      * @param iayGrunnlag InntektArbeidYtelseGrunnlag
      * @param beregningsgrunnlagGrunnlagEntitet Aktivt beregningsgrunnlag
-     * @param idag Dagens dato
      * @return Liste med utbetalingsgrader for FRISINN
      */
     public static List<UtbetalingsgradPrAktivitetDto> map(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                          LocalDate idag) {
+                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         Optional<LocalDate> stpOpt = finnSkjæringstidspunkt(beregningsgrunnlagGrunnlagEntitet);
         if (stpOpt.isEmpty()) {
             return Collections.emptyList();
         }
-        LocalDate skjæringstidspunkt = stpOpt.get();
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = finnAlleAndelerIFørstePeriode(beregningsgrunnlagGrunnlagEntitet);
-        List<Intervall> inntektPerioder = periodiserMånedsvisFraSkjæringstidspunktTilNå(skjæringstidspunkt, idag);
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe = new ArrayList<>();
 
-        mapUtbetalingsgradNæring(iayGrunnlag, andeler, inntektPerioder, utbetalingsgradPrAktivitetListe);
-        mapUtbetalingsgradFrilans(iayGrunnlag, andeler, inntektPerioder, utbetalingsgradPrAktivitetListe);
+        mapUtbetalingsgradNæring(iayGrunnlag, andeler, utbetalingsgradPrAktivitetListe);
+        mapUtbetalingsgradFrilans(iayGrunnlag, andeler, utbetalingsgradPrAktivitetListe);
         return utbetalingsgradPrAktivitetListe;
     }
 
     private static void mapUtbetalingsgradFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                   List<BeregningsgrunnlagPrStatusOgAndel> andeler,
-                                                  List<Intervall> inntektPerioder,
                                                   List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe) {
         Optional<BeregningsgrunnlagPrStatusOgAndel> næringAndel = finnFrilansandel(andeler);
         næringAndel.filter(a -> a.getBruttoPrÅr() != null)
-                .map(a -> mapUtbetalingsgraderForFrilans(iayGrunnlag, inntektPerioder, a))
+                .map(a -> mapUtbetalingsgraderForFrilans(iayGrunnlag, a))
                 .ifPresent(utbetalingsgradPrAktivitetListe::add);
     }
 
-    private static void mapUtbetalingsgradNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<BeregningsgrunnlagPrStatusOgAndel> andeler, List<Intervall> inntektPerioder, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe) {
+    private static void mapUtbetalingsgradNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<BeregningsgrunnlagPrStatusOgAndel> andeler, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe) {
         Optional<BeregningsgrunnlagPrStatusOgAndel> næringAndel = finnNæringsandel(andeler);
         næringAndel.filter(a -> a.getBruttoPrÅr() != null)
-                .map(a -> mapUtbetalingsgraderForNæring(iayGrunnlag, inntektPerioder, a))
+                .map(a -> mapUtbetalingsgraderForNæring(iayGrunnlag, a))
                 .ifPresent(utbetalingsgradPrAktivitetListe::add);
     }
 
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Intervall> inntektPerioder, BeregningsgrunnlagPrStatusOgAndel a) {
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndel a) {
         UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
         BigDecimal totalInntektVedStp = a.getBruttoPrÅr();
-        List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = inntektPerioder.stream()
-                .map(månedsperiode -> mapTilPeriodeMedUtbetalingsgrad(finnNæringsInntekter(iayGrunnlag), totalInntektVedStp, månedsperiode))
+        List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnNæringsInntekter(iayGrunnlag).stream()
+                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, totalInntektVedStp))
                 .collect(Collectors.toList());
         return new UtbetalingsgradPrAktivitetDto(snAktivitet, perioderMedUtbetalingsgrad);
     }
 
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Intervall> inntektPerioder, BeregningsgrunnlagPrStatusOgAndel a) {
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndel a) {
         UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null,
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         BigDecimal totalInntektVedStp = a.getBruttoPrÅr();
-        List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = inntektPerioder.stream()
-                .map(månedsperiode -> mapTilPeriodeMedUtbetalingsgrad(finnFrilansInntekter(iayGrunnlag), totalInntektVedStp, månedsperiode))
+        List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnFrilansInntekter(iayGrunnlag).stream()
+                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, totalInntektVedStp))
                 .collect(Collectors.toList());
         return new UtbetalingsgradPrAktivitetDto(snAktivitet, perioderMedUtbetalingsgrad);
     }
@@ -106,14 +100,12 @@ public class UtbetalingsgradMapperFRISINN {
                 .collect(Collectors.toList());
     }
 
-
-
-    private static PeriodeMedUtbetalingsgradDto mapTilPeriodeMedUtbetalingsgrad(List<OppgittPeriodeInntekt> oppgittPeriodeInntekter, BigDecimal totalInntektVedStp, Intervall månedsperiode) {
-        BigDecimal løpendeInntekt = finnTotalLøpendeInntektIPeriode(oppgittPeriodeInntekter, månedsperiode);
-        BigDecimal løpendeÅrsinntekt = løpendeInntekt.multiply(MND_I_1_ÅR);
+    private static PeriodeMedUtbetalingsgradDto mapTilPeriodeMedUtbetalingsgrad(OppgittPeriodeInntekt oppgittPeriodeInntekt,
+                                                                                BigDecimal totalInntektVedStp) {
+        BigDecimal løpendeÅrsinntekt = finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
         BigDecimal bortfaltInntekt = totalInntektVedStp.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
         BigDecimal utbetalingsgrad = totalInntektVedStp.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektVedStp, 2,RoundingMode.HALF_UP);
-        return new PeriodeMedUtbetalingsgradDto(månedsperiode, utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
+        return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndel> finnAlleAndelerIFørstePeriode(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
@@ -138,79 +130,25 @@ public class UtbetalingsgradMapperFRISINN {
     }
 
     /**
-     * Lager månedsperioder fra skjæringstidspunkt til dagens dato.
+     * Finner effektiv årsinntekt fra oppgitt inntekt
      *
-     * Første periode går fra skjæringstidspunkt og ut måneden. De resterende periodene går fra start til slutt i måneden.
-     *
-     * @param skjæringstidspunkt Skjæringstidspunkt
-     * @param idag
-     * @return Liste med oppstykket periode fra skjæringstidspunkt til dagens dato
-     */
-    private static List<Intervall> periodiserMånedsvisFraSkjæringstidspunktTilNå(LocalDate skjæringstidspunkt, LocalDate idag) {
-        List<Intervall> inntektPerioder = new ArrayList<>();
-        inntektPerioder.add(Intervall.fraOgMedTilOgMed(skjæringstidspunkt.withDayOfMonth(1), skjæringstidspunkt.withDayOfMonth(skjæringstidspunkt.lengthOfMonth())));
-        LocalDate førsteDagIMåned = skjæringstidspunkt.withDayOfMonth(skjæringstidspunkt.lengthOfMonth()).plusDays(1);
-        while (førsteDagIMåned.getMonthValue() <= idag.getMonthValue()) {
-            inntektPerioder.add(Intervall.fraOgMedTilOgMed(førsteDagIMåned, førsteDagIMåned.withDayOfMonth(førsteDagIMåned.lengthOfMonth())));
-            førsteDagIMåned = førsteDagIMåned.plusMonths(1);
-        }
-        return inntektPerioder;
-    }
-
-    /**
-     * Finner total inntekt fra oppgitt inntektliste i oppgitt periode
-     *
-     * @param oppgittPeriodeInntekter Liste med oppgitt inntekt
-     * @param månedsperiode Periode på 1 mnd
-     * @return total inntekt fra næring i periode
-     */
-    public static BigDecimal  finnTotalLøpendeInntektIPeriode(List<OppgittPeriodeInntekt> oppgittPeriodeInntekter, Intervall månedsperiode) {
-        return oppgittPeriodeInntekter.stream()
-                .filter(e -> overlapperMedMåned(månedsperiode, e))
-                .map(oppgittEgenNæringDto -> finnEffektivInntektIPeriodeForNæring(månedsperiode, oppgittEgenNæringDto)).reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
-    }
-
-    private static boolean overlapperMedMåned(Intervall månedsperiode, OppgittPeriodeInntekt e) {
-        return e.getPeriode().overlapper(månedsperiode);
-    }
-
-    /**
-     * Finner inntekten fra gitt næring i periode basert på overlappende dager mellom måned og oppgitt periode med inntekt
-     *
-     * @param månedsperiode periode
      * @param oppgittInntekt oppgitt inntektsinformasjon
-     * @return total inntekt fra oppgitt næring i periode
+     * @return effektiv årsinntekt fra inntekt
      */
-    private static BigDecimal finnEffektivInntektIPeriodeForNæring(Intervall månedsperiode, OppgittPeriodeInntekt oppgittInntekt) {
-        Intervall oppgittNæringPeriode = oppgittInntekt.getPeriode();
-        BigDecimal dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt, oppgittNæringPeriode);
-        long overlappendeDager = finnAntallOverlappendeDagerIMåned(månedsperiode, oppgittNæringPeriode);
-        return dagsats.multiply(BigDecimal.valueOf(overlappendeDager));
+    public static BigDecimal finnEffektivÅrsinntektForLøpenedeInntekt(OppgittPeriodeInntekt oppgittInntekt) {
+        BigDecimal dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt);
+        return dagsats.multiply(BigDecimal.valueOf(VIRKEDAGER_I_ET_ÅR));
     }
 
     /**
-     * Finner antall overlappende dager i perioder
-     *
-     * @param p Månedsperiode
-     * @param periode periode fra næring
-     * @return
-     */
-    private static long finnAntallOverlappendeDagerIMåned(Intervall p, Intervall periode) {
-        LocalDate størsteFom = periode.getFomDato().isAfter(p.getFomDato()) ? periode.getFomDato() : p.getFomDato();
-        LocalDate minsteTom = periode.getTomDato().isBefore(p.getTomDato()) ? periode.getTomDato() : p.getTomDato();
-        return ChronoUnit.DAYS.between(størsteFom, minsteTom.plusDays(1));
-    }
-
-    /**
-     * Finner opptjent inntekt pr dag i periode fra gitt næringsvirksomhet
+     * Finner opptjent inntekt pr dag i periode
      *
      * @param oppgittInntekt Informasjon om oppgitt inntekt
-     * @param periode Periode
-     * @return dagsats fra næring
+     * @return dagsats i periode
      */
-    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt, Intervall periode) {
-        long dagerIRapportertPeriode = ChronoUnit.DAYS.between(periode.getFomDato(), periode.getTomDato().plusDays(1));
+    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt) {
+        Intervall periode = oppgittInntekt.getPeriode();
+        long dagerIRapportertPeriode = Virkedager.beregnAntallVirkedager(periode.getFomDato(), periode.getTomDato());
         return oppgittInntekt.getInntekt().divide(BigDecimal.valueOf(dagerIRapportertPeriode), RoundingMode.HALF_UP);
     }
 }

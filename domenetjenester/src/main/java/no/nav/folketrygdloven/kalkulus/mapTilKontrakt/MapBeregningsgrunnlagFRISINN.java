@@ -74,11 +74,19 @@ public class MapBeregningsgrunnlagFRISINN {
         // Her må vi finne løpende inntekt basert på status og periode
         IntervallEntitet periode = andel.getBeregningsgrunnlagPeriode().getPeriode();
         if (andel.getAktivitetStatus().erFrilanser()) {
-            return UtbetalingsgradMapperFRISINN.finnTotalLøpendeInntektIPeriode(finnOppgittInntektFL(oppgittOpptjening), Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
+            return finnInntektIPeriode(finnOppgittInntektFL(oppgittOpptjening), periode);
         } else if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
-            return UtbetalingsgradMapperFRISINN.finnTotalLøpendeInntektIPeriode(finnOppgittInntektSN(oppgittOpptjening), Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()));
+            return finnInntektIPeriode(finnOppgittInntektSN(oppgittOpptjening), periode);
         }
         return BigDecimal.ZERO;
+    }
+
+    private static BigDecimal finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
+        return periodeInntekter.stream()
+                .filter(i -> i.getPeriode().getFomDato().equals(periode.getFomDato()))
+                .map(UtbetalingsgradMapperFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
     }
 
     private static List<OppgittPeriodeInntekt> finnOppgittInntektFL(Optional<OppgittOpptjeningDto> oppgittOpptjening) {
