@@ -64,7 +64,7 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnHøyestRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger) {
+    public static BigDecimal finnHøyestRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger, LocalDate stp) {
         Intervall relevantPeriode = vlBGPeriode.getPeriode();
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class MapRefusjonskravFraVLTilRegel {
             InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldinger.get();
             List<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes = inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes();
             for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
-                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, inntektsmeldingerSomSkalBruke.getStartDatoPermisjon().orElseThrow()));
+                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
             }
         }
 

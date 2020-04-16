@@ -192,7 +192,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                     .medskalSplitteATFL(input.isEnabled(TOGGLE, false))
                     .medSkalVurdereAvviksvurdering(skalVurdereAvviksvurdering(input))
-                    .medMaksRefusjonForPeriode(finnHøyestRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger()))
+                    .medMaksRefusjonForPeriode(finnHøyestRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning()))
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
             List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller());
