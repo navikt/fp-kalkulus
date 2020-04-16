@@ -5,6 +5,7 @@ import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -12,15 +13,18 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
-class MapRefusjonskravFraVLTilRegel {
+public class MapRefusjonskravFraVLTilRegel {
     private MapRefusjonskravFraVLTilRegel() {
         // skjul public constructor
     }
 
-    static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon) {
+   static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon) {
         Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
         Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
         refusjoner.put(startdatoPermisjon, refusjonBeløpPerMnd);
@@ -58,5 +62,26 @@ class MapRefusjonskravFraVLTilRegel {
             return Optional.of(nesteEntry.getKey());
         }
         return Optional.empty();
+    }
+
+    public static BigDecimal finnHøyestRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger) {
+        Intervall relevantPeriode = vlBGPeriode.getPeriode();
+        List<Refusjonskrav> refusjonskravs = new ArrayList<>();
+
+        if (inntektsmeldinger.isPresent()) {
+            InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldinger.get();
+            List<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes = inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes();
+            for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
+                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, inntektsmeldingerSomSkalBruke.getStartDatoPermisjon().orElseThrow()));
+            }
+        }
+
+        BigDecimal høyesteIPerioden = refusjonskravs.stream()
+                .filter(ref -> relevantPeriode.overlapper(Intervall.fraOgMedTilOgMed(ref.getPeriode().getFom(), ref.getPeriode().getTom())))
+                .max(Comparator.comparing(Refusjonskrav::getMånedsbeløp))
+                .map(Refusjonskrav::getMånedsbeløp).orElse(BigDecimal.ZERO);
+
+        //ganger med 12 får å få pr år
+        return høyesteIPerioden.multiply(BigDecimal.valueOf(12));
     }
 }
