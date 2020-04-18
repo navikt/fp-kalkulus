@@ -27,6 +27,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
@@ -39,9 +40,8 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
-    private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag;
-    private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste;
-    private FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
+    private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
+    private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
 
     public BeregningsgrunnlagTjeneste() {
         // CDI Proxy
@@ -53,8 +53,8 @@ public class BeregningsgrunnlagTjeneste {
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
                                       BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
-                                      ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag,
-                                      VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste, FastsettBeregningAktiviteter fastsettBeregningAktiviteter) {
+                                      @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
+                                      @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
@@ -62,11 +62,10 @@ public class BeregningsgrunnlagTjeneste {
         this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
-        this.fastsettBeregningAktiviteter = fastsettBeregningAktiviteter;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
-        BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = FastsettBeregningAktiviteter.fastsettAktiviteter(input);
         BeregningsgrunnlagDto beregningsgrunnlag = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
         Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -90,7 +89,7 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var ytelseType = input.getFagsakYtelseType();
-        FullføreBeregningsgrunnlag fullføre = FagsakYtelseTypeRef.Lookup.find(fullføreBeregningsgrunnlag, ytelseType).orElseThrow();
+        FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
             .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT)
@@ -98,7 +97,8 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     public BeregningResultatAggregat fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
+        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
+                .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
         if (Boolean.FALSE.equals(vilkårVurderingResultat.getVilkårOppfylt())) {
             return BeregningResultatAggregat.Builder.fra(input)
@@ -133,7 +133,8 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)
+                .foreslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
             .medAksjonspunkter(resultat.getAksjonspunkter())
             .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), FORESLÅTT)
@@ -146,7 +147,7 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .build(OPPDATERT_MED_ANDELER);
-        var apUtleder = FagsakYtelseTypeRef.Lookup.find(aksjonspunktUtledereFaktaOmBeregning, input.getFagsakYtelseType()).orElseThrow();
+        var apUtleder = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), aksjonspunktUtledereFaktaOmBeregning);
         FaktaOmBeregningAksjonspunktResultat aksjonspunktresultat = apUtleder.utledAksjonspunkterFor(
             input,
             nyttGrunnlag,
@@ -172,6 +173,11 @@ public class BeregningsgrunnlagTjeneste {
         Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.hentForrigeBeregningsgrunnlagGrunnlag(FASTSATT_BEREGNINGSAKTIVITETER);
         return overstyrtGrunnlag
             .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
+    }
+
+    private <T> T finnImplementasjonForYtelseType(FagsakYtelseType fagsakYtelseType, Instance<T> instanser) {
+        return FagsakYtelseTypeRef.Lookup.find(instanser, fagsakYtelseType)
+                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for ytelse " + fagsakYtelseType.getKode()));
     }
 
 }

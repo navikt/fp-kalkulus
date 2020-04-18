@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulator;
 
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -16,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 public class OpprettBeregningsgrunnlagTjeneste {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
-    private FastsettSkjæringstidspunktOgStatuser fastsettSkjæringstidspunktOgStatuser;
+    private Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser;
 
     protected OpprettBeregningsgrunnlagTjeneste() {
         // for CDI proxy
@@ -24,7 +26,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
     @Inject
     public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
-                                             FastsettSkjæringstidspunktOgStatuser fastsettSkjæringstidspunktOgStatuser) {
+                                             @Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser) {
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
         this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
     }
@@ -43,7 +45,9 @@ public class OpprettBeregningsgrunnlagTjeneste {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
 
-        BeregningsgrunnlagDto bgMedAndeler = fastsettSkjæringstidspunktOgStatuser.fastsett(ref, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser());
+        BeregningsgrunnlagDto bgMedAndeler = FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
+                .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
+                .fastsett(input, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser());
         BehandlingReferanse refMedSkjæringstidspunkt = ref
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(ref, beregningAktiviteter, bgMedAndeler));
         FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(bgMedAndeler, input.getIayGrunnlag());
@@ -62,7 +66,9 @@ public class OpprettBeregningsgrunnlagTjeneste {
     }
 
     BeregningsgrunnlagDto fastsettSkjæringstidspunktOgStatuser(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return fastsettSkjæringstidspunktOgStatuser.fastsett(input.getBehandlingReferanse(), beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());
+        return FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
+                .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
+                .fastsett(input, beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());
     }
 
 }

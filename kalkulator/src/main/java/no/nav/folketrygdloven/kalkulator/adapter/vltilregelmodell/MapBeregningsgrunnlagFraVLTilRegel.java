@@ -91,7 +91,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .collect(Collectors.toList());
 
         MapInntektsgrunnlagVLTilRegel inntektMapper = FagsakYtelseTypeRef.Lookup.find(alleInntektMappere, ref.getFagsakYtelseType()).orElseThrow();
-        Inntektsgrunnlag inntektsgrunnlag = inntektMapper.map(ref, input, beregningsgrunnlag.getSkjæringstidspunkt());
+        Inntektsgrunnlag inntektsgrunnlag = inntektMapper.map(input, beregningsgrunnlag.getSkjæringstidspunkt());
         List<BeregningsgrunnlagPeriode> perioder = mapBeregningsgrunnlagPerioder(beregningsgrunnlag, input);
         //Sammenligningsgrunnlaget blir alltid satt inne i regel
         EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlagMap = mapSammenligningsgrunnlagPrStatus(beregningsgrunnlag);

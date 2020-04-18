@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 
 public abstract class MapInntektsgrunnlagVLTilRegel {
 
@@ -12,5 +11,5 @@ public abstract class MapInntektsgrunnlagVLTilRegel {
         // CDI
     }
 
-    abstract Inntektsgrunnlag map(BehandlingReferanse referanse, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning);
+    public abstract Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning);
 }

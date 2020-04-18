@@ -110,13 +110,12 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                         .flatMap(Collection::stream)
                         .filter(a -> a.getPeriode().getFomDato().isBefore(skjæringstidspunkt))
                         .collect(Collectors.toList());
-
+                    LocalDate arbeidsperiodeFom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getFomDato()).min(LocalDate::compareTo).orElse(null);
+                    LocalDate arbeidsperiodeTom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getTomDato()).max(LocalDate::compareTo).orElse(null);
                     var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
                         .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(af.getAktivitet()))
                         .medAktivitetStatus(af.erFrilanser() ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER)
                         .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato());
-                    LocalDate arbeidsperiodeFom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getFomDato()).min(LocalDate::compareTo).orElse(null);
-                    LocalDate arbeidsperiodeTom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getTomDato()).max(LocalDate::compareTo).orElse(null);
                     if (arbeidsperiodeFom != null || af.getReferanseType() != null || af.getArbeidsforholdId() != null) {
                         BGAndelArbeidsforholdDto.Builder bgArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                             .medArbeidsgiver(arbeidsgiver)

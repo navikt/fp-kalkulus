@@ -54,10 +54,11 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     public MapInntektsgrunnlagVLTilRegelFelles() {
         // CDI
     }
-    Inntektsgrunnlag map(BehandlingReferanse referanse, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+
+    public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         inntektsgrunnlag.setInntektRapporteringFristDag((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
-        hentInntektArbeidYtelse(referanse, inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);
 
         return inntektsgrunnlag;
     }

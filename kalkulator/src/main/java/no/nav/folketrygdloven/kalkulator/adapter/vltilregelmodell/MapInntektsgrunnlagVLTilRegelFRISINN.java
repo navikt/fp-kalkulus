@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
@@ -43,14 +42,10 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     private static final LocalDate FOM_2019 = LocalDate.of(2019,1,1);
     private static final LocalDate TOM_2019 = LocalDate.of(2019,12,31);
 
-    @Inject
-    public MapInntektsgrunnlagVLTilRegelFRISINN() {
-        // CDI
-    }
 
-    Inntektsgrunnlag map(BehandlingReferanse referanse, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+    public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
-        hentInntektArbeidYtelse(referanse, inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);
         return inntektsgrunnlag;
     }
 
@@ -127,7 +122,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist) {
         return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntektskildeOgPeriodeType(Inntektskilde.YTELSER)
                 .medInntekt(anvist.getBeløp().map(Beløp::getVerdi).orElse(null))
                 .medUtbetalingsgrad(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElseThrow())
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))

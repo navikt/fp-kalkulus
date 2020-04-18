@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.vurder.RegelVurderBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
@@ -22,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
+@FagsakYtelseTypeRef("*")
 public class VurderBeregningsgrunnlagTjeneste {
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
@@ -38,6 +40,16 @@ public class VurderBeregningsgrunnlagTjeneste {
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
         var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, oppdatertGrunnlag);
 
+        List<RegelResultat> regelResultater = kjørRegel(beregningsgrunnlagRegel);
+        BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
+        List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
+        boolean vilkårOppfylt = erVilkårOppfylt(regelResultater);
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, aksjonspunkter);
+        beregningsgrunnlagRegelResultat.setVilkårOppfylt(vilkårOppfylt);
+        return beregningsgrunnlagRegelResultat;
+    }
+
+    protected List<RegelResultat> kjørRegel(Beregningsgrunnlag beregningsgrunnlagRegel) {
         String jsonInput = toJson(beregningsgrunnlagRegel);
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
@@ -46,12 +58,7 @@ public class VurderBeregningsgrunnlagTjeneste {
             Evaluation evaluation = regel.evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
         }
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
-        List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
-        boolean vilkårOppfylt = erVilkårOppfylt(regelResultater);
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, aksjonspunkter);
-        beregningsgrunnlagRegelResultat.setVilkårOppfylt(vilkårOppfylt);
-        return beregningsgrunnlagRegelResultat;
+        return regelResultater;
     }
 
     private boolean erVilkårOppfylt(List<RegelResultat> regelResultater) {
@@ -62,7 +69,7 @@ public class VurderBeregningsgrunnlagTjeneste {
             .noneMatch(avslagskode -> avslagskode.equals("1041"));
     }
 
-    private String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
         return JsonMapper.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 }

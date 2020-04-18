@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
@@ -27,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
+@FagsakYtelseTypeRef("*")
 public class ForeslåBeregningsgrunnlag {
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
@@ -48,19 +50,27 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         opprettPerioderForKortvarigeArbeidsforhold(ref.getAktørId(), regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getIayGrunnlag());
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
+        List<RegelResultat> regelResultater = kjørRegelForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, jsonInput);
 
+        // Oversett endelig resultat av regelmodell til foreslått Beregningsgrunnlag  (+ spore input -> evaluation)
+        BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, regelResultater, beregningsgrunnlag);
+        List<BeregningAksjonspunktResultat> aksjonspunkter = utledAksjonspunkter(input, regelResultater);
+        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
+        return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
+    }
+
+    protected List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater) {
+        return AksjonspunktUtlederForeslåBeregning.utledAksjonspunkter(input, regelResultater);
+    }
+
+    protected List<RegelResultat> kjørRegelForeslåBeregningsgrunnlag(Beregningsgrunnlag regelmodellBeregningsgrunnlag, String jsonInput) {
         // Evaluerer hver BeregningsgrunnlagPeriode fra initielt Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : regelmodellBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
             Evaluation evaluation = new RegelForeslåBeregningsgrunnlag(periode).evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
         }
-
-        // Oversett endelig resultat av regelmodell til foreslått Beregningsgrunnlag  (+ spore input -> evaluation)
-        BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, regelResultater, beregningsgrunnlag);
-        List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederForeslåBeregning.utledAksjonspunkter(input, regelResultater);
-        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
-        return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
+        return regelResultater;
     }
 
     private void opprettPerioderForKortvarigeArbeidsforhold(AktørId aktørId, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelBeregningsgrunnlag, BeregningsgrunnlagDto vlBeregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

@@ -68,7 +68,7 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         }
     }
 
-    private List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
+    protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
             RegelFullføreBeregningsgrunnlag regel = new RegelFullføreBeregningsgrunnlag(periode);
@@ -78,7 +78,7 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         return regelResultater;
     }
 
-    private List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected List<String> kjørRegelFinnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel) {
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
             .map(periode -> {
                 RegelFinnGrenseverdi regel = new RegelFinnGrenseverdi(periode);

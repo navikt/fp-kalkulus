@@ -55,7 +55,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }
@@ -76,7 +76,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter()).isEmpty();
     }
@@ -96,7 +96,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
 
 
         // Act
-        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }
@@ -115,7 +115,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
-        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(behandlingReferanse, input, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
         assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
     }
