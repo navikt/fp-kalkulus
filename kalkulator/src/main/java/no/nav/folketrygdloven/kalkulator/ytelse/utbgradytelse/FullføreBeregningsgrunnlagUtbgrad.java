@@ -21,9 +21,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
-@FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("OMP")
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunnlag {
 

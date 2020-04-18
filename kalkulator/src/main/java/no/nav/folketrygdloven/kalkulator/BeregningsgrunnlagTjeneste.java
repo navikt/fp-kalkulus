@@ -88,7 +88,6 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        var ytelseType = input.getFagsakYtelseType();
         FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
