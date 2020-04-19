@@ -168,8 +168,8 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Deaktiverer aktivt beregningsgrunnlag basert.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
+    public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentKalkulusRestTjeneste.HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlag(koblingId);
         return Response.ok().build();
