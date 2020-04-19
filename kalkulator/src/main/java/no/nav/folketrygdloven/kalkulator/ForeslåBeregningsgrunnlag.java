@@ -30,7 +30,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 @FagsakYtelseTypeRef("*")
 public class ForeslåBeregningsgrunnlag {
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
     public ForeslåBeregningsgrunnlag() {
         // CDI
@@ -45,10 +45,9 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
-        var ref = input.getBehandlingReferanse();
         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
-        opprettPerioderForKortvarigeArbeidsforhold(ref.getAktørId(), regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getIayGrunnlag());
+        splittPerioder(input, regelmodellBeregningsgrunnlag, beregningsgrunnlag);
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
         List<RegelResultat> regelResultater = kjørRegelForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, jsonInput);
 
@@ -57,6 +56,10 @@ public class ForeslåBeregningsgrunnlag {
         List<BeregningAksjonspunktResultat> aksjonspunkter = utledAksjonspunkter(input, regelResultater);
         BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
+    }
+
+    protected void splittPerioder(BeregningsgrunnlagInput input,  Beregningsgrunnlag regelmodellBeregningsgrunnlag, BeregningsgrunnlagDto beregningsgrunnlag) {
+        opprettPerioderForKortvarigeArbeidsforhold(input.getAktørId(), regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getIayGrunnlag());
     }
 
     protected List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater) {
@@ -80,14 +83,14 @@ public class ForeslåBeregningsgrunnlag {
             .filter(entry -> entry.getKey().getBgAndelArbeidsforhold()
                 .filter(a -> Boolean.TRUE.equals(a.getErTidsbegrensetArbeidsforhold())).isPresent())
             .map(Map.Entry::getValue)
-            .forEach(ya -> SplittBGPerioderMedAvsluttetArbeidsforhold.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
+            .forEach(ya -> SplittBGPerioder.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
     }
 
     private YrkesaktivitetFilterDto getYrkesaktivitetFilter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return  new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
     }
 
-    private String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {
         return JsonMapper.toJson(beregningsgrunnlagRegel, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 

@@ -12,8 +12,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.kalkulator.adapter.util.KopierBeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 
-class SplittBGPerioderMedAvsluttetArbeidsforhold {
-    private SplittBGPerioderMedAvsluttetArbeidsforhold() {
+public class SplittBGPerioder {
+    private SplittBGPerioder() {
         // skjul public constructor
     }
 
@@ -44,7 +44,7 @@ class SplittBGPerioderMedAvsluttetArbeidsforhold {
         }
     }
 
-    private static BeregningsgrunnlagPeriode splitBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, LocalDate nyPeriodeTom, PeriodeÅrsak periodeÅrsak) {
+    public static BeregningsgrunnlagPeriode splitBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, LocalDate nyPeriodeTom, PeriodeÅrsak periodeÅrsak) {
         LocalDate eksisterendePeriodeTom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriode().getTom();
         BeregningsgrunnlagPeriode.builder(beregningsgrunnlagPeriode)
             .medPeriode(Periode.of(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriode().getFom(), nyPeriodeTom))

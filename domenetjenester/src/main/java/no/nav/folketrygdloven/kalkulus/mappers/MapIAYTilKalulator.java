@@ -134,8 +134,9 @@ public class MapIAYTilKalulator {
             if (oppgittFrilans.getOppgittFrilansInntekt() != null) {
                 List<OppgittFrilansInntektDto> oppgittInntekt = oppgittFrilans.getOppgittFrilansInntekt().stream().map(MapIAYTilKalulator::mapFrilansInntekt).collect(Collectors.toList());
                 builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet(), oppgittInntekt));
+            } else {
+                builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet()));
             }
-            builder.leggTilFrilansOpplysninger(new OppgittFrilansDto(oppgittFrilans.getErNyoppstartet()));
         }
         if (oppgittOpptjening.getEgenNæring() != null) {
             oppgittOpptjening.getEgenNæring().forEach(egen -> builder.leggTilEgneNæring(mapEgenNæring(egen)));

@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,9 @@ import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 public class UtbetalingsgradMapperFRISINN {
 
@@ -35,51 +38,32 @@ public class UtbetalingsgradMapperFRISINN {
      */
     public static List<UtbetalingsgradPrAktivitetDto> map(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                           Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        Optional<LocalDate> stpOpt = finnSkjæringstidspunkt(beregningsgrunnlagGrunnlagEntitet);
-        if (stpOpt.isEmpty()) {
+        Optional<BeregningsgrunnlagEntitet> bgOpt = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
+        if (bgOpt.isEmpty()) {
             return Collections.emptyList();
         }
-        List<BeregningsgrunnlagPrStatusOgAndel> andeler = finnAlleAndelerIFørstePeriode(beregningsgrunnlagGrunnlagEntitet);
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe = new ArrayList<>();
-
-        mapUtbetalingsgradNæring(iayGrunnlag, andeler, utbetalingsgradPrAktivitetListe);
-        mapUtbetalingsgradFrilans(iayGrunnlag, andeler, utbetalingsgradPrAktivitetListe);
+        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForNæring(iayGrunnlag, bgOpt.get()));
+        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForFrilans(iayGrunnlag, bgOpt.get()));
         return utbetalingsgradPrAktivitetListe;
     }
 
-    private static void mapUtbetalingsgradFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                  List<BeregningsgrunnlagPrStatusOgAndel> andeler,
-                                                  List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe) {
-        Optional<BeregningsgrunnlagPrStatusOgAndel> næringAndel = finnFrilansandel(andeler);
-        næringAndel.filter(a -> a.getBruttoPrÅr() != null)
-                .map(a -> mapUtbetalingsgraderForFrilans(iayGrunnlag, a))
-                .ifPresent(utbetalingsgradPrAktivitetListe::add);
-    }
 
-    private static void mapUtbetalingsgradNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<BeregningsgrunnlagPrStatusOgAndel> andeler, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe) {
-        Optional<BeregningsgrunnlagPrStatusOgAndel> næringAndel = finnNæringsandel(andeler);
-        næringAndel.filter(a -> a.getBruttoPrÅr() != null)
-                .map(a -> mapUtbetalingsgraderForNæring(iayGrunnlag, a))
-                .ifPresent(utbetalingsgradPrAktivitetListe::add);
-    }
-
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndel a) {
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagEntitet bg) {
         UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        BigDecimal totalInntektVedStp = a.getBruttoPrÅr();
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnNæringsInntekter(iayGrunnlag).stream()
-                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, totalInntektVedStp))
+                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, bg, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .collect(Collectors.toList());
         return new UtbetalingsgradPrAktivitetDto(snAktivitet, perioderMedUtbetalingsgrad);
     }
 
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndel a) {
-        UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null,
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagEntitet bg) {
+        UtbetalingsgradArbeidsforholdDto frilansAktivitet = new UtbetalingsgradArbeidsforholdDto(null,
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
-        BigDecimal totalInntektVedStp = a.getBruttoPrÅr();
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnFrilansInntekter(iayGrunnlag).stream()
-                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, totalInntektVedStp))
+                .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, bg, AktivitetStatus.FRILANSER))
                 .collect(Collectors.toList());
-        return new UtbetalingsgradPrAktivitetDto(snAktivitet, perioderMedUtbetalingsgrad);
+        return new UtbetalingsgradPrAktivitetDto(frilansAktivitet, perioderMedUtbetalingsgrad);
     }
 
     private static List<OppgittPeriodeInntekt> finnFrilansInntekter(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
@@ -101,32 +85,20 @@ public class UtbetalingsgradMapperFRISINN {
     }
 
     private static PeriodeMedUtbetalingsgradDto mapTilPeriodeMedUtbetalingsgrad(OppgittPeriodeInntekt oppgittPeriodeInntekt,
-                                                                                BigDecimal totalInntektVedStp) {
+                                                                                BeregningsgrunnlagEntitet bg,
+                                                                                AktivitetStatus aktivitetStatus) {
         BigDecimal løpendeÅrsinntekt = finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
-        BigDecimal bortfaltInntekt = totalInntektVedStp.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
-        BigDecimal utbetalingsgrad = totalInntektVedStp.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektVedStp, 2,RoundingMode.HALF_UP);
+        BigDecimal totalInntektIPeriode = bg.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> p.getPeriode().inkluderer(oppgittPeriodeInntekt.getPeriode().getFomDato()))
+                .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                .filter(a -> a.getAktivitetStatus().equals(aktivitetStatus))
+                .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
+        BigDecimal bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
+        BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 2,RoundingMode.HALF_UP);
         return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
-    }
-
-    private static List<BeregningsgrunnlagPrStatusOgAndel> finnAlleAndelerIFørstePeriode(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        return beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
-                    .map(bg -> bg.getBeregningsgrunnlagPerioder().get(0))
-                    .stream()
-                    .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-                    .collect(Collectors.toList());
-    }
-
-    private static Optional<LocalDate> finnSkjæringstidspunkt(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        return beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
-                    .map(BeregningsgrunnlagEntitet::getSkjæringstidspunkt);
-    }
-
-    private static Optional<BeregningsgrunnlagPrStatusOgAndel> finnNæringsandel(List<BeregningsgrunnlagPrStatusOgAndel> andeler) {
-        return andeler.stream().filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende()).findFirst();
-    }
-
-    private static Optional<BeregningsgrunnlagPrStatusOgAndel> finnFrilansandel(List<BeregningsgrunnlagPrStatusOgAndel> andeler) {
-        return andeler.stream().filter(a -> a.getAktivitetStatus().erFrilanser()).findFirst();
     }
 
     /**

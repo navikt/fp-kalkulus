@@ -129,7 +129,6 @@ public class MapFraKalkulator {
                 pleiepengerSyktBarnGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
                 return pleiepengerSyktBarnGrunnlag;
             case FRISINN:
-                LocalDate idag = LocalDate.now();
                 return new FrisinnGrunnlag(UtbetalingsgradMapperFRISINN.map(iayGrunnlag, beregningsgrunnlagGrunnlagEntitet));
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
