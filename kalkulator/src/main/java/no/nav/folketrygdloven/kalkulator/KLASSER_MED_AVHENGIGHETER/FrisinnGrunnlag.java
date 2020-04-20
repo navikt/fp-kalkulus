@@ -7,7 +7,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 
 public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private final int dekningsgrad = 100;
+    private final int dekningsgrad = 80;
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
     private final boolean søkerYtelseForFrilans;
