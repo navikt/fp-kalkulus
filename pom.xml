@@ -350,7 +350,7 @@
                 <!-- for Bean validation -->
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>6.1.2.Final</version>
+                <version>6.1.4.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.web</groupId>
