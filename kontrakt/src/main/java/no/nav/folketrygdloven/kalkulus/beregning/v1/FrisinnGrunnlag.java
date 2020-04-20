@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -19,22 +20,24 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     /**
      * Er det søkt ytelse for frilansaktivitet
      */
+    @JsonProperty("søkerYtelseForFrilans")
     @Valid
     @NotNull
     private Boolean søkerYtelseForFrilans;
-
     /**
      * Er det søkt ytelse for næringsinntekt
      */
+
+    @JsonProperty("søkerYtelseForNæring")
     @Valid
     @NotNull
     private Boolean søkerYtelseForNæring;
 
-    public FrisinnGrunnlag() {
-        super();
+    protected FrisinnGrunnlag() {
+        // default ctor
     }
 
-    public FrisinnGrunnlag(Boolean søkerYtelseForFrilans, Boolean søkerYtelseForNæring) {
+    public FrisinnGrunnlag(@Valid @NotNull Boolean søkerYtelseForFrilans, @Valid @NotNull Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
         this.søkerYtelseForNæring = søkerYtelseForNæring;
     }
