@@ -66,14 +66,14 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
                                                            InntektsmeldingDto inntektsmelding) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return MapBeregningAktiviteterFraVLTilRegel.mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return MapBeregningAktiviteterFraVLTilRegel.mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
     }
 
     @Test

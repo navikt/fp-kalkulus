@@ -5,8 +5,11 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -15,15 +18,13 @@ import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
+@ApplicationScoped
+@FagsakYtelseTypeRef("*")
 public class MapBeregningAktiviteterFraVLTilRegel {
 
     public static final String INGEN_AKTIVITET_MELDING = "Må ha aktiviteter for å sette status.";
 
-    private MapBeregningAktiviteterFraVLTilRegel() {
-        // Skjul
-    }
-
-    public static AktivitetStatusModell mapForSkjæringstidspunkt(BeregningsgrunnlagInput input) {
+    public AktivitetStatusModell mapForSkjæringstidspunkt(BeregningsgrunnlagInput input) {
         LocalDate opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
 
         AktivitetStatusModell modell = new AktivitetStatusModell();
@@ -39,7 +40,7 @@ public class MapBeregningAktiviteterFraVLTilRegel {
         return modell;
     }
 
-    private static AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
+    protected AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                 OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         Periode gjeldendePeriode = opptjeningsperiode.getPeriode();

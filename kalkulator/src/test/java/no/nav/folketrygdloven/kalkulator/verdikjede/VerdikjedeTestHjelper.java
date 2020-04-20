@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -514,7 +515,8 @@ public class VerdikjedeTestHjelper {
     BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(BeregningsgrunnlagInput input,
                                                           BeregningTjenesteWrapper beregningTjenesteWrapper) {
         var ref = input.getBehandlingReferanse();
-        BeregningAktivitetAggregatDto beregningAktivitetAggregat = FastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = new FastsettBeregningAktiviteter(
+                new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegel())).fastsettAktiviteter(input);
 
         BeregningsgrunnlagDto beregningsgrunnlag = fastsettSkjæringstidspunktOgStatuser.fastsett(input,
             beregningAktivitetAggregat, input.getIayGrunnlag(), GRUNNBELØPSATSER);
