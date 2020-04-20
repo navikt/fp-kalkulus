@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Re
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
@@ -28,7 +29,16 @@ public class MapRefusjonskravFraVLTilRegel {
         Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
         Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
         refusjoner.put(startdatoPermisjon, refusjonBeløpPerMnd);
-        inntektsmelding.getEndringerRefusjon().forEach(endring -> refusjoner.put(endring.getFom(), endring.getRefusjonsbeløp()));
+        inntektsmelding.getEndringerRefusjon()
+                .stream()
+                .sorted(Comparator.comparing(RefusjonDto::getFom))
+                .forEach(endring -> {
+                    if (endring.getFom().isBefore(startdatoPermisjon)) {
+                        refusjoner.put(startdatoPermisjon, endring.getRefusjonsbeløp());
+                    } else {
+                        refusjoner.put(endring.getFom(), endring.getRefusjonsbeløp());
+                    }
+                });
         if (inntektsmelding.getRefusjonOpphører() != null && !TIDENES_ENDE.equals(inntektsmelding.getRefusjonOpphører())) {
             refusjoner.put(inntektsmelding.getRefusjonOpphører().plusDays(1), Beløp.ZERO);
         }
