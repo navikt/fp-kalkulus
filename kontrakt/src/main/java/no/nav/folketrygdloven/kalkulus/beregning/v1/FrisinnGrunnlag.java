@@ -12,20 +12,31 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static final String YTELSE_TYPE = "FRISINN";
+    private final boolean søkerYtelseForFrilans;
+    private final boolean søkerYtelseForNæring;
 
-    public FrisinnGrunnlag() {
-        // default ctor
+    public FrisinnGrunnlag(boolean søkerYtelseForFrilans, boolean søkerYtelseForNæring) {
+        this.søkerYtelseForFrilans = søkerYtelseForFrilans;
+        this.søkerYtelseForNæring = søkerYtelseForNæring;
     }
 
     public static String getYtelseType() {
         return YTELSE_TYPE;
     }
 
+    public boolean getSøkerYtelseForFrilans() {
+        return søkerYtelseForFrilans;
+    }
+
+    public boolean getSøkerYtelseForNæring() {
+        return søkerYtelseForNæring;
+    }
+
     @Override
     public String toString() {
         return "FrisinnGrunnlag{" +
-                YTELSE_TYPE +
+                "søkerYtelseForFrilans=" + søkerYtelseForFrilans +
+                ", søkerYtelseForNæring=" + søkerYtelseForNæring +
                 '}';
     }
-
 }
