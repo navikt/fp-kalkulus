@@ -21,14 +21,18 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
      */
     @Valid
     @NotNull
-    private final Boolean søkerYtelseForFrilans;
+    private Boolean søkerYtelseForFrilans;
 
     /**
      * Er det søkt ytelse for næringsinntekt
      */
     @Valid
     @NotNull
-    private final Boolean søkerYtelseForNæring;
+    private Boolean søkerYtelseForNæring;
+
+    public FrisinnGrunnlag() {
+        super();
+    }
 
     public FrisinnGrunnlag(Boolean søkerYtelseForFrilans, Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
