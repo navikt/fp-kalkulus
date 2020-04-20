@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,10 +15,22 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static final String YTELSE_TYPE = "FRISINN";
-    private final boolean søkerYtelseForFrilans;
-    private final boolean søkerYtelseForNæring;
 
-    public FrisinnGrunnlag(boolean søkerYtelseForFrilans, boolean søkerYtelseForNæring) {
+    /**
+     * Er det søkt ytelse for frilansaktivitet
+     */
+    @Valid
+    @NotNull
+    private final Boolean søkerYtelseForFrilans;
+
+    /**
+     * Er det søkt ytelse for næringsinntekt
+     */
+    @Valid
+    @NotNull
+    private final Boolean søkerYtelseForNæring;
+
+    public FrisinnGrunnlag(Boolean søkerYtelseForFrilans, Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
         this.søkerYtelseForNæring = søkerYtelseForNæring;
     }
@@ -24,11 +39,11 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
         return YTELSE_TYPE;
     }
 
-    public boolean getSøkerYtelseForFrilans() {
+    public Boolean getSøkerYtelseForFrilans() {
         return søkerYtelseForFrilans;
     }
 
-    public boolean getSøkerYtelseForNæring() {
+    public Boolean getSøkerYtelseForNæring() {
         return søkerYtelseForNæring;
     }
 
