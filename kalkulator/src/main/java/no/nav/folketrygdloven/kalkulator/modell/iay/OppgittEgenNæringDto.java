@@ -40,6 +40,7 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
         return periode.getTomDato();
     }
 
+    @Override
     public Intervall getPeriode() {
         return periode;
     }

@@ -20,8 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -57,6 +55,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
 
     @BeforeEach
     public void setUp() {
+        @SuppressWarnings("unchecked")
         Instance<FaktaOmBeregningTilfelleDtoTjeneste> tjenesteInstances = mock(Instance.class);
         List<FaktaOmBeregningTilfelleDtoTjeneste> tjenester = new ArrayList<>();
         tjenester.add(lagDtoTjenesteMock(setFrilansAndelConsumer()));

@@ -36,6 +36,7 @@ public class BeregningsgrunnlagInputTestUtil {
     }
 
 
+    @SafeVarargs
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(BehandlingReferanse behandlingReferanse,
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand>... forrige) {

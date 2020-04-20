@@ -26,8 +26,6 @@ import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.Opp
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
-;
-
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class BeregningsgrunnlagInput {
 

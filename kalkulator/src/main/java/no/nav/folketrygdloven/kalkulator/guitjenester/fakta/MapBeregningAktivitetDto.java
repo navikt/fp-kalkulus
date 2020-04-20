@@ -11,8 +11,6 @@ import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørId;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 class MapBeregningAktivitetDto {

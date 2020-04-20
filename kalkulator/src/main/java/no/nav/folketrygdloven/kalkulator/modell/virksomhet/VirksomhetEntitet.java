@@ -11,7 +11,6 @@ import javax.persistence.Version;
 
 import no.nav.folketrygdloven.kalkulator.modell.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.vedtak.util.FPDateUtil;
 
 public class VirksomhetEntitet implements Virksomhet, IndexKey {
 
@@ -82,7 +81,7 @@ public class VirksomhetEntitet implements Virksomhet, IndexKey {
 
     @Override
     public boolean skalRehentes() {
-        return opplysningerOppdatertTidspunkt.isBefore(FPDateUtil.nå().minusDays(1));
+        return opplysningerOppdatertTidspunkt.isBefore(LocalDateTime.now().minusDays(1));
     }
 
     @Override
@@ -171,7 +170,7 @@ public class VirksomhetEntitet implements Virksomhet, IndexKey {
         }
 
         public Builder oppdatertOpplysningerNå() {
-            this.mal.opplysningerOppdatertTidspunkt = FPDateUtil.nå();
+            this.mal.opplysningerOppdatertTidspunkt = LocalDateTime.now();
             return this;
         }
 

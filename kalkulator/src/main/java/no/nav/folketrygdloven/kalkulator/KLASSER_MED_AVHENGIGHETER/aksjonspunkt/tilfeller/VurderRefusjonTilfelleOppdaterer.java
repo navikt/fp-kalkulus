@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 public class VurderRefusjonTilfelleOppdaterer implements FaktaOmBeregningTilfelleOppdaterer {
 
 
+    @Override
     public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         List<RefusjonskravPrArbeidsgiverVurderingDto> gyldighetPrArbeidsgiver = dto.getRefusjonskravGyldighet();
         LocalDate frist = input.getBeregningsgrunnlag().getSkjæringstidspunkt();

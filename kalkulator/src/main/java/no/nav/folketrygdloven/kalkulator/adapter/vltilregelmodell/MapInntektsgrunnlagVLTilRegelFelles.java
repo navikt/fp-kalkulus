@@ -55,6 +55,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         // CDI
     }
 
+    @Override
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         inntektsgrunnlag.setInntektRapporteringFristDag((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));

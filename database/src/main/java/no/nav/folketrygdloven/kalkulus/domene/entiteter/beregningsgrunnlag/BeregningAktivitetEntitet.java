@@ -181,7 +181,7 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
                 return this.opptjeningAktivitetType.compareTo(o.opptjeningAktivitetType);
             }
             return -1;
-        };
+        }
 
         if (o.arbeidsgiver == null) {
             return 1;

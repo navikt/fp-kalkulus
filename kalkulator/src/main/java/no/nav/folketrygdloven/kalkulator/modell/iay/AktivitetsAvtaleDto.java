@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class AktivitetsAvtaleDto {

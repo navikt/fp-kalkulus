@@ -65,11 +65,11 @@ public class BGMapperTilKalkulusTest {
         BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
-        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold1 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), InternArbeidsforholdRef.nullRef());;
+        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold1 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), InternArbeidsforholdRef.nullRef());
         BeregningsgrunnlagPrStatusOgAndel.Builder beregningsgrunnlagPrStatusOgAndel1 = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(bgAndelArbeidsforhold1);
-        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold2 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_2), InternArbeidsforholdRef.nullRef());;
+        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold2 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_2), InternArbeidsforholdRef.nullRef());
         BeregningsgrunnlagPrStatusOgAndel.Builder beregningsgrunnlagPrStatusOgAndel2 = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(bgAndelArbeidsforhold2);
@@ -103,11 +103,11 @@ public class BGMapperTilKalkulusTest {
         BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
-        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold1 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), InternArbeidsforholdRef.nullRef());;
+        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold1 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), InternArbeidsforholdRef.nullRef());
         BeregningsgrunnlagPrStatusOgAndel.Builder beregningsgrunnlagPrStatusOgAndel1 = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(bgAndelArbeidsforhold1);
-        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold2 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), internArbeidsforholdRef);;
+        BGAndelArbeidsforhold.Builder bgAndelArbeidsforhold2 = lagBGAndelArbeidsforhold(Arbeidsgiver.virksomhet(ORGANISASJON_1), internArbeidsforholdRef);
         BeregningsgrunnlagPrStatusOgAndel.Builder beregningsgrunnlagPrStatusOgAndel2 = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(bgAndelArbeidsforhold2);

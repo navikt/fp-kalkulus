@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
@@ -62,9 +61,9 @@ public class ValiderKontraktDtoer {
     };
 
     public static void validerAlleDtoerIKontraken() throws IOException, ClassNotFoundException {
-        Class[] classes = getClasses("no.nav.folketrygdloven.kalkulus");
-        for (Class aClass : classes) {
-            for (Field field : getRelevantFields(aClass)) {
+        Class<?>[] classes = getClasses("no.nav.folketrygdloven.kalkulus");
+        for (var aClass : classes) {
+            for (var field : getRelevantFields(aClass)) {
                 if (field.getAnnotation(JsonIgnore.class) != null) {
                     continue; // feltet blir hverken serialisert elle deserialisert, unntas fra sjekk
                 }
@@ -102,10 +101,6 @@ public class ValiderKontraktDtoer {
         throw new IllegalArgumentException("Feltet " + field + " har ikke påkrevde annoteringer: " + alternativer);
     }
 
-    private static boolean brukerGenerics(Field field) {
-        return field.getGenericType() instanceof ParameterizedType;
-    }
-
     private static List<List<Class<? extends Annotation>>> getVurderingsalternativer(Field field) {
         Class<?> type = field.getType();
         if (field.getType().isEnum()) {
@@ -133,7 +128,7 @@ public class ValiderKontraktDtoer {
         return fields.stream().filter(f -> !Modifier.isStatic(f.getModifiers())).collect(Collectors.toList());
     }
 
-    private static Class[] getClasses(String packageName)
+    private static Class<?>[] getClasses(String packageName)
             throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         assert classLoader != null;
@@ -144,15 +139,15 @@ public class ValiderKontraktDtoer {
             URL resource = resources.nextElement();
             dirs.add(new File(resource.getFile()));
         }
-        ArrayList<Class> classes = new ArrayList<Class>();
+        ArrayList<Class<?>> classes = new ArrayList<>();
         for (File directory : dirs) {
             classes.addAll(findClasses(directory, packageName));
         }
         return classes.toArray(new Class[classes.size()]);
     }
 
-    private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
-        List<Class> classes = new ArrayList<Class>();
+    private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+        List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
         }
@@ -160,8 +155,8 @@ public class ValiderKontraktDtoer {
         for (File file : files) {
             if (file.isDirectory()) {
                 assert !file.getName().contains(".");
-                List<Class> classes1 = findClasses(file, packageName + "." + file.getName());
-                for (Class aClass : classes1) {
+                List<Class<?>> classes1 = findClasses(file, packageName + "." + file.getName());
+                for (var aClass : classes1) {
                     if (aClass.getName().endsWith("Dto")) {
                         classes.add(aClass);
                     }

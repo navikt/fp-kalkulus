@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktafordeling;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -19,8 +18,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
-
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForReadableInstant;
 
 class UtledEndringIAndel {
 

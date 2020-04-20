@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonEllerGraderingArbeidsforholdDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;

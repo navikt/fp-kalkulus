@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
@@ -18,12 +16,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.vedtak.util.FPDateUtil;
 
 public class GraderingUtenBeregningsgrunnlagTjenesteTest {
 
-    private static final LocalDate SKJÆRINGSTIDSPUNKT = FPDateUtil.iDag();
+    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final String ORGNR = "915933149";
 
     private Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
@@ -34,7 +32,6 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
     @Test
     public void skalIkkeFåAksjonspunkterArbeidstakerMedBG() {
         // Arrange
-        @SuppressWarnings("unused")
         var beregningsgrunnlagPeriode = lagBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null);
         lagBeregningsgrunnlagAndel(beregningsgrunnlagPeriode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, BigDecimal.TEN);
 

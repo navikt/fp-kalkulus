@@ -87,7 +87,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/fastsatt")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -107,7 +107,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent BeregningsgrunnlagGrunnlag for angitt grunnlagsreferanse", summary = ("Returnerer BeregningsgrunnlagGrunnlag for grunnlagsreferanse."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/grunnlagForReferanse")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentBeregningsgrunnlagGrunnlagForReferanse(@NotNull @Valid HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -125,7 +125,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/grunnlag")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -143,7 +143,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/aktivtBeregningsgrunnlag")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -186,7 +186,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
     @Path("/frisinnGrunnlag")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());

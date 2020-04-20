@@ -1,27 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.frisinn;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")

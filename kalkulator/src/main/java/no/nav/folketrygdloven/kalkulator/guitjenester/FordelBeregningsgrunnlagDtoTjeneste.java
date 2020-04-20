@@ -5,8 +5,6 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;

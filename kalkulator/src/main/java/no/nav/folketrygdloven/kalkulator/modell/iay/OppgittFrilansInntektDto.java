@@ -14,10 +14,12 @@ public class OppgittFrilansInntektDto implements OppgittPeriodeInntekt {
         this.inntekt = inntekt;
     }
 
+    @Override
     public Intervall getPeriode() {
         return periode;
     }
 
+    @Override
     public BigDecimal getInntekt() {
         return inntekt;
     }

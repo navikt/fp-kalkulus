@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag;
 
 import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;

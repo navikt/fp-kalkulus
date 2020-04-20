@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
-import no.nav.vedtak.util.FPDateUtil;
 
 public class MapBeregningAktiviteterFraRegelTilVLTest {
 
@@ -27,7 +26,7 @@ public class MapBeregningAktiviteterFraRegelTilVLTest {
     public void mapFrilanserOgArbeidstakerAktiviteter() {
         // Arrange
         AktivitetStatusModell regelmodell = new AktivitetStatusModell();
-        LocalDate idag = FPDateUtil.iDag();
+        LocalDate idag = LocalDate.now();
         regelmodell.setSkjæringstidspunktForOpptjening(idag);
         var arbeidsforholdRef = InternArbeidsforholdRefDto.nyRef();
         LocalDate a0fom = idag.minusMonths(5);

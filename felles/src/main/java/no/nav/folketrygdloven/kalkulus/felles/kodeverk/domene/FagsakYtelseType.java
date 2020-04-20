@@ -67,7 +67,7 @@ public enum FagsakYtelseType implements Kodeverdi {
     ENSLIG_FORSØRGER("EF", "Enslig forsørger", "ENSLIG_FORSØRGER"),
 
     UDEFINERT("-", "Ikke definert"),
-    ;;
+    ;
 
     public static final String KODEVERK = "FAGSAK_YTELSE"; //$NON-NLS-1$
 

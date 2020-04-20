@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 
 class MapStegTilTilstand {

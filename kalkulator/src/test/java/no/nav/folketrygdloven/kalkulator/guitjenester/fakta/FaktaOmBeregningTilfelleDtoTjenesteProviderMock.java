@@ -8,15 +8,6 @@ import java.util.List;
 
 import javax.enterprise.inject.Instance;
 
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.KortvarigeArbeidsforholdDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.KunYtelseDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.NyOppstartetFLDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.VurderATFLISammeOrgDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.VurderBesteberegningTilfelleDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.VurderLønnsendringDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.VurderMottarYtelseDtoTjeneste;
-
 public class FaktaOmBeregningTilfelleDtoTjenesteProviderMock {
 
     public static Instance<FaktaOmBeregningTilfelleDtoTjeneste> getTjenesteInstances() {

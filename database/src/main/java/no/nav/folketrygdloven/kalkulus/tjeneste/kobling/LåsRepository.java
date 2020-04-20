@@ -9,7 +9,6 @@ import javax.persistence.LockModeType;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
-import no.nav.vedtak.felles.jpa.VLPersistenceUnit;
 
 @ApplicationScoped
 public class LåsRepository {
@@ -20,7 +19,7 @@ public class LåsRepository {
     }
 
     @Inject
-    public LåsRepository(@VLPersistenceUnit EntityManager entityManager) {
+    public LåsRepository(EntityManager entityManager) {
         Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
         this.entityManager = entityManager;
     }

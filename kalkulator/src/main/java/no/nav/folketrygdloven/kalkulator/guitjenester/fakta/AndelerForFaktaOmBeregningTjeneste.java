@@ -34,7 +34,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
             gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         }
         var beregningAktivitetAggregat = gjeldendeGrunnlag.getGjeldendeAktiviteter();
-        BeregningsgrunnlagDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));;
+        BeregningsgrunnlagDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIFørstePeriode = beregningsgrunnlag
             .getBeregningsgrunnlagPerioder()
             .get(0)

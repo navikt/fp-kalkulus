@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
@@ -62,7 +61,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
     private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapper = new MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(
             new UnitTestLookupInstanceImpl<>(
-            new BeregningsperiodeTjeneste()));;
+            new BeregningsperiodeTjeneste()));
 
     @Test
     public void testMappingBGForSN() {

@@ -12,7 +12,6 @@ import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FaktaOmFordelingHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 @ApplicationScoped

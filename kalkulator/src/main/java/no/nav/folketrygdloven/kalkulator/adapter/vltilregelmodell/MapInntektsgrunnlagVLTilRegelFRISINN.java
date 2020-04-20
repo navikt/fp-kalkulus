@@ -48,6 +48,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     private static final LocalDate FOM_2019 = LocalDate.of(2019,1,1);
     private static final LocalDate TOM_2019 = LocalDate.of(2019,12,31);
 
+    @Override
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);

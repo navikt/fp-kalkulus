@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.modell.behandling;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Inneholder relevante tidspunkter for en behandling

@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeliste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.KodeverkTabell;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy;
-import no.nav.vedtak.felles.jpa.VLPersistenceUnit;
 
 @ApplicationScoped
 public class KoblingRepository {
@@ -37,7 +36,7 @@ public class KoblingRepository {
 
     //TODO(OJR) erstatt med egen KalkulusPersistenceUnit??
     @Inject
-    public KoblingRepository(@VLPersistenceUnit EntityManager entityManager) {
+    public KoblingRepository(EntityManager entityManager) {
         Objects.requireNonNull(entityManager, "entityManager"); //$NON-NLS-1$
         this.entityManager = entityManager;
     }
