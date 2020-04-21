@@ -25,7 +25,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 @FagsakYtelseTypeRef("*")
 public class VurderBeregningsgrunnlagTjeneste {
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
     public VurderBeregningsgrunnlagTjeneste() {
         // CDI
@@ -61,7 +61,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         return regelResultater;
     }
 
-    private boolean erVilkårOppfylt(List<RegelResultat> regelResultater) {
+    protected boolean erVilkårOppfylt(List<RegelResultat> regelResultater) {
         return regelResultater.stream()
             .flatMap(regelResultat -> regelResultat.getMerknader().stream())
             .map(RegelMerknad::getMerknadKode)

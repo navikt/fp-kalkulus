@@ -22,6 +22,23 @@ public final class RegelmodellModifiserer {
     private RegelmodellModifiserer() {
     }
 
+    public static void settSøktYtelseForStatus(Beregningsgrunnlag beregningsgrunnlagRegel, AktivitetStatus status, boolean erSøktYtelseFor) {
+        beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().forEach(bgPeriode -> {
+            if (AktivitetStatus.FL.equals(status)) {
+                getBGArbeidsforhold(bgPeriode).stream()
+                        .filter(BeregningsgrunnlagPrArbeidsforhold::erFrilanser)
+                        .findFirst()
+                        .ifPresent(bgFrilans -> bgFrilans.setErSøktYtelseFor(erSøktYtelseFor));
+            }
+            if (AktivitetStatus.SN.equals(status)) {
+                BeregningsgrunnlagPrStatus snAndel = bgPeriode.getBeregningsgrunnlagPrStatus(AktivitetStatus.SN);
+                if (snAndel != null) {
+                    snAndel.setErSøktYtelseFor(erSøktYtelseFor);
+                }
+            }
+        });
+    }
+
     public static void tilpassRegelModellForUtbetalingsgrad(Beregningsgrunnlag beregningsgrunnlagRegel, List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         settAlleUtbetalingsgraderTil0(beregningsgrunnlagRegel);
         mapUtbetalingsgrad(beregningsgrunnlagRegel, tilretteleggingMedUtbelingsgrad);
