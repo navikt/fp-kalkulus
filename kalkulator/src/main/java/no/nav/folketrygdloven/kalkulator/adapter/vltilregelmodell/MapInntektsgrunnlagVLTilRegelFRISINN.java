@@ -55,7 +55,10 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         return inntektsgrunnlag;
     }
 
-    private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter, Collection<YrkesaktivitetDto> yrkesaktiviteter, FrisinnGrunnlag frisinnGrunnlag) {
+    private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag,
+                                     InntektFilterDto filter,
+                                     Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                     FrisinnGrunnlag frisinnGrunnlag) {
         filter.filterBeregningsgrunnlag()
                 .filter(i -> i.getArbeidsgiver() != null)
                 .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter, frisinnGrunnlag));
@@ -185,12 +188,13 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
-        oppgittOpptjeningOpt.ifPresent(oppgittOpptjening -> mapOppgittOpptjening(inntektsgrunnlag, oppgittOpptjening, skjæringstidspunktBeregning));
+        oppgittOpptjeningOpt.ifPresent(oppgittOpptjening ->
+                mapOppgittOpptjening(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening, skjæringstidspunktBeregning));
 
     }
 
-    private void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
-        mapOppgittNæringsinntekt(inntektsgrunnlag, oppgittOpptjening);
+    private void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, FrisinnGrunnlag frisinnGrunnlag, OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
+        mapOppgittNæringsinntekt(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening);
         mapOppgittFrilansinntekt(inntektsgrunnlag, oppgittOpptjening, skjæringstidspunktBeregning);
     }
 
@@ -219,18 +223,34 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     }
 
 
-    private void mapOppgittNæringsinntekt(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
+    private void mapOppgittNæringsinntekt(Inntektsgrunnlag inntektsgrunnlag, FrisinnGrunnlag frisinnGrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
         if (!oppgittOpptjening.getEgenNæring().isEmpty()) {
             Optional<BigDecimal> samletNæringsinntekt2019 = oppgittOpptjening.getEgenNæring().stream()
                     .filter(en -> erInntektFor2019(en.getPeriode()))
                     .filter(en -> en.getBruttoInntekt() != null)
                     .map(OppgittEgenNæringDto::getBruttoInntekt)
                     .reduce(BigDecimal::add);
-            if (samletNæringsinntekt2019.isEmpty()) {
+            if (samletNæringsinntekt2019.isEmpty() && frisinnGrunnlag.getSøkerYtelseForNæring()) {
                 throw new IllegalStateException("Kunne ikke finne oppgitt næringsinntekt for 2019, ugyldig tilstand for ytelse FRISINN");
+            } else if (frisinnGrunnlag.getSøkerYtelseForNæring() && samletNæringsinntekt2019.isPresent()) {
+                inntektsgrunnlag.leggTilPeriodeinntekt(byggOppgittNæringsinntektFor2019(samletNæringsinntekt2019.get()));
             }
-            inntektsgrunnlag.leggTilPeriodeinntekt(byggOppgittNæringsinntektFor2019(samletNæringsinntekt2019.get()));
+            oppgittOpptjening.getEgenNæring().stream()
+                    .filter(en -> !erInntektFor2019(en.getPeriode()))
+                    .filter(en -> en.getBruttoInntekt() != null)
+                    .map(MapInntektsgrunnlagVLTilRegelFRISINN::mapTilRegel)
+                    .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
         }
+    }
+
+    private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
+        BigDecimal inntekt = oppgittEgenNæringDto.getBruttoInntekt();
+        Intervall periode = oppgittEgenNæringDto.getPeriode();
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
+                .medPeriode(Periode.of(periode.getFomDato(), periode.getTomDato()))
+                .medInntekt(inntekt)
+                .build();
     }
 
     private boolean erInntektFor2019(Intervall periode) {
