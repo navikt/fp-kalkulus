@@ -36,10 +36,10 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
 
         // Legger til 12 mnd med frilans og næring rundt stp om det ikkje finnes
         if (relevanteAktiviteter.stream().noneMatch(a -> a.getType().equals(OpptjeningAktivitetType.FRILANS))) {
-            modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forFrilanser(Periode.of(opptjeningSkjæringstidspunkt.minusMonths(6), opptjeningSkjæringstidspunkt.plusMonths(6))));
+            modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forFrilanser(Periode.of(opptjeningSkjæringstidspunkt.minusMonths(36), opptjeningSkjæringstidspunkt.plusMonths(6))));
         }
         if (relevanteAktiviteter.stream().noneMatch(a -> a.getType().equals(OpptjeningAktivitetType.NÆRING))) {
-            modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forAndre(Aktivitet.NÆRINGSINNTEKT, Periode.of(opptjeningSkjæringstidspunkt.minusMonths(6), opptjeningSkjæringstidspunkt.plusMonths(6))));
+            modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forAndre(Aktivitet.NÆRINGSINNTEKT, Periode.of(opptjeningSkjæringstidspunkt.minusMonths(36), opptjeningSkjæringstidspunkt.plusMonths(6))));
         }
         return modell;
     }

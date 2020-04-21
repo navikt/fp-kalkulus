@@ -36,8 +36,8 @@ public class FastsettSkjæringstidspunktOgStatuser {
 
     public BeregningsgrunnlagDto fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
-        RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(regelmodell);
-        RegelResultat regelResultatFastsettStatus = fastsettStatus(input, regelmodell);
+        RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(input, regelmodell);
+        RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)
         List<RegelResultat> regelResultater = List.of(
@@ -46,14 +46,14 @@ public class FastsettSkjæringstidspunktOgStatuser {
         return mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getBehandlingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
     }
 
-    protected RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
+    protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         String inputSkjæringstidspunkt = toJson(regelmodell);
         Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunkt().evaluer(regelmodell);
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
 
-    protected RegelResultat fastsettStatus(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    protected RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         String inputStatusFastsetting = toJson(regelmodell);
         Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunkt().evaluer(regelmodell);

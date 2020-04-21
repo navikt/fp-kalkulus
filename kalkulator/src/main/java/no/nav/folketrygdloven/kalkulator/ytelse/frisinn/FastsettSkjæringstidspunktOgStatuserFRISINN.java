@@ -31,22 +31,23 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
     }
 
     @Override
-    protected RegelResultat fastsettSkjæringstidspunkt(AktivitetStatusModell regelmodell) {
+    protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
-        String inputSkjæringstidspunkt = toJson(regelmodell);
-        Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunktFrisinn().evaluer(regelmodell);
+        var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
+        Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
+        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag, regelmodell);
+        aktivitetStatusModellFRISINN.setInntektsgrunnlag(inntektsgrunnlag);
+        String inputSkjæringstidspunkt = toJson(aktivitetStatusModellFRISINN);
+        Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunktFrisinn().evaluer(aktivitetStatusModellFRISINN);
+        regelmodell.setSkjæringstidspunktForBeregning(aktivitetStatusModellFRISINN.getSkjæringstidspunktForBeregning());
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
 
     @Override
-    protected RegelResultat fastsettStatus(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    protected RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
-        var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
-        Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForBeregning());
-        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag, regelmodell);
-        aktivitetStatusModellFRISINN.setInntektsgrunnlag(inntektsgrunnlag);
-        String inputStatusFastsetting = toJson(aktivitetStatusModellFRISINN);
-        Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(aktivitetStatusModellFRISINN);
+        String inputStatusFastsetting = toJson(regelmodell);
+        Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(regelmodell);
         return RegelmodellOversetter.getRegelResultat(evaluationStatusFastsetting, inputStatusFastsetting);
     }
 
