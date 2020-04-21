@@ -94,7 +94,7 @@ public class UtbetalingsgradMapperFRISINN {
                 .findFirst()
                 .orElse(BigDecimal.ZERO);
         BigDecimal bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
-        BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 2,RoundingMode.HALF_UP);
+        BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 10, RoundingMode.HALF_EVEN);
         return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
     }
 
@@ -118,6 +118,6 @@ public class UtbetalingsgradMapperFRISINN {
     private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt) {
         Intervall periode = oppgittInntekt.getPeriode();
         long dagerIRapportertPeriode = Virkedager.beregnAntallVirkedager(periode.getFomDato(), periode.getTomDato());
-        return oppgittInntekt.getInntekt().divide(BigDecimal.valueOf(dagerIRapportertPeriode), RoundingMode.HALF_UP);
+        return oppgittInntekt.getInntekt().divide(BigDecimal.valueOf(dagerIRapportertPeriode), 10, RoundingMode.HALF_EVEN);
     }
 }

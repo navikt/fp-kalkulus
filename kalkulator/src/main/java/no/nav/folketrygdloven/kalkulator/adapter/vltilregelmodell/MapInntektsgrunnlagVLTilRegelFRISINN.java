@@ -132,7 +132,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
         ytelseFilter.getAlleYtelser().forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                 .filter(this::harHattUtbetalingForPeriode)
-                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist))));
+                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats()))));
     }
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
@@ -141,13 +141,19 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                 .orElse(false);
     }
 
-    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist) {
+    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.YTELSER)
-                .medInntekt(anvist.getBeløp().map(Beløp::getVerdi).orElse(null))
+                .medInntekt(finnBeløp(anvist, vedtaksDagsats))
                 .medUtbetalingsgrad(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElseThrow())
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
                 .build();
+    }
+
+    private BigDecimal finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
+        BigDecimal beløpFraYtelseAnvist = anvist.getBeløp().map(Beløp::getVerdi)
+                .orElse(anvist.getDagsats().map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        return vedtaksDagsats.map(Beløp::getVerdi).orElse(beløpFraYtelseAnvist);
     }
 
     private void lagInntekterSN(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {

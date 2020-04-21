@@ -108,7 +108,7 @@ class UtbetalingsgradMapperFRISINNTest {
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
-        assertPeriode(april, periode1, 51);
+        assertPeriode(april, periode1, 50);
     }
 
     @Test
@@ -185,7 +185,7 @@ class UtbetalingsgradMapperFRISINNTest {
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
         assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
-        assertPeriode(april, periode1, 51);
+        assertPeriode(april, periode1, 50);
     }
 
     private OppgittOpptjeningDtoBuilder.EgenNæringBuilder lagOppgittInntekt(Intervall april, BigDecimal periodeInntekt) {
