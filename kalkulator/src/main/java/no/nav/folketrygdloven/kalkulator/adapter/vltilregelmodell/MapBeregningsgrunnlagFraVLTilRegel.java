@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnHøyestRefusjonskravForBGPerioden;
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -192,7 +192,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                     .medskalSplitteATFL(input.isEnabled(TOGGLE, false))
                     .medSkalSjekkeRefusjonFørAvviksvurdering(skalSjekkeRefusjonFørAvviksvurdering(input))
-                    .medMaksRefusjonForPeriode(finnHøyestRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning()))
+                    .medMaksRefusjonForPeriode(finnSummertRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning()))
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
             List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller());

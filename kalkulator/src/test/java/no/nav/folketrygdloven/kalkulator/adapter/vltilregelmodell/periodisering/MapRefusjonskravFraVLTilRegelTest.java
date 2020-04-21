@@ -47,7 +47,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
     }
 
     @Test
-    public void skal_finne_høyeste_refusjonskrav_i_bgPeriode_og_gi_årssummert_størst_i_endring() {
+    public void skal_summere_refusjonskrav_i_bgPeriode_og_gi_årssummert_i_endring() {
         // Arrange
         LocalDate idag = LocalDate.now();
         LocalDate om2Måneder = LocalDate.now().plusMonths(2);
@@ -61,25 +61,30 @@ public class MapRefusjonskravFraVLTilRegelTest {
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
                 .medRefusjon(BigDecimal.valueOf(2000))
                 .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+        InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
+        inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
+                .medRefusjon(BigDecimal.valueOf(2000))
+                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
 
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
+        inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
         InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnHøyestRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
+        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
 
         // Assert
-        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(120000));
+        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(240000));
     }
 
     @Test
     public void skal_finne_høyeste_refusjonskrav_i_bgPeriode_og_gi_årssummert_størst_opprinnelig() {
         // Arrange
         LocalDate idag = LocalDate.now();
-        LocalDate om2Måneder = LocalDate.now().plusMonths(2);
+        LocalDate om10Dager = LocalDate.now().plusDays(10);
 
         Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
-        periodeBuilder.medBeregningsgrunnlagPeriode(idag, om2Måneder);
+        periodeBuilder.medBeregningsgrunnlagPeriode(idag, om10Dager);
         BeregningsgrunnlagPeriodeDto periodeDto = periodeBuilder.build();
 
         InntektsmeldingAggregatDtoBuilder inntektsmeldingAggregatDtoBuilder = InntektsmeldingAggregatDtoBuilder.ny();
@@ -87,14 +92,19 @@ public class MapRefusjonskravFraVLTilRegelTest {
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
                 .medRefusjon(BigDecimal.valueOf(12000))
                 .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
+        InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
+        inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
+                .medRefusjon(BigDecimal.valueOf(12000))
+                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
 
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
+        inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
         InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnHøyestRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
+        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
 
         // Assert
-        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(144000));
+        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(288000));
     }
 }

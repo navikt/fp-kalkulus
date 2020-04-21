@@ -11,6 +11,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.threeten.extra.Interval;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -25,7 +29,7 @@ public class MapRefusjonskravFraVLTilRegel {
         // skjul public constructor
     }
 
-   static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon) {
+    static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon) {
         Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
         Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
         refusjoner.put(startdatoPermisjon, refusjonBeløpPerMnd);
@@ -74,24 +78,45 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnHøyestRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger, LocalDate stp) {
+    public static BigDecimal finnSummertRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger, LocalDate stp) {
         Intervall relevantPeriode = vlBGPeriode.getPeriode();
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
 
-        if (inntektsmeldinger.isPresent()) {
-            InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldinger.get();
-            List<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes = inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes();
-            for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
-                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
+        if (inntektsmeldinger.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldinger.get();
+        List<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes = inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes();
+        for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
+            refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
+        }
+
+        BigDecimal høyesteSummertIPerioden = BigDecimal.ZERO;
+
+        for (LocalDate enDag : getDager(relevantPeriode)) {
+            BigDecimal sumForDagen = BigDecimal.ZERO;
+            for (Refusjonskrav refusjonskrav : refusjonskravs) {
+                if (refusjonskrav.getPeriode().inneholder(enDag)) {
+                    sumForDagen = sumForDagen.add(refusjonskrav.getMånedsbeløp());
+                }
+            }
+            if (sumForDagen.compareTo(høyesteSummertIPerioden) > 0) {
+                høyesteSummertIPerioden = sumForDagen;
             }
         }
 
-        BigDecimal høyesteIPerioden = refusjonskravs.stream()
-                .filter(ref -> relevantPeriode.overlapper(Intervall.fraOgMedTilOgMed(ref.getPeriode().getFom(), ref.getPeriode().getTom())))
-                .max(Comparator.comparing(Refusjonskrav::getMånedsbeløp))
-                .map(Refusjonskrav::getMånedsbeløp).orElse(BigDecimal.ZERO);
-
         //ganger med 12 får å få pr år
-        return høyesteIPerioden.multiply(BigDecimal.valueOf(12));
+        return høyesteSummertIPerioden.multiply(BigDecimal.valueOf(12));
+    }
+
+    //ser maks 1000 dager fremover
+    private static List<LocalDate> getDager(Intervall relevantPeriode) {
+        Interval interval = relevantPeriode.tilIntervall();
+        long antallDager = interval.toDuration().toDays();
+        if (antallDager > 1000) {
+            antallDager = 1000;
+        }
+        return Stream.iterate(relevantPeriode.getFomDato(), date -> date.plusDays(1)).limit(antallDager).collect(Collectors.toList());
     }
 }
