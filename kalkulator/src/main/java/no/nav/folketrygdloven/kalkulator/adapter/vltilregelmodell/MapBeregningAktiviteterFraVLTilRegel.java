@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
@@ -35,12 +36,13 @@ public class MapBeregningAktiviteterFraVLTilRegel {
         if (relevanteAktiviteter.isEmpty()) { // For enklere feilsøking når det mangler aktiviteter
             throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
         } else {
-            relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode)));
+            relevanteAktiviteter.forEach(opptjeningsperiode ->
+                    modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode)));
         }
         return modell;
     }
 
-    protected AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
+    private AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                 OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         Periode gjeldendePeriode = opptjeningsperiode.getPeriode();
@@ -58,7 +60,7 @@ public class MapBeregningAktiviteterFraVLTilRegel {
         }
     }
 
-    private static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
+    protected static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                Periode gjeldendePeriode,
                                                                String opptjeningArbeidsgiverAktørId,
                                                                String opptjeningArbeidsgiverOrgnummer,
