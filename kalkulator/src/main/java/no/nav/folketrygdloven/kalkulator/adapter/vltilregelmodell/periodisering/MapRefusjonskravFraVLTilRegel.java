@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.threeten.extra.Interval;
-
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
@@ -92,31 +90,19 @@ public class MapRefusjonskravFraVLTilRegel {
             refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
         }
 
-        BigDecimal høyesteSummertIPerioden = BigDecimal.ZERO;
+        List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream().filter(p -> p.getPeriode().overlapper(Periode.of(relevantPeriode.getFomDato(), relevantPeriode.getTomDato())))
+                .collect(Collectors.toList());
 
-        for (LocalDate enDag : getDager(relevantPeriode)) {
-            BigDecimal sumForDagen = BigDecimal.ZERO;
-            for (Refusjonskrav refusjonskrav : refusjonskravs) {
-                if (refusjonskrav.getPeriode().inneholder(enDag)) {
-                    sumForDagen = sumForDagen.add(refusjonskrav.getMånedsbeløp());
-                }
-            }
-            if (sumForDagen.compareTo(høyesteSummertIPerioden) > 0) {
-                høyesteSummertIPerioden = sumForDagen;
-            }
-        }
+        BigDecimal høyesteSummertIPerioden = relevanteRefusjonskrav.stream().map(Refusjonskrav::getPeriode)
+                .map(periode -> relevanteRefusjonskrav.stream()
+                        .filter(refusjonskrav -> refusjonskrav.getPeriode().overlapper(periode))
+                        .map(Refusjonskrav::getMånedsbeløp)
+                        .reduce(BigDecimal::add)
+                        .orElse(BigDecimal.ZERO))
+                .max(Comparator.naturalOrder())
+                .orElse(BigDecimal.ZERO);
 
         //ganger med 12 får å få pr år
         return høyesteSummertIPerioden.multiply(BigDecimal.valueOf(12));
-    }
-
-    //ser maks 1000 dager fremover
-    private static List<LocalDate> getDager(Intervall relevantPeriode) {
-        Interval interval = relevantPeriode.tilIntervall();
-        long antallDager = interval.toDuration().toDays();
-        if (antallDager > 1000) {
-            antallDager = 1000;
-        }
-        return Stream.iterate(relevantPeriode.getFomDato(), date -> date.plusDays(1)).limit(antallDager).collect(Collectors.toList());
     }
 }
