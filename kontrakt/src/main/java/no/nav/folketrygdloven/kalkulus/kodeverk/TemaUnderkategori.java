@@ -25,7 +25,7 @@ public class TemaUnderkategori extends Kodeverk {
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    @Size(min = 2, max = 50)
+    @Size(min = 1, max = 50)
     @NotNull
     private final String kode;
 
