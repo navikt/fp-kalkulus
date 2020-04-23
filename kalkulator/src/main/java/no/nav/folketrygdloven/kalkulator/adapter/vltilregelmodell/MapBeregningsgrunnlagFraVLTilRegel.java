@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,8 +26,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -61,14 +59,17 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             SammenligningsgrunnlagType.SAMMENLIGNING_SN, AktivitetStatus.SN
     );
     private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
+    private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
 
     public MapBeregningsgrunnlagFraVLTilRegel() {
         // CDI
     }
 
     @Inject
-    public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<MapInntektsgrunnlagVLTilRegel> inntektsmapper) {
+    public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<MapInntektsgrunnlagVLTilRegel> inntektsmapper,
+                                              @Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper) {
         this.alleInntektMappere = inntektsmapper;
+        this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
     }
 
     public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
@@ -105,11 +106,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
         sammenligningsgrunnlagMap.forEach(builder::medSammenligningsgrunnlagPrStatus);
-        boolean harVærtBesteberegnet = beregningsgrunnlag.getFaktaOmBeregningTilfeller().stream()
-                .anyMatch(tilfelle -> FaktaOmBeregningTilfelle.FASTSETT_BESTEBEREGNING_FØDENDE_KVINNE.equals(FaktaOmBeregningTilfelle.fraKode(tilfelle.getKode())));
         return builder
                 .medInntektsgrunnlag(inntektsgrunnlag)
-                .medBesteberegnet(harVærtBesteberegnet)
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medAktivitetStatuser(aktivitetStatuser)
                 .medBeregningsgrunnlagPerioder(perioder)
@@ -123,7 +121,13 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
+                .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
                 .build();
+    }
+
+    private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        return FagsakYtelseTypeRef.Lookup.find(ytelsesSpesifikkMapper, input.getFagsakYtelseType())
+        .map(mapper -> mapper.map(beregningsgrunnlag, input)).orElse(null);
     }
 
     private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
@@ -191,8 +195,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                     .medskalSplitteATFL(input.isEnabled(TOGGLE, false))
-                    .medSkalSjekkeRefusjonFørAvviksvurdering(skalSjekkeRefusjonFørAvviksvurdering(input))
-                    .medMaksRefusjonForPeriode(finnSummertRefusjonskravForBGPerioden(vlBGPeriode, input.getIayGrunnlag().getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning()))
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
             List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller());
@@ -201,10 +203,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         });
 
         return perioder;
-    }
-
-    private boolean skalSjekkeRefusjonFørAvviksvurdering(BeregningsgrunnlagInput input) {
-        return input.getYtelsespesifiktGrunnlag() instanceof OmsorgspengerGrunnlag;
     }
 
     private List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {

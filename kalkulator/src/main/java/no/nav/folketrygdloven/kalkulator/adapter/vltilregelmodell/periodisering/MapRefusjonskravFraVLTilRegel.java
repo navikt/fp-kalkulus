@@ -5,6 +5,7 @@ import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
@@ -76,16 +77,9 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnSummertRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Optional<InntektsmeldingAggregatDto> inntektsmeldinger, LocalDate stp) {
+    public static BigDecimal finnSummertRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes, LocalDate stp) {
         Intervall relevantPeriode = vlBGPeriode.getPeriode();
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
-
-        if (inntektsmeldinger.isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-
-        InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldinger.get();
-        List<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes = inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes();
         for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
             refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
         }

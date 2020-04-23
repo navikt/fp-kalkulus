@@ -45,7 +45,7 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
-        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
+        Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         splittPerioder(input, regelmodellBeregningsgrunnlag, beregningsgrunnlag);
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
@@ -57,6 +57,7 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
     }
+
 
     protected void splittPerioder(BeregningsgrunnlagInput input,  Beregningsgrunnlag regelmodellBeregningsgrunnlag, BeregningsgrunnlagDto beregningsgrunnlag) {
         opprettPerioderForKortvarigeArbeidsforhold(input.getAktørId(), regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getIayGrunnlag());

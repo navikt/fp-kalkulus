@@ -71,7 +71,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
+        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag);
 
         // Assert
         assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(240000));
@@ -102,7 +102,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, Optional.of(inntektsmeldingAggregatDto), idag);
+        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periodeDto, inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag);
 
         // Assert
         assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(288000));

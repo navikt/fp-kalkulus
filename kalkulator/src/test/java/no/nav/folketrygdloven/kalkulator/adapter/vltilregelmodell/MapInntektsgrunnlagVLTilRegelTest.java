@@ -35,7 +35,6 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("94632432");
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel));
 
     @Test
     public void skal_mappe_inntektsmelding_for_arbeid_med_fleire_yrkesaktiviteter() {
