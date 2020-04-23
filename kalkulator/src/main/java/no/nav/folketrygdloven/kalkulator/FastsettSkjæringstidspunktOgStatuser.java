@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,7 +24,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef("*")
 public class FastsettSkjæringstidspunktOgStatuser {
 
-    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel;
+    protected MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel;
 
     public FastsettSkjæringstidspunktOgStatuser() {
         // CDI
@@ -34,7 +35,7 @@ public class FastsettSkjæringstidspunktOgStatuser {
         this.mapFraRegel = mapFraRegel;
     }
 
-    public BeregningsgrunnlagDto fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
+    public Optional<BeregningsgrunnlagDto> fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(input, regelmodell);
         RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
@@ -43,17 +44,17 @@ public class FastsettSkjæringstidspunktOgStatuser {
         List<RegelResultat> regelResultater = List.of(
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
-        return mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getBehandlingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
+        return Optional.of(mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getBehandlingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser));
     }
 
-    protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    private RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         String inputSkjæringstidspunkt = toJson(regelmodell);
         Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunkt().evaluer(regelmodell);
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
 
-    protected RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
+    private RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         String inputStatusFastsetting = toJson(regelmodell);
         Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunkt().evaluer(regelmodell);

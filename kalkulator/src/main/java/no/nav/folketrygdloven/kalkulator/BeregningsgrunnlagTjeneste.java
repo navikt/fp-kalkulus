@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 public class BeregningsgrunnlagTjeneste {
 
     private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
+    private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
@@ -51,6 +52,7 @@ public class BeregningsgrunnlagTjeneste {
     @Inject
     public BeregningsgrunnlagTjeneste(@Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
                                       @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
+                                      @Any Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
                                       BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
@@ -59,6 +61,7 @@ public class BeregningsgrunnlagTjeneste {
                                       FastsettBeregningAktiviteter fastsettBeregningAktiviteter) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
+        this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
         this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
@@ -69,33 +72,33 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
-        BeregningsgrunnlagDto beregningsgrunnlag = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
         Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .medRegisterAktiviteter(beregningAktivitetAggregat)
-            .medOverstyring(overstyrt.orElse(null));
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .medOverstyring(overstyrt.orElse(null));
+        beregningsgrunnlagOpt.ifPresent(builder::medBeregningsgrunnlag);
         var beregningsgrunnlagGrunnlag = builder.build(OPPRETTET);
         boolean erOverstyrt = overstyrt.isPresent();
         BeregningsgrunnlagInput inputOppdatertMedBg = input.medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
-        var aksjonspunkter = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(
-            beregningsgrunnlag,
-            beregningAktivitetAggregat,
-            inputOppdatertMedBg,
-            erOverstyrt,
-            input.getFagsakYtelseType());
-        return BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
-            .medAksjonspunkter(aksjonspunkter)
-            .medBeregningsgrunnlag(beregningsgrunnlag, OPPRETTET)
-            .build();
+        var aksjonspunkter = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter).utledAksjonspunkter(
+                beregningsgrunnlagOpt,
+                beregningAktivitetAggregat,
+                inputOppdatertMedBg,
+                erOverstyrt,
+                input.getFagsakYtelseType());
+        BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
+                .medAksjonspunkter(aksjonspunkter);
+        resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagOpt.orElse(null), OPPRETTET);
+        return resultatBuilder.build();
     }
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
-            .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT)
-            .build();
+                .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT)
+                .build();
     }
 
     public BeregningResultatAggregat fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
@@ -104,25 +107,25 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
         if (Boolean.FALSE.equals(vilkårVurderingResultat.getVilkårOppfylt())) {
             return BeregningResultatAggregat.Builder.fra(input)
-                .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
-                .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
-                .build();
+                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
+                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                    .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
+                    .build();
         } else {
             var fordeltBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, vurdertBeregningsgrunnlag);
             BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
-                .medBeregningsgrunnlag(fordeltBeregningsgrunnlag)
-                .build(OPPDATERT_MED_REFUSJON_OG_GRADERING);
+                    .medBeregningsgrunnlag(fordeltBeregningsgrunnlag)
+                    .build(OPPDATERT_MED_REFUSJON_OG_GRADERING);
             List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
-                input.getBehandlingReferanse(),
-                nyttGrunnlag,
-                input.getAktivitetGradering(),
-                input.getInntektsmeldinger());
+                    input.getBehandlingReferanse(),
+                    nyttGrunnlag,
+                    input.getAktivitetGradering(),
+                    input.getInntektsmeldinger());
             return BeregningResultatAggregat.Builder.fra(input)
-                .medAksjonspunkter(aksjonspunkter)
-                .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
-                .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                .build();
+                    .medAksjonspunkter(aksjonspunkter)
+                    .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
+                    .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                    .build();
         }
     }
 
@@ -138,43 +141,43 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)
                 .foreslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
-            .medAksjonspunkter(resultat.getAksjonspunkter())
-            .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), FORESLÅTT)
-            .build();
+                .medAksjonspunkter(resultat.getAksjonspunkter())
+                .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), FORESLÅTT)
+                .build();
     }
 
     public BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagDto beregningsgrunnlag = opprettBeregningsgrunnlagTjeneste.opprettOgLagreBeregningsgrunnlag(input);
 
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .build(OPPDATERT_MED_ANDELER);
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .build(OPPDATERT_MED_ANDELER);
         var apUtleder = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), aksjonspunktUtledereFaktaOmBeregning);
         FaktaOmBeregningAksjonspunktResultat aksjonspunktresultat = apUtleder.utledAksjonspunkterFor(
-            input,
-            nyttGrunnlag,
-            harOverstyrtBergningsgrunnlag(input));
+                input,
+                nyttGrunnlag,
+                harOverstyrtBergningsgrunnlag(input));
 
         BeregningsgrunnlagDto grunnlagMedTilfeller = BeregningsgrunnlagDto.builder(beregningsgrunnlag)
-            .leggTilFaktaOmBeregningTilfeller(aksjonspunktresultat.getFaktaOmBeregningTilfeller())
-            .build();
+                .leggTilFaktaOmBeregningTilfeller(aksjonspunktresultat.getFaktaOmBeregningTilfeller())
+                .build();
 
         return BeregningResultatAggregat.Builder.fra(input)
-            .medBeregningsgrunnlag(grunnlagMedTilfeller, OPPDATERT_MED_ANDELER)
-            .medAksjonspunkter(aksjonspunktresultat.getBeregningAksjonspunktResultatList())
-            .build();
+                .medBeregningsgrunnlag(grunnlagMedTilfeller, OPPDATERT_MED_ANDELER)
+                .medAksjonspunkter(aksjonspunktresultat.getBeregningAksjonspunktResultatList())
+                .build();
     }
 
     private boolean harOverstyrtBergningsgrunnlag(BeregningsgrunnlagInput input) {
         return input.hentForrigeBeregningsgrunnlag(KOFAKBER_UT)
-            .stream()
-            .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
+                .stream()
+                .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
     }
 
     private Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(BeregningsgrunnlagInput input) {
         Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.hentForrigeBeregningsgrunnlagGrunnlag(FASTSATT_BEREGNINGSAKTIVITETER);
         return overstyrtGrunnlag
-            .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
+                .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
     }
 
     private <T> T finnImplementasjonForYtelseType(FagsakYtelseType fagsakYtelseType, Instance<T> instanser) {

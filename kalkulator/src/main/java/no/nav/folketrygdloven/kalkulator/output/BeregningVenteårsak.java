@@ -60,7 +60,11 @@ public enum BeregningVenteårsak implements Kodeverdi {
     AAP_DP_SISTE_10_MND_SVP("AAP_DP_SISTE_10_MND_SVP", "Behandlingen er satt på vent på grunn av mangel i løsningen. Det jobbes med å løse dette."),
     FL_SN_IKKE_STOTTET_FOR_SVP("FL_SN_IKKE_STOTTET_FOR_SVP", "Behandlingen er satt på vent på grunn av mangel i løsningen. Det jobbes med å løse dette."),
     VENT_MANGLENDE_ARBEIDSFORHOLD("VENT_MANGLENDE_ARBEIDSFORHOLD", "Sak settes på vent pga kommune- og fylkesammenslåing. Meld saken i Porten."),
+
+    INGEN_PERIODE_UTEN_YTELSE("INGEN_PERIODE_UTEN_YTELSE", "FRISINN: Sak settes på vent fordi søker har ytelse de 3 siste årene."),
     ;
+
+
 
     public static final String KODEVERK = "VENT_AARSAK";
     private static final Map<String, BeregningVenteårsak> KODER = new LinkedHashMap<>();

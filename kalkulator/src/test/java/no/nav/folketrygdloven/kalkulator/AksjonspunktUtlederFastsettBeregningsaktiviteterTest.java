@@ -50,6 +50,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
     private BehandlingReferanse ref;
 
     private BeregningsgrunnlagDto beregningsgrunnlag;
+    private AksjonspunktUtlederFastsettBeregningsaktiviteterFelles apUtleder = new AksjonspunktUtlederFastsettBeregningsaktiviteterFelles();
     private boolean erOverstyrt;
 
     private OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto();
@@ -105,7 +106,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         LocalDateTime frist = tom.plusDays(rapporteringsfrist).plusDays(1).atStartOfDay();
 
         //Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = new AksjonspunktUtlederFastsettBeregningsaktiviteterFelles().utledAksjonspunkter(Optional.of(beregningsgrunnlag), beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -146,7 +147,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(bgMedDagpenger), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -165,7 +166,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         int rapporteringsfrist = 1000;
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(beregningsgrunnlag), beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -209,7 +210,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(bgMedDagpenger), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(0);
@@ -245,7 +246,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(bgMedDagpenger), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(0);
@@ -280,7 +281,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(bgMedDagpenger), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -318,7 +319,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = AksjonspunktUtlederFastsettBeregningsaktiviteter.utledAksjonspunkterForFelles(bgMedDagpenger, beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(false), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(Optional.of(bgMedDagpenger), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
 
         // Assert
         assertThat(resultater).hasSize(0);
@@ -330,9 +331,8 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         return beregningsgrunnlagInput;
     }
 
-    private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput(boolean toggleManglendeArbeidsforhold) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
-        return beregningsgrunnlagInput;
+    private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput() {
+        return new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
     }
 
     private void settSimulertNåtidTil(LocalDate dato) {

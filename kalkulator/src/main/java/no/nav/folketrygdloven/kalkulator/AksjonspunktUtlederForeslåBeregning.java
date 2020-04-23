@@ -16,7 +16,7 @@ public class AksjonspunktUtlederForeslåBeregning {
         // Skjul
     }
 
-    protected static List<BeregningAksjonspunktResultat> utledAksjonspunkter(@SuppressWarnings("unused") BeregningsgrunnlagInput input,
+    public static List<BeregningAksjonspunktResultat> utledAksjonspunkter(@SuppressWarnings("unused") BeregningsgrunnlagInput input,
                                                                              List<RegelResultat> regelResultater) {
         return mapRegelResultater(regelResultater);
     }

@@ -48,6 +48,10 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", "Autopunkt ulike startdatoer svangerskapspenger"),
     AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027","Autopunkt delvis SVP og refusjon"),
     AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
+
+    // 8000 frisinn
+    AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av frisinnsøknad som ikke kan behandles."),
+
     UNDEFINED,
     ;
 
