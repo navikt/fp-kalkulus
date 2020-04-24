@@ -195,7 +195,7 @@ public class HentKalkulusRestTjeneste {
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId);
         return beregningsgrunnlagGrunnlagEntitet.stream()
                 .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening()))
+                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
                 .map(bgDto -> Response.ok(bgDto).build())
                 .findFirst()
                 .orElse(Response.noContent().build());

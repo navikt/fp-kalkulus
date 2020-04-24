@@ -160,6 +160,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         filter.filterBeregnetSkatt().getFiltrertInntektsposter()
                 .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
                         .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
+                        .medAktivitetStatus(AktivitetStatus.SN)
                         .medInntekt(inntektspost.getBeløp().getVerdi())
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
                         .build()));

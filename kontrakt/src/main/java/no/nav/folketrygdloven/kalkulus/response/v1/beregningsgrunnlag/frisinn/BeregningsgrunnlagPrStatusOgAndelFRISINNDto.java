@@ -76,13 +76,18 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     @Valid
     private Inntektskategori inntektskategori;
 
+    @JsonProperty(value = "avslagsårsak")
+    @Valid
+    private Avslagsårsak avslagsårsak;
+
+
     public BeregningsgrunnlagPrStatusOgAndelFRISINNDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bruttoPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal redusertPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal avkortetPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal løpendeInntektPrÅr,
                                                        @NotNull @Valid @Min(0) @Max(Long.MAX_VALUE) Long dagsats,
-                                                       @NotNull @Valid Inntektskategori inntektskategori) {
+                                                       @NotNull @Valid Inntektskategori inntektskategori, Avslagsårsak avslagsårsak) {
         this.aktivitetStatus = aktivitetStatus;
         this.bruttoPrÅr = bruttoPrÅr;
         this.redusertPrÅr = redusertPrÅr;
@@ -90,6 +95,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
         this.løpendeInntektPrÅr = løpendeInntektPrÅr;
         this.dagsats = dagsats;
         this.inntektskategori = inntektskategori;
+        this.avslagsårsak = avslagsårsak;
     }
 
     public BeregningsgrunnlagPrStatusOgAndelFRISINNDto() {
@@ -121,5 +127,9 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
 
     public Inntektskategori getInntektskategori() {
         return inntektskategori;
+    }
+
+    public Avslagsårsak getAvslagsårsak() {
+        return avslagsårsak;
     }
 }
