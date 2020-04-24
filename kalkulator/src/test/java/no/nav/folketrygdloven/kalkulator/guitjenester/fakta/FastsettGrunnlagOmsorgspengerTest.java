@@ -1,0 +1,329 @@
+package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+
+public class FastsettGrunnlagOmsorgspengerTest {
+    private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
+
+    private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
+    private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
+    private static final BigDecimal BRUTTO_PR_AAR = BigDecimal.valueOf(300000);
+    private static final BigDecimal REDUSERT_PR_AAR = BigDecimal.valueOf(500000);
+    private static final LocalDate ANDEL_FOM = LocalDate.now().minusDays(100);
+    private static final LocalDate ANDEL_TOM = LocalDate.now();
+    private static final String ORGNR = "973093681";
+
+    private static final BigDecimal RAPPORTERT_PR_AAR = BigDecimal.valueOf(300000);
+    private static final BigDecimal AVVIK_OVER_25_PROSENT = BigDecimal.valueOf(500L);
+    private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
+    private static final LocalDate SAMMENLIGNING_FOM = LocalDate.now().minusDays(100);
+    private static final LocalDate SAMMENLIGNING_TOM = LocalDate.now();
+
+    private BeregningsgrunnlagGrunnlagDto grunnlag;
+
+    @Test
+    public void skalIkkeFastsetteGrunnlagNårYtelseErOmsorgspengerMedAvvikIBeregningOgFullRefusjon() {
+        //Arange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        byggAndelAt(bgPeriode, arbeidsgiver, 1L);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT,
+                SKJÆRINGSTIDSPUNKT.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medArbeidsgiver(arbeidsgiver)
+                .build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
+        //Act
+        var skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
+                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+        // Assert
+        assertThat(skalGrunnlagFastsettes).isEqualTo(false);
+    }
+
+    @Test
+    public void skalIkkeFastsetteGrunnlagNårYtelseErOmsorgspengerMedAvvikIBeregningOgRefusjonEr6G() {
+        //Arange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
+                .builder()
+                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
+                .medArbeidsgiver(arbeidsgiver);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(1L)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(BigDecimal.valueOf(1_200_000))
+                .build(bgPeriode);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT,
+                SKJÆRINGSTIDSPUNKT.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BigDecimal.valueOf(60_000))
+                .medBeløp(BigDecimal.valueOf(1_200_000).divide(BigDecimal.valueOf(12)))
+                .medArbeidsgiver(arbeidsgiver)
+                .build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
+        //Act
+        boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
+                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+        // Assert
+        assertThat(skalGrunnlagFastsettes).isEqualTo(false);
+    }
+
+    @Test
+    public void skalIkkeFastsetteGrunnlagNårYtelseErOmsorgspengerUtenAvvikIBeregning() {
+        //Arange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikUnder25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        byggAndelAt(bgPeriode, arbeidsgiver, 1L);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT,
+                SKJÆRINGSTIDSPUNKT.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
+                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medArbeidsgiver(arbeidsgiver)
+                .build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
+        //Act
+        boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
+                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+        // Assert
+        assertThat(skalGrunnlagFastsettes).isEqualTo(false);
+    }
+
+    @Test
+    public void skalFastsetteGrunnlagNårYtelseErOmsorgspengerMedAvvikIBeregningOgIkkeFullRefusjon() {
+        //Arange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        byggAndelAt(bgPeriode, arbeidsgiver, 1L);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT,
+                SKJÆRINGSTIDSPUNKT.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(30)))
+                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medArbeidsgiver(arbeidsgiver)
+                .build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
+        //Act
+        boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
+                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+        // Assert
+        assertThat(skalGrunnlagFastsettes).isEqualTo(true);
+    }
+
+    @Test
+    public void skalReturnereFalseNårForeslåBeregningIkkeErKjørt() {
+        //Arange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
+                .builder()
+                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
+                .medArbeidsgiver(arbeidsgiver);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(1L)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(null)
+                .build(bgPeriode);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT,
+                SKJÆRINGSTIDSPUNKT.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BigDecimal.valueOf(60_000))
+                .medBeløp(BigDecimal.valueOf(1_200_000).divide(BigDecimal.valueOf(12)))
+                .medArbeidsgiver(arbeidsgiver)
+                .build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
+        //Act
+        boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
+                grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0));
+        // Assert
+        assertThat(skalGrunnlagFastsettes).isEqualTo(false);
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag() {
+        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT).build();
+
+        return BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .build();
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikUnder25ProsentMedKunSammenligningsgrunnlag() {
+        SammenligningsgrunnlagDto sammenligningsgrunnlagDto = SammenligningsgrunnlagDto.builder()
+                .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM)
+                .medRapportertPrÅr(RAPPORTERT_PR_AAR)
+                .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT).build();
+
+        return BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
+                .build();
+    }
+
+    private void byggAndelAt(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Arbeidsgiver arbeidsgiver, Long andelsNr) {
+        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
+                .builder()
+                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
+                .medArbeidsgiver(arbeidsgiver);
+
+        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                .medBGAndelArbeidsforhold(bga)
+                .medInntektskategori(INNTEKTSKATEGORI)
+                .medAndelsnr(andelsNr)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
+                .medBeregnetPrÅr(BRUTTO_PR_AAR)
+                .medAvkortetPrÅr(AVKORTET_PR_AAR)
+                .medRedusertPrÅr(REDUSERT_PR_AAR)
+                .build(beregningsgrunnlagPeriode);
+    }
+
+    private BeregningsgrunnlagDto lagBehandling(BeregningsgrunnlagDto beregningsgrunnlag, Arbeidsgiver arbeidsgiver) {
+        BeregningAktivitetAggregatDto beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
+        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(beregningAktiviteter)
+                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
+
+        this.grunnlag = beregningsgrunnlagGrunnlag;
+        return beregningsgrunnlag;
+    }
+
+    private BeregningAktivitetAggregatDto lagBeregningAktiviteter(Arbeidsgiver arbeidsgiver) {
+        return lagBeregningAktiviteter(BeregningAktivitetAggregatDto.builder(), arbeidsgiver);
+    }
+
+    private BeregningAktivitetAggregatDto lagBeregningAktiviteter(BeregningAktivitetAggregatDto.Builder builder, Arbeidsgiver arbeidsgiver) {
+        return builder.medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medArbeidsgiver(arbeidsgiver)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                        .medPeriode(Intervall.fraOgMedTilOgMed(ANDEL_FOM, ANDEL_TOM))
+                        .build())
+                .build();
+    }
+
+    private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
+        return BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(ANDEL_FOM, null)
+                .build(beregningsgrunnlag);
+    }
+
+}

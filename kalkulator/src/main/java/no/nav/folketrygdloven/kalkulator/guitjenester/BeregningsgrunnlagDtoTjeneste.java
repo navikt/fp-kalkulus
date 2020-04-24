@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Sammen
 public class BeregningsgrunnlagDtoTjeneste {
 
     private static final int SEKS = 6;
+    private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
 
     private final Map<FagsakYtelseType, BiConsumer<BeregningsgrunnlagRestInput, BeregningsgrunnlagDto>> ytelsespesifikkMapper = Map
@@ -46,8 +47,9 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     @Inject
-    public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste) {
+    public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste, BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste) {
         this.faktaOmBeregningDtoTjeneste = faktaOmBeregningDtoTjeneste;
+        this.beregningsgrunnlagPrStatusOgAndelDtoTjeneste = beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
     }
 
     public BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BeregningsgrunnlagRestInput input) {
@@ -146,7 +148,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             aktivitetGradering);
 
         if (!andelerMedGraderingUtenBG.isEmpty()) {
-            dto.setAndelerMedGraderingUtenBG(BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, andelerMedGraderingUtenBG));
+            dto.setAndelerMedGraderingUtenBG(beregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, andelerMedGraderingUtenBG));
         }
     }
 
@@ -284,7 +286,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setDagsats(periode.getDagsats());
         dto.leggTilPeriodeAarsaker(periode.getPeriodeÅrsaker().stream().map(årsak -> new PeriodeÅrsak(årsak.getKode())).collect(Collectors.toList()));
         dto.setAndeler(
-                BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, periode.getBeregningsgrunnlagPrStatusOgAndelList()));
+                beregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, periode.getBeregningsgrunnlagPrStatusOgAndelList()));
         return dto;
     }
 

@@ -11,22 +11,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 
+@ApplicationScoped
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
+    private Instance<FastsettGrunnlag> fastsettGrunnlag;
     private static final int MND_I_ÅR = 12;
 
     private static final Map<SammenligningsgrunnlagType, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
@@ -37,11 +43,17 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
             SammenligningsgrunnlagType.SAMMENLIGNING_SN, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste() {
+    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste() {
+        // CDI Proxy
+    }
+
+    @Inject
+    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(@Any Instance<FastsettGrunnlag> fastsettGrunnlag) {
+        this.fastsettGrunnlag = fastsettGrunnlag;
         // Skjul
     }
 
-    public static List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagRestInput input,
+    public List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagRestInput input,
                                                                                                      List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> usortertDtoList = new ArrayList<>();
@@ -61,7 +73,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return dtoList;
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto lagDto(BeregningsgrunnlagRestInput input,
+    private BeregningsgrunnlagPrStatusOgAndelDto lagDto(BeregningsgrunnlagRestInput input,
                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var iayGrunnlag = input.getIayGrunnlag();
         var inntektsmeldinger = input.getInntektsmeldinger();
@@ -94,7 +106,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
         dto.setErTilkommetAndel(FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
-            dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettes(input, andel));
+            dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettesForYtelse(input, andel));
         }
         if (andel.getAktivitetStatus().erArbeidstaker()) {
             iayGrunnlag.getAktørInntektFraRegister(ref.getAktørId())
@@ -114,83 +126,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return dto;
     }
 
-    private static boolean skalGrunnlagFastsettes(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
-        if(finnesIngenSammenligningsgrunnlagPrStatus(input)){
-            return skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(input, andel, input.getBeregningsgrunnlag().getSammenligningsgrunnlag());
-        }
-
-        Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagIkkeSplittet = input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
-            .filter(s -> s.getSammenligningsgrunnlagType().equals(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN))
-            .findAny();
-
-        if(sammenligningsgrunnlagIkkeSplittet.isPresent()) {
-            return skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(input, andel, sammenligningsgrunnlagIkkeSplittet.get());
-        }
-
-        if(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())){
-            return skalGrunnlagFastsettesForSN(input, andel);
-        }
-
-        return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
-            .filter(s -> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType()).equals(andel.getAktivitetStatus()))
-            .anyMatch(s -> erAvvikStørreEnn25Prosent(s.getAvvikPromilleNy()));
-
-    }
-
-    private static boolean finnesIngenSammenligningsgrunnlagPrStatus(BeregningsgrunnlagRestInput input){
-        return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().isEmpty();
-    }
-
-    private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatus =  input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
-            .filter(s -> no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType())))
-            .findAny();
-        if(sammenligningsgrunnlagPrStatus.isPresent()){
-            return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.get().getAvvikPromilleNy());
-        }
-        return Boolean.TRUE.equals(andel.getNyIArbeidslivet());
-    }
-
-    private static boolean  skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
-                                                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                                   SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus){
-        if(finnesSelvstendigNæringsdrivendeAndel(input)) {
-            if(andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
-                return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy()) || Boolean.TRUE.equals(andel.getNyIArbeidslivet());
-            } else {
-                return false;
-            }
-        }
-        return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
-    }
-
-    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
-                                                                                  no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                                  SammenligningsgrunnlagDto sammenligningsgrunnlag){
-        if(finnesSelvstendigNæringsdrivendeAndel(input)) {
-            if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
-                return finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(sammenligningsgrunnlag) || Boolean.TRUE.equals(andel.getNyIArbeidslivet());
-            } else {
-                return false;
-            }
-        }
-        return finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(sammenligningsgrunnlag);
-    }
-
-    private static boolean finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(SammenligningsgrunnlagDto sammenligningsgrunnlag){
-        if(sammenligningsgrunnlag != null){
-            return erAvvikStørreEnn25Prosent(sammenligningsgrunnlag.getAvvikPromilleNy());
-        }
-        return false;
-    }
-
-    private static boolean erAvvikStørreEnn25Prosent(BigDecimal avvikPromille){
-        return avvikPromille.compareTo(BigDecimal.valueOf(250)) > 0;
-    }
-
-    private static boolean finnesSelvstendigNæringsdrivendeAndel(BeregningsgrunnlagRestInput input){
-        List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-        return beregningsgrunnlagPrStatusOgAndel.stream().anyMatch(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende());
+    private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagRestInput input,
+                                                    no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
+        return FagsakYtelseTypeRef.Lookup.find(fastsettGrunnlag, input.getFagsakYtelseType())
+                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getBehandlingReferanse()))
+                .skalGrunnlagFastsettes(input, andel);
     }
 
     private static boolean dtoKanSorteres(List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidsarbeidstakerAndeler) {

@@ -30,6 +30,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Sammenligning
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -37,6 +38,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
@@ -75,8 +77,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -96,8 +99,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -117,8 +121,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -137,8 +142,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -155,8 +161,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
     }
 
@@ -172,8 +179,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -192,8 +200,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(true);
@@ -213,8 +222,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        var beregningsgrunnlagPrStatusOgAndelDto = BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
         // Assert
         assertThat(beregningsgrunnlagPrStatusOgAndelDto.get(0).getSkalFastsetteGrunnlag()).isEqualTo(false);
@@ -233,14 +243,16 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
+        tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
                 grunnlag.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
     }
 
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedAvvikOver25Prosent(SammenligningsgrunnlagType sammenligningsgrunnlagType) {
         return BeregningsgrunnlagDto.builder()
+                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
@@ -259,6 +271,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }
 
@@ -279,6 +292,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         return BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .medSammenligningsgrunnlag(sammenligningsgrunnlagDto)
+                .medGrunnbeløp(new Beløp(BigDecimal.valueOf(99_858)))
                 .build();
     }
 
@@ -298,7 +312,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medBeregnetPrÅr(BRUTTO_PR_AAR)
                 .medAvkortetPrÅr(AVKORTET_PR_AAR)
                 .medRedusertPrÅr(REDUSERT_PR_AAR)
-                .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
                 .build(beregningsgrunnlagPeriode);
     }
 

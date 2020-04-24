@@ -660,6 +660,56 @@ public class ForeslåBeregningsgrunnlagTest {
     }
 
     @Test
+    public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOOgRefusjon6G() {
+        // Arrange
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        BigDecimal inntektBeregnet = BigDecimal.valueOf(70_000);
+        BigDecimal refusjon = BigDecimal.valueOf(50_000);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(40_000);
+        lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+        var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
+                inntektBeregnet, null, refusjon);
+        var inntektsmeldinger = List.of(im1);
+        // Act
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        // Assert
+        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
+        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).isEmpty();
+    }
+
+    @Test
+    public void skalReturnereAksjonspunktNårOmsorgspengerOgATMedOver25ProsentAvvikOOgRefusjonMindreEnnBeregnet() {
+        // Arrange
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
+                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
+        BigDecimal refusjonskrav = BigDecimal.valueOf(MÅNEDSINNTEKT1).divide(BigDecimal.valueOf(2));
+        lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+        var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
+                inntektBeregnet, null, refusjonskrav);
+        var inntektsmeldinger = List.of(im1);
+        // Act
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        // Assert
+        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
+        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+    }
+
+    @Test
     public void skalSetteRiktigSammenligningsgrunnlagNårEnPeriodeMedArbeidstakerUtenNaturalytelserOgMedInntektsmeldingNårToggleErPå() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
