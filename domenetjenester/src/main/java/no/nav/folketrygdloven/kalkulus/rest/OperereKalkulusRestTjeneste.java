@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
@@ -102,7 +103,7 @@ public class OperereKalkulusRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = CREATE, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
 
@@ -134,7 +135,7 @@ public class OperereKalkulusRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = UPDATE, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
@@ -155,7 +156,7 @@ public class OperereKalkulusRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = UPDATE, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
@@ -168,7 +169,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/deaktiver")
     @Operation(description = "Deaktiverer aktivt beregningsgrunnlag basert.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
-    @BeskyttetRessurs(action = UPDATE, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentKalkulusRestTjeneste.HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());

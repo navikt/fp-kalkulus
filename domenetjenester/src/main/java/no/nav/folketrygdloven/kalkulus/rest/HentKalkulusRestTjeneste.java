@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursResourceAttributt.FAGSAK;
 
@@ -48,6 +49,7 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGU
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagGrunnlagForReferanseRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
@@ -85,7 +87,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/fastsatt")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
@@ -105,7 +107,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent BeregningsgrunnlagGrunnlag for angitt grunnlagsreferanse", summary = ("Returnerer BeregningsgrunnlagGrunnlag for grunnlagsreferanse."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/grunnlagForReferanse")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentBeregningsgrunnlagGrunnlagForReferanse(@NotNull @Valid HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto spesifikasjon) {
@@ -123,7 +125,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/grunnlag")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
@@ -141,7 +143,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/aktivtBeregningsgrunnlag")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
@@ -160,7 +162,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/beregningsgrunnlag")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDto(@NotNull @Valid HentBeregningsgrunnlagDtoForGUIRequestAbacDto spesifikasjon) {
@@ -184,7 +186,7 @@ public class HentKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
     @Path("/frisinnGrunnlag")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {

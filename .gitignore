@@ -64,3 +64,4 @@ dep.txt
 .env
 app.properties
 app-local.properties
+/lsp/

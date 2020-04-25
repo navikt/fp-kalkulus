@@ -9,12 +9,15 @@ services:
       - "5433:5432"
     volumes:
       - ./lokalutvikling/postgres-init:/docker-entrypoint-initdb.d/
-    container_name: postgres_kalkulus
+    container_name: postgres
   vtp:
     image: docker.pkg.github.com/navikt/vtp/vtp
     environment:
+      - "TZ=Europe/Oslo"
       - "NO_NAV_MODIG_SECURITY_APPCERT_KEYSTORE=/root/.modig/keystore.jks"
       - "JAVAX_NET_SSL_TRUSTSTORE=/root/.modig/truststore.jks"
+    env_file:
+      - "lokalutvikling/vtp.env"
     volumes:
       - "~/.modig:/root/.modig"
     ports:
@@ -24,7 +27,7 @@ services:
       - "9093:9093"
       - "9092:9092"
       - "8389:8389"
-    container_name: vtp_kalkulus
+    container_name: vtp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8060/rest/isReady"]
       interval: 30s

@@ -42,15 +42,13 @@ spec:
     paths:
       - mountPath: /var/run/secrets/nais.io/serviceuser
         kvPath: serviceuser/data/dev/srvftkalkulus
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: /kv/preprod/fss/ftkalkulus/q0
       - mountPath: /var/run/secrets/nais.io/appdynamics
         kvPath: /apikey/appdynamics/dev
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus-q0.nais.preprod.local
     - name: ABAC_PDP_ENDPOINT_URL
-      value: https://wasapp-q0.adeo.no/asm-pdp/authorize
+      value: http://abac-duplo/application/authorize
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts-q0.preprod.local/SecurityTokenServiceProvider/
     #OpenID

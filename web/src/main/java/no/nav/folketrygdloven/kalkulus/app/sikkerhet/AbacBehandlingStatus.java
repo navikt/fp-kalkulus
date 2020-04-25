@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.jetty.sikkerhet;
+package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
 public enum AbacBehandlingStatus {
     OPPRETTET("Opprettet"),
