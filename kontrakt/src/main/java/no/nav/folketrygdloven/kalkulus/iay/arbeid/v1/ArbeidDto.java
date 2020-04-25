@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ArbeidDto {
 
     @JsonProperty("yrkesaktiviteter")
-    @Size(min = 1)
+    @Size()
     @Valid
     private List<YrkesaktivitetDto> yrkesaktiviteter;
 
