@@ -14,13 +14,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public class BeregningsgrunnlagPrStatusOgAndelDto {
+@JsonTypeInfo(
+        use=JsonTypeInfo.Id.NAME,
+        include=JsonTypeInfo.As.PROPERTY,
+        property="dtoType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelATDto.class, name= BeregningsgrunnlagPrStatusOgAndelATDto.DTO_TYPE),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelSNDto.class, name= BeregningsgrunnlagPrStatusOgAndelSNDto.DTO_TYPE),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelFLDto.class, name= BeregningsgrunnlagPrStatusOgAndelFLDto.DTO_TYPE),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelYtelseDto.class, name= BeregningsgrunnlagPrStatusOgAndelYtelseDto.DTO_TYPE),
+        @JsonSubTypes.Type(value=BeregningsgrunnlagPrStatusOgAndelDtoFelles.class, name= BeregningsgrunnlagPrStatusOgAndelDtoFelles.DTO_TYPE)
+})
+public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     @Valid
     @JsonProperty("aktivitetStatus")
@@ -157,7 +170,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Valid
     @JsonProperty("skalFastsetteGrunnlag")
     private Boolean skalFastsetteGrunnlag;
-
 
     public BeregningsgrunnlagPrStatusOgAndelDto() {
         // trengs for deserialisering av JSON

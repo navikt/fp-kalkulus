@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagPrStatusOgAndelSNDto extends BeregningsgrunnlagPrStatusOgAndelDto {
 
+    public static final String DTO_TYPE = "SN";
+
     @Valid
     @JsonProperty("pgiSnitt")
     @Digits(integer = 8, fraction = 2)
@@ -40,7 +42,6 @@ public class BeregningsgrunnlagPrStatusOgAndelSNDto extends BeregningsgrunnlagPr
 
     public BeregningsgrunnlagPrStatusOgAndelSNDto() {
         super();
-        // trengs for deserialisering av JSON
     }
 
     public BigDecimal getPgiSnitt() {

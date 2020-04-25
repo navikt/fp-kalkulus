@@ -34,6 +34,10 @@ public class PgiDto {
     @Max(3000)
     private Integer årstall;
 
+    public PgiDto() {
+        // Jackson
+    }
+
     public PgiDto(BigDecimal beløp, Integer årstall) {
         this.beløp = beløp;
         this.årstall = årstall;

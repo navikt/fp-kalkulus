@@ -83,6 +83,10 @@ public class EgenNæringDto {
     @DecimalMax("10000000.00")
     private BigDecimal oppgittInntekt;
 
+    public EgenNæringDto() {
+        // Jackson
+    }
+
     public String getOrgnr() {
         return orgnr;
     }

@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelATDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDtoFelles;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelFLDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelSNDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelYtelseDto;
@@ -41,13 +42,12 @@ class LagTilpassetDtoTjeneste  {
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
             && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
             return opprettATDto(andel);
-
         } else if (AktivitetStatus.FRILANSER.equals(andel.getAktivitetStatus())) {
             return opprettFLDto(andel);
         } else if (AktivitetStatus.DAGPENGER.equals(andel.getAktivitetStatus()) || AktivitetStatus.ARBEIDSAVKLARINGSPENGER.equals(andel.getAktivitetStatus())) {
             return opprettYtelseDto(ref, inntektArbeidYtelseGrunnlag, andel);
         } else {
-            return new BeregningsgrunnlagPrStatusOgAndelDto();
+            return new BeregningsgrunnlagPrStatusOgAndelDtoFelles();
         }
     }
 

@@ -14,13 +14,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagPrStatusOgAndelFLDto extends BeregningsgrunnlagPrStatusOgAndelDto {
 
+    public static final String DTO_TYPE = "FL";
+
     @Valid
     @JsonProperty(value = "erNyoppstartet")
     private Boolean erNyoppstartet;
 
     public BeregningsgrunnlagPrStatusOgAndelFLDto() {
         super();
-        // trengs for deserialisering av JSON
     }
 
     public Boolean getErNyoppstartet() {

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonAutoDetect(getterVisibility= JsonAutoDetect.Visibility.NONE, setterVisibility= JsonAutoDetect.Visibility.NONE, fieldVisibility= JsonAutoDetect.Visibility.ANY)
 public class BeregningsgrunnlagPrStatusOgAndelYtelseDto extends BeregningsgrunnlagPrStatusOgAndelDto {
+    public static final String DTO_TYPE = "KUN_YTELSE";
 
     @Valid
     @JsonProperty("belopFraMeldekortPrMnd")
@@ -37,7 +38,6 @@ public class BeregningsgrunnlagPrStatusOgAndelYtelseDto extends Beregningsgrunnl
 
     public BeregningsgrunnlagPrStatusOgAndelYtelseDto() {
         super();
-        // trengs for deserialisering av JSON
     }
 
     public BigDecimal getBelopFraMeldekortPrMnd() {
