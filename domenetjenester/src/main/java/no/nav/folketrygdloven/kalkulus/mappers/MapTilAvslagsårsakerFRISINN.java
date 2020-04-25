@@ -50,7 +50,12 @@ public class MapTilAvslagsårsakerFRISINN {
                 .map(Intervall::getFomDato)
                 .min(Comparator.naturalOrder())
                 .orElse(TIDENES_BEGYNNELSE);
-        if (førsteSøknadsdato.isAfter(periode.getFomDato())) {
+        var sisteSøknadsdato = finnPeriodeinntekterFrilans(oppgittOpptjening).stream()
+                .map(OppgittPeriodeInntekt::getPeriode)
+                .map(Intervall::getTomDato)
+                .max(Comparator.naturalOrder())
+                .orElse(TIDENES_BEGYNNELSE);
+        if (førsteSøknadsdato.isAfter(periode.getFomDato()) || sisteSøknadsdato.isBefore(periode.getFomDato())) {
             return Optional.empty();
         }
         if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
@@ -81,7 +86,13 @@ public class MapTilAvslagsårsakerFRISINN {
                 .filter(d -> !d.isBefore(bgPeriode.getBeregningsgrunnlag().getSkjæringstidspunkt()))
                 .min(Comparator.naturalOrder())
                 .orElse(TIDENES_BEGYNNELSE);
-        if (førsteSøknadsdato.isAfter(periode.getFomDato())) {
+        var sisteSøknadsdato = finnPeriodeinntekterNæring(oppgittOpptjening).stream()
+                .map(OppgittPeriodeInntekt::getPeriode)
+                .map(Intervall::getTomDato)
+                .filter(d -> !d.isBefore(bgPeriode.getBeregningsgrunnlag().getSkjæringstidspunkt()))
+                .max(Comparator.naturalOrder())
+                .orElse(TIDENES_BEGYNNELSE);
+        if (førsteSøknadsdato.isAfter(periode.getFomDato()) || sisteSøknadsdato.isBefore(periode.getFomDato())) {
             return Optional.empty();
         }
         if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
