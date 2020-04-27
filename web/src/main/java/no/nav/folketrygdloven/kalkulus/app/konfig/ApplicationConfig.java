@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.app.konfig;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
@@ -20,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.rest.UtledKalkulusRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -29,23 +31,23 @@ public class ApplicationConfig extends Application {
     public ApplicationConfig() {
         OpenAPI oas = new OpenAPI();
         Info info = new Info()
-            .title("Kalkulus")
-            .version("1.0")
-            .description("REST grensesnitt for Kalkulus.");
+                .title("Kalkulus")
+                .version("1.0")
+                .description("REST grensesnitt for Kalkulus.");
 
         oas.info(info)
-            .addServersItem(new Server()
-                .url("/ftkalkulus"));
+                .addServersItem(new Server()
+                        .url("/ftkalkulus"));
         SwaggerConfiguration oasConfig = new SwaggerConfiguration()
-            .openAPI(oas)
-            .prettyPrint(true)
-            .scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner")
-            .resourcePackages(Set.of("no.nav.folketrygdloven"));
+                .openAPI(oas)
+                .prettyPrint(true)
+                .scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner")
+                .resourcePackages(Set.of("no.nav.folketrygdloven"));
         try {
             new JaxrsOpenApiContextBuilder<>()
-                .openApiConfiguration(oasConfig)
-                .buildContext(true)
-                .read();
+                    .openApiConfiguration(oasConfig)
+                    .buildContext(true)
+                    .read();
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -57,6 +59,7 @@ public class ApplicationConfig extends Application {
 
         //kalkulus rest
         classes.add(OperereKalkulusRestTjeneste.class);
+        classes.add(UtledKalkulusRestTjeneste.class);
         classes.add(HentKalkulusRestTjeneste.class);
 
         //andre tjenester
