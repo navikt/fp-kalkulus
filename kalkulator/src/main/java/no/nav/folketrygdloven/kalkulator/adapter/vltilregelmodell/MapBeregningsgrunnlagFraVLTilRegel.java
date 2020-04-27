@@ -81,7 +81,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return mapBeregningsgrunnlagPerioder(Beregningsgrunnlag, input);
     }
 
-    public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
+    public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
+                                                                                                 BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
         var ref = input.getBehandlingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");

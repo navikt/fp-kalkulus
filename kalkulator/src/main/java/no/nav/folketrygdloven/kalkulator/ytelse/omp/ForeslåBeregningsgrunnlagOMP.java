@@ -16,8 +16,10 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("OMP")
@@ -51,6 +53,7 @@ public class ForeslåBeregningsgrunnlagOMP extends ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
         beregningsgrunnlag = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderUtenAndelendring(input, beregningsgrunnlag);
+        grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
 
         // Oversetter initielt Beregningsgrunnlag -> regelmodell
         Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
