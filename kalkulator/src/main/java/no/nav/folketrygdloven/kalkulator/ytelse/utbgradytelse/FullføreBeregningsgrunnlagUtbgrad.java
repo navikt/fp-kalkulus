@@ -34,11 +34,6 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
 
     @Override
     protected List<RegelResultat> evaluerRegelmodell(Beregningsgrunnlag beregningsgrunnlagRegel, BeregningsgrunnlagInput bgInput) {
-        var ytelsespesifiktGrunnlag = (UtbetalingsgradGrunnlag)bgInput.getYtelsespesifiktGrunnlag();
-
-        tilpassRegelModellForUtbetalingsgrad(ytelsespesifiktGrunnlag, beregningsgrunnlagRegel);
-
-
         String input = toJson(beregningsgrunnlagRegel);
         // Regel for å finne grenseverdi for andre gjennomkjøring
         List<String> sporingerFinnGrenseverdi = kjørRegelFinnGrenseverdi(beregningsgrunnlagRegel);
@@ -81,12 +76,6 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
                 Evaluation evaluering = regel.evaluer(periode);
                 return RegelmodellOversetter.getSporing(evaluering);
             }).collect(Collectors.toList());
-    }
-
-
-    private void tilpassRegelModellForUtbetalingsgrad(UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, Beregningsgrunnlag beregningsgrunnlagRegel) {
-        List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet();
-        RegelmodellModifiserer.tilpassRegelModellForUtbetalingsgrad(beregningsgrunnlagRegel, tilretteleggingMedUtbelingsgrad);
     }
 
 }

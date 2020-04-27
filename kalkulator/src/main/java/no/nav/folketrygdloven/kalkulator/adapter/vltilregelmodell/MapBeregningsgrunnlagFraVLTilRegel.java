@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnUtbetalingsgradForAndel;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -189,7 +191,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .build();
     }
 
-    private List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag, BeregningsgrunnlagInput input) {
+    private List<BeregningsgrunnlagPeriode> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagDto vlBeregningsgrunnlag,
+                                                                          BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPeriode> perioder = new ArrayList<>();
         vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(vlBGPeriode -> {
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
@@ -197,7 +200,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                     .medskalSplitteATFL(input.isEnabled(TOGGLE, false))
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsak(vlBGPeriode.getBeregningsgrunnlagPeriodeÅrsaker()));
 
-            List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller());
+            List<BeregningsgrunnlagPrStatus> beregningsgrunnlagPrStatus = mapVLBGPrStatus(vlBGPeriode, vlBeregningsgrunnlag.getFaktaOmBeregningTilfeller(), input);
             beregningsgrunnlagPrStatus.forEach(regelBGPeriode::medBeregningsgrunnlagPrStatus);
             perioder.add(regelBGPeriode.build());
         });
@@ -205,7 +208,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return perioder;
     }
 
-    private List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
+    private List<BeregningsgrunnlagPrStatus> mapVLBGPrStatus(BeregningsgrunnlagPeriodeDto vlBGPeriode,
+                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+                                                             BeregningsgrunnlagInput input) {
         List<BeregningsgrunnlagPrStatus> liste = new ArrayList<>();
         BeregningsgrunnlagPrStatus bgpsATFL = null;
 
@@ -213,11 +218,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
             if (AktivitetStatus.ATFL.equals(regelAktivitetStatus) || AktivitetStatus.AT.equals(regelAktivitetStatus)) {
                 if (bgpsATFL == null) {  // Alle ATFL håndteres samtidig her
-                    bgpsATFL = mapVLBGPStatusForATFL(vlBGPeriode, regelAktivitetStatus, faktaOmBeregningTilfeller);
+                    bgpsATFL = mapVLBGPStatusForATFL(vlBGPeriode, regelAktivitetStatus, faktaOmBeregningTilfeller, input);
                     liste.add(bgpsATFL);
                 }
             } else {
-                BeregningsgrunnlagPrStatus bgps = mapVLBGPStatusForAlleAktivietetStatuser(vlBGPStatus);
+                BeregningsgrunnlagPrStatus bgps = mapVLBGPStatusForAlleAktivietetStatuser(vlBGPStatus, input);
                 liste.add(bgps);
             }
         }
@@ -240,7 +245,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     // Ikke ATFL og TY, de har separat mapping
-    private BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    private BeregningsgrunnlagPrStatus mapVLBGPStatusForAlleAktivietetStatuser(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus, BeregningsgrunnlagInput input) {
         final AktivitetStatus regelAktivitetStatus = mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus());
         List<BigDecimal> pgi = (vlBGPStatus.getPgiSnitt() == null ? new ArrayList<>() :
                 Arrays.asList(vlBGPStatus.getPgi1(), vlBGPStatus.getPgi2(), vlBGPStatus.getPgi3()));
@@ -260,8 +265,13 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medLagtTilAvSaksbehandler(vlBGPStatus.getLagtTilAvSaksbehandler())
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medOrginalDagsatsFraTilstøtendeYtelse(vlBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
+                .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()))
                 .build();
     }
+
+
+
+
 
     private Periode beregningsperiodeFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         if (vlBGPStatus.getBeregningsperiodeFom() == null && vlBGPStatus.getBeregningsperiodeTom() == null) {
@@ -272,21 +282,24 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     // Felles mapping av alle statuser som mapper til ATFL
     private BeregningsgrunnlagPrStatus mapVLBGPStatusForATFL(BeregningsgrunnlagPeriodeDto vlBGPeriode,
-                                                             AktivitetStatus regelAktivitetStatus, List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
+                                                             AktivitetStatus regelAktivitetStatus,
+                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+                                                             BeregningsgrunnlagInput input) {
 
         BeregningsgrunnlagPrStatus.Builder regelBGPStatusATFL = BeregningsgrunnlagPrStatus.builder().medAktivitetStatus(regelAktivitetStatus)
                 .medFlOgAtISammeOrganisasjon(faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON));
 
         for (BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus : vlBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             if (regelAktivitetStatus.equals(mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus()))) {
-                BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold = byggAndel(vlBGPStatus);
+                BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold = byggAndel(vlBGPStatus, input);
                 regelBGPStatusATFL.medArbeidsforhold(regelArbeidsforhold);
             }
         }
         return regelBGPStatusATFL.build();
     }
 
-    private BeregningsgrunnlagPrArbeidsforhold byggAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
+    private BeregningsgrunnlagPrArbeidsforhold byggAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus,
+                                                         BeregningsgrunnlagInput input) {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getInntektskategori()))
@@ -297,7 +310,8 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
                 .medFordeltPrÅr(vlBGPStatus.getFordeltPrÅr())
-                .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus));
+                .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
+                .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()));
 
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
@@ -315,4 +329,5 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .map(BeregningAktivitetDto::getOpptjeningAktivitetType)
                 .anyMatch(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE::equals);
     }
+
 }

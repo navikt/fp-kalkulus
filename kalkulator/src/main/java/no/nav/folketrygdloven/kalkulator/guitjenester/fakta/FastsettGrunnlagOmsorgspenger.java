@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnGradertBruttoForAndel;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -27,15 +29,17 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
         BeregningsgrunnlagPeriodeDto periode = andel.getBeregningsgrunnlagPeriode();
         Optional<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPeriode = finnTilhørendePeriode(input, periode);
         BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
-        BigDecimal maksRefusjonForPeriode = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(periode, input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning());
+        BigDecimal lavesteTotalRefusjonForPeriode = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periode, input.getInntektsmeldinger(),
+                input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
 
-        BigDecimal totaltMaksimalRefusjon = grenseverdi6G.min(maksRefusjonForPeriode);
-        BigDecimal totaltBeregningsgrunnlag = beregningsgrunnlagPeriode.get().getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+        BigDecimal lavesteGrenseRefusjon = grenseverdi6G.min(lavesteTotalRefusjonForPeriode);
+        BigDecimal totaltBeregningsgrunnlag = beregningsgrunnlagPeriode.get().getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .map(a -> finnGradertBruttoForAndel(a, periode.getPeriode(), input.getYtelsespesifiktGrunnlag()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal avkortetTotaltGrunnlag = grenseverdi6G.min(totaltBeregningsgrunnlag);
 
-        if (utbetalesPengerDirekteTilBruker(totaltMaksimalRefusjon, avkortetTotaltGrunnlag)) {
+        if (utbetalesPengerDirekteTilBruker(lavesteGrenseRefusjon, avkortetTotaltGrunnlag)) {
             return erAvvikStørreEnn25Prosent(finnAvvikPromille(input));
         }
         return false;

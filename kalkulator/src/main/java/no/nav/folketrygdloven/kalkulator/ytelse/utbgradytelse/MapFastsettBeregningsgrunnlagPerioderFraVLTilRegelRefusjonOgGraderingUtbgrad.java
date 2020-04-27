@@ -65,11 +65,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             return Optional.empty();
         }
         UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = input.getYtelsespesifiktGrunnlag();
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet();
-        Optional<LocalDate> førsteDatoMedUtbetalingOpt = utbetalingsgradPrAktivitet.stream()
-                .filter(trl -> trl.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().map(ag -> ag.getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator())).orElse(false)
-                        && trl.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()))
-                .flatMap(trl -> trl.getPeriodeMedUtbetalingsgrad().stream())
+        Optional<LocalDate> førsteDatoMedUtbetalingOpt = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(ya.getArbeidsgiver(), ya.getArbeidsforholdRef())
+                .stream()
                 .filter(periodeMedUtbetalingsgradDto -> periodeMedUtbetalingsgradDto.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) != 0)
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
                 .map(Intervall::getFomDato)

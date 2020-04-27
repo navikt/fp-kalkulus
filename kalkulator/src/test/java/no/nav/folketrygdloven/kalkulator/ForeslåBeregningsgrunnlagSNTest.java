@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.verdikjede.BeregningTjenesteProvider;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;

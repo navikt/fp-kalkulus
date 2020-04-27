@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
@@ -46,6 +49,39 @@ public class MapRefusjonskravFraVLTilRegel {
             refusjoner.put(inntektsmelding.getRefusjonOpphører().plusDays(1), Beløp.ZERO);
         }
         return lagForenkletRefusjonListe(refusjoner);
+    }
+
+    static List<Refusjonskrav> periodiserGradertRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
+                                                               List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader,
+                                                               LocalDate startdatoPermisjon) {
+        Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
+        Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
+        BigDecimal utbetalingsgradVedStart = finnUtbetalingsgradForDato(utbetalingsgrader, startdatoPermisjon);
+        refusjoner.put(startdatoPermisjon, refusjonBeløpPerMnd.multipliser(utbetalingsgradVedStart));
+        inntektsmelding.getEndringerRefusjon()
+                .stream()
+                .sorted(Comparator.comparing(RefusjonDto::getFom))
+                .forEach(endring -> {
+                    if (endring.getFom().isBefore(startdatoPermisjon)) {
+                        refusjoner.put(startdatoPermisjon, endring.getRefusjonsbeløp().multipliser(utbetalingsgradVedStart));
+                    } else {
+                        BigDecimal utbetalingsgrad = finnUtbetalingsgradForDato(utbetalingsgrader, startdatoPermisjon);
+                        refusjoner.put(endring.getFom(), endring.getRefusjonsbeløp().multipliser(utbetalingsgrad));
+                    }
+                });
+
+        if (inntektsmelding.getRefusjonOpphører() != null && !TIDENES_ENDE.equals(inntektsmelding.getRefusjonOpphører())) {
+            refusjoner.put(inntektsmelding.getRefusjonOpphører().plusDays(1), Beløp.ZERO);
+        }
+        return lagForenkletRefusjonListe(refusjoner);
+    }
+
+    private static BigDecimal finnUtbetalingsgradForDato(List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader, LocalDate startdatoPermisjon) {
+        return utbetalingsgrader.stream().filter(u -> u.getPeriode().inkluderer(startdatoPermisjon))
+                .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
+                .map(b -> b.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN))
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
     }
 
     private static List<Refusjonskrav> lagForenkletRefusjonListe(Map<LocalDate, Beløp> refusjoner) {
@@ -77,26 +113,37 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnSummertRefusjonskravForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode, Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes, LocalDate stp) {
+    public static BigDecimal finnLavesteTotalRefusjonForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode,
+                                                                   Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
+                                                                   LocalDate stp,
+                                                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         Intervall relevantPeriode = vlBGPeriode.getPeriode();
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
         for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
-            refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
+            if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
+                UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag;
+                var utbetalingsgrader = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(inntektsmeldingerSomSkalBruke.getArbeidsgiver(), inntektsmeldingerSomSkalBruke.getArbeidsforholdRef());
+                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserGradertRefusjonsbeløp(inntektsmeldingerSomSkalBruke, utbetalingsgrader, stp));
+            } else {
+                // Usikker på om vi trenger dette ettersom det kun brukes for omsorgspenger som alltid vil vere eit utbetalingsgradgrunnlag
+                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
+            }
         }
 
         List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream().filter(p -> p.getPeriode().overlapper(Periode.of(relevantPeriode.getFomDato(), relevantPeriode.getTomDato())))
                 .collect(Collectors.toList());
 
-        BigDecimal høyesteSummertIPerioden = relevanteRefusjonskrav.stream().map(Refusjonskrav::getPeriode)
+        BigDecimal lavesteSummertIPerioden = relevanteRefusjonskrav.stream().map(Refusjonskrav::getPeriode)
                 .map(periode -> relevanteRefusjonskrav.stream()
                         .filter(refusjonskrav -> refusjonskrav.getPeriode().overlapper(periode))
                         .map(Refusjonskrav::getMånedsbeløp)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO))
-                .max(Comparator.naturalOrder())
+                .min(Comparator.naturalOrder())
                 .orElse(BigDecimal.ZERO);
 
         //ganger med 12 får å få pr år
-        return høyesteSummertIPerioden.multiply(BigDecimal.valueOf(12));
+        return lavesteSummertIPerioden.multiply(BigDecimal.valueOf(12));
     }
+
 }

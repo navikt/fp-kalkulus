@@ -74,7 +74,7 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
-    static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p , lagVerifiserForeslåttAndelConsumer(p)));
         SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();

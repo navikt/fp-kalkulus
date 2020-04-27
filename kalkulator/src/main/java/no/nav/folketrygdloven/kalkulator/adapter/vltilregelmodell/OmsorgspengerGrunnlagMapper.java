@@ -23,10 +23,11 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
         List<OmsorgspengerGrunnlagPeriode> ompPerioder = beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
                 .map(p -> {
-                    BigDecimal maksimalRefusjon = MapRefusjonskravFraVLTilRegel.finnSummertRefusjonskravForBGPerioden(p,
+                    BigDecimal lavesteTotalRefusjon = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(p,
                             input.getInntektsmeldinger(),
-                            beregningsgrunnlagDto.getSkjæringstidspunkt());
-                    return new OmsorgspengerGrunnlagPeriode(Periode.of(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeFom()), maksimalRefusjon);
+                            beregningsgrunnlagDto.getSkjæringstidspunkt(),
+                            input.getYtelsespesifiktGrunnlag());
+                    return new OmsorgspengerGrunnlagPeriode(Periode.of(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeFom()), lavesteTotalRefusjon);
                 })
                 .collect(Collectors.toList());
         return new OmsorgspengerGrunnlag(ompPerioder);

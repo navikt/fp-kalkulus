@@ -97,6 +97,10 @@ public class Beløp implements Serializable, IndexKey, TraverseValue {
         return new Beløp(this.verdi.multiply(BigDecimal.valueOf(multiplicand)));
     }
 
+    public Beløp multipliser(BigDecimal multiplicand) {
+        return new Beløp(this.verdi.multiply(multiplicand));
+    }
+
     public Beløp adder(Beløp augend) {
         return new Beløp(this.verdi.add(augend.getVerdi()));
     }

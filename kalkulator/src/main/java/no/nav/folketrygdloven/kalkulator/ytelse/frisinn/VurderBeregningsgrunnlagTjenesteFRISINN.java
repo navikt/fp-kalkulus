@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -12,6 +13,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.vurder.frisinn.RegelVurderBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
@@ -23,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.RegelmodellModifiserer;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
@@ -47,8 +49,8 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
             throw new IllegalStateException("Har ikke FRISINN grunnlag når frisinnvilkår skal vurderes");
         }
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        RegelmodellModifiserer.settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.FL, frisinnGrunnlag.getSøkerYtelseForFrilans());
-        RegelmodellModifiserer.settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.SN, frisinnGrunnlag.getSøkerYtelseForNæring());
+        settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.FL, frisinnGrunnlag.getSøkerYtelseForFrilans());
+        settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.SN, frisinnGrunnlag.getSøkerYtelseForNæring());
 
         List<RegelResultat> regelResultater = kjørRegel(beregningsgrunnlagRegel);
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
@@ -71,5 +73,30 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         }
         return regelResultater;
     }
+
+
+    public static void settSøktYtelseForStatus(Beregningsgrunnlag beregningsgrunnlagRegel, AktivitetStatus status, boolean erSøktYtelseFor) {
+        beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().forEach(bgPeriode -> {
+            if (AktivitetStatus.FL.equals(status)) {
+                getBGArbeidsforhold(bgPeriode).stream()
+                        .filter(BeregningsgrunnlagPrArbeidsforhold::erFrilanser)
+                        .findFirst()
+                        .ifPresent(bgFrilans -> bgFrilans.setErSøktYtelseFor(erSøktYtelseFor));
+            }
+            if (AktivitetStatus.SN.equals(status)) {
+                BeregningsgrunnlagPrStatus snAndel = bgPeriode.getBeregningsgrunnlagPrStatus(AktivitetStatus.SN);
+                if (snAndel != null) {
+                    snAndel.setErSøktYtelseFor(erSøktYtelseFor);
+                }
+            }
+        });
+    }
+
+    private static List<BeregningsgrunnlagPrArbeidsforhold> getBGArbeidsforhold(BeregningsgrunnlagPeriode bgPeriode) {
+        return Optional.ofNullable(bgPeriode.getBeregningsgrunnlagPrStatus(AktivitetStatus.ATFL))
+                .map(BeregningsgrunnlagPrStatus::getArbeidsforhold)
+                .orElse(Collections.emptyList());
+    }
+
 
 }

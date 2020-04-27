@@ -45,8 +45,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
 public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLTilRegel {
-    private static final LocalDate FOM_2019 = LocalDate.of(2019,1,1);
-    private static final LocalDate TOM_2019 = LocalDate.of(2019,12,31);
 
     @Override
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
