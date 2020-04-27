@@ -45,6 +45,7 @@ public class ForeslåBeregningsgrunnlagOMP extends ForeslåBeregningsgrunnlag {
      * @param input BeregningsgrunnlagInput
      * @return Foreslått beregningsgrunnlag
      */
+    @Override
     public BeregningsgrunnlagRegelResultat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
