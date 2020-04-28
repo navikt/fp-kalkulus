@@ -25,15 +25,18 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
         if(manglerBeregnetPrÅr(andel)){
             return false;
         }
+        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
+                .stream()
+                .anyMatch(p -> FastsettGrunnlagOmsorgspenger.girDirekteUtbetaling(input, p));
+    }
 
-        BeregningsgrunnlagPeriodeDto periode = andel.getBeregningsgrunnlagPeriode();
-        Optional<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPeriode = finnTilhørendePeriode(input, periode);
+    private static boolean girDirekteUtbetaling(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPeriodeDto periode) {
         BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
         BigDecimal lavesteTotalRefusjonForPeriode = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periode, input.getInntektsmeldinger(),
                 input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
 
         BigDecimal lavesteGrenseRefusjon = grenseverdi6G.min(lavesteTotalRefusjonForPeriode);
-        BigDecimal totaltBeregningsgrunnlag = beregningsgrunnlagPeriode.get().getBeregningsgrunnlagPrStatusOgAndelList()
+        BigDecimal totaltBeregningsgrunnlag = periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .map(a -> finnGradertBruttoForAndel(a, periode.getPeriode(), input.getYtelsespesifiktGrunnlag()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -51,12 +54,6 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
 
     private static boolean utbetalesPengerDirekteTilBruker(BigDecimal maksimalRefusjon, BigDecimal avkortetTotaltGrunnlag){
         return maksimalRefusjon.compareTo(avkortetTotaltGrunnlag) < 0 ? true : false;
-    }
-
-    private static Optional<BeregningsgrunnlagPeriodeDto> finnTilhørendePeriode(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPeriodeDto periode ){
-        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
-                .filter(p -> p.getBeregningsgrunnlagPeriodeFom().equals(periode.getBeregningsgrunnlagPeriodeFom()))
-                .findFirst();
     }
 
     private static boolean erAvvikStørreEnn25Prosent(BigDecimal avvikPromille){
