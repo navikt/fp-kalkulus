@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPr
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
+import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -83,7 +84,8 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 );
         beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
                 faktaOmBeregningDtoTjeneste,
-                beregningsgrunnlagPrStatusOgAndelDtoTjeneste
+                beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
+                new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock())
         );
         virksomhet.setNavn(VIRKSOMHET_NAVN);
     }

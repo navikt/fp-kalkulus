@@ -16,15 +16,13 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforhol
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 public class UtbetalingsgradMapperFRISINN {
-
-    public static final int VIRKEDAGER_I_ET_ÅR = 260;
 
     /**
      * Finnner utbetalingsgrader for FRISINN
@@ -84,7 +82,7 @@ public class UtbetalingsgradMapperFRISINN {
     private static PeriodeMedUtbetalingsgradDto mapTilPeriodeMedUtbetalingsgrad(OppgittPeriodeInntekt oppgittPeriodeInntekt,
                                                                                 BeregningsgrunnlagEntitet bg,
                                                                                 AktivitetStatus aktivitetStatus) {
-        BigDecimal løpendeÅrsinntekt = finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
+        BigDecimal løpendeÅrsinntekt = EffektivÅrsinntektTjenesteFRISINN.finnEffektivÅrsinntektForLøpenedeInntekt(oppgittPeriodeInntekt);
         BigDecimal totalInntektIPeriode = bg.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getPeriode().inkluderer(oppgittPeriodeInntekt.getPeriode().getFomDato()))
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
@@ -96,28 +94,5 @@ public class UtbetalingsgradMapperFRISINN {
         BigDecimal bortfaltInntekt = totalInntektIPeriode.subtract(løpendeÅrsinntekt).max(BigDecimal.ZERO);
         BigDecimal utbetalingsgrad = totalInntektIPeriode.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : bortfaltInntekt.divide(totalInntektIPeriode, 10, RoundingMode.HALF_EVEN);
         return new PeriodeMedUtbetalingsgradDto(oppgittPeriodeInntekt.getPeriode(), utbetalingsgrad.multiply(BigDecimal.valueOf(100)));
-    }
-
-    /**
-     * Finner effektiv årsinntekt fra oppgitt inntekt
-     *
-     * @param oppgittInntekt oppgitt inntektsinformasjon
-     * @return effektiv årsinntekt fra inntekt
-     */
-    public static BigDecimal finnEffektivÅrsinntektForLøpenedeInntekt(OppgittPeriodeInntekt oppgittInntekt) {
-        BigDecimal dagsats = finnEffektivDagsatsIPeriode(oppgittInntekt);
-        return dagsats.multiply(BigDecimal.valueOf(VIRKEDAGER_I_ET_ÅR));
-    }
-
-    /**
-     * Finner opptjent inntekt pr dag i periode
-     *
-     * @param oppgittInntekt Informasjon om oppgitt inntekt
-     * @return dagsats i periode
-     */
-    private static BigDecimal finnEffektivDagsatsIPeriode(OppgittPeriodeInntekt oppgittInntekt) {
-        Intervall periode = oppgittInntekt.getPeriode();
-        long dagerIRapportertPeriode = Virkedager.beregnAntallVirkedager(periode.getFomDato(), periode.getTomDato());
-        return oppgittInntekt.getInntekt().divide(BigDecimal.valueOf(dagerIRapportertPeriode), 10, RoundingMode.HALF_EVEN);
     }
 }

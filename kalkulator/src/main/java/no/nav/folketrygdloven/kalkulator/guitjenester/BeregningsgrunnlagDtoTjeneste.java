@@ -13,11 +13,15 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisningstall;
+import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -38,6 +42,8 @@ public class BeregningsgrunnlagDtoTjeneste {
     private static final int SEKS = 6;
     private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
+    private Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester;
+
 
     private final Map<FagsakYtelseType, BiConsumer<BeregningsgrunnlagRestInput, BeregningsgrunnlagDto>> ytelsespesifikkMapper = Map
         .of(FagsakYtelseType.FORELDREPENGER, this::mapDtoForeldrepenger);
@@ -47,9 +53,12 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     @Inject
-    public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste, BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste) {
+    public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste,
+                                         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
+                                         @Any Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester) {
         this.faktaOmBeregningDtoTjeneste = faktaOmBeregningDtoTjeneste;
         this.beregningsgrunnlagPrStatusOgAndelDtoTjeneste = beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
+        this.ytelsetjenester = ytelsetjenester;
     }
 
     public BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BeregningsgrunnlagRestInput input) {
@@ -76,7 +85,14 @@ public class BeregningsgrunnlagDtoTjeneste {
 
         mapDekningsgrad(input, dto);
 
+        mapYtelsesspesifiktGrunnlag(input, dto);
+
         return dto;
+    }
+
+    private void mapYtelsesspesifiktGrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+        Optional<YtelsespesifiktGrunnlagTjeneste> ytelsemapper = FagsakYtelseTypeRef.Lookup.find(ytelsetjenester, input.getFagsakYtelseType());
+        ytelsemapper.flatMap(ytelsespesifiktGrunnlagTjeneste -> ytelsespesifiktGrunnlagTjeneste.map(input)).ifPresent(dto::setYtelsesspesifiktGrunnlag);
     }
 
     private void mapDekningsgrad(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {

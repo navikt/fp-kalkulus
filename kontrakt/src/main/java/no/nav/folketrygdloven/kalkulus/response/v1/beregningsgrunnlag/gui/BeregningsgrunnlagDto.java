@@ -119,6 +119,10 @@ public class BeregningsgrunnlagDto {
     @Max(100)
     private int dekningsgrad;
 
+    @JsonProperty(value = "ytelsesspesifiktGrunnlag")
+    @Valid
+    private YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag;
+
     public BeregningsgrunnlagDto() {
         // trengs for deserialisering av JSON
     }
@@ -257,5 +261,13 @@ public class BeregningsgrunnlagDto {
 
     public void setSammenligningsgrunnlagPrStatus(List<SammenligningsgrunnlagDto> sammenligningsgrunnlagPrStatus) {
         this.sammenligningsgrunnlagPrStatus = sammenligningsgrunnlagPrStatus;
+    }
+
+    public YtelsespesifiktGrunnlagDto getYtelsesspesifiktGrunnlag() {
+        return ytelsesspesifiktGrunnlag;
+    }
+
+    public void setYtelsesspesifiktGrunnlag(YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag) {
+        this.ytelsesspesifiktGrunnlag = ytelsesspesifiktGrunnlag;
     }
 }

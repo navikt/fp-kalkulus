@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -162,7 +163,7 @@ public class MapTilAvslagsårsakerFRISINN {
     private static BigDecimal finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
         return periodeInntekter.stream()
                 .filter(i -> i.getPeriode().getFomDato().equals(periode.getFomDato()))
-                .map(UtbetalingsgradMapperFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
+                .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }

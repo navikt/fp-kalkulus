@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.mappers;
+package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import static java.lang.Math.toIntExact;
 
