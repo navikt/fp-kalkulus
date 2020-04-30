@@ -29,17 +29,11 @@ import no.nav.vedtak.util.FPDateUtil;
 @FagsakYtelseTypeRef("*")
 public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements AksjonspunktUtlederFastsettBeregningsaktiviteter {
 
-    @Override
-    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
-        return utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
-    }
-
     private static List<BeregningAksjonspunktResultat> utledAksjonspunkterForFelles(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                   BeregningAktivitetAggregatDto beregningAktivitetAggregat,
-                                                                                   BeregningsgrunnlagInput input,
-                                                                                   boolean erOverstyrt,
-                                                                                   FagsakYtelseType fagsakYtelseType) {
+                                                                                    BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                                                    BeregningsgrunnlagInput input,
+                                                                                    boolean erOverstyrt,
+                                                                                    FagsakYtelseType fagsakYtelseType) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getBehandlingReferanse().getAktørId());
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
@@ -71,5 +65,11 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
 
     protected static BeregningAksjonspunktResultat autopunkt(BeregningAksjonspunktDefinisjon apDef, BeregningVenteårsak venteårsak, LocalDate settPåVentTom) {
         return BeregningAksjonspunktResultat.opprettMedFristFor(apDef, venteårsak, LocalDateTime.of(settPåVentTom, LocalTime.MIDNIGHT));
+    }
+
+    @Override
+    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
+        return utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
     }
 }
