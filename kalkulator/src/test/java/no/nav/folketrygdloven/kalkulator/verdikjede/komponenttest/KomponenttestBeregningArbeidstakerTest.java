@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -28,7 +27,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef.Lookup;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBeregningsgrunnlagATFLHåndterer;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.InntektPrAndelDto;
@@ -71,7 +69,7 @@ public class KomponenttestBeregningArbeidstakerTest {
     @Inject
     private BeregningArbeidsgiverTestUtil arbeidsgiverTestUtil;
 
-
+    @Inject
     private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
@@ -80,10 +78,7 @@ public class KomponenttestBeregningArbeidstakerTest {
 
     @BeforeEach
     public void setUp() {
-
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        Optional<BeregningsgrunnlagTjeneste> fp = Lookup.find(BeregningsgrunnlagTjeneste.class, "FP");
-        beregningsgrunnlagTjeneste = fp.get();
     }
 
     // Arbeidsgivere: 1 (virksomhet)

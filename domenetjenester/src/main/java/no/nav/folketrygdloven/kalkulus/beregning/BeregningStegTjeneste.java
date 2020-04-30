@@ -14,12 +14,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -30,7 +27,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
@@ -45,7 +41,7 @@ public class BeregningStegTjeneste {
     private static final String UTVIKLER_FEIL_SKAL_HA_BEREGNINGSGRUNNLAG_HER = "Utvikler-feil: skal ha beregningsgrunnlag her";
     private static final Supplier<IllegalStateException> INGEN_BG_EXCEPTION_SUPPLIER = () -> new IllegalStateException(UTVIKLER_FEIL_SKAL_HA_BEREGNINGSGRUNNLAG_HER);
 
-    private Instance<BeregningsgrunnlagTjeneste> beregningsgrunnlagTjeneste;
+    private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
     private BeregningsgrunnlagRepository repository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
 
@@ -54,7 +50,7 @@ public class BeregningStegTjeneste {
     }
 
     @Inject
-    public BeregningStegTjeneste(@Any Instance<BeregningsgrunnlagTjeneste> beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository, RullTilbakeTjeneste rullTilbakeTjeneste) {
+    public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository, RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
@@ -68,7 +64,7 @@ public class BeregningStegTjeneste {
      * @return {@link TilstandResponse}
      */
     public TilstandResponse fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
-        BeregningResultatAggregat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType()).fastsettBeregningsaktiviteter(input);
+        BeregningResultatAggregat resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         TilstandResponse tilstandResponse = mapTilstandResponse(lagreOgKopier(input.getBehandlingReferanse(), resultat));
 
         if (resultat.getBeregningVilkårResultat() != null) {
@@ -86,7 +82,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     public TilstandResponse kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = finnImplementasjonForYtelseType(input.getFagsakYtelseType()).kontrollerFaktaBeregningsgrunnlag(input);
+        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeBekreftetGrunnlag = finnForrigeGrunnlagFraTilstand(input, KOFAKBER_UT);
         BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(input.getBehandlingReferanse().getKoblingId(), beregningResultatAggregat.getBeregningsgrunnlagGrunnlag(), OPPDATERT_MED_ANDELER);
         BeregningsgrunnlagEntitet nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER);
@@ -102,7 +98,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     public TilstandResponse foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = finnImplementasjonForYtelseType(input.getFagsakYtelseType()).foreslåBeregningsgrunnlag(input);
+        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FORESLÅTT_UT);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, FORESLÅTT, FORESLÅTT_UT);
@@ -118,7 +114,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     public TilstandResponse fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = finnImplementasjonForYtelseType(input.getFagsakYtelseType()).fordelBeregningsgrunnlag(input);
+        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FASTSATT_INN);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, OPPDATERT_MED_REFUSJON_OG_GRADERING, FASTSATT_INN);
@@ -134,7 +130,7 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      */
     public TilstandResponse fastsettBeregningsaktiviteters(BeregningsgrunnlagInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = finnImplementasjonForYtelseType(input.getFagsakYtelseType()).fastsettBeregningsgrunnlag(input);
+        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         Long koblingId = input.getBehandlingReferanse().getKoblingId();
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag = beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag();
 
@@ -247,10 +243,5 @@ public class BeregningStegTjeneste {
             return fastsettBeregningsaktiviteters(input);
         }
         throw new IllegalStateException("Kan ikke beregne for " + stegType.getKode());
-    }
-
-    private BeregningsgrunnlagTjeneste finnImplementasjonForYtelseType(FagsakYtelseType fagsakYtelseType) {
-        return FagsakYtelseTypeRef.Lookup.find(beregningsgrunnlagTjeneste, fagsakYtelseType)
-                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for ytelse " + fagsakYtelseType.getKode()));
     }
 }

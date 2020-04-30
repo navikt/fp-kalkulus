@@ -16,6 +16,7 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
@@ -24,26 +25,28 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
  */
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
 public class BeregningsgrunnlagTjeneste {
 
+    protected FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
+    protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
     private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
-    protected FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
-    protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
 
     public BeregningsgrunnlagTjeneste() {
@@ -92,8 +95,32 @@ public class BeregningsgrunnlagTjeneste {
         BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
                 .medAksjonspunkter(aksjonspunkter);
 
+        if (input.getFagsakYtelseType().equals(FagsakYtelseType.FRISINN)) {
+            leggPåFrisinnData(input, beregningsgrunnlagRegelResultat, resultatBuilder);
+        }
+
         resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), OPPRETTET);
         return resultatBuilder.build();
+    }
+
+    //FIXME(OJR) skill ut i egen tjeneste
+    private void leggPåFrisinnData(BeregningsgrunnlagInput input, BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, Builder resultatBuilder) {
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        if (beregningsgrunnlagRegelResultat.getAksjonspunkter().stream().anyMatch(bra -> bra.getBeregningAksjonspunktDefinisjon() == BeregningAksjonspunktDefinisjon.INGEN_AKTIVITETER)) {
+            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
+                resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT);
+            } else {
+                resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.FOR_LAVT_BG);
+            }
+        } else {
+            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
+                if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag() != null) {
+                    if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag().getAktivitetStatuser().stream().noneMatch(as -> as.getAktivitetStatus().erFrilanser())) {
+                        resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT);
+                    }
+                }
+            }
+        }
     }
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
