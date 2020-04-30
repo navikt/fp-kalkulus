@@ -47,7 +47,10 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         if (regelmodell.getSkjæringstidspunktForBeregning() == null) {
             return Optional.empty();
         }
-        RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
+        RegelResultat regelResultatFastsettStatus = fastsettStatus(input, regelmodell);
+        if (regelmodell.getBeregningsgrunnlagPrStatusListe() == null || regelmodell.getBeregningsgrunnlagPrStatusListe().isEmpty()) {
+            return Optional.empty();
+        }
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)
         List<RegelResultat> regelResultater = List.of(
@@ -68,10 +71,14 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
 
-    private RegelResultat fastsettStatus(AktivitetStatusModell regelmodell) {
+    private RegelResultat fastsettStatus(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
-        String inputStatusFastsetting = toJson(regelmodell);
-        Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(regelmodell);
+        var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
+        Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
+        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag, regelmodell);
+        aktivitetStatusModellFRISINN.setInntektsgrunnlag(inntektsgrunnlag);
+        String inputStatusFastsetting = toJson(aktivitetStatusModellFRISINN);
+        Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(aktivitetStatusModellFRISINN);
         return RegelmodellOversetter.getRegelResultat(evaluationStatusFastsetting, inputStatusFastsetting);
     }
 
