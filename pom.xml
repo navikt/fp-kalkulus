@@ -45,7 +45,7 @@
 
         <fpsak.nare.version>2.1.0-20200121220149-fc67304</fpsak.nare.version>
         <fpsak.tidsserie.version>2.1-20200123110022-e75fb59</fpsak.tidsserie.version>
-        <beregningsgrunnlag.regelmodell.version>2.1-20200427192123-8f57df0</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>2.1-20200429201119-9756b9b</beregningsgrunnlag.regelmodell.version>
         <felles.version>1.6-20200423205043-1937934</felles.version>
         <prometheus.version>0.8.1</prometheus.version>
         <junit.version>5.6.2</junit.version>

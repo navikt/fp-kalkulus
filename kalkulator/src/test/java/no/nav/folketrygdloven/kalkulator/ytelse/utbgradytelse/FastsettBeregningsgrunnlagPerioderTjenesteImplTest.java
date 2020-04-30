@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -172,11 +173,13 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
-        assertThat(perioder).hasSize(3);
+        assertThat(perioder).hasSize(4);
         assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(13));
         assertBeregningsgrunnlagPeriode(perioder.get(1), SKJÆRINGSTIDSPUNKT.plusDays(14), SKJÆRINGSTIDSPUNKT.plusMonths(1),
             PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
-        assertBeregningsgrunnlagPeriode(perioder.get(2), SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), Intervall.TIDENES_ENDE, PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+        assertBeregningsgrunnlagPeriode(perioder.get(2), SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(2), PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+        assertBeregningsgrunnlagPeriode(perioder.get(3), SKJÆRINGSTIDSPUNKT.plusMonths(2).plusDays(1), TIDENES_ENDE, PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+
     }
 
 
@@ -208,9 +211,12 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
-        assertThat(perioder).hasSize(1);
+        assertThat(perioder).hasSize(2);
         assertThat(perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
-        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, Intervall.TIDENES_ENDE);
+        assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        assertThat(perioder.get(1).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
+        assertBeregningsgrunnlagPeriode(perioder.get(1),  SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), TIDENES_ENDE,
+                PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
     }
 
 

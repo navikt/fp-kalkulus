@@ -297,7 +297,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             .reduce(BigDecimal::add)
             .orElse(null);
         dto.setBruttoInkludertBortfaltNaturalytelsePrAar(bruttoInkludertBortfaltNaturalytelsePrAar);
-        dto.setAvkortetPrAar(finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp()));
+        dto.setAvkortetPrAar(periode.getAvkortetPrÅr() == null ? null : finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp()));
         dto.setRedusertPrAar(periode.getRedusertPrÅr());
         dto.setDagsats(periode.getDagsats());
         dto.leggTilPeriodeAarsaker(periode.getPeriodeÅrsaker().stream().map(årsak -> new PeriodeÅrsak(årsak.getKode())).collect(Collectors.toList()));
