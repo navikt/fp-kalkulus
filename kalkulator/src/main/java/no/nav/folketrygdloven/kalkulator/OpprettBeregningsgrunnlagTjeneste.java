@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator;
 
 
-import java.util.Optional;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
@@ -14,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 
 
 @ApplicationScoped
@@ -50,9 +49,10 @@ public class OpprettBeregningsgrunnlagTjeneste {
         BeregningsgrunnlagDto bgMedAndeler = FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
                 .fastsett(input, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser())
-                .orElseThrow(() -> new IllegalStateException("Forventer at fastsettSkjæringstidspunktOgStatuser i kontroller fakta beregning"));
+                .getBeregningsgrunnlag();
+
         BehandlingReferanse refMedSkjæringstidspunkt = ref
-            .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(ref, beregningAktiviteter, bgMedAndeler));
+            .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(beregningAktiviteter, bgMedAndeler));
         FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(bgMedAndeler, input.getIayGrunnlag());
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
         BeregningsgrunnlagDto bgMedPerioder = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, bgMedAndeler);
@@ -60,15 +60,14 @@ public class OpprettBeregningsgrunnlagTjeneste {
         return bgMedPerioder;
     }
 
-    private Skjæringstidspunkt oppdaterSkjæringstidspunktForBeregning(BehandlingReferanse ref,
-                                                                      BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+    private Skjæringstidspunkt oppdaterSkjæringstidspunktForBeregning(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                       BeregningsgrunnlagDto beregningsgrunnlag) {
         return Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening())
             .medSkjæringstidspunktBeregning(beregningsgrunnlag.getSkjæringstidspunkt()).build();
     }
 
-    Optional<BeregningsgrunnlagDto> fastsettSkjæringstidspunktOgStatuser(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
                 .fastsett(input, beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());

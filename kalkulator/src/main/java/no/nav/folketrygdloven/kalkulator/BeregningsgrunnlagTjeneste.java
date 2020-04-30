@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
  * Fasade tjeneste for å delegere alle kall fra steg
  */
 @ApplicationScoped
+@FagsakYtelseTypeRef("*")
 public class BeregningsgrunnlagTjeneste {
 
     private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
@@ -40,9 +41,9 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
-    private FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
+    protected FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
-    private OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
+    protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
 
     public BeregningsgrunnlagTjeneste() {
@@ -72,24 +73,26 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
         Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
                 .medOverstyring(overstyrt.orElse(null));
-        beregningsgrunnlagOpt.ifPresent(builder::medBeregningsgrunnlag);
+        builder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag());
+
         var beregningsgrunnlagGrunnlag = builder.build(OPPRETTET);
         boolean erOverstyrt = overstyrt.isPresent();
         BeregningsgrunnlagInput inputOppdatertMedBg = input.medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
         var aksjonspunkter = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter).utledAksjonspunkter(
-                beregningsgrunnlagOpt,
+                beregningsgrunnlagRegelResultat,
                 beregningAktivitetAggregat,
                 inputOppdatertMedBg,
                 erOverstyrt,
                 input.getFagsakYtelseType());
         BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
                 .medAksjonspunkter(aksjonspunkter);
-        resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagOpt.orElse(null), OPPRETTET);
+
+        resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), OPPRETTET);
         return resultatBuilder.build();
     }
 
@@ -174,7 +177,7 @@ public class BeregningsgrunnlagTjeneste {
                 .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
     }
 
-    private Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(BeregningsgrunnlagInput input) {
+    Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(BeregningsgrunnlagInput input) {
         Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.hentForrigeBeregningsgrunnlagGrunnlag(FASTSATT_BEREGNINGSAKTIVITETER);
         return overstyrtGrunnlag
                 .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);

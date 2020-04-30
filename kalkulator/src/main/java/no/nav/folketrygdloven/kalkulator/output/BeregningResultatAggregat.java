@@ -7,6 +7,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 
 
 public class BeregningResultatAggregat {
@@ -70,6 +71,11 @@ public class BeregningResultatAggregat {
 
         public Builder medVilkårResultat(boolean erVilkårOppfylt) {
             this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(erVilkårOppfylt);
+            return this;
+        }
+
+        public Builder medVilkårAvslått(Vilkårsavslagsårsak vilkårsavslagsårsak) {
+            this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(false, vilkårsavslagsårsak);
             return this;
         }
 

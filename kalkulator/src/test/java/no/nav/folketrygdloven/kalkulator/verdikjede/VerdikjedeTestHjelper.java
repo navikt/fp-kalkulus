@@ -518,12 +518,12 @@ public class VerdikjedeTestHjelper {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = new FastsettBeregningAktiviteter(
                 new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegel())).fastsettAktiviteter(input);
 
-        var beregningsgrunnlag = fastsettSkjæringstidspunktOgStatuser.fastsett(input,
-            beregningAktivitetAggregat, input.getIayGrunnlag(), GRUNNBELØPSATSER).orElse(null);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag,
+        var regelResultat = fastsettSkjæringstidspunktOgStatuser.fastsett(input,
+                beregningAktivitetAggregat, input.getIayGrunnlag(), GRUNNBELØPSATSER);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningAktivitetAggregat, regelResultat.getBeregningsgrunnlag(),
             BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, beregningsgrunnlag);
+        var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag());
         return lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 

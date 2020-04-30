@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef.Lookup;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBeregningsgrunnlagATFLHåndterer;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.InntektPrAndelDto;
@@ -59,33 +61,36 @@ import no.nav.vedtak.konfig.Tid;
 @EnableWeld
 public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
-    @WeldSetup
-    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld()
-            .addPackage(true, BeregningsgrunnlagTjeneste.class)
-            .addPackage(true, BeregningArbeidsgiverTestUtil.class));
-
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.DECEMBER, 1);
     private static final LocalDateTime INNSENDINGSTIDSPUNKT = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusWeeks(1).atStartOfDay();
     private static final String ORGNR = "974761076";
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
     private static BeregningsgrunnlagInput input;
-
+    @WeldSetup
+    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld()
+            .addPackage(true, BeregningsgrunnlagTjeneste.class)
+            .addPackage(true, BeregningArbeidsgiverTestUtil.class));
     @Inject
     private BeregningArbeidsgiverTestUtil arbeidsgiverTestUtil;
-    @Inject
+
     private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
+    @AfterAll
+    public static void teardown() {
+        input.leggTilToggle(TOGGLE, false)
+        ;
+    }
+
     @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
+        Optional<BeregningsgrunnlagTjeneste> fp = Lookup.find(BeregningsgrunnlagTjeneste.class, "FP");
+        beregningsgrunnlagTjeneste = fp.get();
     }
-
-    @AfterAll
-    public static void teardown(){input.leggTilToggle(TOGGLE, false);}
 
     // Arbeidsgivere: 1 (virksomhet)
     // Arbeidsforhold: 1
@@ -104,7 +109,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
         BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
-            Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektPrMnd, iayGrunnlagBuilder);
+                Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektPrMnd, iayGrunnlagBuilder);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT_OPPTJENING, refusjonPrMnd, inntektPrMnd);
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR);
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
@@ -132,10 +137,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         // Assert steg ForeslåBeregningsgrunnlag
         assertForeslåBeregningsgrunnlagSteg(
-            resultat, inntektPrÅr,
-            inntektPrÅr,
-            ZERO,
-            false);
+                resultat, inntektPrÅr,
+                inntektPrÅr,
+                ZERO,
+                false);
 
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
@@ -151,8 +156,8 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         // Assert steg FastsettBeregningsgrunnlag
         // Assert steg FastsettBeregningsgrunnlag og oppdaterer
         assertFastsettBeregningsgrunnlag(resultat, refusjonskravPrÅr,
-            inntektPrÅr,
-            null);
+                inntektPrÅr,
+                null);
     }
 
     // Arbeidsgivere: 1 (virksomhet)
@@ -173,7 +178,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
         BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
-            Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektIRegister, iayGrunnlagBuilder);
+                Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektIRegister, iayGrunnlagBuilder);
 
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT_OPPTJENING, ZERO, inntektFraIM);
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR);
@@ -202,10 +207,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         // Assert steg ForeslåBeregningsgrunnlag
         assertForeslåBeregningsgrunnlagSteg(
-            resultat, inntektPrÅrRegister,
-            inntektPrÅrIM,
-            BigDecimal.valueOf(500),
-            true);
+                resultat, inntektPrÅrRegister,
+                inntektPrÅrIM,
+                BigDecimal.valueOf(500),
+                true);
 
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
@@ -225,8 +230,8 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         // Assert steg FastsettBeregningsgrunnlag og oppdaterer
         assertFastsettBeregningsgrunnlag(resultat, ZERO,
-            inntektPrÅrIM,
-            overstyrtPrÅr);
+                inntektPrÅrIM,
+                overstyrtPrÅr);
     }
 
     private BeregningsgrunnlagInput utvidMedOppdaterGrunnlagOGTilstand(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto grunnlagDto, BeregningsgrunnlagTilstand tilstand) {
@@ -253,7 +258,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         String arbeidsgiverAktørId = behandlingReferanse.getAktørId().getId();
 
         BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
-            Tid.TIDENES_ENDE, null, arbeidsgiverTestUtil.forArbeidsgiverpPrivatperson(behandlingReferanse.getAktørId()), inntektIRegister, iayGrunnlagBuilder);
+                Tid.TIDENES_ENDE, null, arbeidsgiverTestUtil.forArbeidsgiverpPrivatperson(behandlingReferanse.getAktørId()), inntektIRegister, iayGrunnlagBuilder);
 
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
@@ -283,10 +288,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         // Assert steg ForeslåBeregningsgrunnlag
         assertForeslåBeregningsgrunnlagSteg(
-            resultat, inntektPrÅrRegister,
-            null,
-            ZERO,
-            false);
+                resultat, inntektPrÅrRegister,
+                null,
+                ZERO,
+                false);
 
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
@@ -301,8 +306,8 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         // Assert steg FastsettBeregningsgrunnlag og oppdaterer
         assertFastsettBeregningsgrunnlag(resultat, BigDecimal.ZERO,
-            inntektPrÅrRegister,
-            null);
+                inntektPrÅrRegister,
+                null);
     }
 
     private BeregningResultatAggregat doStegFastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
@@ -357,28 +362,28 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         assertThat(resultat.getBeregningAksjonspunktResultater()).isEmpty();
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         assertBeregningsgrunnlag(beregningsgrunnlag,
-            SKJÆRINGSTIDSPUNKT_OPPTJENING, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
 
         // Beregningsgrunnlagperiode
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         assertBeregningsgrunnlagPeriode(førstePeriode,
-            Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
-            ZERO,
-            null,
-            null,
-            null);
+                Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
+                ZERO,
+                null,
+                null,
+                null);
 
         // BeregningsgrunnlagPrStatusOgAndelDto
         assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertBeregningsgrunnlagAndel(
-            førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
-            null,
-            AktivitetStatus.ARBEIDSTAKER,
-            Inntektskategori.ARBEIDSTAKER,
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
-            null, null);
+                førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
+                null,
+                AktivitetStatus.ARBEIDSTAKER,
+                Inntektskategori.ARBEIDSTAKER,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
+                null, null);
     }
 
     private void assertKontrollerFaktaOmFordelingSteg(BeregningResultatAggregat resultat, BigDecimal refusjonskravPrÅr,
@@ -388,28 +393,28 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         assertThat(resultat.getBeregningAksjonspunktResultater()).isEmpty();
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         assertBeregningsgrunnlag(beregningsgrunnlag,
-            SKJÆRINGSTIDSPUNKT_OPPTJENING, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
 
         // Beregningsgrunnlagperiode
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         assertBeregningsgrunnlagPeriode(førstePeriode,
-            Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
-            beregnetPrÅr,
-            null,
-            null,
-            refusjonskravPrÅr);
+                Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
+                beregnetPrÅr,
+                null,
+                null,
+                refusjonskravPrÅr);
 
         // BeregningsgrunnlagPrStatusOgAndelDto
         assertThat(førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertBeregningsgrunnlagAndel(
-            førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
-            beregnetPrÅr,
-            AktivitetStatus.ARBEIDSTAKER,
-            Inntektskategori.ARBEIDSTAKER,
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
-            refusjonskravPrÅr, null);
+                førstePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
+                beregnetPrÅr,
+                AktivitetStatus.ARBEIDSTAKER,
+                Inntektskategori.ARBEIDSTAKER,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
+                refusjonskravPrÅr, null);
     }
 
     private void assertForeslåBeregningsgrunnlagSteg(BeregningResultatAggregat resultat, BigDecimal inntektPrÅrRegister,
@@ -420,7 +425,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         if (medAksjonspunkt) {
             assertThat(resultat.getBeregningAksjonspunktResultater()).isNotEmpty().hasSize(1);
             assertThat(resultat.getBeregningAksjonspunktResultater().get(0).getBeregningAksjonspunktDefinisjon())
-                .isEqualTo(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+                    .isEqualTo(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
         } else {
             assertThat(resultat.getBeregningAksjonspunktResultater()).isEmpty();
         }
@@ -434,17 +439,17 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto førstePeriodeStegTo = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         assertBeregningsgrunnlagPeriode(førstePeriodeStegTo,
-            Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING), gjeldendeInntekt, null, null, BigDecimal.ZERO);
+                Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING), gjeldendeInntekt, null, null, BigDecimal.ZERO);
 
         // Andelsnivå
         for (BeregningsgrunnlagPeriodeDto bgp : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
             for (BeregningsgrunnlagPrStatusOgAndelDto andel : bgp.getBeregningsgrunnlagPrStatusOgAndelList()) {
                 assertBeregningsgrunnlagAndel(andel,
-                    gjeldendeInntekt,
-                    AktivitetStatus.ARBEIDSTAKER,
-                    Inntektskategori.ARBEIDSTAKER,
-                    SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
-                    SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), null, null);
+                        gjeldendeInntekt,
+                        AktivitetStatus.ARBEIDSTAKER,
+                        Inntektskategori.ARBEIDSTAKER,
+                        SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
+                        SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), null, null);
             }
         }
     }
@@ -467,21 +472,21 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         BeregningsgrunnlagPeriodeDto førstePeriodeTredjeSteg = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         assertThat(førstePeriodeTredjeSteg.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertBeregningsgrunnlagPeriode(førstePeriodeTredjeSteg,
-            Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
-            beregnetPrÅr,
-            forventetDagsats.longValue(),
-            overstyrtViØnskerAssertPå, refusjonskravPrÅr);
+                Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING),
+                beregnetPrÅr,
+                forventetDagsats.longValue(),
+                overstyrtViØnskerAssertPå, refusjonskravPrÅr);
 
         // Andelsnivå
         BeregningsgrunnlagPrStatusOgAndelDto andel = førstePeriodeTredjeSteg.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertBeregningsgrunnlagAndel(andel,
-            beregnetPrÅr,
-            AktivitetStatus.ARBEIDSTAKER,
-            Inntektskategori.ARBEIDSTAKER,
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
-            refusjonskravPrÅr,
-            overstyrtViØnskerAssertPå);
+                beregnetPrÅr,
+                AktivitetStatus.ARBEIDSTAKER,
+                Inntektskategori.ARBEIDSTAKER,
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
+                refusjonskravPrÅr,
+                overstyrtViØnskerAssertPå);
     }
 
     private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {

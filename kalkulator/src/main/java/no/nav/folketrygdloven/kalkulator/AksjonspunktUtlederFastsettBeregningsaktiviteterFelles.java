@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.vedtak.util.FPDateUtil;
@@ -29,8 +30,8 @@ import no.nav.vedtak.util.FPDateUtil;
 public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements AksjonspunktUtlederFastsettBeregningsaktiviteter {
 
     @Override
-    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(Optional<BeregningsgrunnlagDto> beregningsgrunnlagOpt, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagOpt.orElseThrow(() -> new IllegalStateException("Forventer beregningsgrunnlag i denne implementasjonen av aksjonspunktutleder"));
+    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
         return utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
     }
 

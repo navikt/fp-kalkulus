@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Vilkårsavslagsårsak;
 
 
 /**
@@ -32,6 +33,11 @@ public class TilstandResponse {
     @Valid
     private Boolean vilkarOppfylt;
 
+    @JsonProperty("vilkårsavslagsårsak")
+    @Valid
+    private Vilkårsavslagsårsak vilkårsavslagsårsak;
+
+
     public TilstandResponse() {
         // default ctor
     }
@@ -42,6 +48,10 @@ public class TilstandResponse {
 
     public TilstandResponse medVilkårResultat(boolean resultat) {
         vilkarOppfylt = resultat;
+        return this;
+    }
+    public TilstandResponse medVilkårsavslagsårsak(Vilkårsavslagsårsak vilkårsavslagsårsak) {
+        this.vilkårsavslagsårsak = vilkårsavslagsårsak;
         return this;
     }
 
@@ -55,5 +65,9 @@ public class TilstandResponse {
 
     public static TilstandResponse TOM_RESPONSE() {
         return new TilstandResponse(Collections.emptyList());
+    }
+
+    public Vilkårsavslagsårsak getVilkårsavslagsårsak() {
+        return vilkårsavslagsårsak;
     }
 }

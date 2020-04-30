@@ -51,6 +51,7 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
 
     // 8000 frisinn
     AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av frisinnsøknad som ikke kan behandles."),
+    INGEN_AKTIVITETER("8001", "Gir avslag"),
 
     UNDEFINED,
     ;
