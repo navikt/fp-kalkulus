@@ -46,10 +46,21 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 @FagsakYtelseTypeRef("FRISINN")
 public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLTilRegel {
 
+    private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
+        BigDecimal inntekt = oppgittEgenNæringDto.getBruttoInntekt();
+        Intervall periode = oppgittEgenNæringDto.getPeriode();
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
+                .medPeriode(Periode.of(periode.getFomDato(), periode.getTomDato()))
+                .medAktivitetStatus(AktivitetStatus.SN)
+                .medInntekt(inntekt)
+                .build();
+    }
+
     @Override
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
-        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag, input, skjæringstidspunktBeregning);
         return inntektsgrunnlag;
     }
 
@@ -228,7 +239,6 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         return !periode.getFomDato().isBefore(skjæringstidspunktBeregning);
     }
 
-
     private void mapOppgittNæringsinntekt(Inntektsgrunnlag inntektsgrunnlag,
                                           FrisinnGrunnlag frisinnGrunnlag,
                                           OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
@@ -248,16 +258,5 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                     .map(MapInntektsgrunnlagVLTilRegelFRISINN::mapTilRegel)
                     .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
         }
-    }
-
-    private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
-        BigDecimal inntekt = oppgittEgenNæringDto.getBruttoInntekt();
-        Intervall periode = oppgittEgenNæringDto.getPeriode();
-        return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
-                .medPeriode(Periode.of(periode.getFomDato(), periode.getTomDato()))
-                .medAktivitetStatus(AktivitetStatus.SN)
-                .medInntekt(inntekt)
-                .build();
     }
 }
