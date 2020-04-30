@@ -194,7 +194,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
         oppgittOpptjeningOpt.ifPresent(oppgittOpptjening ->
-                mapOppgittOpptjening(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening, skjæringstidspunktBeregning));
+                mapOppgittOpptjening(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening, input.getSkjæringstidspunktOpptjening()));
 
     }
 
@@ -234,7 +234,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                                           OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
         if (!oppgittOpptjening.getEgenNæring().isEmpty()) {
             Optional<OppgittEgenNæringDto> oppgittInntektFørStp = oppgittOpptjening.getEgenNæring().stream()
-                    .filter(en -> skjæringstidspunktBeregning.isAfter(en.getTilOgMed()))
+                    .filter(en -> skjæringstidspunktBeregning.isAfter(en.getFraOgMed()))
                     .filter(en -> en.getBruttoInntekt() != null)
                     .findFirst();
             if (oppgittInntektFørStp.isEmpty() && frisinnGrunnlag.getSøkerYtelseForNæring()) {
@@ -243,7 +243,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                 inntektsgrunnlag.leggTilPeriodeinntekt(mapTilRegel(oppgittInntektFørStp.get()));
             }
             oppgittOpptjening.getEgenNæring().stream()
-                    .filter(en -> !skjæringstidspunktBeregning.isAfter(en.getTilOgMed()))
+                    .filter(en -> !skjæringstidspunktBeregning.isAfter(en.getFraOgMed()))
                     .filter(en -> en.getBruttoInntekt() != null)
                     .map(MapInntektsgrunnlagVLTilRegelFRISINN::mapTilRegel)
                     .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
