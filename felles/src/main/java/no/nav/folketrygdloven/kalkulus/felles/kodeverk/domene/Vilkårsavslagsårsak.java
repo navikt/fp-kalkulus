@@ -15,7 +15,9 @@ public enum Vilkårsavslagsårsak {
 
     ATFL_SAMME_ORG("ATFL_SAMME_ORG"),
     SØKT_FL_INGEN_FL_INNTEKT("SØKT_FL_INGEN_FL_INNTEKT"),
-    FOR_LAVT_BG("FOR_LAVT_BG");
+    FOR_LAVT_BG("FOR_LAVT_BG"),
+    AVKORTET_GRUNNET_ANNEN_INNTEKT("AVKORTET_GRUNNET_ANNEN_INNTEKT");
+
 
     @JsonValue
     private final String kode;

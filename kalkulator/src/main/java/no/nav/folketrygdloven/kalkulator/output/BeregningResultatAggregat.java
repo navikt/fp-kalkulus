@@ -69,6 +69,11 @@ public class BeregningResultatAggregat {
             return this;
         }
 
+        public Builder medVilkårResultat(BeregningVilkårResultat vilkårResultat) {
+            this.kladd.beregningVilkårResultat = vilkårResultat;
+            return this;
+        }
+
         public Builder medVilkårResultat(boolean erVilkårOppfylt) {
             this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(erVilkårOppfylt);
             return this;

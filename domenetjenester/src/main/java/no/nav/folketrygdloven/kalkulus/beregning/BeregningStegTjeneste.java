@@ -129,7 +129,7 @@ public class BeregningStegTjeneste {
      *
      * @param input {@link BeregningsgrunnlagInput}
      */
-    public TilstandResponse fastsettBeregningsaktiviteters(BeregningsgrunnlagInput input) {
+    public TilstandResponse fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         Long koblingId = input.getBehandlingReferanse().getKoblingId();
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag = beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag();
@@ -138,7 +138,12 @@ public class BeregningStegTjeneste {
             BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningsgrunnlag.get());
             repository.lagre(koblingId, beregningsgrunnlagEntitet, FASTSATT);
         }
-        return TilstandResponse.TOM_RESPONSE();
+        TilstandResponse tilstandResponse = mapTilstandResponse(List.of());
+        if (beregningResultatAggregat.getBeregningVilkårResultat() != null) {
+            tilstandResponse.medVilkårResultat(beregningResultatAggregat.getBeregningVilkårResultat().getErVilkårOppfylt());
+            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(beregningResultatAggregat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+        }
+        return tilstandResponse;
     }
 
     private boolean getVilkårResultat(BeregningResultatAggregat beregningResultatAggregat) {
@@ -240,7 +245,7 @@ public class BeregningStegTjeneste {
         } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
             return fordelBeregningsgrunnlag(input);
         } else if (stegType.equals(StegType.FAST_BERGRUNN)) {
-            return fastsettBeregningsaktiviteters(input);
+            return fastsettBeregningsgrunnlag(input);
         }
         throw new IllegalStateException("Kan ikke beregne for " + stegType.getKode());
     }

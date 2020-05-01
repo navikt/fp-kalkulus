@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
+import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
@@ -48,6 +49,8 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
+    private Instance<VilkårTjeneste> vilkårTjeneste;
+
 
     public BeregningsgrunnlagTjeneste() {
         // CDI Proxy
@@ -62,7 +65,8 @@ public class BeregningsgrunnlagTjeneste {
                                       BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
-                                      FastsettBeregningAktiviteter fastsettBeregningAktiviteter) {
+                                      FastsettBeregningAktiviteter fastsettBeregningAktiviteter,
+                                      @Any Instance<VilkårTjeneste> vilkårTjeneste) {
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
@@ -72,6 +76,7 @@ public class BeregningsgrunnlagTjeneste {
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
         this.fastsettBeregningAktiviteter = fastsettBeregningAktiviteter;
+        this.vilkårTjeneste = vilkårTjeneste;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
@@ -95,39 +100,23 @@ public class BeregningsgrunnlagTjeneste {
         BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
                 .medAksjonspunkter(aksjonspunkter);
 
-        if (input.getFagsakYtelseType().equals(FagsakYtelseType.FRISINN)) {
-            leggPåFrisinnData(input, beregningsgrunnlagRegelResultat, resultatBuilder);
-        }
+        finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFastsettBeregningsaktiviteter(input, beregningsgrunnlagRegelResultat)
+                .ifPresent(resultatBuilder::medVilkårResultat);
 
         resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), OPPRETTET);
         return resultatBuilder.build();
     }
 
-    //FIXME(OJR) skill ut i egen tjeneste
-    private void leggPåFrisinnData(BeregningsgrunnlagInput input, BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, Builder resultatBuilder) {
-        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        if (beregningsgrunnlagRegelResultat.getAksjonspunkter().stream().anyMatch(bra -> bra.getBeregningAksjonspunktDefinisjon() == BeregningAksjonspunktDefinisjon.INGEN_AKTIVITETER)) {
-            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
-                resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT);
-            } else {
-                resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.FOR_LAVT_BG);
-            }
-        } else {
-            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
-                if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag() != null) {
-                    if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag().getAktivitetStatuser().stream().noneMatch(as -> as.getAktivitetStatus().erFrilanser())) {
-                        resultatBuilder.medVilkårAvslått(Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT);
-                    }
-                }
-            }
-        }
-    }
-
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
-        return BeregningResultatAggregat.Builder.fra(input)
-                .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT)
+        Builder resultatBuilder = Builder.fra(input)
+                .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT);
+        finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFullføre(input, fastsattBeregningsgrunnlag)
+                .ifPresent(resultatBuilder::medVilkårResultat);
+        return resultatBuilder
                 .build();
     }
 
@@ -151,9 +140,12 @@ public class BeregningsgrunnlagTjeneste {
                     nyttGrunnlag,
                     input.getAktivitetGradering(),
                     input.getInntektsmeldinger());
-            return BeregningResultatAggregat.Builder.fra(input)
+
+            BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                    .lagVilkårResultatFordel(vilkårVurderingResultat);
+            return Builder.fra(input)
                     .medAksjonspunkter(aksjonspunkter)
-                    .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
+                    .medVilkårResultat(vilkårResultat)
                     .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
                     .build();
         }

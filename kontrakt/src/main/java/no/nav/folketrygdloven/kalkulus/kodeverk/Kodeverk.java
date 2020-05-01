@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Vilkårsavslagsårsak;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "kodeverk", defaultImpl = Void.class)
@@ -41,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = UtbetaltPensjonTrygdType.class, name = UtbetaltPensjonTrygdType.KODEVERK),
         @JsonSubTypes.Type(value = UtbetaltYtelseFraOffentligeType.class, name = UtbetaltYtelseFraOffentligeType.KODEVERK),
         @JsonSubTypes.Type(value = UttakArbeidType.class, name = UttakArbeidType.KODEVERK),
+        @JsonSubTypes.Type(value = Vilkårsavslagsårsak.class, name = Vilkårsavslagsårsak.KODEVERK),
         @JsonSubTypes.Type(value = VirksomhetType.class, name = VirksomhetType.KODEVERK),
         @JsonSubTypes.Type(value = YtelseTyperKalkulusStøtterKontrakt.class, name = YtelseTyperKalkulusStøtterKontrakt.KODEVERK),
 })
