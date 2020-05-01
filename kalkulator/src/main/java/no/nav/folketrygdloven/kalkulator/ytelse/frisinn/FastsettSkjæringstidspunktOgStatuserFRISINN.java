@@ -8,7 +8,9 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.AksjonspunktUtlederForeslåBeregning;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
@@ -27,6 +29,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModellFRISINN;
 import no.nav.folketrygdloven.skjæringstidspunkt.status.frisinn.RegelFastsettStatusVedSkjæringstidspunktFRISINN;
 import no.nav.fpsak.nare.evaluation.Evaluation;
+import no.nav.fpsak.nare.evaluation.Resultat;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -71,6 +74,17 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         String inputSkjæringstidspunkt = toJson(aktivitetStatusModellFRISINN);
         Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunktFrisinn().evaluer(aktivitetStatusModellFRISINN);
         regelmodell.setSkjæringstidspunktForBeregning(aktivitetStatusModellFRISINN.getSkjæringstidspunktForBeregning());
+        return lagRegelresultat(inputSkjæringstidspunkt, evaluationSkjæringstidspunkt);
+    }
+
+    private RegelResultat lagRegelresultat(String inputSkjæringstidspunkt, Evaluation evaluationSkjæringstidspunkt) {
+        if (evaluationSkjæringstidspunkt.result().equals(Resultat.NEI)) {
+            return new RegelResultat(ResultatBeregningType.IKKE_BEREGNET,
+                    inputSkjæringstidspunkt,
+                    RegelmodellOversetter.getSporing(evaluationSkjæringstidspunkt))
+                    .medRegelMerknad(new RegelMerknad(evaluationSkjæringstidspunkt.getOutcome().getReasonCode(),
+                            evaluationSkjæringstidspunkt.reason()));
+        }
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
 
