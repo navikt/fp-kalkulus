@@ -120,6 +120,9 @@ public class BeregningStegTjeneste {
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, OPPDATERT_MED_REFUSJON_OG_GRADERING, FASTSATT_INN);
         boolean vilkårResultat = getVilkårResultat(beregningResultatAggregat);
         TilstandResponse tilstandResponse = mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        if (!vilkårResultat) {
+            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(beregningResultatAggregat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+        }
         return tilstandResponse.medVilkårResultat(vilkårResultat);
     }
 

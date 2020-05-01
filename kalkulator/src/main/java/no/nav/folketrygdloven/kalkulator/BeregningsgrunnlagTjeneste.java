@@ -124,11 +124,13 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
+        BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFordel(vilkårVurderingResultat);
         if (Boolean.FALSE.equals(vilkårVurderingResultat.getVilkårOppfylt())) {
             return BeregningResultatAggregat.Builder.fra(input)
                     .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
                     .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                    .medVilkårResultat(vilkårVurderingResultat.getVilkårOppfylt())
+                    .medVilkårResultat(vilkårResultat)
                     .build();
         } else {
             var fordeltBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, vurdertBeregningsgrunnlag);
@@ -140,9 +142,6 @@ public class BeregningsgrunnlagTjeneste {
                     nyttGrunnlag,
                     input.getAktivitetGradering(),
                     input.getInntektsmeldinger());
-
-            BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                    .lagVilkårResultatFordel(vilkårVurderingResultat);
             return Builder.fra(input)
                     .medAksjonspunkter(aksjonspunkter)
                     .medVilkårResultat(vilkårResultat)
