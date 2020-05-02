@@ -159,7 +159,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .orElse(BigDecimal.ZERO);
         BigDecimal oppgittLøpendeInntekt = oppgittFLInntekt.stream()
                 .filter(oi -> !oi.getPeriode().getFomDato().isBefore(stpBg))
-                .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
+                .map(OppgittFrilansInntektDto::getInntekt)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
         SøknadsopplysningerDto dto = new SøknadsopplysningerDto();

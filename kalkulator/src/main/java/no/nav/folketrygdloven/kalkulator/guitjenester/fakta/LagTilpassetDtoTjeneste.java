@@ -38,7 +38,7 @@ class LagTilpassetDtoTjeneste  {
                                                                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
-            return opprettSNDto(andel, inntektArbeidYtelseGrunnlag);
+            return opprettSNDto(andel, inntektArbeidYtelseGrunnlag, ref.getSkjæringstidspunktBeregning());
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
             && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
             return opprettATDto(andel);
@@ -51,7 +51,9 @@ class LagTilpassetDtoTjeneste  {
         }
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto opprettSNDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto opprettSNDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                     InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                     LocalDate stpBG) {
         //Merk, PGI verdier ligger i kronologisk synkende rekkefølge og er pgi fra årene i beregningsperioden
         BeregningsgrunnlagPrStatusOgAndelSNDto dtoSN = new BeregningsgrunnlagPrStatusOgAndelSNDto();
 
@@ -61,7 +63,13 @@ class LagTilpassetDtoTjeneste  {
 
         dtoSN.setPgiSnitt(andel.getPgiSnitt());
 
-        List<EgenNæringDto> næringer = egneNæringer.stream().map(EgenNæringMapper::map).collect(Collectors.toList());
+
+        // Næringer som startet etter skjæringstidspunktet for beregning er ikke relevante
+        List<EgenNæringDto> næringer = egneNæringer.stream()
+                .filter(en -> en.getPeriode().getFomDato() != null && en.getPeriode().getFomDato().isBefore(stpBG))
+                .map(EgenNæringMapper::map)
+                .collect(Collectors.toList());
+
         dtoSN.setNæringer(næringer);
 
         List<PgiDto> pgiDtoer = lagPgiDto(andel);
