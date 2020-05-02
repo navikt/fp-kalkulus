@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -68,25 +69,20 @@ public class BeregningsgrunnlagDtoTjeneste {
     private BeregningsgrunnlagDto lagDto(BeregningsgrunnlagRestInput input) {
         BeregningsgrunnlagDto dto = new BeregningsgrunnlagDto();
 
-        mapSkjæringstidspunkt(input, dto);
-
         mapFaktaOmBeregning(input, dto);
+
+
+        mapSkjæringstidspunkt(input, dto);
         mapFaktaOmFordeling(input, dto);
         mapSammenligningsgrunnlag(input, dto);
         mapSammenlingingsgrunnlagPrStatus(input, dto);
-
         mapBeregningsgrunnlagAktivitetStatus(input, dto);
         mapBeregningsgrunnlagPerioder(input, dto);
         mapBeløp(input, dto);
-
         mapAktivitetGradering(input, dto);
-
         mapDtoYtelsespesifikk(input, dto);
-
         mapDekningsgrad(input, dto);
-
         mapYtelsesspesifiktGrunnlag(input, dto);
-
         return dto;
     }
 

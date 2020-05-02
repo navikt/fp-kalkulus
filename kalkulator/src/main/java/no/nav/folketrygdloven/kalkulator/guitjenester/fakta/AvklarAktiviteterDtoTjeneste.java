@@ -28,6 +28,7 @@ public class AvklarAktiviteterDtoTjeneste {
 
     /**
      * Modifiserer dto for fakta om beregning og setter dto for avklaring av aktiviteter på denne.
+     *
      * @param registerAktivitetAggregat      aggregat for registeraktiviteter
      * @param saksbehandletAktivitetAggregat aggregat for saksbehandlede aktiviteter
      * @param faktaOmBeregningDto            Dto for fakta om beregning som modifiseres
@@ -36,7 +37,8 @@ public class AvklarAktiviteterDtoTjeneste {
     static void lagAvklarAktiviteterDto(BeregningAktivitetAggregatDto registerAktivitetAggregat,
                                         Optional<BeregningAktivitetAggregatDto> saksbehandletAktivitetAggregat,
                                         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
-                                        FaktaOmBeregningDto faktaOmBeregningDto, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+                                        FaktaOmBeregningDto faktaOmBeregningDto,
+                                        List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
         AvklarAktiviteterDto avklarAktiviteterDto = new AvklarAktiviteterDto();
         List<BeregningAktivitetDto> beregningAktiviteter = registerAktivitetAggregat.getBeregningAktiviteter();
         List<BeregningAktivitetDto> saksbehandletAktiviteter = saksbehandletAktivitetAggregat

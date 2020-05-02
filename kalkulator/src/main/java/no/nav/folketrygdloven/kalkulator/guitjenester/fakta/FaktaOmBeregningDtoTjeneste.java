@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 
@@ -30,18 +31,19 @@ public class FaktaOmBeregningDtoTjeneste {
         this.dtoTjenester = dtoTjenesteInstance.stream().collect(Collectors.toList());
     }
 
+    // TODO (Denne burde splittes i ein del som krever bg og ein del som ikkje krever det)
     public Optional<FaktaOmBeregningDto> lagDto(BeregningsgrunnlagRestInput input) {
         FaktaOmBeregningDto faktaOmBeregningDto = new FaktaOmBeregningDto();
         var grunnlagEntitet = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto registerAktivitetAggregat = Optional.ofNullable(grunnlagEntitet.getRegisterAktiviteter())
-            .orElse(grunnlagEntitet.getGjeldendeAktiviteter());
+                .orElse(grunnlagEntitet.getGjeldendeAktiviteter());
         Optional<BeregningAktivitetAggregatDto> saksbehandletAktivitetAggregat = grunnlagEntitet.getOverstyrteEllerSaksbehandletAktiviteter();
-
-        faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
-
         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon = input.getIayGrunnlag().getArbeidsforholdInformasjon();
         AvklarAktiviteterDtoTjeneste.lagAvklarAktiviteterDto(registerAktivitetAggregat,
-            saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
+                saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
+
+        // Denne delen krever Beregningsgrunnlag
+        faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
         if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
             List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
