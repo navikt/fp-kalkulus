@@ -72,7 +72,7 @@ public class MapBeregningsgrunnlagFRISINN {
 
     private static List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, Optional<OppgittOpptjeningDto> oppgittOpptjening, FrisinnGrunnlag frisinnGrunnlag, BigDecimal gbeløp) {
         BigDecimal bruttoIAndelerIkkeSøktFor = beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(andel -> !erSøktYtelseFor(andel, frisinnGrunnlag))
+                .filter(andel -> !erSøktYtelseFor(andel, frisinnGrunnlag) && andel.getBruttoPrÅr() != null)
                 .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);

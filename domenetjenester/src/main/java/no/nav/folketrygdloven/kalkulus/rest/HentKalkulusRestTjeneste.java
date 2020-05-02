@@ -178,7 +178,7 @@ public class HentKalkulusRestTjeneste {
         if (beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isEmpty()) {
             return Response.noContent().build();
         }
-        
+
         Set<no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto> referanser = MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser());
         List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = MapIAYTilKalulator.mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger());
         BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(beregningsgrunnlagInput, arbeidsgiverOpplysninger, referanser);
