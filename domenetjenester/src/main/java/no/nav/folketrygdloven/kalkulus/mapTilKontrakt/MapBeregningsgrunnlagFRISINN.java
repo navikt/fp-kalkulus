@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
@@ -13,6 +14,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -24,6 +26,11 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Be
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagPrStatusOgAndelFRISINNDto;
 
 public class MapBeregningsgrunnlagFRISINN {
+    private final static BigDecimal ANTALL_G_GRENSEVERDI;
+
+    static {
+        ANTALL_G_GRENSEVERDI = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
+    }
 
     private MapBeregningsgrunnlagFRISINN() {
         // SKjul konstruktør
@@ -64,23 +71,49 @@ public class MapBeregningsgrunnlagFRISINN {
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, Optional<OppgittOpptjeningDto> oppgittOpptjening, FrisinnGrunnlag frisinnGrunnlag, BigDecimal gbeløp) {
+        BigDecimal bruttoIAndelerIkkeSøktFor = beregningsgrunnlagPrStatusOgAndelList.stream()
+                .filter(andel -> !erSøktYtelseFor(andel, frisinnGrunnlag))
+                .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
         return beregningsgrunnlagPrStatusOgAndelList.stream()
-                .map(a -> MapBeregningsgrunnlagFRISINN.mapAndel(a, oppgittOpptjening, frisinnGrunnlag, gbeløp)).collect(Collectors.toList());
+                .map(a -> MapBeregningsgrunnlagFRISINN.mapAndel(a, oppgittOpptjening, frisinnGrunnlag, gbeløp, bruttoIAndelerIkkeSøktFor)).collect(Collectors.toList());
+    }
+
+    private static boolean erSøktYtelseFor(BeregningsgrunnlagPrStatusOgAndel andel, FrisinnGrunnlag frisinnGrunnlag) {
+        if (andel.getAktivitetStatus().erArbeidstaker()) {
+            return false;
+        }
+        if (andel.getAktivitetStatus().erFrilanser() && frisinnGrunnlag.getSøkerYtelseForFrilans()) {
+            return true;
+        }
+        return andel.getAktivitetStatus().erSelvstendigNæringsdrivende() && frisinnGrunnlag.getSøkerYtelseForNæring();
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelFRISINNDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel,
-                                                                        Optional<OppgittOpptjeningDto> oppgittOpptjening, FrisinnGrunnlag frisinnGrunnlag, BigDecimal gbeløp) {
+                                                                        Optional<OppgittOpptjeningDto> oppgittOpptjening,
+                                                                        FrisinnGrunnlag frisinnGrunnlag,
+                                                                        BigDecimal gbeløp,
+                                                                        BigDecimal bruttoIAndelerIkkeSøktFor) {
         List<BeregningsgrunnlagPrStatusOgAndel> andelerSammePeriode = beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList();
+
+        BigDecimal bgFratrukketInntektstak = BigDecimal.ZERO;
+
+        if (erSøktYtelseFor(beregningsgrunnlagPrStatusOgAndel, frisinnGrunnlag)) {
+            BigDecimal grenseverdi = ANTALL_G_GRENSEVERDI.multiply(gbeløp);
+            BigDecimal inntektstak = grenseverdi.subtract(bruttoIAndelerIkkeSøktFor).max(BigDecimal.ZERO);
+            bgFratrukketInntektstak = inntektstak.min(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr());
+        }
 
         Optional<Avslagsårsak> avslagsårsak = oppgittOpptjening.flatMap(oo ->
                 MapTilAvslagsårsakerFRISINN.map(beregningsgrunnlagPrStatusOgAndel, andelerSammePeriode, frisinnGrunnlag, oo, gbeløp));
-
         return new BeregningsgrunnlagPrStatusOgAndelFRISINNDto(
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
                 finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
+                bgFratrukketInntektstak,
                 beregningsgrunnlagPrStatusOgAndel.getDagsats(),
                 new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
                 avslagsårsak.orElse(null));

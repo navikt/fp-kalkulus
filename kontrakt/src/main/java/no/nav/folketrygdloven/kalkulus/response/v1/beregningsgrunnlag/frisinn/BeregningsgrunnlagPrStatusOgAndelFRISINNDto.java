@@ -64,6 +64,14 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal løpendeInntektPrÅr;
 
+    @JsonProperty(value = "bgFratrukketInntektstak")
+    @NotNull
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal bgFratrukketInntektstak;
+
     @JsonProperty(value = "dagsats")
     @NotNull
     @Valid
@@ -86,6 +94,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal redusertPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal avkortetPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal løpendeInntektPrÅr,
+                                                       @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bgFratrukketInntektstak,
                                                        @NotNull @Valid @Min(0) @Max(Long.MAX_VALUE) Long dagsats,
                                                        @NotNull @Valid Inntektskategori inntektskategori, Avslagsårsak avslagsårsak) {
         this.aktivitetStatus = aktivitetStatus;
@@ -96,6 +105,7 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
         this.dagsats = dagsats;
         this.inntektskategori = inntektskategori;
         this.avslagsårsak = avslagsårsak;
+        this.bgFratrukketInntektstak = bgFratrukketInntektstak;
     }
 
     public BeregningsgrunnlagPrStatusOgAndelFRISINNDto() {
@@ -131,5 +141,9 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
 
     public Avslagsårsak getAvslagsårsak() {
         return avslagsårsak;
+    }
+
+    public BigDecimal getBgFratrukketInntektstak() {
+        return bgFratrukketInntektstak;
     }
 }
