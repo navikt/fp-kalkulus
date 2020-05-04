@@ -65,3 +65,8 @@ spec:
       value: https://security-token-service.nais.adeo.no
     - name: OIDC_STS_JWKS_URL
       value: https://security-token-service.nais.adeo.no/rest/v1/sts/jwks
+    #Sensu
+    - name: SENSU_HOST
+      value: sensu.nais
+    - name: SENSU_PORT
+      value: "3030"
