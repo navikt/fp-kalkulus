@@ -45,7 +45,7 @@ public class UtbetalingsPostDto {
      */
     @JsonProperty("beløp")
     @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMin(value = "-1000000000.00", message = "verdien ${validatedValue} må være >= {value}")
     @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
     @Digits(integer = 10, fraction = 2)
     private BigDecimal beløp;

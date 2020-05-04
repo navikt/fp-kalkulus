@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -53,6 +54,14 @@ public class TilstandResponse {
     public TilstandResponse medVilkårsavslagsårsak(Vilkårsavslagsårsak vilkårsavslagsårsak) {
         this.vilkårsavslagsårsak = vilkårsavslagsårsak;
         return this;
+    }
+
+    @AssertTrue(message = "Krever vilkårsavslagsårsak når vilkåret ikke er oppfylt")
+    boolean sjekkOmHarAvslagsårsak() {
+        if (vilkarOppfylt != null && !vilkarOppfylt) {
+            return vilkårsavslagsårsak != null;
+        }
+        return true;
     }
 
     public List<AksjonspunktMedTilstandDto> getAksjonspunktMedTilstandDto() {
