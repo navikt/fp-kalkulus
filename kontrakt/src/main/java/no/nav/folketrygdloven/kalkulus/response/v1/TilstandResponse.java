@@ -47,10 +47,15 @@ public class TilstandResponse {
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
     }
 
+    public static TilstandResponse TOM_RESPONSE() {
+        return new TilstandResponse(Collections.emptyList());
+    }
+
     public TilstandResponse medVilkårResultat(boolean resultat) {
         vilkarOppfylt = resultat;
         return this;
     }
+
     public TilstandResponse medVilkårsavslagsårsak(Vilkårsavslagsårsak vilkårsavslagsårsak) {
         this.vilkårsavslagsårsak = vilkårsavslagsårsak;
         return this;
@@ -70,10 +75,6 @@ public class TilstandResponse {
 
     public Boolean getVilkarOppfylt() {
         return vilkarOppfylt;
-    }
-
-    public static TilstandResponse TOM_RESPONSE() {
-        return new TilstandResponse(Collections.emptyList());
     }
 
     public Vilkårsavslagsårsak getVilkårsavslagsårsak() {
