@@ -36,7 +36,7 @@ public class YtelseAnvistDto {
     @JsonProperty("utbetalingsgradProsent")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}")
+    @DecimalMax(value = "200.00", message = "verdien ${validatedValue} må være <= {value}")
     @Digits(integer = 3, fraction = 2)
     private BigDecimal utbetalingsgradProsent;
 
