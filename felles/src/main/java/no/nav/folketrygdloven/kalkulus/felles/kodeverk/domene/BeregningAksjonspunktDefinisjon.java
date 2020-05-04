@@ -50,7 +50,7 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
 
     // 8000 frisinn
-    AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av frisinnsøknad som ikke kan behandles."),
+    AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av manglende funksjonalitet"),
     INGEN_AKTIVITETER("8001", "Gir avslag"),
 
     UNDEFINED,
