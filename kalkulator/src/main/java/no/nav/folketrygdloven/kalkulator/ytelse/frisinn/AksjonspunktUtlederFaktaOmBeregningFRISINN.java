@@ -36,7 +36,7 @@ public class AksjonspunktUtlederFaktaOmBeregningFRISINN extends AksjonspunktUtle
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAksjonspunkt(input, beregningsgrunnlagGrunnlag);
         if (faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
-            throw new IllegalStateException("Kan ikke behandle FRISINN-ytelse for AT og FL i samme organisajon.");
+            throw new IllegalStateException("Kan ikke behandle FRISINN-ytelse for AT og FL i samme organisajon. BehandlingID: " + input.getBehandlingReferanse().getBehandlingId());
         }
         return FaktaOmBeregningAksjonspunktResultat.INGEN_AKSJONSPUNKTER;
     }
