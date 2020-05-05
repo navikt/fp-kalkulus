@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
-import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursResourceAttributt.FAGSAK;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -69,7 +68,7 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Utleder om det er endring i beregning mellom beregningsgrunnlag for to behandlinger", summary = ("Returnerer om det er endring i beregning mellom behandlinger."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/erEndring")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response erEndringIBeregning(@NotNull @Valid ErEndringIBeregningRequestAbacDto spesifikasjon) {

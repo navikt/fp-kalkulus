@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
-import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursResourceAttributt.FAGSAK;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -108,7 +107,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
@@ -142,7 +141,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
@@ -165,7 +164,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = TilstandResponse.class)))
             })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
@@ -180,7 +179,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/deaktiver")
     @Operation(description = "Deaktiverer aktivt beregningsgrunnlag basert.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG, ressurs = FAGSAK)
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentKalkulusRestTjeneste.HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
