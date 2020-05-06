@@ -57,86 +57,45 @@ public class MapRefusjonskravFraVLTilRegelTest {
     }
 
     @Test
-    public void skal_summere_refusjonskrav_i_bgPeriode_og_gi_årssummert_i_endring() {
+    public void skal_finne_refusjonskrav_på_stp_med_uten_refusjon_fra_start() {
         // Arrange
         LocalDate idag = LocalDate.now();
-        LocalDate om2Måneder = LocalDate.now().plusMonths(2);
-
-        Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
-        periodeBuilder.medBeregningsgrunnlagPeriode(idag, om2Måneder);
-        BeregningsgrunnlagPeriodeDto periodeDto = periodeBuilder.build();
-
         InntektsmeldingAggregatDtoBuilder inntektsmeldingAggregatDtoBuilder = InntektsmeldingAggregatDtoBuilder.ny();
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER1)
-                .medRefusjon(BigDecimal.valueOf(2000))
+                .medRefusjon(BigDecimal.valueOf(0))
                 .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
                 .medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjon(BigDecimal.valueOf(2000))
+                .medRefusjon(BigDecimal.valueOf(0))
                 .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
 
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
         inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
         InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
 
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = lagOmsorgpengerGrunnlag(idag);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(
+                new UtbetalingsgradPrAktivitetDto(
+                        new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER1, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(100)))),
+                new UtbetalingsgradPrAktivitetDto(
+                        new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER2, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periodeDto, inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
+        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
-        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(48_000));
+        assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(0));
     }
 
-    @Test
-    public void skal_finne_høyeste_refusjonskrav_i_bgPeriode_og_gi_årssummert_lavest_opprinnelig() {
-        // Arrange
-        LocalDate idag = LocalDate.now();
-        LocalDate om10Dager = LocalDate.now().plusDays(10);
-
-        Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
-        periodeBuilder.medBeregningsgrunnlagPeriode(idag, om10Dager);
-        BeregningsgrunnlagPeriodeDto periodeDto = periodeBuilder.build();
-
-        InntektsmeldingAggregatDtoBuilder inntektsmeldingAggregatDtoBuilder = InntektsmeldingAggregatDtoBuilder.ny();
-        InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder = InntektsmeldingDtoBuilder.builder();
-        inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
-                .medArbeidsgiver(ARBEIDSGIVER1)
-                .medRefusjon(BigDecimal.valueOf(12000))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
-        InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder2 = InntektsmeldingDtoBuilder.builder();
-        inntektsmeldingDtoBuilder2.medStartDatoPermisjon(idag)
-                .medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjon(BigDecimal.valueOf(12000))
-                .leggTil(new RefusjonDto(BigDecimal.valueOf(10000), idag.plusMonths(1)));
-
-        inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder.build());
-        inntektsmeldingAggregatDtoBuilder.leggTil(inntektsmeldingDtoBuilder2.build());
-        InntektsmeldingAggregatDto inntektsmeldingAggregatDto = inntektsmeldingAggregatDtoBuilder.build();
-
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = lagOmsorgpengerGrunnlag(idag);
-
-
-        // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periodeDto, inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
-
-        // Assert
-        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(288_000));
-    }
 
     @Test
-    public void skal_finne_høyeste_refusjonskrav_i_bgPeriode_og_gi_årssummert_lavest_opprinnelig_med_utbetalingsgrad() {
+    public void skal_finne_refusjonskrav_på_stp_med_endring_i_refusjonskrav() {
         // Arrange
         LocalDate idag = LocalDate.now();
-        LocalDate om2Måneder = idag.plusMonths(2);
-
-        Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
-        periodeBuilder.medBeregningsgrunnlagPeriode(idag, om2Måneder);
-        BeregningsgrunnlagPeriodeDto periodeDto = periodeBuilder.build();
-
         InntektsmeldingAggregatDtoBuilder inntektsmeldingAggregatDtoBuilder = InntektsmeldingAggregatDtoBuilder.ny();
         InntektsmeldingDtoBuilder inntektsmeldingDtoBuilder = InntektsmeldingDtoBuilder.builder();
         inntektsmeldingDtoBuilder.medStartDatoPermisjon(idag)
@@ -162,10 +121,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
 
         // Act
-        BigDecimal høyestRefusjonskravForBGPerioden = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periodeDto, inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
+        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
-        assertThat(høyestRefusjonskravForBGPerioden).isEqualByComparingTo(BigDecimal.valueOf(180_000));
+        assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(216_000));
     }
 
     private OmsorgspengerGrunnlag lagOmsorgpengerGrunnlag(LocalDate idag) {

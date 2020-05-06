@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjene
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -58,7 +57,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
-import no.nav.vedtak.konfig.Tid;
 
 @ExtendWith(MockitoExtension.class)
 public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
@@ -86,7 +84,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     }
 
     private InntektArbeidYtelseAggregatBuilder leggTilYrkesaktiviteterOgBeregningAktiviteter(List<String> orgnrs, AktørId aktørId) {
-        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
+        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
 
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
             .medAktørId(aktørId);
@@ -284,9 +282,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
         var oversetterFraRegelTilVLNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
         var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        var oversetterFraRegelTilVLUtenAndelendring = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring();
         return new FastsettBeregningsgrunnlagPerioderTjeneste(oversetterTilRegelNaturalytelse,
             new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelTilVLNaturalytelse,
-            oversetterFraRegelTilVLRefusjonOgGradering, oversetterFraRegelTilVLUtenAndelendring);
+            oversetterFraRegelTilVLRefusjonOgGradering);
     }
 }

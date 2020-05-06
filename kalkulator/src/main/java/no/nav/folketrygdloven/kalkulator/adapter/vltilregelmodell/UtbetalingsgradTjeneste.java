@@ -52,7 +52,7 @@ public class UtbetalingsgradTjeneste {
             return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                     .filter(ubtGrad -> mapAktivitetStatus(ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).equals(status))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                    .filter(p -> p.getPeriode().overlapper(periode))
+                    .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
                     .findFirst()
                     .orElse(BigDecimal.ZERO);
@@ -70,7 +70,7 @@ public class UtbetalingsgradTjeneste {
                     .filter(utbGrad -> matcherArbeidsgiver(arbeidsforhold, utbGrad)
                             && matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                    .filter(p -> p.getPeriode().overlapper(periode))
+                    .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
                     .findFirst()
                     .orElse(BigDecimal.ZERO);

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.UtbetalingsgradTjeneste.finnGradertBruttoForAndel;
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -25,17 +26,14 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
         if(manglerBeregnetPrÅr(andel)){
             return false;
         }
-        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
-                .stream()
-                .anyMatch(p -> FastsettGrunnlagOmsorgspenger.girDirekteUtbetaling(input, p));
+        return girDirekteUtbetaling(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0));
     }
 
     private static boolean girDirekteUtbetaling(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPeriodeDto periode) {
         BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
-        BigDecimal lavesteTotalRefusjonForPeriode = MapRefusjonskravFraVLTilRegel.finnLavesteTotalRefusjonForBGPerioden(periode, input.getInntektsmeldinger(),
-                input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
+        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
 
-        BigDecimal lavesteGrenseRefusjon = grenseverdi6G.min(lavesteTotalRefusjonForPeriode);
+        BigDecimal lavesteGrenseRefusjon = grenseverdi6G.min(gradertRefusjonVedSkjæringstidspunkt);
         BigDecimal totaltBeregningsgrunnlag = periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .map(a -> finnGradertBruttoForAndel(a, periode.getPeriode(), input.getYtelsespesifiktGrunnlag()))
@@ -53,7 +51,7 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
     }
 
     private static boolean utbetalesPengerDirekteTilBruker(BigDecimal maksimalRefusjon, BigDecimal avkortetTotaltGrunnlag){
-        return maksimalRefusjon.compareTo(avkortetTotaltGrunnlag) < 0 ? true : false;
+        return maksimalRefusjon.compareTo(avkortetTotaltGrunnlag) < 0;
     }
 
     private static boolean erAvvikStørreEnn25Prosent(BigDecimal avvikPromille){

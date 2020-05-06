@@ -121,11 +121,9 @@ public class MapRefusjonskravFraVLTilRegel {
         return Optional.empty();
     }
 
-    public static BigDecimal finnLavesteTotalRefusjonForBGPerioden(BeregningsgrunnlagPeriodeDto vlBGPeriode,
-                                                                   Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
+    public static BigDecimal finnGradertRefusjonskravPåSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
                                                                    LocalDate stp,
                                                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        Intervall relevantPeriode = vlBGPeriode.getPeriode();
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
         for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
             if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
@@ -137,21 +135,14 @@ public class MapRefusjonskravFraVLTilRegel {
                 refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));
             }
         }
-
-        List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream().filter(p -> p.getPeriode().overlapper(Periode.of(relevantPeriode.getFomDato(), relevantPeriode.getTomDato())))
+        List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream()
+                .filter(p -> p.getPeriode().inneholder(stp))
                 .collect(Collectors.toList());
-
-        BigDecimal lavesteSummertIPerioden = relevanteRefusjonskrav.stream().map(Refusjonskrav::getPeriode)
-                .map(periode -> relevanteRefusjonskrav.stream()
-                        .filter(refusjonskrav -> refusjonskrav.getPeriode().overlapper(periode))
-                        .map(Refusjonskrav::getMånedsbeløp)
-                        .reduce(BigDecimal::add)
-                        .orElse(BigDecimal.ZERO))
-                .min(Comparator.naturalOrder())
-                .orElse(BigDecimal.ZERO);
-
-        //ganger med 12 får å få pr år
-        return lavesteSummertIPerioden.multiply(BigDecimal.valueOf(12));
+        return relevanteRefusjonskrav.stream()
+                .map(Refusjonskrav::getMånedsbeløp)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .multiply(BigDecimal.valueOf(12));
     }
-
+    
 }

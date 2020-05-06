@@ -5,7 +5,6 @@ import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjene
 import no.nav.folketrygdloven.kalkulator.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
@@ -18,9 +17,9 @@ import no.nav.folketrygdloven.kalkulator.kontrollerfakta.TilfelleUtlederMockTjen
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
-public class BeregningTjenesteProvider {
+class BeregningTjenesteProvider {
 
-    public static BeregningTjenesteWrapper provide() {
+    static BeregningTjenesteWrapper provide() {
         FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste = new FaktaOmBeregningTilfelleTjeneste(
             TilfelleUtlederMockTjeneste.getUtlederInstances());
         AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning = new AksjonspunktUtlederFaktaOmBeregning(faktaOmBeregningTilfelleTjeneste);
@@ -29,8 +28,7 @@ public class BeregningTjenesteProvider {
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
         MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        var oversetterFraRegelTilVLUtenAndelendring = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring();
-        var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste(oversetterTilRegelNaturalytelse, new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelNaturalytelse, oversetterFraRegelRefusjonOgGradering, oversetterFraRegelTilVLUtenAndelendring);
+        var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste(oversetterTilRegelNaturalytelse, new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelNaturalytelse, oversetterFraRegelRefusjonOgGradering);
 
         MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());

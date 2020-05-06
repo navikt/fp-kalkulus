@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
@@ -140,10 +139,9 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         var oversetterFraRegelTilVLNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
         var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        var oversetterFraRegelTilVLUtenAndelendring = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLUtenAndelendring();
         return new FastsettBeregningsgrunnlagPerioderTjeneste(oversetterTilRegelNaturalytelse,
             new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelTilVLNaturalytelse,
-            oversetterFraRegelTilVLRefusjonOgGradering, oversetterFraRegelTilVLUtenAndelendring);
+            oversetterFraRegelTilVLRefusjonOgGradering);
     }
 
     private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Map<String, BigDecimal> orgnrs, BehandlingReferanse behandlingReferanse,

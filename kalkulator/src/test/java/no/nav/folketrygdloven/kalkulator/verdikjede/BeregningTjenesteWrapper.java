@@ -5,7 +5,7 @@ import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjene
 import no.nav.folketrygdloven.kalkulator.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
 
-public class BeregningTjenesteWrapper {
+class BeregningTjenesteWrapper {
 
     private FullføreBeregningsgrunnlagFPImpl fullføreBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
