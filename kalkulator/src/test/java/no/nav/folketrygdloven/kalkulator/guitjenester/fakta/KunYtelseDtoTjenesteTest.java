@@ -11,8 +11,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.sp.SykepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -58,6 +60,27 @@ public class KunYtelseDtoTjenesteTest {
 
         // Act
         var input = new BeregningsgrunnlagRestInput(behandlingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
+                .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
+
+        KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
+
+        // Assert
+        assertAndel(kunytelse);
+        assertThat(kunytelse.isFodendeKvinneMedDP()).isFalse();
+        assertThat(kunytelse.getErBesteberegning()).isNull();
+    }
+
+    @Test
+    public void skal_ikke_feile_hvis_svpgrunnlag() {
+        Intervall periode = Intervall.fraOgMedTilOgMed(
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
+        var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
+        SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of());
+
+        // Act
+        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);

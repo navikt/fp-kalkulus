@@ -39,12 +39,13 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
     }
 
     KunYtelseDto lagKunYtelseDto(BeregningsgrunnlagRestInput input) {
-        var ref = input.getBehandlingReferanse();
         KunYtelseDto dto = new KunYtelseDto();
 
         dto.setErBesteberegning(harBesteberegning(input.getBeregningsgrunnlag(), input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand()));
         settVerdier(dto, input.getBeregningsgrunnlag(), input.getIayGrunnlag());
-        dto.setFodendeKvinneMedDP(((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).isKvalifisererTilBesteberegning());
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
+            dto.setFodendeKvinneMedDP(((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).isKvalifisererTilBesteberegning());
+        }
         return dto;
     }
 
