@@ -266,7 +266,7 @@ public class MapIAYTilKalulator {
         if (grunnlagDto.getInntekterDto() != null) {
             builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto(), id));
         }
-        if (grunnlagDto.getYtelserDto() != null) {
+        if (grunnlagDto.getYtelserDto() != null && grunnlagDto.getYtelserDto().getYtelser() != null) {
             builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto(), id));
         }
         return builder;

@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BekreftetPermisjonStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isFalse();
     }
@@ -82,7 +83,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isFalse();
     }
@@ -99,7 +100,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isTrue();
     }

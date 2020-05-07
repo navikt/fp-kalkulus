@@ -8,7 +8,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public final class FinnAnsettelsesPeriode {
 
@@ -16,20 +18,22 @@ public final class FinnAnsettelsesPeriode {
         // skjul public constructor
     }
 
-    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
-        return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt));
+    public static Optional<Periode> finnMinMaksPeriode(FagsakYtelseType fagsakYtelseType, Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+        return Optional.ofNullable(getMinMaksPeriode(fagsakYtelseType, ansettelsesPerioder, skjæringstidspunkt));
     }
 
     /** Forventer at skjæringstidspunktet ligger i en av ansettelses periodene
      *
+     *
+     * @param fagsakYtelseType
      * @param ansettelsesPerioder
      * @param skjæringstidspunkt
      * @return Periode {@link Periode}
      */
-    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+    public static Periode getMinMaksPeriode(FagsakYtelseType fagsakYtelseType, Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
             .stream()
-            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)))
+            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(fagsakYtelseType, skjæringstidspunkt)))
             .collect(Collectors.toList());
         if (perioderSomSlutterEtterStp.isEmpty()) {
             return null;

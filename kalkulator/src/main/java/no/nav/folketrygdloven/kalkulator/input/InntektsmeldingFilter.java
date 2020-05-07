@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
@@ -35,9 +36,10 @@ public class InntektsmeldingFilter {
      * @param skjæringstidspunktForOpptjening datoen arbeidsforhold må inkludere eller starte etter for å bli regnet som aktive
      * @return Liste med inntektsmeldinger {@link InntektsmeldingDto}
      */
-    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(BehandlingReferanse ref, LocalDate skjæringstidspunktForOpptjening) {
+    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(BehandlingReferanse ref,
+                                                                   LocalDate skjæringstidspunktForOpptjening) {
         AktørId aktørId = ref.getAktørId();
-        LocalDate skjæringstidspunktMinusEnDag = skjæringstidspunktForOpptjening.minusDays(1);
+        LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(ref.getFagsakYtelseType(), skjæringstidspunktForOpptjening);
         List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
             .orElse(emptyList());
 
@@ -48,7 +50,7 @@ public class InntektsmeldingFilter {
         if (yrkesaktiviteter.isEmpty()) {
             return inntektsmeldinger;
         }
-        return filtrerVekkInntektsmeldingPåInaktiveArbeidsforhold(filter, yrkesaktiviteter, inntektsmeldinger, skjæringstidspunktMinusEnDag);
+        return filtrerVekkInntektsmeldingPåInaktiveArbeidsforhold(filter, yrkesaktiviteter, inntektsmeldinger, sistedagForInkluderteAktiviteter);
     }
 
     /**

@@ -23,15 +23,21 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
         // Skjul
     }
 
-    public static Collection<YrkesaktivitetDto> finnYrkesaktiviteter(BehandlingReferanse behandlingReferanse, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagGrunnlagDto grunnlag) {
+    public static Collection<YrkesaktivitetDto> finnYrkesaktiviteter(BehandlingReferanse behandlingReferanse,
+                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                     BeregningsgrunnlagGrunnlagDto grunnlag) {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(behandlingReferanse.getAktørId()));
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
         LocalDate skjæringstidspunktBeregning = behandlingReferanse.getSkjæringstidspunktBeregning();
         BeregningAktivitetAggregatDto overstyrtEllerRegisterAktiviteter = grunnlag.getOverstyrteEllerRegisterAktiviteter();
         return yrkesaktiviteterForBeregning.stream()
             .filter(yrkesaktivitet ->
-                !ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, yrkesaktivitet, overstyrtEllerRegisterAktiviteter, skjæringstidspunktBeregning))
-            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
+                !ErFjernetIOverstyrt.erFjernetIOverstyrt(filter,
+                        yrkesaktivitet,
+                        overstyrtEllerRegisterAktiviteter,
+                        skjæringstidspunktBeregning,
+                        behandlingReferanse.getFagsakYtelseType()))
+            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(behandlingReferanse.getFagsakYtelseType(), filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
             .collect(Collectors.toList());
     }
 
@@ -49,7 +55,7 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
         LocalDate skjæringstidspunktBeregning = behandlingReferanse.getSkjæringstidspunktBeregning();
         return yrkesaktiviteterForBeregning.stream()
-            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
+            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(behandlingReferanse.getFagsakYtelseType(), filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
             .collect(Collectors.toList());
     }
 

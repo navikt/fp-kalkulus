@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class MapAndelGraderingTest {
 
@@ -39,6 +40,8 @@ public class MapAndelGraderingTest {
     public void setUp() {
         ref = mock(BehandlingReferanse.class);
         when(ref.getSkjæringstidspunktBeregning()).thenReturn(LocalDate.now());
+        when(ref.getFagsakYtelseType()).thenReturn(FagsakYtelseType.FORELDREPENGER);
+
     }
 
     @Test

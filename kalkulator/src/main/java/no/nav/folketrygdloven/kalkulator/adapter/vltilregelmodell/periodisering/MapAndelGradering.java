@@ -42,7 +42,7 @@ public final class MapAndelGradering {
                 andelGradering.getArbeidsgiver(),
                 andelGradering.getArbeidsforholdRef());
             yrkesaktivitet.ifPresent(ya -> Arbeidsforhold.builder(arbeidsforhold)
-                .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya),
+                .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(ref.getFagsakYtelseType(), filter.getAnsettelsesPerioder(ya),
                     ref.getSkjæringstidspunktBeregning())));
             builder.medArbeidsforhold(arbeidsforhold);
         }

@@ -121,10 +121,13 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         throw new IllegalStateException("Arbeidsgiver må være enten aktør eller virksomhet, men var: " + arbeidsgiver);
     }
 
-    private void mapInntektsmelding(Inntektsgrunnlag inntektsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger,
-                                    YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
+    private void mapInntektsmelding(Inntektsgrunnlag inntektsgrunnlag,
+                                    Collection<InntektsmeldingDto> inntektsmeldinger,
+                                    YrkesaktivitetFilterDto filterYaRegister,
+                                    LocalDate skjæringstidspunktBeregning,
+                                    FagsakYtelseType fagsakYtelseType) {
         inntektsmeldinger.stream()
-                .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
+                .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning, fagsakYtelseType))
                 .forEach(im -> {
                     Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
                     BigDecimal inntekt = im.getInntektBeløp().getVerdi();
@@ -142,10 +145,10 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 });
     }
 
-    private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
+    private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
         return filterYaRegister.getYrkesaktiviteter().stream()
                 .filter(ya -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
+                .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(fagsakYtelseType, ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
                         .map(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false));
     }
 
@@ -254,7 +257,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             lagInntekterSN(inntektsgrunnlag, filter);
         }
 
-        mapInntektsmelding(inntektsgrunnlag, inntektsmeldinger, filterYaRegister, skjæringstidspunktBeregning);
+        mapInntektsmelding(inntektsgrunnlag, inntektsmeldinger, filterYaRegister, skjæringstidspunktBeregning, referanse.getFagsakYtelseType());
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(skjæringstidspunktBeregning);
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
