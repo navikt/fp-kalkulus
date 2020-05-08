@@ -365,7 +365,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
-                .medHjemmel(Hjemmel.F_14_7_8_30)
+                .medHjemmel(Hjemmel.F_14_7_8_28_8_30)
                 .build(beregningsgrunnlag);
 
 
@@ -401,7 +401,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
-                .medHjemmel(Hjemmel.F_14_7_8_30)
+                .medHjemmel(Hjemmel.F_14_7_8_28_8_30)
                 .build(beregningsgrunnlag);
 
 

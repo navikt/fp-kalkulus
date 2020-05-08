@@ -72,7 +72,7 @@ public class RegelMapperTestDataHelper {
     public static void buildVLBGAktivitetStatus(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus aktivitetStatus) {
         BeregningsgrunnlagAktivitetStatusDto.builder()
             .medAktivitetStatus(aktivitetStatus)
-            .medHjemmel(Hjemmel.F_14_7_8_30)
+            .medHjemmel(Hjemmel.F_14_7_8_28_8_30)
             .build(beregningsgrunnlag);
     }
 

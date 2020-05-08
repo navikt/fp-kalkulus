@@ -157,7 +157,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 1
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -179,7 +179,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
@@ -263,7 +263,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
@@ -357,7 +357,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
@@ -441,7 +441,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
@@ -504,7 +504,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -526,7 +526,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2, forventetDagsats);
@@ -588,7 +588,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -610,7 +610,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2, forventetDagsats);
@@ -684,7 +684,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -706,7 +706,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4, forventetDagsats);
@@ -789,7 +789,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -811,7 +811,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4, forventetDagsats);
@@ -872,7 +872,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
 
         // Assert 2
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagDto beregningsgrunnlagEtter1 = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periodeEtter1 = beregningsgrunnlagEtter1.getBeregningsgrunnlagPerioder().get(0);
@@ -920,7 +920,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         );
 
         // Assert 3-4
-        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
+        verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_28_8_30);
 
         BeregningsgrunnlagPeriodeDto periodeEtter3 = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         Long forvetetAndelSum = Math.round((SEKS_G / 2) / 260) * 2;
