@@ -18,6 +18,7 @@ public class MapOpptjeningAktivitetTypeFraVLTilRegel {
         map.put(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE, Aktivitet.ETTERLØNN_SLUTTPAKKE);
         map.put(OpptjeningAktivitetType.FORELDREPENGER, Aktivitet.FORELDREPENGER_MOTTAKER);
         map.put(OpptjeningAktivitetType.FRILANS, Aktivitet.FRILANSINNTEKT);
+        map.put(OpptjeningAktivitetType.FRISINN, Aktivitet.FRISINN_MOTTAKER);
         map.put(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE, Aktivitet.MILITÆR_ELLER_SIVILTJENESTE);
         map.put(OpptjeningAktivitetType.NÆRING, Aktivitet.NÆRINGSINNTEKT);
         map.put(OpptjeningAktivitetType.OMSORGSPENGER, Aktivitet.OMSORGSPENGER);
