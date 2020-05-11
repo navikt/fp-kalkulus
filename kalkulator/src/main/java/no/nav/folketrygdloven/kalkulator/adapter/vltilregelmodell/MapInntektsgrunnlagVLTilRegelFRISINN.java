@@ -66,15 +66,14 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag,
                                      InntektFilterDto filter,
-                                     Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                     FrisinnGrunnlag frisinnGrunnlag) {
+                                     Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         filter.filterBeregningsgrunnlag()
                 .filter(i -> i.getArbeidsgiver() != null)
-                .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter, frisinnGrunnlag));
+                .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
     }
 
     private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag, InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
-                            Collection<YrkesaktivitetDto> yrkesaktiviteter, FrisinnGrunnlag frisinnGrunnlag) {
+                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         inntektsposter.forEach(inntektspost -> {
 
             Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
@@ -85,25 +84,12 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
             } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
                 throw new IllegalStateException("Inntektsbeløp må være satt.");
             }
-
-            if (arbeidsgiver.erFrilanser()) {
-                // Frilansinntekter skal kun brukes dersom det er søkt ytelse for frilansaktiviteten.
-                if (frisinnGrunnlag.getSøkerYtelseForFrilans()) {
-                    inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                            .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
-                            .medArbeidsgiver(arbeidsgiver)
-                            .medMåned(inntektspost.getPeriode().getFomDato())
-                            .medInntekt(inntektspost.getBeløp().getVerdi())
-                            .build());
-                }
-            } else {
-                inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                        .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
-                        .medArbeidsgiver(arbeidsgiver)
-                        .medMåned(inntektspost.getPeriode().getFomDato())
-                        .medInntekt(inntektspost.getBeløp().getVerdi())
-                        .build());
-            }
+            inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+                    .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
+                    .medArbeidsgiver(arbeidsgiver)
+                    .medMåned(inntektspost.getPeriode().getFomDato())
+                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .build());
         });
     }
 
@@ -194,7 +180,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
             yrkesaktiviteter.addAll(filterYaRegister.getYrkesaktiviteterForBeregning());
             yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
 
-            lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter, frisinnGrunnlag);
+            lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter);
             lagInntekterSN(inntektsgrunnlag, filter);
         }
 

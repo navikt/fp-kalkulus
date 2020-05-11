@@ -17,7 +17,11 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
         Boolean erNyoppstartetFrilans = input.getIayGrunnlag().getOppgittOpptjening().flatMap(OppgittOpptjeningDto::getFrilans).map(OppgittFrilansDto::getErNyoppstartet).orElse(false);
-        return new FrisinnGrunnlag(erNyoppstartetFrilans);
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag)) {
+            throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
+        }
+        no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        return new FrisinnGrunnlag(erNyoppstartetFrilans, frisinnGrunnlag.getSøkerYtelseForFrilans());
     }
 
 }
