@@ -22,6 +22,7 @@ public class VisningsnavnForAktivitetTjeneste {
     public static final String PRIVATPERSON_DEFAULT_VISNING = "Privatperson";
 
     private static final Logger logger = LoggerFactory.getLogger(VisningsnavnForAktivitetTjeneste.class);
+    public static final String NAVN_FOR_FEILET_TPS_KALL = "N/A";
 
 
     private VisningsnavnForAktivitetTjeneste() {
@@ -29,11 +30,14 @@ public class VisningsnavnForAktivitetTjeneste {
     }
 
     public static Optional<String> finnArbeidsgiverNavn(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        Optional<String> navn = arbeidsgiverOpplysninger.stream()
+                .filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .findFirst()
+                .map(ArbeidsgiverOpplysningerDto::getNavn);
         if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
-            return Optional.of(PRIVATPERSON_DEFAULT_VISNING);
+            return Optional.of(navn.filter(n -> !n.equals(NAVN_FOR_FEILET_TPS_KALL)).orElse(PRIVATPERSON_DEFAULT_VISNING));
         }
-        return arbeidsgiverOpplysninger.stream().filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-                .findFirst().map(ArbeidsgiverOpplysningerDto::getNavn);
+        return navn;
     }
 
     public static String finnArbeidsgiverIdentifikatorForVisning(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
