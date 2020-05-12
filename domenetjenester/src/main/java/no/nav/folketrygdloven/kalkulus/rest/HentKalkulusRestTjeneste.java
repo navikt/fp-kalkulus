@@ -99,8 +99,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
 
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
+        if (!harKalkulatorInput(koblingId)) {
+            return Response.noContent().build();
+        }
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
                 .filter(grunnlag -> grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
                 .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
@@ -123,8 +126,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId, spesifikasjon.getGrunnlagReferanse());
+        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
+        if (!harKalkulatorInput(koblingId)) {
+            return Response.noContent().build();
+        }
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId.get(), spesifikasjon.getGrunnlagReferanse());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
                 .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
                 .map(bgDto -> Response.ok(bgDto).build())
@@ -145,8 +151,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
+        if (!harKalkulatorInput(koblingId)) {
+            return Response.noContent().build();
+        }
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
                 .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
                 .map(bgDto -> Response.ok(bgDto).build())
@@ -167,8 +176,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
+        if (!harKalkulatorInput(koblingId)) {
+            return Response.noContent().build();
+        }
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
                 .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
                 .map(MapDetaljertBeregningsgrunnlag::map)
@@ -192,7 +204,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
-        if (koblingId.isEmpty()){
+        if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)){
             response = Response.noContent().build();
         } else {
             BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId.get());
@@ -222,7 +234,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
-        if (koblingId.isEmpty()) {
+        if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Response.noContent().build();
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
@@ -320,6 +332,10 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
             return abacDataAttributter;
         }
+    }
+
+    private Boolean harKalkulatorInput(Optional<Long> koblingId) {
+        return koblingId.map(id -> beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(id).isEmpty()).orElse(false);
     }
 
 

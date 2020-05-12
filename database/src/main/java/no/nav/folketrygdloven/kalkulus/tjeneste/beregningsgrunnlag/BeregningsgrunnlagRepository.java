@@ -310,6 +310,14 @@ public class BeregningsgrunnlagRepository {
         return BeregningsgrunnlagGrunnlagBuilder.oppdatere(grunnlag);
     }
 
+    public void deaktiverKalkulatorInput(Long koblingId) {
+        KalkulatorInputEntitet kalkulatorInputEntitet = hentKalkulatorInput(koblingId);
+        kalkulatorInputEntitet.setAktiv(false);
+        entityManager.persist(kalkulatorInputEntitet);
+        entityManager.flush();
+    }
+
+
     public void deaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         entitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);

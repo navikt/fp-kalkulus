@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
@@ -88,6 +89,41 @@ public class RullTilbakeTjenesteTest {
         assertThat(aktivtGrunnlag).isPresent();
         assertThat(aktivtGrunnlag.get().getBeregningsgrunnlagTilstand()).isEqualTo(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
+
+    @Test
+    public void skal_deaktivere_beregningsgrunnlag_og_input() {
+        // Arrange
+        String json = getTestJSON();
+        KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
+        repository.lagreOgSjekkStatus(input);
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
+
+        // Act
+        Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        Optional<KalkulatorInputEntitet> kalkulatorInputEntitet = repository.hentHvisEksitererKalkulatorInput(koblingId);
+
+        // Assert
+        assertThat(aktivtGrunnlag).isEmpty();
+        assertThat(kalkulatorInputEntitet).isEmpty();
+    }
+
+    private String getTestJSON() {
+        return "{\n" +
+                "  \"jeg\" : {\n" +
+                "    \"er\" : \"en\",\n" +
+                "    \"test\" : \"json\",\n" +
+                "    \"fordi\" : \"jeg\",\n" +
+                "    \"tester\" : \"jsonb\",\n" +
+                "    \"lagring\" : {\n" +
+                "      \"i\" : \"postgres\",\n" +
+                "      \"databasen\" : \"til\"\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"kalkulus\" : \"okey?\"\n" +
+                "}";
+    }
+
 
 
 }

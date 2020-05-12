@@ -56,8 +56,9 @@ public class RullTilbakeTjeneste {
         }
     }
 
-    public void deaktiverAktivtBeregningsgrunnlag(Long koblingId) {
+    public void deaktiverAktivtBeregningsgrunnlagOgInput(Long koblingId) {
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        beregningsgrunnlagRepository.deaktiverKalkulatorInput(koblingId);
     }
 
 }

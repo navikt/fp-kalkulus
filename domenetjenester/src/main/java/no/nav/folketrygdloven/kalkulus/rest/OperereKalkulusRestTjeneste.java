@@ -178,14 +178,14 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/deaktiver")
-    @Operation(description = "Deaktiverer aktivt beregningsgrunnlag basert.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
+    @Operation(description = "Deaktiverer aktivt beregningsgrunnlag. Nullstiller beregning.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentKalkulusRestTjeneste.HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
-        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlag(koblingId);
+        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
         logMetrikk("/kalkulus/v1/deaktiver", Duration.between(startTx, Instant.now()));
         return Response.ok().build();
     }
