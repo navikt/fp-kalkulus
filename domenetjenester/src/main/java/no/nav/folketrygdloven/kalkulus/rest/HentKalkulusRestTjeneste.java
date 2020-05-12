@@ -335,7 +335,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     }
 
     private Boolean harKalkulatorInput(Optional<Long> koblingId) {
-        return koblingId.map(id -> beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(id).isEmpty()).orElse(false);
+        return koblingId.map(id -> beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(id).isPresent()).orElse(false);
     }
 
 
