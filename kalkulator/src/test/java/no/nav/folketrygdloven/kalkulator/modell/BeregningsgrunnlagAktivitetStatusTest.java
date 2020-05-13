@@ -16,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 public class BeregningsgrunnlagAktivitetStatusTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final AktivitetStatus AKTIVITET_STATUS = AktivitetStatus.ARBEIDSTAKER;
-    private static final Hjemmel BARE_ARBEIDSTAKER = Hjemmel.F_14_7_8_28_8_30;
+    private static final Hjemmel BARE_ARBEIDSTAKER = Hjemmel.F_14_7_8_30;
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagAktivitetStatusDto beregningsgrunnlagAktivitetStatus;
 
