@@ -63,6 +63,7 @@ public enum BeregningVenteårsak implements Kodeverdi {
 
     INGEN_PERIODE_UTEN_YTELSE("INGEN_PERIODE_UTEN_YTELSE", "FRISINN: Sak settes på vent fordi søker har ytelse de 3 siste årene."),
     KORTVARIG_ARBEID("KORTVARIG_ARBEID", "FRISINN: Sak settes på vent fordi søker har et kortvarig arbeidsforhold i løpet av opptjeningsperioden."),
+    FRISINN_ATFL_SAMME_ORG("FRISINN_ATFL_SAMME_ORG", "FRISINN: Søker er ATFL i samme org, skal ikke behandles og kan settes på vent."),
     ;
 
 

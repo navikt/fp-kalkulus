@@ -52,6 +52,7 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     // 8000 frisinn
     AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av manglende funksjonalitet"),
     INGEN_AKTIVITETER("8001", "Gir avslag"),
+    FRISINN_ATFL_SAMME_ORG("8005", "Sak settes på vent fordi vi ikke skal behandle saker der søker er ATFL samme org"),
 
     UNDEFINED,
     ;
