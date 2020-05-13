@@ -71,39 +71,17 @@ public class MapBeregningsgrunnlagFRISINN {
     }
 
     private static List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, Optional<OppgittOpptjeningDto> oppgittOpptjening, FrisinnGrunnlag frisinnGrunnlag, BigDecimal gbeløp) {
-        BigDecimal bruttoIAndelerIkkeSøktFor = beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(andel -> !erSøktYtelseFor(andel, frisinnGrunnlag) && andel.getBruttoPrÅr() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
         return beregningsgrunnlagPrStatusOgAndelList.stream()
-                .map(a -> MapBeregningsgrunnlagFRISINN.mapAndel(a, oppgittOpptjening, frisinnGrunnlag, gbeløp, bruttoIAndelerIkkeSøktFor)).collect(Collectors.toList());
-    }
-
-    private static boolean erSøktYtelseFor(BeregningsgrunnlagPrStatusOgAndel andel, FrisinnGrunnlag frisinnGrunnlag) {
-        if (andel.getAktivitetStatus().erArbeidstaker()) {
-            return false;
-        }
-        if (andel.getAktivitetStatus().erFrilanser() && frisinnGrunnlag.getSøkerYtelseForFrilans()) {
-            return true;
-        }
-        return andel.getAktivitetStatus().erSelvstendigNæringsdrivende() && frisinnGrunnlag.getSøkerYtelseForNæring();
+                .map(a -> MapBeregningsgrunnlagFRISINN.mapAndel(a, oppgittOpptjening, frisinnGrunnlag, gbeløp)).collect(Collectors.toList());
     }
 
     private static BeregningsgrunnlagPrStatusOgAndelFRISINNDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel,
                                                                         Optional<OppgittOpptjeningDto> oppgittOpptjening,
                                                                         FrisinnGrunnlag frisinnGrunnlag,
-                                                                        BigDecimal gbeløp,
-                                                                        BigDecimal bruttoIAndelerIkkeSøktFor) {
+                                                                        BigDecimal gbeløp) {
         List<BeregningsgrunnlagPrStatusOgAndel> andelerSammePeriode = beregningsgrunnlagPrStatusOgAndel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList();
-
-        BigDecimal bgFratrukketInntektstak = BigDecimal.ZERO;
-
-        if (erSøktYtelseFor(beregningsgrunnlagPrStatusOgAndel, frisinnGrunnlag)) {
-            BigDecimal grenseverdi = ANTALL_G_GRENSEVERDI.multiply(gbeløp);
-            BigDecimal inntektstak = grenseverdi.subtract(bruttoIAndelerIkkeSøktFor).max(BigDecimal.ZERO);
-            bgFratrukketInntektstak = inntektstak.min(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr());
-        }
+        BigDecimal inntektstak = MapInntektstakFRISINN.map(andelerSammePeriode,
+                beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus(), frisinnGrunnlag, oppgittOpptjening, gbeløp);
 
         Optional<Avslagsårsak> avslagsårsak = oppgittOpptjening.flatMap(oo ->
                 MapTilAvslagsårsakerFRISINN.map(beregningsgrunnlagPrStatusOgAndel, andelerSammePeriode, frisinnGrunnlag, oo, gbeløp));
@@ -113,7 +91,7 @@ public class MapBeregningsgrunnlagFRISINN {
                 beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
                 finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
-                bgFratrukketInntektstak,
+                inntektstak,
                 beregningsgrunnlagPrStatusOgAndel.getDagsats(),
                 new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
                 avslagsårsak.orElse(null));
