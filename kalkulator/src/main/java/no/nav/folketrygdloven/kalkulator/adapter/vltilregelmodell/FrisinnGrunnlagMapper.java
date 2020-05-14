@@ -18,7 +18,7 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
             throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
         }
         no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        return new FrisinnGrunnlag(frisinnGrunnlag.getSøkerYtelseForFrilans());
+        return new FrisinnGrunnlag(frisinnGrunnlag.getSøkerYtelseForFrilans(), input.getSkjæringstidspunktOpptjening());
     }
 
 }
