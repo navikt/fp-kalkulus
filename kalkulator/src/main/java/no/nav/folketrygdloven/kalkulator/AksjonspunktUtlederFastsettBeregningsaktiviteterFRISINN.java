@@ -39,24 +39,8 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
                         LocalDateTime.of(TIDENES_ENDE, LocalTime.MIDNIGHT)));
             }
         }
-
-        List<BeregningAktivitetDto> aktiviteter = beregningAktivitetAggregat.getBeregningAktiviteter();
-        List<BeregningAktivitetDto> korteArbeidsforhold = aktiviteter.stream()
-                .filter(this::varerUnder6Måneder)
-                .filter(a -> OpptjeningAktivitetType.ARBEID.equals(a.getOpptjeningAktivitetType()))
-                .collect(Collectors.toList());
-        if (!korteArbeidsforhold.isEmpty()) {
-            return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
-                    BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
-                    BeregningVenteårsak.KORTVARIG_ARBEID,
-                    LocalDateTime.of(TIDENES_ENDE, LocalTime.MIDNIGHT)));
-        }
-
         return Collections.emptyList();
     }
 
-    private boolean varerUnder6Måneder(BeregningAktivitetDto a) {
-        return a.getPeriode().getFomDato().isAfter(LocalDate.of(2019, 9, 1)) &&
-                a.getPeriode().getTomDato().isBefore(a.getPeriode().getFomDato().plusMonths(6));
-    }
+
 }
