@@ -9,7 +9,6 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -26,10 +25,13 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
         if(manglerBeregnetPrÅr(andel)){
             return false;
         }
-        return girDirekteUtbetaling(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0));
+        if(girDirekteUtbetalingTilBruker(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0))){
+            return erAvvikStørreEnn25Prosent(finnAvvikPromille(input));
+        }
+        return false;
     }
 
-    private static boolean girDirekteUtbetaling(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPeriodeDto periode) {
+    public static boolean girDirekteUtbetalingTilBruker(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPeriodeDto periode) {
         BigDecimal grenseverdi6G = input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi().multiply(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi());
         BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), input.getSkjæringstidspunktForBeregning(), input.getYtelsespesifiktGrunnlag());
 
@@ -40,18 +42,11 @@ public class FastsettGrunnlagOmsorgspenger implements FastsettGrunnlag {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal avkortetTotaltGrunnlag = grenseverdi6G.min(totaltBeregningsgrunnlag);
 
-        if (utbetalesPengerDirekteTilBruker(lavesteGrenseRefusjon, avkortetTotaltGrunnlag)) {
-            return erAvvikStørreEnn25Prosent(finnAvvikPromille(input));
-        }
-        return false;
+        return lavesteGrenseRefusjon.compareTo(avkortetTotaltGrunnlag) < 0;
     }
 
     private static boolean manglerBeregnetPrÅr(BeregningsgrunnlagPrStatusOgAndelDto andel){
         return andel.getBeregnetPrÅr() == null;
-    }
-
-    private static boolean utbetalesPengerDirekteTilBruker(BigDecimal maksimalRefusjon, BigDecimal avkortetTotaltGrunnlag){
-        return maksimalRefusjon.compareTo(avkortetTotaltGrunnlag) < 0;
     }
 
     private static boolean erAvvikStørreEnn25Prosent(BigDecimal avvikPromille){
