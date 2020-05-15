@@ -1,20 +1,15 @@
 package no.nav.folketrygdloven.kalkulator;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -36,7 +31,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
                         BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
                         BeregningVenteårsak.INGEN_PERIODE_UTEN_YTELSE,
-                        LocalDateTime.of(TIDENES_ENDE, LocalTime.MIDNIGHT)));
+                        LocalDateTime.of(LocalDate.now().plusDays(30), LocalTime.MIDNIGHT)));
             }
         }
         return Collections.emptyList();
