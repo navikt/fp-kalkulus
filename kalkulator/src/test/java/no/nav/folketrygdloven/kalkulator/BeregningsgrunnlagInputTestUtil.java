@@ -167,7 +167,4 @@ public class BeregningsgrunnlagInputTestUtil {
         return inputMedBeregningsgrunnlag;
     }
 
-    public static void leggPåStandarGrunnBeløpPakke(BeregningsgrunnlagInput input) {
-        input.getGrunnbeløpsatser().addAll(GrunnbeløpMock.GRUNNBELØPSATSER);
-    }
 }

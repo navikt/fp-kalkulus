@@ -77,7 +77,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
             return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder()
                     .stream()
                     .filter(p -> overlapperMinstEnPeriode(frilansSøktPerioder, p))
-                    .allMatch(this::harNæringUtenUtbetaling);
+                    .allMatch(this::harIkkeUtbetalingForNæring);
         }
         return false;
     }
@@ -94,7 +94,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
             return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder()
                     .stream()
                     .filter(p -> overlapperMinstEnPeriode(søktePerioder, p))
-                    .allMatch(this::harFrilansUtenUtbetaling);
+                    .allMatch(this::harIkkeUtbetalingForFrilans);
         }
         return false;
     }
@@ -103,20 +103,20 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
         return frilansSøktPerioder.stream().anyMatch(sp -> p.getPeriode().overlapper(sp.getPeriode()));
     }
 
-    private Boolean harFrilansUtenUtbetaling(BeregningsgrunnlagPeriodeDto p) {
+    private Boolean harIkkeUtbetalingForFrilans(BeregningsgrunnlagPeriodeDto p) {
         return p.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAktivitetStatus().erFrilanser())
                 .findFirst()
                 .map(a -> a.getDagsats().equals(0L))
-                .orElse(false);
+                .orElse(true);
     }
 
-    private Boolean harNæringUtenUtbetaling(BeregningsgrunnlagPeriodeDto p) {
+    private Boolean harIkkeUtbetalingForNæring(BeregningsgrunnlagPeriodeDto p) {
         return p.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
                 .findFirst()
                 .map(a -> a.getDagsats().equals(0L))
-                .orElse(false);
+                .orElse(true);
     }
 
 }
