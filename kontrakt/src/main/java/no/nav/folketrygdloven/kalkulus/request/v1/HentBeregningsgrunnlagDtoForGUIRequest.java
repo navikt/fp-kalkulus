@@ -33,7 +33,6 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     @NotNull
     private UUID eksternReferanse;
 
-
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
