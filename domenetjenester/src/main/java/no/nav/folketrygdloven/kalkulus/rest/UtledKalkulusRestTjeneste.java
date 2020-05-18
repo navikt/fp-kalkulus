@@ -76,11 +76,11 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         var koblingReferanse1 = new KoblingReferanse(spesifikasjon.getKoblingReferanse1());
         var koblingReferanse2 = new KoblingReferanse(spesifikasjon.getKoblingReferanse2());
-        Long koblingId1 = koblingTjeneste.hentKoblingId(koblingReferanse1, ytelseTyperKalkulusStøtter);
-        Long koblingId2 = koblingTjeneste.hentKoblingId(koblingReferanse2, ytelseTyperKalkulusStøtter);
-        BeregningsgrunnlagDto beregningsgrunnlag1 = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId1).getBeregningsgrunnlag();
-        BeregningsgrunnlagDto beregningsgrunnlag2 = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId2).getBeregningsgrunnlag();
-        boolean erEndring = ErEndringIBeregning.vurder(Optional.ofNullable(beregningsgrunnlag1), Optional.ofNullable(beregningsgrunnlag2));
+        Optional<Long> koblingId1 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse1, ytelseTyperKalkulusStøtter);
+        Optional<Long> koblingId2 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse2, ytelseTyperKalkulusStøtter);
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.map(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlag());
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.map(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlag());
+        boolean erEndring = ErEndringIBeregning.vurder(beregningsgrunnlag1, beregningsgrunnlag2);
         logMetrikk("/kalkulus/v1/erEndring", Duration.between(startTx, Instant.now()));
 
         return Response.ok(erEndring).build();
