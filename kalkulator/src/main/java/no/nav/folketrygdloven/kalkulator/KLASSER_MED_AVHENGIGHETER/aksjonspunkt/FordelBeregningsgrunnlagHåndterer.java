@@ -124,7 +124,10 @@ public class FordelBeregningsgrunnlagHåndterer {
             .medFastsattAvSaksbehandler(true);
     }
 
-    private static void byggArbeidsforhold(BeregningsgrunnlagPeriodeDto korrektPeriode, FastsettBeregningsgrunnlagAndelDto endretAndel, FastsatteVerdierDto verdierMedJustertRefusjon, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
+    private static void byggArbeidsforhold(BeregningsgrunnlagPeriodeDto korrektPeriode,
+                                           FastsettBeregningsgrunnlagAndelDto endretAndel,
+                                           FastsatteVerdierDto verdierMedJustertRefusjon,
+                                           BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
         var arbeidsgiver = finnArbeidsgiver(endretAndel);
         Optional<BGAndelArbeidsforholdDto> arbeidsforholdOpt = finnRiktigArbeidsforholdFraGrunnlag(korrektPeriode, endretAndel);
         if (arbeidsforholdOpt.isPresent()) {
@@ -134,7 +137,7 @@ public class FordelBeregningsgrunnlagHåndterer {
                 .medRefusjonskravPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
                 .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
                 .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null));
-            if (!endretAndel.getLagtTilAvSaksbehandler()) {
+            if (!endretAndel.getLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {
                 mapNaturalytelse(arbeidsforhold, abeidsforholdBuilder);
             }
             andelBuilder.medBGAndelArbeidsforhold(abeidsforholdBuilder);

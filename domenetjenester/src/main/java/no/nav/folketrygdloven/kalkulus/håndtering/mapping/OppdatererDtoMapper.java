@@ -325,6 +325,7 @@ public class OppdatererDtoMapper {
         return no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto.Builder.ny()
                 .medRefusjonPrÅr(fastsatteVerdier.getRefusjonPrÅr())
                 .medFastsattBeløpPrÅr(fastsatteVerdier.getFastsattÅrsbeløp())
+                .medFastsattBeløpPrÅrInklNaturalytelse(fastsatteVerdier.getFastsattÅrsbeløp())
                 .medInntektskategori(Inntektskategori.fraKode(fastsatteVerdier.getInntektskategori().getKode()))
                 .medSkalHaBesteberegning(fastsatteVerdier.getSkalHaBesteberegning())
                 .build();

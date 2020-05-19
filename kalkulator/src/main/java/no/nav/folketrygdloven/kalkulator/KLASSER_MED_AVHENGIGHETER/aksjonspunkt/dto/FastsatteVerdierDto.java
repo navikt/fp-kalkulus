@@ -12,6 +12,7 @@ public class FastsatteVerdierDto {
     private Integer refusjonPrÅr;
     private Integer fastsattBeløp;
     private Integer fastsattÅrsbeløp;
+    private Integer fastsattÅrsbeløpInklNaturalytelse;
     private Inntektskategori inntektskategori;
     private Boolean skalHaBesteberegning;
 
@@ -37,7 +38,14 @@ public class FastsatteVerdierDto {
         return fastsattBeløp;
     }
 
+    public Integer getFastsattÅrsbeløpInklNaturalytelse() {
+        return fastsattÅrsbeløpInklNaturalytelse;
+    }
+
     public BigDecimal finnEllerUtregnFastsattBeløpPrÅr() {
+        if (fastsattÅrsbeløpInklNaturalytelse != null) {
+            return BigDecimal.valueOf(fastsattÅrsbeløpInklNaturalytelse);
+        }
         if (fastsattÅrsbeløp != null) {
             return BigDecimal.valueOf(fastsattÅrsbeløp);
         }
@@ -93,6 +101,11 @@ public class FastsatteVerdierDto {
 
         public Builder medFastsattBeløpPrÅr(Integer fastsattBeløpPrÅr) {
             kladd.fastsattÅrsbeløp = fastsattBeløpPrÅr;
+            return this;
+        }
+
+        public Builder medFastsattBeløpPrÅrInklNaturalytelse(Integer fastsattBeløpPrÅrInklNaturalytelse) {
+            kladd.fastsattÅrsbeløpInklNaturalytelse = fastsattBeløpPrÅrInklNaturalytelse;
             return this;
         }
 
