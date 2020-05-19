@@ -60,6 +60,14 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal redusertPrÅr;
 
+    @JsonProperty(value = "bgFratrukketInntektstak")
+    @NotNull
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal bgFratrukketInntektstak;
+
     @JsonProperty(value = "dagsats")
     @Valid
     @Min(0)
@@ -79,6 +87,7 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
                                                @JsonProperty(value = "bruttoPrÅr") @Valid BigDecimal bruttoPrÅr,
                                                @JsonProperty(value = "avkortetPrÅr") @Valid BigDecimal avkortetPrÅr,
                                                @JsonProperty(value = "redusertPrÅr") @Valid BigDecimal redusertPrÅr,
+                                               @JsonProperty(value = "bgFratrukketInntektstak") @Valid BigDecimal bgFratrukketInntektstak,
                                                @JsonProperty(value = "dagsats") @Valid Long dagsats,
                                                @JsonProperty(value = "periodeÅrsaker") @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
 
@@ -87,6 +96,7 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
         this.bruttoPrÅr = bruttoPrÅr;
         this.avkortetPrÅr = avkortetPrÅr;
         this.redusertPrÅr = redusertPrÅr;
+        this.bgFratrukketInntektstak = bgFratrukketInntektstak;
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
     }
@@ -109,6 +119,10 @@ public class BeregningsgrunnlagPeriodeFRISINNDto {
 
     public BigDecimal getRedusertPrÅr() {
         return redusertPrÅr;
+    }
+
+    public BigDecimal getBgFratrukketInntektstak() {
+        return bgFratrukketInntektstak;
     }
 
     public Long getDagsats() {
