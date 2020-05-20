@@ -240,7 +240,7 @@ public class OppdatererDtoMapper {
     }
 
     private static DagpengeAndelLagtTilBesteberegningDto mapNyDagpengeAndel(no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {
-        return new DagpengeAndelLagtTilBesteberegningDto(nyDagpengeAndel.getFastsatteVerdier().getFastsattBeløp(), Inntektskategori.fraKode(nyDagpengeAndel.getFastsatteVerdier().getInntektskategori().getKode()));
+        return nyDagpengeAndel == null ? null : new DagpengeAndelLagtTilBesteberegningDto(nyDagpengeAndel.getFastsatteVerdier().getFastsattBeløp(), Inntektskategori.fraKode(nyDagpengeAndel.getFastsatteVerdier().getInntektskategori().getKode()));
     }
 
     private static List<no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.BesteberegningFødendeKvinneAndelDto> mapBesteberegningAndeler(List<BesteberegningFødendeKvinneAndelDto> besteberegningAndelListe) {
