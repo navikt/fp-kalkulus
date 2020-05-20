@@ -13,10 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class OppgittFrilansInntekt {
+public class OppgittArbeidsforholdDto {
 
     @JsonProperty("periode")
     @NotNull
@@ -31,11 +32,12 @@ public class OppgittFrilansInntekt {
     @Valid
     private BigDecimal inntekt;
 
-    public OppgittFrilansInntekt() {
+
+    public OppgittArbeidsforholdDto() {
         // Json deserilaisering
     }
 
-    public OppgittFrilansInntekt(@NotNull Periode periode, @NotNull BigDecimal inntekt) {
+    public OppgittArbeidsforholdDto(@NotNull Periode periode, @NotNull BigDecimal inntekt) {
         this.periode = periode;
         this.inntekt = inntekt;
     }
@@ -47,4 +49,5 @@ public class OppgittFrilansInntekt {
     public BigDecimal getInntekt() {
         return inntekt;
     }
+
 }

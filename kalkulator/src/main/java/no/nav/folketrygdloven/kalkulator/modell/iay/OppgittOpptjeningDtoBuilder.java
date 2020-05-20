@@ -136,7 +136,6 @@ public class OppgittOpptjeningDtoBuilder {
         public EgenNæringBuilder medNyIArbeidslivet(boolean nyIArbeidslivet) {
             this.entitet.setNyIArbeidslivet(nyIArbeidslivet);
             return this;
-
         }
 
         public EgenNæringBuilder medVirksomhet(OrgNummer orgNr) {
@@ -161,12 +160,13 @@ public class OppgittOpptjeningDtoBuilder {
             return this;
         }
 
-        public OppgittArbeidsforholdBuilder medArbeidType(ArbeidType arbeidType) {
-            this.entitet.setArbeidType(arbeidType);
-            return this;
-        }
         public OppgittArbeidsforholdDto build() {
             return entitet;
+        }
+
+        public OppgittArbeidsforholdBuilder medInntekt(BigDecimal inntekt) {
+            this.entitet.setInntekt(inntekt);
+            return this;
         }
     }
 }

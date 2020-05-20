@@ -23,13 +23,23 @@ public class OppgittOpptjeningDto {
     @Size
     private List<OppgittEgenNæringDto> egenNæring;
 
+
+    @JsonProperty(value = "oppgittArbeidsforhold")
+    @Valid
+    @Size
+    private List<OppgittArbeidsforholdDto> oppgittArbeidsforhold;
+
+
     public OppgittOpptjeningDto() {
         // Json deserialisering
     }
 
-    public OppgittOpptjeningDto(@Valid OppgittFrilansDto frilans, @Valid List<OppgittEgenNæringDto> egenNæring) {
+    public OppgittOpptjeningDto(@Valid OppgittFrilansDto frilans,
+                                @Valid List<OppgittEgenNæringDto> egenNæring,
+                                @Valid List<OppgittArbeidsforholdDto> oppgittArbeidsforhold) {
         this.frilans = frilans;
         this.egenNæring = egenNæring;
+        this.oppgittArbeidsforhold = oppgittArbeidsforhold;
     }
 
     public OppgittFrilansDto getFrilans() {
@@ -38,5 +48,9 @@ public class OppgittOpptjeningDto {
 
     public List<OppgittEgenNæringDto> getEgenNæring() {
         return egenNæring;
+    }
+
+    public List<OppgittArbeidsforholdDto> getOppgittArbeidsforhold() {
+        return oppgittArbeidsforhold;
     }
 }

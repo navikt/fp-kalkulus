@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -18,19 +19,14 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
  * OBS: Legger man til nye felter så skal dette oppdateres mange steder:
  * builder, equals, hashcode etc.
  */
-public class OppgittArbeidsforholdDto {
+public class OppgittArbeidsforholdDto implements OppgittPeriodeInntekt {
 
     private Intervall periode;
 
-    @Convert(converter = ArbeidType.KodeverdiConverter.class)
-    private ArbeidType arbeidType;
+    private BigDecimal inntekt;
 
     public OppgittArbeidsforholdDto() {
         // hibernate
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(periode, arbeidType);
     }
 
     public LocalDate getFraOgMed() {
@@ -41,15 +37,15 @@ public class OppgittArbeidsforholdDto {
         return periode.getTomDato();
     }
 
+    @Override
     public Intervall getPeriode() {
         return periode;
     }
 
-
-    public ArbeidType getArbeidType() {
-        return arbeidType;
+    @Override
+    public BigDecimal getInntekt() {
+        return inntekt;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -60,29 +56,27 @@ public class OppgittArbeidsforholdDto {
 
         return
             Objects.equals(periode, that.periode) &&
-            Objects.equals(arbeidType, that.arbeidType);
+            Objects.equals(inntekt, that.inntekt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(periode, arbeidType);
+        return Objects.hash(periode, inntekt);
     }
 
     @Override
     public String toString() {
         return "OppgittArbeidsforholdImpl{" +
             "periode=" + periode +
-            ", arbeidType=" + arbeidType +
-            '}';
+            "inntekt=" + inntekt +
+                '}';
     }
 
     void setPeriode(Intervall periode) {
         this.periode = periode;
     }
 
-    void setArbeidType(ArbeidType arbeidType) {
-        this.arbeidType = arbeidType;
+    void setInntekt(BigDecimal inntekt) {
+        this.inntekt = inntekt;
     }
-
-
 }

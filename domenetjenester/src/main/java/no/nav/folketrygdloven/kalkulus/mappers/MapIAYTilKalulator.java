@@ -59,6 +59,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
@@ -141,7 +142,16 @@ public class MapIAYTilKalulator {
         if (oppgittOpptjening.getEgenNæring() != null) {
             oppgittOpptjening.getEgenNæring().forEach(egen -> builder.leggTilEgneNæring(mapEgenNæring(egen)));
         }
+        if (oppgittOpptjening.getOppgittArbeidsforhold() != null) {
+            oppgittOpptjening.getOppgittArbeidsforhold().forEach(arb -> builder.leggTilOppgittArbeidsforhold(mapArbeidsforhold(arb)));
+        }
         return builder;
+    }
+
+    private static OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder mapArbeidsforhold(OppgittArbeidsforholdDto arb) {
+        return OppgittOpptjeningDtoBuilder.OppgittArbeidsforholdBuilder.ny()
+                .medPeriode(Intervall.fraOgMedTilOgMed(arb.getPeriode().getFom(), arb.getPeriode().getTom()))
+                .medInntekt(arb.getInntekt());
     }
 
     private static OppgittFrilansInntektDto mapFrilansInntekt(OppgittFrilansInntekt oppgittFrilansInntekt) {
