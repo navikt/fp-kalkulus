@@ -29,14 +29,14 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto extends HentBere
     }
 
     public HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
-                                                              @Valid @NotNull UUID superReferanse) {
-        super(requestPrReferanse, superReferanse);
+                                                              @Valid @NotNull UUID behandlingUuid) {
+        super(requestPrReferanse, behandlingUuid);
     }
 
     @Override
     public AbacDataAttributter abacAttributter() {
         final var abacDataAttributter = AbacDataAttributter.opprett();
-        abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getSuperReferanse());
+        abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
         return abacDataAttributter;
     }
 }

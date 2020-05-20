@@ -6,8 +6,10 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDAT
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -40,10 +42,14 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulu
 import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringBolkRespons;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.rest.abac.FortsettBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
+import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningBolkRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.StartBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
@@ -141,20 +147,41 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/oppdaterBolk")
+    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt bolk", tags = "beregn",
+            summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt for oppgitt bolk."),
+            responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = OppdateringBolkRespons.class)))
+            })
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response håndterBolk(@NotNull @Valid HåndterBeregningBolkRequestAbacDto spesifikasjon) {
+        var startTx = Instant.now();
+        List<OppdateringPrRequest> oppdateringer = spesifikasjon.getHåndterBeregningListe().stream()
+                .map(request -> {
+                    var oppdatering = håndterForKobling(request);
+                    return new OppdateringPrRequest(oppdatering, request.getEksternReferanse());
+                })
+                .collect(Collectors.toList());
+        logMetrikk("/kalkulus/v1/oppdaterBolk", Duration.between(startTx, Instant.now()));
+        return Response.ok(Objects.requireNonNullElseGet(new OppdateringBolkRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/oppdater")
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn",
             summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt."),
-            responses = {@ApiResponse(description = "DETTE MÅ VI FINNE UT AV",
+            responses = {@ApiResponse(description = "Endringer som ble gjort under oppdatering",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = TilstandResponse.class)))
+                            schema = @Schema(implementation = OppdateringRespons.class)))
             })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
-        OppdateringRespons respons = håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
+        OppdateringRespons respons = håndterForKobling(spesifikasjon);
         logMetrikk("/kalkulus/v1/oppdater", Duration.between(startTx, Instant.now()));
         return Response.ok(Objects.requireNonNullElseGet(respons, OppdateringRespons::TOM_RESPONS)).build();
     }
@@ -172,6 +199,12 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
         logMetrikk("/kalkulus/v1/deaktiver", Duration.between(startTx, Instant.now()));
         return Response.ok().build();
+    }
+
+    private OppdateringRespons håndterForKobling(@NotNull @Valid HåndterBeregningRequest spesifikasjon) {
+        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
+        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
+        return håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
     }
 
 }

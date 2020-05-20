@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -13,10 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 
 /**
@@ -33,26 +28,26 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
     @NotNull
     private List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse;
 
-    @JsonProperty(value = "superReferanse", required = true)
+    @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
     @NotNull
-    private UUID superReferanse;
+    private UUID behandlingUuid;
 
     protected HentBeregningsgrunnlagDtoListeForGUIRequest() {
         // default ctor
     }
 
     public HentBeregningsgrunnlagDtoListeForGUIRequest(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
-                                                       @Valid @NotNull UUID superReferanse) {
+                                                       @Valid @NotNull UUID behandlingUuid) {
         this.requestPrReferanse = requestPrReferanse;
-        this.superReferanse = superReferanse;
+        this.behandlingUuid = behandlingUuid;
     }
 
     public List<HentBeregningsgrunnlagDtoForGUIRequest> getRequestPrReferanse() {
         return requestPrReferanse;
     }
 
-    public UUID getSuperReferanse() {
-        return superReferanse;
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
     }
 }

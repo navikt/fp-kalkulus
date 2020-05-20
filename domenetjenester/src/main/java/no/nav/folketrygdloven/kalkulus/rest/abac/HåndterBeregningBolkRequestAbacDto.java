@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest.abac;
 
+
 import java.util.List;
 import java.util.UUID;
 
@@ -7,12 +8,16 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagListeRequest;
-import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningBolkRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
+import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 /**
@@ -21,21 +26,17 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class HentBeregningsgrunnlagListeRequestAbacDto extends HentBeregningsgrunnlagListeRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+public class HåndterBeregningBolkRequestAbacDto extends HåndterBeregningBolkRequest implements AbacDto {
 
-
-    public HentBeregningsgrunnlagListeRequestAbacDto() {
-        // For Json deserialisering
-    }
-
-    public HentBeregningsgrunnlagListeRequestAbacDto(@Valid @NotNull List<HentBeregningsgrunnlagRequest> requestPrReferanse,
-                                                     @Valid @NotNull UUID behandlingUuid) {
-        super(requestPrReferanse, behandlingUuid);
+    @JsonCreator
+    public HåndterBeregningBolkRequestAbacDto(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe, @Valid @NotNull UUID behandlingUuid) {
+        super(håndterBeregningListe, behandlingUuid);
     }
 
     @Override
     public AbacDataAttributter abacAttributter() {
         final var abacDataAttributter = AbacDataAttributter.opprett();
+
         abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
         return abacDataAttributter;
     }

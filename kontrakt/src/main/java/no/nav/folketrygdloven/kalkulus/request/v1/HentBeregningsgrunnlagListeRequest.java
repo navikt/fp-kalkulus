@@ -13,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-
 
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
@@ -30,26 +28,26 @@ public class HentBeregningsgrunnlagListeRequest {
     @NotNull
     private List<HentBeregningsgrunnlagRequest> requestPrReferanse;
 
-    @JsonProperty(value = "superReferanse", required = true)
+    @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
     @NotNull
-    private UUID superReferanse;
+    private UUID behandlingUuid;
 
     protected HentBeregningsgrunnlagListeRequest() {
         // default ctor
     }
 
     public HentBeregningsgrunnlagListeRequest(@Valid @NotNull List<HentBeregningsgrunnlagRequest> requestPrReferanse,
-                                              @Valid @NotNull UUID superReferanse) {
+                                              @Valid @NotNull UUID behandlingUuid) {
         this.requestPrReferanse = requestPrReferanse;
-        this.superReferanse = superReferanse;
+        this.behandlingUuid = behandlingUuid;
     }
 
     public List<HentBeregningsgrunnlagRequest> getRequestPrReferanse() {
         return requestPrReferanse;
     }
 
-    public UUID getSuperReferanse() {
-        return superReferanse;
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
     }
 }
