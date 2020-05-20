@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
@@ -199,6 +200,14 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                                       OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
         mapOppgittNæringsinntekt(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening, skjæringstidspunktBeregning);
         mapOppgittFrilansinntekt(inntektsgrunnlag, oppgittOpptjening, skjæringstidspunktBeregning);
+        mapOppgittArbeidsinntekt(inntektsgrunnlag, oppgittOpptjening);
+    }
+
+    private void mapOppgittArbeidsinntekt(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
+        List<OppgittPeriodeInntekt> inntekter = oppgittOpptjening.getOppgittArbeidsforhold()
+                .stream().map(oppgittArbeidsforholdDto -> (OppgittPeriodeInntekt) oppgittArbeidsforholdDto)
+                .collect(Collectors.toList());
+        inntekter.forEach(inntekt -> inntektsgrunnlag.leggTilPeriodeinntekt(byggOppgittInntektForStatus(inntekt, AktivitetStatus.AT)));
     }
 
     private void mapOppgittFrilansinntekt(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening, LocalDate skjæringstidspunktBeregning) {
@@ -208,17 +217,16 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         List<OppgittFrilansInntektDto> oppgittFLInntekt = flInntekter.stream()
                 .filter(inntekt -> oppgittForPeriodeEtterSTP(inntekt.getPeriode(), skjæringstidspunktBeregning))
                 .collect(Collectors.toList());
-        oppgittFLInntekt.forEach(inntekt -> inntektsgrunnlag.leggTilPeriodeinntekt(byggOppgittFrilansinntekt(inntekt)));
+        oppgittFLInntekt.forEach(inntekt -> inntektsgrunnlag.leggTilPeriodeinntekt(byggOppgittInntektForStatus(inntekt, AktivitetStatus.FL)));
     }
 
-    private Periodeinntekt byggOppgittFrilansinntekt(OppgittFrilansInntektDto oppgittFrilansInntektDto) {
+    private Periodeinntekt byggOppgittInntektForStatus(OppgittPeriodeInntekt periodeInntekt, AktivitetStatus aktivitetStatus) {
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
-                .medPeriode(Periode.of(oppgittFrilansInntektDto.getPeriode().getFomDato(), oppgittFrilansInntektDto.getPeriode().getTomDato()))
-                .medInntekt(oppgittFrilansInntektDto.getInntekt())
-                .medAktivitetStatus(AktivitetStatus.FL)
+                .medPeriode(Periode.of(periodeInntekt.getPeriode().getFomDato(), periodeInntekt.getPeriode().getTomDato()))
+                .medInntekt(periodeInntekt.getInntekt())
+                .medAktivitetStatus(aktivitetStatus)
                 .build();
-
     }
 
     private boolean oppgittForPeriodeEtterSTP(Intervall periode, LocalDate skjæringstidspunktBeregning) {
