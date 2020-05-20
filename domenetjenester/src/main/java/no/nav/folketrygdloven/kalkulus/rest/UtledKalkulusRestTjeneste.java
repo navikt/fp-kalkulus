@@ -78,8 +78,8 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse2 = new KoblingReferanse(spesifikasjon.getKoblingReferanse2());
         Optional<Long> koblingId1 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse1, ytelseTyperKalkulusStøtter);
         Optional<Long> koblingId2 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse2, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.map(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlag());
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.map(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlag());
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlagHvisFinnes());
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlagHvisFinnes());
         boolean erEndring = ErEndringIBeregning.vurder(beregningsgrunnlag1, beregningsgrunnlag2);
         logMetrikk("/kalkulus/v1/erEndring", Duration.between(startTx, Instant.now()));
 

@@ -153,8 +153,12 @@ public class BeregningsgrunnlagInput {
         return beregningsgrunnlagGrunnlag;
     }
 
+    public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlagHvisFinnes() {
+        return beregningsgrunnlagGrunnlag == null ? Optional.empty() : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag();
+    }
+
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
-        return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
+        return beregningsgrunnlagGrunnlag == null ? null: beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
     }
 
     public Optional<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
