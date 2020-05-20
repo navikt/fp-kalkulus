@@ -8,6 +8,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagOmsorgspenger;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.OmsorgspengeGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
@@ -22,7 +23,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnl
         var omsorgspengeGrunnlagDto = new OmsorgspengeGrunnlagDto();
         var førsteBeregningsperiode = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
 
-        if (harForeslåttBeregning(beregningsgrunnlag)) {
+        if (harForeslåttBeregning(beregningsgrunnlag) && erBrukerKunArbeidstaker(input)) {
             omsorgspengeGrunnlagDto.setSkalAvviksvurdere(FastsettGrunnlagOmsorgspenger.girDirekteUtbetalingTilBruker(input, førsteBeregningsperiode));
         }
 
@@ -31,5 +32,10 @@ public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnl
 
     private boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto){
         return !beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT);
+    }
+
+    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagRestInput input){
+        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                .allMatch(a -> AktivitetStatus.ARBEIDSTAKER.equals(a.getAktivitetStatus()));
     }
 }

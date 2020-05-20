@@ -14,8 +14,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Sammenligning
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
-public class FastsettGrunnlagGenerell implements FastsettGrunnlag {
+@FagsakYtelseTypeRef()
+public class FastsettGrunnlagGenerell {
     private static final Map<SammenligningsgrunnlagType, AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
     static {
         SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP = Map.of(

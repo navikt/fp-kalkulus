@@ -32,7 +32,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 @ApplicationScoped
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
-    private Instance<FastsettGrunnlag> fastsettGrunnlag;
+    private Instance<FastsettGrunnlagGenerell> fastsettGrunnlag;
     private static final int MND_I_ÅR = 12;
 
     private static final Map<SammenligningsgrunnlagType, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
@@ -48,7 +48,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     }
 
     @Inject
-    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(@Any Instance<FastsettGrunnlag> fastsettGrunnlag) {
+    public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(@Any Instance<FastsettGrunnlagGenerell> fastsettGrunnlag) {
         this.fastsettGrunnlag = fastsettGrunnlag;
         // Skjul
     }

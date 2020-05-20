@@ -743,6 +743,38 @@ public class ForeslåBeregningsgrunnlagTest {
     }
 
     @Test
+    public void skalReturnereAksjonspunktNårOmsorgspengerOgFLMedOver25ProsentAvvik() {
+        // Arrange
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagFL();
+        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
+                SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
+                InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
+        BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
+
+        var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
+        AktørId aktørId = behandlingReferanse.getAktørId();
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1),
+                MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        for (LocalDate dt = MINUS_YEARS_2.withDayOfMonth(1); dt.isBefore(MINUS_YEARS_1.withDayOfMonth(1).plusYears(2)); dt = dt.plusMonths(1)) {
+            verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
+                    Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1));
+            verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektBeregnet,
+                    Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1));
+        }
+        iayGrunnlagBuilder.medData(inntektArbeidYtelseBuilder);
+        // Act
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), false, omsorgspengerGrunnlag);
+        // Assert
+        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
+        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+    }
+
+    @Test
     public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgFlereArbeidsforholdMedAvvikOgEttKravMedFullRefusjon() {
         // Arrange
         BigDecimal inntektBeregnetArbeidsgiver1 = BigDecimal.valueOf(40_000);

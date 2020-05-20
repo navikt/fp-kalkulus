@@ -209,8 +209,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
     public void skalReturnereFalseNårForeslåBeregningIkkeErKjørt() {
         //Arange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
-        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25ProsentMedKunSammenligningsgrunnlag();
+        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
@@ -225,7 +225,12 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
                 .medBeregnetPrÅr(null)
                 .build(bgPeriode);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        BeregningAktivitetAggregatDto beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
+        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(beregningAktiviteter)
+                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
+        this.grunnlag = beregningsgrunnlagGrunnlag;
+
         LocalDate PeriodeFom =LocalDate.of(2020,01,26);
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
@@ -234,8 +239,8 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BigDecimal.valueOf(60_000))
-                .medBeløp(BigDecimal.valueOf(1_200_000).divide(BigDecimal.valueOf(12)))
+                .medRefusjon(BigDecimal.valueOf(10_000))
+                .medBeløp(BigDecimal.valueOf(20_000))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
@@ -300,7 +305,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         BeregningAktivitetAggregatDto beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
         BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktiviteter)
-                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
 
         this.grunnlag = beregningsgrunnlagGrunnlag;
         return beregningsgrunnlag;

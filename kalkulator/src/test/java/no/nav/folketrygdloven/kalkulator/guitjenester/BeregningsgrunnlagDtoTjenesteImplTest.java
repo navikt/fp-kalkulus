@@ -7,7 +7,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoT
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
-import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjenesteOMP;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -35,24 +33,16 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.OmsorgspengeGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
 import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 
@@ -328,121 +318,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagTom()).isEqualTo(SAMMENLIGNING_TOM);
         assertThat(sammenligningsgrunnlag.getSammenligningsgrunnlagType()).isEqualTo(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
         assertThat(sammenligningsgrunnlag.getDifferanseBeregnet()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
-    }
-
-    @Test
-    public void skalSetteRiktigYtelsesspesifikkInformasjonNårOmsorgspengerOgDirekteUtbetalingTilBruker() {
-        //Arrange
-        BigDecimal beregnet = BigDecimal.valueOf(20_000);
-        BigDecimal beregnetPrÅr = BigDecimal.valueOf(240_000);
-        BigDecimal refusjon = BigDecimal.valueOf(15_000);
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        this.beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
-        var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
-                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
-                .build();
-        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
-        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
-                .builder()
-                .medArbeidsgiver(arbeidsgiver);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
-                .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
-                .medAndelsnr(ANDELSNR)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(beregnetPrÅr)
-                .build(bgPeriode);
-
-        this.grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-                .medRegisterAktiviteter(beregningAktiviteter)
-                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
-
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
-        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
-        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
-                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
-        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(refusjon)
-                .medBeløp(beregnet)
-                .medArbeidsgiver(arbeidsgiver)
-                .build();
-
-        FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances());
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
-                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()))
-                );
-        beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(faktaOmBeregningDtoTjeneste, beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteOMP()));
-
-        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
-                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build());
-        // Assert
-        assertThat(beregningsgrunnlagDto.getYtelsesspesifiktGrunnlag()).isInstanceOf(OmsorgspengeGrunnlagDto.class);
-        OmsorgspengeGrunnlagDto omsorgspengeGrunnlagDto = (OmsorgspengeGrunnlagDto) beregningsgrunnlagDto.getYtelsesspesifiktGrunnlag();
-        assertThat(omsorgspengeGrunnlagDto.getSkalAvviksvurdere()).isEqualTo(true);
-    }
-
-    @Test
-    public void skalSetteRiktigYtelsesspesifikkInformasjonNårOmsorgspengerOgFullRefusjon() {
-        //Arrange
-        BigDecimal beregnet = BigDecimal.valueOf(20_000);
-        BigDecimal beregnetPrÅr = BigDecimal.valueOf(240_000);
-        BigDecimal refusjon = beregnet;
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        this.beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
-        var beregningsgrunnlag = no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto.builder()
-                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-                .medGrunnbeløp(GRUNNBELØP)
-                .build();
-        BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag);
-        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
-                .builder()
-                .medArbeidsgiver(arbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
-                .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
-                .medAndelsnr(ANDELSNR)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
-                .medBeregnetPrÅr(beregnetPrÅr)
-                .build(bgPeriode);
-
-        this.grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-                .medRegisterAktiviteter(beregningAktiviteter)
-                .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
-
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
-        PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
-                PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
-        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
-                InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
-        InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(refusjon)
-                .medBeløp(beregnet)
-                .medArbeidsgiver(arbeidsgiver)
-                .build();
-
-        FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances());
-        BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
-                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()))
-                );
-        beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(faktaOmBeregningDtoTjeneste, beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteOMP()));
-
-        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
-                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build());
-        // Assert
-        assertThat(beregningsgrunnlagDto.getYtelsesspesifiktGrunnlag()).isInstanceOf(OmsorgspengeGrunnlagDto.class);
-        OmsorgspengeGrunnlagDto omsorgspengeGrunnlagDto = (OmsorgspengeGrunnlagDto) beregningsgrunnlagDto.getYtelsesspesifiktGrunnlag();
-        assertThat(omsorgspengeGrunnlagDto.getSkalAvviksvurdere()).isEqualTo(false);
     }
 
     private BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {

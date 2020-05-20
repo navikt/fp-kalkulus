@@ -14,6 +14,7 @@ class MapHjemmelFraRegelTilVL {
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_8_8_28, Hjemmel.F_9_8_8_28);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_28_8_30, Hjemmel.F_9_9_8_28_8_30);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_38, Hjemmel.F_9_9_8_38);
+        hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_35, Hjemmel.F_9_9_8_35);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_40, Hjemmel.F_9_9_8_40);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_41, Hjemmel.F_9_9_8_41);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_42, Hjemmel.F_9_9_8_42);
