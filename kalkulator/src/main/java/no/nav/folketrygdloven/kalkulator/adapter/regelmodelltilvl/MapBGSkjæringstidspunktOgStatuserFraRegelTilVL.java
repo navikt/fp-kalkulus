@@ -30,6 +30,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
@@ -112,6 +114,16 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                         .collect(Collectors.toList());
                     LocalDate arbeidsperiodeFom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getFomDato()).min(LocalDate::compareTo).orElse(null);
                     LocalDate arbeidsperiodeTom = ansettelsesPerioder.stream().map(a -> a.getPeriode().getTomDato()).max(LocalDate::compareTo).orElse(null);
+
+                    if (erKunstig(arbeidsgiver)) {
+                        if (arbeidsperiodeFom == null) {
+                            arbeidsperiodeFom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
+                        }
+                        if (arbeidsperiodeTom == null) {
+                            arbeidsperiodeTom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom();
+                        }
+                    }
+
                     var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
                         .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(af.getAktivitet()))
                         .medAktivitetStatus(af.erFrilanser() ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER)
@@ -133,6 +145,10 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                 .medAktivitetStatus(mapAktivitetStatusfraRegelmodell(regelmodell, bgps.getAktivitetStatus()))
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(bgps.getAktivitetStatus()))
                 .build(beregningsgrunnlagPeriode));
+    }
+
+    private boolean erKunstig(Arbeidsgiver arbeidsgiver) {
+        return arbeidsgiver != null && arbeidsgiver.getErVirksomhet() && OrgNummer.KUNSTIG_ORG.equals(arbeidsgiver.getIdentifikator());
     }
 
     protected Intervall lagBeregningsperiode(BehandlingReferanse ref, LocalDate skjæringstidspunkt) {
