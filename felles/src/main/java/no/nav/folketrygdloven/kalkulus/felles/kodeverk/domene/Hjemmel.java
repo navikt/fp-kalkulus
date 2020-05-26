@@ -44,6 +44,10 @@ public enum Hjemmel implements Kodeverdi {
     F_14_7_8_43("F_14_7_8_43", "folketrygdloven §§ 14-7 og 8-43"),
     F_14_7_8_47("F_14_7_8_47", "folketrygdloven §§ 14-7 og 8-47"),
     F_14_7_8_49("F_14_7_8_49", "folketrygdloven §§ 14-7 og 8-49"),
+
+    KORONALOVEN_3("KORONALOVEN_3", "koronaloven § 3"),
+
+
     UDEFINERT("-", "Ikke definert"),
     ;
 

@@ -139,7 +139,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
         return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.YTELSER)
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
                 .medUtbetalingsgrad(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElseThrow())
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
@@ -166,7 +166,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         AktørId aktørId = referanse.getAktørId();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
 
-        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister(aktørId)).før(skjæringstidspunktBeregning);
+        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister(aktørId));
         var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister(aktørId);
         var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
 
