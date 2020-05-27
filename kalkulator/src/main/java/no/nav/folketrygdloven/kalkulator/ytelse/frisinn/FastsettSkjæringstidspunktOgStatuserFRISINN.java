@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.kalkulator.AksjonspunktUtlederForeslåBeregning;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBGStatuserFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFRISINN;
@@ -69,7 +70,11 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
-        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag, regelmodell);
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag,
+                regelmodell,
+                frisinnGrunnlag.getSøkerYtelseForFrilans(),
+                frisinnGrunnlag.getSøkerYtelseForNæring());
         aktivitetStatusModellFRISINN.setInntektsgrunnlag(inntektsgrunnlag);
         String inputSkjæringstidspunkt = toJson(aktivitetStatusModellFRISINN);
         Evaluation evaluationSkjæringstidspunkt = new RegelFastsettSkjæringstidspunktFrisinn().evaluer(aktivitetStatusModellFRISINN);
@@ -92,7 +97,11 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med status per beregningsgrunnlag
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
-        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag, regelmodell);
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        AktivitetStatusModellFRISINN aktivitetStatusModellFRISINN = new AktivitetStatusModellFRISINN(inntektsgrunnlag,
+                regelmodell,
+                frisinnGrunnlag.getSøkerYtelseForFrilans(),
+                frisinnGrunnlag.getSøkerYtelseForNæring());
         aktivitetStatusModellFRISINN.setInntektsgrunnlag(inntektsgrunnlag);
         String inputStatusFastsetting = toJson(aktivitetStatusModellFRISINN);
         Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(aktivitetStatusModellFRISINN);

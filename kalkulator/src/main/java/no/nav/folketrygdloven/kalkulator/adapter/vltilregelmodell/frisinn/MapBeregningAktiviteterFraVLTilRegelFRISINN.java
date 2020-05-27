@@ -50,7 +50,6 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
                     lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, harFLEtterStp, harSNEtterStp, opptjeningSkjæringstidspunkt)));
         }
 
-
         // Legger til 48 mnd med frilans og næring rundt stp om det ikkje finnes, legger også til arbeidsaktivitet om det ikke finnes fra før og er oppgitt
         Periode hardkodetOpptjeningsperiode = Periode.of(opptjeningSkjæringstidspunkt.minusMonths(36), opptjeningSkjæringstidspunkt.plusMonths(12));
         if (relevanteAktiviteter.stream().noneMatch(a -> a.getType().equals(OpptjeningAktivitetType.FRILANS)) && harFLEtterStp) {
