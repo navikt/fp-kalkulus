@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +14,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 import no.nav.vedtak.util.Tuple;
 
 class BeregningsgrunnlagDiffSjekker {
@@ -59,6 +62,10 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
 
+        if (harSammenligningsgrunnlagPrStatusDiff(aktivt.getSammenligningsgrunnlagPrStatusListe(), forrige.getSammenligningsgrunnlagPrStatusListe())) {
+            return true;
+        }
+
         List<BeregningsgrunnlagPeriode> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
         List<BeregningsgrunnlagPeriode> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
         return harPeriodeDiff(aktivePerioder, forrigePerioder);
@@ -79,6 +86,34 @@ class BeregningsgrunnlagDiffSjekker {
         }
         if (!Objects.equals(aktivt.getSammenligningsperiodeTom(), forrige.getSammenligningsperiodeTom())) {
             return true;
+        }
+        return false;
+    }
+
+    private static boolean harSammenligningsgrunnlagPrStatusDiff(List<SammenligningsgrunnlagPrStatus> aktivt, List<SammenligningsgrunnlagPrStatus> forrige) {
+        if(aktivt.isEmpty() != forrige.isEmpty()){
+            return true;
+        }
+
+        if(!inneholderLikeSammenligningstyper(aktivt, forrige)){
+            return true;
+        }
+
+        for(SammenligningsgrunnlagPrStatus aktivSgPrStatus : aktivt){
+            SammenligningsgrunnlagPrStatus forrigeSgPrStatus = forrige.stream().filter(s -> aktivSgPrStatus.getSammenligningsgrunnlagType().equals(s.getSammenligningsgrunnlagType())).findFirst().get();
+
+            if(!erLike(aktivSgPrStatus.getAvvikPromilleNy(), forrigeSgPrStatus.getAvvikPromilleNy())){
+                return true;
+            }
+            if (!erLike(aktivSgPrStatus.getRapportertPrÅr(), forrigeSgPrStatus.getRapportertPrÅr())) {
+                return true;
+            }
+            if (!Objects.equals(aktivSgPrStatus.getSammenligningsperiodeFom(), forrigeSgPrStatus.getSammenligningsperiodeFom())) {
+                return true;
+            }
+            if (!Objects.equals(aktivSgPrStatus.getSammenligningsperiodeTom(), forrigeSgPrStatus.getSammenligningsperiodeTom())) {
+                return true;
+            }
         }
         return false;
     }
@@ -180,6 +215,18 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
         return false;
+    }
+
+    private static boolean inneholderLikeSammenligningstyper(List<SammenligningsgrunnlagPrStatus> aktivt, List<SammenligningsgrunnlagPrStatus> forrige){
+        EnumSet<SammenligningsgrunnlagType> sammenligningsgrunnlagTyper = EnumSet.allOf(SammenligningsgrunnlagType.class);
+
+        for(SammenligningsgrunnlagType sgType : sammenligningsgrunnlagTyper){
+            if(forrige.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType())) !=
+                    aktivt.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType()))){
+                return false;
+            }
+        }
+        return true;
     }
 
     private static List<AktivitetStatus> hentStatuser(BeregningsgrunnlagEntitet aktivt) {
