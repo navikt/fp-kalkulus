@@ -125,7 +125,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagAndel(BeregningsgrunnlagPeriodeDto periode, String orgnr, UUID arbRefId, int inntekt, int refusjon) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(Arbeidsgiver.virksomhet(orgnr), arbRefId, refusjon))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -135,7 +135,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagFrilansAndel(BeregningsgrunnlagPeriodeDto periode, int inntekt) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
@@ -144,7 +144,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagNæringAndel(BeregningsgrunnlagPeriodeDto periode, int inntekt) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))

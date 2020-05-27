@@ -68,7 +68,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .builder()
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
@@ -122,7 +122,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
@@ -172,13 +172,13 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(Inntektskategori.FRILANSER)
                 .medAndelsnr(ANDELSNR)
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build(bgPeriode);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR+1)
@@ -213,13 +213,13 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medAndelsnr(ANDELSNR)
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .build(bgPeriode);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR+1)

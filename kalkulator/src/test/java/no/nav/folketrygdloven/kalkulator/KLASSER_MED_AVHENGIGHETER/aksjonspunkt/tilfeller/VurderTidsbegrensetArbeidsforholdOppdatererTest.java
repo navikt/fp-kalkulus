@@ -129,7 +129,7 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
             .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhet.getOrgnr()))
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(beregningsgrunnlagPeriode);

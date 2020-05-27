@@ -115,7 +115,7 @@ public class FinnÅrsinntektvisningstallTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR)))
@@ -138,7 +138,7 @@ public class FinnÅrsinntektvisningstallTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBeregnetPrÅr(bruttoPrÅrAndel)

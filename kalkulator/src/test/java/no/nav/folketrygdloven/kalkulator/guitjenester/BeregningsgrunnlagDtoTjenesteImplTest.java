@@ -417,7 +417,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
@@ -443,7 +443,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
@@ -455,7 +455,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
                 .build(beregningsgrunnlagPeriode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR + 1)
@@ -464,7 +464,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .medBeregnetPrÅr(BRUTTO_PR_AAR)
                 .build(beregningsgrunnlagPeriode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR + 3)

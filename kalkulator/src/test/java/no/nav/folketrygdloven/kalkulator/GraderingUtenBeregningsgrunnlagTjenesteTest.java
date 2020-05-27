@@ -434,7 +434,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver)
                 .medArbeidsperiodeFom(arbeidsperiodeFom)
                 .medArbeidsperiodeTom(arbeidsperiodeTom);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
                 .medRedusertPrÅr(redusertPrÅr);
 

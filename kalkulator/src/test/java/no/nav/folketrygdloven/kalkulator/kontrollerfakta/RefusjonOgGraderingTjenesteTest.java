@@ -66,7 +66,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10))
                 .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1))
@@ -90,7 +90,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .build();
         BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), null)
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3))
                 .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(5))
@@ -510,7 +510,7 @@ public class RefusjonOgGraderingTjenesteTest {
                           BigDecimal overstyrtPrÅr,
                           BigDecimal beregnetPrÅr,
                           InternArbeidsforholdRefDto arbeidsforholdRef) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBeregnetPrÅr(beregnetPrÅr)
             .medOverstyrtPrÅr(overstyrtPrÅr)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
@@ -522,12 +522,12 @@ public class RefusjonOgGraderingTjenesteTest {
     }
 
     private void lagAAPAndel(BeregningsgrunnlagPeriodeDto periode1) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)
             .build(periode1);
     }
 
     private void lagFLAndel(BeregningsgrunnlagPeriodeDto periode1) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.FRILANSER)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode1);
     }
 
@@ -536,7 +536,7 @@ public class RefusjonOgGraderingTjenesteTest {
     }
 
     private void lagSNAndel(BeregningsgrunnlagPeriodeDto periode1, int beregnetPrÅr) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBeregnetPrÅr(BigDecimal.valueOf(beregnetPrÅr))
             .build(periode1);
     }

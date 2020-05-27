@@ -31,7 +31,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @Test
     public void skalIkkjeKunneEndreAktivitetOmLagtTilAvSaksbehandlerOgDagpenger() {
-        BeregningsgrunnlagPrStatusOgAndelDto dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medLagtTilAvSaksbehandler(true)
             .build(periode);
@@ -43,7 +43,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @Test
     public void skalIkkjeKunneEndreAktivitetOmIkkjeLagtTilAvSaksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medLagtTilAvSaksbehandler(false)
             .build(periode);
@@ -55,7 +55,7 @@ public class SkalKunneEndreAktivitetTest {
 
     @Test
     public void skalKunneEndreAktivitetOmLagtTilAvSaksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medLagtTilAvSaksbehandler(true)
             .build(periode);

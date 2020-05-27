@@ -54,7 +54,7 @@ public class VurderMottarYtelseTjenesteTest {
     @Test
     public void skal_gi_frilanser() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .build(periode);
@@ -69,7 +69,7 @@ public class VurderMottarYtelseTjenesteTest {
     @Test
     public void skal_ikkje_gi_frilanser() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(periode);
@@ -84,7 +84,7 @@ public class VurderMottarYtelseTjenesteTest {
     @Test
     public void skal_vurdere_mottar_ytelse_for_frilans() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .build(periode);
@@ -100,12 +100,12 @@ public class VurderMottarYtelseTjenesteTest {
     public void skal_vurdere_mottary_ytelse_for_frilans_og_arbeidstaker_uten_inntektsmelding() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsforholdRef(ARB_ID).medArbeidsgiver(arbeidsgiver))
             .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .build(periode);

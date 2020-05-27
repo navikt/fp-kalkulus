@@ -114,7 +114,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         var periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(bg);
-        var andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        var andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
@@ -137,7 +137,7 @@ public class BeregningsgrunnlagDtoUtilTest {
             .build(bg);
 
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(orgnr);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
@@ -164,7 +164,7 @@ public class BeregningsgrunnlagDtoUtilTest {
             .build(bg);
 
         Arbeidsgiver person = Arbeidsgiver.person(AktørId.dummy());
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)

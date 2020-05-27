@@ -163,7 +163,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
         for (String orgnr : orgnrs.keySet()) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(orgnrs.get(orgnr))
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()

@@ -259,7 +259,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     private void leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder, AktivitetStatus aktivitetStatus,
                                                           Virksomhet virksomheten, InternArbeidsforholdRefDto arbforholdId, Long andelsnr, Inntektskategori inntektskategori) {
 
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medInntektskategori(inntektskategori)
             .medAktivitetStatus(aktivitetStatus)

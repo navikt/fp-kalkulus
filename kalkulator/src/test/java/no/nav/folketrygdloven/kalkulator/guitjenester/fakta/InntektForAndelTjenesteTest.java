@@ -179,7 +179,7 @@ public class InntektForAndelTjenesteTest {
     }
 
     private void lagArbeidstakerAndel() {
-        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
@@ -213,7 +213,7 @@ public class InntektForAndelTjenesteTest {
     }
 
     private void lagFrilansAndel() {
-        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
             .medAndelsnr(2L)

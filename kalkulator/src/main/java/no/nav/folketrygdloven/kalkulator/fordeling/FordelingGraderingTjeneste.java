@@ -61,7 +61,7 @@ public final class FordelingGraderingTjeneste {
                     .reduce(BigDecimal::add)
                     .orElse(BigDecimal.ZERO);
             BigDecimal seksG = grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6));
-            return totaltBgFraArbeidstaker.compareTo(seksG) > 0;
+            return totaltBgFraArbeidstaker.compareTo(seksG) >= 0;
         }
         return false;
     }

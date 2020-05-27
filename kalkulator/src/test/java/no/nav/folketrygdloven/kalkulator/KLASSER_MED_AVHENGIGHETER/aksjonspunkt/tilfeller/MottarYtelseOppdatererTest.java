@@ -111,7 +111,7 @@ public class MottarYtelseOppdatererTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto byggFrilansAndel(Boolean mottarYtelse) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medMottarYtelse(mottarYtelse, AktivitetStatus.FRILANSER)
@@ -120,7 +120,7 @@ public class MottarYtelseOppdatererTest {
 
     private BeregningsgrunnlagPrStatusOgAndelDto byggArbeidsforholdMedBgAndel(Boolean mottarYtelse) {
         Arbeidsgiver arbeidsgiver = arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR);
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medMottarYtelse(mottarYtelse, AktivitetStatus.ARBEIDSTAKER)

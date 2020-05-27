@@ -382,7 +382,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
             .leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, Tid.TIDENES_ENDE)
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(
-                    BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                    BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medAndelsnr(1L)
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medBeregnetPrÅr(BigDecimal.TEN)

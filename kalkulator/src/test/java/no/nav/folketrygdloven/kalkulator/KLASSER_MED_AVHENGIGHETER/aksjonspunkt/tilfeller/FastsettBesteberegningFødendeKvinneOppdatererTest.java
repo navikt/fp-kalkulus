@@ -60,14 +60,14 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_DAGPENGER)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .build(periode1);
-        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -178,7 +178,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)

@@ -52,6 +52,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         aktivitetAggregatEntitet = BeregningAktivitetAggregatDto.builder()
                 .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER))
                 .leggTilAktivitet(lagAktivitet(ARBEIDSGIVER2))
+                .leggTilAktivitet(lagNæring())
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING).build();
     }
 
@@ -59,6 +60,12 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         return BeregningAktivitetDto.builder()
                 .medArbeidsgiver(arbeidsgiver).medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1))).build();
     }
+
+    private BeregningAktivitetDto lagNæring() {
+        return BeregningAktivitetDto.builder().medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1))).build();
+    }
+
 
     @Test
     public void skalKunneEndreInntektEtterRedusertRefusjonTilUnder6G() {
@@ -74,10 +81,52 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandling = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(grunnlag,
-                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger);
+                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), bgFørFordeling.getBeregningsgrunnlagPerioder(), inntektsmeldinger);
 
         // Assert
         assertThat(kreverManuellBehandling).isTrue();
+    }
+
+
+    @Test
+    public void skalKunneEndreInntektOmTidligerePeriodeHarGraderingForAndelSomVilBliAvkortetTil0() {
+        // Arrange
+        LocalDate graderingTom = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1);
+        AndelGradering graderingNæring = lagGraderingForNæringFraSTP(graderingTom);
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(new Beløp(GRUNNBELØP))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+                .build();
+        BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, graderingTom);
+        leggTilArbeidstakerOver6GOgNæring(periode);
+        BeregningsgrunnlagPeriodeDto periode2 = lagPeriode(bg, graderingTom.plusDays(1), null);
+        leggTilArbeidstakerOver6GOgNæring(periode2);
+
+        BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(aktivitetAggregatEntitet)
+                .medBeregningsgrunnlag(bg).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+
+        // Act
+        boolean kreverManuellBehandling1 = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(
+                grunnlag,
+                new AktivitetGradering(graderingNæring),
+                periode,
+                bg.getBeregningsgrunnlagPerioder(),
+                List.of());
+
+        boolean kreverManuellBehandling2 = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(
+                grunnlag,
+                new AktivitetGradering(graderingNæring),
+                periode2,
+                bg.getBeregningsgrunnlagPerioder(),
+                List.of());
+
+
+        // Assert
+        assertThat(kreverManuellBehandling1).isTrue();
+        assertThat(kreverManuellBehandling2).isTrue();
     }
 
     @Test
@@ -101,6 +150,44 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         assertThat(kreverManuellBehandlingAvRefusjon).isTrue();
     }
 
+    private AndelGradering lagGraderingForNæringFraSTP(LocalDate graderingTom) {
+        return AndelGradering.builder()
+                .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING,
+                        graderingTom), BigDecimal.valueOf(50)))
+                .medAndelsnr(3L)
+                .build();
+    }
+
+    private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg, LocalDate fom, LocalDate tom) {
+        return BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom, tom).build(bg);
+    }
+
+    private void leggTilArbeidstakerOver6GOgNæring(BeregningsgrunnlagPeriodeDto periode) {
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(true).build())
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
+                .build(periode);
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAndelsnr(ANDELSNR2)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
+                .build(periode);
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAndelsnr(3L)
+                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())
+                .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medBeregnetPrÅr(BigDecimal.TEN)
+                .build(periode);
+    }
+
     private no.nav.folketrygdloven.kalkulator.gradering.AndelGradering lagGradering() {
         return no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -115,17 +202,15 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
                 .medGrunnbeløp(new Beløp(GRUNNBELØP))
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-                .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, null);
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
                 .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(true).build())
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.TEN)
                 .build(periode);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(ANDELSNR2)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
                 .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())

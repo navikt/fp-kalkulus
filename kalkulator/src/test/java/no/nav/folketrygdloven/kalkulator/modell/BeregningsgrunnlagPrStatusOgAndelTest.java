@@ -47,7 +47,7 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
 
     @Test
     public void skal_ikke_bygge_instans_hvis_mangler_påkrevde_felter() {
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.kopier();
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny();
         try {
             builder.build(null);
             fail();
@@ -196,7 +196,7 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2));
 
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medArbforholdType(ARBEIDSFORHOLD_TYPE);

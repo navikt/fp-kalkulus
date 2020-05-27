@@ -116,7 +116,7 @@ public class FordelRefusjonTjenesteTest {
         FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
             Inntektskategori.ARBEIDSTAKER, 0, FORRIGE_ARBEIDSTINNTEKT);
         andelListe.add(fordeltAndel);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
@@ -183,7 +183,7 @@ public class FordelRefusjonTjenesteTest {
         FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder1)
             .build(periode);
@@ -205,7 +205,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
 
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
             .medAndelsnr(1L)
@@ -215,7 +215,7 @@ public class FordelRefusjonTjenesteTest {
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -245,7 +245,7 @@ public class FordelRefusjonTjenesteTest {
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -282,7 +282,7 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
             .medBGAndelArbeidsforhold(afBuilder3);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -317,7 +317,7 @@ public class FordelRefusjonTjenesteTest {
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -352,7 +352,7 @@ public class FordelRefusjonTjenesteTest {
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -392,7 +392,7 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
             .medBGAndelArbeidsforhold(afBuilder3);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -432,7 +432,7 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
             .medBGAndelArbeidsforhold(afBuilder3);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(afBuilder2)
             .medAndelsnr(2L)
@@ -466,7 +466,7 @@ public class FordelRefusjonTjenesteTest {
     }
 
     private void lagArbeidstakerAndel() {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(FORRIGE_INNTEKTSKATEGORI)
             .medBGAndelArbeidsforhold(afBuilder1)
@@ -476,7 +476,7 @@ public class FordelRefusjonTjenesteTest {
     }
 
     private void lagDPAndelLagtTilAvSaksbehandler() {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medInntektskategori(Inntektskategori.DAGPENGER)
             .medAndelsnr(1L)

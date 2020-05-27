@@ -95,7 +95,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         List<AndelGradering> endringerSøktYtelse = hentEndringSøktYtelseSVP(input, vlBeregningsgrunnlag);
         var regelEndringerSøktYtelse = endringerSøktYtelse.stream()
                 .filter(g -> erAnsattIPerioden(input.getBehandlingReferanse(), g, filter))
-                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(input.getBehandlingReferanse(),
+                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(vlBeregningsgrunnlag, input.getBehandlingReferanse(),
                         andelGradering, filter))
                 .collect(Collectors.toList());
 
@@ -137,6 +137,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         Arbeidsgiver tilretteleggingArbeidsgiver = tilretteleggingArbeidsforhold.getArbeidsgiver().orElse(null);
         InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
         AktivitetStatus tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
+        // TODO TFP-3398 (Andelsnr skal fjernes fra AndelGradering så dette må settes på en annen måte)
         AndelGradering.Builder builder = AndelGradering.builder()
                 .medStatus(tilretteleggingAktivitetStatus)
                 .medArbeidsgiver(tilretteleggingArbeidsgiver)

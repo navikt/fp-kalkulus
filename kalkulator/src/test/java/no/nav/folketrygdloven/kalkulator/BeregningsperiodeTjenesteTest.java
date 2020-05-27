@@ -199,7 +199,7 @@ public class BeregningsperiodeTjenesteTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(beregningsgrunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode);
@@ -216,7 +216,7 @@ public class BeregningsperiodeTjenesteTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(beregningsgrunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverA))
             .medLagtTilAvSaksbehandler(lagtTilAvSaksbehandler)
@@ -236,7 +236,7 @@ public class BeregningsperiodeTjenesteTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(beregningsgrunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(periode);
         return beregningsgrunnlag;
@@ -252,13 +252,13 @@ public class BeregningsperiodeTjenesteTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(beregningsgrunnlag);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverA))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverB))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

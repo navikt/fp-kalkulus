@@ -64,7 +64,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                 .anyMatch(a -> a.getAktivitetStatus().equals(aktivitetStatus) && a.getArbeidsforholdType().equals(aktivitetTypeMap.get(aktivitetStatus)) &&
                     a.getBeregningsperiodeFom().equals(beregningsperiode.getFomDato()) && a.getBeregningsperiodeTom().equals(beregningsperiode.getTomDato()));
             if (!eksisterende) {
-                BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(aktivitetStatus)
                     .medArbforholdType(aktivitetTypeMap.get(aktivitetStatus))
                     .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
@@ -79,7 +79,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                 .medArbeidsperiodeFom(nyAndel.getArbeidsperiodeFom())
                 .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom())
                 .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr());
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medArbforholdType(OpptjeningAktivitetType.ARBEID)

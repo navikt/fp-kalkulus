@@ -544,7 +544,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
 
@@ -569,7 +569,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BeregningsgrunnlagPeriodeDto bgPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(bgPeriode);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
@@ -648,7 +648,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         newGrunnlagBuilder.medInntektsmeldinger(im1);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT, AbstractIntervall.TIDENES_ENDE)
             .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
@@ -764,7 +764,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         assertThat(perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertThat(finnBGAndelArbeidsforhold(perioder.get(0), ORG_NUMMER_2)).isPresent();
         assertThat(perioder.get(1).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(3);
-        assertThat(perioder.get(2).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
+        assertThat(perioder.get(2).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(3);
         assertThat(finnBGAndelArbeidsforhold(perioder.get(2), ORG_NUMMER_2)).isPresent();
     }
 
@@ -859,7 +859,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         assertThat(perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertThat(finnBGAndelArbeidsforhold(perioder.get(0), ORG_NUMMER_2)).isPresent();
         assertThat(perioder.get(1).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
-        assertThat(perioder.get(2).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
+        assertThat(perioder.get(2).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         assertThat(finnBGAndelArbeidsforhold(perioder.get(2), ORG_NUMMER_2)).isPresent();
     }
 
@@ -1241,7 +1241,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsforholdRef(arbId.getReferanse());
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1312,7 +1312,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode2.getTomDato())
                 .medArbeidsgiver(arbeidsgiver);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1415,7 +1415,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsgiver(arbeidsgiver2);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1441,7 +1441,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
 
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode3 = perioder.get(2);
         assertThat(beregningsgrunnlagPeriode3.getPeriodeÅrsaker()).containsExactly(PeriodeÅrsak.GRADERING_OPPHØRER);
-        assertThat(beregningsgrunnlagPeriode3.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
+        assertThat(beregningsgrunnlagPeriode3.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
     }
 
     @Test
@@ -1535,7 +1535,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsgiver(arbeidsgiver2);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1587,7 +1587,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsgiver(arbeidsgiver2);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1655,7 +1655,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsgiver(arbeidsgiver2);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -1677,7 +1677,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
 
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = perioder.get(1);
         assertThat(beregningsgrunnlagPeriode2.getPeriodeÅrsaker()).containsExactly(PeriodeÅrsak.GRADERING_OPPHØRER);
-        assertThat(beregningsgrunnlagPeriode2.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
+        assertThat(beregningsgrunnlagPeriode2.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
     }
 
     @Test
@@ -1727,7 +1727,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
                 .medArbeidsperiodeTom(arbeidsperiode.getTomDato())
                 .medArbeidsgiver(arbeidsgiver2);
 
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(periode);
@@ -2182,7 +2182,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
         for (String orgnr : orgnrs) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(arbeidsgiver)

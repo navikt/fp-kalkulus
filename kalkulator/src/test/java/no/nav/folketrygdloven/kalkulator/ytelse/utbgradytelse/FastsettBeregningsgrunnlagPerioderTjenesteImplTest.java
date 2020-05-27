@@ -154,7 +154,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), behandlingReferanse.getAktørId());
 
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER, ORG_NUMMER_2), behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt = BigDecimal.valueOf(40000);
@@ -191,7 +191,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2),
             behandlingReferanse.getAktørId());
 
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER_2), behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         BigDecimal inntekt = BigDecimal.valueOf(40000);
@@ -237,7 +237,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         assertThat(beregningsgrunnlagPeriode.getPeriodeÅrsaker()).as("periodeÅrsaker").containsExactlyInAnyOrder(perioderÅrsaker);
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(List<String> orgnrs, BehandlingReferanse behandlingReferanse,
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(List<String> orgnrs,
                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()
@@ -256,7 +256,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
         for (String orgnr : orgnrs) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(arbeidsgiver)

@@ -31,7 +31,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
 
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet("abc");
         InternArbeidsforholdRefDto arbeidsforholdRef = InternArbeidsforholdRefDto.nyRef();
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medAndelsnr(1L)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()

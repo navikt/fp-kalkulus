@@ -51,7 +51,7 @@ public class VurderNyoppstartetFLOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.FRILANSER)

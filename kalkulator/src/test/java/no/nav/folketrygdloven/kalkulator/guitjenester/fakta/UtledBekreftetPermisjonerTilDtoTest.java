@@ -234,7 +234,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         BGAndelArbeidsforholdDto.Builder builder = BGAndelArbeidsforholdDto.builder()
             .medArbeidsforholdRef(ref);
         arbeidsgiverOpt.ifPresent(builder::medArbeidsgiver);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(builder)
             .build(periode);

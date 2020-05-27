@@ -96,7 +96,7 @@ public class EtterlønnSluttpakkeTjenesteTest {
         BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), null);
         BeregningsgrunnlagPeriodeDto periode = periodeBuilder.build(beregningsgrunnlag);
         for (OpptjeningAktivitetType type : opptjeningAktivitetTypes) {
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medBeregnetPrÅr(null)

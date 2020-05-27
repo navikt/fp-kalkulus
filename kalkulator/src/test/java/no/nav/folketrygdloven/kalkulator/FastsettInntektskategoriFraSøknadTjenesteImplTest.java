@@ -51,7 +51,7 @@ public class FastsettInntektskategoriFraSøknadTjenesteImplTest {
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
             .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(aktivitetStatus)
             .build(periode);

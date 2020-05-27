@@ -185,7 +185,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(bg);
-        ags.forEach(ag -> BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        ags.forEach(ag -> BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag))
             .build(periode)

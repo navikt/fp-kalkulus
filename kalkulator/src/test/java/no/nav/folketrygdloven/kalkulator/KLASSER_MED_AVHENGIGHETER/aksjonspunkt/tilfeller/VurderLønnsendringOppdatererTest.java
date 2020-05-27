@@ -54,13 +54,13 @@ public class VurderLønnsendringOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(3252L)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode1);
-        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomheten))
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
             .medLagtTilAvSaksbehandler(false)

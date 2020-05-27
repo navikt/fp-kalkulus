@@ -88,7 +88,7 @@ public class NyIArbeidslivetTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef())
@@ -97,7 +97,7 @@ public class NyIArbeidslivetTjenesteTest {
                 .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1)))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(bgPeriode);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(bgPeriode);
         return beregningsgrunnlag;
@@ -111,7 +111,7 @@ public class NyIArbeidslivetTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef())

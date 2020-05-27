@@ -327,7 +327,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
                                                                         boolean fastsattAvSaksbehandler,
                                                                         BigDecimal beregnetPrÅr,
                                                                         BigDecimal naturalytelseBortfaltPrÅr) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                         .medArbeidsgiver(Arbeidsgiver.virksomhet(ORG_NUMMER))
                         .medArbeidsforholdRef(arbId2).medRefusjonskravPrÅr(refusjonskravPrÅr)
@@ -345,7 +345,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
     private BeregningsgrunnlagPrStatusOgAndelDto buildAPAndel(Long andelsnr2, BeregningsgrunnlagPeriodeDto periode,
                                                               boolean lagtTilAvSaksbehandler,
                                                               boolean fastsattAvSaksbehandler, BigDecimal beregnetPrÅr) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(andelsnr2)
                 .medBeregningsperiode(LocalDate.of(2019, 7, 1), LocalDate.of(2019, 10, 1))
                 .medBeregnetPrÅr(beregnetPrÅr)

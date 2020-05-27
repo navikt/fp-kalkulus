@@ -51,7 +51,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        snAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        snAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
             .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)

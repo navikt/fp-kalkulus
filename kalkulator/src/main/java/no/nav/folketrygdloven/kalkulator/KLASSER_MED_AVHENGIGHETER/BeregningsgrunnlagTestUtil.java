@@ -90,7 +90,7 @@ public class BeregningsgrunnlagTestUtil {
             if (status.equals(AktivitetStatus.ARBEIDSTAKER)) {
                 continue;
             }
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(status);
             if (status.equals(AktivitetStatus.FRILANSER)) {
                 andelBuilder.medBeregningsperiode(skjæringstidspunktOpptjening.minusMonths(3).withDayOfMonth(1), skjæringstidspunktOpptjening.withDayOfMonth(1).minusDays(1));
@@ -116,7 +116,7 @@ public class BeregningsgrunnlagTestUtil {
                     .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
                     .medArbeidsperiodeTom(arbeidsperiode.getTomDato());
 
-                BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medBeregningsperiode(skjæringstidspunktOpptjening.minusMonths(3).withDayOfMonth(1), skjæringstidspunktOpptjening.withDayOfMonth(1).minusDays(1))
                     .medBGAndelArbeidsforhold(bga)
@@ -265,7 +265,7 @@ public class BeregningsgrunnlagTestUtil {
                                   Inntektskategori inntektskategori,
                                   BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
                                   BGAndelArbeidsforholdDto.Builder bga, LocalDate skjæringstidspunkt) { //NOSONAR
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(skjæringstidspunkt.minusMonths(3).withDayOfMonth(1), skjæringstidspunkt.withDayOfMonth(1).minusDays(1))
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

@@ -303,7 +303,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(andelsNr)
@@ -322,7 +322,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(andelsNr)
@@ -339,7 +339,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(andelsNr)
@@ -360,21 +360,21 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(ANDELSNR)
                 .medAktivitetStatus(AktivitetStatus.DAGPENGER)
                 .build(beregningsgrunnlagPeriode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(ANDELSNR + 1)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)
                 .build(beregningsgrunnlagPeriode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(ANDELSNR + 2)

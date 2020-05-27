@@ -69,7 +69,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
             .builder()
             .medArbeidsgiver(arbeidsgiver1)
             .medArbeidsforholdRef(ARBEIDSFORHOLD_REF);
-        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(arbeidsforholdBuilder)
             .build(periode);

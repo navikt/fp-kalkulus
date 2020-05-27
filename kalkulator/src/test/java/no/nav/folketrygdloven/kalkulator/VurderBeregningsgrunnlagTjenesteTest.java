@@ -140,7 +140,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
             .medRapportertPrÅr(BigDecimal.ZERO)
             .medAvvikPromilleNy(BigDecimal.valueOf(0))
             .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12))
                 .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING)

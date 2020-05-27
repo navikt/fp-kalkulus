@@ -19,6 +19,7 @@ public class AndelGradering {
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private List<Gradering> graderinger = new ArrayList<>();
+    @Deprecated(forRemoval = true)
     private Long andelsnr;
 
     public AktivitetStatus getAktivitetStatus() {
@@ -37,6 +38,7 @@ public class AndelGradering {
         return graderinger;
     }
 
+    @Deprecated(forRemoval = true)
     public Long getAndelsnr() {
         return andelsnr;
     }
@@ -118,6 +120,7 @@ public class AndelGradering {
             return this;
         }
 
+        @Deprecated(forRemoval = true)
         public Builder medAndelsnr(Long andelsnr) {
             kladd.andelsnr = andelsnr;
             return this;

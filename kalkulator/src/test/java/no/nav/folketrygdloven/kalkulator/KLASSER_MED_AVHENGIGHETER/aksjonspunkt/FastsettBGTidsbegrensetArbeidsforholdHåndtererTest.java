@@ -118,7 +118,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
             .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhet.getOrgnr()));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(beregningsgrunnlagPeriode);

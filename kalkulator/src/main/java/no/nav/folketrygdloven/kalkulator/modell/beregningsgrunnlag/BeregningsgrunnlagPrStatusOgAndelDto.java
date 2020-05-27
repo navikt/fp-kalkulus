@@ -393,7 +393,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                 + ">"; //$NON-NLS-1$
     }
 
-    public static Builder kopier() {
+    public static Builder ny() {
         return new Builder();
     }
 

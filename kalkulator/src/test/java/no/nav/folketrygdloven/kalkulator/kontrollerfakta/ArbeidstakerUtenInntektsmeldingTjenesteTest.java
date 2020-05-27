@@ -54,7 +54,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
         InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsforholdRef(ARB_ID).medArbeidsgiver(arbeidsgiver))
@@ -75,7 +75,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
         InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsforholdRef(ARB_ID).medArbeidsgiver(arbeidsgiver))
@@ -96,7 +96,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.emptyList());
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsforholdRef(ARB_ID).medArbeidsgiver(arbeidsgiver))
@@ -117,7 +117,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
         InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medInntektskategori(Inntektskategori.DAGPENGER)
             .build(periode);

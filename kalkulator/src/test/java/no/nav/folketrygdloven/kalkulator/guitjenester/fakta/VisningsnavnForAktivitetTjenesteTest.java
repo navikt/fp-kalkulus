@@ -67,7 +67,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
     @Test
     public void skal_lage_navn_for_brukers_andel() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medArbforholdType(OpptjeningAktivitetType.UDEFINERT)
             .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
             .build(periode);
@@ -84,7 +84,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(VIRKSOMHETEN);
         arbeidsgiver.setNavn(VIRKSOMHET_NAVN);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .medArbforholdType(OpptjeningAktivitetType.ARBEID)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -106,7 +106,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(VIRKSOMHETEN);
         arbeidsgiver.setNavn(VIRKSOMHET_NAVN);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver)
                 .medArbeidsforholdRef("123-234-345-456-6556"))
             .medArbforholdType(OpptjeningAktivitetType.ARBEID)
@@ -130,7 +130,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.person(new AktørId(AKTØR_ID));
         arbeidsgiver.setNavn("N/A");
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
                 .medArbforholdType(OpptjeningAktivitetType.ARBEID)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -152,7 +152,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(KUNSTIG_VIRKSOMHET);
         arbeidsgiver.setNavn(KUNSTIG_VIRKSOMHET_NAVN);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .medArbforholdType(OpptjeningAktivitetType.ARBEID)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

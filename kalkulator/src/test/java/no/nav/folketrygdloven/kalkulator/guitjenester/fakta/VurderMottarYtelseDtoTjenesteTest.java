@@ -154,7 +154,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .medOppgittOpptjening(BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(false, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10)))
                 .build();
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .medInntektskategori(Inntektskategori.FRILANSER)
                 .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))

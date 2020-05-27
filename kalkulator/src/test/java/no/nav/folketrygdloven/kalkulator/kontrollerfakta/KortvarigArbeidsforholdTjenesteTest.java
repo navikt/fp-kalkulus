@@ -336,7 +336,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(arbId)
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
@@ -356,7 +356,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(arbId)
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
@@ -365,7 +365,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(bgPeriode);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .build(bgPeriode);
         return beregningsgrunnlag;
@@ -380,7 +380,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
         yrkesaktivitetList.forEach(ya ->
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                     .medArbeidsforholdRef(ya.getArbeidsforholdRef())
                     .medArbeidsgiver(ya.getArbeidsgiver())
@@ -401,7 +401,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
         yrkesaktivitetList.stream().filter(a -> a.getArbeidType().equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)).forEach(ya ->
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                     .medArbeidsforholdRef(ya.getArbeidsforholdRef())
                     .medArbeidsgiver(ya.getArbeidsgiver())
@@ -410,7 +410,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .build(bgPeriode)
         );
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(bgPeriode);
         return beregningsgrunnlag;

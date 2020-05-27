@@ -95,7 +95,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medArbforholdType(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)
             .build(beregningsgrunnlagPeriode);

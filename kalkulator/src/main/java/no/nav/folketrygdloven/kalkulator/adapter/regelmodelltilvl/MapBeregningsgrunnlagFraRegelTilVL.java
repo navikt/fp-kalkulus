@@ -341,7 +341,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
 
     private static void opprettBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto kopierFra, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         kopierFra.getBeregningsgrunnlagPrStatusOgAndelList().forEach(bgpsa -> {
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medArbforholdType(bgpsa.getArbeidsforholdType())
                 .medAktivitetStatus(bgpsa.getAktivitetStatus())
                 .medInntektskategori(bgpsa.getInntektskategori());

@@ -77,7 +77,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndtererTest {
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(beregningsgrunnlagPeriode);
     }

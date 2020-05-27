@@ -60,13 +60,13 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2).plusDays(1), null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAndelsnr(1L)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(1L)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver)).build(periode1);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAndelsnr(5L)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(5L)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver)).build(periode2);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAndelsnr(2L)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(2L)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver2)).build(periode1);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAndelsnr(1L)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(1L)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver2)).build(periode2);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);

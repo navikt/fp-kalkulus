@@ -97,7 +97,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagBeregnignsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto periode) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregnetPrÅr(BEREGNET_PR_ÅR)
             .medOverstyrtPrÅr(BRUTTO_PR_ÅR)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

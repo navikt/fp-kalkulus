@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,9 +24,21 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
     public static boolean skalSaksbehandlerRedigereInntekt(BeregningsgrunnlagGrunnlagDto grunnlag,
                                                            AktivitetGradering aktivitetGradering,
                                                            BeregningsgrunnlagPeriodeDto periode,
+                                                           List<BeregningsgrunnlagPeriodeDto> perioder,
                                                            Collection<InntektsmeldingDto> inntektsmeldinger) {
+        boolean grunnetTidligerePerioder = skalRedigereGrunnetTidligerePerioder(grunnlag, aktivitetGradering, periode, perioder, inntektsmeldinger);
+        if (grunnetTidligerePerioder) {
+            return true;
+        }
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering, periode, inntektsmeldinger);
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andelFraSteg -> andelLiggerITilfelleMap(andelFraSteg, periodeTilfelleMap));
+    }
+
+    private static boolean skalRedigereGrunnetTidligerePerioder(BeregningsgrunnlagGrunnlagDto grunnlag, AktivitetGradering aktivitetGradering, BeregningsgrunnlagPeriodeDto periode, List<BeregningsgrunnlagPeriodeDto> perioder, Collection<InntektsmeldingDto> inntektsmeldinger) {
+        return perioder.stream()
+                .filter(p -> p.getBeregningsgrunnlagPeriodeFom().isBefore(periode.getBeregningsgrunnlagPeriodeFom()))
+                .flatMap(p -> utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering, p, inntektsmeldinger).values().stream())
+                .anyMatch(tilfelle -> tilfelle.equals(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0) || tilfelle.equals(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0));
     }
 
     public static boolean skalSaksbehandlerRedigereRefusjon(BeregningsgrunnlagGrunnlagDto grunnlag,

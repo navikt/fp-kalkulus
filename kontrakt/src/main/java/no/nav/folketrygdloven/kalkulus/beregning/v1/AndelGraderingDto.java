@@ -27,7 +27,6 @@ public class AndelGraderingDto {
 
     @JsonProperty(value = "arbeidsgiver")
     @Valid
-    @NotNull
     private Aktør arbeidsgiver;
 
     @JsonProperty(value = "arbeidsforholdRef")

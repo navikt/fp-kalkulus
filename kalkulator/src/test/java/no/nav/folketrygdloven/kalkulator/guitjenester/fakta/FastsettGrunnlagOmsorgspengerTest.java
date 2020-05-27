@@ -106,7 +106,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(1L)
@@ -217,7 +217,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(1L)
@@ -289,7 +289,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
                 .medArbeidsgiver(arbeidsgiver);
 
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
                 .medInntektskategori(INNTEKTSKATEGORI)
                 .medAndelsnr(andelsNr)

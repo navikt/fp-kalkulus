@@ -185,7 +185,7 @@ public class LønnsendringTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3), SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsforholdRef(arbId)

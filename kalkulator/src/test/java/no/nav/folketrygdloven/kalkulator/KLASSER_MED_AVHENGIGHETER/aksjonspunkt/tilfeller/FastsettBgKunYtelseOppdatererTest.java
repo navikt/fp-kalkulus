@@ -54,7 +54,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR)
             .medLagtTilAvSaksbehandler(false)
             .medAktivitetStatus(brukers_andel)
@@ -207,7 +207,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         boolean lagtTilAvSaksbehandler = true;
         BeregningsgrunnlagDto førsteGrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         Long andelsnr = 2133L;
-        førsteGrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        førsteGrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER)
@@ -250,7 +250,7 @@ public class FastsettBgKunYtelseOppdatererTest {
                 BeregningsgrunnlagPrStatusOgAndelDto.kopier(andel)
                     .medBeregnetPrÅr(BigDecimal.valueOf(100000*12))
             );
-            BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER)

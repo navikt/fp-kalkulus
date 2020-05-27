@@ -118,7 +118,7 @@ public class RegelMapperTestDataHelper {
                                         Arbeidsgiver arbeidsgiver,
                                         OpptjeningAktivitetType arbforholdType) {
 
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(aktivitetStatus)
             .medInntektskategori(inntektskategori)
             .medBeregningsperiode(fom, tom)

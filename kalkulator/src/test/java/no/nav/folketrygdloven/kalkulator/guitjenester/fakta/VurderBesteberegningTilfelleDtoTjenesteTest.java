@@ -77,7 +77,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
             .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_BESTEBEREGNING))
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
         var periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(STP, null).build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder)
             .medInntektskategori(Inntektskategori.JORDBRUKER)
             .build(periode);

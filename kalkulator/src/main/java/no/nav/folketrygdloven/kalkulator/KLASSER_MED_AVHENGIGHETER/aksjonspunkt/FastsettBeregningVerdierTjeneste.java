@@ -96,7 +96,7 @@ public class FastsettBeregningVerdierTjeneste {
         if (nyInntektskategori == null) {
             throw new IllegalStateException("Kan ikke sette inntektskategori lik null på ny andel.");
         }
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(aktivitetStatus)
             .medInntektskategori(nyInntektskategori)
             .medBeregnetPrÅr(fastsatt)

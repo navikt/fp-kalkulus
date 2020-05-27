@@ -103,7 +103,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         String orgnr = medKunstigArbeid ? OrgNummer.KUNSTIG_ORG : ORGNR;
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr)))
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)

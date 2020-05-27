@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGraderingImpl;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -41,7 +43,6 @@ public class MapAndelGraderingTest {
         ref = mock(BehandlingReferanse.class);
         when(ref.getSkjæringstidspunktBeregning()).thenReturn(LocalDate.now());
         when(ref.getFagsakYtelseType()).thenReturn(FagsakYtelseType.FORELDREPENGER);
-
     }
 
     @Test
@@ -57,11 +58,12 @@ public class MapAndelGraderingTest {
             .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .leggTilGradering(new AndelGradering.Gradering(p1, BigDecimal.valueOf(50)))
             .leggTilGradering(new AndelGradering.Gradering(p2, BigDecimal.valueOf(25)))
+                .medAndelsnr(1L)
             .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
 
         // Act
-        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(ref,
+        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(null, ref,
             vlAndelGradering, filter);
 
         // Assert
@@ -91,11 +93,12 @@ public class MapAndelGraderingTest {
             .medStatus(AktivitetStatus.FRILANSER)
             .leggTilGradering(new AndelGradering.Gradering(p1, BigDecimal.valueOf(50)))
             .leggTilGradering(new AndelGradering.Gradering(p2, BigDecimal.valueOf(25)))
-            .build();
+            .medAndelsnr(1L)
+                .build();
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(Optional.empty(), Optional.empty());
 
         // Act
-        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(ref, vlAndelGradering, filter);
+        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(null, ref, vlAndelGradering, filter);
 
         // Assert
         assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2.FL);
@@ -125,6 +128,7 @@ public class MapAndelGraderingTest {
             .medArbeidsgiver(ARBEIDSGIVER)
             .leggTilGradering(new AndelGradering.Gradering(p1, BigDecimal.valueOf(50)))
             .leggTilGradering(new AndelGradering.Gradering(p2, BigDecimal.valueOf(25)))
+            .medAndelsnr(1L)
             .build();
         InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty());
         AktørId aktørId = AktørId.dummy();
@@ -141,7 +145,7 @@ public class MapAndelGraderingTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
 
         // Act
-        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(ref, vlAndelGradering, filter);
+        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(null, ref, vlAndelGradering, filter);
 
         // Assert
         assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(AktivitetStatusV2.AT);

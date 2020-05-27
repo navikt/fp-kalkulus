@@ -124,7 +124,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                         }
                     }
 
-                    var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+                    var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(af.getAktivitet()))
                         .medAktivitetStatus(af.erFrilanser() ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER)
                         .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato());
@@ -141,7 +141,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                 }));
         regelmodell.getBeregningsgrunnlagPrStatusListe().stream()
             .filter(bgps -> !(erATFL(bgps.getAktivitetStatus())))
-            .forEach(bgps -> BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+            .forEach(bgps -> BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(mapAktivitetStatusfraRegelmodell(regelmodell, bgps.getAktivitetStatus()))
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(bgps.getAktivitetStatus()))
                 .build(beregningsgrunnlagPeriode));

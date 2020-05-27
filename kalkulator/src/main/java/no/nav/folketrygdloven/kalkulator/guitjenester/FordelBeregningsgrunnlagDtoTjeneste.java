@@ -79,6 +79,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
                         periodeFraSteg,
+                        forrigeBgFraSteg.getBeregningsgrunnlagPerioder(),
                         input.getInntektsmeldinger()));
         fordelBGPeriode.setSkalKunneEndreRefusjon(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalSaksbehandlerRedigereRefusjon(

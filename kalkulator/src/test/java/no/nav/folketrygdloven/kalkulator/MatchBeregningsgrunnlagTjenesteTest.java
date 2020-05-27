@@ -42,7 +42,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         BeregningsgrunnlagPeriodeDto periode =    lagPeriode(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
             .medInntektskategori(Inntektskategori.SJØMANN)
@@ -65,7 +65,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)
@@ -87,7 +87,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
             .medAndelsnr(andelsnr)
             .medLagtTilAvSaksbehandler(true)

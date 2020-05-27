@@ -160,7 +160,7 @@ public class VurderMilitærOppdatererTest {
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, AktivitetStatus aktivitetStatus) {
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.kopier()
+        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(aktivitetStatus)
             .medArbforholdType(OpptjeningAktivitetType.ARBEID);
         if (aktivitetStatus.erArbeidstaker()) {
