@@ -55,13 +55,6 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal beregnetPrAar;
 
     @Valid
-    @JsonProperty("fastsattForrigePrAar")
-    @Digits(integer = 8, fraction = 2)
-    @DecimalMin("0.00")
-    @DecimalMax("10000000.00")
-    private BigDecimal fastsattForrigePrAar;
-
-    @Valid
     @JsonProperty("overstyrtPrAar")
     @Digits(integer = 8, fraction = 2)
     @DecimalMin("0.00")
@@ -323,14 +316,6 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public void setLagtTilAvSaksbehandler(Boolean lagtTilAvSaksbehandler) {
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
-    }
-
-    public BigDecimal getFastsattForrigePrAar() {
-        return fastsattForrigePrAar;
-    }
-
-    public void setFastsattForrigePrAar(BigDecimal fastsattForrigePrAar) {
-        this.fastsattForrigePrAar = fastsattForrigePrAar;
     }
 
     public BigDecimal getBelopPrMndEtterAOrdningen() {

@@ -6,7 +6,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiv
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 
 public class KalkulatorTilIAYMapper {
-    public static InternArbeidsforholdRef mapArbeidsforholdRed(InternArbeidsforholdRefDto arbeidsforholdRef) {
+    public static InternArbeidsforholdRef mapArbeidsforholdRef(InternArbeidsforholdRefDto arbeidsforholdRef) {
         return InternArbeidsforholdRef.ref(arbeidsforholdRef.getReferanse());
     }
 

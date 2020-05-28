@@ -35,11 +35,19 @@ public class FordelBeregningsgrunnlagPeriodeDto {
 
     @Valid
     @JsonProperty(value = "harPeriodeAarsakGraderingEllerRefusjon")
-    private boolean harPeriodeAarsakGraderingEllerRefusjon = false;
+    private boolean harPeriodeAarsakGraderingEllerRefusjon;
+
+    @Valid
+    @JsonProperty(value = "skalRedigereInntekt")
+    private boolean skalRedigereInntekt;
+
+    @Valid
+    @JsonProperty(value = "skalPreutfyllesMedBeregningsgrunnlag")
+    private boolean skalPreutfyllesMedBeregningsgrunnlag;
 
     @Valid
     @JsonProperty(value = "skalKunneEndreRefusjon")
-    private boolean skalKunneEndreRefusjon = false;
+    private boolean skalKunneEndreRefusjon;
 
 
     public boolean isHarPeriodeAarsakGraderingEllerRefusjon() {
@@ -80,5 +88,21 @@ public class FordelBeregningsgrunnlagPeriodeDto {
 
     public void setSkalKunneEndreRefusjon(boolean skalKunneEndreRefusjon) {
         this.skalKunneEndreRefusjon = skalKunneEndreRefusjon;
+    }
+
+    public boolean isSkalRedigereInntekt() {
+        return skalRedigereInntekt;
+    }
+
+    public void setSkalRedigereInntekt(boolean skalRedigereInntekt) {
+        this.skalRedigereInntekt = skalRedigereInntekt;
+    }
+
+    public boolean isSkalPreutfyllesMedBeregningsgrunnlag() {
+        return skalPreutfyllesMedBeregningsgrunnlag;
+    }
+
+    public void setSkalPreutfyllesMedBeregningsgrunnlag(boolean skalPreutfyllesMedBeregningsgrunnlag) {
+        this.skalPreutfyllesMedBeregningsgrunnlag = skalPreutfyllesMedBeregningsgrunnlag;
     }
 }

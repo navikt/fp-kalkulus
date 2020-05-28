@@ -34,7 +34,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andelFraSteg -> andelLiggerITilfelleMap(andelFraSteg, periodeTilfelleMap));
     }
 
-    private static boolean skalRedigereGrunnetTidligerePerioder(BeregningsgrunnlagGrunnlagDto grunnlag, AktivitetGradering aktivitetGradering, BeregningsgrunnlagPeriodeDto periode, List<BeregningsgrunnlagPeriodeDto> perioder, Collection<InntektsmeldingDto> inntektsmeldinger) {
+    public static boolean skalRedigereGrunnetTidligerePerioder(BeregningsgrunnlagGrunnlagDto grunnlag, AktivitetGradering aktivitetGradering, BeregningsgrunnlagPeriodeDto periode, List<BeregningsgrunnlagPeriodeDto> perioder, Collection<InntektsmeldingDto> inntektsmeldinger) {
         return perioder.stream()
                 .filter(p -> p.getBeregningsgrunnlagPeriodeFom().isBefore(periode.getBeregningsgrunnlagPeriodeFom()))
                 .flatMap(p -> utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering, p, inntektsmeldinger).values().stream())

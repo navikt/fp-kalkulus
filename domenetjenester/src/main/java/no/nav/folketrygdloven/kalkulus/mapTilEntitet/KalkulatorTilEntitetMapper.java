@@ -87,7 +87,7 @@ public class KalkulatorTilEntitetMapper {
     private static Consumer<BeregningAktivitetDto> mapBeregningAktivitet(BeregningAktivitetAggregatEntitet.Builder entitetBuilder) {
         return beregningAktivitet -> {
             BeregningAktivitetEntitet.Builder builder = BeregningAktivitetEntitet.builder();
-            builder.medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef() == null ? null : KalkulatorTilIAYMapper.mapArbeidsforholdRed(beregningAktivitet.getArbeidsforholdRef()));
+            builder.medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef() == null ? null : KalkulatorTilIAYMapper.mapArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef()));
             builder.medArbeidsgiver(beregningAktivitet.getArbeidsgiver() == null ? null : KalkulatorTilIAYMapper.mapArbeidsgiver(beregningAktivitet.getArbeidsgiver()));
             builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(beregningAktivitet.getOpptjeningAktivitetType().getKode()));
             builder.medPeriode(mapDatoIntervall(beregningAktivitet.getPeriode()));
@@ -99,7 +99,7 @@ public class KalkulatorTilEntitetMapper {
         BeregningAktivitetOverstyringerEntitet.Builder entitetBuilder = BeregningAktivitetOverstyringerEntitet.builder();
         beregningAktivitetOverstyringerFraKalkulus.getOverstyringer().forEach(overstyring -> {
             BeregningAktivitetOverstyringEntitet.Builder builder = BeregningAktivitetOverstyringEntitet.builder();
-            builder.medArbeidsforholdRef(overstyring.getArbeidsforholdRef() == null ? null : KalkulatorTilIAYMapper.mapArbeidsforholdRed(overstyring.getArbeidsforholdRef()));
+            builder.medArbeidsforholdRef(overstyring.getArbeidsforholdRef() == null ? null : KalkulatorTilIAYMapper.mapArbeidsforholdRef(overstyring.getArbeidsforholdRef()));
             overstyring.getArbeidsgiver().ifPresent(arbeidsgiver -> builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(arbeidsgiver)));
             builder.medHandling(overstyring.getHandling() == null ? null : BeregningAktivitetHandlingType.fraKode(overstyring.getHandling().getKode()));
             builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(overstyring.getOpptjeningAktivitetType().getKode()));

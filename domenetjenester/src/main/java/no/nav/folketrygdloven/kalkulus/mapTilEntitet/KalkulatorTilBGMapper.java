@@ -109,7 +109,7 @@ public class KalkulatorTilBGMapper {
 
     private static BGAndelArbeidsforhold.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
         BGAndelArbeidsforhold.Builder builder = BGAndelArbeidsforhold.builder();
-        builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRed(fraKalkulus.getArbeidsforholdRef()));
+        builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraKalkulus.getArbeidsperiodeFom());
         builder.medLønnsendringIBeregningsperioden(fraKalkulus.erLønnsendringIBeregningsperioden());

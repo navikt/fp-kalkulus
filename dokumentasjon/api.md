@@ -424,7 +424,6 @@ HTTP 200 - BeregningsgrunnlagDto
       "beregningsperiodeFom" : "2019-10-01",
       "beregningsperiodeTom" : "2019-12-31",
       "beregnetPrAar" : null,
-      "fastsattForrigePrAar" : null,
       "overstyrtPrAar" : null,
       "bruttoPrAar" : null,
       "avkortetPrAar" : null,
