@@ -1,7 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -33,6 +36,11 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     @NotNull
     private Boolean søkerYtelseForNæring;
 
+    @Valid
+    @JsonProperty("perioderMedSøkerInfo")
+    @Size(max = 20)
+    private List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo;
+
     protected FrisinnGrunnlag() {
         // default ctor
     }
@@ -40,6 +48,15 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     public FrisinnGrunnlag(@Valid @NotNull Boolean søkerYtelseForFrilans, @Valid @NotNull Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
         this.søkerYtelseForNæring = søkerYtelseForNæring;
+    }
+
+    public FrisinnGrunnlag medPerioderMedSøkerInfo(List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo) {
+        this.perioderMedSøkerInfo = perioderMedSøkerInfo;
+        return this;
+    }
+
+    public List<PeriodeMedSøkerInfoDto> getPerioderMedSøkerInfo() {
+        return perioderMedSøkerInfo;
     }
 
     public static String getYtelseType() {
