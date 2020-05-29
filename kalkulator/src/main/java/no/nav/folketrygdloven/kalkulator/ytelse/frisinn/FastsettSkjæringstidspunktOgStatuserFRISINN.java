@@ -66,7 +66,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
 
     }
 
-    protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+        protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
