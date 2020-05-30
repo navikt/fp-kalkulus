@@ -12,16 +12,19 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.OpplystPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.SøknadsopplysningerDto;
 
@@ -56,7 +59,66 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         List<OpplystPeriodeDto> søktePerioder = mapSøktePerider(input);
         frisinnGrunnlagDto.setPerioderSøktFor(søktePerioder);
 
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        Optional<OppgittOpptjeningDto> oppgitOpptjening = input.getIayGrunnlag().getOppgittOpptjening();
+        oppgitOpptjening.ifPresent(oppgittOpptjeningDto -> frisinnGrunnlagDto.setFrisinnPerioder(mapFrisinnPerioder(frisinnGrunnlag.getFrisinnPerioder(), oppgittOpptjeningDto)));
+
         return frisinnGrunnlagDto;
+    }
+
+    private List<FrisinnPeriodeDto> mapFrisinnPerioder(List<FrisinnPeriode> frisinnPerioder, OppgittOpptjeningDto oppgittOpptjening) {
+        List<FrisinnPeriodeDto> dtoer = new ArrayList<>();
+        frisinnPerioder.forEach(periode -> {
+            if (periode.getSøkerFrilans()) {
+                lagFrilansperiode(periode.getPeriode(), oppgittOpptjening).ifPresent(dtoer::add);
+            }
+            if (periode.getSøkerNæring()) {
+                lagNæringsperiode(periode.getPeriode(), oppgittOpptjening).ifPresent(dtoer::add);
+            }
+        });
+        return dtoer;
+    }
+
+    private Optional<FrisinnPeriodeDto> lagNæringsperiode(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
+        List<OppgittEgenNæringDto> næringer  = oppgittOpptjening.getEgenNæring();
+        if (næringer.isEmpty()) {
+            return Optional.empty();
+        }
+        BigDecimal oppgittNæringsinntektIPerioden = næringer.stream()
+                .filter(næring -> !næring.getPeriode().getFomDato().isBefore(periode.getFomDato()) &&
+                        !næring.getPeriode().getTomDato().isAfter(periode.getTomDato()))
+                .filter(i -> i.getInntekt() != null)
+                .map(OppgittEgenNæringDto::getInntekt)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        FrisinnPeriodeDto dto = new FrisinnPeriodeDto();
+        dto.setFom(periode.getFomDato());
+        dto.setTom(periode.getTomDato());
+        dto.setStatusSøktFor(AktivitetStatus.FRILANSER);
+        dto.setOppgittInntekt(oppgittNæringsinntektIPerioden);
+        return Optional.of(dto);
+    }
+
+    private Optional<FrisinnPeriodeDto> lagFrilansperiode(Intervall periode, OppgittOpptjeningDto oppgittOpptjening) {
+        Optional<OppgittFrilansDto> oppgittFL = oppgittOpptjening.getFrilans();
+        if (oppgittFL.isEmpty()) {
+            return Optional.empty();
+        }
+        BigDecimal oppgittFrilansinntektIPeriode = oppgittFL.get().getOppgittFrilansInntekt().stream()
+                .filter(inntekt -> !inntekt.getPeriode().getFomDato().isBefore(periode.getFomDato())
+                && !inntekt.getPeriode().getTomDato().isAfter(periode.getTomDato()))
+                .filter(i -> i.getInntekt() != null)
+                .map(OppgittFrilansInntektDto::getInntekt)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        FrisinnPeriodeDto dto = new FrisinnPeriodeDto();
+        dto.setFom(periode.getFomDato());
+        dto.setTom(periode.getTomDato());
+        dto.setStatusSøktFor(AktivitetStatus.FRILANSER);
+        dto.setOppgittInntekt(oppgittFrilansinntektIPeriode);
+        return Optional.of(dto);
     }
 
     private List<OpplystPeriodeDto> mapSøktePerider(BeregningsgrunnlagRestInput input) {

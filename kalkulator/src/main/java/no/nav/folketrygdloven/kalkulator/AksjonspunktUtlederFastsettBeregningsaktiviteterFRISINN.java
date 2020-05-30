@@ -31,7 +31,13 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
                         BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
                         BeregningVenteårsak.INGEN_PERIODE_UTEN_YTELSE,
-                        LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT)));
+                        LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)));
+            }
+            if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunktDefinisjon.INGEN_AKTIVITETER))) {
+                return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
+                        BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                        BeregningVenteårsak.INGEN_AKTIVITETER,
+                        LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)));
             }
         }
         return Collections.emptyList();

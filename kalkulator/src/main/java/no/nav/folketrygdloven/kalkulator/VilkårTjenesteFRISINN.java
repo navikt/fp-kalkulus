@@ -1,7 +1,10 @@
 package no.nav.folketrygdloven.kalkulator;
 
+import static no.nav.folketrygdloven.kalkulator.ytelse.frisinn.HarFrilansUtenInntekt.harKunFrilansUtenInntekt;
+
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,11 +13,11 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnl
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -22,85 +25,64 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
 
 
     @Override
-    public Optional<BeregningVilkårResultat> lagVilkårResultatFastsettBeregningsaktiviteter(BeregningsgrunnlagInput input, BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat) {
-
+    public List<BeregningVilkårResultat> lagVilkårResultatFordel(BeregningsgrunnlagInput input, BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat) {
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        if (beregningsgrunnlagRegelResultat.getAksjonspunkter().stream().anyMatch(bra -> bra.getBeregningAksjonspunktDefinisjon() == BeregningAksjonspunktDefinisjon.INGEN_AKTIVITETER)) {
-            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
-                return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT));
-            } else {
-                return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.FOR_LAVT_BG));
-            }
-        } else {
-            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && !frisinnGrunnlag.getSøkerYtelseForNæring()) {
-                if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag() != null) {
-                    if (beregningsgrunnlagRegelResultat.getBeregningsgrunnlag().getAktivitetStatuser().stream().noneMatch(as -> as.getAktivitetStatus().erFrilanser())) {
-                        return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT));
-                    }
-                }
-            }
+        BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .min(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
+                .orElseThrow();
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(førstePeriode.getBeregningsgrunnlagPeriodeFom(), AbstractIntervall.TIDENES_ENDE);
+        List<BeregningVilkårResultat> søktFLIngenInntektPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> harKunFrilansUtenInntekt(frisinnGrunnlag, p.getBeregningsgrunnlagPeriodeFom(), førstePeriode))
+                .map(p -> new BeregningVilkårResultat(false, Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT, p.getPeriode()))
+                .collect(Collectors.toList());
+        if (!søktFLIngenInntektPerioder.isEmpty()) {
+            return søktFLIngenInntektPerioder;
         }
-        return Optional.empty();
+        if (!beregningsgrunnlagRegelResultat.getVilkårOppfylt()) {
+            return List.of(new BeregningVilkårResultat(
+                    false,
+                    Vilkårsavslagsårsak.FOR_LAVT_BG,
+                    vilkårsperiode));
+
+        }
+        return List.of(new BeregningVilkårResultat(true, vilkårsperiode));
     }
 
     @Override
-    public Optional<BeregningVilkårResultat> lagVilkårResultatFullføre(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto) {
+    public List<BeregningVilkårResultat> lagVilkårResultatFullføre(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto) {
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        boolean harSøktFrilans = frisinnGrunnlag.getSøkerYtelseForFrilans();
-        boolean harSøktNæring = frisinnGrunnlag.getSøkerYtelseForNæring();
-        boolean harAvkortetSøktNæring = harAvkortetSøktNæring(input, beregningsgrunnlagDto, harSøktNæring);
-        boolean harAvkortetSøktFrilans = harAvkortetSøktFrilans(input, beregningsgrunnlagDto, harSøktFrilans);
+        return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p))
+                .map(p -> new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, p.getPeriode()))
+                .collect(Collectors.toList());
 
+    }
+
+    private boolean harAvkortetGrunnetAnnenInntekt(FrisinnGrunnlag frisinnGrunnlag, BeregningsgrunnlagPeriodeDto p) {
+        LocalDate fom = p.getBeregningsgrunnlagPeriodeFom();
+        boolean harSøktFrilans = frisinnGrunnlag.getSøkerYtelseForFrilans(fom);
+        boolean harSøktNæring = frisinnGrunnlag.getSøkerYtelseForNæring(fom);
+        boolean harAvkortetSøktNæring = harAvkortetSøktNæring(p, harSøktNæring);
+        boolean harAvkortetSøktFrilans = harAvkortetSøktFrilans(harSøktFrilans, p);
         if ((harSøktFrilans && harAvkortetSøktFrilans) && !harSøktNæring) {
-            return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT));
+            return true;
         }
-
         if ((harSøktNæring && harAvkortetSøktNæring) && !harSøktFrilans) {
-            return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT));
+            return true;
         }
-
         if (harAvkortetSøktFrilans && harAvkortetSøktNæring) {
-            return Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT));
-        }
-
-        return Optional.empty();
-    }
-
-    private boolean harAvkortetSøktNæring(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto,
-                                          boolean harSøktNæring) {
-        if (harSøktNæring) {
-            List<OppgittPeriodeInntekt> frilansSøktPerioder = input.getIayGrunnlag().getOppgittOpptjening()
-                    .stream()
-                    .flatMap(oo -> oo.getEgenNæring().stream())
-                    .filter(p -> p.getPeriode().getFomDato().isAfter(input.getSkjæringstidspunktOpptjening()))
-                    .collect(Collectors.toList());
-            return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder()
-                    .stream()
-                    .filter(p -> overlapperMinstEnPeriode(frilansSøktPerioder, p))
-                    .allMatch(this::harIkkeUtbetalingForNæring);
+            return true;
         }
         return false;
     }
 
-    private boolean harAvkortetSøktFrilans(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto,
-                                           boolean harSøktFrilans) {
-        if (harSøktFrilans) {
-            List<OppgittPeriodeInntekt> søktePerioder = input.getIayGrunnlag().getOppgittOpptjening()
-                    .stream()
-                    .flatMap(oo -> oo.getFrilans().stream())
-                    .flatMap(fl -> fl.getOppgittFrilansInntekt().stream())
-                    .filter(p -> p.getPeriode().getFomDato().isAfter(input.getSkjæringstidspunktOpptjening()))
-                    .collect(Collectors.toList());
-            return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder()
-                    .stream()
-                    .filter(p -> overlapperMinstEnPeriode(søktePerioder, p))
-                    .allMatch(this::harIkkeUtbetalingForFrilans);
-        }
-        return false;
+    private boolean harAvkortetSøktNæring(BeregningsgrunnlagPeriodeDto periode, boolean harSøktNæring) {
+        return harSøktNæring && harIkkeUtbetalingForNæring(periode);
     }
 
-    private boolean overlapperMinstEnPeriode(List<OppgittPeriodeInntekt> frilansSøktPerioder, BeregningsgrunnlagPeriodeDto p) {
-        return frilansSøktPerioder.stream().anyMatch(sp -> p.getPeriode().overlapper(sp.getPeriode()));
+    private boolean harAvkortetSøktFrilans(boolean harSøktFrilans, BeregningsgrunnlagPeriodeDto periode) {
+        return harSøktFrilans && harIkkeUtbetalingForFrilans(periode);
     }
 
     private Boolean harIkkeUtbetalingForFrilans(BeregningsgrunnlagPeriodeDto p) {

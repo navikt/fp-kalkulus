@@ -8,6 +8,9 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsg
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPRETTET;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +28,15 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
+import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
@@ -94,13 +101,7 @@ public class BeregningsgrunnlagTjeneste {
                 inputOppdatertMedBg,
                 erOverstyrt,
                 input.getFagsakYtelseType());
-        BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg)
-                .medAksjonspunkter(aksjonspunkter);
-
-        finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                .lagVilkårResultatFastsettBeregningsaktiviteter(input, beregningsgrunnlagRegelResultat)
-                .ifPresent(resultatBuilder::medVilkårResultat);
-
+        BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg).medAksjonspunkter(aksjonspunkter);
         resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), OPPRETTET);
         return resultatBuilder.build();
     }
@@ -110,9 +111,15 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
         Builder resultatBuilder = Builder.fra(input)
                 .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT);
-        finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                .lagVilkårResultatFullføre(input, fastsattBeregningsgrunnlag)
-                .ifPresent(resultatBuilder::medVilkårResultat);
+        List<BeregningVilkårResultat> vilkårResultatListe = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste).lagVilkårResultatFullføre(input, fastsattBeregningsgrunnlag);
+        resultatBuilder.medVilkårResultatListe(vilkårResultatListe).medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultatListe, input));
+        if (skalSettesPåVent(input)) {
+            resultatBuilder
+                    .medAksjonspunkter(List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
+                            BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                            BeregningVenteårsak.PERIODE_MED_AVSLAG,
+                            LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT))));
+        }
         return resultatBuilder
                 .build();
     }
@@ -121,14 +128,25 @@ public class BeregningsgrunnlagTjeneste {
         BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
-        BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                .lagVilkårResultatFordel(vilkårVurderingResultat);
-        if (Boolean.FALSE.equals(vilkårVurderingResultat.getVilkårOppfylt())) {
-            return BeregningResultatAggregat.Builder.fra(input)
-                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
-                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                    .medVilkårResultat(vilkårResultat)
-                    .build();
+        List<BeregningVilkårResultat> vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFordel(input, vilkårVurderingResultat);
+        if (vilkårResultat.stream().anyMatch(vr -> !vr.getErVilkårOppfylt())) {
+            if (skalSettesPåVent(input)) {
+                return BeregningResultatAggregat.Builder.fra(input)
+                        .medAksjonspunkter(List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
+                                BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                                BeregningVenteårsak.PERIODE_MED_AVSLAG,
+                                LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT))))
+                        .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                        .build();
+            } else {
+                return BeregningResultatAggregat.Builder.fra(input)
+                        .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
+                        .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                        .medVilkårResultatListe(vilkårResultat)
+                        .medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultat, input))
+                        .build();
+            }
         } else {
             var fordeltBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, vurdertBeregningsgrunnlag);
             BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
@@ -141,10 +159,22 @@ public class BeregningsgrunnlagTjeneste {
                     input.getInntektsmeldinger());
             return Builder.fra(input)
                     .medAksjonspunkter(aksjonspunkter)
-                    .medVilkårResultat(vilkårResultat)
                     .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                    .medVilkårResultatListe(vilkårResultat)
+                    .medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultat, input))
                     .build();
         }
+    }
+
+    private boolean skalSettesPåVent(BeregningsgrunnlagInput input) {
+        return false; // Returnerer false foreløpig.
+//        boolean gjelderFrisinn = input.getFagsakYtelseType().equals(FagsakYtelseType.FRISINN);
+//        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+//        LocalDate førsteMai = LocalDate.of(2020, 5, 1);
+//        boolean søkerForMai = frisinnGrunnlag.getFrisinnPerioder().stream().anyMatch(p ->
+//                (p.getSøkerFrilans() || p.getSøkerNæring())
+//                        && p.getPeriode().getTomDato().isAfter(førsteMai));
+//        return gjelderFrisinn && søkerForMai;
     }
 
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(BeregningsgrunnlagInput input) {
@@ -202,5 +232,17 @@ public class BeregningsgrunnlagTjeneste {
         return FagsakYtelseTypeRef.Lookup.find(instanser, fagsakYtelseType)
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for ytelse " + fagsakYtelseType.getKode()));
     }
+
+    private BeregningVilkårResultat finnEnkeltVilkårsresultat(List<BeregningVilkårResultat> beregningVilkårResultatListe, BeregningsgrunnlagInput input) {
+        if (beregningVilkårResultatListe.isEmpty()) {
+            return null;
+        }
+        Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
+        return avslåttVilkår
+                .map(beregningVilkårResultat -> new BeregningVilkårResultat(false, beregningVilkårResultat.getVilkårsavslagsårsak(), vilkårsperiode))
+                .orElseGet(() -> new BeregningVilkårResultat(true, vilkårsperiode));
+    }
+
 
 }

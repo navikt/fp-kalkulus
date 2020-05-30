@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
@@ -421,7 +422,9 @@ class MapInntektstakFRISINNTest {
     }
 
     private FrisinnGrunnlag frisinn(boolean søkerFL, boolean søkerSN) {
-        return new FrisinnGrunnlag(Collections.emptyList(), søkerFL, søkerSN);
+        Intervall periode = Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE);
+        FrisinnPeriode frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
+        return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode));
     }
 
     private BeregningsgrunnlagPrStatusOgAndel snAndel(long andelsnr, BigDecimal brutto, BeregningsgrunnlagPeriode periode) {

@@ -18,6 +18,8 @@ public class BeregningResultatAggregat {
 
     private BeregningVilkårResultat beregningVilkårResultat;
 
+    private List<BeregningVilkårResultat> beregningVilkårResultatListe;
+
     public List<BeregningAksjonspunktResultat> getBeregningAksjonspunktResultater() {
         return beregningAksjonspunktResultater;
     }
@@ -33,6 +35,10 @@ public class BeregningResultatAggregat {
 
     public BeregningVilkårResultat getBeregningVilkårResultat() {
         return beregningVilkårResultat;
+    }
+
+    public List<BeregningVilkårResultat> getBeregningVilkårResultatListe() {
+        return beregningVilkårResultatListe;
     }
 
     public static Builder builder() {
@@ -74,13 +80,8 @@ public class BeregningResultatAggregat {
             return this;
         }
 
-        public Builder medVilkårResultat(boolean erVilkårOppfylt) {
-            this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(erVilkårOppfylt);
-            return this;
-        }
-
-        public Builder medVilkårAvslått(Vilkårsavslagsårsak vilkårsavslagsårsak) {
-            this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(false, vilkårsavslagsårsak);
+        public Builder medVilkårResultatListe(List<BeregningVilkårResultat> vilkårResultat) {
+            this.kladd.beregningVilkårResultatListe = vilkårResultat;
             return this;
         }
 

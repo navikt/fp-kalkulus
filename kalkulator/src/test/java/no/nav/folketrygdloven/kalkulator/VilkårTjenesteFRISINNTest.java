@@ -1,16 +1,16 @@
 package no.nav.folketrygdloven.kalkulator;
 
-import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -42,15 +42,16 @@ class VilkårTjenesteFRISINNTest {
                 iayGrunnlag, null,
                 AktivitetGradering.INGEN_GRADERING, List.of(),
                 new FrisinnGrunnlag(List.of(),
-                        true,
-                        true));
+                        Collections.singletonList(
+                                new FrisinnPeriode(
+                                Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE), true, true))));
 
         // Act
-        Optional<BeregningVilkårResultat> beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);
+        List<BeregningVilkårResultat> beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);
 
         // Assert
-        assertThat(beregningVilkårResultat.isPresent()).isTrue();
-        assertThat(beregningVilkårResultat.get().getErVilkårOppfylt()).isFalse();
+        boolean finnesAvslåttVilkår = beregningVilkårResultat.stream().anyMatch(vr -> !vr.getErVilkårOppfylt());
+        assertThat(finnesAvslåttVilkår).isTrue();
     }
 
     private BeregningsgrunnlagDto lagBgMedAvkortetNæring() {

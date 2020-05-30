@@ -40,7 +40,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
         var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, oppdatertGrunnlag);
 
-        List<RegelResultat> regelResultater = kjørRegel(beregningsgrunnlagRegel);
+        List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
         boolean vilkårOppfylt = erVilkårOppfylt(regelResultater);
@@ -49,7 +49,7 @@ public class VurderBeregningsgrunnlagTjeneste {
         return beregningsgrunnlagRegelResultat;
     }
 
-    protected List<RegelResultat> kjørRegel(Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {
         String jsonInput = toJson(beregningsgrunnlagRegel);
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();

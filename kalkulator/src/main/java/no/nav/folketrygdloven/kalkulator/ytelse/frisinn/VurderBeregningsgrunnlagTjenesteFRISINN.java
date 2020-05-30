@@ -1,15 +1,19 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
@@ -25,7 +29,10 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
@@ -48,31 +55,47 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         if (!(input.getYtelsespesifiktGrunnlag() instanceof FrisinnGrunnlag)) {
             throw new IllegalStateException("Har ikke FRISINN grunnlag når frisinnvilkår skal vurderes");
         }
-        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.FL, frisinnGrunnlag.getSøkerYtelseForFrilans());
-        settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.SN, frisinnGrunnlag.getSøkerYtelseForNæring());
-
-        List<RegelResultat> regelResultater = kjørRegel(beregningsgrunnlagRegel);
+        List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
-        boolean vilkårOppfylt = erVilkårOppfylt(regelResultater);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, aksjonspunkter);
-        beregningsgrunnlagRegelResultat.setVilkårOppfylt(vilkårOppfylt);
+        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag));
         return beregningsgrunnlagRegelResultat;
     }
 
     @Override
-    protected List<RegelResultat> kjørRegel(Beregningsgrunnlag beregningsgrunnlagRegel) {
+    protected List<RegelResultat> kjørRegel(BeregningsgrunnlagInput input, Beregningsgrunnlag beregningsgrunnlagRegel) {
         String jsonInput = toJson(beregningsgrunnlagRegel);
         // Evaluerer hver BeregningsgrunnlagPeriode fra foreslått Beregningsgrunnlag
         List<RegelResultat> regelResultater = new ArrayList<>();
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {
+            LocalDate fom = periode.getBeregningsgrunnlagPeriode().getFom();
+            settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.FL, frisinnGrunnlag.getSøkerYtelseForFrilans(fom));
+            settSøktYtelseForStatus(beregningsgrunnlagRegel, AktivitetStatus.SN, frisinnGrunnlag.getSøkerYtelseForNæring(fom));
             RegelVurderBeregningsgrunnlagFRISINN regel = new RegelVurderBeregningsgrunnlagFRISINN(periode);
             Evaluation evaluation = regel.evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, jsonInput));
         }
         return regelResultater;
     }
+
+    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater, BeregningsgrunnlagDto beregningsgrunnlag) {
+        List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
+        Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();
+        for (var periode : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
+            BeregningVilkårResultat vilkårResultat = lagVilkårResultatForPeriode(regelResultatIterator.next(), periode.getPeriode());
+            vilkårsResultatListe.add(vilkårResultat);
+        }
+        return vilkårsResultatListe;
+    }
+
+    private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
+        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
+                .noneMatch(avslagskode -> avslagskode.equals("1041"));
+        return new BeregningVilkårResultat(erVilkårOppfylt, erVilkårOppfylt ? null : Vilkårsavslagsårsak.FOR_LAVT_BG, periode);
+    }
+
 
 
     public static void settSøktYtelseForStatus(Beregningsgrunnlag beregningsgrunnlagRegel, AktivitetStatus status, boolean erSøktYtelseFor) {

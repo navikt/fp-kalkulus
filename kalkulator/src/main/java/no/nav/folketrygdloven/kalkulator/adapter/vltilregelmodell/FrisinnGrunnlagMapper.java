@@ -1,12 +1,20 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jetbrains.annotations.NotNull;
+
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -17,8 +25,18 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
         if (!(input.getYtelsespesifiktGrunnlag() instanceof no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag)) {
             throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
         }
-        no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        return new FrisinnGrunnlag(frisinnGrunnlag.getSøkerYtelseForFrilans(), input.getSkjæringstidspunktOpptjening());
+        List<FrisinnPeriode> regelPerioder = mapFrisinnPerioder(input);
+        return new FrisinnGrunnlag(regelPerioder, input.getSkjæringstidspunktOpptjening());
     }
 
+    public static List<FrisinnPeriode> mapFrisinnPerioder(BeregningsgrunnlagInput input) {
+        no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        return frisinnGrunnlag.getFrisinnPerioder().stream()
+                .map(fg -> new FrisinnPeriode(mapPeriode(fg.getPeriode()), fg.getSøkerFrilans(), fg.getSøkerNæring()))
+                .collect(Collectors.toList());
+    }
+
+    private static Periode mapPeriode(Intervall periode) {
+        return new Periode(periode.getFomDato(), periode.getTomDato());
+    }
 }

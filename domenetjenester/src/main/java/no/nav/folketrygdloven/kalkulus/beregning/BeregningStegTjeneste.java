@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
@@ -32,6 +33,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.response.v1.Vilkårsperiode;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Vilkårsavslagsårsak;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
@@ -118,12 +120,29 @@ public class BeregningStegTjeneste {
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FASTSATT_INN);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, OPPDATERT_MED_REFUSJON_OG_GRADERING, FASTSATT_INN);
-        boolean vilkårResultat = getVilkårResultat(beregningResultatAggregat);
-        TilstandResponse tilstandResponse = mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
-        if (!vilkårResultat) {
-            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(beregningResultatAggregat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+        BeregningVilkårResultat vilkårResultat = beregningResultatAggregat.getBeregningVilkårResultat();
+        if (vilkårResultat == null) {
+            throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getBehandlingReferanse());
         }
-        return tilstandResponse.medVilkårResultat(vilkårResultat);
+        TilstandResponse tilstandResponse = mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        if (!vilkårResultat.getErVilkårOppfylt()) {
+            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(vilkårResultat.getVilkårsavslagsårsak().getKode()));
+        }
+        List<Vilkårsperiode> beregningVilkårResultat = beregningResultatAggregat.getBeregningVilkårResultatListe().stream()
+                .map(p -> new Vilkårsperiode(finnAvslagskode(p), p.getErVilkårOppfylt(), mapPeriode(p)))
+                .collect(Collectors.toList());
+        return tilstandResponse.medVilkårsperioder(beregningVilkårResultat).medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
+    }
+
+    private Vilkårsavslagsårsak finnAvslagskode(BeregningVilkårResultat p) {
+        if (p.getVilkårsavslagsårsak() == null) {
+            return null;
+        }
+        return new Vilkårsavslagsårsak(p.getVilkårsavslagsårsak().getKode());
+    }
+
+    private no.nav.folketrygdloven.kalkulus.felles.v1.Periode mapPeriode(BeregningVilkårResultat p) {
+        return new no.nav.folketrygdloven.kalkulus.felles.v1.Periode(p.getPeriode().getFomDato(), p.getPeriode().getTomDato());
     }
 
     /**
@@ -142,15 +161,17 @@ public class BeregningStegTjeneste {
             repository.lagre(koblingId, beregningsgrunnlagEntitet, FASTSATT);
         }
         TilstandResponse tilstandResponse = mapTilstandResponse(List.of());
-        if (beregningResultatAggregat.getBeregningVilkårResultat() != null) {
-            tilstandResponse.medVilkårResultat(beregningResultatAggregat.getBeregningVilkårResultat().getErVilkårOppfylt());
-            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(beregningResultatAggregat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+
+        BeregningVilkårResultat vilkårResultat = beregningResultatAggregat.getBeregningVilkårResultat();
+        List<Vilkårsperiode> beregningVilkårResultat = beregningResultatAggregat.getBeregningVilkårResultatListe().stream()
+                .map(p -> new Vilkårsperiode(finnAvslagskode(p), p.getErVilkårOppfylt(), mapPeriode(p)))
+                .collect(Collectors.toList());
+        tilstandResponse.medVilkårsperioder(beregningVilkårResultat);
+        if (vilkårResultat != null && !vilkårResultat.getErVilkårOppfylt()) {
+            tilstandResponse.medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
+            tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(vilkårResultat.getVilkårsavslagsårsak().getKode()));
         }
         return tilstandResponse;
-    }
-
-    private boolean getVilkårResultat(BeregningResultatAggregat beregningResultatAggregat) {
-        return beregningResultatAggregat.getBeregningVilkårResultat().getErVilkårOppfylt();
     }
 
     private List<BeregningAksjonspunktResultat> lagreOgKopier(BehandlingReferanse ref, BeregningResultatAggregat resultat) {

@@ -23,12 +23,10 @@ public class PeriodeMedSøkerInfoDto {
     private Periode periode;
 
     @JsonProperty(value = "søkerFrilansIPeriode", required = true)
-    @NotNull
     @Valid
     private Boolean søkerFrilansIPeriode;
 
     @JsonProperty(value = "søkerNæringIPeriode", required = true)
-    @NotNull
     @Valid
     private Boolean søkerNæringIPeriode;
 

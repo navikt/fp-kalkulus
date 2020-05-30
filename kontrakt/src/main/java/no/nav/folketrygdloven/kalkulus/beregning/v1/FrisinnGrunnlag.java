@@ -19,21 +19,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static final String YTELSE_TYPE = "FRISINN";
-
     /**
      * Er det søkt ytelse for frilansaktivitet
      */
     @JsonProperty("søkerYtelseForFrilans")
     @Valid
     @NotNull
+    @Deprecated // Fjernes herfra når vi har gått over til å bruke frisinnPerioder
     private Boolean søkerYtelseForFrilans;
+
     /**
      * Er det søkt ytelse for næringsinntekt
      */
-
     @JsonProperty("søkerYtelseForNæring")
     @Valid
     @NotNull
+    @Deprecated // Fjernes herfra når vi har gått over til å bruke frisinnPerioder
     private Boolean søkerYtelseForNæring;
 
     @Valid
@@ -48,6 +49,10 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     public FrisinnGrunnlag(@Valid @NotNull Boolean søkerYtelseForFrilans, @Valid @NotNull Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
         this.søkerYtelseForNæring = søkerYtelseForNæring;
+    }
+
+    public FrisinnGrunnlag(@Valid @Size(max = 20) List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo) {
+        this.perioderMedSøkerInfo = perioderMedSøkerInfo;
     }
 
     public FrisinnGrunnlag medPerioderMedSøkerInfo(List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo) {
@@ -74,8 +79,7 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     @Override
     public String toString() {
         return "FrisinnGrunnlag{" +
-                "søkerYtelseForFrilans=" + søkerYtelseForFrilans +
-                ", søkerYtelseForNæring=" + søkerYtelseForNæring +
+                "perioderMedSøkerInfo=" + perioderMedSøkerInfo +
                 '}';
     }
 }

@@ -48,7 +48,7 @@ public class FullføreBeregningsgrunnlagUtbgrad extends FullføreBeregningsgrunn
         return regelResultater;
     }
 
-    private void leggTilSporingerForFinnGrenseverdi(String input, List<String> sporingerFinnGrenseverdi, List<RegelResultat> regelResultater) {
+    protected void leggTilSporingerForFinnGrenseverdi(String input, List<String> sporingerFinnGrenseverdi, List<RegelResultat> regelResultater) {
         if (regelResultater.size() == sporingerFinnGrenseverdi.size()) {
             for (int i = 0; i < regelResultater.size(); i++) {
                 RegelResultat res = regelResultater.get(i);

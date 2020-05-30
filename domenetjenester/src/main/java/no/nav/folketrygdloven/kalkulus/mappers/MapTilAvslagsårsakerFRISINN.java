@@ -6,6 +6,7 @@ import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fri
 import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak.INGEN_FRILANS_I_PERIODE_UTEN_YTELSE;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +34,11 @@ public class MapTilAvslagsårsakerFRISINN {
         if (andel.getRedusertPrÅr() == null || andel.getRedusertPrÅr().compareTo(BigDecimal.ZERO) != 0) {
             return Optional.empty();
         }
-        if (andel.getAktivitetStatus().erFrilanser() && frisinnGrunnlag.getSøkerYtelseForFrilans()) {
+        LocalDate fomDato = andel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom();
+        if (andel.getAktivitetStatus().erFrilanser() && frisinnGrunnlag.getSøkerYtelseForFrilans(fomDato)) {
             return finnAvslagsårsakForFrilans(andel, andelerISammePeriode, oppgittOpptjening, grunnbeløp);
         }
-        if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende() && frisinnGrunnlag.getSøkerYtelseForNæring()) {
+        if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende() && frisinnGrunnlag.getSøkerYtelseForNæring(fomDato)) {
             return finnAvslagsårsakForNæring(andel, andelerISammePeriode, oppgittOpptjening, frisinnGrunnlag, grunnbeløp);
         }
         return Optional.empty();
@@ -109,12 +111,12 @@ public class MapTilAvslagsårsakerFRISINN {
             }
             BigDecimal løpendeInntektFrilans = finnLøpendeFrilansInntekt(andel, oppgittOpptjening);
             BigDecimal grunnlagMedLøpendeFrilans = grunnlagFraArbeid.add(løpendeInntektFrilans);
-            if (!frisinnGrunnlag.getSøkerYtelseForFrilans() && grunnlagMedLøpendeFrilans.compareTo(seksG) >= 0) {
+            if (!frisinnGrunnlag.getSøkerYtelseForFrilans(bgPeriode.getBeregningsgrunnlagPeriodeFom()) && grunnlagMedLøpendeFrilans.compareTo(seksG) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
             BigDecimal grunnlagFraFrilans = finnKompensasjonsgrunnlagFrilans(andelerISammePeriode);
             BigDecimal grunnlagMedKompensertFrilans = grunnlagFraArbeid.add(grunnlagFraFrilans);
-            if (frisinnGrunnlag.getSøkerYtelseForFrilans() && grunnlagMedKompensertFrilans.compareTo(seksG) >= 0) {
+            if (frisinnGrunnlag.getSøkerYtelseForFrilans(bgPeriode.getBeregningsgrunnlagPeriodeFom()) && grunnlagMedKompensertFrilans.compareTo(seksG) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
             return Optional.of(AVKORTET_GRUNNET_LØPENDE_INNTEKT);

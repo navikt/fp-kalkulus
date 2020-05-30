@@ -62,6 +62,8 @@ public enum BeregningVenteårsak implements Kodeverdi {
     VENT_MANGLENDE_ARBEIDSFORHOLD("VENT_MANGLENDE_ARBEIDSFORHOLD", "Sak settes på vent pga kommune- og fylkesammenslåing. Meld saken i Porten."),
 
     INGEN_PERIODE_UTEN_YTELSE("INGEN_PERIODE_UTEN_YTELSE", "FRISINN: Sak settes på vent fordi søker har ytelse de 3 siste årene."),
+    INGEN_AKTIVITETER("INGEN_AKTIVITETER", "FRISINN: Sak settes på vent fordi søker ikke har aktiviteter."),
+    PERIODE_MED_AVSLAG("PERIODE_MED_AVSLAG", "FRISINN: Sak settes på vent fordi søker har avslag på minst en periode."),
     ;
 
 

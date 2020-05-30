@@ -38,6 +38,9 @@ public class TilstandResponse {
     @Valid
     private Vilkårsavslagsårsak vilkårsavslagsårsak;
 
+    @JsonProperty("vilkårsperioder")
+    @Valid
+    private List<Vilkårsperiode> vilkårsperioder;
 
     public TilstandResponse() {
         // default ctor
@@ -53,6 +56,11 @@ public class TilstandResponse {
 
     public TilstandResponse medVilkårResultat(boolean resultat) {
         vilkarOppfylt = resultat;
+        return this;
+    }
+
+    public TilstandResponse medVilkårsperioder(List<Vilkårsperiode> vilkår) {
+        vilkårsperioder = vilkår;
         return this;
     }
 
@@ -79,5 +87,9 @@ public class TilstandResponse {
 
     public Vilkårsavslagsårsak getVilkårsavslagsårsak() {
         return vilkårsavslagsårsak;
+    }
+
+    public List<Vilkårsperiode> getVilkårsperioder() {
+        return vilkårsperioder;
     }
 }

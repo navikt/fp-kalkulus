@@ -36,6 +36,12 @@ public class FrisinnGrunnlagDto extends YtelsespesifiktGrunnlagDto {
     @Size(min = 1)
     private List<OpplystPeriodeDto> perioderSøktFor;
 
+    @Valid
+    @JsonProperty("frisinnPerioder")
+    @NotNull
+    @Size(min = 1)
+    private List<FrisinnPeriodeDto> frisinnPerioder;
+
     public FrisinnGrunnlagDto() {
         super();
     }
@@ -62,6 +68,14 @@ public class FrisinnGrunnlagDto extends YtelsespesifiktGrunnlagDto {
 
     public void setPerioderSøktFor(List<OpplystPeriodeDto> perioderSøktFor) {
         this.perioderSøktFor = perioderSøktFor;
+    }
+
+    public List<FrisinnPeriodeDto> getFrisinnPerioder() {
+        return frisinnPerioder;
+    }
+
+    public void setFrisinnPerioder(List<FrisinnPeriodeDto> frisinnPerioder) {
+        this.frisinnPerioder = frisinnPerioder;
     }
 }
 

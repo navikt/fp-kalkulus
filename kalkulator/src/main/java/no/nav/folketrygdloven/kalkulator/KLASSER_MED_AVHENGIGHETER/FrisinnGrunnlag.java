@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -10,14 +11,11 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
     private final int dekningsgrad = 80;
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
-    private final boolean søkerYtelseForFrilans;
-    private final boolean søkerYtelseForNæring;
+    private final List<FrisinnPeriode> frisinnPerioder;
 
-
-    public FrisinnGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, boolean søkerYtelseForFrilans, boolean søkerYtelseForNæring) {
+    public FrisinnGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, List<FrisinnPeriode> frisinnPerioder) {
         super(utbetalingsgradPrAktivitet);
-        this.søkerYtelseForFrilans = søkerYtelseForFrilans;
-        this.søkerYtelseForNæring = søkerYtelseForNæring;
+        this.frisinnPerioder = frisinnPerioder;
     }
 
 
@@ -37,10 +35,22 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
     }
 
     public boolean getSøkerYtelseForFrilans() {
-        return søkerYtelseForFrilans;
+        return frisinnPerioder.stream().anyMatch(FrisinnPeriode::getSøkerFrilans);
+    }
+
+    public boolean getSøkerYtelseForFrilans(LocalDate dato) {
+        return frisinnPerioder.stream().anyMatch(p -> p.getSøkerFrilans() && p.getPeriode().inkluderer(dato));
     }
 
     public boolean getSøkerYtelseForNæring() {
-        return søkerYtelseForNæring;
+        return frisinnPerioder.stream().anyMatch(FrisinnPeriode::getSøkerNæring);
+    }
+
+    public boolean getSøkerYtelseForNæring(LocalDate dato) {
+        return frisinnPerioder.stream().anyMatch(p -> p.getSøkerNæring() && p.getPeriode().inkluderer(dato));
+    }
+
+    public List<FrisinnPeriode> getFrisinnPerioder() {
+        return frisinnPerioder;
     }
 }

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,11 +50,12 @@ public class MapInntektstakFRISINN {
         BeregningsgrunnlagPrStatusOgAndel snAndel = andelOpt.get();
         IntervallEntitet bgPeriode = snAndel.getBeregningsgrunnlagPeriode().getPeriode();
 
-        if (frisinnGrunnlag.getSøkerYtelseForNæring() && harOppgittNæringsinntektForPeriode(bgPeriode, oppgittOpptjeningDto.get())) {
+        LocalDate fom = bgPeriode.getFomDato();
+        if (frisinnGrunnlag.getSøkerYtelseForNæring(fom) && harOppgittNæringsinntektForPeriode(bgPeriode, oppgittOpptjeningDto.get())) {
             BigDecimal seksG = gbeløp.multiply(ANTALL_G_GRENSEVERDI);
             BigDecimal atBrutto = bruttoArbeidsforhold(andeler);
             BigDecimal inntektstak = seksG.subtract(atBrutto);
-            if (!frisinnGrunnlag.getSøkerYtelseForFrilans()) {
+            if (!frisinnGrunnlag.getSøkerYtelseForFrilans(fom)) {
                 BigDecimal flBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erFrilanser())
                         .filter(a -> a.getBruttoPrÅr() != null)
                         .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
@@ -87,11 +89,12 @@ public class MapInntektstakFRISINN {
         }
         BeregningsgrunnlagPrStatusOgAndel flAndel = andelOpt.get();
         IntervallEntitet bgPeriode = flAndel.getBeregningsgrunnlagPeriode().getPeriode();
-        if (frisinnGrunnlag.getSøkerYtelseForFrilans() && erSøktYtelseForFLIPeriode(bgPeriode, oppgittOpptjeningDto.get())) {
+        LocalDate fom = bgPeriode.getFomDato();
+        if (frisinnGrunnlag.getSøkerYtelseForFrilans(fom) && erSøktYtelseForFLIPeriode(bgPeriode, oppgittOpptjeningDto.get())) {
             BigDecimal seksG = gbeløp.multiply(ANTALL_G_GRENSEVERDI);
             BigDecimal atBrutto = bruttoArbeidsforhold(andeler);
             BigDecimal inntektstak = seksG.subtract(atBrutto);
-            if (!frisinnGrunnlag.getSøkerYtelseForNæring()) {
+            if (!frisinnGrunnlag.getSøkerYtelseForNæring(fom)) {
                 BigDecimal snBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
                         .filter(a -> a.getBruttoPrÅr() != null)
                         .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
