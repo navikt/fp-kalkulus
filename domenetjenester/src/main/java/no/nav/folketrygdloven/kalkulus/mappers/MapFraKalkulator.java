@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +44,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -146,6 +146,11 @@ public class MapFraKalkulator {
     }
 
     private static List<FrisinnPeriode> mapFraKontrakt(no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag) {
+        //FIXME (Er tilfellet ved gamle saker på gamel kontrakt)
+        if (frisinnGrunnlag.getPerioderMedSøkerInfo() == null) {
+            return List.of(new FrisinnPeriode(Intervall.fraOgMedTilOgMed(AbstractIntervall.TIDENES_BEGYNNELSE, AbstractIntervall.TIDENES_ENDE), frisinnGrunnlag.getSøkerYtelseForFrilans(), frisinnGrunnlag.getSøkerYtelseForNæring()));
+        }
+
         return frisinnGrunnlag.getPerioderMedSøkerInfo().stream()
                 .map(p -> new FrisinnPeriode(Intervall.fraOgMedTilOgMed(p.getPeriode().getFom(), p.getPeriode().getTom()), p.getSøkerFrilansIPeriode(), p.getSøkerNæringIPeriode()))
                 .collect(Collectors.toList());
