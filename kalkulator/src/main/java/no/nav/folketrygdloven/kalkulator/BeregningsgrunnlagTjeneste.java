@@ -237,11 +237,16 @@ public class BeregningsgrunnlagTjeneste {
         if (beregningVilkårResultatListe.isEmpty()) {
             return null;
         }
-        Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
+        boolean erAvslått = beregningVilkårResultatListe.stream().noneMatch(BeregningVilkårResultat::getErVilkårOppfylt);
         Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
-        return avslåttVilkår
-                .map(beregningVilkårResultat -> new BeregningVilkårResultat(false, beregningVilkårResultat.getVilkårsavslagsårsak(), vilkårsperiode))
-                .orElseGet(() -> new BeregningVilkårResultat(true, vilkårsperiode));
+        if (erAvslått) {
+            Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
+            return avslåttVilkår
+                    .map(beregningVilkårResultat -> new BeregningVilkårResultat(false, beregningVilkårResultat.getVilkårsavslagsårsak(), vilkårsperiode))
+                    .orElseGet(() -> new BeregningVilkårResultat(true, vilkårsperiode));
+        } else {
+            return new BeregningVilkårResultat(true, vilkårsperiode);
+        }
     }
 
 
