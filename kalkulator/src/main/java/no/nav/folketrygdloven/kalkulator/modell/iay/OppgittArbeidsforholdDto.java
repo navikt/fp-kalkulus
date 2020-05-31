@@ -4,11 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.persistence.Convert;
-
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 /**
  * Entitetsklasse for oppgitte arbeidsforhold.
@@ -29,11 +25,11 @@ public class OppgittArbeidsforholdDto implements OppgittPeriodeInntekt {
         // hibernate
     }
 
-    public LocalDate getFraOgMed() {
+    public LocalDate getFom() {
         return periode.getFomDato();
     }
 
-    public LocalDate getTilOgMed() {
+    public LocalDate getTom() {
         return periode.getTomDato();
     }
 

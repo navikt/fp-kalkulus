@@ -66,7 +66,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
 
     private boolean harOppgittArbeidsinntektEtterSTP(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
         List<OppgittArbeidsforholdDto> oppgitteArbfor = oppgittOpptjening.map(OppgittOpptjeningDto::getOppgittArbeidsforhold).orElse(Collections.emptyList());
-        return oppgitteArbfor.stream().anyMatch(oa -> !oa.getFraOgMed().isBefore(opptjeningSkjæringstidspunkt));
+        return oppgitteArbfor.stream().anyMatch(oa -> !oa.getFom().isBefore(opptjeningSkjæringstidspunkt));
     }
 
     private boolean harOppgittFLEtterStpOpptjening(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {

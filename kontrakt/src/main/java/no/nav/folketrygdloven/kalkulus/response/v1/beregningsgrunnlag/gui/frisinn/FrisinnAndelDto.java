@@ -4,78 +4,60 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FrisinnPeriodeDto {
+public class FrisinnAndelDto {
 
     @Valid
-    @NotNull
-    @JsonProperty("fom")
-    private LocalDate fom;
-
-    @Valid
-    @JsonProperty("tom")
-    @NotNull
-    private LocalDate tom;
-
-    @Valid
-    @JsonProperty("oppgittArbeidsinntekt")
+    @JsonProperty("oppgittInntekt")
     @Digits(integer = 8, fraction = 2)
     @DecimalMin("0.00")
     @DecimalMax("10000000.00")
-    private BigDecimal oppgittArbeidsinntekt;
+    private BigDecimal oppgittInntekt;
 
     @Valid
-    @JsonProperty("frisinnAndeler")
+    @JsonProperty("statusSøktFor")
     @NotNull
-    @Size(min = 1)
-    private List<FrisinnAndelDto> frisinnAndeler;
+    private AktivitetStatus statusSøktFor;
 
-    public LocalDate getFom() {
-        return fom;
+    public FrisinnAndelDto() {
+        // Jackson
     }
 
-    public void setFom(LocalDate fom) {
-        this.fom = fom;
+    public FrisinnAndelDto(@Valid @Digits(integer = 8, fraction = 2) @DecimalMin("0.00") @DecimalMax("10000000.00") BigDecimal oppgittInntekt,
+                           @Valid @NotNull AktivitetStatus statusSøktFor) {
+        this.oppgittInntekt = oppgittInntekt;
+        this.statusSøktFor = statusSøktFor;
     }
 
-    public LocalDate getTom() {
-        return tom;
+    public BigDecimal getOppgittInntekt() {
+        return oppgittInntekt;
     }
 
-    public void setTom(LocalDate tom) {
-        this.tom = tom;
+    public void setOppgittInntekt(BigDecimal oppgittInntekt) {
+        this.oppgittInntekt = oppgittInntekt;
     }
 
-    public BigDecimal getOppgittArbeidsinntekt() {
-        return oppgittArbeidsinntekt;
+    public AktivitetStatus getStatusSøktFor() {
+        return statusSøktFor;
     }
 
-    public void setOppgittArbeidsinntekt(BigDecimal oppgittArbeidsinntekt) {
-        this.oppgittArbeidsinntekt = oppgittArbeidsinntekt;
-    }
-
-    public List<FrisinnAndelDto> getFrisinnAndeler() {
-        return frisinnAndeler;
-    }
-
-    public void setFrisinnAndeler(List<FrisinnAndelDto> frisinnAndeler) {
-        this.frisinnAndeler = frisinnAndeler;
+    public void setStatusSøktFor(AktivitetStatus statusSøktFor) {
+        this.statusSøktFor = statusSøktFor;
     }
 }
