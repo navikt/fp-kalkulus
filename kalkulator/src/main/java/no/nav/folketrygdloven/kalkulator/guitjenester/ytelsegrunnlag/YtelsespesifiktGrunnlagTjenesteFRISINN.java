@@ -95,7 +95,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         FrisinnPeriodeDto dto = new FrisinnPeriodeDto();
         dto.setFom(periode.getFomDato());
         dto.setTom(periode.getTomDato());
-        dto.setStatusSøktFor(AktivitetStatus.FRILANSER);
+        dto.setStatusSøktFor(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         dto.setOppgittInntekt(oppgittNæringsinntektIPerioden);
         return Optional.of(dto);
     }
