@@ -43,10 +43,10 @@ public class FrisinnGrunnlagDto extends YtelsespesifiktGrunnlagDto {
     private List<FrisinnPeriodeDto> frisinnPerioder;
 
     @Valid
-    @JsonProperty("AvslagsårsakPrPeriode")
+    @JsonProperty("avslagsårsakPrPeriode")
     @NotNull
-    @Size(min = 1)
-    private List<AvslagsårsakPrPeriodeDto> AvslagsårsakPrPeriode;
+    @Size()
+    private List<AvslagsårsakPrPeriodeDto> avslagsårsakPrPeriode;
 
     public FrisinnGrunnlagDto() {
         super();
@@ -85,11 +85,11 @@ public class FrisinnGrunnlagDto extends YtelsespesifiktGrunnlagDto {
     }
 
     public List<AvslagsårsakPrPeriodeDto> getAvslagsårsakPrPeriode() {
-        return AvslagsårsakPrPeriode;
+        return avslagsårsakPrPeriode;
     }
 
     public void setAvslagsårsakPrPeriode(List<AvslagsårsakPrPeriodeDto> avslagsårsakPrPeriode) {
-        AvslagsårsakPrPeriode = avslagsårsakPrPeriode;
+        this.avslagsårsakPrPeriode = avslagsårsakPrPeriode;
     }
 }
 

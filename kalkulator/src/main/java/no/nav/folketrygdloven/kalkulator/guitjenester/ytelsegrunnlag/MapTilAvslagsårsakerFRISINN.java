@@ -180,12 +180,18 @@ public class MapTilAvslagsårsakerFRISINN {
             return Optional.empty();
         }
 
+        LocalDate fom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
+        if (!frisinnGrunnlag.getSøkerYtelseForNæring(fom) && !frisinnGrunnlag.getSøkerYtelseForFrilans(fom)) {
+            return Optional.empty();
+        }
+
         if (oppgittOpptjening.isPresent()) {
+
             List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
             Set<Avslagsårsak> avslagsårsaker = andeler.stream()
                     .flatMap(a -> map(a, andeler, frisinnGrunnlag, oppgittOpptjening.get(), gbeløp, skjæringstidspunkt).stream())
                     .collect(Collectors.toSet());
-            if (beregningsgrunnlagPeriode.getRedusertPrÅr() == null && beregningsgrunnlagPeriode.getBeregnetPrÅr() != null) {
+            if (harForLavtBeregningsgrunnlag(frisinnGrunnlag, gbeløp, fom, andeler)){
                 if (avslagsårsaker.contains(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE)) {
                     return Optional.of(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE);
                 }
@@ -202,5 +208,25 @@ public class MapTilAvslagsårsakerFRISINN {
 
         return Optional.empty();
 
+    }
+
+    private static boolean harForLavtBeregningsgrunnlag(FrisinnGrunnlag frisinnGrunnlag, BigDecimal gbeløp, LocalDate fom, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+        BigDecimal grunnlagFraSøkteStatuser = BigDecimal.ZERO;
+        if (frisinnGrunnlag.getSøkerYtelseForFrilans(fom)) {
+            BigDecimal frilansBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erFrilanser())
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).findFirst().orElse(BigDecimal.ZERO);
+            grunnlagFraSøkteStatuser = grunnlagFraSøkteStatuser.add(frilansBrutto);
+        }
+        if (frisinnGrunnlag.getSøkerYtelseForNæring(fom)) {
+            BigDecimal næringBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr).findFirst().orElse(BigDecimal.ZERO);
+            grunnlagFraSøkteStatuser = grunnlagFraSøkteStatuser.add(næringBrutto);
+        }
+
+        BigDecimal antallGForOppfyltVilkår = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGForOppfyltVilkår();
+        if (grunnlagFraSøkteStatuser.compareTo(gbeløp.multiply(antallGForOppfyltVilkår)) < 0) {
+            return true;
+        }
+        return false;
     }
 }
