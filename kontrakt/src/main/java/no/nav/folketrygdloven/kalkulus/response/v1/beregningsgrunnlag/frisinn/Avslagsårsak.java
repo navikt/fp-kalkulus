@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public enum Avslagsårsak {
 
+    FOR_LAVT_BG("FOR_LAVT_BG"),
     INGEN_FRILANS_I_PERIODE_UTEN_YTELSE("INGEN_FRILANS_I_PERIODE_UTEN_YTELSE"),
     AVKORTET_GRUNNET_LØPENDE_INNTEKT("AVKORTET_GRUNNET_LØPENDE_INNTEKT"),
     AVKORTET_GRUNNET_ANNEN_INNTEKT("AVKORTET_GRUNNET_ANNEN_INNTEKT");

@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.FRISINNKonfig;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
@@ -62,8 +61,9 @@ public class MapBeregningsgrunnlagFRISINN {
                 a.getAktivitetStatus(), frisinnGrunnlag, oppgittOpptjening, gbeløp))
                 .reduce(BigDecimal::add)
                 .orElse(ANTALL_G_GRENSEVERDI.multiply(gbeløp));
+        List<BeregningsgrunnlagPrStatusOgAndelFRISINNDto> andeler = mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), oppgittOpptjening, frisinnGrunnlag, gbeløp);
         return new BeregningsgrunnlagPeriodeFRISINNDto(
-                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), oppgittOpptjening, frisinnGrunnlag, gbeløp),
+                andeler,
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 beregningsgrunnlagPeriode.getBruttoPrÅr(),
                 beregningsgrunnlagPeriode.getAvkortetPrÅr(),

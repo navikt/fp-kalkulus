@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.jetbrains.annotations.NotNull;
+
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
@@ -24,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.AvslagsårsakPrPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnPeriodeDto;
@@ -65,7 +68,21 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         Optional<OppgittOpptjeningDto> oppgitOpptjening = input.getIayGrunnlag().getOppgittOpptjening();
         oppgitOpptjening.ifPresent(oppgittOpptjeningDto -> frisinnGrunnlagDto.setFrisinnPerioder(mapFrisinnPerioder(frisinnGrunnlag.getFrisinnPerioder(), oppgittOpptjeningDto)));
 
+        frisinnGrunnlagDto.setAvslagsårsakPrPeriode(mapAvslagsårsakPerioder(input, frisinnGrunnlag, oppgitOpptjening));
+
         return frisinnGrunnlagDto;
+    }
+
+    @NotNull
+    private List<AvslagsårsakPrPeriodeDto> mapAvslagsårsakPerioder(BeregningsgrunnlagRestInput input, FrisinnGrunnlag frisinnGrunnlag, Optional<OppgittOpptjeningDto> oppgitOpptjening) {
+        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
+                    .map(periode -> new AvslagsårsakPrPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(),
+                            MapTilAvslagsårsakerFRISINN.finnForPeriode(periode, frisinnGrunnlag,
+                                    oppgitOpptjening,
+                                    input.getBeregningsgrunnlag().getGrunnbeløp().getVerdi(),
+                                    input.getSkjæringstidspunktForBeregning()).orElse(null)))
+                    .filter(a -> a.getAvslagsårsak() != null)
+                    .collect(Collectors.toList());
     }
 
     private List<FrisinnPeriodeDto> mapFrisinnPerioder(List<FrisinnPeriode> frisinnPerioder, OppgittOpptjeningDto oppgittOpptjening) {
