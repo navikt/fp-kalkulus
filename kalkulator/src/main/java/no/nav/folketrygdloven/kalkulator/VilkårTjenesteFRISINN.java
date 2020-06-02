@@ -31,22 +31,16 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
         BeregningsgrunnlagPeriodeDto førstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .min(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
                 .orElseThrow();
-        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(førstePeriode.getBeregningsgrunnlagPeriodeFom(), AbstractIntervall.TIDENES_ENDE);
         List<BeregningVilkårResultat> søktFLIngenInntektPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> harKunFrilansUtenInntekt(frisinnGrunnlag, p.getBeregningsgrunnlagPeriodeFom(), førstePeriode))
                 .map(p -> new BeregningVilkårResultat(false, Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT, p.getPeriode()))
                 .collect(Collectors.toList());
-        if (!søktFLIngenInntektPerioder.isEmpty()) {
-            return søktFLIngenInntektPerioder;
-        }
-        if (!beregningsgrunnlagRegelResultat.getVilkårOppfylt()) {
-            return List.of(new BeregningVilkårResultat(
-                    false,
-                    Vilkårsavslagsårsak.FOR_LAVT_BG,
-                    vilkårsperiode));
-
-        }
-        return List.of(new BeregningVilkårResultat(true, vilkårsperiode));
+        List<BeregningVilkårResultat> beregningVilkårListe = beregningsgrunnlagRegelResultat.getVilkårsresultat().stream()
+                .filter(p -> frisinnGrunnlag.getFrisinnPerioder().stream().anyMatch(fp -> fp.getPeriode().overlapper(p.getPeriode())))
+                .filter(vp -> søktFLIngenInntektPerioder.stream().noneMatch(p -> p.getPeriode().overlapper(vp.getPeriode())))
+                .collect(Collectors.toList());
+        beregningVilkårListe.addAll(søktFLIngenInntektPerioder);
+        return beregningVilkårListe;
     }
 
     @Override

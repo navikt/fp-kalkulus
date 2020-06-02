@@ -128,10 +128,7 @@ public class BeregningStegTjeneste {
         if (!vilkårResultat.getErVilkårOppfylt()) {
             tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(vilkårResultat.getVilkårsavslagsårsak().getKode()));
         }
-        List<Vilkårsperiode> beregningVilkårResultat = beregningResultatAggregat.getBeregningVilkårResultatListe().stream()
-                .map(p -> new Vilkårsperiode(finnAvslagskode(p), p.getErVilkårOppfylt(), mapPeriode(p)))
-                .collect(Collectors.toList());
-        return tilstandResponse.medVilkårsperioder(beregningVilkårResultat).medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
+        return tilstandResponse.medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
     }
 
     private Vilkårsavslagsårsak finnAvslagskode(BeregningVilkårResultat p) {
@@ -163,10 +160,6 @@ public class BeregningStegTjeneste {
         TilstandResponse tilstandResponse = mapTilstandResponse(List.of());
 
         BeregningVilkårResultat vilkårResultat = beregningResultatAggregat.getBeregningVilkårResultat();
-        List<Vilkårsperiode> beregningVilkårResultat = beregningResultatAggregat.getBeregningVilkårResultatListe().stream()
-                .map(p -> new Vilkårsperiode(finnAvslagskode(p), p.getErVilkårOppfylt(), mapPeriode(p)))
-                .collect(Collectors.toList());
-        tilstandResponse.medVilkårsperioder(beregningVilkårResultat);
         if (vilkårResultat != null && !vilkårResultat.getErVilkårOppfylt()) {
             tilstandResponse.medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
             tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(vilkårResultat.getVilkårsavslagsårsak().getKode()));

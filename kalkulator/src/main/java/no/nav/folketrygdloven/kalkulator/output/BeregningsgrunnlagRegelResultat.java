@@ -49,4 +49,8 @@ public class BeregningsgrunnlagRegelResultat {
     public void setVilkårsresultat(List<BeregningVilkårResultat> vilkårsresultat) {
         this.vilkårsresultat = vilkårsresultat;
     }
+
+    public List<BeregningVilkårResultat> getVilkårsresultat() {
+        return vilkårsresultat;
+    }
 }

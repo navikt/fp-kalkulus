@@ -34,6 +34,8 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.refusjon.BeregningRefusjonAksjonspunktutleder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FinnEnkeltVilkårsresultat;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.SkalAvslagSettesPåVent;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
@@ -112,8 +114,8 @@ public class BeregningsgrunnlagTjeneste {
         Builder resultatBuilder = Builder.fra(input)
                 .medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT);
         List<BeregningVilkårResultat> vilkårResultatListe = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste).lagVilkårResultatFullføre(input, fastsattBeregningsgrunnlag);
-        resultatBuilder.medVilkårResultatListe(vilkårResultatListe).medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultatListe, input));
-        if (skalSettesPåVent(input)) {
+        resultatBuilder.medVilkårResultat(FinnEnkeltVilkårsresultat.finnEnkeltVilkårsresultatFastsett(vilkårResultatListe, input));
+        if (SkalAvslagSettesPåVent.skalSettesPåVent(input)) {
             resultatBuilder
                     .medAksjonspunkter(List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
                             BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
@@ -131,7 +133,7 @@ public class BeregningsgrunnlagTjeneste {
         List<BeregningVilkårResultat> vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
                 .lagVilkårResultatFordel(input, vilkårVurderingResultat);
         if (vilkårResultat.stream().anyMatch(vr -> !vr.getErVilkårOppfylt())) {
-            if (skalSettesPåVent(input)) {
+            if (SkalAvslagSettesPåVent.skalSettesPåVent(input)) {
                 return BeregningResultatAggregat.Builder.fra(input)
                         .medAksjonspunkter(List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
                                 BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
@@ -143,7 +145,6 @@ public class BeregningsgrunnlagTjeneste {
                 return BeregningResultatAggregat.Builder.fra(input)
                         .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
                         .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                        .medVilkårResultatListe(vilkårResultat)
                         .medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultat, input))
                         .build();
             }
@@ -160,21 +161,9 @@ public class BeregningsgrunnlagTjeneste {
             return Builder.fra(input)
                     .medAksjonspunkter(aksjonspunkter)
                     .medBeregningsgrunnlag(fordeltBeregningsgrunnlag, OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                    .medVilkårResultatListe(vilkårResultat)
                     .medVilkårResultat(finnEnkeltVilkårsresultat(vilkårResultat, input))
                     .build();
         }
-    }
-
-    private boolean skalSettesPåVent(BeregningsgrunnlagInput input) {
-        return false; // Returnerer false foreløpig.
-//        boolean gjelderFrisinn = input.getFagsakYtelseType().equals(FagsakYtelseType.FRISINN);
-//        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-//        LocalDate førsteMai = LocalDate.of(2020, 5, 1);
-//        boolean søkerForMai = frisinnGrunnlag.getFrisinnPerioder().stream().anyMatch(p ->
-//                (p.getSøkerFrilans() || p.getSøkerNæring())
-//                        && p.getPeriode().getTomDato().isAfter(førsteMai));
-//        return gjelderFrisinn && søkerForMai;
     }
 
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(BeregningsgrunnlagInput input) {
