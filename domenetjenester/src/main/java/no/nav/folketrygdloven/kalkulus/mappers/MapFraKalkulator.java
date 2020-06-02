@@ -1,10 +1,13 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,10 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -50,6 +57,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnAndelDto;
 
 public class MapFraKalkulator {
 
@@ -134,7 +142,7 @@ public class MapFraKalkulator {
             case FRISINN:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag;
                 return new FrisinnGrunnlag(UtbetalingsgradMapperFRISINN.map(iayGrunnlag, beregningsgrunnlagGrunnlagEntitet),
-                        mapFraKontrakt(frisinnGrunnlag));
+                        mapFraKontrakt(frisinnGrunnlag, iayGrunnlag.getOppgittOpptjening()));
             case OMSORGSPENGER:
                 OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
                 no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
@@ -145,10 +153,10 @@ public class MapFraKalkulator {
         }
     }
 
-    private static List<FrisinnPeriode> mapFraKontrakt(no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag) {
+    private static List<FrisinnPeriode> mapFraKontrakt(no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
         //FIXME (Er tilfellet ved gamle saker på gamel kontrakt)
         if (frisinnGrunnlag.getPerioderMedSøkerInfo() == null) {
-            return List.of(new FrisinnPeriode(Intervall.fraOgMedTilOgMed(AbstractIntervall.TIDENES_BEGYNNELSE, AbstractIntervall.TIDENES_ENDE), frisinnGrunnlag.getSøkerYtelseForFrilans(), frisinnGrunnlag.getSøkerYtelseForNæring()));
+            return MapGammeltFrisinngrunnlag.map(frisinnGrunnlag, oppgittOpptjening);
         }
 
         return frisinnGrunnlag.getPerioderMedSøkerInfo().stream()
