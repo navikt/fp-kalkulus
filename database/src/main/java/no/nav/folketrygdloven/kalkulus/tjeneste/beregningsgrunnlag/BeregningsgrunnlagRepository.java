@@ -309,10 +309,8 @@ public class BeregningsgrunnlagRepository {
     }
 
     public void deaktiverKalkulatorInput(Long koblingId) {
-        KalkulatorInputEntitet kalkulatorInputEntitet = hentKalkulatorInput(koblingId);
-        kalkulatorInputEntitet.setAktiv(false);
-        entityManager.persist(kalkulatorInputEntitet);
-        entityManager.flush();
+        Optional<KalkulatorInputEntitet> kalkulatorInputEntitet = hentHvisEksitererKalkulatorInput(koblingId);
+        kalkulatorInputEntitet.ifPresent(this::deaktiverKalkulatorInput);
     }
 
 
@@ -323,6 +321,12 @@ public class BeregningsgrunnlagRepository {
 
     private void deaktiverBeregningsgrunnlagGrunnlagEntitet(BeregningsgrunnlagGrunnlagEntitet entitet) {
         setAktivOgLagre(entitet, false);
+    }
+
+    private void deaktiverKalkulatorInput(KalkulatorInputEntitet entitet){
+        entitet.setAktiv(false);
+        entityManager.persist(entitet);
+        entityManager.flush();
     }
 
     private void setAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
