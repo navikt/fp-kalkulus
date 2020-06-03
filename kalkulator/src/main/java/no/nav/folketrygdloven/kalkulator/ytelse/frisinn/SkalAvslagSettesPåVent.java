@@ -1,6 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 
 public class SkalAvslagSettesPåVent {
 
@@ -17,6 +25,13 @@ public class SkalAvslagSettesPåVent {
 //                (p.getSøkerFrilans() || p.getSøkerNæring())
 //                        && p.getPeriode().getTomDato().isAfter(førsteMai));
 //        return gjelderFrisinn && søkerForMai;
+    }
+
+    public static List<BeregningAksjonspunktResultat> avslagPåVent() {
+        return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
+                BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                BeregningVenteårsak.PERIODE_MED_AVSLAG,
+                LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)));
     }
 
 

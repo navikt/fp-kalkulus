@@ -7,7 +7,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 public class BeregningsgrunnlagRegelResultat {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private List<BeregningAksjonspunktResultat> aksjonspunkter;
-    private Boolean vilkårOppfylt;
     private List<BeregningVilkårResultat> vilkårsresultat;
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, List<BeregningAksjonspunktResultat> aksjonspunktResultatListe) {
@@ -31,20 +30,13 @@ public class BeregningsgrunnlagRegelResultat {
 
     public Boolean getVilkårOppfylt() {
 
-        if (vilkårOppfylt != null) {
-            return vilkårOppfylt;
-        }
-
         if (vilkårsresultat != null) {
             return vilkårsresultat.stream().allMatch(BeregningVilkårResultat::getErVilkårOppfylt);
         }
 
-        return vilkårOppfylt;
+        return null;
     }
 
-    public void setVilkårOppfylt(Boolean vilkårOppfylt) {
-        this.vilkårOppfylt = vilkårOppfylt;
-    }
 
     public void setVilkårsresultat(List<BeregningVilkårResultat> vilkårsresultat) {
         this.vilkårsresultat = vilkårsresultat;

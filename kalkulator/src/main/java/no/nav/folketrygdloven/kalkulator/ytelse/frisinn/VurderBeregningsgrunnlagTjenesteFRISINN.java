@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -39,6 +38,8 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef("FRISINN")
 public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgrunnlagTjeneste {
 
+    public static final String FRILANS_UTEN_INNTEKT_MERKNAD = "FRILANS_UTEN_INNTEKT";
+
     public VurderBeregningsgrunnlagTjenesteFRISINN() {
         // CDI
     }
@@ -59,7 +60,8 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, aksjonspunkter);
-        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag));
+        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag,
+                input.getYtelsespesifiktGrunnlag()));
         return beregningsgrunnlagRegelResultat;
     }
 
@@ -80,22 +82,40 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         return regelResultater;
     }
 
-    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
+                                                                    BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                    FrisinnGrunnlag frisinnGrunnlag) {
         List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
         Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();
         for (var periode : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
             BeregningVilkårResultat vilkårResultat = lagVilkårResultatForPeriode(regelResultatIterator.next(), periode.getPeriode());
-            vilkårsResultatListe.add(vilkårResultat);
+            LocalDate fom = periode.getBeregningsgrunnlagPeriodeFom();
+            if (frisinnGrunnlag.getSøkerYtelseForFrilans(fom) || frisinnGrunnlag.getSøkerYtelseForNæring(fom)) {
+                vilkårsResultatListe.add(vilkårResultat);
+            }
         }
         return vilkårsResultatListe;
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
         boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
-                .noneMatch(avslagskode -> avslagskode.equals("1041"));
-        return new BeregningVilkårResultat(erVilkårOppfylt, erVilkårOppfylt ? null : Vilkårsavslagsårsak.FOR_LAVT_BG, periode);
+                .noneMatch(avslagskode -> FOR_LAVT_BG_MERKNAD.equals(avslagskode) || FRILANS_UTEN_INNTEKT_MERKNAD.equals(avslagskode));
+        return new BeregningVilkårResultat(erVilkårOppfylt, finnAvslagsårsak(regelResultat), periode);
     }
 
+    private Vilkårsavslagsårsak finnAvslagsårsak(RegelResultat regelResultat) {
+        boolean frilansUtenInntekt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
+                .anyMatch(FRILANS_UTEN_INNTEKT_MERKNAD::equals);
+        if (frilansUtenInntekt) {
+            return Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT;
+        }
+        boolean harForLavtBG = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
+                .anyMatch(FOR_LAVT_BG_MERKNAD::equals);
+        if (harForLavtBG) {
+            return Vilkårsavslagsårsak.FOR_LAVT_BG;
+        }
+        return null;
+    }
 
 
     public static void settSøktYtelseForStatus(Beregningsgrunnlag beregningsgrunnlagRegel, AktivitetStatus status, boolean erSøktYtelseFor) {

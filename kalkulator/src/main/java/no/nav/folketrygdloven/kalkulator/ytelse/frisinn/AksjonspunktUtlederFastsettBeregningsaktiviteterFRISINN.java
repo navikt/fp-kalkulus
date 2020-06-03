@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator;
+package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import no.nav.folketrygdloven.kalkulator.AksjonspunktUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;

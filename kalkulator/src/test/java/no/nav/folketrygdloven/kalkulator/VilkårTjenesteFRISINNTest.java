@@ -22,8 +22,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.VilkårTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 class VilkårTjenesteFRISINNTest {
@@ -47,7 +47,7 @@ class VilkårTjenesteFRISINNTest {
                                 Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE), true, true))));
 
         // Act
-        List<BeregningVilkårResultat> beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);
+        var beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);
 
         // Assert
         boolean finnesAvslåttVilkår = beregningVilkårResultat.stream().anyMatch(vr -> !vr.getErVilkårOppfylt());
