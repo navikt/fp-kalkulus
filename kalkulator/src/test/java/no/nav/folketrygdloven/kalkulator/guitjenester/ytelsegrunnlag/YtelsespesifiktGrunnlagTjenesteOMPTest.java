@@ -133,7 +133,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medRegisterAktiviteter(beregningAktiviteter)
                 .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
 
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
+        LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
         UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,

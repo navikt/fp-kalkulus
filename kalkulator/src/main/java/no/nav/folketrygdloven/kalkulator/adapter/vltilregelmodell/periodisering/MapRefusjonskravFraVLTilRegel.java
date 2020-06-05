@@ -50,10 +50,11 @@ public class MapRefusjonskravFraVLTilRegel {
     }
 
     static List<Refusjonskrav> periodiserGradertRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
-                                                               List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader) {
+                                                               List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader,
+                                                               LocalDate stp) {
         Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
         Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
-        Optional<PeriodeMedUtbetalingsgradDto> førsteUtbetalingsperiode = finnFørsteUtbetalingsgradPeriode(utbetalingsgrader);
+        Optional<PeriodeMedUtbetalingsgradDto> førsteUtbetalingsperiode = finnFørsteUtbetalingsgradPeriode(utbetalingsgrader, stp);
         BigDecimal utbetalingsgradVedStart = førsteUtbetalingsperiode.map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
                 .map(g -> g.divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_EVEN)).orElse(BigDecimal.ZERO);
         LocalDate startdatoPermisjon = førsteUtbetalingsperiode.map(PeriodeMedUtbetalingsgradDto::getPeriode).map(Intervall::getFomDato).orElse(TIDENES_ENDE);
@@ -84,8 +85,9 @@ public class MapRefusjonskravFraVLTilRegel {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private static Optional<PeriodeMedUtbetalingsgradDto> finnFørsteUtbetalingsgradPeriode(List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader) {
+    private static Optional<PeriodeMedUtbetalingsgradDto> finnFørsteUtbetalingsgradPeriode(List<PeriodeMedUtbetalingsgradDto> utbetalingsgrader, LocalDate stp) {
         return utbetalingsgrader.stream()
+                .filter(ugr -> ugr.getPeriode().inkluderer(stp))
                 .min(Comparator.comparing(u -> u.getPeriode().getFomDato()));
 
     }
@@ -127,7 +129,7 @@ public class MapRefusjonskravFraVLTilRegel {
             if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
                 UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag;
                 var utbetalingsgrader = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(inntektsmeldingerSomSkalBruke.getArbeidsgiver(), inntektsmeldingerSomSkalBruke.getArbeidsforholdRef());
-                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserGradertRefusjonsbeløp(inntektsmeldingerSomSkalBruke, utbetalingsgrader));
+                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserGradertRefusjonsbeløp(inntektsmeldingerSomSkalBruke, utbetalingsgrader, stp));
             } else {
                 // Usikker på om vi trenger dette ettersom det kun brukes for omsorgspenger som alltid vil vere eit utbetalingsgradgrunnlag
                 refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp));

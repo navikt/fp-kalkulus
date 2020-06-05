@@ -69,7 +69,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
+        LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
         UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
@@ -115,7 +115,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .medBeregnetPrÅr(BigDecimal.valueOf(1_200_000))
                 .build(bgPeriode);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
+        LocalDate PeriodeFom =SKJÆRINGSTIDSPUNKT;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
         UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
