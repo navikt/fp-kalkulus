@@ -65,7 +65,7 @@ public class MapTilAvslagsårsakerFRISINN {
         if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
             return Optional.of(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE);
         }
-        if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getAvkortetPrÅr() != null && andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
             BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
             BigDecimal grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
             BigDecimal seksG = grunnbeløp.multiply(antallGØvreGrenseverdi);
