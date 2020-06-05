@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,7 @@ public class MapBeregningsgrunnlag {
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom()),
+                mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom()),
                 new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
                 beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
@@ -105,6 +106,13 @@ public class MapBeregningsgrunnlag {
                 new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel)
                 );
+    }
+
+    private static Periode mapBeregningsperiode(LocalDate fom, LocalDate tom) {
+        if (fom == null && tom == null) {
+            return null;
+        }
+        return new Periode(fom, tom);
     }
 
     private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {

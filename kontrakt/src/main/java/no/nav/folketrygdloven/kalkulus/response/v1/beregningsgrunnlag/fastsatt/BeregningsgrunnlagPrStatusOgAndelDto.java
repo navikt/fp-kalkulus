@@ -37,7 +37,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private AktivitetStatus aktivitetStatus;
 
     @JsonProperty(value = "beregningsperiode")
-    @NotNull
     @Valid
     private Periode beregningsperiode;
 
@@ -96,7 +95,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
     public BeregningsgrunnlagPrStatusOgAndelDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
-                                                @NotNull @Valid Periode beregningsperiode,
+                                                @Valid Periode beregningsperiode,
                                                 @NotNull @Valid OpptjeningAktivitetType arbeidsforholdType,
                                                 @NotNull @Valid BigDecimal bruttoPrÅr,
                                                 @NotNull @Valid BigDecimal redusertRefusjonPrÅr,
