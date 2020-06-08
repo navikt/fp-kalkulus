@@ -79,7 +79,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medRegisterAktiviteter(beregningAktiviteter)
                 .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.FORESLÅTT);
 
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
+        LocalDate PeriodeFom =ANDEL_FOM;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
         UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
@@ -91,8 +91,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medBeløp(beregnet)
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
-        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
-                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
+                .medSkjæringstidspunktOpptjening(ANDEL_FOM).build();
         BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
 
         var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse),

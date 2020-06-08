@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -180,7 +181,7 @@ public class FastsettGrunnlagOmsorgspengerTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
-        LocalDate PeriodeFom =LocalDate.of(2020,01,26);
+        LocalDate PeriodeFom =ANDEL_FOM;
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(PeriodeFom,
                 PeriodeFom.plusMonths(1)), BigDecimal.valueOf(100));
         UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver,
@@ -188,12 +189,12 @@ public class FastsettGrunnlagOmsorgspengerTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
-                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(30)))
-                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12)))
+                .medRefusjon(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(30), RoundingMode.HALF_EVEN))
+                .medBeløp(BRUTTO_PR_AAR.divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN))
                 .medArbeidsgiver(arbeidsgiver)
                 .build();
-        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
-                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
+        Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
+                .medSkjæringstidspunktOpptjening(ANDEL_FOM).build();
         BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
         var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
