@@ -106,6 +106,30 @@ public class RefusjonOgGraderingTjenesteTest {
     }
 
     @Test
+    public void returnererFalseForArbeidsforholdSomStarterPåSkjæringstidspunktSomAlleredeErFordelt() {
+        // Arrange
+        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .build();
+        BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), null)
+                .build(bg);
+        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                        .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3))
+                        .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(5))
+                        .medArbeidsgiver(arbeidsgiver1)
+                        .medRefusjonskravPrÅr(BigDecimal.valueOf(10000)))
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medFordeltPrÅr(BigDecimal.valueOf(10000))
+                .build(periode2);
+        // Act
+        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
+        // Assert
+        assertThat(tilkomEtter).isFalse();
+    }
+
+    @Test
     public void returnererTrueForFLMedGraderingSomTilkommer() {
         // Arrange
         BeregningsgrunnlagDto bg = lagBg();

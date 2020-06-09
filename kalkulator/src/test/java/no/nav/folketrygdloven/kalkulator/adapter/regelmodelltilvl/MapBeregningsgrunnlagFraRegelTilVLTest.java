@@ -68,7 +68,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         final BeregningsgrunnlagDto vlBG = buildVLBG();
 
         List<RegelResultat> regelresultater = List.of(new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing"));
-        final BeregningsgrunnlagDto mappedBG = MapBeregningsgrunnlagFraRegelTilVL
+        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
             .mapFastsettBeregningsgrunnlag(buildRegelBGForSN(), regelresultater, vlBG);
 
         assertThat(mappedBG).isNotSameAs(vlBG);
@@ -93,7 +93,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         List<RegelResultat> regelresultater = List.of(new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing"));
 
         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag = buildRegelBGForAT();
-        final BeregningsgrunnlagDto mappedBG = MapBeregningsgrunnlagFraRegelTilVL
+        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
             .mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG);
 
         final BeregningsgrunnlagPeriodeDto vlBGP = mappedBG.getBeregningsgrunnlagPerioder()
@@ -111,7 +111,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     public void testMappingBGForATFLogSN() {
         final BeregningsgrunnlagDto vlBG = buildVLBGForATFLogSN();
         List<RegelResultat> regelresultater = List.of(new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing"));
-        final BeregningsgrunnlagDto mappedBG = MapBeregningsgrunnlagFraRegelTilVL
+        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
             .mapFastsettBeregningsgrunnlag(buildRegelBGForATFLogSN(), regelresultater, vlBG);
 
         final BeregningsgrunnlagPeriodeDto vlBGP = mappedBG.getBeregningsgrunnlagPerioder()
@@ -220,7 +220,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag = buildRegelBGForAT();
 
         //Act
-        final var mappedBG = MapBeregningsgrunnlagFraRegelTilVL.mapFastsettBeregningsgrunnlag(resultatGrunnlag, List.of(regelResultat), vlBG);
+        final var mappedBG = new MapBeregningsgrunnlagFraRegelTilVL().mapFastsettBeregningsgrunnlag(resultatGrunnlag, List.of(regelResultat), vlBG);
 
         //Assert
         final var vlPeriode = mappedBG.getBeregningsgrunnlagPerioder().get(0);
@@ -237,7 +237,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         List<RegelResultat> regelresultater = List.of(new RegelResultat(ResultatBeregningType.BEREGNET, "input", "sporing"));
 
         no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag = buildRegelBGForFL();
-        final BeregningsgrunnlagDto mappedBG = MapBeregningsgrunnlagFraRegelTilVL
+        final BeregningsgrunnlagDto mappedBG = new MapBeregningsgrunnlagFraRegelTilVL()
             .mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG);
 
         assertVLSammenligningsgrunnlagPrStatus(mappedBG.getSammenligningsgrunnlagPrStatusListe().get(0), SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -253,7 +253,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             .medSammenligningsgrunnlagPrStatus(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.UDEFINERT, buildRegelSammenligningsG()).build();
 
         assertThatThrownBy(() ->
-                MapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG))
+                new MapBeregningsgrunnlagFraRegelTilVL().mapForeslåBeregningsgrunnlag(resultatGrunnlag, regelresultater, vlBG))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

@@ -51,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.konfig.Tid;
 
@@ -165,6 +166,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                    .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medBeregnetPrÅr(orgnrs.get(orgnr))
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(arbeidsgiver)

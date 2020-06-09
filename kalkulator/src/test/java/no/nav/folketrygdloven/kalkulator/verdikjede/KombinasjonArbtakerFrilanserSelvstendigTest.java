@@ -75,7 +75,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
     public void toArbeidsforholdOgFrilansMedBgOver6gOgRefusjonUnder6G() {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 28000d, 12 * 14_000d);
-        final List<Double> refusjonsKrav = List.of(12 * 20000d, 12 * 15_000d);
+        final List<Double> refusjonsKrav = List.of(12 * 20000d, 12 * 14_000d);
         final Double frilansÅrsinntekt = 12 * 23000d;
 
         final double årsinntekt1 = 4.0 * GrunnbeløpMock.finnGrunnbeløpsnitt(LocalDate.of(2014, Month.JANUARY, 1));

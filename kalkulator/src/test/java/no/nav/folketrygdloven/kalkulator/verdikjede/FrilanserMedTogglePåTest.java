@@ -84,7 +84,7 @@ public class FrilanserMedTogglePåTest {
     public void toArbeidsforholdOgFrilansMedBgOver6gOgRefusjonUnder6G() {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 28_000d, 12 * 14_000d);
-        final List<Double> refusjonsKrav = List.of(12 * 20_000d, 12 * 15_000d);
+        final List<Double> refusjonsKrav = List.of(12 * 20_000d, 12 * 14_000d);
         final double sammenligning = 12 * 67_500d;
         final double frilansÅrsinntekt = 12 * 23_000d;
 
@@ -187,7 +187,7 @@ public class FrilanserMedTogglePåTest {
     public void treArbeidsforholdOgFrilansMedBgUnder6gOgRefusjonUnder6G() {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 13_000d, 12 * 12_000d, 12 * 8_000d);
-        final List<Double> refusjonsKrav = List.of(12 * 15_500d, 12 * 9_000d, 12 * 17_781d);
+        final List<Double> refusjonsKrav = List.of(12 * 13_000d, 12 * 9_000d, 12 * 8_000d);
         final Double sammenligningFrilanser = 12 * 60000d;
         final Double frilansÅrsinntekt = 12 * 13000d;
 
@@ -291,7 +291,7 @@ public class FrilanserMedTogglePåTest {
     public void treArbeidsforholdOgFrilansMedBgOver6gOgRefusjonUnder6G() {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 13_000d, 12 * 12_000d, 12 * 22_500d);
-        final List<Double> refusjonsKrav = List.of(12 * 15_500d, 12 * 9_000d, 12 * 17_781d);
+        final List<Double> refusjonsKrav = List.of(12 * 13_000d, 12 * 9_000d, 12 * 17_781d);
         final double sammenligning = 12 * 61_000d;
         final double frilansÅrsinntekt = 12 * 14_000d;
 

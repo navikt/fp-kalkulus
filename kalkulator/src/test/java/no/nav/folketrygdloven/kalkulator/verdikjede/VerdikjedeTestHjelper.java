@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FastsettBeregningAktiviteter;
+import no.nav.folketrygdloven.kalkulator.FastsettInntektskategoriFraSøknadTjeneste;
 import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
@@ -167,7 +168,11 @@ public class VerdikjedeTestHjelper {
                 .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                     .as("gjelderSpesifiktArbeidsforhold").isFalse();
             assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
-            assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(beregnetListe.get(ix), within(0.01));
+            if (beregnetListe.get(ix) == null) {
+                assertThat(bgpsa.getBeregnetPrÅr()).isNull();
+            } else {
+                assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(beregnetListe.get(ix), within(0.01));
+            }
             assertThat(bgpsa.getBruttoPrÅr().doubleValue()).isEqualTo(bruttoBgListe.get(ix), within(0.01));
 
             if (!overstyrt) {
@@ -525,6 +530,7 @@ public class VerdikjedeTestHjelper {
             BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag());
+        FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
         return lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 

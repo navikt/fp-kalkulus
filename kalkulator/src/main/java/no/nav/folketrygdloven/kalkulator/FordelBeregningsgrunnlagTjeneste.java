@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.fordel.RegelFordelBeregningsgru
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVLFordel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
@@ -22,6 +23,7 @@ public class FordelBeregningsgrunnlagTjeneste {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    private MapBeregningsgrunnlagFraRegelTilVLFordel mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVLFordel();
 
     public FordelBeregningsgrunnlagTjeneste() {
         // CDI
@@ -50,7 +52,7 @@ public class FordelBeregningsgrunnlagTjeneste {
             Evaluation evaluation = regel.evaluer(periode);
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, regelinput));
         }
-        return MapBeregningsgrunnlagFraRegelTilVL.mapForFordel(regelPerioder, regelResultater, beregningsgrunnlag);
+        return mapBeregningsgrunnlagFraRegelTilVL.map(regelPerioder, regelResultater, beregningsgrunnlag);
     }
 
     private static String toJson(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> regelPerioder) {

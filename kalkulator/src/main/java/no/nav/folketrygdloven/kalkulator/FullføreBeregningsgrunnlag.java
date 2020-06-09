@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 
 public abstract class FullføreBeregningsgrunnlag {
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
+    private MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
     public FullføreBeregningsgrunnlag() {
         // CDI
     }
@@ -31,7 +32,7 @@ public abstract class FullføreBeregningsgrunnlag {
 
         // Oversett endelig resultat av regelmodell til fastsatt Beregningsgrunnlag  (+ spore input -> evaluation)
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapFastsettBeregningsgrunnlag(beregningsgrunnlagRegel, regelResultater, beregningsgrunnlag);
+        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapFastsettBeregningsgrunnlag(beregningsgrunnlagRegel, regelResultater, beregningsgrunnlag);
         BeregningsgrunnlagVerifiserer.verifiserFastsattBeregningsgrunnlag(fastsattBeregningsgrunnlag, input.getAktivitetGradering());
         return fastsattBeregningsgrunnlag;
     }
