@@ -33,7 +33,7 @@ public class Virkedager {
             throw new IllegalArgumentException("Utviklerfeil: fom " + fom + " kan ikke være før tom " + tom);
         }
 
-        int varighetDager = (int) no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode.of(fom, tom).getVarighetDager();
+        int varighetDager = (int) (tom.toEpochDay() - fom.toEpochDay() + 1);
         if (varighetDager <= 2 && erHelg(fom) && erHelg(tom)) {
             return varighetDager;
         }
