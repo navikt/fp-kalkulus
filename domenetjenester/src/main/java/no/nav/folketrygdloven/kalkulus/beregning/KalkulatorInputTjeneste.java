@@ -67,7 +67,8 @@ public class KalkulatorInputTjeneste {
     private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagTilstand[] tilstander = BeregningsgrunnlagTilstand.values();
         for (BeregningsgrunnlagTilstand tilstand : tilstander) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(input.getBehandlingReferanse().getBehandlingId(), tilstand);
+            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
+                    input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
             sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger()),
                     BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
         }
