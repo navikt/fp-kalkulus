@@ -5,11 +5,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
@@ -44,9 +46,10 @@ class UtbetalingsgradMapperFRISINNTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
                 .build();
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
 
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -74,9 +77,10 @@ class UtbetalingsgradMapperFRISINNTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
                 .build();
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
 
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -98,9 +102,10 @@ class UtbetalingsgradMapperFRISINNTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
                 .build();
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
 
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -124,9 +129,10 @@ class UtbetalingsgradMapperFRISINNTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
                 .build();
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(halveApril, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
 
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -151,8 +157,10 @@ class UtbetalingsgradMapperFRISINNTest {
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny().leggTilEgneNæringer(oppgittNæring))
                 .build();
 
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(periode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
+
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -175,9 +183,10 @@ class UtbetalingsgradMapperFRISINNTest {
                 .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
                         .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt)))
                 .build();
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.FRILANSER));
 
         // Act
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
         assertThat(utbetalingsgrader.size()).isEqualTo(2);
@@ -187,6 +196,80 @@ class UtbetalingsgradMapperFRISINNTest {
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 50);
     }
+
+    @Test
+    void skal_ikke_lage_perioder_for_andeler_det_ikke_er_søkt_om() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedFL(skjæringstidspunkt, BigDecimal.valueOf(360_000));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        BigDecimal månedsinntekt = BigDecimal.valueOf(15_000);
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, månedsinntekt));
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.FRILANSER));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(
+                april, månedsinntekt));
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
+                        .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
+                        .leggTilEgneNæringer(oppgittNæring))
+                .build();
+
+        // Act
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
+
+        // Assert
+        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
+
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto2 = utbetalingsgrader.get(0);
+        assertThat(utbetalingsgradPrAktivitetDto2.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(0);
+
+        assertPeriode(april, periode1, 50);
+    }
+
+    @Test
+    void skal_ikke_lage_perioder_for_to_andeler_når_det_er_søkt_om_begge() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.of(2020, 4, 1);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> bgGrunnlagEntitet = lagBeregningsgrunnlagMedFL(skjæringstidspunkt, BigDecimal.valueOf(360_000));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
+        Intervall halveApril = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 15), LocalDate.of(2020, 4, 30));
+        BigDecimal månedsinntekt = BigDecimal.valueOf(15_000);
+        List<OppgittFrilansInntektDto> oppgittFrilansInntekt = List.of(lagOppgittFrilansInntekt(april, månedsinntekt));
+        List<FrisinnPeriode> frisinnPerioder = Arrays.asList(lagFrisinnperiode(april, AktivitetStatus.FRILANSER), lagFrisinnperiode(halveApril, AktivitetStatus.FRILANSER, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
+        List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> oppgittNæring = List.of(lagOppgittInntekt(
+                halveApril, månedsinntekt));
+
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
+                        .leggTilFrilansOpplysninger(new OppgittFrilansDto(false, oppgittFrilansInntekt))
+                        .leggTilEgneNæringer(oppgittNæring))
+                .build();
+
+        // Act
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
+
+        // Assert
+        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
+        assertPeriode(april, periode1, 50);
+
+        UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto2 = utbetalingsgrader.get(0);
+        assertThat(utbetalingsgradPrAktivitetDto2.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        PeriodeMedUtbetalingsgradDto periode2 = utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().get(0);
+
+        assertPeriode(halveApril, periode2, 0);
+    }
+
 
     private OppgittOpptjeningDtoBuilder.EgenNæringBuilder lagOppgittInntekt(Intervall april, BigDecimal periodeInntekt) {
         return OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
@@ -230,4 +313,13 @@ class UtbetalingsgradMapperFRISINNTest {
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FORESLÅTT));
     }
+
+    private FrisinnPeriode lagFrisinnperiode(Intervall periode, AktivitetStatus... statuser) {
+        List<AktivitetStatus> aktivitetStatuses = Arrays.asList(statuser);
+        boolean søkerSN = aktivitetStatuses.contains(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        boolean søkerFL = aktivitetStatuses.contains(AktivitetStatus.FRILANSER);
+        return new FrisinnPeriode(periode, søkerFL, søkerSN);
+    }
+
+
 }

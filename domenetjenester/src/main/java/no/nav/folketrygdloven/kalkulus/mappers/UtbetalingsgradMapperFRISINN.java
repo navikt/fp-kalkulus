@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -29,36 +30,52 @@ public class UtbetalingsgradMapperFRISINN {
      *
      * @param iayGrunnlag InntektArbeidYtelseGrunnlag
      * @param beregningsgrunnlagGrunnlagEntitet Aktivt beregningsgrunnlag
+     * @param frisinnPerioder
      * @return Liste med utbetalingsgrader for FRISINN
      */
     public static List<UtbetalingsgradPrAktivitetDto> map(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                          List<FrisinnPeriode> frisinnPerioder) {
         Optional<BeregningsgrunnlagEntitet> bgOpt = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
-        if (bgOpt.isEmpty()) {
+        if (bgOpt.isEmpty() || frisinnPerioder.isEmpty()) {
             return Collections.emptyList();
         }
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetListe = new ArrayList<>();
-        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForNæring(iayGrunnlag, bgOpt.get()));
-        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForFrilans(iayGrunnlag, bgOpt.get()));
+        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForNæring(iayGrunnlag, bgOpt.get(), frisinnPerioder));
+        utbetalingsgradPrAktivitetListe.add(mapUtbetalingsgraderForFrilans(iayGrunnlag, bgOpt.get(), frisinnPerioder));
         return utbetalingsgradPrAktivitetListe;
     }
 
 
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagEntitet bg) {
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                               BeregningsgrunnlagEntitet bg,
+                                                                               List<FrisinnPeriode> frisinnPerioder) {
         UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnNæringsInntekter(iayGrunnlag).stream()
+                .filter(pi -> erSøktFrisinnIPerioden(pi, frisinnPerioder, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, bg, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .collect(Collectors.toList());
         return new UtbetalingsgradPrAktivitetDto(snAktivitet, perioderMedUtbetalingsgrad);
     }
 
-    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagEntitet bg) {
+    private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                BeregningsgrunnlagEntitet bg,
+                                                                                List<FrisinnPeriode> frisinnPerioder) {
         UtbetalingsgradArbeidsforholdDto frilansAktivitet = new UtbetalingsgradArbeidsforholdDto(null,
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnFrilansInntekter(iayGrunnlag).stream()
+                .filter(pi -> erSøktFrisinnIPerioden(pi, frisinnPerioder, AktivitetStatus.FRILANSER))
                 .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, bg, AktivitetStatus.FRILANSER))
                 .collect(Collectors.toList());
         return new UtbetalingsgradPrAktivitetDto(frilansAktivitet, perioderMedUtbetalingsgrad);
+    }
+
+    private static boolean erSøktFrisinnIPerioden(OppgittPeriodeInntekt periodeinntekt,
+                                                  List<FrisinnPeriode> frisinnPerioder,
+                                                  AktivitetStatus status) {
+        return frisinnPerioder.stream()
+                .filter(fp -> fp.getPeriode().overlapper(periodeinntekt.getPeriode()))
+                .anyMatch(fp -> AktivitetStatus.FRILANSER.equals(status) ? fp.getSøkerFrilans() : fp.getSøkerNæring());
     }
 
     private static List<OppgittPeriodeInntekt> finnFrilansInntekter(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
