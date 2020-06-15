@@ -47,6 +47,7 @@ public class AvklarAktiviteterDtoTjeneste {
 
         avklarAktiviteterDto.setAktiviteterTomDatoMapping(map(beregningAktiviteter, saksbehandletAktiviteter,
                 registerAktivitetAggregat.getSkjæringstidspunktOpptjening(), arbeidsforholdInformasjon, arbeidsgiverOpplysninger));
+        avklarAktiviteterDto.setSkjæringstidspunkt(registerAktivitetAggregat.getSkjæringstidspunktOpptjening());
         faktaOmBeregningDto.setAvklarAktiviteter(avklarAktiviteterDto);
     }
 
