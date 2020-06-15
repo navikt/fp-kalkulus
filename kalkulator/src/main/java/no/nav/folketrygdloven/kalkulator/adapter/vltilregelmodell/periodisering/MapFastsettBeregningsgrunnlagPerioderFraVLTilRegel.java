@@ -276,7 +276,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
                 .getSkjæringstidspunkt();
 
-        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(input.getFagsakYtelseType(), filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
+        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
         Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(input, skjæringstidspunktBeregning, inntektsmeldinger, ya, ansettelsesPeriode, iayGrunnlag);
         if (startdatoPermisjonOpt.isPresent()) {
             LocalDate startdatoPermisjon = startdatoPermisjonOpt.get();

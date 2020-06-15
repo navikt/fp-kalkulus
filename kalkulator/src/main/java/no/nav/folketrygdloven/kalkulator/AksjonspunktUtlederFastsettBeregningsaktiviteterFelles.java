@@ -40,7 +40,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
         if (no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, FPDateUtil.iDag())) {
             return List.of(opprettSettPåVentAutopunktForVentPåRapportering(input, beregningsgrunnlag));
         }
-        Optional<LocalDate> ventPåMeldekortFrist = no.nav.folketrygdloven.kalkulator.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(input.getFagsakYtelseType(), aktørYtelse, beregningsgrunnlag, FPDateUtil.iDag());
+        Optional<LocalDate> ventPåMeldekortFrist = no.nav.folketrygdloven.kalkulator.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, beregningsgrunnlag, FPDateUtil.iDag());
         if (ventPåMeldekortFrist.isPresent()) {
             return List.of(opprettSettPåVentAutopunktMeldekort(ventPåMeldekortFrist.get()));
         }

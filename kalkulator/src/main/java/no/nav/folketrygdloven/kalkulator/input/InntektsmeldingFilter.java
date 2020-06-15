@@ -39,7 +39,7 @@ public class InntektsmeldingFilter {
     public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(BehandlingReferanse ref,
                                                                    LocalDate skjæringstidspunktForOpptjening) {
         AktørId aktørId = ref.getAktørId();
-        LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(ref.getFagsakYtelseType(), skjæringstidspunktForOpptjening);
+        LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktForOpptjening);
         List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
             .orElse(emptyList());
 

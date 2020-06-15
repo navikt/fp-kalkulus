@@ -212,6 +212,9 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     private static boolean gjelderSammeAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
+        if (vlBGPAndel.getAndelsnr() != null && arbeidsforhold.getAndelNr() != null) {
+            return vlBGPAndel.getAndelsnr().equals(arbeidsforhold.getAndelNr());
+        }
         if (vlBGPAndel.getAktivitetStatus().erFrilanser()) {
             return arbeidsforhold.erFrilanser();
         }

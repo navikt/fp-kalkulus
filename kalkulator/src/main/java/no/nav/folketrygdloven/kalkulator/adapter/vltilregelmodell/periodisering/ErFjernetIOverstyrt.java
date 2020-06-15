@@ -26,9 +26,9 @@ public class ErFjernetIOverstyrt {
 
         List<Periode> ansettelsesPerioder = filter.getAnsettelsesPerioder(yrkesaktivitet).stream()
             .map(aa -> new Periode(aa.getPeriode().getFomDato(), aa.getPeriode().getTomDato()))
-            .filter(periode -> !periode.getTom().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(fagsakYtelseType, skjæringstidspunktBeregning)))
+            .filter(periode -> !periode.getTom().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning)))
             .collect(Collectors.toList());
-        if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder, fagsakYtelseType)) {
+        if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder)) {
             return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(filter.getBekreftedePermisjonerForYrkesaktivitet(yrkesaktivitet), skjæringstidspunktBeregning);
         }
         return false;
@@ -46,9 +46,8 @@ public class ErFjernetIOverstyrt {
     }
 
     private static boolean erAktivDagenFørSkjæringstidspunktet(LocalDate skjæringstidspunktBeregning,
-                                                               List<Periode> ansettelsesPerioder,
-                                                               FagsakYtelseType fagsakYtelseType) {
+                                                               List<Periode> ansettelsesPerioder) {
         return ansettelsesPerioder.stream()
-                .anyMatch(periode -> periode.inneholder(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(fagsakYtelseType, skjæringstidspunktBeregning)));
+                .anyMatch(periode -> periode.inneholder(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning)));
     }
 }
