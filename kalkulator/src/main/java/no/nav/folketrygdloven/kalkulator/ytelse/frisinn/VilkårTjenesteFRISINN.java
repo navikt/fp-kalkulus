@@ -1,11 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
+
+import org.jetbrains.annotations.NotNull;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
@@ -25,9 +28,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
 
     @Override
     public BeregningVilkårResultat lagVilkårResultatFordel(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
-        boolean erAvslått = beregningVilkårResultatListe.stream().
-        max(Comparator.comparing(vp -> vp.getPeriode().getFomDato()))
-                .map(v -> !v.getErVilkårOppfylt()).orElse(true);
+        boolean erAvslått = erSisteSøknadsperiodeAvslått(input, beregningVilkårResultatListe);
         Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
         if (erAvslått) {
             Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
@@ -42,15 +43,52 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
     @Override
     public Optional<BeregningVilkårResultat> lagVilkårResultatFullføre(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto) {
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        Intervall sisteSøknadsperiode = frisinnGrunnlag.getFrisinnPerioder().stream()
-                .map(FrisinnPeriode::getPeriode)
-                .max(Comparator.comparing(Intervall::getFomDato))
-                .orElseThrow(() -> new IllegalStateException("Fant ingen søknadsperiode for FRISINN"));
-        return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
+        Intervall sisteSøknadsperiode = finnSisteSøknadsperiode(input.getYtelsespesifiktGrunnlag());
+        boolean harAvkortetHeleSistePeriode = beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getPeriode().overlapper(sisteSøknadsperiode))
-                .findFirst()
-                .filter(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p))
-                .map(p -> new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, p.getPeriode()));
+                .allMatch(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p));
+        return harAvkortetHeleSistePeriode ? Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, sisteSøknadsperiode)) :
+                Optional.empty();
+    }
+
+    private Boolean erSisteSøknadsperiodeAvslått(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
+        Intervall sisteSøknadsperiode = finnSisteSøknadsperiode(input.getYtelsespesifiktGrunnlag());
+        return beregningVilkårResultatListe.stream()
+                .filter(vp -> vp.getPeriode().overlapper(sisteSøknadsperiode))
+                .anyMatch(vp -> !vp.getErVilkårOppfylt());
+    }
+
+
+    private Intervall finnSisteSøknadsperiode(FrisinnGrunnlag frisinnGrunnlag) {
+        // Frisinn kan bares søkes for èn måned av gangen
+        LocalDate sisteSøknadsperiodeTom = frisinnGrunnlag.getFrisinnPerioder().stream()
+                .map(FrisinnPeriode::getPeriode)
+                .max(Comparator.comparing(Intervall::getTomDato))
+                .map(Intervall::getTomDato)
+                .orElseThrow(() -> new IllegalStateException("Fant ingen søknadsperiode for FRISINN"));
+
+        // Vi må spesialbehandle mars fordi dette er einaste måneden som ikkje har ein egen søknad,
+        // men søkes for som ein del av aprilsøknaden
+        boolean harTomDatoIMars = frisinnGrunnlag.getFrisinnPerioder().stream()
+                .map(FrisinnPeriode::getPeriode)
+                .anyMatch(p -> p.getTomDato().getMonth().equals(Month.MARCH));
+        LocalDate sisteSøknadsperiodeFom;
+        if (sisteSøknadsperiodeTom.getMonth().equals(Month.APRIL) && harTomDatoIMars) {
+            sisteSøknadsperiodeFom = frisinnGrunnlag.getFrisinnPerioder().stream()
+                    .map(FrisinnPeriode::getPeriode)
+                    .filter(p -> Month.MARCH.equals(p.getTomDato().getMonth()))
+                    .min(Comparator.comparing(Intervall::getFomDato))
+                    .map(Intervall::getFomDato)
+                    .orElseThrow();
+        } else {
+            sisteSøknadsperiodeFom = frisinnGrunnlag.getFrisinnPerioder().stream()
+                    .map(FrisinnPeriode::getPeriode)
+                    .filter(p -> sisteSøknadsperiodeTom.getMonth().equals(p.getTomDato().getMonth()))
+                    .min(Comparator.comparing(Intervall::getFomDato))
+                    .map(Intervall::getFomDato)
+                    .orElseThrow();
+        }
+        return Intervall.fraOgMedTilOgMed(sisteSøknadsperiodeFom, sisteSøknadsperiodeTom);
     }
 
     private boolean harAvkortetGrunnetAnnenInntekt(FrisinnGrunnlag frisinnGrunnlag, BeregningsgrunnlagPeriodeDto p) {
