@@ -81,10 +81,6 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
                 return Optional.of(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0);
             }
         }
-
-        if (FordelAAPTjeneste.harAndelerMedAAPOgRefusjonOverstigerInntekt(andel, periode, refusjonForAndelIPeriode)) {
-            return Optional.of(FordelingTilfelle.REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP);
-        }
         return Optional.empty();
     }
 }

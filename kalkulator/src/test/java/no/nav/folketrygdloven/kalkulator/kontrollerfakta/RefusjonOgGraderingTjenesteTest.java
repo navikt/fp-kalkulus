@@ -173,43 +173,6 @@ public class RefusjonOgGraderingTjenesteTest {
     }
 
     @Test
-    public void returnererTrueForAAPMedRefusjonskravSomOverstigerInntekt() {
-        // Arrange
-        InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), SKJÆRINGSTIDSPUNKT_BEREGNING,
-            BigDecimal.valueOf(1000), BigDecimal.valueOf(10));
-        BeregningsgrunnlagDto bg = lagBg();
-        BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), InternArbeidsforholdRefDto.nullRef());
-        setAktivitetFørStp(arbeidsgiver1, InternArbeidsforholdRefDto.nullRef());
-        lagAAPAndel(periode1);
-
-        // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
-
-        // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.REFUSJON_STØRRE_ENN_OPPGITT_INNTEKT_OG_HAR_AAP));
-    }
-
-    @Test
-    public void returnererFalseForAAPMedRefusjonskravSomIkkeOverstigerInntekt() {
-        // Arrange
-        InntektsmeldingDto inntektsmelding = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), SKJÆRINGSTIDSPUNKT_BEREGNING,
-            BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
-        BeregningsgrunnlagDto bg = lagBg();
-        BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(13000), InternArbeidsforholdRefDto.nullRef());
-        setAktivitetFørStp(arbeidsgiver1, InternArbeidsforholdRefDto.nullRef());
-        setAktivitetFørStp(OpptjeningAktivitetType.ARBEIDSAVKLARING);
-        lagAAPAndel(periode1);
-
-        // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(inntektsmelding));
-
-        // Assert
-        assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
-    }
-
-    @Test
     public void returnererFalseForNyInntektsmeldingUtenRefusjonskrav() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
