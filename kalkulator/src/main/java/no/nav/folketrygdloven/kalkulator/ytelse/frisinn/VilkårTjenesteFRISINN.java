@@ -55,7 +55,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
         Intervall sisteSøknadsperiode = finnSisteSøknadsperiode(input.getYtelsespesifiktGrunnlag());
         return beregningVilkårResultatListe.stream()
                 .filter(vp -> vp.getPeriode().overlapper(sisteSøknadsperiode))
-                .anyMatch(vp -> !vp.getErVilkårOppfylt());
+                .noneMatch(BeregningVilkårResultat::getErVilkårOppfylt);
     }
 
 
