@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jetbrains.annotations.NotNull;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -15,10 +17,12 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.frisinn.RegelFinnGrenseverdiFRISINN;
 import no.nav.folketrygdloven.beregningsgrunnlag.ytelse.frisinn.RegelFullføreBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -48,8 +52,10 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
 
         // Vurdere vilkår
         List<BeregningVilkårResultat> beregningVilkårResultatListe = vurderVilkår(bgInput);
+
+        FrisinnGrunnlag frisinnGrunnlag = bgInput.getYtelsespesifiktGrunnlag();
         // Finner grenseverdi
-        List<String> sporingerFinnGrenseverdi = finnGrenseverdi(beregningsgrunnlagRegel, beregningVilkårResultatListe);
+        List<String> sporingerFinnGrenseverdi = finnGrenseverdi(beregningsgrunnlagRegel, beregningVilkårResultatListe, frisinnGrunnlag);
 
         // Fullfører grenseverdi
         String inputNrTo = toJson(beregningsgrunnlagRegel);
@@ -75,20 +81,27 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
         return regelResultater;
     }
 
-    private List<String> finnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
+    private List<String> finnGrenseverdi(Beregningsgrunnlag beregningsgrunnlagRegel, List<BeregningVilkårResultat> beregningVilkårResultatListe, FrisinnGrunnlag frisinnGrunnlag) {
+        List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
         return beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder().stream()
                 .map(periode -> {
-                    Optional<BeregningVilkårResultat> vilkårResultat = finnVilkårResultatForPeriode(beregningVilkårResultatListe, periode);
-                    BeregningsgrunnlagPeriode.builder(periode).medErVilkårOppfylt(vilkårResultat.map(BeregningVilkårResultat::getErVilkårOppfylt).orElse(true));
+                    Boolean erVilkårOppfylt = erVilkårOppfyltForSøknadsperiode(beregningVilkårResultatListe, søknadsperioder, periode);
+                    BeregningsgrunnlagPeriode.builder(periode).medErVilkårOppfylt(erVilkårOppfylt);
                     RegelFinnGrenseverdiFRISINN regel = new RegelFinnGrenseverdiFRISINN(periode);
                     Evaluation evaluering = regel.evaluer(periode);
                     return RegelmodellOversetter.getSporing(evaluering);
                 }).collect(Collectors.toList());
     }
 
-    private Optional<BeregningVilkårResultat> finnVilkårResultatForPeriode(List<BeregningVilkårResultat> beregningVilkårResultatListe, BeregningsgrunnlagPeriode periode) {
-        return beregningVilkårResultatListe.stream().filter(vp -> vp.getPeriode().inkluderer(periode.getBeregningsgrunnlagPeriode().getFom()))
-                .findFirst();
+    private Boolean erVilkårOppfyltForSøknadsperiode(List<BeregningVilkårResultat> beregningVilkårResultatListe, List<Intervall> søknadsperioder, BeregningsgrunnlagPeriode periode) {
+        Optional<Intervall> søknadsperiode = søknadsperioder.stream().filter(p -> p.inkluderer(periode.getPeriodeFom())).findFirst();
+        List<BeregningVilkårResultat> vilkårResultat = søknadsperiode.map(p -> finnVilkårResultatForPeriode(beregningVilkårResultatListe, p)).orElse(List.of());
+        return vilkårResultat.stream().anyMatch(BeregningVilkårResultat::getErVilkårOppfylt);
+    }
+
+    private List<BeregningVilkårResultat> finnVilkårResultatForPeriode(List<BeregningVilkårResultat> beregningVilkårResultatListe, Intervall periode) {
+        return beregningVilkårResultatListe.stream().filter(vp -> periode.overlapper(vp.getPeriode()))
+                .collect(Collectors.toList());
     }
 
 }
