@@ -193,14 +193,14 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
             return sammenlignArbeidsgiverId;
         }
 
-        if (this.arbeidsforholdRef.getReferanse() == null) {
-            if (o.arbeidsforholdRef.getReferanse() == null) {
+        if (this.arbeidsforholdRef == null || this.arbeidsforholdRef.getReferanse() == null) {
+            if (o.arbeidsforholdRef == null || o.arbeidsforholdRef.getReferanse() == null) {
                 return this.opptjeningAktivitetType.compareTo(o.opptjeningAktivitetType);
             }
             return -1;
         }
 
-        if (o.arbeidsforholdRef.getReferanse() == null) {
+        if (o.arbeidsforholdRef == null || o.arbeidsforholdRef.getReferanse() == null) {
             return 1;
         }
 
