@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -294,6 +295,9 @@ class UtbetalingsgradMapperFRISINNTest {
                         .medBeregnetPrÅr(beregnetPrÅr))
                 .build(bg);
         return Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
+                        .build())
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FORESLÅTT));
     }
@@ -310,6 +314,9 @@ class UtbetalingsgradMapperFRISINNTest {
                         .medBeregnetPrÅr(beregnetPrÅr))
                 .build(bg);
         return Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
+                        .build())
                 .medBeregningsgrunnlag(bg)
                 .build(1L, BeregningsgrunnlagTilstand.FORESLÅTT));
     }

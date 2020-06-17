@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
@@ -47,8 +49,16 @@ public class RullTilbakeTjenesteTest {
     @Test
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Act
@@ -62,8 +72,16 @@ public class RullTilbakeTjenesteTest {
     @Test
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
@@ -78,8 +96,16 @@ public class RullTilbakeTjenesteTest {
     @Test
     public void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT_UT);
 
         // Act
@@ -96,7 +122,11 @@ public class RullTilbakeTjenesteTest {
         String json = getTestJSON();
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
         repository.lagreOgSjekkStatus(input);
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty()).build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build())
+                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
 
         // Act

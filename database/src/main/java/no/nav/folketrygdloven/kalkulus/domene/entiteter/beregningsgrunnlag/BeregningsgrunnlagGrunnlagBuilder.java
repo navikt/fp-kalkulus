@@ -55,6 +55,7 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         }
         Objects.requireNonNull(koblingId);
         Objects.requireNonNull(beregningsgrunnlagTilstand);
+        Objects.requireNonNull(kladd.getRegisterAktiviteter());
         kladd.setKoblingId(koblingId);
         kladd.setBeregningsgrunnlagTilstand(beregningsgrunnlagTilstand);
         built = true;

@@ -54,7 +54,7 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
     @ManyToOne
-    @JoinColumn(name = "register_aktiviteter_id", updatable = false, unique = true)
+    @JoinColumn(name = "register_aktiviteter_id", updatable = false, unique = true, nullable = false)
     private BeregningAktivitetAggregatEntitet registerAktiviteter;
 
     @ManyToOne
