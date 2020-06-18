@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FinnSøknadsperioder;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -26,7 +27,10 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
             throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
         }
         List<FrisinnPeriode> regelPerioder = mapFrisinnPerioder(input);
-        return new FrisinnGrunnlag(regelPerioder, input.getSkjæringstidspunktOpptjening());
+        return new FrisinnGrunnlag(
+                regelPerioder,
+                FinnSøknadsperioder.finnSøknadsperioder(input.getYtelsespesifiktGrunnlag()).stream().map(FrisinnGrunnlagMapper::mapPeriode).collect(Collectors.toList()),
+                input.getSkjæringstidspunktOpptjening());
     }
 
     public static List<FrisinnPeriode> mapFrisinnPerioder(BeregningsgrunnlagInput input) {
