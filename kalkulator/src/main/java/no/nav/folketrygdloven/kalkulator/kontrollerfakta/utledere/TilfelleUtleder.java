@@ -10,7 +10,10 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 /**
  * TilfelleUtleder
  * Utleder et FaktaOmBeregningTilfelle for behandlingen.
- * Instanser av dette interfacet vil bli injeksert inn i FaktaOmBeregningTilfelleTjeneste.
+ * Instanser av dette interfacet vil bli injeksert inn i FaktaOmBeregningTilfelleTjeneste (må ha @FagsakYtelseTypeRef).
+ * Alle implementasjoner av denne klassen kan enten vere en defaultimplementasjon eller en implementasjon for en spesifikk ytelse.
+ * Tilfeller som har spesifikke implementasjoner av klassen må også spesifisere @FaktaOmBeregningTilfelleRef, ellers blir både defaultimplementasjon
+ * og spesifikk implementasjon evaluert.
  * Implementasjoner av denne klassen må derfor være injectable for å skulle kunne brukes i utledelsen av aksjonspunkt for
  * kontroller fakta om beregning.
  */

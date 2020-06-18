@@ -18,6 +18,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 
 
+/**
+ * Et tilfelle som kan oppstå i fakta om beregning. Hvert tilfelle beskriver en spesifikk situasjon der informasjon må innhentes eller manuell vurdering
+ * må gjøres av saksbehandler.
+ */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum FaktaOmBeregningTilfelle implements Kodeverdi {

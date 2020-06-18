@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.LønnsendringTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -13,6 +15,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 
 
 @ApplicationScoped
+@FagsakYtelseTypeRef("*")
+@FaktaOmBeregningTilfelleRef("VURDER_LØNNSENDRING")
 public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
 
     @Override
