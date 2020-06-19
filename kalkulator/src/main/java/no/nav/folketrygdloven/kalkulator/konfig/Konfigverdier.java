@@ -1,14 +1,17 @@
 package no.nav.folketrygdloven.kalkulator.konfig;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Period;
 
 public abstract class Konfigverdier {
     // Standardverdier
     private BigDecimal avviksgrenseProsent = BigDecimal.valueOf(25);
     private BigDecimal antallGØvreGrenseverdi = BigDecimal.valueOf(6);
-    protected BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
     private Period meldekortPeriode = Period.parse("P30D");
+
+    protected BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
+    protected int maksFristMånederEtterRefusjon = 4;
 
     // Verdier som ikke skal endres
     private final BigDecimal ytelsesdagerIÅr = BigDecimal.valueOf(260);
@@ -43,5 +46,9 @@ public abstract class Konfigverdier {
 
     public BigDecimal getYtelsesdagerIÅr() {
         return ytelsesdagerIÅr;
+    }
+
+    public int getMaksFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
+        return maksFristMånederEtterRefusjon;
     }
 }

@@ -37,7 +37,10 @@ public class InntektsmeldingMedRefusjonTjeneste {
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
-        Map<Arbeidsgiver, Boolean> harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lag(yrkesaktivitetDatoMap, gjeldendeAktiviteter, skjæringstidspunktBeregning);
+        Map<Arbeidsgiver, Boolean> harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lag(behandlingReferanse, yrkesaktivitetDatoMap,
+                gjeldendeAktiviteter,
+                skjæringstidspunktBeregning
+        );
         return finnArbeidsgivereSomHarSøktForSent(harSøktForSentMap);
     }
 
