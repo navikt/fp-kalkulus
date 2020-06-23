@@ -185,7 +185,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
             lagInntekterSN(inntektsgrunnlag, filter);
         }
 
-        var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(skjæringstidspunktBeregning);
+        var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(input.getSkjæringstidspunktOpptjening());
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
             mapAlleYtelser(inntektsgrunnlag, ytelseFilter);
         }
