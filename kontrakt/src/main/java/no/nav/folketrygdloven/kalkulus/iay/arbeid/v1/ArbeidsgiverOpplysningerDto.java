@@ -60,10 +60,12 @@ public class ArbeidsgiverOpplysningerDto {
         return fødselsdato;
     }
 
-    @AssertTrue(message = "Aktør av typen person må ha oppgitt fødselsdato")
-    private boolean isPerson() {
-        if (aktør.getErPerson() && fødselsdato != null) {
-            return true;
-        } else return aktør.getErOrganisasjon() && fødselsdato == null;
+    @AssertTrue(message = "Aktør av typen orgnr skal ikke ha oppgitt fødselsdato")
+    private boolean erGyldig() {
+        if (aktør.getErOrganisasjon()) {
+            return fødselsdato == null;
+        }
+        return true;
     }
+
 }

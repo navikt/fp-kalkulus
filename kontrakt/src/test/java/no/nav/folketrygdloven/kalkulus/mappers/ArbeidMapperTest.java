@@ -47,20 +47,4 @@ public class ArbeidMapperTest {
 
         validateResult(roundTripped);
     }
-
-    @Test
-    void test_ArbeidsforholdOverstyringDto_person_med_exception() throws JsonProcessingException {
-
-        AktørIdPersonident person = new AktørIdPersonident("9457489311234");
-
-        ArbeidsgiverOpplysningerDto dto = new ArbeidsgiverOpplysningerDto(person, "Veppsen");
-
-        String json = WRITER_JSON.writeValueAsString(dto);
-        System.out.println(json);
-
-        ArbeidsgiverOpplysningerDto roundTripped = READER_JSON.forType(ArbeidsgiverOpplysningerDto.class).readValue(json);
-
-        assertThatThrownBy(() -> validateResult(roundTripped)).isInstanceOf(AssertionError.class)
-                .hasMessageContaining("<[ConstraintViolationImpl{interpolatedMessage='Aktør av typen person må ha oppgitt fødselsdato', propertyPath=person, rootBeanClass=class no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto, messageTemplate='Aktør av typen person må ha oppgitt fødselsdato'}]");
-    }
 }
