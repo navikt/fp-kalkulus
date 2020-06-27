@@ -123,6 +123,10 @@ public class BeregningsgrunnlagDto {
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag;
 
+    @JsonProperty(value = "vilkårsperiodeFom")
+    @Valid
+    private LocalDate vilkårsperiodeFom;
+
     public BeregningsgrunnlagDto() {
         // trengs for deserialisering av JSON
     }
@@ -269,5 +273,13 @@ public class BeregningsgrunnlagDto {
 
     public void setYtelsesspesifiktGrunnlag(YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag) {
         this.ytelsesspesifiktGrunnlag = ytelsesspesifiktGrunnlag;
+    }
+
+    public LocalDate getVilkårsperiodeFom() {
+        return vilkårsperiodeFom;
+    }
+
+    public void setVilkårsperiodeFom(LocalDate vilkårsperiodeFom) {
+        this.vilkårsperiodeFom = vilkårsperiodeFom;
     }
 }

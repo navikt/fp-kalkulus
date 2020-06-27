@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -47,8 +48,24 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     @Valid
     private Set<ArbeidsforholdReferanseDto> referanser;
 
+    @JsonProperty(value = "vilkårsperiodeFom")
+    @Valid
+    private LocalDate vilkårsperiodeFom;
+
     protected HentBeregningsgrunnlagDtoForGUIRequest() {
         // default ctor
+    }
+
+    public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
+                                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,
+                                                  @Valid Set<ArbeidsforholdReferanseDto> referanser,
+                                                  @Valid LocalDate vilkårsperiodeFom) {
+        this.eksternReferanse = eksternReferanse;
+        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
+        this.referanser = referanser;
+        this.vilkårsperiodeFom = vilkårsperiodeFom;
     }
 
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
@@ -85,5 +102,9 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
 
     public Set<ArbeidsforholdReferanseDto> getReferanser() {
         return referanser;
+    }
+
+    public LocalDate getVilkårsperiodeFom() {
+        return vilkårsperiodeFom;
     }
 }
