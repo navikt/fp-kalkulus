@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.BatchSize;
+
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 
 @Entity(name = "BeregningAktivitetOverstyringer")
@@ -29,6 +31,7 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
     private long versjon;
 
     @OneToMany(mappedBy = "overstyringerEntitet")
+    @BatchSize(size=20)
     private List<BeregningAktivitetOverstyringEntitet> overstyringer = new ArrayList<>();
 
     public Long getId() {

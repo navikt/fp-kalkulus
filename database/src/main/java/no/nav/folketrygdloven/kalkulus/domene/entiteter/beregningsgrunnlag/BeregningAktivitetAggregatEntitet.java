@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.BatchSize;
+
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 
 
@@ -31,6 +33,7 @@ public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
     private long versjon;
 
     @OneToMany(mappedBy = "beregningAktiviteter")
+    @BatchSize(size=20)
     private List<BeregningAktivitetEntitet> aktiviteter = new ArrayList<>();
 
     @Column(name = "skjaringstidspunkt_opptjening", nullable = false)

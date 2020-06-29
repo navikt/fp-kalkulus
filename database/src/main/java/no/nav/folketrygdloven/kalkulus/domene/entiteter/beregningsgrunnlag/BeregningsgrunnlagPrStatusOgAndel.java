@@ -25,6 +25,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
@@ -40,6 +43,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivite
 
 @Entity(name = "BeregningsgrunnlagPrStatusOgAndel")
 @Table(name = "BG_PR_STATUS_OG_ANDEL")
+@DynamicInsert
+@DynamicUpdate
 public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
 
     @Id

@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -30,6 +32,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
         typeClass = JsonBinaryType.class
 )
 @Table(name = "BG_REGEL_SPORING")
+@DynamicInsert
+@DynamicUpdate
 public class BeregningsgrunnlagRegelSporing extends BaseEntitet {
 
     @Id

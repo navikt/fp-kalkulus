@@ -16,6 +16,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
@@ -25,6 +28,8 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 
 @Entity(name = "BGAndelArbeidsforhold")
 @Table(name = "BG_ANDEL_ARBEIDSFORHOLD")
+@DynamicInsert
+@DynamicUpdate
 public class BGAndelArbeidsforhold extends BaseEntitet {
 
     @Id
