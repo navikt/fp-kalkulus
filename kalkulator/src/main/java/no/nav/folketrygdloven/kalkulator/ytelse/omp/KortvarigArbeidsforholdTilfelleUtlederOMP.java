@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jetbrains.annotations.NotNull;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.utledere.KortvarigArbeidsforholdTilfelleUtleder;

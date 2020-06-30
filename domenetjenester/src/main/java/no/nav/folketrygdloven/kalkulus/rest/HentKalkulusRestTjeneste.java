@@ -62,7 +62,6 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 @Transactional
 public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
 
-
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
@@ -90,12 +89,12 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/fastsatt")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         final Response response = hentFastsattBeregningsgrunnlagForSpesifikasjon(spesifikasjon)
-                .map(bgDto -> Response.ok(bgDto).build())
-                .orElse(Response.noContent().build());
+            .map(bgDto -> Response.ok(bgDto).build())
+            .orElse(Response.noContent().build());
         logMetrikk("/kalkulus/v1/fastsatt", Duration.between(startTx, Instant.now()));
         return response;
     }
@@ -105,25 +104,25 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/fastsattListe")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
     public Response hentFastsattBeregningsgrunnlagListe(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
-                .map(spes -> this.hentFastsattBeregningsgrunnlagForSpesifikasjon(spes)
-                        .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
-                        .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto>(spes.getKoblingReferanse(), null)))
-                .collect(Collectors.toList());
+            .map(spes -> this.hentFastsattBeregningsgrunnlagForSpesifikasjon(spes)
+                .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
+                .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto>(
+                    spes.getKoblingReferanse(), null)))
+            .collect(Collectors.toList());
         logMetrikk("/kalkulus/v1/fastsattListe", Duration.between(startTx, Instant.now()));
         return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent BeregningsgrunnlagGrunnlag for angitt grunnlagsreferanse", summary = ("Returnerer BeregningsgrunnlagGrunnlag for grunnlagsreferanse."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/grunnlagForReferanse")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentBeregningsgrunnlagGrunnlagForReferanse(@NotNull @Valid HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
@@ -132,12 +131,13 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         if (!harKalkulatorInput(koblingId)) {
             return Response.noContent().build();
         }
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId.get(), spesifikasjon.getGrunnlagReferanse());
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
+            .hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId.get(), spesifikasjon.getGrunnlagReferanse());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
-                .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
-                .map(bgDto -> Response.ok(bgDto).build())
-                .findFirst()
-                .orElse(Response.noContent().build());
+            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, spesifikasjon.getInkluderRegelSporing()))
+            .map(bgDto -> Response.ok(bgDto).build())
+            .findFirst()
+            .orElse(Response.noContent().build());
 
         logMetrikk("/kalkulus/v1/grunnlagForReferanse", Duration.between(startTx, Instant.now()));
         return response;
@@ -148,14 +148,14 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/grunnlag")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         final Response response = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(spesifikasjon).stream()
-                .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
-                .map(bgDto -> Response.ok(bgDto).build())
-                .findFirst()
-                .orElse(Response.noContent().build());
+            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, spesifikasjon.getInkluderRegelSporing()))
+            .map(bgDto -> Response.ok(bgDto).build())
+            .findFirst()
+            .orElse(Response.noContent().build());
         logMetrikk("/kalkulus/v1/grunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
@@ -165,14 +165,14 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/aktivtBeregningsgrunnlag")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
     public Response hentAktivtBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         Response response;
         var startTx = Instant.now();
-        response = hentDetalertBeregningsgrunnlagForSpesifikasjon(spesifikasjon)
-                .map(Response::ok)
-                .orElse(Response.noContent())
-                .build();
+        response = hentDetaljertBeregningsgrunnlagForSpesifikasjon(spesifikasjon, spesifikasjon.getInkluderRegelSporing())
+            .map(Response::ok)
+            .orElse(Response.noContent())
+            .build();
         logMetrikk("/kalkulus/v1/aktivtBeregningsgrunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
@@ -182,14 +182,15 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/aktivtBeregningsgrunnlagListe")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
     public Response hentAktivtBeregningsgrunnlagListe(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
-                .map(spes -> this.hentDetalertBeregningsgrunnlagForSpesifikasjon(spes)
-                        .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
-                        .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto>(spes.getKoblingReferanse(), null)))
-                .collect(Collectors.toList());
+            .map(spes -> this.hentDetaljertBeregningsgrunnlagForSpesifikasjon(spes, spesifikasjon.getInkluderRegelSporing())
+                .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
+                .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto>(
+                    spes.getKoblingReferanse(), null)))
+            .collect(Collectors.toList());
         logMetrikk("/kalkulus/v1/aktivtBeregningsgrunnlag", Duration.between(startTx, Instant.now()));
         return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
@@ -204,9 +205,9 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         Response response;
         response = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(spesifikasjon)
-                .map(Response::ok)
-                .orElse(Response.noContent())
-                .build();
+            .map(Response::ok)
+            .orElse(Response.noContent())
+            .build();
         logMetrikk("/kalkulus/v1/beregningsgrunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
@@ -220,21 +221,20 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
-                .map(spes -> this.hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(spes)
-                        .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
-                        .orElse(new BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>(spes.getKoblingReferanse(), null)))
-                .collect(Collectors.toList());
+            .map(spes -> this.hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(spes)
+                .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
+                .orElse(new BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>(spes.getKoblingReferanse(), null)))
+            .collect(Collectors.toList());
         logMetrikk("/kalkulus/v1/beregningsgrunnlag", Duration.between(startTx, Instant.now()));
         return Response.ok(new BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/frisinnGrunnlag")
-    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
@@ -243,31 +243,34 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Response.noContent().build();
         }
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
+            .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId.get());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
-                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
-                .map(bgDto -> Response.ok(bgDto).build())
-                .findFirst()
-                .orElse(Response.noContent().build());
+            .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+            .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
+            .map(bgDto -> Response.ok(bgDto).build())
+            .findFirst()
+            .orElse(Response.noContent().build());
         logMetrikk("/kalkulus/v1/frisinnGrunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
 
     private Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto> hentFastsattBeregningsgrunnlagForSpesifikasjon(@NotNull @Valid HentBeregningsgrunnlagRequest spesifikasjon) {
         return hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(spesifikasjon).stream()
-                .filter(grunnlag -> grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
-                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                .map(MapBeregningsgrunnlag::map)
-                .findFirst();
+            .filter(grunnlag -> grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
+            .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+            .map(MapBeregningsgrunnlag::map)
+            .findFirst();
     }
 
-    private Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto> hentDetalertBeregningsgrunnlagForSpesifikasjon(@NotNull @Valid HentBeregningsgrunnlagRequest spesifikasjon) {
+    private Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto> hentDetaljertBeregningsgrunnlagForSpesifikasjon(
+                                                                                                                                                                    @NotNull @Valid HentBeregningsgrunnlagRequest spesifikasjon,
+                                                                                                                                                                    boolean inkluderRegelSporing) {
         return hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(spesifikasjon).stream()
-                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                .map(MapDetaljertBeregningsgrunnlag::map)
-                .findFirst();
+            .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+            .map(bg -> MapDetaljertBeregningsgrunnlag.map(bg, inkluderRegelSporing))
+            .findFirst();
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(HentBeregningsgrunnlagRequest spesifikasjon) {
@@ -292,7 +295,8 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
             return Optional.empty();
         } else {
             Set<ArbeidsforholdReferanseDto> referanser = MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser());
-            List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = MapIAYTilKalulator.mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger());
+            List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = MapIAYTilKalulator
+                .mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger());
             BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(beregningsgrunnlagInput, arbeidsgiverOpplysninger, referanser);
             BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(restInput);
             beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
@@ -303,6 +307,5 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     private Boolean harKalkulatorInput(Optional<Long> koblingId) {
         return koblingId.map(id -> beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(id).isPresent()).orElse(false);
     }
-
 
 }

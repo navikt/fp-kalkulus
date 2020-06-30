@@ -1,9 +1,6 @@
 package no.nav.folketrygdloven.kalkulator;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /**
  * Tjeneste for å finne siste aktivitetsdag.

@@ -29,8 +29,9 @@ public class HentBeregningsgrunnlagListeRequestAbacDto extends HentBeregningsgru
     }
 
     public HentBeregningsgrunnlagListeRequestAbacDto(@Valid @NotNull List<HentBeregningsgrunnlagRequest> requestPrReferanse,
-                                                     @Valid @NotNull UUID behandlingUuid) {
-        super(requestPrReferanse, behandlingUuid);
+                                                     @Valid @NotNull UUID behandlingUuid,
+                                                     boolean inkluderRegelSporing) {
+        super(requestPrReferanse, behandlingUuid, inkluderRegelSporing);
     }
 
     @Override

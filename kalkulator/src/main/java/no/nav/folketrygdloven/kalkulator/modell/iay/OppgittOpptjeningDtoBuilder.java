@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 public class OppgittOpptjeningDtoBuilder {

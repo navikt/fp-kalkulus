@@ -32,7 +32,6 @@ class BeregningRefusjonTjenesteTest {
     private static final Arbeidsgiver AG2 = Arbeidsgiver.virksomhet("111111111");
     private static final Arbeidsgiver AG3 = Arbeidsgiver.virksomhet("222222222");
     private static final InternArbeidsforholdRefDto REF1 = InternArbeidsforholdRefDto.nyRef();
-    private static final InternArbeidsforholdRefDto REF2 = InternArbeidsforholdRefDto.nyRef();
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static BeregningsgrunnlagDto originaltBG;
@@ -307,10 +306,6 @@ class BeregningRefusjonTjenesteTest {
             assertThat(faktisk.getBrutto()).isEqualByComparingTo(forventet.getBrutto());
         });
 
-    }
-
-    private RefusjonAndel lagForventetAndel(AktivitetStatus status, int refusjon, int brutto) {
-        return lagForventetAndel(status, null, refusjon, brutto);
     }
 
     private RefusjonAndel lagForventetAndel(AktivitetStatus status, Arbeidsgiver ag, int refusjon, int brutto) {

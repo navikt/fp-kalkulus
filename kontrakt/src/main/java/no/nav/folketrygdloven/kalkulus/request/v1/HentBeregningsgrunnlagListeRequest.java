@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
  * Henter aktivt beregningsgrunnlag
@@ -33,14 +32,19 @@ public class HentBeregningsgrunnlagListeRequest {
     @NotNull
     private UUID behandlingUuid;
 
+    @JsonProperty(value = "inkluderRegelSporing", required = false)
+    private boolean inkluderRegelSporing;
+
     protected HentBeregningsgrunnlagListeRequest() {
         // default ctor
     }
 
     public HentBeregningsgrunnlagListeRequest(@Valid @NotNull List<HentBeregningsgrunnlagRequest> requestPrReferanse,
-                                              @Valid @NotNull UUID behandlingUuid) {
+                                              @Valid @NotNull UUID behandlingUuid, 
+                                              boolean inkluderRegelSporing) {
         this.requestPrReferanse = requestPrReferanse;
         this.behandlingUuid = behandlingUuid;
+        this.inkluderRegelSporing = inkluderRegelSporing;
     }
 
     public List<HentBeregningsgrunnlagRequest> getRequestPrReferanse() {
@@ -49,5 +53,9 @@ public class HentBeregningsgrunnlagListeRequest {
 
     public UUID getBehandlingUuid() {
         return behandlingUuid;
+    }
+    
+    public boolean getInkluderRegelSporing() {
+        return inkluderRegelSporing;
     }
 }

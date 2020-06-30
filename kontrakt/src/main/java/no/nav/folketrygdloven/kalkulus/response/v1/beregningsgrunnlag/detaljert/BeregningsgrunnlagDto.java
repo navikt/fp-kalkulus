@@ -66,9 +66,10 @@ public class BeregningsgrunnlagDto {
     @JsonProperty(value = "overstyrt")
     private boolean overstyrt;
 
+    @JsonInclude(value = Include.NON_EMPTY)
     @JsonProperty(value = "regelSporingMap")
     @Valid
-    @Size
+    @Size(min = 0, max = 100)
     private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> regelSporingMap;
 
     @JsonProperty(value = "grunnbeløp")
@@ -87,7 +88,9 @@ public class BeregningsgrunnlagDto {
                                  @Valid Sammenligningsgrunnlag sammenligningsgrunnlag,
                                  @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
-                                 boolean overstyrt, Map<BeregningsgrunnlagRegelType, @Valid BeregningsgrunnlagRegelSporing> regelSporingMap, @Valid BigDecimal grunnbeløp) {
+                                 boolean overstyrt,
+                                 Map<BeregningsgrunnlagRegelType, @Valid BeregningsgrunnlagRegelSporing> regelSporingMap,
+                                 @Valid BigDecimal grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
@@ -95,7 +98,7 @@ public class BeregningsgrunnlagDto {
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
         this.overstyrt = overstyrt;
-        this.regelSporingMap = regelSporingMap;
+        this.regelSporingMap = regelSporingMap == null ? Collections.emptyMap() : regelSporingMap;
         this.grunnbeløp = grunnbeløp;
     }
 
@@ -109,16 +112,14 @@ public class BeregningsgrunnlagDto {
 
     public List<BeregningsgrunnlagPeriodeDto> getBeregningsgrunnlagPerioder() {
         return beregningsgrunnlagPerioder
-                .stream()
-                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
-                .collect(Collectors.toUnmodifiableList());
+            .stream()
+            .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
+            .collect(Collectors.toUnmodifiableList());
     }
 
     public Sammenligningsgrunnlag getSammenligningsgrunnlag() {
         return sammenligningsgrunnlag;
     }
-
-
 
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
         return faktaOmBeregningTilfeller;

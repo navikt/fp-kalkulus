@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.READER_JSON;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.WRITER_JSON;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.validateResult;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;

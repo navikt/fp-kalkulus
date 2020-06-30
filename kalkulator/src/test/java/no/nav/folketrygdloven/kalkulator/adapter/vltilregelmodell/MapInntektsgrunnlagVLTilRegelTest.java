@@ -27,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapInntektsgrunnlagVLTilRegelTest {
 

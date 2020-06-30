@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
 import java.util.List;
 

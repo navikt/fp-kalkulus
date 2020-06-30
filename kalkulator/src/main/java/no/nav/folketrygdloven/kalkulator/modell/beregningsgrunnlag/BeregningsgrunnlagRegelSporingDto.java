@@ -8,7 +8,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 
 public class BeregningsgrunnlagRegelSporingDto {
 
-    private BeregningsgrunnlagDto beregningsgrunnlag;
     private String regelEvaluering;
     private String regelInput;
     private BeregningsgrunnlagRegelType regelType;
@@ -70,7 +69,6 @@ public class BeregningsgrunnlagRegelSporingDto {
 
         BeregningsgrunnlagRegelSporingDto build(BeregningsgrunnlagDto beregningsgrunnlag) {
             verifyStateForBuild();
-            beregningsgrunnlagRegelSporingMal.beregningsgrunnlag = beregningsgrunnlag;
             beregningsgrunnlag.leggTilBeregningsgrunnlagRegel(beregningsgrunnlagRegelSporingMal);
             return beregningsgrunnlagRegelSporingMal;
         }

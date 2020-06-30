@@ -7,13 +7,13 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-
 
 /**
  * Spesifikasjon for å hente beregningsgrunnlagGrunnlag for gitt referanse.
@@ -29,15 +29,16 @@ public class HentBeregningsgrunnlagGrunnlagForReferanseRequest extends HentBereg
     @NotNull
     private UUID grunnlagReferanse;
 
-
     protected HentBeregningsgrunnlagGrunnlagForReferanseRequest() {
         // default ctor
     }
 
+    @JsonCreator
     public HentBeregningsgrunnlagGrunnlagForReferanseRequest(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                                     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                     @JsonProperty(value = "grunnlagReferanse", required = true) @NotNull @Valid UUID grunnlagReferanse) {
-        super(eksternReferanse, ytelseSomSkalBeregnes);
+                                                             @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                             @JsonProperty(value = "grunnlagReferanse", required = true) @NotNull @Valid UUID grunnlagReferanse,
+                                                             @JsonProperty(value = "inkluderRegelSporing", required = false) Boolean inkluderRegelSporing) {
+        super(eksternReferanse, ytelseSomSkalBeregnes, inkluderRegelSporing);
         this.grunnlagReferanse = grunnlagReferanse;
     }
 

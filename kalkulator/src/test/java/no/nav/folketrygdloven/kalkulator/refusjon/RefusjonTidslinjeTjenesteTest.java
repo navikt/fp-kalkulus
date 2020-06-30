@@ -27,10 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RefusjonTidslinjeTjenesteTest {
     private static final Arbeidsgiver AG1 = Arbeidsgiver.virksomhet("999999999");
-    private static final Arbeidsgiver AG2 = Arbeidsgiver.virksomhet("111111111");
-    private static final Arbeidsgiver AG3 = Arbeidsgiver.virksomhet("222222222");
     private static final InternArbeidsforholdRefDto REF1 = InternArbeidsforholdRefDto.nyRef();
-    private static final InternArbeidsforholdRefDto REF2 = InternArbeidsforholdRefDto.nyRef();
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static BeregningsgrunnlagDto originaltBG;

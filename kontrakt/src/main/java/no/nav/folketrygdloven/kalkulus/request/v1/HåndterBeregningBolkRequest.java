@@ -15,8 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-
 /**
  * Spesifikasjon for å oppdatere grunnlaget med informasjon fra saksbehandler.
  *

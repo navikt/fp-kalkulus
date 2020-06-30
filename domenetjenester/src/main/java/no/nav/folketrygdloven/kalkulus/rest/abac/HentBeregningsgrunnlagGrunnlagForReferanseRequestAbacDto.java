@@ -22,14 +22,15 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto extends HentBeregningsgrunnlagGrunnlagForReferanseRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+public class HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto extends HentBeregningsgrunnlagGrunnlagForReferanseRequest
+        implements no.nav.vedtak.sikkerhet.abac.AbacDto {
 
     @JsonCreator
     public HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
                                                                     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                                    @JsonProperty(value = "grunnlagReferanse", required = true) @NotNull @Valid UUID grunnlagReferanse
-    ) {
-        super(eksternReferanse, ytelseSomSkalBeregnes, grunnlagReferanse);
+                                                                    @JsonProperty(value = "grunnlagReferanse", required = true) @NotNull @Valid UUID grunnlagReferanse,
+                                                                    @JsonProperty(value = "inkluderRegelSporing", required = false) Boolean inkluderRegelSporing) {
+        super(eksternReferanse, ytelseSomSkalBeregnes, grunnlagReferanse, inkluderRegelSporing);
     }
 
     @Override

@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
-
 /**
  * Spesifikasjon for å hente aktivt beregningsgrunnlag.
  * Henter aktivt beregningsgrunnlag
@@ -29,22 +28,25 @@ public class HentBeregningsgrunnlagRequest {
     @NotNull
     private UUID eksternReferanse;
 
-
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
+    @JsonProperty(value = "inkluderRegelSporing", required = false)
+    private boolean inkluderRegelSporing;
 
     protected HentBeregningsgrunnlagRequest() {
         // default ctor
     }
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
-                                         @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+                                         @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         Boolean inkluderRegelSporing) {
 
         this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.inkluderRegelSporing = inkluderRegelSporing==null?false:inkluderRegelSporing;
     }
 
     public UUID getKoblingReferanse() {
@@ -53,6 +55,10 @@ public class HentBeregningsgrunnlagRequest {
 
     public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
+    }
+
+    public boolean getInkluderRegelSporing() {
+        return inkluderRegelSporing;
     }
 
 }

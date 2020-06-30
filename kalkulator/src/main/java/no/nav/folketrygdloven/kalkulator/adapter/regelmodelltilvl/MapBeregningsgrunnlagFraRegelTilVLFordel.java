@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;

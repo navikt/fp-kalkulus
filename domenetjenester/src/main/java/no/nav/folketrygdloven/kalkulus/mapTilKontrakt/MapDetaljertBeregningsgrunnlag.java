@@ -47,16 +47,18 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 
 public class MapDetaljertBeregningsgrunnlag {
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet, boolean inkluderRegelSporing) {
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
+            .map(bg -> MapDetaljertBeregningsgrunnlag.map(bg, inkluderRegelSporing)).orElse(null);
+
         return new BeregningsgrunnlagGrunnlagDto(
-                beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag().map(MapDetaljertBeregningsgrunnlag::map).orElse(null),
-                mapBeregningAktivitetAggregat(beregningsgrunnlagGrunnlagEntitet.getRegisterAktiviteter()),
-                beregningsgrunnlagGrunnlagEntitet.getSaksbehandletAktiviteter().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitetAggregat).orElse(null),
-                beregningsgrunnlagGrunnlagEntitet.getOverstyring().map(MapDetaljertBeregningsgrunnlag::mapOverstyrteAktiviteterAggregat).orElse(null),
-                beregningsgrunnlagGrunnlagEntitet.getRefusjonOverstyringer().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyringAggregat).orElse(null),
-                beregningsgrunnlagGrunnlagEntitet.erAktivt(),
-                new BeregningsgrunnlagTilstand(beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagTilstand().getKode())
-        );
+            beregningsgrunnlag,
+            mapBeregningAktivitetAggregat(beregningsgrunnlagGrunnlagEntitet.getRegisterAktiviteter()),
+            beregningsgrunnlagGrunnlagEntitet.getSaksbehandletAktiviteter().map(MapDetaljertBeregningsgrunnlag::mapBeregningAktivitetAggregat).orElse(null),
+            beregningsgrunnlagGrunnlagEntitet.getOverstyring().map(MapDetaljertBeregningsgrunnlag::mapOverstyrteAktiviteterAggregat).orElse(null),
+            beregningsgrunnlagGrunnlagEntitet.getRefusjonOverstyringer().map(MapDetaljertBeregningsgrunnlag::mapRefusjonOverstyringAggregat).orElse(null),
+            beregningsgrunnlagGrunnlagEntitet.erAktivt(),
+            new BeregningsgrunnlagTilstand(beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlagTilstand().getKode()));
     }
 
     private static BeregningRefusjonOverstyringerDto mapRefusjonOverstyringAggregat(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {
@@ -69,9 +71,8 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         return new BeregningRefusjonOverstyringDto(
-                mapArbeidsgiver(beregningRefusjonOverstyringEntitet.getArbeidsgiver()),
-                beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom()
-        );
+            mapArbeidsgiver(beregningRefusjonOverstyringEntitet.getArbeidsgiver()),
+            beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom());
     }
 
     private static BeregningAktivitetOverstyringerDto mapOverstyrteAktiviteterAggregat(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringerEntitet) {
@@ -84,19 +85,19 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningAktivitetOverstyringDto mapOverstyrtAktivitet(BeregningAktivitetOverstyringEntitet beregningAktivitetOverstyringEntitet) {
         return new BeregningAktivitetOverstyringDto(
-                new Periode(beregningAktivitetOverstyringEntitet.getPeriode().getFomDato(), beregningAktivitetOverstyringEntitet.getPeriode().getTomDato()),
-                beregningAktivitetOverstyringEntitet.getArbeidsgiver().map(MapDetaljertBeregningsgrunnlag::mapArbeidsgiver).orElse(null),
-                beregningAktivitetOverstyringEntitet.getArbeidsforholdRef() == null || beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse() == null ? null : new InternArbeidsforholdRefDto(beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse()),
-                new OpptjeningAktivitetType(beregningAktivitetOverstyringEntitet.getOpptjeningAktivitetType().getKode()),
-                new BeregningAktivitetHandlingType(beregningAktivitetOverstyringEntitet.getHandling().getKode())
-        );
+            new Periode(beregningAktivitetOverstyringEntitet.getPeriode().getFomDato(), beregningAktivitetOverstyringEntitet.getPeriode().getTomDato()),
+            beregningAktivitetOverstyringEntitet.getArbeidsgiver().map(MapDetaljertBeregningsgrunnlag::mapArbeidsgiver).orElse(null),
+            beregningAktivitetOverstyringEntitet.getArbeidsforholdRef() == null
+                || beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse() == null ? null
+                    : new InternArbeidsforholdRefDto(beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse()),
+            new OpptjeningAktivitetType(beregningAktivitetOverstyringEntitet.getOpptjeningAktivitetType().getKode()),
+            new BeregningAktivitetHandlingType(beregningAktivitetOverstyringEntitet.getHandling().getKode()));
     }
 
     private static BeregningAktivitetAggregatDto mapBeregningAktivitetAggregat(BeregningAktivitetAggregatEntitet aktivitetAggregatEntitet) {
         return new BeregningAktivitetAggregatDto(
-                mapBeregningAktiviteter(aktivitetAggregatEntitet.getBeregningAktiviteter()),
-                aktivitetAggregatEntitet.getSkjæringstidspunktOpptjening()
-        );
+            mapBeregningAktiviteter(aktivitetAggregatEntitet.getBeregningAktiviteter()),
+            aktivitetAggregatEntitet.getSkjæringstidspunktOpptjening());
     }
 
     private static List<BeregningAktivitetDto> mapBeregningAktiviteter(List<BeregningAktivitetEntitet> beregningAktiviteter) {
@@ -105,25 +106,27 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningAktivitetDto mapBeregningAktivitet(BeregningAktivitetEntitet beregningAktivitetEntitet) {
         return new BeregningAktivitetDto(
-                new Periode(beregningAktivitetEntitet.getPeriode().getFomDato(), beregningAktivitetEntitet.getPeriode().getTomDato()),
-                beregningAktivitetEntitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitetEntitet.getArbeidsgiver()),
-                beregningAktivitetEntitet.getArbeidsforholdRef() == null || beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse() == null ? null : new InternArbeidsforholdRefDto(beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse()),
-                new OpptjeningAktivitetType(beregningAktivitetEntitet.getOpptjeningAktivitetType().getKode())
-        );
+            new Periode(beregningAktivitetEntitet.getPeriode().getFomDato(), beregningAktivitetEntitet.getPeriode().getTomDato()),
+            beregningAktivitetEntitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitetEntitet.getArbeidsgiver()),
+            beregningAktivitetEntitet.getArbeidsforholdRef() == null || beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse() == null ? null
+                : new InternArbeidsforholdRefDto(beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse()),
+            new OpptjeningAktivitetType(beregningAktivitetEntitet.getOpptjeningAktivitetType().getKode()));
     }
 
-    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, boolean inkluderRegelSporing) {
+        // ytelse optimalisering: laster ikke lazy regelsporingmap hvis ikke definert
+        var regelSporingMap = inkluderRegelSporing ? mapRegelsporing(beregningsgrunnlagEntitet.getRegelSporingMap()) : null;
+
         return new BeregningsgrunnlagDto(
-                beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
-                mapAktivitetstatuser(beregningsgrunnlagEntitet),
-                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
-                mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
-                mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
-                beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller().stream().map(MapDetaljertBeregningsgrunnlag::mapTilfelle).collect(Collectors.toList()),
-                beregningsgrunnlagEntitet.isOverstyrt(),
-                mapRegelsporing(beregningsgrunnlagEntitet.getRegelSporingMap()),
-                beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi()
-        );
+            beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
+            mapAktivitetstatuser(beregningsgrunnlagEntitet),
+            mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
+            mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
+            mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
+            beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller().stream().map(MapDetaljertBeregningsgrunnlag::mapTilfelle).collect(Collectors.toList()),
+            beregningsgrunnlagEntitet.isOverstyrt(),
+            regelSporingMap,
+            beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
     }
 
     private static Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> mapRegelsporing(Map<no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType, no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagRegelSporing> regelsporingMap) {
@@ -134,10 +137,9 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningsgrunnlagRegelSporing mapSporing(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagRegelSporing sporing) {
         return new BeregningsgrunnlagRegelSporing(
-                sporing.getRegelEvaluering(),
-                sporing.getRegelInput(),
-                new BeregningsgrunnlagRegelType(sporing.getRegelType().getKode())
-        );
+            sporing.getRegelEvaluering(),
+            sporing.getRegelInput(),
+            new BeregningsgrunnlagRegelType(sporing.getRegelType().getKode()));
     }
 
     private static no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle mapTilfelle(FaktaOmBeregningTilfelle faktaOmBeregningTilfelle) {
@@ -148,28 +150,28 @@ public class MapDetaljertBeregningsgrunnlag {
         if (beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe() == null) {
             return null;
         }
-        return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream().map(MapDetaljertBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus).collect(Collectors.toList());
+        return beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream().map(MapDetaljertBeregningsgrunnlag::mapSammeligningsgrunnlagPrStatus)
+            .collect(Collectors.toList());
     }
 
     private static SammenligningsgrunnlagPrStatusDto mapSammeligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
         return new SammenligningsgrunnlagPrStatusDto(
-                new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
-                new SammenligningsgrunnlagType(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType().getKode()),
-                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
-                sammenligningsgrunnlagPrStatus.getAvvikPromilleNy()
-        );
+            new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
+            new SammenligningsgrunnlagType(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType().getKode()),
+            sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
+            sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
     private static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag() == null) {
             return null;
         }
-        no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag sammenligningsgrunnlag = beregningsgrunnlagEntitet.getSammenligningsgrunnlag();
+        no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag sammenligningsgrunnlag = beregningsgrunnlagEntitet
+            .getSammenligningsgrunnlag();
         return new Sammenligningsgrunnlag(
-                new Periode(sammenligningsgrunnlag.getSammenligningsperiodeFom(), sammenligningsgrunnlag.getSammenligningsperiodeTom()),
-                sammenligningsgrunnlag.getRapportertPrÅr(),
-                sammenligningsgrunnlag.getAvvikPromilleNy()
-        );
+            new Periode(sammenligningsgrunnlag.getSammenligningsperiodeFom(), sammenligningsgrunnlag.getSammenligningsperiodeTom()),
+            sammenligningsgrunnlag.getRapportertPrÅr(),
+            sammenligningsgrunnlag.getAvvikPromilleNy());
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
@@ -178,14 +180,14 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
-                new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
-                beregningsgrunnlagPeriode.getRedusertPrÅr(),
-                beregningsgrunnlagPeriode.getDagsats(),
-                beregningsgrunnlagPeriode.getPeriodeÅrsaker().stream().map(MapDetaljertBeregningsgrunnlag::mapPeriodeÅrsak).collect(Collectors.toList()),
-                mapPeriodeRegelSporingMap(beregningsgrunnlagPeriode.getRegelSporingMap()));
+            mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
+            new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
+            beregningsgrunnlagPeriode.getBruttoPrÅr(),
+            beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+            beregningsgrunnlagPeriode.getRedusertPrÅr(),
+            beregningsgrunnlagPeriode.getDagsats(),
+            beregningsgrunnlagPeriode.getPeriodeÅrsaker().stream().map(MapDetaljertBeregningsgrunnlag::mapPeriodeÅrsak).collect(Collectors.toList()),
+            mapPeriodeRegelSporingMap(beregningsgrunnlagPeriode.getRegelSporingMap()));
     }
 
     private static Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> mapPeriodeRegelSporingMap(Map<no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType, no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap) {
@@ -196,10 +198,9 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPeriodeRegelSporing mapSporingPeriode(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriodeRegelSporing sporing) {
         return new BeregningsgrunnlagPeriodeRegelSporing(
-                sporing.getRegelEvaluering(),
-                sporing.getRegelInput(),
-                new BeregningsgrunnlagPeriodeRegelType(sporing.getRegelType().getKode())
-        );
+            sporing.getRegelEvaluering(),
+            sporing.getRegelInput(),
+            new BeregningsgrunnlagPeriodeRegelType(sporing.getRegelType().getKode()));
     }
 
     private static no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak mapPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
@@ -212,42 +213,42 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
-                beregningsgrunnlagPrStatusOgAndel.getAndelsnr(),
-                new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel),
-                new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
-                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker(),
-                beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver(),
-                new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
-                mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel),
-                beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getPgiSnitt(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi1(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi2(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi3(),
-                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getNyIArbeidslivet(),
-                beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler(),
-                beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getLagtTilAvSaksbehandler(),
-                beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse(),
-                beregningsgrunnlagPrStatusOgAndel.mottarYtelse().orElse(null),
-                beregningsgrunnlagPrStatusOgAndel.erNyoppstartet().orElse(null)
-        );
+            beregningsgrunnlagPrStatusOgAndel.getAndelsnr(),
+            new AktivitetStatus(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
+            mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel),
+            new OpptjeningAktivitetType(beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType().getKode()),
+            beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker(),
+            beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver(),
+            new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
+            mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel),
+            beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getPgiSnitt(),
+            beregningsgrunnlagPrStatusOgAndel.getPgi1(),
+            beregningsgrunnlagPrStatusOgAndel.getPgi2(),
+            beregningsgrunnlagPrStatusOgAndel.getPgi3(),
+            beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getNyIArbeidslivet(),
+            beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler(),
+            beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr(),
+            beregningsgrunnlagPrStatusOgAndel.getLagtTilAvSaksbehandler(),
+            beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse(),
+            beregningsgrunnlagPrStatusOgAndel.mottarYtelse().orElse(null),
+            beregningsgrunnlagPrStatusOgAndel.erNyoppstartet().orElse(null));
     }
 
     private static Periode mapBeregningsperiode(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
-        return beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom() == null ? null : new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom());
+        return beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom() == null ? null
+            : new Periode(beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeFom(), beregningsgrunnlagPrStatusOgAndel.getBeregningsperiodeTom());
     }
 
     private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
@@ -256,19 +257,18 @@ public class MapDetaljertBeregningsgrunnlag {
 
     private static BGAndelArbeidsforhold mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold bgAndelArbeidsforhold) {
         return new BGAndelArbeidsforhold(
-                mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
-                bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                bgAndelArbeidsforhold.getRefusjonskravPrÅr(),
-                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
-                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
-                bgAndelArbeidsforhold.getArbeidsperiodeFom(),
-                bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null)
-        );
+            mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
+            bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
+            bgAndelArbeidsforhold.getRefusjonskravPrÅr(),
+            bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
+            bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
+            bgAndelArbeidsforhold.getArbeidsperiodeFom(),
+            bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> new AktivitetStatus(a.getAktivitetStatus().getKode()))
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {

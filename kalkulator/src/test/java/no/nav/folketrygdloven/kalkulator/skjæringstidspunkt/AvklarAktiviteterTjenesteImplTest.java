@@ -43,7 +43,6 @@ public class AvklarAktiviteterTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.of(2018, 9, 30);
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet("900050001");
     private static final AktørId AKTØR_ID = AktørId.dummy();
-    private static final long FAGSAK_ID = 39827532L;
     private static final long BEHANDLING_ID = 4234034L;
 
     private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();

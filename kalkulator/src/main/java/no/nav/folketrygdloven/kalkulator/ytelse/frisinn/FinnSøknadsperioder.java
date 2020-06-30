@@ -1,17 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
-
-import org.jetbrains.annotations.NotNull;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;

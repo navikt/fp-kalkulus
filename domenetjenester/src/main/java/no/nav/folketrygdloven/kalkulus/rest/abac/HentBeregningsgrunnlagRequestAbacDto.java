@@ -27,8 +27,9 @@ public class HentBeregningsgrunnlagRequestAbacDto extends HentBeregningsgrunnlag
 
     @JsonCreator
     public HentBeregningsgrunnlagRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                                @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-        super(eksternReferanse, ytelseSomSkalBeregnes);
+                                                @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                @JsonProperty(value = "inkluderRegelSporing", required = false) Boolean inkluderRegelSporing) {
+        super(eksternReferanse, ytelseSomSkalBeregnes, inkluderRegelSporing);
     }
 
     @Override

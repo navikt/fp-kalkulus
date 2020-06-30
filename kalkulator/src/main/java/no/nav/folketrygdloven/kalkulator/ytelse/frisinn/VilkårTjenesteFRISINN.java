@@ -1,18 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
-import java.time.Month;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jetbrains.annotations.NotNull;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
