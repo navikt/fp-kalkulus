@@ -41,7 +41,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jackson.version>2.10.3</jackson.version>
+        <jackson.version>2.10.4</jackson.version>
 
         <fpsak.nare.version>2.1.0-20200121220149-fc67304</fpsak.nare.version>
 
