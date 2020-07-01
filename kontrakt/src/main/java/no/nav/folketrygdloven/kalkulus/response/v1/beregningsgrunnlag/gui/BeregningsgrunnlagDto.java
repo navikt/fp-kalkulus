@@ -123,6 +123,11 @@ public class BeregningsgrunnlagDto {
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag;
 
+    @JsonProperty(value = "erOverstyrtInntekt")
+    @NotNull
+    @Valid
+    private boolean erOverstyrtInntekt;
+
     @JsonProperty(value = "vilkårsperiodeFom")
     @Valid
     private LocalDate vilkårsperiodeFom;
@@ -273,6 +278,14 @@ public class BeregningsgrunnlagDto {
 
     public void setYtelsesspesifiktGrunnlag(YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag) {
         this.ytelsesspesifiktGrunnlag = ytelsesspesifiktGrunnlag;
+    }
+
+    public boolean isErOverstyrtInntekt() {
+        return erOverstyrtInntekt;
+    }
+
+    public void setErOverstyrtInntekt(boolean erOverstyrtInntekt) {
+        this.erOverstyrtInntekt = erOverstyrtInntekt;
     }
 
     public LocalDate getVilkårsperiodeFom() {

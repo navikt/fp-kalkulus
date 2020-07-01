@@ -71,6 +71,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         mapFaktaOmBeregning(input, dto);
 
 
+        mapOverstyring(input, dto);
         mapSkjæringstidspunkt(input, dto);
         mapFaktaOmFordeling(input, dto);
         mapSammenligningsgrunnlag(input, dto);
@@ -83,6 +84,11 @@ public class BeregningsgrunnlagDtoTjeneste {
         mapDekningsgrad(input, dto);
         mapYtelsesspesifiktGrunnlag(input, dto);
         return dto;
+    }
+
+    private void mapOverstyring(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+        boolean overstyrt = input.getBeregningsgrunnlag().isOverstyrt();
+        dto.setErOverstyrtInntekt(overstyrt);
     }
 
     private void mapYtelsesspesifiktGrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
