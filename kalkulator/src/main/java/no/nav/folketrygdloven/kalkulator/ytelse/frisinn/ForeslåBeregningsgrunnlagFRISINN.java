@@ -63,7 +63,10 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
         List<OppgittPeriodeInntekt> oppgittFLInntekt = input.getIayGrunnlag().getOppgittOpptjening().stream().flatMap(ofl -> ofl.getFrilans().stream())
                 .flatMap(fl -> fl.getOppgittFrilansInntekt().stream()).collect(Collectors.toList());
         inntektListe.addAll(oppgittFLInntekt);
-        inntektListe.forEach(oppgittPeriodeInntekt -> splittForOppgittPeriode(oppgittPeriodeInntekt, regelmodellBeregningsgrunnlag));
+        List<OppgittPeriodeInntekt> inntekterSomSkalFøreTilSPlitt = inntektListe.stream()
+                .filter(inntekt -> !inntekt.getPeriode().getFomDato().isBefore(input.getSkjæringstidspunktOpptjening()))
+                .collect(Collectors.toList());
+        inntekterSomSkalFøreTilSPlitt.forEach(oppgittPeriodeInntekt -> splittForOppgittPeriode(oppgittPeriodeInntekt, regelmodellBeregningsgrunnlag));
     }
 
     private void splittForOppgittPeriode(OppgittPeriodeInntekt oppgittPeriodeInntekt, Beregningsgrunnlag regelmodellBeregningsgrunnlag) {
