@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -127,11 +128,18 @@ public class InntektArbeidYtelseGrunnlagDtoBuilder {
     }
 
     public InntektArbeidYtelseGrunnlagDtoBuilder medInntektsmeldinger(Collection<InntektsmeldingDto> inntektsmeldinger) {
-        setInntektsmeldinger(new InntektsmeldingAggregatDto(inntektsmeldinger));
+        setInntektsmeldinger(new InntektsmeldingAggregatDto(inntektsmeldinger, Collections.emptyList()));
         return this;
     }
 
     public InntektArbeidYtelseGrunnlagDtoBuilder medInntektsmeldinger(InntektsmeldingDto... inntektsmeldinger) {
         return medInntektsmeldinger(Arrays.asList(inntektsmeldinger));
     }
+
+    public InntektArbeidYtelseGrunnlagDtoBuilder medInntektsmeldinger(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                      Collection<InntektsmeldingDto> inntektsmeldingDiffListe) {
+        setInntektsmeldinger(new InntektsmeldingAggregatDto(inntektsmeldinger, inntektsmeldingDiffListe));
+        return this;
+    }
+
 }

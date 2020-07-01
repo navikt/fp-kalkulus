@@ -19,18 +19,23 @@ public class InntektsmeldingAggregatDto {
 
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
 
+    /** Alle inntektsmeldinger som er tilkommet siden originalbehandlingen */
+    private List<InntektsmeldingDto> inntektsmeldingdiffFraOriginalbehandling = new ArrayList<>();
+
     public InntektsmeldingAggregatDto() {
     }
 
     InntektsmeldingAggregatDto(InntektsmeldingAggregatDto inntektsmeldingAggregat) {
-        this(inntektsmeldingAggregat.getAlleInntektsmeldinger());
+        this(inntektsmeldingAggregat.getAlleInntektsmeldinger(), inntektsmeldingAggregat.getInntektsmeldingdiffFraOriginalbehandling());
     }
 
-    public InntektsmeldingAggregatDto(Collection<InntektsmeldingDto> inntektsmeldinger) {
-        this.inntektsmeldinger.addAll(inntektsmeldinger.stream().map(i -> {
-            final InntektsmeldingDto inntektsmelding = new InntektsmeldingDto(i);
-            return inntektsmelding;
-        }).collect(Collectors.toList()));
+    public InntektsmeldingAggregatDto(Collection<InntektsmeldingDto> inntektsmeldinger, Collection<InntektsmeldingDto> inntektsmeldingDiffliste) {
+        this.inntektsmeldinger.addAll(inntektsmeldinger.stream()
+                .map(InntektsmeldingDto::new)
+                .collect(Collectors.toList()));
+        this.inntektsmeldingdiffFraOriginalbehandling.addAll(inntektsmeldingDiffliste.stream()
+                .map(InntektsmeldingDto::new)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -45,6 +50,10 @@ public class InntektsmeldingAggregatDto {
     /** Get alle inntetksmeldinger (både de som skal brukes og ikke brukes). */
     public List<InntektsmeldingDto> getAlleInntektsmeldinger() {
         return List.copyOf(inntektsmeldinger);
+    }
+
+    public List<InntektsmeldingDto> getInntektsmeldingdiffFraOriginalbehandling() {
+        return inntektsmeldingdiffFraOriginalbehandling.stream().collect(Collectors.toUnmodifiableList());
     }
 
     private boolean skalBrukes(InntektsmeldingDto im) {
@@ -96,6 +105,11 @@ public class InntektsmeldingAggregatDto {
 
         public InntektsmeldingAggregatDtoBuilder leggTil(InntektsmeldingDto inntektsmeldingDto) {
             this.kladd.inntektsmeldinger.add(inntektsmeldingDto);
+            return this;
+        }
+
+        public InntektsmeldingAggregatDtoBuilder leggTilDiff(InntektsmeldingDto inntektsmeldingDto) {
+            this.kladd.inntektsmeldingdiffFraOriginalbehandling.add(inntektsmeldingDto);
             return this;
         }
 
