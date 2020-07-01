@@ -20,7 +20,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSent {
      * Refusjonkrav kommer inn 15.01.2020 og kravet ber om refusjon fom 01.09.2019. Dette refusjonskravet er ugylig fordi første gyldige dato for dette kravet er 01.10.2019.
      *
      *
-     * @param behandlingReferanse
+     * @param behandlingReferanse Behandlingreferanse
      * @param refusjonsdato Sammensatt objekt for refusjonskravdatoer
      * @param yrkesaktivitet aktuell yrkesaktivitet
      * @param gjeldendeAktiviteter gjeldende aktiviteter på skjæringstidspunktet
@@ -34,7 +34,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSent {
         if (!erNyttArbeidsforhold && harRefusjonFraStart) {
             førsteDagMedRefusjon = skjæringstidspunktBeregning;
         }
-        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(behandlingReferanse.getFagsakYtelseType()).getMaksFristMånederEtterRefusjon(refusjonsdato.getFørsteInnsendingAvRefusjonskrav());
+        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(behandlingReferanse.getFagsakYtelseType()).getFristMånederEtterRefusjon(refusjonsdato.getFørsteInnsendingAvRefusjonskrav()) + 1;
         LocalDate førsteLovligeDatoForRefusjon = refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
         return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
     }

@@ -36,7 +36,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
     }
 
     @Override
-    protected void mapInntektsmelding(Collection<InntektsmeldingDto>inntektsmeldinger,
+    protected void mapInntektsmelding(BeregningsgrunnlagInput input, Collection<InntektsmeldingDto> inntektsmeldinger,
                                       Map<Arbeidsgiver, LocalDate> førsteIMMap,
                                       YrkesaktivitetDto ya, LocalDate startdatoPermisjon,
                                       ArbeidsforholdOgInntektsmelding.Builder builder,

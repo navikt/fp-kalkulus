@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodisertBruttoBe
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -31,7 +32,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     }
 
     @Override
-    protected void mapInntektsmelding(Collection<InntektsmeldingDto>inntektsmeldinger,
+    protected void mapInntektsmelding(BeregningsgrunnlagInput input,
+                                      Collection<InntektsmeldingDto> inntektsmeldinger,
                                       Map<Arbeidsgiver, LocalDate> førsteIMMap,
                                       YrkesaktivitetDto ya,
                                       LocalDate startdatoPermisjon,
@@ -45,7 +47,9 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         );
         Optional<LocalDate> førsteMuligeRefusjonsdato = mapFørsteGyldigeDatoForRefusjon(ya, refusjonOverstyringer);
         førsteMuligeRefusjonsdato.ifPresent(builder::medOverstyrtRefusjonsFrist);
-        builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(førsteIMMap.get(ya.getArbeidsgiver()));
+        LocalDate innsendingsdatoFørsteInntektsmeldingMedRefusjon = førsteIMMap.get(ya.getArbeidsgiver());
+        builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon)
+                .medAntallMånederRefusjonskravFrist(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getFristMånederEtterRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon));
     }
 
     @Override

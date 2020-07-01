@@ -11,7 +11,7 @@ public abstract class Konfigverdier {
     private Period meldekortPeriode = Period.parse("P30D");
 
     protected BigDecimal antallGForOppfyltVilkår = BigDecimal.valueOf(0.5);
-    protected int maksFristMånederEtterRefusjon = 4;
+    protected int fristMånederEtterRefusjon = 3;
 
     // Verdier som ikke skal endres
     private final BigDecimal ytelsesdagerIÅr = BigDecimal.valueOf(260);
@@ -48,7 +48,7 @@ public abstract class Konfigverdier {
         return ytelsesdagerIÅr;
     }
 
-    public int getMaksFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
-        return maksFristMånederEtterRefusjon;
+    public int getFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
+        return fristMånederEtterRefusjon;
     }
 }
