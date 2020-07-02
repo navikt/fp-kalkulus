@@ -106,7 +106,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse().getReferanse());
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        MDC.put("prosess_saksnummer", saksnummer);
+        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
@@ -140,7 +140,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
-        MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer());
+        MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer().getVerdi());
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 
@@ -208,7 +208,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
         koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
-                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer));
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         return håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
     }
 
