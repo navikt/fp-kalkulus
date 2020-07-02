@@ -23,6 +23,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.MDC;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -104,6 +106,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse().getReferanse());
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
+        MDC.put("prosess_saksnummer", saksnummer);
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
@@ -136,8 +139,8 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
+        MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer());
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 
@@ -204,6 +207,8 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     private OppdateringRespons håndterForKobling(@NotNull @Valid HåndterBeregningRequest spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
+        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer));
         return håndtererApplikasjonTjeneste.håndter(koblingId, spesifikasjon.getHåndterBeregning());
     }
 

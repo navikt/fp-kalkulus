@@ -98,6 +98,10 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
         return ytelseTyperKalkulusStøtter;
     }
 
+    public Saksnummer getSaksnummer() {
+        return saksnummer;
+    }
+
     public void setYtelseTyperKalkulusStøtter(YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
         this.ytelseTyperKalkulusStøtter = ytelseTyperKalkulusStøtter;
     }
