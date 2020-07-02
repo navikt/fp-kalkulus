@@ -42,16 +42,26 @@ public class KalkulatorInputTjeneste {
         // CDI-runner
     }
 
-    public BeregningsgrunnlagInput lagInput(Long koblingId, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        Objects.requireNonNull(koblingId, "Denne kan ikke være null");
-
+    public Optional<BeregningsgrunnlagInput> lagInputHvisFinnes(Long koblingId, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+        Objects.requireNonNull(koblingId, "koblingId");
         KoblingEntitet koblingEntitet = koblingRepository.hentForKoblingId(koblingId);
         Optional<KalkulatorInputEntitet> inputEntitetOptional = beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(koblingId);
-        if (inputEntitetOptional.isPresent()) {
-            KalkulatorInputEntitet kalkulatorInputEntitet = inputEntitetOptional.get();
-            return MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputEntitet, beregningsgrunnlagGrunnlagEntitet);
-        }
-        throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException();
+        return inputEntitetOptional.map(kalkulatorInputEntitet -> MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputEntitet, beregningsgrunnlagGrunnlagEntitet));
+    }
+
+    public BeregningsgrunnlagInput lagInput(Long koblingId, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+        return lagInputHvisFinnes(koblingId, beregningsgrunnlagGrunnlagEntitet)
+                .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException());
+    }
+
+    public Optional<BeregningsgrunnlagInput> lagInputMedBeregningsgrunnlagHvisFinnes(Long koblingId) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        Optional<BeregningsgrunnlagInput> inputOpt = lagInputHvisFinnes(koblingId, beregningsgrunnlagGrunnlagEntitet);
+        return inputOpt.map(input -> {
+            Optional<BeregningsgrunnlagGrunnlagDto> mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger()));
+            leggTilTilstandhistorikk(input);
+            return mappedGrunnlag.map(input::medBeregningsgrunnlagGrunnlag).orElse(input);
+        });
     }
 
     public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId) {
@@ -61,7 +71,6 @@ public class KalkulatorInputTjeneste {
                 .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException());
         leggTilTilstandhistorikk(input);
         return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
-
     }
 
     private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {

@@ -30,6 +30,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.endringsresultat.ErEndringIBeregning;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -78,8 +79,8 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblingReferanse2 = new KoblingReferanse(spesifikasjon.getKoblingReferanse2());
         Optional<Long> koblingId1 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse1, ytelseTyperKalkulusStøtter);
         Optional<Long> koblingId2 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse2, ytelseTyperKalkulusStøtter);
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlagHvisFinnes());
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(k).getBeregningsgrunnlagHvisFinnes());
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagHvisFinnes(k).flatMap(BeregningsgrunnlagInput::getBeregningsgrunnlagHvisFinnes));
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagHvisFinnes(k).flatMap(BeregningsgrunnlagInput::getBeregningsgrunnlagHvisFinnes));
         boolean erEndring = ErEndringIBeregning.vurder(beregningsgrunnlag1, beregningsgrunnlag2);
         logMetrikk("/kalkulus/v1/erEndring", Duration.between(startTx, Instant.now()));
 
