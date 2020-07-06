@@ -26,7 +26,6 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
      */
     @JsonProperty("søkerYtelseForFrilans")
     @Valid
-    @NotNull
     @Deprecated // Fjernes herfra når vi har gått over til å bruke frisinnPerioder
     private Boolean søkerYtelseForFrilans;
 
@@ -35,7 +34,6 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
      */
     @JsonProperty("søkerYtelseForNæring")
     @Valid
-    @NotNull
     @Deprecated // Fjernes herfra når vi har gått over til å bruke frisinnPerioder
     private Boolean søkerYtelseForNæring;
 
@@ -53,7 +51,8 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
         // default ctor
     }
 
-    public FrisinnGrunnlag(@Valid @NotNull Boolean søkerYtelseForFrilans, @Valid @NotNull Boolean søkerYtelseForNæring) {
+    @Deprecated
+    public FrisinnGrunnlag(@Valid Boolean søkerYtelseForFrilans, @Valid Boolean søkerYtelseForNæring) {
         this.søkerYtelseForFrilans = søkerYtelseForFrilans;
         this.søkerYtelseForNæring = søkerYtelseForNæring;
     }
