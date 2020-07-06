@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -42,6 +44,11 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
     @Size(max = 20)
     private List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo;
 
+    @JsonProperty(value = "frisinnBehandlingType")
+    @Valid
+    private FrisinnBehandlingType frisinnBehandlingType;
+
+
     protected FrisinnGrunnlag() {
         // default ctor
     }
@@ -53,6 +60,11 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public FrisinnGrunnlag(@Valid @Size(max = 20) List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo) {
         this.perioderMedSøkerInfo = perioderMedSøkerInfo;
+    }
+
+    public FrisinnGrunnlag(@Valid @Size(max = 20) List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo, @Valid FrisinnBehandlingType frisinnBehandlingType) {
+        this.perioderMedSøkerInfo = perioderMedSøkerInfo;
+        this.frisinnBehandlingType = frisinnBehandlingType;
     }
 
     public FrisinnGrunnlag medPerioderMedSøkerInfo(List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo) {
@@ -74,6 +86,10 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public Boolean getSøkerYtelseForNæring() {
         return søkerYtelseForNæring;
+    }
+
+    public FrisinnBehandlingType getFrisinnBehandlingType() {
+        return frisinnBehandlingType;
     }
 
     @Override

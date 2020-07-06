@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnBehandlingType;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.VilkårTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
@@ -44,7 +45,7 @@ class VilkårTjenesteFRISINNTest {
                 new FrisinnGrunnlag(List.of(),
                         Collections.singletonList(
                                 new FrisinnPeriode(
-                                Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE), true, true))));
+                                Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE), true, true)), FrisinnBehandlingType.NY_SØKNADSPERIODE));
 
         // Act
         var beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);

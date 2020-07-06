@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -21,9 +22,10 @@ import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 @FagsakYtelseTypeRef("FRISINN")
 public class VilkårTjenesteFRISINN extends VilkårTjeneste {
 
+
     @Override
     public BeregningVilkårResultat lagVilkårResultatFordel(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
-        boolean erAvslått = erSisteSøknadsperiodeAvslått(input, beregningVilkårResultatListe);
+        boolean erAvslått = erBeregningsgrunnlagVilkåretAvslått(input, beregningVilkårResultatListe);
         Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
         if (erAvslått) {
             Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
@@ -37,13 +39,47 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
 
     @Override
     public Optional<BeregningVilkårResultat> lagVilkårResultatFullføre(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto) {
+        boolean harAvkortetHeleSistePeriode = harAvslagGrunnetAvkorting(beregningsgrunnlagDto, input.getYtelsespesifiktGrunnlag());
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
+        return harAvkortetHeleSistePeriode ? Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, vilkårsperiode)) :
+                Optional.empty();
+    }
+
+    private Boolean erBeregningsgrunnlagVilkåretAvslått(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        Intervall sisteSøknadsperiode = FinnSøknadsperioder.finnSisteSøknadsperiode(input.getYtelsespesifiktGrunnlag());
-        boolean harAvkortetHeleSistePeriode = beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
+        if (frisinnGrunnlag.getFrisinnBehandlingType().equals(FrisinnBehandlingType.REVURDERING)) {
+            return erAlleSøknadperioderAvslått(input, beregningVilkårResultatListe);
+        }
+        return erSisteSøknadsperiodeAvslått(input, beregningVilkårResultatListe);
+    }
+
+    private Boolean erAlleSøknadperioderAvslått(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
+        FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode);
+        return beregningVilkårResultatListe.stream()
+                .filter(vp -> søktePerioder.anyMatch(p -> vp.getPeriode().overlapper(p)))
+                .noneMatch(BeregningVilkårResultat::getErVilkårOppfylt);
+    }
+
+    private boolean harAvslagGrunnetAvkorting(BeregningsgrunnlagDto beregningsgrunnlagDto, FrisinnGrunnlag frisinnGrunnlag) {
+        if (frisinnGrunnlag.getFrisinnBehandlingType().equals(FrisinnBehandlingType.REVURDERING)) {
+            return erAllePerioderAvkortetTilNull(beregningsgrunnlagDto, frisinnGrunnlag);
+        }
+        return erSistePeriodeAvkortetTilNull(beregningsgrunnlagDto, frisinnGrunnlag);
+    }
+
+    private boolean erAllePerioderAvkortetTilNull(BeregningsgrunnlagDto beregningsgrunnlagDto, FrisinnGrunnlag frisinnGrunnlag) {
+        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode);
+        return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
+                .filter(bgPeriode -> søktePerioder.anyMatch(søktPeriode -> bgPeriode.getPeriode().overlapper(søktPeriode)))
+                .allMatch(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p));
+    }
+
+    private boolean erSistePeriodeAvkortetTilNull(BeregningsgrunnlagDto beregningsgrunnlagDto, FrisinnGrunnlag frisinnGrunnlag) {
+        Intervall sisteSøknadsperiode = FinnSøknadsperioder.finnSisteSøknadsperiode(frisinnGrunnlag);
+        return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getPeriode().overlapper(sisteSøknadsperiode))
                 .allMatch(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p));
-        return harAvkortetHeleSistePeriode ? Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, sisteSøknadsperiode)) :
-                Optional.empty();
     }
 
     private Boolean erSisteSøknadsperiodeAvslått(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {

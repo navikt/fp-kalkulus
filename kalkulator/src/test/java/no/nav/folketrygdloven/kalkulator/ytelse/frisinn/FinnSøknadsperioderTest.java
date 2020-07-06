@@ -19,7 +19,7 @@ class FinnSøknadsperioderTest {
         LocalDate sisteTom = LocalDate.of(2020, 4, 30);
         FrisinnPeriode mars = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(tidligsteFom, LocalDate.of(2020, 3, 31)), true, false);
         FrisinnPeriode april = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), sisteTom), true, true);
-        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mars, april));
+        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mars, april), FrisinnBehandlingType.NY_SØKNADSPERIODE);
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 
@@ -35,7 +35,7 @@ class FinnSøknadsperioderTest {
         LocalDate sisteTom = LocalDate.of(2020, 4, 30);
         FrisinnPeriode mars = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(tidligsteFom, LocalDate.of(2020, 4, 3)), true, false);
         FrisinnPeriode april = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 4), sisteTom), true, true);
-        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mars, april));
+        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mars, april), FrisinnBehandlingType.NY_SØKNADSPERIODE);
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 
@@ -51,7 +51,7 @@ class FinnSøknadsperioderTest {
         FrisinnPeriode april = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 4), LocalDate.of(2020, 4, 30)), true, true);
         FrisinnPeriode mai = new FrisinnPeriode(Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 5, 4), LocalDate.of(2020, 5, 31)), true, true);
 
-        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mai, april));
+        FrisinnGrunnlag frisinnGrunnlag = new FrisinnGrunnlag(List.of(), List.of(mai, april), FrisinnBehandlingType.NY_SØKNADSPERIODE);
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 

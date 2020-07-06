@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnBehandlingType;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -361,7 +362,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     private FrisinnGrunnlag frisinn(boolean søkerFL, boolean søkerSN) {
         Intervall periode = Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE);
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
-        return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode));
+        return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode), FrisinnBehandlingType.NY_SØKNADSPERIODE);
     }
 
     private BeregningsgrunnlagPrStatusOgAndel snAndel(long andelsnr, BigDecimal brutto, BeregningsgrunnlagPeriode periode) {

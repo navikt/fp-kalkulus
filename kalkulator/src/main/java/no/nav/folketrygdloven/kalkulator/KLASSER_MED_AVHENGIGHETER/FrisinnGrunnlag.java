@@ -5,6 +5,7 @@ import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnBehandlingType;
 
 public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
@@ -12,10 +13,12 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
     private final List<FrisinnPeriode> frisinnPerioder;
+    private FrisinnBehandlingType frisinnBehandlingType;
 
-    public FrisinnGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, List<FrisinnPeriode> frisinnPerioder) {
+    public FrisinnGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, List<FrisinnPeriode> frisinnPerioder, FrisinnBehandlingType frisinnBehandlingType) {
         super(utbetalingsgradPrAktivitet);
         this.frisinnPerioder = frisinnPerioder;
+        this.frisinnBehandlingType = frisinnBehandlingType;
     }
 
 
@@ -48,6 +51,10 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
 
     public boolean getSøkerYtelseForNæring(LocalDate dato) {
         return frisinnPerioder.stream().anyMatch(p -> p.getSøkerNæring() && p.getPeriode().inkluderer(dato));
+    }
+
+    public FrisinnBehandlingType getFrisinnBehandlingType() {
+        return frisinnBehandlingType;
     }
 
     public List<FrisinnPeriode> getFrisinnPerioder() {
