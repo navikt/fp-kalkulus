@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiv
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
 @Entity(name = "BGAndelArbeidsforhold")
 @Table(name = "BG_ANDEL_ARBEIDSFORHOLD")
@@ -71,6 +72,9 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
     @Column(name = "arbeidsperiode_tom")
     private LocalDate arbeidsperiodeTom;
+
+    @Column(name = "hjemmel_for_refusjonskravfrist")
+    private Hjemmel hjemmelForRefusjonskravfrist;
 
 
     public Long getId() {
@@ -122,6 +126,10 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;
+    }
+
+    public Hjemmel getHjemmelForRefusjonskravfrist() {
+        return hjemmelForRefusjonskravfrist;
     }
 
     @Override
@@ -221,6 +229,11 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
         public Builder medArbeidsperiodeTom(LocalDate arbeidsperiodeTom) {
             bgAndelArbeidsforhold.arbeidsperiodeTom = arbeidsperiodeTom;
+            return this;
+        }
+
+        public Builder medHjemmel(Hjemmel hjemmel) {
+            bgAndelArbeidsforhold.hjemmelForRefusjonskravfrist = hjemmel;
             return this;
         }
 

@@ -8,6 +8,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
 
 public class BGAndelArbeidsforholdDto {
@@ -22,6 +23,7 @@ public class BGAndelArbeidsforholdDto {
     private Boolean lønnsendringIBeregningsperioden;
     private LocalDate arbeidsperiodeFom;
     private LocalDate arbeidsperiodeTom;
+    private Hjemmel hjemmelForRefusjonskravfrist;
 
     private BGAndelArbeidsforholdDto() {
     }
@@ -83,6 +85,10 @@ public class BGAndelArbeidsforholdDto {
 
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;
+    }
+
+    public Hjemmel getHjemmelForRefusjonskravfrist() {
+        return hjemmelForRefusjonskravfrist;
     }
 
     @Override
@@ -203,6 +209,11 @@ public class BGAndelArbeidsforholdDto {
 
         public Builder medArbeidsperiodeTom(LocalDate arbeidsperiodeTom) {
             bgAndelArbeidsforhold.arbeidsperiodeTom = arbeidsperiodeTom;
+            return this;
+        }
+
+        public Builder medHjemmel(Hjemmel hjemmel) {
+            bgAndelArbeidsforhold.hjemmelForRefusjonskravfrist = hjemmel;
             return this;
         }
 

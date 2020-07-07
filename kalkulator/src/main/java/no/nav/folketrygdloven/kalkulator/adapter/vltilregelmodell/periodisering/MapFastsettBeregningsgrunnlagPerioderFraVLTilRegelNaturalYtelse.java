@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -63,7 +63,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
                                              LocalDate skjæringstidspunkt,
                                              List<SplittetPeriode> eksisterendePerioder,
                                              List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
-                                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger) {
+                                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> regelAndelGraderinger) {
         return PeriodeModell.builder()
             .medSkjæringstidspunkt(skjæringstidspunkt)
             .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())

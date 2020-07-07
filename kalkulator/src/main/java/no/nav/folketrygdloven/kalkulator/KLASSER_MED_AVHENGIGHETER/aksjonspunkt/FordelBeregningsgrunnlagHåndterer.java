@@ -52,7 +52,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, korrektPeriode);
         BeregningsgrunnlagPeriodeDto uendretPeriode = BeregningsgrunnlagPeriodeDto.builder(korrektPeriode).buildForKopi();
         BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode)
-            .fjernAlleBeregningsgrunnlagPrStatusOgAndeler();
+                .fjernAlleBeregningsgrunnlagPrStatusOgAndeler();
         // Må sortere med eksisterende først for å sette andelsnr på disse først
         List<FastsettBeregningsgrunnlagAndelDto> sorted = sorterMedNyesteSist(endretPeriode);
         for (FastsettBeregningsgrunnlagAndelDto endretAndel : sorted) {
@@ -92,7 +92,7 @@ public class FordelBeregningsgrunnlagHåndterer {
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelMedMatchendeAndelsnr(BeregningsgrunnlagPeriodeDto korrektPeriode, FastsettBeregningsgrunnlagAndelDto endretAndel) {
         return korrektPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(a -> a.getAndelsnr().equals(endretAndel.getAndelsnr())).findFirst();
+                .filter(a -> a.getAndelsnr().equals(endretAndel.getAndelsnr())).findFirst();
     }
 
     private static void mapFelterForYtelse(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
@@ -115,13 +115,13 @@ public class FordelBeregningsgrunnlagHåndterer {
             builder.medBeregningsperiode(endretAndel.getBeregningsperiodeFom(), endretAndel.getBeregningsperiodeTom());
         }
         return builder
-            .medAndelsnr(endretAndel.getNyAndel() ? null : endretAndel.getAndelsnr()) // Opprettholder andelsnr som andel ble lagret med forrige gang
-            .medAktivitetStatus(endretAndel.getAktivitetStatus())
-            .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
-            .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
-            .medLagtTilAvSaksbehandler(endretAndel.getLagtTilAvSaksbehandler())
-            .medArbforholdType(endretAndel.getArbeidsforholdType())
-            .medFastsattAvSaksbehandler(true);
+                .medAndelsnr(endretAndel.getNyAndel() ? null : endretAndel.getAndelsnr()) // Opprettholder andelsnr som andel ble lagret med forrige gang
+                .medAktivitetStatus(endretAndel.getAktivitetStatus())
+                .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
+                .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
+                .medLagtTilAvSaksbehandler(endretAndel.getLagtTilAvSaksbehandler())
+                .medArbforholdType(endretAndel.getArbeidsforholdType())
+                .medFastsattAvSaksbehandler(true);
     }
 
     private static void byggArbeidsforhold(BeregningsgrunnlagPeriodeDto korrektPeriode,
@@ -133,10 +133,11 @@ public class FordelBeregningsgrunnlagHåndterer {
         if (arbeidsforholdOpt.isPresent()) {
             var arbeidsforhold = arbeidsforholdOpt.get();
             BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder().medArbeidsgiver(arbeidsgiver)
-                .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
-                .medRefusjonskravPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
-                .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
-                .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null));
+                    .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
+                    .medRefusjonskravPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
+                    .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
+                    .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null))
+                    .medHjemmel(arbeidsforhold.getHjemmelForRefusjonskravfrist());
             if (!endretAndel.getLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {
                 mapNaturalytelse(arbeidsforhold, abeidsforholdBuilder);
             }
@@ -146,19 +147,19 @@ public class FordelBeregningsgrunnlagHåndterer {
 
     private static void mapNaturalytelse(BGAndelArbeidsforholdDto arbeidsforhold, BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder) {
         abeidsforholdBuilder
-            .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null))
-            .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null));
+                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null))
+                .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null));
     }
 
     private static Optional<BGAndelArbeidsforholdDto> finnRiktigArbeidsforholdFraGrunnlag(BeregningsgrunnlagPeriodeDto korrektPeriode, FastsettBeregningsgrunnlagAndelDto endretAndel) {
         return korrektPeriode
-            .getBeregningsgrunnlagPrStatusOgAndelList()
-            .stream()
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(a -> a.getArbeidsgiver().getIdentifikator().equals(endretAndel.getArbeidsgiverId()) && a.getArbeidsforholdRef().gjelderFor(endretAndel.getArbeidsforholdId()))
-            .findFirst();
+                .getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(a -> a.getArbeidsgiver().getIdentifikator().equals(endretAndel.getArbeidsgiverId()) && a.getArbeidsforholdRef().gjelderFor(endretAndel.getArbeidsforholdId()))
+                .findFirst();
     }
 
     private static Arbeidsgiver finnArbeidsgiver(FastsettBeregningsgrunnlagAndelDto endretAndel) {
@@ -181,9 +182,9 @@ public class FordelBeregningsgrunnlagHåndterer {
     private static BeregningsgrunnlagPeriodeDto getKorrektPeriode(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPeriodeDto> perioder,
                                                                   FastsettBeregningsgrunnlagPeriodeDto endretPeriode) {
         return perioder.stream()
-            .filter(periode -> periode.getBeregningsgrunnlagPeriodeFom().equals(endretPeriode.getFom()))
-            .findFirst()
-            .orElseThrow(() -> FordelBeregningsgrunnlagHåndtererFeil.FACTORY.finnerIkkePeriodeFeil(input.getBehandlingReferanse().getBehandlingId()).toException());
+                .filter(periode -> periode.getBeregningsgrunnlagPeriodeFom().equals(endretPeriode.getFom()))
+                .findFirst()
+                .orElseThrow(() -> FordelBeregningsgrunnlagHåndtererFeil.FACTORY.finnerIkkePeriodeFeil(input.getBehandlingReferanse().getBehandlingId()).toException());
     }
 
     private static List<FastsettBeregningsgrunnlagAndelDto> sorterMedNyesteSist(FastsettBeregningsgrunnlagPeriodeDto endretPeriode) {
@@ -198,6 +199,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         };
         return endretPeriode.getAndeler().stream().sorted(fastsettBeregningsgrunnlagAndelDtoComparator).collect(Collectors.toList());
     }
+
     private interface FordelBeregningsgrunnlagHåndtererFeil extends DeklarerteFeil {
 
 

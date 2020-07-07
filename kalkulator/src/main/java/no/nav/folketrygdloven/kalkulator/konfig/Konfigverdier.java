@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+
 public abstract class Konfigverdier {
     // Standardverdier
     private BigDecimal avviksgrenseProsent = BigDecimal.valueOf(25);
@@ -50,5 +52,9 @@ public abstract class Konfigverdier {
 
     public int getFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
         return fristMånederEtterRefusjon;
+    }
+
+    public Hjemmel getHjemmelForRefusjonfrist(LocalDate datoForInnsendtRefKrav) {
+        return Hjemmel.F_22_13_6;
     }
 }

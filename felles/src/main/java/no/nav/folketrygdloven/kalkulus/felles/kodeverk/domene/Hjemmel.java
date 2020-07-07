@@ -45,6 +45,9 @@ public enum Hjemmel implements Kodeverdi {
     F_14_7_8_47("F_14_7_8_47", "folketrygdloven §§ 14-7 og 8-47"),
     F_14_7_8_49("F_14_7_8_49", "folketrygdloven §§ 14-7 og 8-49"),
 
+    F_22_13_6("F_22_13_6", "folketrygdloven §§ 22-13 sjette ledd"),
+    COV_1_5("COV_1_5", "Midlertidig forskrift om unntak fra folketrygdloven og arbeidsmiljøloven i forbindelse med covid-19-pandemien § 1-5"),
+
     KORONALOVEN_3("KORONALOVEN_3", "koronaloven § 3"),
 
 

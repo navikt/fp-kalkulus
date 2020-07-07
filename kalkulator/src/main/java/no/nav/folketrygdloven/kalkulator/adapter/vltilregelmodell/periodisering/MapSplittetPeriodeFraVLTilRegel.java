@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
@@ -26,10 +27,10 @@ class MapSplittetPeriodeFraVLTilRegel {
             .build();
     }
 
-    private static BeregningsgrunnlagPrArbeidsforhold mapToBeregningsgrunnlagPrArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
+    private static EksisterendeAndel mapToBeregningsgrunnlagPrArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
         BGAndelArbeidsforholdDto bgAndelArbeidsforhold = bgAndel.getBgAndelArbeidsforhold()
             .orElseThrow(() -> new IllegalStateException("Må ha arbeidsforhold"));
-        BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder()
+        EksisterendeAndel.Builder builder = EksisterendeAndel.builder()
             .medAndelNr(bgAndel.getAndelsnr());
         builder.medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(bgAndelArbeidsforhold.getArbeidsgiver(), bgAndelArbeidsforhold.getArbeidsforholdRef()));
         return builder.build();

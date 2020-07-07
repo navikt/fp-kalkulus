@@ -11,13 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.perioder.FastsettPeriodeRegel;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
 
@@ -37,9 +38,9 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
 
     @Inject
     public FastsettBeregningsgrunnlagPerioderTjeneste(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse oversetterTilRegelNaturalytelse,
-                                                          @Any Instance<MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering> oversetterTilRegelRefusjonOgGradering,
-                                                          MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse,
-                                                          MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering) {
+                                                      @Any Instance<MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering> oversetterTilRegelRefusjonOgGradering,
+                                                      MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse,
+                                                      MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering) {
         this.oversetterTilRegelNaturalytelse = oversetterTilRegelNaturalytelse;
         this.oversetterTilRegelRefusjonOgGradering = oversetterTilRegelRefusjonOgGradering;
         this.oversetterFraRegelNaturalytelse = oversetterFraRegelNaturalytelse;
@@ -58,10 +59,10 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
                                                                         BeregningsgrunnlagDto beregningsgrunnlag) {
         var ref = input.getBehandlingReferanse();
         var mapper = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjonOgGradering, ref.getFagsakYtelseType())
-            .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
+                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
 
         PeriodeModell periodeModell = mapper.map(input, beregningsgrunnlag);
-        return kjørRegelOgMapTilVLRefusjonOgGradering(beregningsgrunnlag, periodeModell);
+        return kjørRegelOgMapTilVLRefusjonOgGradering(input.getBehandlingReferanse(), beregningsgrunnlag, periodeModell);
     }
 
     private BeregningsgrunnlagDto kjørRegelOgMapTilVLNaturalytelse(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
@@ -71,7 +72,7 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
         return oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, regelInput, beregningsgrunnlag);
     }
 
-    private BeregningsgrunnlagDto kjørRegelOgMapTilVLRefusjonOgGradering(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
+    private BeregningsgrunnlagDto kjørRegelOgMapTilVLRefusjonOgGradering(BehandlingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
         String regelInput = toJson(input);
         logger.info("Regelinput for splitt perioder refusjon og gradering: " + regelInput);
         List<SplittetPeriode> splittedePerioder = FastsettPeriodeRegel.fastsett(input);

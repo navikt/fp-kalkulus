@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk;
 
 import java.util.Map;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 

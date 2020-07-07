@@ -6,7 +6,7 @@ import java.util.Map;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
-class MapHjemmelFraRegelTilVL {
+public class MapHjemmelFraRegelTilVL {
 
     private static final Map<BeregningsgrunnlagHjemmel, Hjemmel> hjemmelMap =
         new EnumMap<>(BeregningsgrunnlagHjemmel.class);
@@ -33,6 +33,9 @@ class MapHjemmelFraRegelTilVL {
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_14_7_8_47, Hjemmel.F_14_7_8_47);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_14_7_8_49, Hjemmel.F_14_7_8_49);
 
+        hjemmelMap.put(BeregningsgrunnlagHjemmel.F_22_13_6, Hjemmel.F_22_13_6);
+
+
         hjemmelMap.put(BeregningsgrunnlagHjemmel.KORONALOVEN_3, Hjemmel.KORONALOVEN_3);
     }
 
@@ -40,7 +43,7 @@ class MapHjemmelFraRegelTilVL {
         // skjul public constructor
     }
 
-    static Hjemmel map(BeregningsgrunnlagHjemmel hjemmel) {
+    public static Hjemmel map(BeregningsgrunnlagHjemmel hjemmel) {
         if (hjemmel == null) {
             return Hjemmel.UDEFINERT;
         }

@@ -11,8 +11,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGraderingImpl;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
@@ -65,7 +65,7 @@ public class MapAndelGraderingTest {
             vlAndelGradering, filter);
 
         // Assert
-        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2.SN);
+        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2.SN);
         assertThat(regelAndelGradering.getGraderinger()).hasSize(2);
         assertThat(regelAndelGradering.getGraderinger()).anySatisfy(periode -> {
             assertThat(periode.getFom()).isEqualTo(fom1);
@@ -99,7 +99,7 @@ public class MapAndelGraderingTest {
         AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGradering(null, ref, vlAndelGradering, filter);
 
         // Assert
-        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2.FL);
+        assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2.FL);
         assertThat(regelAndelGradering.getGraderinger()).hasSize(2);
         assertThat(regelAndelGradering.getGraderinger()).anySatisfy(periode -> {
             assertThat(periode.getFom()).isEqualTo(fom1);

@@ -11,15 +11,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.InntektsmeldingMedRefusjonTjeneste;
@@ -42,8 +39,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
-
-    private static final Logger logger = LoggerFactory.getLogger(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel.class);
 
     protected MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel() {
     }
@@ -86,7 +81,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                                                       LocalDate skjæringstidspunkt,
                                                       List<SplittetPeriode> eksisterendePerioder,
                                                       List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
-                                                      List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger);
+                                                      List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> regelAndelGraderinger);
 
     protected abstract void mapInntektsmelding(BeregningsgrunnlagInput input,
                                                Collection<InntektsmeldingDto> inntektsmeldinger,

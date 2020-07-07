@@ -10,11 +10,12 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusV2;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapHjemmelFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -43,7 +44,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                               List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         andelListe.forEach(eksisterendeAndel -> mapEksisterendeAndel(splittetPeriode, beregningsgrunnlagPeriode, eksisterendeAndel));
         splittetPeriode.getNyeAndeler()
-            .forEach(nyAndel -> mapNyAndelTaHensynTilSNFL(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
+                .forEach(nyAndel -> mapNyAndelTaHensynTilSNFL(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
     }
 
     private void mapNyAndelTaHensynTilSNFL(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
@@ -61,30 +62,31 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                 throw new IllegalStateException("Klarte ikke identifisere aktivitetstatus under periodesplitt. Status var " + nyAndel.getAktivitetStatus());
             }
             boolean eksisterende = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .anyMatch(a -> a.getAktivitetStatus().equals(aktivitetStatus) && a.getArbeidsforholdType().equals(aktivitetTypeMap.get(aktivitetStatus)) &&
-                    a.getBeregningsperiodeFom().equals(beregningsperiode.getFomDato()) && a.getBeregningsperiodeTom().equals(beregningsperiode.getTomDato()));
+                    .anyMatch(a -> a.getAktivitetStatus().equals(aktivitetStatus) && a.getArbeidsforholdType().equals(aktivitetTypeMap.get(aktivitetStatus)) &&
+                            a.getBeregningsperiodeFom().equals(beregningsperiode.getFomDato()) && a.getBeregningsperiodeTom().equals(beregningsperiode.getTomDato()));
             if (!eksisterende) {
                 BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                    .medAktivitetStatus(aktivitetStatus)
-                    .medArbforholdType(aktivitetTypeMap.get(aktivitetStatus))
-                    .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
-                    .build(beregningsgrunnlagPeriode);
+                        .medAktivitetStatus(aktivitetStatus)
+                        .medArbforholdType(aktivitetTypeMap.get(aktivitetStatus))
+                        .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
+                        .build(beregningsgrunnlagPeriode);
             }
         } else {
             Arbeidsgiver arbeidsgiver = MapArbeidsforholdFraRegelTilVL.map(nyAndel.getArbeidsforhold());
             InternArbeidsforholdRefDto iaRef = InternArbeidsforholdRefDto.ref(nyAndel.getArbeidsforhold().getArbeidsforholdId());
             BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
-                .medArbeidsgiver(arbeidsgiver)
-                .medArbeidsforholdRef(iaRef)
-                .medArbeidsperiodeFom(nyAndel.getArbeidsperiodeFom())
-                .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom())
-                .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr());
+                    .medArbeidsgiver(arbeidsgiver)
+                    .medArbeidsforholdRef(iaRef)
+                    .medArbeidsperiodeFom(nyAndel.getArbeidsperiodeFom())
+                    .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom())
+                    .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr())
+                    .medHjemmel(MapHjemmelFraRegelTilVL.map(nyAndel.getAnvendtRefusjonskravfristHjemmel()));
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
-                .build(beregningsgrunnlagPeriode);
+                    .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
+                    .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                    .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+                    .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
+                    .build(beregningsgrunnlagPeriode);
         }
     }
 
@@ -95,29 +97,30 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
         var status = statusMap.get(aktivitetStatusV2);
         if (status == null) {
             throw new IllegalStateException(
-                "Mangler mapping til " + AktivitetStatus.class.getName() + " fra " + AktivitetStatusV2.class.getName() + "." + aktivitetStatusV2);
+                    "Mangler mapping til " + AktivitetStatus.class.getName() + " fra " + AktivitetStatusV2.class.getName() + "." + aktivitetStatusV2);
         }
         return status;
     }
 
     private boolean nyAndelErSNEllerFl(SplittetAndel nyAndel) {
         return nyAndel.getAktivitetStatus() != null
-            && (nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.SN) || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.FL));
+                && (nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.SN) || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.FL));
     }
 
     private void mapEksisterendeAndel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
                                       BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier(eksisterendeAndel);
-        Optional<BeregningsgrunnlagPrArbeidsforhold> regelMatchOpt = finnEksisterendeAndelFraRegel(splittetPeriode, eksisterendeAndel);
+        Optional<EksisterendeAndel> regelMatchOpt = finnEksisterendeAndelFraRegel(splittetPeriode, eksisterendeAndel);
         regelMatchOpt.ifPresent(regelAndel -> {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder();
             BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = bgAndelArbeidsforholdDtoBuilder
-                .medRefusjonskravPrÅr(regelAndel.getRefusjonskravPrÅr().orElse(BigDecimal.ZERO));
+                    .medRefusjonskravPrÅr(regelAndel.getRefusjonskravPrÅr().orElse(BigDecimal.ZERO))
+                    .medHjemmel(MapHjemmelFraRegelTilVL.map(regelAndel.getAnvendtRefusjonskravfristHjemmel()));
             andelBuilder.medBGAndelArbeidsforhold(andelArbeidsforholdBuilder);
         });
 
         andelBuilder
-            .build(beregningsgrunnlagPeriode);
+                .build(beregningsgrunnlagPeriode);
     }
 
 }

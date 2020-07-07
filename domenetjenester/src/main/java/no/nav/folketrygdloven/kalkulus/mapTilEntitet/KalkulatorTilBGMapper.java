@@ -55,7 +55,7 @@ public class KalkulatorTilBGMapper {
 
         //legg til
         fraKalkulus.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
-        fraKalkulus.getBeregningsgrunnlagPrStatusOgAndelList().forEach( statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
+        fraKalkulus.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
 
         return builder;
     }
@@ -72,26 +72,26 @@ public class KalkulatorTilBGMapper {
 
     private static BeregningsgrunnlagPrStatusOgAndel.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto fraKalkulus) {
         BeregningsgrunnlagPrStatusOgAndel.Builder builder = BeregningsgrunnlagPrStatusOgAndel.builder()
-            .medAktivitetStatus(AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode()))
-            .medAndelsnr(fraKalkulus.getAndelsnr())
-            .medArbforholdType(fraKalkulus.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraKalkulus.getArbeidsforholdType().getKode()))
-            .medAvkortetBrukersAndelPrÅr(fraKalkulus.getAvkortetBrukersAndelPrÅr())
-            .medAvkortetPrÅr(fraKalkulus.getAvkortetPrÅr())
-            .medAvkortetRefusjonPrÅr(fraKalkulus.getAvkortetRefusjonPrÅr())
-            .medBeregnetPrÅr(fraKalkulus.getBeregnetPrÅr())
-            .medBesteberegningPrÅr(fraKalkulus.getBesteberegningPrÅr())
-            .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
-            .medOverstyrtPrÅr(fraKalkulus.getOverstyrtPrÅr())
-            .medFordeltPrÅr(fraKalkulus.getFordeltPrÅr())
-            .medRedusertPrÅr(fraKalkulus.getRedusertPrÅr())
-            .medRedusertBrukersAndelPrÅr(fraKalkulus.getRedusertBrukersAndelPrÅr())
-            .medMaksimalRefusjonPrÅr(fraKalkulus.getMaksimalRefusjonPrÅr())
-            .medRedusertRefusjonPrÅr(fraKalkulus.getRedusertRefusjonPrÅr())
-            .medÅrsbeløpFraTilstøtendeYtelse(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
-            .medNyIArbeidslivet(fraKalkulus.getNyIArbeidslivet())
-            .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
-            .medLagtTilAvSaksbehandler(fraKalkulus.getLagtTilAvSaksbehandler())
-            .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse());
+                .medAktivitetStatus(AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode()))
+                .medAndelsnr(fraKalkulus.getAndelsnr())
+                .medArbforholdType(fraKalkulus.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraKalkulus.getArbeidsforholdType().getKode()))
+                .medAvkortetBrukersAndelPrÅr(fraKalkulus.getAvkortetBrukersAndelPrÅr())
+                .medAvkortetPrÅr(fraKalkulus.getAvkortetPrÅr())
+                .medAvkortetRefusjonPrÅr(fraKalkulus.getAvkortetRefusjonPrÅr())
+                .medBeregnetPrÅr(fraKalkulus.getBeregnetPrÅr())
+                .medBesteberegningPrÅr(fraKalkulus.getBesteberegningPrÅr())
+                .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
+                .medOverstyrtPrÅr(fraKalkulus.getOverstyrtPrÅr())
+                .medFordeltPrÅr(fraKalkulus.getFordeltPrÅr())
+                .medRedusertPrÅr(fraKalkulus.getRedusertPrÅr())
+                .medRedusertBrukersAndelPrÅr(fraKalkulus.getRedusertBrukersAndelPrÅr())
+                .medMaksimalRefusjonPrÅr(fraKalkulus.getMaksimalRefusjonPrÅr())
+                .medRedusertRefusjonPrÅr(fraKalkulus.getRedusertRefusjonPrÅr())
+                .medÅrsbeløpFraTilstøtendeYtelse(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
+                .medNyIArbeidslivet(fraKalkulus.getNyIArbeidslivet())
+                .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
+                .medLagtTilAvSaksbehandler(fraKalkulus.getLagtTilAvSaksbehandler())
+                .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse());
 
         if (fraKalkulus.getBeregningsperiodeFom() != null) {
             builder.medBeregningsperiode(fraKalkulus.getBeregningsperiodeFom(), fraKalkulus.getBeregningsperiodeTom());
@@ -115,6 +115,9 @@ public class KalkulatorTilBGMapper {
         builder.medLønnsendringIBeregningsperioden(fraKalkulus.erLønnsendringIBeregningsperioden());
         builder.medTidsbegrensetArbeidsforhold(fraKalkulus.getErTidsbegrensetArbeidsforhold());
         builder.medRefusjonskravPrÅr(fraKalkulus.getRefusjonskravPrÅr());
+        builder.medHjemmel(fraKalkulus.getHjemmelForRefusjonskravfrist() == null
+                || fraKalkulus.getHjemmelForRefusjonskravfrist().equals(Hjemmel.UDEFINERT) ?
+                null : fraKalkulus.getHjemmelForRefusjonskravfrist());
 
         fraKalkulus.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
         fraKalkulus.getNaturalytelseBortfaltPrÅr().ifPresent(builder::medNaturalytelseBortfaltPrÅr);

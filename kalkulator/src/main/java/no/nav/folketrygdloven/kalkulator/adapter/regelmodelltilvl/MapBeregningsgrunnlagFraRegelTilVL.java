@@ -342,7 +342,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                         .medArbeidsgiver(arbeidsgiver.orElse(null))
                         .medArbeidsforholdRef(arbeidsforholdRef.orElse(null))
                         .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
-                        .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null));
+                        .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null))
+                        .medHjemmel(arbeidsforhold.getHjemmelForRefusjonskravfrist());
                 andelBuilder
                         .medBGAndelArbeidsforhold(bgAndelArbeidsforhold);
             }

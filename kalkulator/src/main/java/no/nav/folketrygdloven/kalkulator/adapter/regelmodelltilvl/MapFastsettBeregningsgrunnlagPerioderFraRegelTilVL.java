@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapPeriodeÅrsakFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -55,7 +55,7 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
         return tom;
     }
 
-    Optional<BeregningsgrunnlagPrArbeidsforhold> finnEksisterendeAndelFraRegel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
+    Optional<EksisterendeAndel> finnEksisterendeAndelFraRegel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
         return splittetPeriode.getEksisterendePeriodeAndeler().stream()
             .filter(andel -> andel.getAndelNr().equals(eksisterendeAndel.getAndelsnr()))
             .findFirst();

@@ -9,14 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeModell;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodisertBruttoBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodisertBruttoBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.RefusjonskravFrist;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
+import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -49,7 +52,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         førsteMuligeRefusjonsdato.ifPresent(builder::medOverstyrtRefusjonsFrist);
         LocalDate innsendingsdatoFørsteInntektsmeldingMedRefusjon = førsteIMMap.get(ya.getArbeidsgiver());
         builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon)
-                .medAntallMånederRefusjonskravFrist(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getFristMånederEtterRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon));
+                .medRefusjonskravFrist(lagRefusjonskravFrist(input, innsendingsdatoFørsteInntektsmeldingMedRefusjon));
+    }
+
+    private RefusjonskravFrist lagRefusjonskravFrist(BeregningsgrunnlagInput input, LocalDate innsendingsdatoFørsteInntektsmeldingMedRefusjon) {
+        Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(input.getFagsakYtelseType());
+        return new RefusjonskravFrist(konfigverdier.getFristMånederEtterRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon),
+                BeregningsgrunnlagHjemmel.valueOf(konfigverdier.getHjemmelForRefusjonfrist(innsendingsdatoFørsteInntektsmeldingMedRefusjon).getKode()));
     }
 
     @Override
@@ -72,7 +81,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                                              LocalDate skjæringstidspunkt,
                                              List<SplittetPeriode> eksisterendePerioder,
                                              List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
-                                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AndelGradering> regelAndelGraderinger) {
+                                             List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> regelAndelGraderinger) {
         List<PeriodisertBruttoBeregningsgrunnlag> periodiseringBruttoBg = MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag);
 
         return PeriodeModell.builder()

@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapPeriodeÅrsakFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -45,7 +45,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse ext
     private void mapEksisterendeAndel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier(eksisterendeAndel);
 
-        Optional<BeregningsgrunnlagPrArbeidsforhold> regelMatchOpt = splittetPeriode.getEksisterendePeriodeAndeler().stream()
+        Optional<EksisterendeAndel> regelMatchOpt = splittetPeriode.getEksisterendePeriodeAndeler().stream()
             .filter(andel -> andel.getAndelNr().equals(eksisterendeAndel.getAndelsnr()))
             .findFirst();
         regelMatchOpt.ifPresent(regelAndel -> {

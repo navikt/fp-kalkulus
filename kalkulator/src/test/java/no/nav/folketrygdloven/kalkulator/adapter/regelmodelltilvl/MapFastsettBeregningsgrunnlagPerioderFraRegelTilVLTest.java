@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
@@ -115,8 +116,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
                 .build(vlBeregningsgrunnlag);
     }
 
-    private BeregningsgrunnlagPrArbeidsforhold mapTilBeregningsgrunnlagPrArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return BeregningsgrunnlagPrArbeidsforhold.builder()
+    private EksisterendeAndel mapTilBeregningsgrunnlagPrArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return EksisterendeAndel.builder()
             .medAndelNr(andel.getAndelsnr())
             .medArbeidsforhold(Arbeidsforhold.nyttArbeidsforholdHosPrivatperson(ARBEIDSGIVER.getIdentifikator())).build();
     }
