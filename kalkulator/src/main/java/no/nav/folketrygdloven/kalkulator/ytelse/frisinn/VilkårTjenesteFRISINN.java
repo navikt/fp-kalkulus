@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -55,9 +56,9 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
 
     private Boolean erAlleSøknadperioderAvslått(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
         FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
-        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode);
+        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode).collect(Collectors.toList());
         return beregningVilkårResultatListe.stream()
-                .filter(vp -> søktePerioder.anyMatch(p -> vp.getPeriode().overlapper(p)))
+                .filter(vp -> søktePerioder.stream().anyMatch(p -> vp.getPeriode().overlapper(p)))
                 .noneMatch(BeregningVilkårResultat::getErVilkårOppfylt);
     }
 
@@ -69,9 +70,9 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
     }
 
     private boolean erAllePerioderAvkortetTilNull(BeregningsgrunnlagDto beregningsgrunnlagDto, FrisinnGrunnlag frisinnGrunnlag) {
-        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode);
+        var søktePerioder = frisinnGrunnlag.getFrisinnPerioder().stream().map(FrisinnPeriode::getPeriode).collect(Collectors.toList());
         return beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().stream()
-                .filter(bgPeriode -> søktePerioder.anyMatch(søktPeriode -> bgPeriode.getPeriode().overlapper(søktPeriode)))
+                .filter(bgPeriode -> søktePerioder.stream().anyMatch(søktPeriode -> bgPeriode.getPeriode().overlapper(søktPeriode)))
                 .allMatch(p -> harAvkortetGrunnetAnnenInntekt(frisinnGrunnlag, p));
     }
 
