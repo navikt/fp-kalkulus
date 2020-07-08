@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,7 +11,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.perioder.FastsettPeriodeRegel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
@@ -18,8 +21,8 @@ import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBer
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.fpsak.nare.evaluation.Evaluation;
 
 
 @ApplicationScoped
@@ -62,21 +65,25 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
 
         PeriodeModell periodeModell = mapper.map(input, beregningsgrunnlag);
-        return kjørRegelOgMapTilVLRefusjonOgGradering(input.getBehandlingReferanse(), beregningsgrunnlag, periodeModell);
+        return kjørRegelOgMapTilVLRefusjonOgGradering(beregningsgrunnlag, periodeModell);
     }
 
     private BeregningsgrunnlagDto kjørRegelOgMapTilVLNaturalytelse(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
         String regelInput = toJson(input);
         logger.info("Regelinput for splitt perioder naturalytelse: " + regelInput);
-        List<SplittetPeriode> splittedePerioder = FastsettPeriodeRegel.fastsett(input);
-        return oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, regelInput, beregningsgrunnlag);
+        List<SplittetPeriode> splittedePerioder = new ArrayList<>();
+        Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
+        RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluation, regelInput);
+        return oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, regelResultat, beregningsgrunnlag);
     }
 
-    private BeregningsgrunnlagDto kjørRegelOgMapTilVLRefusjonOgGradering(BehandlingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
+    private BeregningsgrunnlagDto kjørRegelOgMapTilVLRefusjonOgGradering(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
         String regelInput = toJson(input);
         logger.info("Regelinput for splitt perioder refusjon og gradering: " + regelInput);
-        List<SplittetPeriode> splittedePerioder = FastsettPeriodeRegel.fastsett(input);
-        return oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, regelInput, beregningsgrunnlag);
+        List<SplittetPeriode> splittedePerioder = new ArrayList<>();
+        Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
+        RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluation, regelInput);
+        return oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, regelResultat, beregningsgrunnlag);
     }
 
     private String toJson(Object o) {

@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagRegelSporingDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
@@ -23,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAktivitetHandlingType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
@@ -44,15 +46,11 @@ public class KalkulatorTilEntitetMapper {
         //med
         builder.medGrunnbeløp(new Beløp(beregningsgrunnlagFraKalkulus.getGrunnbeløp().getVerdi()));
         builder.medOverstyring(beregningsgrunnlagFraKalkulus.isOverstyrt());
-        if (beregningsgrunnlagFraKalkulus.getRegelinputPeriodisering() != null) {
-            builder.medRegelinputPeriodisering(beregningsgrunnlagFraKalkulus.getRegelinputPeriodisering());
-        }
-        if (beregningsgrunnlagFraKalkulus.getRegelInputBrukersStatus() != null && beregningsgrunnlagFraKalkulus.getRegelloggBrukersStatus() != null) {
-            builder.medRegelloggBrukersStatus(beregningsgrunnlagFraKalkulus.getRegelInputBrukersStatus(), beregningsgrunnlagFraKalkulus.getRegelloggBrukersStatus());
-        }
-        if (beregningsgrunnlagFraKalkulus.getRegelInputSkjæringstidspunkt() != null && beregningsgrunnlagFraKalkulus.getRegelloggSkjæringstidspunkt() != null) {
-            builder.medRegelloggSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getRegelInputSkjæringstidspunkt(), beregningsgrunnlagFraKalkulus.getRegelloggSkjæringstidspunkt());
-        }
+        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING);
+        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
+        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON);
+        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.BRUKERS_STATUS);
+        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT);
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
         if (beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag() != null) {
             builder.medSammenligningsgrunnlagOld(KalkulatorTilBGMapper.mapSammenligningsgrunnlag(beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag()));
@@ -65,6 +63,13 @@ public class KalkulatorTilEntitetMapper {
         beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
+    }
+
+    private static void leggTilRegelsporing(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus, BeregningsgrunnlagEntitet.Builder builder, BeregningsgrunnlagRegelType regelType) {
+        BeregningsgrunnlagRegelSporingDto regelLogg = beregningsgrunnlagFraKalkulus.getRegelLogg(BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
+        if (regelLogg != null) {
+            builder.medRegellogg(regelLogg.getRegelInput(), regelLogg.getRegelEvaluering(), regelType);
+        }
     }
 
     public static BeregningRefusjonOverstyringerEntitet mapRefusjonOverstyring(BeregningRefusjonOverstyringerDto refusjonOverstyringerFraKalkulus) {

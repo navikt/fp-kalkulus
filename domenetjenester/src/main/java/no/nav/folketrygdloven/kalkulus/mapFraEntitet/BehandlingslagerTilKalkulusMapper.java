@@ -23,8 +23,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagRegelSporing;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAktivitetHandlingType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 public class BehandlingslagerTilKalkulusMapper {
@@ -49,15 +51,11 @@ public class BehandlingslagerTilKalkulusMapper {
         //med
         builder.medGrunnbeløp(beregningsgrunnlagFraFpsak.getGrunnbeløp().getVerdi());
         builder.medOverstyring(beregningsgrunnlagFraFpsak.isOverstyrt());
-        if (beregningsgrunnlagFraFpsak.getRegelinputPeriodisering() != null) {
-            builder.medRegelinputPeriodisering(beregningsgrunnlagFraFpsak.getRegelinputPeriodisering());
-        }
-        if (beregningsgrunnlagFraFpsak.getRegelInputBrukersStatus() != null && beregningsgrunnlagFraFpsak.getRegelloggBrukersStatus() != null) {
-            builder.medRegelloggBrukersStatus(beregningsgrunnlagFraFpsak.getRegelInputBrukersStatus(), beregningsgrunnlagFraFpsak.getRegelloggBrukersStatus());
-        }
-        if (beregningsgrunnlagFraFpsak.getRegelInputSkjæringstidspunkt() != null && beregningsgrunnlagFraFpsak.getRegelloggSkjæringstidspunkt() != null) {
-            builder.medRegelloggSkjæringstidspunkt(beregningsgrunnlagFraFpsak.getRegelInputSkjæringstidspunkt(), beregningsgrunnlagFraFpsak.getRegelloggSkjæringstidspunkt());
-        }
+        leggTilSporingHvisFinnes(beregningsgrunnlagFraFpsak, builder, BeregningsgrunnlagRegelType.PERIODISERING);
+        leggTilSporingHvisFinnes(beregningsgrunnlagFraFpsak, builder, BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
+        leggTilSporingHvisFinnes(beregningsgrunnlagFraFpsak, builder, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON);
+        leggTilSporingHvisFinnes(beregningsgrunnlagFraFpsak, builder, BeregningsgrunnlagRegelType.BRUKERS_STATUS);
+        leggTilSporingHvisFinnes(beregningsgrunnlagFraFpsak, builder, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT);
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraFpsak.getSkjæringstidspunkt());
         if (beregningsgrunnlagFraFpsak.getSammenligningsgrunnlag() != null) {
             builder.medSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlag(beregningsgrunnlagFraFpsak.getSammenligningsgrunnlag()));
@@ -70,6 +68,13 @@ public class BehandlingslagerTilKalkulusMapper {
         beregningsgrunnlagFraFpsak.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
+    }
+
+    private static void leggTilSporingHvisFinnes(BeregningsgrunnlagEntitet beregningsgrunnlagFraFpsak, BeregningsgrunnlagDto.Builder builder, BeregningsgrunnlagRegelType regelType) {
+        if (beregningsgrunnlagFraFpsak.getRegelsporing(regelType) != null) {
+            BeregningsgrunnlagRegelSporing regelsporing = beregningsgrunnlagFraFpsak.getRegelsporing(regelType);
+            builder.medRegellogg(regelsporing.getRegelInput(), regelsporing.getRegelEvaluering(), regelType);
+        }
     }
 
     private static BeregningRefusjonOverstyringerDto mapRefusjonOverstyring(BeregningRefusjonOverstyringerEntitet refusjonOverstyringerFraFpsak) {

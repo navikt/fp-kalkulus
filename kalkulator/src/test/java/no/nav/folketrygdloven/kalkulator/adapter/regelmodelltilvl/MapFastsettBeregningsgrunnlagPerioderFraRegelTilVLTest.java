@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
@@ -41,6 +42,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.fra(AktørId.dummy());
     private static final BigDecimal NATURALYTELSE_TILKOMMET_PR_ÅR = BigDecimal.valueOf(2000);
     private static final BigDecimal BEREGNET_PR_ÅR = BigDecimal.valueOf(1000);
+    public static final RegelResultat REGEL_RESULTAT = new RegelResultat(null, "input", "sporing");
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
 
@@ -59,10 +61,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
             .build());
 
         // Act
-        BeregningsgrunnlagDto nyttBg = mapTilVlNaturalytelse.mapFraRegel(splittetPerioder, null, vlBeregningsgrunnlag);
+        BeregningsgrunnlagDto nyttBg = mapTilVlNaturalytelse.mapFraRegel(splittetPerioder, REGEL_RESULTAT, vlBeregningsgrunnlag);
 
         // Assert
-        assertThat(nyttBg).isEqualToComparingFieldByFieldRecursively(vlBeregningsgrunnlag);
+        assertThat(nyttBg.getBeregningsgrunnlagPerioder().size()).isEqualTo(vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size());
     }
 
     @Test
@@ -79,10 +81,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
             .build());
 
         // Act
-        BeregningsgrunnlagDto nyttBg = mapTilVlRefusjonOgGradering.mapFraRegel(splittetPerioder, null, vlBeregningsgrunnlag);
+        BeregningsgrunnlagDto nyttBg = mapTilVlRefusjonOgGradering.mapFraRegel(splittetPerioder, REGEL_RESULTAT, vlBeregningsgrunnlag);
 
         // Assert
-        assertThat(nyttBg).isEqualToComparingFieldByFieldRecursively(vlBeregningsgrunnlag);
+        assertThat(nyttBg.getBeregningsgrunnlagPerioder().size()).isEqualTo(vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size());
     }
 
 

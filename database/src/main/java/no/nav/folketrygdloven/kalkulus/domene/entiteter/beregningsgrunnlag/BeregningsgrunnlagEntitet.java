@@ -133,6 +133,10 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return regelSporingMap;
     }
 
+    public BeregningsgrunnlagRegelSporing getRegelsporing(BeregningsgrunnlagRegelType regelType) {
+        return regelSporingMap.getOrDefault(regelType, null);
+    }
+
     public String getRegelinputPeriodisering() {
         return regelSporingMap.containsKey(PERIODISERING) ? regelSporingMap.get(PERIODISERING).getRegelInput() : null;
     }
@@ -345,6 +349,17 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
+        public Builder medRegellogg(String regelInput, String regelEvaluering, BeregningsgrunnlagRegelType regelType) {
+            verifiserKanModifisere();
+            if (regelInput != null) {
+                BeregningsgrunnlagRegelSporing.ny()
+                        .medRegelInput(regelInput)
+                        .medRegelEvaluering(regelEvaluering)
+                        .medRegelType(regelType)
+                        .build(kladd);
+            }
+            return this;
+        }
         public Builder medOverstyring(boolean overstyrt) {
             verifiserKanModifisere();
             kladd.overstyrt = overstyrt;

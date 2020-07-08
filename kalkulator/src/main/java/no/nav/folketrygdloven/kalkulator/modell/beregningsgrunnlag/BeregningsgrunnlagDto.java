@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagRegelSporing;
 
 public class BeregningsgrunnlagDto {
 
@@ -116,6 +117,11 @@ public class BeregningsgrunnlagDto {
             beregningsgrunnlagPerioder.add(bgPeriode);
         }
     }
+
+    public BeregningsgrunnlagRegelSporingDto getRegelLogg(BeregningsgrunnlagRegelType regelType) {
+        return regelSporingMap.getOrDefault(regelType, null);
+    }
+
 
     public String getRegelinputPeriodisering() {
         return regelSporingMap.containsKey(PERIODISERING) ? regelSporingMap.get(PERIODISERING).getRegelInput() : null;
@@ -306,7 +312,6 @@ public class BeregningsgrunnlagDto {
 
         public Builder medRegelloggSkjæringstidspunkt(String regelInput, String regelEvaluering) {
             verifiserKanModifisere();
-            // Lagrer til begge regel-sporinger til vi har kjørt migrering
             BeregningsgrunnlagRegelSporingDto.ny()
                     .medRegelInput(regelInput)
                     .medRegelEvaluering(regelEvaluering)
@@ -317,7 +322,6 @@ public class BeregningsgrunnlagDto {
 
         public Builder medRegelloggBrukersStatus(String regelInput, String regelEvaluering) {
             verifiserKanModifisere();
-            // Lagrer til begge regel-sporinger til vi har kjørt migrering
             BeregningsgrunnlagRegelSporingDto.ny()
                     .medRegelInput(regelInput)
                     .medRegelEvaluering(regelEvaluering)
@@ -326,17 +330,19 @@ public class BeregningsgrunnlagDto {
             return this;
         }
 
-        public Builder medRegelinputPeriodisering(String regelInput) {
+        public Builder medRegellogg(String regelInput, String regelEvaluering, BeregningsgrunnlagRegelType regelType) {
             verifiserKanModifisere();
-            // Lagrer til begge regel-sporinger til vi har kjørt migrering
             if (regelInput != null) {
                 BeregningsgrunnlagRegelSporingDto.ny()
                         .medRegelInput(regelInput)
-                        .medRegelType(PERIODISERING)
+                        .medRegelEvaluering(regelEvaluering)
+                        .medRegelType(regelType)
                         .build(kladd);
             }
             return this;
         }
+
+
 
         public Builder medOverstyring(boolean overstyrt) {
             verifiserKanModifisere();

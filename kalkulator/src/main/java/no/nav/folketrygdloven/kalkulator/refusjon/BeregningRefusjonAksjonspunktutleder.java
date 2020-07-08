@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.perioder.FastsettPeriodeRegel;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspu
 @ApplicationScoped
 public class BeregningRefusjonAksjonspunktutleder {
 
+    public static final RegelResultat DUMMY_REGEL_RESULTAT = new RegelResultat(null, "", "");
     private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering;
 
@@ -53,8 +54,14 @@ public class BeregningRefusjonAksjonspunktutleder {
 
     private BeregningsgrunnlagDto hentRefusjonForBG(BeregningsgrunnlagInput input) {
         PeriodeModell modell = mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon.map(input, input.getBeregningsgrunnlag());
-        List<SplittetPeriode> splittedePerioder = FastsettPeriodeRegel.fastsett(modell);
-        return oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, null, input.getBeregningsgrunnlag());
+        List<SplittetPeriode> splittedePerioder = kjørRegel(modell);
+        return oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, DUMMY_REGEL_RESULTAT, input.getBeregningsgrunnlag());
+    }
+
+    private List<SplittetPeriode> kjørRegel(PeriodeModell modell) {
+        List<SplittetPeriode> splittedePerioder = new ArrayList<>();
+        new FastsettPeriodeRegel().evaluer(modell, splittedePerioder);
+        return splittedePerioder;
     }
 
 }

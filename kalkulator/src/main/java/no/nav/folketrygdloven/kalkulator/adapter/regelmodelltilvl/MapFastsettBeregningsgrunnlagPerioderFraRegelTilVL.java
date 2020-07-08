@@ -4,25 +4,31 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapPeriodeÅrsakFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.vedtak.konfig.Tid;
 
 abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
-    public BeregningsgrunnlagDto mapFraRegel(List<SplittetPeriode> splittedePerioder, String regelinputPeriodisering, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    public BeregningsgrunnlagDto mapFraRegel(List<SplittetPeriode> splittedePerioder,
+                                             RegelResultat regelResultat,
+                                             BeregningsgrunnlagDto vlBeregningsgrunnlag) {
 
         BeregningsgrunnlagDto nytt = BeregningsgrunnlagDto.builder(vlBeregningsgrunnlag)
-            .medRegelinputPeriodisering(regelinputPeriodisering)
+            .medRegellogg(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing(), getRegelType())
             .fjernAllePerioder().build();
 
         splittedePerioder.forEach(splittetPeriode -> mapSplittetPeriode(nytt, splittetPeriode, vlBeregningsgrunnlag));
         return nytt;
     }
+
+    protected abstract BeregningsgrunnlagRegelType getRegelType();
 
     protected void mapSplittetPeriode(BeregningsgrunnlagDto nyttBeregningsgrunnlag,
                                       SplittetPeriode splittetPeriode,
