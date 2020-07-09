@@ -43,7 +43,6 @@ public class BeregningAktivitetOverstyringDto {
                 .medArbeidsforholdRef(arbeidsforholdRef != null ? arbeidsforholdRef.getReferanse() : null)
                 .medOpptjeningAktivitetType(opptjeningAktivitetType)
                 .medFom(periode.getFomDato())
-                .medTom(periode.getTomDato())
                 .build();
     }
 

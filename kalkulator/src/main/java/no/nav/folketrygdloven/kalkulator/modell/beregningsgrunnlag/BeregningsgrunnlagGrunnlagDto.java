@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-
 
 public class BeregningsgrunnlagGrunnlagDto {
 
@@ -14,7 +14,6 @@ public class BeregningsgrunnlagGrunnlagDto {
     private BeregningAktivitetAggregatDto saksbehandletAktiviteter;
     private BeregningAktivitetOverstyringerDto overstyringer;
     private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
-    private boolean aktiv;
     private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;
 
     public BeregningsgrunnlagGrunnlagDto() {
@@ -52,22 +51,6 @@ public class BeregningsgrunnlagGrunnlagDto {
         return Optional.ofNullable(overstyringer);
     }
 
-    private Optional<BeregningAktivitetAggregatDto> getOverstyrteAktiviteter() {
-        if (overstyringer != null) {
-            List<BeregningAktivitetDto> overstyrteAktiviteter = registerAktiviteter.getBeregningAktiviteter().stream()
-                    .filter(beregningAktivitet -> beregningAktivitet.skalBrukes(overstyringer))
-                    .collect(Collectors.toList());
-            BeregningAktivitetAggregatDto.Builder overstyrtBuilder = BeregningAktivitetAggregatDto.builder()
-                    .medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
-            overstyrteAktiviteter.forEach(aktivitet -> {
-                BeregningAktivitetDto kopiert = BeregningAktivitetDto.kopier(aktivitet).build();
-                overstyrtBuilder.leggTilAktivitet(kopiert);
-            });
-            return Optional.of(overstyrtBuilder.build());
-        }
-        return Optional.empty();
-    }
-
     public BeregningAktivitetAggregatDto getGjeldendeAktiviteter() {
         return getOverstyrteAktiviteter()
                 .or(this::getSaksbehandletAktiviteter)
@@ -84,14 +67,6 @@ public class BeregningsgrunnlagGrunnlagDto {
 
     public BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {
         return beregningsgrunnlagTilstand;
-    }
-
-    public boolean erAktivt() {
-        return aktiv;
-    }
-
-    public void setAktiv(boolean aktiv) {
-        this.aktiv = aktiv;
     }
 
     void setBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -120,5 +95,58 @@ public class BeregningsgrunnlagGrunnlagDto {
 
     void setRefusjonOverstyringer(BeregningRefusjonOverstyringerDto refusjonOverstyringer) {
         this.refusjonOverstyringer = refusjonOverstyringer;
+    }
+
+    private Optional<BeregningAktivitetAggregatDto> getOverstyrteAktiviteter() {
+        if (overstyringer != null) {
+            List<BeregningAktivitetDto> overstyrteAktiviteter = registerAktiviteter.getBeregningAktiviteter().stream()
+                    .filter(beregningAktivitet -> beregningAktivitet.skalBrukes(overstyringer))
+                    .collect(Collectors.toList());
+            BeregningAktivitetAggregatDto.Builder overstyrtBuilder = BeregningAktivitetAggregatDto.builder()
+                    .medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
+            overstyrteAktiviteter.forEach(aktivitet -> {
+                Optional<BeregningAktivitetOverstyringDto> overstyrtAktivitet
+                        = hentOverstyrtAktivitet(overstyringer, aktivitet);
+                BeregningAktivitetDto kopiert = BeregningAktivitetDto
+                        .kopier(aktivitet)
+                        .medPeriode(getIntervall(aktivitet, overstyrtAktivitet))
+                        .build();
+                overstyrtBuilder.leggTilAktivitet(kopiert);
+            });
+            return Optional.of(overstyrtBuilder.build());
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Her hentes overstyrt aktivitet fra 'overstyringsAktiviteter' hvis 'aktivitet' finnes i listen av overstyringer
+     * i 'overstyringsAktiviteter' (hvis nøklene deres er like). Hvis denne finnes så skal det altså bety at aktiveten
+     * har blitt overstyrt, og hvis ikke, så har ikke aktiviteten overstyrt.
+     *
+     * @param overstyringsAktiviteter
+     * @param aktivitet
+     * @return En 'BeregningAktivitetOverstyringDto' hvis 'BeregningAktivitetDto' er overstyrt.
+     */
+    private Optional<BeregningAktivitetOverstyringDto> hentOverstyrtAktivitet(
+            final BeregningAktivitetOverstyringerDto overstyringsAktiviteter, final BeregningAktivitetDto aktivitet) {
+        return overstyringsAktiviteter
+                .getOverstyringer()
+                .stream()
+                .filter(overstyrtAktivitet -> overstyrtAktivitet.getNøkkel().equals(aktivitet.getNøkkel()))
+                .findFirst();
+
+    }
+
+    /**
+     * Henter periode fra overstyrt aktivitet hvis aktivitet er overstyrt. Hvis ikke så hentes periode fra aktivitet.
+     * @param aktivitet
+     * @param overstyring
+     * @return opprinnelig eller overstyrt intervall
+     */
+    private Intervall getIntervall(BeregningAktivitetDto aktivitet, Optional<BeregningAktivitetOverstyringDto> overstyring) {
+        if (overstyring.isPresent()) {
+            return overstyring.get().getPeriode();
+        }
+        return aktivitet.getPeriode();
     }
 }

@@ -38,7 +38,11 @@ class MapBeregningAktivitetDto {
         dto.setFom(beregningAktivitet.getPeriode().getFomDato());
         dto.setTom(beregningAktivitet.getPeriode().getTomDato());
         if (!saksbehandletAktiviteter.isEmpty()) {
-            dto.setSkalBrukes(saksbehandletAktiviteter.contains(beregningAktivitet));
+            Optional<BeregningAktivitetDto> matchetAktivitet = saksbehandletAktiviteter.stream().filter(a -> a.getNøkkel().equals(beregningAktivitet.getNøkkel())).findFirst();
+            matchetAktivitet.ifPresentOrElse(aktivitet -> {
+                dto.setSkalBrukes(true);
+                dto.setTom(aktivitet.getPeriode().getTomDato());
+            }, () -> dto.setSkalBrukes(false));
         }
         return dto;
     }

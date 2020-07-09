@@ -53,7 +53,6 @@ public class BeregningsaktivitetLagreDto {
         BeregningAktivitetNøkkel.Builder builder = BeregningAktivitetNøkkel.builder()
             .medOpptjeningAktivitetType(opptjeningAktivitetType)
             .medFom(fom)
-            .medTom(tom)
             .medArbeidsforholdRef(arbeidsforholdRef);
         if (oppdragsgiverOrg != null) {
             builder.medArbeidsgiverIdentifikator(oppdragsgiverOrg);
