@@ -72,7 +72,7 @@ public class MapDetaljertBeregningsgrunnlag {
     private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         return new BeregningRefusjonOverstyringDto(
             mapArbeidsgiver(beregningRefusjonOverstyringEntitet.getArbeidsgiver()),
-            beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom());
+            beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null));
     }
 
     private static BeregningAktivitetOverstyringerDto mapOverstyrteAktiviteterAggregat(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringerEntitet) {

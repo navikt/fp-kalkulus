@@ -72,6 +72,7 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
         if (statusOpt.isEmpty() && refusjonOverstyringer.isEmpty()) {
             return null;
         }
-        return statusOpt.isPresent() && statusOpt.get().getFørsteMuligeRefusjonFom().isEqual(skjæringstidspunkt);
+        Optional<LocalDate> førsteRefusjonsdato = statusOpt.flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
+        return førsteRefusjonsdato.isPresent() && førsteRefusjonsdato.get().isEqual(skjæringstidspunkt);
     }
 }

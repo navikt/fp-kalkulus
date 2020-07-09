@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
@@ -282,10 +283,15 @@ public class BeregningsgrunnlagRepository {
         }
     }
 
-    private void lagreRefusjonOverstyring(BeregningRefusjonOverstyringerEntitet beregningAktivitetOverstyringer) {
-        entityManager.persist(beregningAktivitetOverstyringer);
-        beregningAktivitetOverstyringer.getRefusjonOverstyringer().forEach(entityManager::persist);
+    private void lagreRefusjonOverstyring(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {
+        entityManager.persist(beregningRefusjonOverstyringerEntitet);
+        beregningRefusjonOverstyringerEntitet.getRefusjonOverstyringer().forEach(this::lagreRefusjonOverstyring);
 
+    }
+
+    private void lagreRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
+        entityManager.persist(beregningRefusjonOverstyringEntitet);
+        beregningRefusjonOverstyringEntitet.getRefusjonPerioder().forEach(entityManager::persist);
     }
 
     private void lagreBeregningAktivitetAggregat(BeregningAktivitetAggregatEntitet aggregat) {

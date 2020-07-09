@@ -81,7 +81,7 @@ public class BehandlingslagerTilKalkulusMapper {
         BeregningRefusjonOverstyringerDto.Builder dtoBuilder = BeregningRefusjonOverstyringerDto.builder();
 
         refusjonOverstyringerFraFpsak.getRefusjonOverstyringer().forEach(beregningRefusjonOverstyring -> {
-            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(IAYMapperTilKalkulus.mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom());
+            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(IAYMapperTilKalkulus.mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null));
             dtoBuilder.leggTilOverstyring(dto);
         });
         return dtoBuilder.build();

@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodisertBruttoBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.RefusjonskravFrist;
@@ -71,6 +71,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return refusjonOverstyringer.stream().flatMap(s -> s.getRefusjonOverstyringer().stream())
             .filter(o -> o.getArbeidsgiver().equals(ya.getArbeidsgiver()))
             .map(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .findFirst();
     }
 

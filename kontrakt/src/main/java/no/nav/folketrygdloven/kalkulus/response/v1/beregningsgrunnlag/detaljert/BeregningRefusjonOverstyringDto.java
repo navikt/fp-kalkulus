@@ -3,9 +3,11 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,17 +28,30 @@ public class BeregningRefusjonOverstyringDto {
     private Arbeidsgiver arbeidsgiver;
 
     @JsonProperty(value = "førsteMuligeRefusjonFom")
-    @NotNull
     @Valid
     private LocalDate førsteMuligeRefusjonFom;
+
+    @JsonProperty(value = "refusjonPerioder")
+    @Valid
+    @Size(min = 1)
+    private List<BeregningRefusjonPeriodeDto> refusjonPerioder;
 
     public BeregningRefusjonOverstyringDto() {
     }
 
-    public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver, @NotNull @Valid LocalDate førsteMuligeRefusjonFom) {
+    public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver, @Valid LocalDate førsteMuligeRefusjonFom) {
         this.arbeidsgiver = arbeidsgiver;
         this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
     }
+
+    public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver,
+                                           @Valid LocalDate førsteMuligeRefusjonFom,
+                                           @Valid List<BeregningRefusjonPeriodeDto> refusjonPerioder) {
+        this.arbeidsgiver = arbeidsgiver;
+        this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
+        this.refusjonPerioder = refusjonPerioder;
+    }
+
 
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;

@@ -96,7 +96,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         List<BeregningRefusjonOverstyringDto> overstyringer = beregningRefusjonOverstyringer.getRefusjonOverstyringer();
         AssertionsForClassTypes.assertThat(overstyringer.size()).isEqualTo(1);
         assertThat(overstyringer.get(0).getArbeidsgiver()).isEqualTo(VIRKSOMHET);
-        assertThat(overstyringer.get(0).getFørsteMuligeRefusjonFom()).isEqualTo(førsteMuligeDato);
+        assertThat(overstyringer.get(0).getFørsteMuligeRefusjonFom().orElse(null)).isEqualTo(førsteMuligeDato);
     }
 
     private FaktaBeregningLagreDto lagDto(boolean skalUtvideGyldighet) {
