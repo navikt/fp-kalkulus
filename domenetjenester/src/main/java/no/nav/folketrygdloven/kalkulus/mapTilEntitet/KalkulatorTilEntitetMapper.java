@@ -70,7 +70,7 @@ public class KalkulatorTilEntitetMapper {
     }
 
     private static void leggTilRegelsporing(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus, BeregningsgrunnlagEntitet.Builder builder, BeregningsgrunnlagRegelType regelType) {
-        BeregningsgrunnlagRegelSporingDto regelLogg = beregningsgrunnlagFraKalkulus.getRegelLogg(BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
+        BeregningsgrunnlagRegelSporingDto regelLogg = beregningsgrunnlagFraKalkulus.getRegelLogg(regelType);
         if (regelLogg != null) {
             builder.medRegellogg(regelLogg.getRegelInput(), regelLogg.getRegelEvaluering(), regelType);
         }
