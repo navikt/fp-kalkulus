@@ -95,7 +95,6 @@ public class VisningsnavnForAktivitetTjeneste {
     }
 
     private static String finnVisningsnavnUtenReferanse(Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        logger.info("Finner visningsnavn for arbeidsgiver {} med registrerte arbeidsgiveropplysninger {}", arbeidsgiver, arbeidsgiverOpplysninger);
         String navn = finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).orElse("");
         if (erPrivatpersonMedFeilendeKallTilTPS(arbeidsgiver, arbeidsgiverOpplysninger)) {
             return navn;
