@@ -20,6 +20,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.MDC;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
@@ -76,6 +79,8 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
         var startTx = Instant.now();
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         var koblingReferanse1 = new KoblingReferanse(spesifikasjon.getKoblingReferanse1());
+        koblingTjeneste.hentFor(koblingReferanse1).map(KoblingEntitet::getSaksnummer)
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         var koblingReferanse2 = new KoblingReferanse(spesifikasjon.getKoblingReferanse2());
         Optional<Long> koblingId1 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse1, ytelseTyperKalkulusStøtter);
         Optional<Long> koblingId2 = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse2, ytelseTyperKalkulusStøtter);

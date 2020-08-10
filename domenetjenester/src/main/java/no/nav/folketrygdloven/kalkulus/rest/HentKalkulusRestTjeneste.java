@@ -22,6 +22,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.MDC;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +35,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
@@ -238,6 +241,8 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
@@ -275,6 +280,8 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(HentBeregningsgrunnlagRequest spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
         if (!harKalkulatorInput(koblingId)) {
@@ -285,6 +292,8 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
 
     private Optional<BeregningsgrunnlagDto> hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(HentBeregningsgrunnlagDtoForGUIRequest spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
+        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
