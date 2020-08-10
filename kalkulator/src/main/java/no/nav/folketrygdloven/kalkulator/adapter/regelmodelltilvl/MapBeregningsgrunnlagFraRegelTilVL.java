@@ -45,12 +45,12 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     public BeregningsgrunnlagDto mapForeslåBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
-                                                                     List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
+                                                              List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FORESLÅ);
     }
 
     public BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
-                                                                      List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
+                                                               List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FASTSETT);
     }
 
@@ -204,7 +204,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return vlBGPAndel.getBgAndelArbeidsforhold().isPresent() &&
                 (arbeidsforhold.getNaturalytelseBortfaltPrÅr().isPresent()
                         || arbeidsforhold.getNaturalytelseTilkommetPrÅr().isPresent()
-                || arbeidsforhold.getRefusjonskravPrÅr().isPresent());
+                        || arbeidsforhold.getRefusjonskravPrÅr().isPresent());
     }
 
     private static BigDecimal verifisertBeløp(BigDecimal beløp) {
@@ -300,7 +300,9 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
             leggTilRegelEvaluering(regelResultat, steg, builder);
             BeregningsgrunnlagPeriodeDto periode = builder
                     .build(eksisterendeVLGrunnlag);
-            opprettBeregningsgrunnlagPrStatusOgAndel(eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().get(0), periode);
+            // Vi kopierer alle andeler fra første periode (med tilhørende andelsnr)
+            var førstePeriode = eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().get(0);
+            opprettBeregningsgrunnlagPrStatusOgAndel(førstePeriode, periode);
             return periode;
         }
         BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.oppdater(vlBGPeriode)
@@ -331,6 +333,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     private static void opprettBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto kopierFra, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         kopierFra.getBeregningsgrunnlagPrStatusOgAndelList().forEach(bgpsa -> {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                    .medAndelsnr(bgpsa.getAndelsnr())
                     .medArbforholdType(bgpsa.getArbeidsforholdType())
                     .medAktivitetStatus(bgpsa.getAktivitetStatus())
                     .medInntektskategori(bgpsa.getInntektskategori());
