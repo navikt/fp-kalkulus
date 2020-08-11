@@ -31,18 +31,12 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagRe
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
-/**
- * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for revurdering. Ignorerer om grunnlaget er aktivt eller ikke.
- * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
- * @param koblingId en koblingId
- * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
- * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den som ble opprettet sist
- */
 @ApplicationScoped
 public class BeregningsgrunnlagRepository {
     private static final String KOBLING_ID = "koblingId";
     private static final String BEREGNINGSGRUNNLAG_TILSTAND = "beregningsgrunnlagTilstand";
     private static final String BEREGNING_AKTIVITET_AGGREGAT = "beregningAktivitetAggregat";
+    private static final String BEREGNINGSGRUNNLAG = "beregningsgrunnlag";
     private static final String BEREGNING_AKTIVITET_OVERSTYRING = "beregningAktivitetOverstyring";
     private static final String BEREGNING_REFUSJON_OVERSTYRINGER = "beregningRefusjonOverstyringer";
     private static final String BUILDER = "beregningsgrunnlagGrunnlagBuilder";
@@ -58,6 +52,14 @@ public class BeregningsgrunnlagRepository {
         this.entityManager = entityManager;
     }
 
+    /**
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for revurdering. Ignorerer om grunnlaget er aktivt eller ikke.
+     * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
+     *
+     * @param koblingId                  en koblingId
+     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den som ble opprettet sist
+     */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(Long koblingId, Optional<Long> originalKoblingId,
                                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, beregningsgrunnlagTilstand);
@@ -79,7 +81,7 @@ public class BeregningsgrunnlagRepository {
 
     public BeregningsgrunnlagEntitet hentBeregningsgrunnlagAggregatForBehandling(Long koblingId) {
         return hentBeregningsgrunnlagForBehandling(koblingId)
-            .orElseThrow(() -> new IllegalStateException("Mangler Beregningsgrunnlag for behandling " + koblingId));
+                .orElseThrow(() -> new IllegalStateException("Mangler Beregningsgrunnlag for behandling " + koblingId));
     }
 
     public Optional<BeregningsgrunnlagEntitet> hentBeregningsgrunnlagForBehandling(Long koblingId) {
@@ -91,22 +93,23 @@ public class BeregningsgrunnlagRepository {
      */
     public Optional<BeregningsgrunnlagEntitet> hentBeregningsgrunnlagForId(Long beregningsgrunnlagId) {
         TypedQuery<BeregningsgrunnlagEntitet> query = entityManager.createQuery(
-            "from Beregningsgrunnlag grunnlag " +
-                "where grunnlag.id = :beregningsgrunnlagId", BeregningsgrunnlagEntitet.class); //$NON-NLS-1$
+                "from Beregningsgrunnlag grunnlag " +
+                        "where grunnlag.id = :beregningsgrunnlagId", BeregningsgrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter("beregningsgrunnlagId", beregningsgrunnlagId); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
 
     /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
+     *
      * @param koblingId en koblingId
      * @return Hvis det finnes en aktiv {@link BeregningsgrunnlagGrunnlagEntitet} returneres denne
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
-                "where grunnlag.koblingId=:koblingId " +
-                "and grunnlag.aktiv = :aktivt", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                        "where grunnlag.koblingId=:koblingId " +
+                        "and grunnlag.aktiv = :aktivt", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktivt", true); //$NON-NLS-1$
         return hentUniktResultat(query);
@@ -115,7 +118,8 @@ public class BeregningsgrunnlagRepository {
 
     /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
-     * @param koblingId en koblingId
+     *
+     * @param koblingId         en koblingId
      * @param grunnlagReferanse en referanse til et lagret grunnlag
      * @return Hvis det finnes en aktiv {@link BeregningsgrunnlagGrunnlagEntitet} returneres denne
      */
@@ -131,16 +135,17 @@ public class BeregningsgrunnlagRepository {
 
     /**
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
-     * @param koblingId en koblingId
+     *
+     * @param koblingId                  en koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den som ble opprettet sist
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-            "from BeregningsgrunnlagGrunnlagEntitet " +
-                "where koblingId=:koblingId " +
-                "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                "order by opprettetTidspunkt desc, id desc", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+                "from BeregningsgrunnlagGrunnlagEntitet " +
+                        "where koblingId=:koblingId " +
+                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "order by opprettetTidspunkt desc, id desc", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); //$NON-NLS-1$
         query.setMaxResults(1);
@@ -149,16 +154,17 @@ public class BeregningsgrunnlagRepository {
 
     /**
      * Henter nest siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
-     * @param koblingId en koblingId
+     *
+     * @param koblingId                  en koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes kun ett BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres dette grunnlaget
      */
     private Optional<BeregningsgrunnlagGrunnlagEntitet> hentNestSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-            "from BeregningsgrunnlagGrunnlagEntitet " +
-                "where koblingId=:koblingId " +
-                "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                "order by opprettetTidspunkt desc, id desc", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+                "from BeregningsgrunnlagGrunnlagEntitet " +
+                        "where koblingId=:koblingId " +
+                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "order by opprettetTidspunkt desc, id desc", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); //$NON-NLS-1$
         query.setMaxResults(2);
@@ -179,7 +185,7 @@ public class BeregningsgrunnlagRepository {
 
     public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagEntitet beregningsgrunnlag, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(beregningsgrunnlag, BEREGNING_AKTIVITET_AGGREGAT);
+        Objects.requireNonNull(beregningsgrunnlag, BEREGNINGSGRUNNLAG);
         Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
 
         BeregningsgrunnlagGrunnlagBuilder builder = opprettGrunnlagBuilderFor(koblingId);
@@ -264,16 +270,16 @@ public class BeregningsgrunnlagRepository {
         }
         nyttGrunnlag.getSaksbehandletAktiviteter().ifPresent(this::lagreBeregningAktivitetAggregat);
         nyttGrunnlag.getOverstyring()
-            .ifPresent(this::lagreOverstyring);
+                .ifPresent(this::lagreOverstyring);
         nyttGrunnlag.getBeregningsgrunnlag().ifPresent(entityManager::persist);
         nyttGrunnlag.getRefusjonOverstyringer()
-            .ifPresent(this::lagreRefusjonOverstyring);
+                .ifPresent(this::lagreRefusjonOverstyring);
 
         entityManager.persist(nyttGrunnlag);
 
         nyttGrunnlag.getBeregningsgrunnlag().stream()
-            .flatMap(beregningsgrunnlagEntitet -> beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream())
-            .forEach(this::lagreSammenligningsgrunnlagPrStatus);
+                .flatMap(beregningsgrunnlagEntitet -> beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream())
+                .forEach(this::lagreSammenligningsgrunnlagPrStatus);
     }
 
     private void lagreOverstyring(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringer) {
@@ -329,7 +335,7 @@ public class BeregningsgrunnlagRepository {
         setAktivOgLagre(entitet, false);
     }
 
-    private void deaktiverKalkulatorInput(KalkulatorInputEntitet entitet){
+    private void deaktiverKalkulatorInput(KalkulatorInputEntitet entitet) {
         entitet.setAktiv(false);
         entityManager.persist(entitet);
         entityManager.flush();
@@ -422,3 +428,4 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 }
+

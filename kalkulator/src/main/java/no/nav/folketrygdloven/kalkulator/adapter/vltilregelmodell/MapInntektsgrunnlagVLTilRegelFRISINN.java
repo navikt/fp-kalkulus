@@ -42,6 +42,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -125,8 +126,9 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
     private void mapAlleYtelser(Inntektsgrunnlag inntektsgrunnlag,
                                 YtelseFilterDto ytelseFilter) {
-
-        ytelseFilter.getAlleYtelser().forEach(ytelse -> ytelse.getYtelseAnvist().stream()
+        ytelseFilter.getAlleYtelser().stream()
+                .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN)).
+                forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                 .filter(this::harHattUtbetalingForPeriode)
                 .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats()))));
     }
