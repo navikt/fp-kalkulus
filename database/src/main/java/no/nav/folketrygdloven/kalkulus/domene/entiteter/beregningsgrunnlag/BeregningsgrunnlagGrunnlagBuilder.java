@@ -53,9 +53,9 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         if(built) {
             return kladd;
         }
-        Objects.requireNonNull(koblingId);
-        Objects.requireNonNull(beregningsgrunnlagTilstand);
-        Objects.requireNonNull(kladd.getRegisterAktiviteter());
+        Objects.requireNonNull(koblingId, "koblingId");
+        Objects.requireNonNull(beregningsgrunnlagTilstand, "beregningsgrunnlagTilstand");
+        Objects.requireNonNull(kladd.getRegisterAktiviteter(), "Registeraktiviteter kan ikke vere null: " + kladd);
         kladd.setKoblingId(koblingId);
         kladd.setBeregningsgrunnlagTilstand(beregningsgrunnlagTilstand);
         built = true;

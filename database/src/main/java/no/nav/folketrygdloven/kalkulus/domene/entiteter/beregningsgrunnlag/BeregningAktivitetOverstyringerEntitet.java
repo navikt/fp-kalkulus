@@ -44,6 +44,14 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Override
+    public String toString() {
+        return "BeregningAktivitetOverstyringerEntitet{" +
+                "id=" + id +
+                ", versjon=" + versjon +
+                '}';
+    }
+
     public static Builder builder() {
         return new Builder();
     }

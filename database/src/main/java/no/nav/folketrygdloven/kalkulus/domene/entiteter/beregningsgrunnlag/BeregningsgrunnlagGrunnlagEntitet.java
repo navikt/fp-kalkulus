@@ -200,4 +200,21 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     public void setGrunnlagReferanse(GrunnlagReferanse grunnlagReferanse) {
         this.grunnlagReferanse = grunnlagReferanse;
     }
+
+    @Override
+    public String toString() {
+        return "BeregningsgrunnlagGrunnlagEntitet{" +
+                "id=" + id +
+                ", versjon=" + versjon +
+                ", koblingId=" + koblingId +
+                ", grunnlagReferanse=" + grunnlagReferanse +
+                ", beregningsgrunnlag=" + beregningsgrunnlag +
+                ", registerAktiviteter=" + registerAktiviteter +
+                ", saksbehandletAktiviteter=" + saksbehandletAktiviteter +
+                ", overstyringer=" + overstyringer +
+                ", refusjonOverstyringer=" + refusjonOverstyringer +
+                ", aktiv=" + aktiv +
+                ", beregningsgrunnlagTilstand=" + beregningsgrunnlagTilstand +
+                '}';
+    }
 }

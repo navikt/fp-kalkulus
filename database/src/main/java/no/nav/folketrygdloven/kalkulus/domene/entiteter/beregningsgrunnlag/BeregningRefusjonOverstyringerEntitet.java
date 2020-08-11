@@ -44,6 +44,13 @@ public class BeregningRefusjonOverstyringerEntitet extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Override
+    public String toString() {
+        return "BeregningRefusjonOverstyringerEntitet{" +
+                "id=" + id +
+                '}';
+    }
+
     public static Builder builder() {
         return new Builder();
     }
