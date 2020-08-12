@@ -107,7 +107,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-        MDC.put("prosess_koblingreferanse", koblingReferanse);
+        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
 
         KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
@@ -142,7 +142,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
         MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer().getVerdi());
-        MDC.put("prosess_koblingreferanse", koblingReferanse);
+        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 

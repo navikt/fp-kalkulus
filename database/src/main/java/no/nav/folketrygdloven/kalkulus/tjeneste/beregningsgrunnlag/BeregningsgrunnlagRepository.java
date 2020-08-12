@@ -16,6 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.jpa.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
@@ -41,6 +43,7 @@ public class BeregningsgrunnlagRepository {
     private static final String BEREGNING_REFUSJON_OVERSTYRINGER = "beregningRefusjonOverstyringer";
     private static final String BUILDER = "beregningsgrunnlagGrunnlagBuilder";
     private EntityManager entityManager;
+    private static final Logger LOG = LoggerFactory.getLogger(BeregningsgrunnlagRepository.class);
 
     protected BeregningsgrunnlagRepository() {
         // for CDI proxy
@@ -316,6 +319,9 @@ public class BeregningsgrunnlagRepository {
 
     private BeregningsgrunnlagGrunnlagBuilder opprettGrunnlagBuilderFor(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        if (entitetOpt.isEmpty()) {
+            LOG.info("Fant ingen aktiv grunnlag for kobling " + koblingId + ". Oppretter ny grunnlagbuilder.");
+        }
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlag = entitetOpt.isPresent() ? Optional.of(entitetOpt.get()) : Optional.empty();
         return BeregningsgrunnlagGrunnlagBuilder.oppdatere(grunnlag);
     }
