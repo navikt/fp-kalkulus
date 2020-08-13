@@ -130,7 +130,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                 .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN)).
                 forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                 .filter(this::harHattUtbetalingForPeriode)
-                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats()))));
+                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getRelatertYtelseType()))));
     }
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
@@ -139,13 +139,17 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                 .orElse(false);
     }
 
-    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
+    private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, FagsakYtelseType ytelsetype) {
         return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP: Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
                 .medUtbetalingsgrad(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElseThrow())
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
                 .build();
+    }
+
+    private boolean erAAPEllerDP(FagsakYtelseType ytelsetype) {
+        return ytelsetype.equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER) || ytelsetype.equals(FagsakYtelseType.DAGPENGER);
     }
 
     private BigDecimal finnBeløp(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats) {
