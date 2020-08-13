@@ -48,6 +48,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 @FagsakYtelseTypeRef("FRISINN")
 public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLTilRegel {
 
+    public static final int MÅNEDER_FØR_STP = 36;
+
     private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
         BigDecimal inntekt = oppgittEgenNæringDto.getBruttoInntekt();
         Intervall periode = oppgittEgenNæringDto.getPeriode();
@@ -125,10 +127,12 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     }
 
     private void mapAlleYtelser(Inntektsgrunnlag inntektsgrunnlag,
-                                YtelseFilterDto ytelseFilter) {
+                                YtelseFilterDto ytelseFilter,
+                                LocalDate skjæringstidspunktOpptjening) {
         ytelseFilter.getAlleYtelser().stream()
                 .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN)).
                 forEach(ytelse -> ytelse.getYtelseAnvist().stream()
+                    .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
                 .filter(this::harHattUtbetalingForPeriode)
                 .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getRelatertYtelseType()))));
     }
@@ -193,7 +197,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(input.getSkjæringstidspunktOpptjening());
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
-            mapAlleYtelser(inntektsgrunnlag, ytelseFilter);
+            mapAlleYtelser(inntektsgrunnlag, ytelseFilter, referanse.getSkjæringstidspunktOpptjening());
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
