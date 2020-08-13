@@ -45,13 +45,7 @@ public class RullTilbakeTjeneste {
             BeregningsgrunnlagTilstand aktivTilstand = beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlagTilstand();
             if (!aktivTilstand.erFør(tilstand) || aktivTilstand.equals(tilstand)) {
                 beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId);
-                Optional<BeregningsgrunnlagTilstand> forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(tilstand);
-                if (forrigeTilstand.isPresent()) {
-                    beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId, forrigeTilstand.get());
-                } else {
-                    BeregningsgrunnlagTilstand første = BeregningsgrunnlagTilstand.finnFørste();
-                    beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId, første);
-                }
+                beregningsgrunnlagRepository.reaktiverSisteBeregningsgrunnlagGrunnlagEntitetFørTilstand(koblingId, aktivTilstand);
             }
         }
     }

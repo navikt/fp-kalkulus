@@ -119,6 +119,9 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
 
     public static Optional<BeregningsgrunnlagTilstand> finnForrigeTilstand(BeregningsgrunnlagTilstand tilstand) {
         int tilstandIndex = tilstandRekkefølge.indexOf(tilstand);
+        if (tilstandIndex == 0) {
+            return Optional.empty();
+        }
         BeregningsgrunnlagTilstand forrigeTilstand = tilstandRekkefølge.get(tilstandIndex-1);
         return Optional.of(forrigeTilstand);
     }

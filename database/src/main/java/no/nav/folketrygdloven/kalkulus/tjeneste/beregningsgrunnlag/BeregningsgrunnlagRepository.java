@@ -363,6 +363,21 @@ public class BeregningsgrunnlagRepository {
         return reaktiverer;
     }
 
+    public boolean reaktiverSisteBeregningsgrunnlagGrunnlagEntitetFørTilstand(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        aktivEntitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
+        Optional<BeregningsgrunnlagTilstand> forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(beregningsgrunnlagTilstand);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
+        while (forrigeEntitet.isEmpty() && forrigeTilstand.isPresent()) {
+            forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(forrigeTilstand.get());
+            forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
+        }
+        forrigeEntitet.ifPresent(entitet -> setAktivOgLagre(entitet, true));
+        entityManager.flush();
+        return forrigeTilstand.isPresent();
+    }
+
+
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagForPreutfylling(Long behandlingId, Optional<Long> originalBehandlingId,
                                                                                              BeregningsgrunnlagTilstand forrigeTilstand, BeregningsgrunnlagTilstand nesteTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBeregningsgrunnlag = hentBeregningsgrunnlagGrunnlagEntitet(behandlingId);
