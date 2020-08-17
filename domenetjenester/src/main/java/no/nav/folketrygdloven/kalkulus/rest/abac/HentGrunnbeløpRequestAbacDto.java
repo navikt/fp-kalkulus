@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest.abac;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.request.v1.HentGrunnbeløpRequest;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
-import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 /**
  * Json bean med Abac.
@@ -25,17 +23,14 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 public class HentGrunnbeløpRequestAbacDto extends HentGrunnbeløpRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
 
 
-
     @JsonCreator
-    public HentGrunnbeløpRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                        @JsonProperty(value = "dato", required = true) @Valid @NotNull LocalDate dato) {
-        super(dato, eksternReferanse);
+    public HentGrunnbeløpRequestAbacDto(@JsonProperty(value = "dato", required = true) @Valid @NotNull LocalDate dato) {
+        super(dato);
     }
 
     @Override
     public AbacDataAttributter abacAttributter() {
         final var abacDataAttributter = AbacDataAttributter.opprett();
-        abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getEksternReferanse());
         return abacDataAttributter;
     }
 }

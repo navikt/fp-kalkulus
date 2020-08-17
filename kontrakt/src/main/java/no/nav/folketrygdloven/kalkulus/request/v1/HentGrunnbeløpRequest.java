@@ -15,25 +15,17 @@ public class HentGrunnbeløpRequest {
     @NotNull
     private LocalDate dato;
 
-    @JsonProperty(value = "eksternReferanse", required = true)
-    @Valid
-    @NotNull
-    private UUID eksternReferanse;
 
     protected HentGrunnbeløpRequest() {
         // default ctor
     }
 
-    public HentGrunnbeløpRequest(@Valid @NotNull LocalDate dato, @Valid @NotNull UUID eksternReferanse) {
+    public HentGrunnbeløpRequest(@Valid @NotNull LocalDate dato) {
         this.dato = dato;
-        this.eksternReferanse = eksternReferanse;
     }
 
     public LocalDate getDato() {
         return dato;
     }
 
-    public UUID getEksternReferanse() {
-        return eksternReferanse;
-    }
 }
