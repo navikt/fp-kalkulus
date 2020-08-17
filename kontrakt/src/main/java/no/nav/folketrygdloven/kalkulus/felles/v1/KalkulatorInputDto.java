@@ -33,7 +33,8 @@ public class KalkulatorInputDto {
     @Size()
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
-    @JsonProperty(value = "grunnbeløpsatser", required = true)
+    @Deprecated
+    @JsonProperty(value = "grunnbeløpsatser")
     @Size(min = 1)
     @Valid
     private List<GrunnbeløpDto> grunnbeløpsatser;
@@ -62,6 +63,14 @@ public class KalkulatorInputDto {
         // default ctor
     }
 
+    public KalkulatorInputDto(@NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                              @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
+                              @NotNull @Valid LocalDate skjæringstidspunkt) {
+        this.iayGrunnlag = iayGrunnlag;
+        this.opptjeningAktiviteter = opptjeningAktiviteter;
+        this.skjæringstidspunkt = skjæringstidspunkt;
+    }
+
     public KalkulatorInputDto(@NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
                               @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                               @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
@@ -78,10 +87,6 @@ public class KalkulatorInputDto {
 
     public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
         return refusjonskravDatoer;
-    }
-
-    public List<GrunnbeløpDto> getGrunnbeløpsatser() {
-        return grunnbeløpsatser;
     }
 
     public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {

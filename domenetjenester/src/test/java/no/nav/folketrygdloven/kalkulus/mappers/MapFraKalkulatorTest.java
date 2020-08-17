@@ -17,10 +17,13 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
@@ -54,6 +57,15 @@ class MapFraKalkulatorTest {
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("945748931");
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
+    private final List<BeregningSats> satser = List.of(
+            new BeregningSats(
+                    BeregningSatsType.GRUNNBELØP,
+                    IntervallEntitet.fraOgMedTilOgMed(periode.getFom(), periode.getTom()),
+                    99000L),
+            new BeregningSats(
+                    BeregningSatsType.GSNITT,
+                    IntervallEntitet.fraOgMedTilOgMed(periode.getFom(), periode.getTom()),
+                    99000L));
 
 
     @Test
@@ -69,7 +81,7 @@ class MapFraKalkulatorTest {
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
 
-        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
+        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty(), satser);
 
         assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
     }
@@ -80,12 +92,11 @@ class MapFraKalkulatorTest {
         AndelGraderingDto andelGraderingDto = new AndelGraderingDto(AktivitetStatus.ARBEIDSTAKER, organisasjon, null, List.of(graderingDto));
         AktivitetGraderingDto aktivitetGraderingDto = new AktivitetGraderingDto(List.of(andelGraderingDto));
 
-        List<GrunnbeløpDto> grunnbeløp = List.of(new GrunnbeløpDto(periode, BigDecimal.valueOf(99000), BigDecimal.valueOf(99000)));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = byggIAY();
         OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon, null)));
         LocalDate skjæringstidspunkt = periode.getFom();
 
-        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløp, iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
+        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
         kalkulatorInputDto.medAktivitetGradering(aktivitetGraderingDto);
 
         return kalkulatorInputDto;

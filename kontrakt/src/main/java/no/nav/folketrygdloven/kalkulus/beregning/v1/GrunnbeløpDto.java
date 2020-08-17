@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 
 //TODO(OJR) ønsker kalkulus skal eie grunnbeløp, da trenger vi ikke denne lengre
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)

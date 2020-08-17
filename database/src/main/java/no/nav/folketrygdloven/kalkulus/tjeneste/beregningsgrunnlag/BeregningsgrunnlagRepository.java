@@ -6,6 +6,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -174,16 +175,24 @@ public class BeregningsgrunnlagRepository {
         return query.getResultStream().min(Comparator.comparing(BeregningsgrunnlagGrunnlagEntitet::getOpprettetTidspunkt));
     }
 
-    public BeregningSats finnEksaktSats(BeregningSatsType satsType, LocalDate dato) {
+
+    public BeregningSats finnGrunnbeløp(LocalDate dato) {
         TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" + //$NON-NLS-1$
                 " and periode.fomDato<=:dato" + //$NON-NLS-1$
                 " and periode.tomDato>=:dato", BeregningSats.class); //$NON-NLS-1$
 
-        query.setParameter("satsType", satsType); //$NON-NLS-1$
+        query.setParameter("satsType", BeregningSatsType.GRUNNBELØP); //$NON-NLS-1$
         query.setParameter("dato", dato); //$NON-NLS-1$
         query.setHint(QueryHints.HINT_READONLY, "true");//$NON-NLS-1$
         query.getResultList();
         return hentEksaktResultat(query);
+    }
+
+    public List<BeregningSats> finnAlleSatser() {
+        TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats", BeregningSats.class); //$NON-NLS-1$
+        query.setHint(QueryHints.HINT_READONLY, "true");//$NON-NLS-1$
+        query.getResultList();
+        return query.getResultList();
     }
 
     public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagEntitet beregningsgrunnlag, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
@@ -375,45 +384,6 @@ public class BeregningsgrunnlagRepository {
         forrigeEntitet.ifPresent(entitet -> setAktivOgLagre(entitet, true));
         entityManager.flush();
         return forrigeTilstand.isPresent();
-    }
-
-
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagForPreutfylling(Long behandlingId, Optional<Long> originalBehandlingId,
-                                                                                             BeregningsgrunnlagTilstand forrigeTilstand, BeregningsgrunnlagTilstand nesteTilstand) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBeregningsgrunnlag = hentBeregningsgrunnlagGrunnlagEntitet(behandlingId);
-
-        if (sisteBeregningsgrunnlag.isEmpty()) {
-            return Optional.empty();
-        }
-
-        BeregningsgrunnlagTilstand gjeldendeTilstand = sisteBeregningsgrunnlag.get().getBeregningsgrunnlagTilstand();
-
-        if (gjeldendeTilstand.erFør(nesteTilstand) || gjeldendeTilstand.equals(nesteTilstand)) {
-            return sisteBeregningsgrunnlag;
-        }
-
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagMedNesteTilstandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(behandlingId, nesteTilstand);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagMedForrigeTiltandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(behandlingId, forrigeTilstand);
-
-        if (grunnlagMedForrigeTiltandOpt.isEmpty() && originalBehandlingId.isPresent()) {
-            grunnlagMedForrigeTiltandOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(originalBehandlingId.get(), forrigeTilstand);
-        }
-
-        if (grunnlagMedNesteTilstandOpt.isEmpty()) {
-            return grunnlagMedForrigeTiltandOpt;
-        }
-
-        BeregningsgrunnlagGrunnlagEntitet forrigeTilstandGrunnlag = grunnlagMedForrigeTiltandOpt
-                .orElseThrow(() -> new IllegalArgumentException("Mangler beregningsgrunnlag med tilstand: " + forrigeTilstand + " for behandling " + behandlingId));
-
-        LocalDateTime nesteTilstandOpprettetTidspunkt = grunnlagMedNesteTilstandOpt.get().getOpprettetTidspunkt();
-        LocalDateTime forrigeTilstandOpprettetTitdspunkt = forrigeTilstandGrunnlag.getOpprettetTidspunkt();
-
-        if (nesteTilstandOpprettetTidspunkt.isAfter(forrigeTilstandOpprettetTitdspunkt)) {
-            return grunnlagMedNesteTilstandOpt;
-        }
-
-        return grunnlagMedForrigeTiltandOpt;
     }
 
     public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {

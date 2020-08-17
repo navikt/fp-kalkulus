@@ -18,7 +18,6 @@ import no.nav.folketrygdloven.kalkulus.UuidDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
@@ -100,12 +99,11 @@ public class KalkulatorMapperTest {
         AndelGraderingDto andelGraderingDto = new AndelGraderingDto(AktivitetStatus.ARBEIDSTAKER, organisasjon, null, List.of(graderingDto));
         AktivitetGraderingDto aktivitetGraderingDto = new AktivitetGraderingDto(List.of(andelGraderingDto));
 
-        List<GrunnbeløpDto> grunnbeløp = List.of(new GrunnbeløpDto(periode, BigDecimal.valueOf(99000), BigDecimal.valueOf(99000)));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = byggIAY();
         OpptjeningAktiviteterDto opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(new OpptjeningPeriodeDto(OpptjeningAktivitetType.ARBEID, periode, organisasjon, null)));
         LocalDate skjæringstidspunkt = periode.getFom();
 
-        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(grunnbeløp, iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
+        KalkulatorInputDto kalkulatorInputDto = new KalkulatorInputDto(iayGrunnlag, opptjeningAktiviteter, skjæringstidspunkt);
         kalkulatorInputDto.medAktivitetGradering(aktivitetGraderingDto);
         kalkulatorInputDto.medRefusjonskravDatoer(List.of(new RefusjonskravDatoDto(organisasjon, periode.getFom(), periode.getFom().minusMonths(1), true)));
 

@@ -33,7 +33,8 @@ public class KalkulatorInputTjeneste {
     private KoblingRepository koblingRepository;
 
     @Inject
-    public KalkulatorInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingRepository koblingRepository) {
+    public KalkulatorInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                   KoblingRepository koblingRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
     }
@@ -46,7 +47,12 @@ public class KalkulatorInputTjeneste {
         Objects.requireNonNull(koblingId, "koblingId");
         KoblingEntitet koblingEntitet = koblingRepository.hentForKoblingId(koblingId);
         Optional<KalkulatorInputEntitet> inputEntitetOptional = beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(koblingId);
-        return inputEntitetOptional.map(kalkulatorInputEntitet -> MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputEntitet, beregningsgrunnlagGrunnlagEntitet));
+        return inputEntitetOptional.map(kalkulatorInputEntitet ->
+                MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(
+                        koblingEntitet,
+                        kalkulatorInputEntitet,
+                        beregningsgrunnlagGrunnlagEntitet,
+                        beregningsgrunnlagRepository.finnAlleSatser()));
     }
 
     public BeregningsgrunnlagInput lagInput(Long koblingId, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
