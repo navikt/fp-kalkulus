@@ -193,10 +193,6 @@ public class BeregningsgrunnlagRestInput {
     public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagRestInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
-        newInput = grunnlag.getBeregningsgrunnlag()
-            .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
-            .map(newInput::medSkjæringstidspunktForBeregning)
-            .orElse(newInput);
         return newInput;
     }
 

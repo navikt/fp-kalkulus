@@ -73,6 +73,7 @@ public class BeregningsgrunnlagDtoTjeneste {
 
         mapOverstyring(input, dto);
         mapSkjæringstidspunkt(input, dto);
+        mapFaktaOmRefusjon(input, dto);
         mapFaktaOmFordeling(input, dto);
         mapSammenligningsgrunnlag(input, dto);
         mapSammenlingingsgrunnlagPrStatus(input, dto);
@@ -84,6 +85,10 @@ public class BeregningsgrunnlagDtoTjeneste {
         mapDekningsgrad(input, dto);
         mapYtelsesspesifiktGrunnlag(input, dto);
         return dto;
+    }
+
+    private void mapFaktaOmRefusjon(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+        VurderRefusjonDtoTjeneste.lagDto(input).ifPresent(dto::setRefusjonTilVurdering);
     }
 
     private void mapOverstyring(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {

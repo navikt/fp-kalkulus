@@ -139,6 +139,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
                 ZERO,
                 false);
 
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
+
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
         input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
@@ -208,6 +212,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
                 inntektPrÅrIM,
                 BigDecimal.valueOf(500),
                 true);
+
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
 
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
@@ -290,6 +298,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
                 ZERO,
                 false);
 
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
+
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
         input = utvidMedOppdaterGrunnlagOGTilstand(input, resultat.getBeregningsgrunnlagGrunnlag(), BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
@@ -317,6 +329,10 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
     private BeregningResultatAggregat doStegForeslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         return beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
+    }
+
+    private BeregningResultatAggregat doStegVurderRefusjonBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+        return beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
     }
 
     private BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {

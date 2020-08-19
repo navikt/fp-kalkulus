@@ -46,6 +46,8 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBer
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.InntektPrAndelDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonAndelBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
@@ -74,6 +76,20 @@ public class OppdatererDtoMapper {
 
     public static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FordelBeregningsgrunnlagDto mapFordelBeregningsgrunnlagDto(FordelBeregningsgrunnlagDto dto) {
         return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FordelBeregningsgrunnlagDto(mapTilEndredePerioderList(dto.getEndretBeregningsgrunnlagPerioder()));
+    }
+
+    public static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto mapVurderRefusjonBeregningsgrunnlagDto(VurderRefusjonBeregningsgrunnlagDto dto) {
+        return new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto(mapTilFastsatteAndeler(dto.getFastsatteAndeler()));
+    }
+
+    private static List<no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto> mapTilFastsatteAndeler(List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
+        return fastsatteAndeler.stream()
+                .map(a -> new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto(
+                        a.getArbeidsgiverOrgnr(),
+                        a.getArbeidsgiverAktørId(),
+                        a.getInternArbeidsforholdRef(),
+                        a.getFastsattRefusjonFom()))
+                .collect(Collectors.toList());
     }
 
     public static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderVarigEndringEllerNyoppstartetSNDto mapVurderVarigEndringEllerNyoppstartetSNDto(VurderVarigEndringEllerNyoppstartetSNDto dto) {

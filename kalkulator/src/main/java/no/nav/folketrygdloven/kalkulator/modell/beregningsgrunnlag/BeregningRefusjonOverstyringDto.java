@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,6 +47,6 @@ public class BeregningRefusjonOverstyringDto {
     }
 
     public List<BeregningRefusjonPeriodeDto> getRefusjonPerioder() {
-        return refusjonPerioder;
+        return Collections.unmodifiableList(refusjonPerioder);
     }
 }

@@ -7,6 +7,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsg
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPRETTET;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 
 import java.util.List;
 import java.util.Optional;
@@ -151,10 +152,11 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(BeregningsgrunnlagInput input) {
         List<BeregningAksjonspunktResultat> beregningAksjonspunktResultats = beregningRefusjonAksjonspunktutleder.utledAksjonspunkter(input);
-        return BeregningResultatAggregat.builder()
+        BeregningsgrunnlagDto nyttBG = BeregningsgrunnlagDto.builder(input.getBeregningsgrunnlag()).build();
+        return BeregningResultatAggregat.Builder.fra(input)
                 .medAksjonspunkter(beregningAksjonspunktResultats)
+                .medBeregningsgrunnlag(nyttBG, VURDERT_REFUSJON)
                 .build();
-
     }
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {

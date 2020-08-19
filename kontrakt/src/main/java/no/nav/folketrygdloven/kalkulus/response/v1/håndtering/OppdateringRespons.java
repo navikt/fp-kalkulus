@@ -27,12 +27,21 @@ public class OppdateringRespons {
     @Valid
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
 
+    @JsonProperty(value = "refusjonoverstyringEndring")
+    @Valid
+    private RefusjonoverstyringEndring refusjonoverstyringEndring;
+
     public OppdateringRespons() {
     }
 
-    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring, @Valid FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
+    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring,
+                              @Valid FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
         this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
         this.faktaOmBeregningVurderinger = faktaOmBeregningVurderinger;
+    }
+
+    public OppdateringRespons(@Valid RefusjonoverstyringEndring refusjonoverstyringEndring) {
+        this.refusjonoverstyringEndring = refusjonoverstyringEndring;
     }
 
     public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
@@ -51,4 +60,7 @@ public class OppdateringRespons {
         return faktaOmBeregningVurderinger;
     }
 
+    public RefusjonoverstyringEndring getRefusjonoverstyringEndring() {
+        return refusjonoverstyringEndring;
+    }
 }

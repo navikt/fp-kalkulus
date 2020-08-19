@@ -131,6 +131,10 @@ public class KomponenttestBeregningArbeidstakerTest {
             ZERO,
             false);
 
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
+
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
         input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
@@ -200,6 +204,10 @@ public class KomponenttestBeregningArbeidstakerTest {
             inntektPrÅrIM,
             BigDecimal.valueOf(500),
             true);
+
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
 
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
@@ -281,6 +289,10 @@ public class KomponenttestBeregningArbeidstakerTest {
             ZERO,
             false);
 
+        // Act steg VurderRefusjonBeregningsgrunnlag
+        resultat = doStegVurderRefusjonBeregningsgrunnlag(input);
+        input = utvidMedOppdaterGrunnlag(input, resultat.getBeregningsgrunnlagGrunnlag());
+
         // Act steg fordel
         resultat = doStegFordelBeregningsgrunnlag(input);
         input = utvidMedOppdaterGrunnlagOGTilstand(input, resultat.getBeregningsgrunnlagGrunnlag(), BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
@@ -308,6 +320,10 @@ public class KomponenttestBeregningArbeidstakerTest {
 
     private BeregningResultatAggregat doStegForeslåBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         return beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
+    }
+
+    private BeregningResultatAggregat doStegVurderRefusjonBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+        return beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
     }
 
     private BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(BeregningsgrunnlagInput input) {

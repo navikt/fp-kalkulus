@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -122,6 +123,10 @@ public class BeregningsgrunnlagDto {
     @JsonProperty(value = "ytelsesspesifiktGrunnlag")
     @Valid
     private YtelsespesifiktGrunnlagDto ytelsesspesifiktGrunnlag;
+
+    @JsonProperty(value = "refusjonTilVurdering")
+    @Valid
+    private RefusjonTilVurderingDto refusjonTilVurdering;
 
     @JsonProperty(value = "erOverstyrtInntekt")
     @NotNull
@@ -294,5 +299,13 @@ public class BeregningsgrunnlagDto {
 
     public void setVilkårsperiodeFom(LocalDate vilkårsperiodeFom) {
         this.vilkårsperiodeFom = vilkårsperiodeFom;
+    }
+
+    public RefusjonTilVurderingDto getRefusjonTilVurdering() {
+        return refusjonTilVurdering;
+    }
+
+    public void setRefusjonTilVurdering(RefusjonTilVurderingDto refusjonTilVurdering) {
+        this.refusjonTilVurdering = refusjonTilVurdering;
     }
 }

@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator;
 import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,23 @@ public class BeregningsgrunnlagInputTestUtil {
         inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return inputMedGrunnbeløp;
     }
+
+    public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagGrunnlag(BehandlingReferanse behandlingReferanse,
+                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                             BeregningsgrunnlagTilstand tilstand) {
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, null, null,
+                AktivitetGradering.INGEN_GRADERING, Collections.emptyList(), foreldrepengerGrunnlag);
+        BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
+        BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedGrunnbeløp;
+    }
+
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(BehandlingReferanse behandlingReferanse,
                                                                              BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,

@@ -22,6 +22,9 @@ public class BeregningRefusjonPeriodeDto {
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {
+        if (arbeidsforholdRef == null) {
+            return InternArbeidsforholdRefDto.nullRef();
+        }
         return arbeidsforholdRef;
     }
 
