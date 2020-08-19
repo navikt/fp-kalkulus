@@ -2,6 +2,9 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper.mapGrunnlag;
 
+import java.time.MonthDay;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -16,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
@@ -28,6 +32,7 @@ import no.nav.vedtak.feil.FeilFactory;
 public class KalkulatorInputTjeneste {
 
     private static final ObjectWriter WRITER = JsonMapper.getMapper().writerWithDefaultPrettyPrinter();
+    public static final MonthDay ENDRING_AV_GRUNNBELØP = MonthDay.of(5, 1);
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingRepository koblingRepository;
@@ -46,12 +51,14 @@ public class KalkulatorInputTjeneste {
     public Optional<BeregningsgrunnlagInput> lagInputHvisFinnes(Long koblingId, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         Objects.requireNonNull(koblingId, "koblingId");
         KoblingEntitet koblingEntitet = koblingRepository.hentForKoblingId(koblingId);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(koblingEntitet);
         Optional<KalkulatorInputEntitet> inputEntitetOptional = beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(koblingId);
         return inputEntitetOptional.map(kalkulatorInputEntitet ->
                 MapFraKalkulator.mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(
                         koblingEntitet,
                         kalkulatorInputEntitet,
                         beregningsgrunnlagGrunnlagEntitet,
+                        førsteFastsatteGrunnlagEntitet,
                         beregningsgrunnlagRepository.finnAlleSatser()));
     }
 
@@ -79,16 +86,6 @@ public class KalkulatorInputTjeneste {
         return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
     }
 
-    private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagTilstand[] tilstander = BeregningsgrunnlagTilstand.values();
-        for (BeregningsgrunnlagTilstand tilstand : tilstander) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
-                    input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
-            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger()),
-                    BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
-        }
-    }
-
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
         String input = null;
         try {
@@ -101,6 +98,27 @@ public class KalkulatorInputTjeneste {
             return beregningsgrunnlagRepository.lagreOgSjekkStatus(new KalkulatorInputEntitet(koblingId, input));
         } else {
             throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusKlarteIkkeLagreNedInput(koblingId).toException();
+        }
+    }
+
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløp(KoblingEntitet koblingEntitet) {
+        List<KoblingEntitet> koblinger = koblingRepository.hentAlleKoblingReferanserFor(koblingEntitet.getAktørId(), koblingEntitet.getSaksnummer(), koblingEntitet.getYtelseTyperKalkulusStøtter());
+        return koblinger.stream()
+                .map(kobling -> beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.FASTSATT))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(gr -> MonthDay.from(gr.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+                .getSkjæringstidspunkt()).isAfter(ENDRING_AV_GRUNNBELØP))
+                .min(Comparator.comparing(BaseEntitet::getOpprettetTidspunkt));
+    }
+
+    private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {
+        BeregningsgrunnlagTilstand[] tilstander = BeregningsgrunnlagTilstand.values();
+        for (BeregningsgrunnlagTilstand tilstand : tilstander) {
+            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
+                    input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
+            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger()),
+                    BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
         }
     }
 }

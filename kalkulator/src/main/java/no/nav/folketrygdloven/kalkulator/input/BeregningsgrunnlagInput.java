@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -50,6 +52,13 @@ public class BeregningsgrunnlagInput {
      * Grunnbeløpsatser
      */
     private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
+
+    /**
+     * Uregulert grunnbeløp om det finnes beregningsgrunnlag som ble fastsatt etter 1. mai.
+     *
+     * En G-regulering ikke skal påvirke utfallet av beregningsgrunnlagvilkåret (se TFP-3599 og https://confluence.adeo.no/display/TVF/G-regulering)
+     */
+    private Beløp uregulertGrunnbeløp;
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
@@ -189,9 +198,7 @@ public class BeregningsgrunnlagInput {
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
         var relevanteAktiviteter = opptjeningAktiviteter.getOpptjeningPerioder()
             .stream()
-            .filter(p -> {
-                return p.getPeriode().getFom().isBefore(skjæringstidspunktOpptjening);
-            })
+            .filter(p -> p.getPeriode().getFom().isBefore(skjæringstidspunktOpptjening))
             .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
             .collect(Collectors.toList());
         return relevanteAktiviteter;
@@ -215,6 +222,10 @@ public class BeregningsgrunnlagInput {
 
     public List<Grunnbeløp> getGrunnbeløpsatser() {
         return grunnbeløpsatser;
+    }
+
+    public Optional<Beløp> getUregulertGrunnbeløp() {
+        return Optional.ofNullable(uregulertGrunnbeløp);
     }
 
     /** Sjekk fagsakytelsetype før denne kalles. */
@@ -242,6 +253,12 @@ public class BeregningsgrunnlagInput {
     public BeregningsgrunnlagInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.grunnbeløpsatser = grunnbeløpsatser;
+        return newInput;
+    }
+
+    public BeregningsgrunnlagInput medUregulertGrunnbeløp(BigDecimal uregulertGrunnbeløp) {
+        var newInput = new BeregningsgrunnlagInput(this);
+        newInput.uregulertGrunnbeløp = new Beløp(uregulertGrunnbeløp);
         return newInput;
     }
 

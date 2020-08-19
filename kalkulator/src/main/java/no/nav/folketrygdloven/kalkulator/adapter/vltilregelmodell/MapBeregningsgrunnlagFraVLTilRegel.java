@@ -46,6 +46,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
@@ -117,6 +118,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medSammenligningsgrunnlag(sammenligningsgrunnlag)
                 .medDekningsgrad(dekningsgrad)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medUregulertGrunnbeløp(input.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi()))
                 .medGrunnbeløpSatser(input.getGrunnbeløpsatser())
                 .medMilitærIOpptjeningsperioden(erMilitærIOpptjeningsperioden)
                 .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())

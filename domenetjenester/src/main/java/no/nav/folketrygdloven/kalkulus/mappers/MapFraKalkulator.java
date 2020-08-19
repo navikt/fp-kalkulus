@@ -40,7 +40,9 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
@@ -58,8 +60,9 @@ public class MapFraKalkulator {
 
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                          KalkulatorInputEntitet kalkulatorInputEntitet,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, List<BeregningSats> satser) {
+                                                                                                 KalkulatorInputEntitet kalkulatorInputEntitet,
+                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet, List<BeregningSats> satser) {
         String json = kalkulatorInputEntitet.getInput();
         KalkulatorInputDto input = null;
 
@@ -69,7 +72,7 @@ public class MapFraKalkulator {
             e.printStackTrace();
         }
         if (input != null) {
-            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, satser);
+            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, førsteFastsatteGrunnlagEntitet, satser);
         }
 
         throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
@@ -77,9 +80,9 @@ public class MapFraKalkulator {
 
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                   KalkulatorInputDto input,
-                                                                                   Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                   List<BeregningSats> satser) {
+                                                                                          KalkulatorInputDto input,
+                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet, List<BeregningSats> satser) {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
@@ -107,7 +110,12 @@ public class MapFraKalkulator {
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
 
-        return utenGrunnbeløp.medGrunnbeløpsatser(new GrunnbeløpMapper(satser).mapGrunnbeløpSatser());
+        return førsteFastsatteGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag)
+                .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
+                .map(Beløp::getVerdi)
+                .map(utenGrunnbeløp::medUregulertGrunnbeløp)
+                .orElse(utenGrunnbeløp)
+                .medGrunnbeløpsatser(new GrunnbeløpMapper(satser).mapGrunnbeløpSatser());
     }
 
     private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,

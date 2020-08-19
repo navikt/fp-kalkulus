@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagRegelSporing;
 
 public class BeregningsgrunnlagDto {
 
@@ -77,7 +76,6 @@ public class BeregningsgrunnlagDto {
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         this.grunnbeløp = kopiereFra.getGrunnbeløp();
-
         this.overstyrt = kopiereFra.overstyrt;
     }
 
@@ -104,6 +102,7 @@ public class BeregningsgrunnlagDto {
     public Beløp getGrunnbeløp() {
         return grunnbeløp;
     }
+
 
     public void leggTilBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto bgAktivitetStatus) {
         Objects.requireNonNull(bgAktivitetStatus, "beregningsgrunnlagAktivitetStatus");
