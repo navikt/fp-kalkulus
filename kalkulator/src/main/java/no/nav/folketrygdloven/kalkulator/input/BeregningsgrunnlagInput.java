@@ -113,6 +113,7 @@ public class BeregningsgrunnlagInput {
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();
+        this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
     }
 
     public Map<String, Boolean> getToggles() {
