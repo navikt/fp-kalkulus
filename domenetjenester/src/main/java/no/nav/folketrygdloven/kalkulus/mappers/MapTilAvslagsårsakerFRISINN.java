@@ -99,7 +99,7 @@ public class MapTilAvslagsårsakerFRISINN {
             return Optional.empty();
         }
         if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
-            throw new IllegalStateException("Ugyldig tilstand for frisinn");
+            return Optional.empty();
         }
         if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
             BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
