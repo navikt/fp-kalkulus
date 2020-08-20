@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,11 +9,36 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 
 class BeregningsgrunnlagDiffSjekkerTest {
+
+    @Test
+    public void skalReturnereTrueOmUlikeGrunnbeløp() {
+        // Arrange
+        BeregningsgrunnlagEntitet aktivt = BeregningsgrunnlagEntitet.builder()
+                .medGrunnbeløp(BigDecimal.TEN)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatus.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
+                .medSkjæringstidspunkt(LocalDate.now())
+                .build();
+
+        BeregningsgrunnlagEntitet forrige = BeregningsgrunnlagEntitet.builder()
+                .medGrunnbeløp(BigDecimal.ONE)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatus.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
+                .medSkjæringstidspunkt(LocalDate.now())
+                .build();
+
+        // Act
+
+        boolean harDiff = BeregningsgrunnlagDiffSjekker.harSignifikantDiffIBeregningsgrunnlag(aktivt, forrige);
+
+        // Assert
+        assertThat(harDiff).isTrue();
+    }
 
     @Test
     public void skalReturnereFalseNårSammenligningsgrunnlagPrStatusListeErLik(){
