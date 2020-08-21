@@ -46,7 +46,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
             .findFirst();
         matchendeInntektsmelding.ifPresent(im ->
-            builder.medRefusjonskrav(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(im, startdatoPermisjon))
+            builder.medRefusjonskrav(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(im, startdatoPermisjon, refusjonOverstyringer))
         );
         Optional<LocalDate> førsteMuligeRefusjonsdato = mapFørsteGyldigeDatoForRefusjon(ya, refusjonOverstyringer);
         førsteMuligeRefusjonsdato.ifPresent(builder::medOverstyrtRefusjonsFrist);

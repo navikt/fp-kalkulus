@@ -13,6 +13,7 @@ class MapStegTilTilstand {
     static {
         map.put(StegType.KOFAKBER, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         map.put(StegType.FORS_BERGRUNN, BeregningsgrunnlagTilstand.FORESLÅTT);
+        map.put(StegType.VURDER_REF_BERGRUNN, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
         map.put(StegType.FORDEL_BERGRUNN, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
         map.put(StegType.FAST_BERGRUNN, BeregningsgrunnlagTilstand.FASTSATT);
     }

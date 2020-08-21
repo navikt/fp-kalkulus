@@ -7,6 +7,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsg
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.KOFAKBER_UT;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 
 import java.util.List;
 import java.util.Optional;
@@ -106,10 +107,24 @@ public class BeregningStegTjeneste {
         return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
+    /**
+     * VurderRefusjonBeregningsgrunnlag
+     * Steg 4. VURDER_REF_BERGRUNN
+     *
+     * @param input {@link BeregningsgrunnlagInput}
+     * @return {@link BeregningAksjonspunktResultat}
+     */
+    public TilstandResponse vurderRefusjonForBeregningsgrunnlaget(BeregningsgrunnlagInput input) {
+        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
+        BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
+        Long koblingId = input.getBehandlingReferanse().getKoblingId();
+        repository.lagre(koblingId, beregningsgrunnlagEntitet, VURDERT_REFUSJON);
+        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+    }
 
     /**
      * FordelBeregningsgrunnlag
-     * Steg 4. FORDEL_BERGRUNN
+     * Steg 5. FORDEL_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAksjonspunktResultat}
@@ -143,7 +158,7 @@ public class BeregningStegTjeneste {
 
     /**
      * FastsettBeregningsgrunnlagSteg
-     * Steg 5. FAST_BERGRUNN
+     * Steg 6. FAST_BERGRUNN
      *
      * @param input {@link BeregningsgrunnlagInput}
      */
@@ -258,6 +273,8 @@ public class BeregningStegTjeneste {
             return kontrollerFaktaBeregningsgrunnlag(input);
         } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag(input);
+        } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
+            return vurderRefusjonForBeregningsgrunnlaget(input);
         } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
             return fordelBeregningsgrunnlag(input);
         } else if (stegType.equals(StegType.FAST_BERGRUNN)) {

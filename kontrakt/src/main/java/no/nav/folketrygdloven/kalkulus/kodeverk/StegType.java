@@ -23,8 +23,9 @@ public class StegType extends Kodeverk{
 
     public static final StegType KOFAKBER = new StegType("KOFAKBER");
     public static final StegType FORS_BERGRUNN = new StegType("FORS_BERGRUNN");
-    public static final StegType FAST_BERGRUNN = new StegType("FAST_BERGRUNN");
+    public static final StegType VURDER_REF_BERGRUNN = new StegType("VURDER_REF_BERGRUNN");
     public static final StegType FORDEL_BERGRUNN = new StegType("FORDEL_BERGRUNN");
+    public static final StegType FAST_BERGRUNN = new StegType("FAST_BERGRUNN");
 
     @JsonProperty(value = "kode", required = true, index = 1)
     @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message="Kode '${validatedValue}' matcher ikke tillatt pattern '{regexp}'")

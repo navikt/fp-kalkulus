@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -10,6 +11,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesi
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.omp.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
 @ApplicationScoped
@@ -18,7 +20,8 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
 
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
-        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag());
+        Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer();
+        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag(), refusjonOverstyringer);
         return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt);
     }
 
