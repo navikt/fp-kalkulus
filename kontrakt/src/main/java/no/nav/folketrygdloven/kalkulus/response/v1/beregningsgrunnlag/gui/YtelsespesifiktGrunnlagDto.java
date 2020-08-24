@@ -14,6 +14,8 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisin
 @JsonSubTypes({
         @JsonSubTypes.Type(value= FrisinnGrunnlagDto.class, name= FrisinnGrunnlagDto.YTELSETYPE),
         @JsonSubTypes.Type(value= OmsorgspengeGrunnlagDto.class, name= OmsorgspengeGrunnlagDto.YTELSETYPE),
+        @JsonSubTypes.Type(value= SvangerskapspengerGrunnlagDto.class, name= SvangerskapspengerGrunnlagDto.YTELSETYPE),
+
 })
 public abstract class YtelsespesifiktGrunnlagDto {
 
