@@ -27,7 +27,7 @@ public class AvklarAktiviteterHåndteringDto extends HåndterBeregningDto {
     private AvklarteAktiviteterDto avklarteAktiviteterDto;
 
     @JsonCreator
-    public AvklarAktiviteterHåndteringDto(AvklarteAktiviteterDto avklarteAktiviteterDto) {
+    public AvklarAktiviteterHåndteringDto(@JsonProperty("avklarteAktiviteterDto") AvklarteAktiviteterDto avklarteAktiviteterDto) {
         super(new HåndteringKode(IDENT_TYPE));
         this.avklarteAktiviteterDto = avklarteAktiviteterDto;
     }

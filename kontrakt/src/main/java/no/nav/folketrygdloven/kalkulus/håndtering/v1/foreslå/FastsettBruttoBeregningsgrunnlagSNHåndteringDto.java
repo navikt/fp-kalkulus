@@ -28,7 +28,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBe
     private FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto;
 
     @JsonCreator
-    public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@Valid @NotNull FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto) {
+    public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto) {
         super(new HåndteringKode(IDENT_TYPE));
         this.fastsettBruttoBeregningsgrunnlagSNDto = fastsettBruttoBeregningsgrunnlagSNDto;
     }
