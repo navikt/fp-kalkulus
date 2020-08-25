@@ -56,10 +56,13 @@ public class ForeslåBeregningsgrunnlag {
         // Oversett endelig resultat av regelmodell til foreslått Beregningsgrunnlag  (+ spore input -> evaluation)
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, regelResultater, beregningsgrunnlag);
         List<BeregningAksjonspunktResultat> aksjonspunkter = utledAksjonspunkter(input, regelResultater);
-        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
+        verifiserBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(foreslåttBeregningsgrunnlag, aksjonspunkter);
     }
 
+    protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
+        BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
+    }
 
     protected void splittPerioder(BeregningsgrunnlagInput input,  Beregningsgrunnlag regelmodellBeregningsgrunnlag, BeregningsgrunnlagDto beregningsgrunnlag) {
         opprettPerioderForKortvarigeArbeidsforhold(input.getAktørId(),

@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagVerifisererFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
@@ -67,6 +68,12 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
                 .filter(inntekt -> !inntekt.getPeriode().getFomDato().isBefore(input.getSkjæringstidspunktOpptjening()))
                 .collect(Collectors.toList());
         inntekterSomSkalFøreTilSPlitt.forEach(oppgittPeriodeInntekt -> splittForOppgittPeriode(oppgittPeriodeInntekt, regelmodellBeregningsgrunnlag));
+    }
+
+
+    @Override
+    protected void verifiserBeregningsgrunnlag(BeregningsgrunnlagDto foreslåttBeregningsgrunnlag) {
+        BeregningsgrunnlagVerifisererFRISINN.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
     }
 
     private void splittForOppgittPeriode(OppgittPeriodeInntekt oppgittPeriodeInntekt, Beregningsgrunnlag regelmodellBeregningsgrunnlag) {
