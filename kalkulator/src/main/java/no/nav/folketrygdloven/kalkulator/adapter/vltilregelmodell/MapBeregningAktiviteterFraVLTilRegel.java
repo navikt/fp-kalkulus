@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
@@ -35,14 +36,14 @@ public class MapBeregningAktiviteterFraVLTilRegel {
         if (relevanteAktiviteter.isEmpty()) { // For enklere feilsøking når det mangler aktiviteter
             throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
         } else {
-            relevanteAktiviteter.forEach(opptjeningsperiode ->
-                    modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode)));
+            relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, relevanteAktiviteter)));
         }
         return modell;
     }
 
     private AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode) {
+                                         OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
+                                         Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         Periode gjeldendePeriode = opptjeningsperiode.getPeriode();
 
@@ -53,21 +54,22 @@ public class MapBeregningAktiviteterFraVLTilRegel {
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverAktørId,
-                opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold);
+                opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, relevanteAktiviteter);
         } else {
             return AktivPeriode.forAndre(aktivitetType, gjeldendePeriode);
         }
     }
 
     protected static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                               Periode gjeldendePeriode,
-                                                               String opptjeningArbeidsgiverAktørId,
-                                                               String opptjeningArbeidsgiverOrgnummer,
-                                                               InternArbeidsforholdRefDto arbeidsforholdRef) {
+                                                                 Periode gjeldendePeriode,
+                                                                 String opptjeningArbeidsgiverAktørId,
+                                                                 String opptjeningArbeidsgiverOrgnummer,
+                                                                 InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                                 Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
         if (opptjeningArbeidsgiverAktørId != null) {
             return lagAktivePerioderForArbeidstakerHosPrivatperson(opptjeningArbeidsgiverAktørId, gjeldendePeriode);
         } else if (opptjeningArbeidsgiverOrgnummer != null) {
-            return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef);
+            return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef, alleAktiviteter);
         } else {
             throw new IllegalStateException("Må ha en arbeidsgiver som enten er aktør eller virksomhet når aktivitet er " + Aktivitet.ARBEIDSTAKERINNTEKT);
         }
@@ -80,12 +82,39 @@ public class MapBeregningAktiviteterFraVLTilRegel {
     private static AktivPeriode lagAktivePerioderForArbeidstakerHosVirksomhet(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                               Periode gjeldendePeriode,
                                                                               String opptjeningArbeidsgiverOrgnummer,
-                                                                              InternArbeidsforholdRefDto arbeidsforholdRef) {
+                                                                              InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                                              Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
         if (harInntektsmeldingForArbeidsforhold(inntektsmeldinger, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef)) {
             return AktivPeriode.forArbeidstakerHosVirksomhet(gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef.getReferanse());
         } else {
+            if (harInntektsmeldingForSpesifiktArbeidVedSkjæringstidspunktet(inntektsmeldinger, alleAktiviteter, opptjeningArbeidsgiverOrgnummer)) {
+                // Her mangler vi inntektsmelding fra minst ett arbeidsforhold. Disse andelene får Id for at de ikke skal behandles som aggregat-andeler.
+                return AktivPeriode.forArbeidstakerHosVirksomhet(gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef.getReferanse());
+            }
             return AktivPeriode.forArbeidstakerHosVirksomhet(gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, null);
         }
+    }
+
+    /**
+     * Sjekker om det er mottatt inntektsmelding for et spesifikt arbeidsforhold og et gitt orgnummer
+     * og om dette spesifikke arbeidsforholdet er aktivt på skjæringstidspunktet for opptjening.
+     *
+     * Tilpassningen er gjort for å støtte caset der omsorgspenger kun mottar inntektsmeldinger for arbeidsforhold der man har fravær (https://jira.adeo.no/browse/TSF-1153)
+     *
+     * @param inntektsmeldinger Innteksmeldinger
+     * @param alleAktiviteter Alle aktiviteter
+     * @param opptjeningArbeidsgiverOrgnummer Orgnnummer for arbeidsaktivitet
+     * @return Boolean som sier om det er motttatt inntektsmelding for et spesifikt arbeidsforhold som er aktivt på skjæringstidspunktet
+     */
+    private static boolean harInntektsmeldingForSpesifiktArbeidVedSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                                Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter,
+                                                                                String opptjeningArbeidsgiverOrgnummer) {
+        return alleAktiviteter.stream()
+                .filter(a -> a.getArbeidsgiverOrgNummer() != null && a.getArbeidsgiverOrgNummer().equals(opptjeningArbeidsgiverOrgnummer))
+                .anyMatch(a -> OpptjeningAktivitetType.ARBEID.equals(a.getType()) && inntektsmeldinger.stream()
+                        .anyMatch(im -> im.getArbeidsgiver().getIdentifikator().equals(a.getArbeidsgiverOrgNummer())
+                                && im.gjelderForEtSpesifiktArbeidsforhold()
+                        && im.getArbeidsforholdRef().gjelderFor(a.getArbeidsforholdId())));
     }
 
     private static boolean harInntektsmeldingForArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,

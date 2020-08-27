@@ -47,7 +47,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
             throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
         } else {
             relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(
-                    lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, harFLEtterStp, harSNEtterStp, opptjeningSkjæringstidspunkt)));
+                    lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, harFLEtterStp, harSNEtterStp, opptjeningSkjæringstidspunkt, relevanteAktiviteter)));
         }
 
         // Legger til 48 mnd med frilans og næring rundt stp om det ikkje finnes, legger også til arbeidsaktivitet om det ikke finnes fra før og er oppgitt
@@ -88,7 +88,8 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
                                          OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                          boolean harFLEtterStp,
                                          boolean harSNEtterStp,
-                                         LocalDate opptjeningSkjæringstidspunkt) {
+                                         LocalDate opptjeningSkjæringstidspunkt,
+                                         Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         Periode gjeldendePeriode = opptjeningsperiode.getPeriode();
         Periode utvidetPeriode = Periode.of(opptjeningSkjæringstidspunkt.minusMonths(36), opptjeningSkjæringstidspunkt.plusMonths(12));
@@ -100,7 +101,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverAktørId,
-                    opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold);
+                    opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, alleAktiviteter);
         } if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {
             return AktivPeriode.forAndre(aktivitetType, harSNEtterStp ? utvidetPeriode : gjeldendePeriode);
         } else {

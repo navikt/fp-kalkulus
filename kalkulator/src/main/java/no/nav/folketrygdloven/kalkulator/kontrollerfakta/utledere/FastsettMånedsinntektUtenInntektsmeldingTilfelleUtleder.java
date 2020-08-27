@@ -18,7 +18,9 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef("FP")
+@FagsakYtelseTypeRef("SVP")
+@FagsakYtelseTypeRef("PSB")
 @FaktaOmBeregningTilfelleRef("FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING")
 public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements TilfelleUtleder {
 
