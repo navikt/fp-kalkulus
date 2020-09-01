@@ -69,6 +69,7 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
         return beregningsgrunnlagRegelResultat.getVilkårsresultat();
     }
 
+    @Override
     protected List<RegelResultat> kjørRegelFullførberegningsgrunnlag(Beregningsgrunnlag beregningsgrunnlagRegel, String input) {
         List<RegelResultat> regelResultater = new ArrayList<>();
         for (BeregningsgrunnlagPeriode periode : beregningsgrunnlagRegel.getBeregningsgrunnlagPerioder()) {

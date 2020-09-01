@@ -67,23 +67,32 @@ public class KalkulatorInputTjeneste {
                 .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException());
     }
 
-    public Optional<BeregningsgrunnlagInput> lagInputMedBeregningsgrunnlagHvisFinnes(Long koblingId) {
+    public Optional<BeregningsgrunnlagInput> lagInputMedBeregningsgrunnlagHvisFinnes(final Long koblingId) {
+        boolean medSporingslogg = true;
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         Optional<BeregningsgrunnlagInput> inputOpt = lagInputHvisFinnes(koblingId, beregningsgrunnlagGrunnlagEntitet);
         return inputOpt.map(input -> {
-            Optional<BeregningsgrunnlagGrunnlagDto> mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger()));
-            leggTilTilstandhistorikk(input);
+            Optional<BeregningsgrunnlagGrunnlagDto> mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), medSporingslogg));
+            leggTilTilstandhistorikk(input, medSporingslogg);
             return mappedGrunnlag.map(input::medBeregningsgrunnlagGrunnlag).orElse(input);
         });
     }
-
+    
     public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId) {
+        return lagInputMedBeregningsgrunnlag(koblingId, true);
+    }
+
+    protected BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId, boolean medSporingslogg) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         BeregningsgrunnlagInput input = lagInput(koblingId, beregningsgrunnlagGrunnlagEntitet);
-        BeregningsgrunnlagGrunnlagDto mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger()))
+        BeregningsgrunnlagGrunnlagDto mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), medSporingslogg))
                 .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException());
-        leggTilTilstandhistorikk(input);
+        leggTilTilstandhistorikk(input, medSporingslogg);
         return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
+    }
+    
+    public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagUtenSporingslogg(Long koblingId) {
+        return lagInputMedBeregningsgrunnlag(koblingId, false);
     }
 
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
@@ -112,12 +121,11 @@ public class KalkulatorInputTjeneste {
                 .min(Comparator.comparing(BaseEntitet::getOpprettetTidspunkt));
     }
 
-    private void leggTilTilstandhistorikk(BeregningsgrunnlagInput input) {
-        BeregningsgrunnlagTilstand[] tilstander = BeregningsgrunnlagTilstand.values();
-        for (BeregningsgrunnlagTilstand tilstand : tilstander) {
+    private void leggTilTilstandhistorikk(final BeregningsgrunnlagInput input, final boolean medSporingslogg) {
+        for (var tilstand : BeregningsgrunnlagTilstand.values()) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
                     input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
-            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger()),
+            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger(), medSporingslogg),
                     BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
         }
     }

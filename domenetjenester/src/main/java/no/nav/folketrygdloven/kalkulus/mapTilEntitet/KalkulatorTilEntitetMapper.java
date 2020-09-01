@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;

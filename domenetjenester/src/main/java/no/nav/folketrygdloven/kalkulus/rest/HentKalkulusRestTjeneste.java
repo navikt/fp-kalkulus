@@ -52,7 +52,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Beregn
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagListe;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagDtoForGUIRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagListeRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -69,7 +68,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
-    private MetrikkerTjeneste metrikkerTjeneste;
 
     public HentKalkulusRestTjeneste() {
         // for CDI
@@ -122,32 +120,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent BeregningsgrunnlagGrunnlag for angitt grunnlagsreferanse", summary = ("Returnerer BeregningsgrunnlagGrunnlag for grunnlagsreferanse."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/grunnlagForReferanse")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
-    public Response hentBeregningsgrunnlagGrunnlagForReferanse(@NotNull @Valid HentBeregningsgrunnlagGrunnlagForReferanseRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
-        if (!harKalkulatorInput(koblingId)) {
-            return Response.noContent().build();
-        }
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
-            .hentBeregningsgrunnlagGrunnlagEntitetForReferanse(koblingId.get(), spesifikasjon.getGrunnlagReferanse());
-        final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
-            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, spesifikasjon.getInkluderRegelSporing()))
-            .map(bgDto -> Response.ok(bgDto).build())
-            .findFirst()
-            .orElse(Response.noContent().build());
-
-        logMetrikk("/kalkulus/v1/grunnlagForReferanse", Duration.between(startTx, Instant.now()));
-        return response;
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/grunnlag")
@@ -161,41 +133,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
             .orElse(Response.noContent().build());
         logMetrikk("/kalkulus/v1/grunnlag", Duration.between(startTx, Instant.now()));
         return response;
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/aktivtBeregningsgrunnlag")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
-    public Response hentAktivtBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        Response response;
-        var startTx = Instant.now();
-        response = hentDetaljertBeregningsgrunnlagForSpesifikasjon(spesifikasjon, spesifikasjon.getInkluderRegelSporing())
-            .map(Response::ok)
-            .orElse(Response.noContent())
-            .build();
-        logMetrikk("/kalkulus/v1/aktivtBeregningsgrunnlag", Duration.between(startTx, Instant.now()));
-        return response;
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent aktivt beregningsgrunnlag for angitt behandling", summary = ("Returnerer aktivt beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/aktivtBeregningsgrunnlagListe")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
-    public Response hentAktivtBeregningsgrunnlagListe(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
-        var dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
-            .map(spes -> this.hentDetaljertBeregningsgrunnlagForSpesifikasjon(spes, spesifikasjon.getInkluderRegelSporing())
-                .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
-                .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto>(
-                    spes.getKoblingReferanse(), null)))
-            .collect(Collectors.toList());
-        logMetrikk("/kalkulus/v1/aktivtBeregningsgrunnlag", Duration.between(startTx, Instant.now()));
-        return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
 
     @POST
@@ -250,7 +187,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
             .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId.get());
+        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagUtenSporingslogg(koblingId.get());
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
             .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
             .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
@@ -266,15 +203,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
             .filter(grunnlag -> grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
             .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
             .map(MapBeregningsgrunnlag::map)
-            .findFirst();
-    }
-
-    private Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagDto> hentDetaljertBeregningsgrunnlagForSpesifikasjon(
-                                                                                                                                                                    @NotNull @Valid HentBeregningsgrunnlagRequest spesifikasjon,
-                                                                                                                                                                    boolean inkluderRegelSporing) {
-        return hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(spesifikasjon).stream()
-            .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-            .map(bg -> MapDetaljertBeregningsgrunnlag.map(bg, inkluderRegelSporing))
             .findFirst();
     }
 
@@ -299,7 +227,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Optional.empty();
         }
-        BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId.get());
+        BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagUtenSporingslogg(koblingId.get());
         if (beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isEmpty()) {
             return Optional.empty();
         } else {
@@ -314,7 +242,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     }
 
     private Boolean harKalkulatorInput(Optional<Long> koblingId) {
-        return koblingId.map(id -> beregningsgrunnlagRepository.hentHvisEksitererKalkulatorInput(id).isPresent()).orElse(false);
+        return koblingId.map(id -> beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(id)).orElse(false);
     }
 
 }

@@ -99,6 +99,7 @@ public class JettyServer extends AbstractJettyServer {
 
         List<Resource> resources = appClasses.stream()
                 .map(c -> Resource.newResource(c.getProtectionDomain().getCodeSource().getLocation()))
+                .distinct()
                 .collect(Collectors.toList());
 
         metaData.setWebInfClassesDirs(resources);
@@ -112,6 +113,8 @@ public class JettyServer extends AbstractJettyServer {
     @Override
     protected ResourceCollection createResourceCollection() throws IOException {
         return new ResourceCollection(
-                Resource.newClassPathResource("/web"));
+            Resource.newClassPathResource("META-INF/resources/webjars/"),
+            Resource.newClassPathResource("/web"));
     }
+
 }

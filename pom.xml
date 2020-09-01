@@ -43,13 +43,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.10.5</jackson.version>
 
-        <fpsak.nare.version>2.1.0-20200121220149-fc67304</fpsak.nare.version>
+        <fpsak.nare.version>2.1-20200824163700-b4aa077</fpsak.nare.version>
 
-        <fpsak.tidsserie.version>2.1-20200123110022-e75fb59</fpsak.tidsserie.version>
+        <fpsak.tidsserie.version>2.3-20200821080538-aa1ee12</fpsak.tidsserie.version>
 
         <beregningsgrunnlag.regelmodell.version>2.1-20200827102644-b03e7cb</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>2.0.0-20200803071822-21e4b75</felles.version>
+        <felles.version>2.1.0-20200831113621-6a21716</felles.version>
 
         <prometheus.version>0.9.0</prometheus.version>
         <junit.version>5.6.2</junit.version>

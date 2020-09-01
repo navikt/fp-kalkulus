@@ -4,8 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -322,6 +320,15 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentUniktResultat(query);
+    }
+    
+    public boolean hvisEksistererKalkulatorInput(Long koblingId) {
+        Number n = (Number) entityManager
+            .createQuery("select count(*) from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv")
+            .setParameter("koblingId", koblingId)
+            .setParameter("aktiv", true)
+            .getSingleResult();
+        return n.longValue() > 0L;
     }
 }
 
