@@ -42,7 +42,8 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     private Saksnummer saksnummer;
 
     /**
-     * Ekstern Referanse (eks. behandlingUuid).
+     * Ekstern Referanse - caller's angitte identitet for dette behandlingsgrunnlaget. Kan f.eks. være knyttet til en behandling
+     * (behandlingUuid), men også mer finkornet dersom det fins flere grunnlag per behandling (eks. Omsorgspenger i K9)
      */
     @NaturalId
     @Embedded
@@ -52,7 +53,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     private KoblingReferanse koblingReferanse;
 
     @Convert(converter = YtelseTyperKalkulusStøtter.KodeverdiConverter.class)
-    @Column(name="ytelse_type", nullable = false)
+    @Column(name = "ytelse_type", nullable = false)
     private YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter;
 
     @Embedded
@@ -109,9 +110,9 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     @Override
     public String toString() {
         return "Kobling{" +
-                "KoblingReferanse=" + koblingReferanse +
-                ", aktørId=" + aktørId +
-                ", saksnummer = " + saksnummer +
-                '}';
+            "KoblingReferanse=" + koblingReferanse +
+            ", aktørId=" + aktørId +
+            ", saksnummer = " + saksnummer +
+            '}';
     }
 }
