@@ -36,7 +36,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
@@ -114,7 +113,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger = new ArrayList<>();
         FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(referanse, iayGrunnlag, grunnlag)
                 .stream()
-                .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya, input.getFagsakYtelseType()))
+                .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya))
                 .sorted(refusjonFørstComparator(inntektsmeldinger))
                 .forEach(ya -> lagArbeidsforholdOgInntektsmelding(
                         input,
@@ -124,8 +123,8 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         return arbeidGraderingOgInntektsmeldinger;
     }
 
-    private boolean slutterEtterSkjæringstidspunktet(YrkesaktivitetFilterDto filter, LocalDate skjæringstidspunktBeregning, YrkesaktivitetDto ya, FagsakYtelseType fagsakYtelseType) {
-        Optional<Periode> periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(fagsakYtelseType, filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
+    private boolean slutterEtterSkjæringstidspunktet(YrkesaktivitetFilterDto filter, LocalDate skjæringstidspunktBeregning, YrkesaktivitetDto ya) {
+        Optional<Periode> periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
         return periode.map(p -> !p.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false);
     }
 

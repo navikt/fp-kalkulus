@@ -18,7 +18,7 @@ public final class FinnAnsettelsesPeriode {
         // skjul public constructor
     }
 
-    public static Optional<Periode> finnMinMaksPeriode(FagsakYtelseType fagsakYtelseType, Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
         return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt));
     }
 

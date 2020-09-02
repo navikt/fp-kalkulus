@@ -122,7 +122,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         if (yrkesaktivitet.isEmpty()) {
             return false;
         }
-        Optional<Periode> ansettelsesPeriodeSomSlutterVedEllerEtterStp = FinnAnsettelsesPeriode.finnMinMaksPeriode(ref.getFagsakYtelseType(), filter.getAnsettelsesPerioder(yrkesaktivitet.get()),
+        Optional<Periode> ansettelsesPeriodeSomSlutterVedEllerEtterStp = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(yrkesaktivitet.get()),
                 ref.getSkjæringstidspunktBeregning());
         return ansettelsesPeriodeSomSlutterVedEllerEtterStp.isPresent();
     }

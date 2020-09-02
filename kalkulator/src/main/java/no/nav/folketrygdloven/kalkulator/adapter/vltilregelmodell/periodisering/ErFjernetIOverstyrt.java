@@ -21,8 +21,7 @@ public class ErFjernetIOverstyrt {
     public static boolean erFjernetIOverstyrt(YrkesaktivitetFilterDto filter,
                                               YrkesaktivitetDto yrkesaktivitet,
                                               BeregningAktivitetAggregatDto aktivitetAggregatEntitet,
-                                              LocalDate skjæringstidspunktBeregning,
-                                              FagsakYtelseType fagsakYtelseType) {
+                                              LocalDate skjæringstidspunktBeregning) {
 
         List<Periode> ansettelsesPerioder = filter.getAnsettelsesPerioder(yrkesaktivitet).stream()
             .map(aa -> new Periode(aa.getPeriode().getFomDato(), aa.getPeriode().getTomDato()))
