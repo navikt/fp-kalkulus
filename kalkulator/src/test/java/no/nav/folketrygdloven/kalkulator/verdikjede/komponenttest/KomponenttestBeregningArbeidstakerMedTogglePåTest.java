@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +59,6 @@ import no.nav.vedtak.konfig.Tid;
 public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.DECEMBER, 1);
-    private static final LocalDateTime INNSENDINGSTIDSPUNKT = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusWeeks(1).atStartOfDay();
     private static final String ORGNR = "974761076";
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
     private static BeregningsgrunnlagInput input;
@@ -500,10 +498,6 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
                 refusjonskravPrÅr,
                 overstyrtViØnskerAssertPå);
-    }
-
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
-        return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 
     private BeregningsgrunnlagInput lagInputMedTogglePå(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {

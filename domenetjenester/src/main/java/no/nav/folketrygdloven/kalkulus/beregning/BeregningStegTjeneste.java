@@ -145,17 +145,6 @@ public class BeregningStegTjeneste {
         return tilstandResponse.medVilkårResultat(vilkårResultat.getErVilkårOppfylt());
     }
 
-    private Vilkårsavslagsårsak finnAvslagskode(BeregningVilkårResultat p) {
-        if (p.getVilkårsavslagsårsak() == null) {
-            return null;
-        }
-        return new Vilkårsavslagsårsak(p.getVilkårsavslagsårsak().getKode());
-    }
-
-    private no.nav.folketrygdloven.kalkulus.felles.v1.Periode mapPeriode(BeregningVilkårResultat p) {
-        return new no.nav.folketrygdloven.kalkulus.felles.v1.Periode(p.getPeriode().getFomDato(), p.getPeriode().getTomDato());
-    }
-
     /**
      * FastsettBeregningsgrunnlagSteg
      * Steg 6. FAST_BERGRUNN

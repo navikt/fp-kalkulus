@@ -52,11 +52,6 @@ public abstract class YtelsespesifiktGrunnlagDto {
         this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
     }
 
-    private YtelsespesifiktGrunnlagDto medBesteberegning() {
-        this.kvalifisererTilBesteberegning = true;
-        return this;
-    }
-
     public BigDecimal getDekningsgrad() {
         return dekningsgrad;
     }

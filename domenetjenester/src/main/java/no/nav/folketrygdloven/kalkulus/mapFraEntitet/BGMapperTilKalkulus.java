@@ -31,112 +31,115 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Sammenligningsgrun
 
 
 public class BGMapperTilKalkulus {
-    public static SammenligningsgrunnlagDto mapSammenligningsgrunnlag(Sammenligningsgrunnlag fraFpsak) {
+    public static SammenligningsgrunnlagDto mapSammenligningsgrunnlag(Sammenligningsgrunnlag fraFagsystem) {
         SammenligningsgrunnlagDto.Builder builder = SammenligningsgrunnlagDto.builder();
-        builder.medAvvikPromilleNy(fraFpsak.getAvvikPromilleNy());
-        builder.medRapportertPrÅr(fraFpsak.getRapportertPrÅr());
-        builder.medSammenligningsperiode(fraFpsak.getSammenligningsperiodeFom(), fraFpsak.getSammenligningsperiodeTom());
+        builder.medAvvikPromilleNy(fraFagsystem.getAvvikPromilleNy());
+        builder.medRapportertPrÅr(fraFagsystem.getRapportertPrÅr());
+        builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
         return builder.build();
     }
 
-    public static BeregningsgrunnlagAktivitetStatusDto.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatus fraFpsak) {
+    public static BeregningsgrunnlagAktivitetStatusDto.Builder mapAktivitetStatus(BeregningsgrunnlagAktivitetStatus fraFagsystem) {
         BeregningsgrunnlagAktivitetStatusDto.Builder builder = new BeregningsgrunnlagAktivitetStatusDto.Builder();
-        builder.medAktivitetStatus(AktivitetStatus.fraKode(fraFpsak.getAktivitetStatus().getKode()));
-        builder.medHjemmel(Hjemmel.fraKode(fraFpsak.getHjemmel().getKode()));
+        builder.medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()));
+        builder.medHjemmel(Hjemmel.fraKode(fraFagsystem.getHjemmel().getKode()));
 
         return builder;
     }
 
-    public static BeregningsgrunnlagPeriodeDto.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode fraFpsak, Collection<InntektsmeldingDto> inntektsmeldinger) {
+    public static BeregningsgrunnlagPeriodeDto.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode fraFagsystem, Collection<InntektsmeldingDto> inntektsmeldinger, boolean medRegelEvaluering) {
         BeregningsgrunnlagPeriodeDto.Builder builder = new BeregningsgrunnlagPeriodeDto.Builder();
 
         //med
-        builder.medAvkortetPrÅr(fraFpsak.getAvkortetPrÅr());
-        builder.medBeregningsgrunnlagPeriode(fraFpsak.getBeregningsgrunnlagPeriodeFom(), fraFpsak.getBeregningsgrunnlagPeriodeTom());
-        builder.medBruttoPrÅr(fraFpsak.getBruttoPrÅr());
-        builder.medRedusertPrÅr(fraFpsak.getRedusertPrÅr());
-        builder.medRegelEvalueringFastsett(fraFpsak.getRegelInputFastsett(), fraFpsak.getRegelEvalueringFastsett());
-        builder.medRegelEvalueringFinnGrenseverdi(fraFpsak.getRegelInputFinnGrenseverdi(), fraFpsak.getRegelEvalueringFinnGrenseverdi());
-        builder.medRegelEvalueringForeslå(fraFpsak.getRegelInput(), fraFpsak.getRegelEvaluering());
-        builder.medRegelEvalueringVilkårsvurdering(fraFpsak.getRegelInputVilkårvurdering(), fraFpsak.getRegelEvalueringVilkårvurdering());
-
+        builder.medAvkortetPrÅr(fraFagsystem.getAvkortetPrÅr());
+        builder.medBeregningsgrunnlagPeriode(fraFagsystem.getBeregningsgrunnlagPeriodeFom(), fraFagsystem.getBeregningsgrunnlagPeriodeTom());
+        builder.medBruttoPrÅr(fraFagsystem.getBruttoPrÅr());
+        builder.medRedusertPrÅr(fraFagsystem.getRedusertPrÅr());
+        
+        if(medRegelEvaluering) {
+            builder.medRegelEvalueringFastsett(fraFagsystem.getRegelInputFastsett(), fraFagsystem.getRegelEvalueringFastsett());
+            builder.medRegelEvalueringFinnGrenseverdi(fraFagsystem.getRegelInputFinnGrenseverdi(), fraFagsystem.getRegelEvalueringFinnGrenseverdi());
+            builder.medRegelEvalueringForeslå(fraFagsystem.getRegelInput(), fraFagsystem.getRegelEvaluering());
+            builder.medRegelEvalueringVilkårsvurdering(fraFagsystem.getRegelInputVilkårvurdering(), fraFagsystem.getRegelEvalueringVilkårvurdering());
+        }
+        
         //legg til
-        fraFpsak.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
-        fraFpsak.getBeregningsgrunnlagPrStatusOgAndelList().forEach( statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel, inntektsmeldinger)));
+        fraFagsystem.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
+        fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach( statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel, inntektsmeldinger)));
 
         return builder;
     }
 
-    public static SammenligningsgrunnlagPrStatusDto.Builder mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatus fraFpsak) {
+    public static SammenligningsgrunnlagPrStatusDto.Builder mapSammenligningsgrunnlagMedStatus(SammenligningsgrunnlagPrStatus fraFagsystem) {
         SammenligningsgrunnlagPrStatusDto.Builder builder = new SammenligningsgrunnlagPrStatusDto.Builder();
-        builder.medAvvikPromilleNy(fraFpsak.getAvvikPromilleNy());
-        builder.medRapportertPrÅr(fraFpsak.getRapportertPrÅr());
-        builder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.fraKode(fraFpsak.getSammenligningsgrunnlagType().getKode()));
-        builder.medSammenligningsperiode(fraFpsak.getSammenligningsperiodeFom(), fraFpsak.getSammenligningsperiodeTom());
+        builder.medAvvikPromilleNy(fraFagsystem.getAvvikPromilleNy());
+        builder.medRapportertPrÅr(fraFagsystem.getRapportertPrÅr());
+        builder.medSammenligningsgrunnlagType(SammenligningsgrunnlagType.fraKode(fraFagsystem.getSammenligningsgrunnlagType().getKode()));
+        builder.medSammenligningsperiode(fraFagsystem.getSammenligningsperiodeFom(), fraFagsystem.getSammenligningsperiodeTom());
 
         return builder;
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFpsak, Collection<InntektsmeldingDto> inntektsmeldinger) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem, Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.fraKode(fraFpsak.getAktivitetStatus().getKode()))
-            .medAndelsnr(fraFpsak.getAndelsnr())
-            .medArbforholdType(fraFpsak.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraFpsak.getArbeidsforholdType().getKode()))
-            .medAvkortetBrukersAndelPrÅr(fraFpsak.getAvkortetBrukersAndelPrÅr())
-            .medAvkortetPrÅr(fraFpsak.getAvkortetPrÅr())
-            .medAvkortetRefusjonPrÅr(fraFpsak.getAvkortetRefusjonPrÅr())
-            .medBeregnetPrÅr(fraFpsak.getBeregnetPrÅr())
-            .medBesteberegningPrÅr(fraFpsak.getBesteberegningPrÅr())
-            .medFastsattAvSaksbehandler(fraFpsak.getFastsattAvSaksbehandler())
-            .medOverstyrtPrÅr(fraFpsak.getOverstyrtPrÅr())
-            .medFordeltPrÅr(fraFpsak.getFordeltPrÅr())
-            .medRedusertPrÅr(fraFpsak.getRedusertPrÅr())
-            .medRedusertBrukersAndelPrÅr(fraFpsak.getRedusertBrukersAndelPrÅr())
-            .medMaksimalRefusjonPrÅr(fraFpsak.getMaksimalRefusjonPrÅr())
-            .medRedusertRefusjonPrÅr(fraFpsak.getRedusertRefusjonPrÅr())
-            .medNyIArbeidslivet(fraFpsak.getNyIArbeidslivet())
-            .medÅrsbeløpFraTilstøtendeYtelse(fraFpsak.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFpsak.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
-            .medInntektskategori(fraFpsak.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFpsak.getInntektskategori().getKode()))
-            .medLagtTilAvSaksbehandler(fraFpsak.getLagtTilAvSaksbehandler())
-            .medOrginalDagsatsFraTilstøtendeYtelse(fraFpsak.getOrginalDagsatsFraTilstøtendeYtelse());
+            .medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()))
+            .medAndelsnr(fraFagsystem.getAndelsnr())
+            .medArbforholdType(fraFagsystem.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraFagsystem.getArbeidsforholdType().getKode()))
+            .medAvkortetBrukersAndelPrÅr(fraFagsystem.getAvkortetBrukersAndelPrÅr())
+            .medAvkortetPrÅr(fraFagsystem.getAvkortetPrÅr())
+            .medAvkortetRefusjonPrÅr(fraFagsystem.getAvkortetRefusjonPrÅr())
+            .medBeregnetPrÅr(fraFagsystem.getBeregnetPrÅr())
+            .medBesteberegningPrÅr(fraFagsystem.getBesteberegningPrÅr())
+            .medFastsattAvSaksbehandler(fraFagsystem.getFastsattAvSaksbehandler())
+            .medOverstyrtPrÅr(fraFagsystem.getOverstyrtPrÅr())
+            .medFordeltPrÅr(fraFagsystem.getFordeltPrÅr())
+            .medRedusertPrÅr(fraFagsystem.getRedusertPrÅr())
+            .medRedusertBrukersAndelPrÅr(fraFagsystem.getRedusertBrukersAndelPrÅr())
+            .medMaksimalRefusjonPrÅr(fraFagsystem.getMaksimalRefusjonPrÅr())
+            .medRedusertRefusjonPrÅr(fraFagsystem.getRedusertRefusjonPrÅr())
+            .medNyIArbeidslivet(fraFagsystem.getNyIArbeidslivet())
+            .medÅrsbeløpFraTilstøtendeYtelse(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
+            .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
+            .medLagtTilAvSaksbehandler(fraFagsystem.getLagtTilAvSaksbehandler())
+            .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse());
 
-        if (fraFpsak.getAktivitetStatus().erArbeidstaker()) {
+        if (fraFagsystem.getAktivitetStatus().erArbeidstaker()) {
             builder.medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder()
-                .medHarInntektsmelding(inntektsmeldinger.stream().anyMatch(im -> gjelderInntektsmeldingFor(fraFpsak, im.getArbeidsgiver(), im.getArbeidsforholdRef())))
-                .medMottarYtelse(fraFpsak.mottarYtelse().orElse(null))
+                .medHarInntektsmelding(inntektsmeldinger.stream().anyMatch(im -> gjelderInntektsmeldingFor(fraFagsystem, im.getArbeidsgiver(), im.getArbeidsforholdRef())))
+                .medMottarYtelse(fraFagsystem.mottarYtelse().orElse(null))
                 .build());
         }
 
-        if (fraFpsak.getAktivitetStatus().erFrilanser() && (fraFpsak.mottarYtelse().isPresent() || fraFpsak.erNyoppstartet().isPresent())) {
+        if (fraFagsystem.getAktivitetStatus().erFrilanser() && (fraFagsystem.mottarYtelse().isPresent() || fraFagsystem.erNyoppstartet().isPresent())) {
             builder.medBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelDto.builder()
-                .medMottarYtelse(fraFpsak.mottarYtelse().orElse(null))
-                .medNyoppstartet(fraFpsak.erNyoppstartet().orElse(null))
+                .medMottarYtelse(fraFagsystem.mottarYtelse().orElse(null))
+                .medNyoppstartet(fraFagsystem.erNyoppstartet().orElse(null))
                 .build());
         }
 
-        if (fraFpsak.getBeregningsperiodeFom() != null) {
-            builder.medBeregningsperiode(fraFpsak.getBeregningsperiodeFom(), fraFpsak.getBeregningsperiodeTom());
+        if (fraFagsystem.getBeregningsperiodeFom() != null) {
+            builder.medBeregningsperiode(fraFagsystem.getBeregningsperiodeFom(), fraFagsystem.getBeregningsperiodeTom());
         }
 
-        if (fraFpsak.getPgiSnitt() != null) {
-            builder.medPgi(fraFpsak.getPgiSnitt(), List.of(fraFpsak.getPgi1(), fraFpsak.getPgi2(), fraFpsak.getPgi3()));
+        if (fraFagsystem.getPgiSnitt() != null) {
+            builder.medPgi(fraFagsystem.getPgiSnitt(), List.of(fraFagsystem.getPgi1(), fraFagsystem.getPgi2(), fraFagsystem.getPgi3()));
         }
 
-        fraFpsak.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(BGMapperTilKalkulus.magBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
+        fraFagsystem.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(BGMapperTilKalkulus.magBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
         return builder;
     }
 
 
-    private static boolean gjelderInntektsmeldingFor(BeregningsgrunnlagPrStatusOgAndel fraFpsak, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
-        Optional<BGAndelArbeidsforhold> bgAndelArbeidsforholdOpt = fraFpsak.getBgAndelArbeidsforhold();
-        if (!Objects.equals(fraFpsak.getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER) || !bgAndelArbeidsforholdOpt.isPresent()) {
+    private static boolean gjelderInntektsmeldingFor(BeregningsgrunnlagPrStatusOgAndel fraFagsystem, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
+        Optional<BGAndelArbeidsforhold> bgAndelArbeidsforholdOpt = fraFagsystem.getBgAndelArbeidsforhold();
+        if (!Objects.equals(fraFagsystem.getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER) || !bgAndelArbeidsforholdOpt.isPresent()) {
             return false;
         }
-        if (!Objects.equals(fraFpsak.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver).map(IAYMapperTilKalkulus::mapArbeidsgiver), Optional.of(arbeidsgiver))) {
+        if (!Objects.equals(fraFagsystem.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver).map(IAYMapperTilKalkulus::mapArbeidsgiver), Optional.of(arbeidsgiver))) {
             return false;
         }
-        if (fraFpsak.getArbeidsforholdRef().isEmpty() || !fraFpsak.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()) {
-            boolean harPeriodeAndelForSammeArbeidsgiverMedReferanse = fraFpsak.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList()
+        if (fraFagsystem.getArbeidsforholdRef().isEmpty() || !fraFagsystem.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()) {
+            boolean harPeriodeAndelForSammeArbeidsgiverMedReferanse = fraFagsystem.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .filter(a -> a.getAktivitetStatus().erArbeidstaker())
                 .filter(a -> a.getArbeidsgiver().isPresent() && a.getArbeidsgiver().get().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
@@ -151,19 +154,19 @@ public class BGMapperTilKalkulus {
     }
 
 
-    private static BGAndelArbeidsforholdDto.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforhold fraFpsak) {
+    private static BGAndelArbeidsforholdDto.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforhold fraFagsystem) {
         BGAndelArbeidsforholdDto.Builder builder = BGAndelArbeidsforholdDto.builder();
-        builder.medArbeidsforholdRef(IAYMapperTilKalkulus.mapArbeidsforholdRef(fraFpsak.getArbeidsforholdRef()));
-        builder.medArbeidsgiver(IAYMapperTilKalkulus.mapArbeidsgiver(fraFpsak.getArbeidsgiver()));
-        builder.medArbeidsperiodeFom(fraFpsak.getArbeidsperiodeFom());
-        builder.medLønnsendringIBeregningsperioden(fraFpsak.erLønnsendringIBeregningsperioden());
-        builder.medTidsbegrensetArbeidsforhold(fraFpsak.getErTidsbegrensetArbeidsforhold());
-        builder.medRefusjonskravPrÅr(fraFpsak.getRefusjonskravPrÅr());
-        builder.medHjemmel(fraFpsak.getHjemmelForRefusjonskravfrist() == null ? Hjemmel.UDEFINERT : Hjemmel.fraKode(fraFpsak.getHjemmelForRefusjonskravfrist().getKode()));
+        builder.medArbeidsforholdRef(IAYMapperTilKalkulus.mapArbeidsforholdRef(fraFagsystem.getArbeidsforholdRef()));
+        builder.medArbeidsgiver(IAYMapperTilKalkulus.mapArbeidsgiver(fraFagsystem.getArbeidsgiver()));
+        builder.medArbeidsperiodeFom(fraFagsystem.getArbeidsperiodeFom());
+        builder.medLønnsendringIBeregningsperioden(fraFagsystem.erLønnsendringIBeregningsperioden());
+        builder.medTidsbegrensetArbeidsforhold(fraFagsystem.getErTidsbegrensetArbeidsforhold());
+        builder.medRefusjonskravPrÅr(fraFagsystem.getRefusjonskravPrÅr());
+        builder.medHjemmel(fraFagsystem.getHjemmelForRefusjonskravfrist() == null ? Hjemmel.UDEFINERT : Hjemmel.fraKode(fraFagsystem.getHjemmelForRefusjonskravfrist().getKode()));
 
-        fraFpsak.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
-        fraFpsak.getNaturalytelseBortfaltPrÅr().ifPresent(builder::medNaturalytelseBortfaltPrÅr);
-        fraFpsak.getNaturalytelseTilkommetPrÅr().ifPresent(builder::medNaturalytelseTilkommetPrÅr);
+        fraFagsystem.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
+        fraFagsystem.getNaturalytelseBortfaltPrÅr().ifPresent(builder::medNaturalytelseBortfaltPrÅr);
+        fraFagsystem.getNaturalytelseTilkommetPrÅr().ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
     }
 }

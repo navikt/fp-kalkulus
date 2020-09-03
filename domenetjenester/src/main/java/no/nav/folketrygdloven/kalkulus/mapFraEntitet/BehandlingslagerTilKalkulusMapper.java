@@ -32,16 +32,16 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 public class BehandlingslagerTilKalkulusMapper {
 
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagFraFpsak, Collection<InntektsmeldingDto> inntektsmeldinger, boolean medSporingslogg) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagFraFagsystem, Collection<InntektsmeldingDto> inntektsmeldinger, boolean medSporingslogg) {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty());
 
-        beregningsgrunnlagFraFpsak.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto, inntektsmeldinger, medSporingslogg)));
-        beregningsgrunnlagFraFpsak.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
-        oppdatere.medRegisterAktiviteter(mapRegisterAktiviteter(beregningsgrunnlagFraFpsak.getRegisterAktiviteter()));
-        beregningsgrunnlagFraFpsak.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
-        beregningsgrunnlagFraFpsak.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
+        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto, inntektsmeldinger, medSporingslogg)));
+        beregningsgrunnlagFraFagsystem.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
+        oppdatere.medRegisterAktiviteter(mapRegisterAktiviteter(beregningsgrunnlagFraFagsystem.getRegisterAktiviteter()));
+        beregningsgrunnlagFraFagsystem.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
+        beregningsgrunnlagFraFagsystem.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
 
-        return oppdatere.build(beregningsgrunnlagFraFpsak.getBeregningsgrunnlagTilstand());
+        return oppdatere.build(beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagTilstand());
     }
 
 
@@ -66,16 +66,16 @@ public class BehandlingslagerTilKalkulusMapper {
 
         //lister
         beregningsgrunnlagFraFagsystem.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(BGMapperTilKalkulus.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
-        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, inntektsmeldinger)));
+        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, inntektsmeldinger, medSporingslogg)));
         builder.leggTilFaktaOmBeregningTilfeller(beregningsgrunnlagFraFagsystem.getFaktaOmBeregningTilfeller().stream().map(fakta -> FaktaOmBeregningTilfelle.fraKode(fakta.getKode())).collect(Collectors.toList()));
         beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
     }
 
-    private static void leggTilSporingHvisFinnes(BeregningsgrunnlagEntitet beregningsgrunnlagFraFpsak, BeregningsgrunnlagDto.Builder builder, BeregningsgrunnlagRegelType regelType) {
-        if (beregningsgrunnlagFraFpsak.getRegelsporing(regelType) != null) {
-            BeregningsgrunnlagRegelSporing regelsporing = beregningsgrunnlagFraFpsak.getRegelsporing(regelType);
+    private static void leggTilSporingHvisFinnes(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem, BeregningsgrunnlagDto.Builder builder, BeregningsgrunnlagRegelType regelType) {
+        if (beregningsgrunnlagFraFagsystem.getRegelsporing(regelType) != null) {
+            BeregningsgrunnlagRegelSporing regelsporing = beregningsgrunnlagFraFagsystem.getRegelsporing(regelType);
             builder.medRegellogg(regelsporing.getRegelInput(), regelsporing.getRegelEvaluering(), regelType);
         }
     }

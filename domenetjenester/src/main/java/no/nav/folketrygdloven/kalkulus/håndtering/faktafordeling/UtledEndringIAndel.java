@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Beregningsgrunnla
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonEndring;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
 
 class UtledEndringIAndel {
 
@@ -78,18 +77,6 @@ class UtledEndringIAndel {
 
     private static boolean harEndringIAndel(BeregningsgrunnlagPrStatusOgAndelEndring a) {
         return a.getInntektEndring() != null || a.getInntektskategoriEndring() != null || a.getRefusjonEndring() != null;
-    }
-
-    private static ToggleEndring initMottarYtelseEndring(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel, Boolean mottarYtelse) {
-        return new ToggleEndring(finnMottarYtelse(forrigeAndel), mottarYtelse);
-    }
-
-    private static Boolean finnMottarYtelse(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::mottarYtelse).orElse(null);
-    }
-
-    private static Boolean harEndringIMottarYtelse(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel, Boolean mottarYtelse) {
-        return forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::mottarYtelse).map(m -> !m.equals(mottarYtelse)).orElse(true);
     }
 
     private static InntektEndring lagInntektEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {

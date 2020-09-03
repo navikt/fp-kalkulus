@@ -32,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -216,7 +215,6 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
-        List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
         input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
@@ -281,7 +279,6 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
-        List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
         input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 80);

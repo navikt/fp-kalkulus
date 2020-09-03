@@ -692,8 +692,6 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         lagAndel(periode, ORGNR1, ORGNR1_ARB_ID1,300_000, 0);
 
-        Map<String, UUID> arbeidsforhold = Map.of(ORGNR1, ORGNR1_ARB_ID1);
-
         var uttakResultat = lagUttakResultat(BigDecimal.valueOf(45));
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 

@@ -27,6 +27,8 @@ public class BGMapperTilKalkulusTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,07,01);
     private static final String ORGANISASJON_1 = "123456789";
     private static final String ORGANISASJON_2 = "012345678";
+    
+    private boolean medRegelEvaluering = false;
 
     @Test
     public void skalIkkeHaInntektsmeldingNårInntektsmeldingHarReferanseOgAndelForSammeVirksomhetFinnesFraFørUtenReferanse(){
@@ -49,7 +51,7 @@ public class BGMapperTilKalkulusTest {
 
         InntektsmeldingDto inntektsmeldingDto = lagInntektsmelding(no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver.virksomhet(ORGANISASJON_1), InternArbeidsforholdRefDto.nyRef(), SKJÆRINGSTIDSPUNKT.plusDays(14));
 
-        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto)).build();
+        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto), medRegelEvaluering).build();
 
         assertThat(bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         Optional<BeregningsgrunnlagArbeidstakerAndelDto> bgArbeidstakerAndel1 = bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getBeregningsgrunnlagArbeidstakerAndel();
@@ -82,7 +84,7 @@ public class BGMapperTilKalkulusTest {
         InntektsmeldingDto inntektsmeldingDto = lagInntektsmelding(no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver.virksomhet(ORGANISASJON_1),
                 InternArbeidsforholdRefDto.nullRef(), SKJÆRINGSTIDSPUNKT.plusDays(14));
 
-        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto)).build();
+        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto), medRegelEvaluering).build();
 
         assertThat(bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         Optional<BeregningsgrunnlagArbeidstakerAndelDto> bgArbeidstakerAndel1 =
@@ -120,7 +122,7 @@ public class BGMapperTilKalkulusTest {
         InntektsmeldingDto inntektsmeldingDto = lagInntektsmelding(no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver.virksomhet(ORGANISASJON_1),
                 internArbeidsforholdRefDto, SKJÆRINGSTIDSPUNKT.plusDays(14));
 
-        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto)).build();
+        BeregningsgrunnlagPeriodeDto bgPeriode = BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, Collections.singleton(inntektsmeldingDto), medRegelEvaluering).build();
 
         assertThat(bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         Optional<BeregningsgrunnlagArbeidstakerAndelDto> bgArbeidstakerAndel1 =

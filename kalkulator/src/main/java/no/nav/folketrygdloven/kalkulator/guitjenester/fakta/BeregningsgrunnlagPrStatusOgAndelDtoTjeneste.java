@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -24,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -34,14 +32,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
 
     private Instance<FastsettGrunnlagGenerell> fastsettGrunnlag;
     private static final int MND_I_ÅR = 12;
-
-    private static final Map<SammenligningsgrunnlagType, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus> SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP;
-    static {
-        SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP = Map.of(
-            SammenligningsgrunnlagType.SAMMENLIGNING_AT, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER,
-            SammenligningsgrunnlagType.SAMMENLIGNING_FL, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.FRILANSER,
-            SammenligningsgrunnlagType.SAMMENLIGNING_SN, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-    }
 
     public BeregningsgrunnlagPrStatusOgAndelDtoTjeneste() {
         // CDI Proxy

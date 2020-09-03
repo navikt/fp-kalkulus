@@ -290,7 +290,6 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         // Lager et kortvarig arbeidsforhold
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING,

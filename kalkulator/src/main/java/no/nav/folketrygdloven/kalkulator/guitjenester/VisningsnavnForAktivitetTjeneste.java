@@ -4,9 +4,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -21,9 +18,7 @@ public class VisningsnavnForAktivitetTjeneste {
     private static final int ANTALL_SIFFER_SOM_SKAL_VISES_AV_REFERANSE = 4;
     public static final String PRIVATPERSON_DEFAULT_VISNING = "Privatperson";
 
-    private static final Logger logger = LoggerFactory.getLogger(VisningsnavnForAktivitetTjeneste.class);
     public static final String NAVN_FOR_FEILET_TPS_KALL = "N/A";
-
 
     private VisningsnavnForAktivitetTjeneste() {
         // For CDI

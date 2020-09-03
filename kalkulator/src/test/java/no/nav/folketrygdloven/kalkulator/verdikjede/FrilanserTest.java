@@ -233,7 +233,6 @@ public class FrilanserTest {
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);

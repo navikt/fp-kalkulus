@@ -29,7 +29,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.GraderingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -233,7 +232,6 @@ public class RefusjonOgGraderingTjenesteTest {
         // Arrange
         var arbId1 = InternArbeidsforholdRefDto.nyRef();
         String orgnr1 = "123456780";
-        GraderingDto gradering = new GraderingDto(SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(2).plusDays(1), null, BigDecimal.valueOf(50));
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(orgnr1, arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, 0);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
@@ -297,7 +295,6 @@ public class RefusjonOgGraderingTjenesteTest {
         var arbId1 = InternArbeidsforholdRefDto.nyRef();
         var arbId2 = InternArbeidsforholdRefDto.nyRef();
         InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver2.getIdentifikator(), arbId2, SKJÆRINGSTIDSPUNKT_BEREGNING, refusjon2 / 12);
-        GraderingDto gradering = new GraderingDto(SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(2).plusDays(1), null, BigDecimal.valueOf(50));
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
@@ -505,11 +502,6 @@ public class RefusjonOgGraderingTjenesteTest {
                 .medArbeidsforholdRef(arbeidsforholdRef)
                 .medRefusjonskravPrÅr(refusjon2 == null ? null : BigDecimal.valueOf(refusjon2))
                 .medArbeidsperiodeFom(tilkomEtter ? periode1.getBeregningsgrunnlagPeriodeFom() : SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12)))
-            .build(periode1);
-    }
-
-    private void lagAAPAndel(BeregningsgrunnlagPeriodeDto periode1) {
-        BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)
             .build(periode1);
     }
 

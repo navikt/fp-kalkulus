@@ -73,6 +73,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @MapKey(name = "regelType")
+    @BatchSize(size=20)
     private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> regelSporingMap = new HashMap<>();
 
     @Embedded

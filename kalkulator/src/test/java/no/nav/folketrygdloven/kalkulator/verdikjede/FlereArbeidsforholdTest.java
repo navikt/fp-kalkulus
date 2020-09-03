@@ -289,7 +289,6 @@ public class FlereArbeidsforholdTest {
         Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12 / 2),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));

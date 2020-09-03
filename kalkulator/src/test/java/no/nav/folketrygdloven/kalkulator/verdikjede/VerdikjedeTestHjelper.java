@@ -519,7 +519,6 @@ public class VerdikjedeTestHjelper {
 
     BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(BeregningsgrunnlagInput input,
                                                           BeregningTjenesteWrapper beregningTjenesteWrapper) {
-        var ref = input.getBehandlingReferanse();
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = new FastsettBeregningAktiviteter(
                 new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegel())).fastsettAktiviteter(input);
 

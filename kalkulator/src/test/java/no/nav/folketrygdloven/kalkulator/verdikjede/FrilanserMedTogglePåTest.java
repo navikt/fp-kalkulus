@@ -243,7 +243,6 @@ public class FrilanserMedTogglePåTest {
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
@@ -585,10 +584,6 @@ public class FrilanserMedTogglePåTest {
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, beregningVirksomhet, fraOgMed, tilOgMed, aktørId, InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER));
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(iayAggregatBuilder);
-    }
-
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
-        return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 
     private BeregningsgrunnlagInput lagInputMedTogglePå(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {

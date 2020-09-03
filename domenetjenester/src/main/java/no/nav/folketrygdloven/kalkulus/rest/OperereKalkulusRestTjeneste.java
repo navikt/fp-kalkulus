@@ -69,7 +69,6 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
-    private MetrikkerTjeneste metrikkerTjeneste;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI

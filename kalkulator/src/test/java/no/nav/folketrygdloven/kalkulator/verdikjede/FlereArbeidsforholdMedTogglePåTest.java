@@ -272,10 +272,6 @@ public class FlereArbeidsforholdMedTogglePåTest {
             overstyrt - forventetRedusert1);
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
-        return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
-    }
-
     private BeregningsgrunnlagInput lagInputMedTogglePå(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteterMedTogglePå(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
@@ -300,7 +296,6 @@ public class FlereArbeidsforholdMedTogglePåTest {
         Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12 / 2),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
