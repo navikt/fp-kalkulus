@@ -227,7 +227,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Optional.empty();
         }
-        BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagUtenSporingslogg(koblingId.get());
+        BeregningsgrunnlagInput beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputForGUI(koblingId.get());
         if (beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isEmpty()) {
             return Optional.empty();
         } else {

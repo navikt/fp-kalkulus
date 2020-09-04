@@ -76,6 +76,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
         grunnlagEntitet = mock(BeregningsgrunnlagGrunnlagDto.class);
         when(grunnlagEntitet.getBeregningsgrunnlag()).thenReturn(Optional.of(beregningsgrunnlag));
         when(grunnlagEntitet.getGjeldendeAktiviteter()).thenReturn(beregningAktivitetAggregat);
+        when(grunnlagEntitet.getBeregningsgrunnlagTilstand()).thenReturn(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
     }
 
     @Test
@@ -216,8 +217,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BeregningsgrunnlagRestInput lagInputMedGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
-        input.leggTilBeregningsgrunnlagIHistorikk(grunnlagEntitet, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
-        return input;
+        return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }
 
     // Periode 1:
@@ -457,8 +457,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BeregningsgrunnlagRestInput lagInputMedGrunnlagOgGradering(AndelGradering andelGradering, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(referanse, iayGrunnlag, new AktivitetGradering(andelGradering), List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
-        input.leggTilBeregningsgrunnlagIHistorikk(grunnlagEntitet, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
-        return input;
+        return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }
 
     @Test

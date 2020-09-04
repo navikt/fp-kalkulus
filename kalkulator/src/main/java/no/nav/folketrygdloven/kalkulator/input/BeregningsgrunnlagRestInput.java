@@ -4,9 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +37,9 @@ public class BeregningsgrunnlagRestInput {
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
+    /** Grunnlag fra fordelsteget. Brukes i visning av automatisk fordeling og utledning av andeler som skal redigeres */
+    private BeregningsgrunnlagGrunnlagDto fordelBeregningsgrunnlagGrunnlag;
+
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
 
@@ -47,17 +48,6 @@ public class BeregningsgrunnlagRestInput {
 
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
     private BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag;
-
-    private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk = new HashMap<>();
-
-    public void setTilstandHistorikk(Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk) {
-        this.tilstandHistorikk = tilstandHistorikk;
-    }
-
-    public void leggTilBeregningsgrunnlagIHistorikk(BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagTilstand tilstand) {
-        this.tilstandHistorikk.put(tilstand, grunnlag);
-    }
-
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
@@ -71,13 +61,12 @@ public class BeregningsgrunnlagRestInput {
         ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonDtoBuilder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.ofNullable(oppdatere.getInformasjon()));
         referanser.forEach(arbeidsforholdInformasjonDtoBuilder::leggTilNyReferanse);
         oppdatere.medInformasjon(arbeidsforholdInformasjonDtoBuilder.build());
-
         this.iayGrunnlag = oppdatere.build();
         this.aktivitetGradering = input.getAktivitetGradering();
         this.refusjonskravDatoer = input.getRefusjonskravDatoer();
         this.ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
-        this.tilstandHistorikk = input.getTilstandHistorikk();
+        this.fordelBeregningsgrunnlagGrunnlag = input.getTilstandHistorikk().get(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
     }
 
@@ -111,8 +100,11 @@ public class BeregningsgrunnlagRestInput {
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
     }
 
-    public Optional<BeregningsgrunnlagDto> hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand tilstand) {
-        return Optional.ofNullable(tilstandHistorikk.get(tilstand)).flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+    public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
+        if (fordelBeregningsgrunnlagGrunnlag == null) {
+            return Optional.empty();
+        }
+        return fordelBeregningsgrunnlagGrunnlag.getBeregningsgrunnlag();
     }
 
     public AktivitetGradering getAktivitetGradering() {
@@ -193,6 +185,15 @@ public class BeregningsgrunnlagRestInput {
     public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagRestInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
+        return newInput;
+    }
+
+    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraFordel(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
+            throw new IllegalArgumentException("Grunnlaget er ikke fra fordel.");
+        }
+        var newInput = new BeregningsgrunnlagRestInput(this);
+        newInput.fordelBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

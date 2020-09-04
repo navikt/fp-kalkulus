@@ -166,9 +166,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag,
                 AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
-        BeregningsgrunnlagRestInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
-        return inputMedBeregningsgrunnlag;
+        return input.medBeregningsgrunnlagGrunnlag(grunnlag);
     }
 
 }

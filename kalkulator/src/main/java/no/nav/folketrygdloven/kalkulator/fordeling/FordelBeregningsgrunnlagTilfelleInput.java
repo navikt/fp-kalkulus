@@ -62,8 +62,7 @@ public class FordelBeregningsgrunnlagTilfelleInput {
 
     public static FordelBeregningsgrunnlagTilfelleInput fraBeregningsgrunnlagRestInput(BeregningsgrunnlagRestInput input) {
         BeregningsgrunnlagGrunnlagDto grunnlag = input.getBeregningsgrunnlagGrunnlag();
-        BeregningsgrunnlagDto bg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                .orElseThrow(() -> new IllegalStateException("Skal ikke kalle fordel-logikk uten å ha utført steg"));
+        BeregningsgrunnlagDto bg = input.getFordelBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ikke kalle fordel-logikk uten å ha utført steg"));
         AktivitetGradering aktivitetGradering = input.getAktivitetGradering();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         return new FordelBeregningsgrunnlagTilfelleInput(bg, grunnlag.getGjeldendeAktiviteter(), aktivitetGradering, inntektsmeldinger);

@@ -77,7 +77,7 @@ public class KalkulatorInputTjeneste {
             return mappedGrunnlag.map(input::medBeregningsgrunnlagGrunnlag).orElse(input);
         });
     }
-    
+
     public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(Long koblingId) {
         return lagInputMedBeregningsgrunnlag(koblingId, true);
     }
@@ -90,9 +90,18 @@ public class KalkulatorInputTjeneste {
         leggTilTilstandhistorikk(input, medSporingslogg);
         return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
     }
-    
+
     public BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagUtenSporingslogg(Long koblingId) {
         return lagInputMedBeregningsgrunnlag(koblingId, false);
+    }
+
+    public BeregningsgrunnlagInput lagInputForGUI(Long koblingId) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        BeregningsgrunnlagInput input = lagInput(koblingId, beregningsgrunnlagGrunnlagEntitet);
+        BeregningsgrunnlagGrunnlagDto mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), false))
+                .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException());
+        leggTilGrunnlagForTilstand(input, false, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
     }
 
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
@@ -123,10 +132,14 @@ public class KalkulatorInputTjeneste {
 
     private void leggTilTilstandhistorikk(final BeregningsgrunnlagInput input, final boolean medSporingslogg) {
         for (var tilstand : BeregningsgrunnlagTilstand.values()) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
-                    input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
-            sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger(), medSporingslogg),
-                    BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
+            leggTilGrunnlagForTilstand(input, medSporingslogg, tilstand);
         }
+    }
+
+    private void leggTilGrunnlagForTilstand(BeregningsgrunnlagInput input, boolean medSporingslogg, BeregningsgrunnlagTilstand tilstand) {
+        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
+                input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
+        sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger(), medSporingslogg),
+                BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
     }
 }

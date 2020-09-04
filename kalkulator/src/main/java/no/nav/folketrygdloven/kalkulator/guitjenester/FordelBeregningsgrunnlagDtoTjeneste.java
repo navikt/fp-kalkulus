@@ -26,7 +26,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
 
     public static void lagDto(BeregningsgrunnlagRestInput input,
                               FordelingDto dto) {
-        boolean harUtførtSteg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING).isPresent();
+        boolean harUtførtSteg = input.getFordelBeregningsgrunnlag().isPresent();
         if (!harUtførtSteg) {
             return;
         }
@@ -68,7 +68,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
                                                                              Beløp grunnbeløp) {
         var aktivitetGradering = input.getAktivitetGradering();
         List<FordelBeregningsgrunnlagAndelDto> fordelAndeler = FordelBeregningsgrunnlagAndelDtoTjeneste.lagEndretBgAndelListe(input, periode);
-        var forrigeBgFraSteg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
+        var forrigeBgFraSteg = input.getFordelBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ikke komme hit uten å ha utført fordel-steget"));
         var periodeFraSteg = forrigeBgFraSteg.getBeregningsgrunnlagPerioder().stream()
                 .filter(p -> p.getPeriode().getFomDato().equals(periode.getBeregningsgrunnlagPeriodeFom())).findFirst()
