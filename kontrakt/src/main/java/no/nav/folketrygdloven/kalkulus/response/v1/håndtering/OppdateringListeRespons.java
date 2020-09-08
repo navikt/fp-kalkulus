@@ -20,17 +20,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
-public class OppdateringBolkRespons {
+public class OppdateringListeRespons {
 
     @JsonProperty(value = "oppdateringer")
     @Valid
     @NotNull
     private List<OppdateringPrRequest> oppdateringer;
 
-    public OppdateringBolkRespons() {
+    public OppdateringListeRespons() {
     }
 
-    public OppdateringBolkRespons(@Valid @NotNull List<OppdateringPrRequest> oppdateringer) {
+    public OppdateringListeRespons(@Valid @NotNull List<OppdateringPrRequest> oppdateringer) {
         this.oppdateringer = oppdateringer;
     }
 

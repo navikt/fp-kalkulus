@@ -46,7 +46,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringBolkRespons;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.rest.abac.FortsettBeregningRequestAbacDto;
@@ -152,11 +152,11 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/oppdaterListe")
-    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt bolk", tags = "beregn",
-            summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt for oppgitt bolk."),
+    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn",
+            summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt for oppgitt liste."),
             responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                            schema = @Schema(implementation = OppdateringBolkRespons.class)))
+                            schema = @Schema(implementation = OppdateringListeRespons.class)))
             })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
@@ -169,7 +169,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
                 })
                 .collect(Collectors.toList());
         logMetrikk("/kalkulus/v1/oppdaterBolk", Duration.between(startTx, Instant.now()));
-        return Response.ok(Objects.requireNonNullElseGet(new OppdateringBolkRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
+        return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
     @POST
