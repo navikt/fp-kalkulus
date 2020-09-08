@@ -51,7 +51,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequ
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.rest.abac.FortsettBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningBolkRequestAbacDto;
+import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningListeRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.StartBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
@@ -151,7 +151,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/oppdaterBolk")
+    @Path("/oppdaterListe")
     @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt bolk", tags = "beregn",
             summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt for oppgitt bolk."),
             responses = {@ApiResponse(description = "Liste med endringer som ble gjort under oppdatering",
@@ -160,7 +160,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
             })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response håndterBolk(@NotNull @Valid HåndterBeregningBolkRequestAbacDto spesifikasjon) {
+    public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         List<OppdateringPrRequest> oppdateringer = spesifikasjon.getHåndterBeregningListe().stream()
                 .map(request -> {

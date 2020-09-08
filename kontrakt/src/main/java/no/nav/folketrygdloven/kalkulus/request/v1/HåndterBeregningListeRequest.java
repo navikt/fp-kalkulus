@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
-public class HåndterBeregningBolkRequest {
+public class HåndterBeregningListeRequest {
 
     @JsonProperty(value = "håndterBeregningListe")
     @NotNull
@@ -35,12 +35,12 @@ public class HåndterBeregningBolkRequest {
     @NotNull
     private UUID behandlingUuid;
 
-    public HåndterBeregningBolkRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe, @Valid @NotNull UUID behandlingUuid) {
+    public HåndterBeregningListeRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe, @Valid @NotNull UUID behandlingUuid) {
         this.håndterBeregningListe = håndterBeregningListe;
         this.behandlingUuid = behandlingUuid;
     }
 
-    public HåndterBeregningBolkRequest() {
+    public HåndterBeregningListeRequest() {
         // jackson
     }
 
