@@ -34,9 +34,6 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi {
 
     public static final String KODEVERK = "SKATTE_OG_AVGIFTSREGEL";
 
-    @Deprecated
-    public static final String DISCRIMINATOR = "SKATTE_OG_AVGIFTSREGEL";
-
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {

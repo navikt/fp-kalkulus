@@ -58,9 +58,6 @@ public enum Hjemmel implements Kodeverdi {
 
     public static final String KODEVERK = "BG_HJEMMEL";
 
-    @Deprecated
-    public static final String DISCRIMINATOR = "BG_HJEMMEL";
-
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {

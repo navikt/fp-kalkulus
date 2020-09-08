@@ -25,10 +25,6 @@ public class InntektsmeldingDtoBuilder {
         return new InntektsmeldingDtoBuilder(new InntektsmeldingDto());
     }
 
-    public static InntektsmeldingDtoBuilder kopi(InntektsmeldingDto inntektsmelding) {
-        return new InntektsmeldingDtoBuilder(new InntektsmeldingDto(inntektsmelding));
-    }
-
     public InntektsmeldingDto build() {
         return build(false);
     }
@@ -48,10 +44,6 @@ public class InntektsmeldingDtoBuilder {
 
     public Arbeidsgiver getArbeidsgiver() {
         return kladd.getArbeidsgiver();
-    }
-
-    public Optional<EksternArbeidsforholdRef> getEksternArbeidsforholdRef() {
-        return Optional.ofNullable(eksternArbeidsforholdId);
     }
 
     public Optional<InternArbeidsforholdRefDto> getInternArbeidsforholdRef() {
@@ -87,15 +79,6 @@ public class InntektsmeldingDtoBuilder {
             kladd.setArbeidsforholdId(arbeidsforholdId);
         }
         return this;
-    }
-
-    /**
-     * @deprecated bruk eksplisitt Intern/Ekstern arbeidforhold Id.
-     */
-    @Deprecated(forRemoval = true)
-    public InntektsmeldingDtoBuilder medArbeidsforholdId(String arbeidsforholdId) {
-        precondition();
-        return medArbeidsforholdId(arbeidsforholdId == null ? null : InternArbeidsforholdRefDto.ref(arbeidsforholdId));
     }
 
     public InntektsmeldingDtoBuilder medArbeidsgiver(Arbeidsgiver arbeidsgiver) {

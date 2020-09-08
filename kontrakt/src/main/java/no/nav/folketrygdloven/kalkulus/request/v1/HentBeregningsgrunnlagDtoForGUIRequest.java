@@ -78,16 +78,6 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
         this.referanser = referanser;
     }
 
-    @Deprecated
-    public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
-                                                  @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                  @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-
-        this.eksternReferanse = eksternReferanse;
-        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
-        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
-    }
-
     public UUID getKoblingReferanse() {
         return eksternReferanse;
     }

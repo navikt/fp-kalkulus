@@ -39,9 +39,6 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     ;
     public static final String KODEVERK = "BEREGNINGSGRUNNLAG_TILSTAND";
 
-    @Deprecated
-    public static final String DISCRIMINATOR = "BEREGNINGSGRUNNLAG_TILSTAND";
-
     private static final Map<String, BeregningsgrunnlagTilstand> KODER = new LinkedHashMap<>();
 
     /**

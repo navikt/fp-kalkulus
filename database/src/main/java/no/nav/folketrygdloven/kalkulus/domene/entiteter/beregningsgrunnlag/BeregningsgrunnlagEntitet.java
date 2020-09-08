@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.BRUKERS_STATUS;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.PERIODISERING;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT;
 
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
@@ -36,10 +34,8 @@ import org.hibernate.annotations.BatchSize;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
 @Entity(name = "Beregningsgrunnlag")
 @Table(name = "BEREGNINGSGRUNNLAG")
@@ -146,35 +142,8 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
     }
 
-    public String getRegelloggSkjæringstidspunkt() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelEvaluering() : null;
-    }
-
     public String getRegelInputBrukersStatus() {
         return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
-    }
-
-    public String getRegelloggBrukersStatus() {
-        return regelSporingMap.containsKey(BRUKERS_STATUS) ? regelSporingMap.get(BRUKERS_STATUS).getRegelEvaluering() : null;
-    }
-
-    public Hjemmel getHjemmel() {
-        if (aktivitetStatuser.isEmpty()) {
-            return Hjemmel.UDEFINERT;
-        }
-        if (aktivitetStatuser.size() == 1) {
-            return aktivitetStatuser.get(0).getHjemmel();
-        }
-        Optional<BeregningsgrunnlagAktivitetStatus> dagpenger = aktivitetStatuser.stream()
-                .filter(as -> Hjemmel.F_14_7_8_49.equals(as.getHjemmel()))
-                .findFirst();
-        if (dagpenger.isPresent()) {
-            return dagpenger.get().getHjemmel();
-        }
-        Optional<BeregningsgrunnlagAktivitetStatus> gjelder = aktivitetStatuser.stream()
-                .filter(as -> !Hjemmel.F_14_7.equals(as.getHjemmel()))
-                .findFirst();
-        return gjelder.isPresent() ? gjelder.get().getHjemmel() : Hjemmel.F_14_7;
     }
 
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
@@ -275,22 +244,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder fjernAllePerioder() {
-            verifiserKanModifisere();
-            kladd.beregningsgrunnlagPerioder = new ArrayList<>();
-            return this;
-        }
-
-        public Builder fjernAktivitetstatus(AktivitetStatus status) {
-            verifiserKanModifisere();
-            List<BeregningsgrunnlagAktivitetStatus> statuserSomSkalFjernes = kladd.aktivitetStatuser.stream().filter(a -> Objects.equals(a.getAktivitetStatus(), status)).collect(Collectors.toList());
-            if (statuserSomSkalFjernes.size() != 1) {
-                throw new IllegalStateException("Ikke entydig hvilken status som skal fjernes fra beregningsgrunnlaget.");
-            }
-            kladd.aktivitetStatuser.remove(statuserSomSkalFjernes.get(0));
-            return this;
-        }
-
         public Builder leggTilFaktaOmBeregningTilfeller(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
             verifiserKanModifisere();
             faktaOmBeregningTilfeller.forEach(this::leggTilFaktaOmBeregningTilfeller);
@@ -316,26 +269,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
         public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatus.Builder sammenligningsgrunnlagPrStatusBuilder) { // NOSONAR
             kladd.sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatusBuilder.medBeregningsgrunnlag(kladd).build());
-            return this;
-        }
-
-        public Builder medRegelloggSkjæringstidspunkt(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagRegelSporing.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(SKJÆRINGSTIDSPUNKT)
-                .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelloggBrukersStatus(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagRegelSporing.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(BRUKERS_STATUS)
-                .build(kladd);
             return this;
         }
 

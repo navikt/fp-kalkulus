@@ -31,20 +31,6 @@ public class RefusjonskravDatoDto {
         this.harRefusjonFraStart = harRefusjonFraStart;
     }
 
-    /**
-     * For bakoverkompabilitet
-     *
-     * @param arbeidsgiver arbeidsgiver med refusjon
-     * @param førsteDagMedRefusjonskrav første dag med refusjon som oppgitt i inntektsmelding
-     * @param førsteInnsendingAvRefusjonskrav første innsendelse av refusjonskrav
-     */
-    @Deprecated
-    public RefusjonskravDatoDto(Arbeidsgiver arbeidsgiver, LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav) {
-        this.arbeidsgiver = arbeidsgiver;
-        this.førsteDagMedRefusjonskrav = førsteDagMedRefusjonskrav;
-        this.førsteInnsendingAvRefusjonskrav = førsteInnsendingAvRefusjonskrav;
-    }
-
     public RefusjonskravDatoDto(RefusjonskravDatoDto refusjonskravDato) {
         this.arbeidsgiver = refusjonskravDato.getArbeidsgiver();
         this.førsteDagMedRefusjonskrav = refusjonskravDato.førsteDagMedRefusjonskrav;
@@ -55,7 +41,7 @@ public class RefusjonskravDatoDto {
     /**
      * Virksomheten som har sendt inn inntektsmeldingen
      *
-     * @return {@link Virksomhet}
+     * @return {@link Arbeidsgiver}
      */
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;

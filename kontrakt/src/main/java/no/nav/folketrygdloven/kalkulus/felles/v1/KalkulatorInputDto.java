@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
-import no.nav.folketrygdloven.kalkulus.beregning.v1.GrunnbeløpDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
@@ -32,12 +30,6 @@ public class KalkulatorInputDto {
     @Valid
     @Size()
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
-
-    @Deprecated
-    @JsonProperty(value = "grunnbeløpsatser")
-    @Size(min = 1)
-    @Valid
-    private List<GrunnbeløpDto> grunnbeløpsatser;
 
     @JsonProperty(value = "iayGrunnlag", required = true)
     @NotNull
@@ -66,16 +58,6 @@ public class KalkulatorInputDto {
     public KalkulatorInputDto(@NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                               @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
                               @NotNull @Valid LocalDate skjæringstidspunkt) {
-        this.iayGrunnlag = iayGrunnlag;
-        this.opptjeningAktiviteter = opptjeningAktiviteter;
-        this.skjæringstidspunkt = skjæringstidspunkt;
-    }
-
-    public KalkulatorInputDto(@NotEmpty @Valid List<GrunnbeløpDto> grunnbeløpsatser,
-                              @NotNull @Valid InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                              @NotNull @Valid OpptjeningAktiviteterDto opptjeningAktiviteter,
-                              @NotNull @Valid LocalDate skjæringstidspunkt) {
-        this.grunnbeløpsatser = grunnbeløpsatser;
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.skjæringstidspunkt = skjæringstidspunkt;

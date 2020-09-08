@@ -33,13 +33,6 @@ public class HentBeregningsgrunnlagDtoForGUIRequestAbacDto extends HentBeregning
         // For Json deserialisering
     }
 
-    @Deprecated
-    public HentBeregningsgrunnlagDtoForGUIRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
-                                                         @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                         @JsonProperty(value = "arbeidsgiverOpplysninger", required = true) @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        super(eksternReferanse, ytelseSomSkalBeregnes, arbeidsgiverOpplysninger);
-    }
-
     public HentBeregningsgrunnlagDtoForGUIRequestAbacDto(@JsonProperty(value = "eksternReferanse", required = true) @Valid @NotNull UUID eksternReferanse,
                                                          @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                          @JsonProperty(value = "arbeidsgiverOpplysninger", required = true) @NotNull @Valid List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,

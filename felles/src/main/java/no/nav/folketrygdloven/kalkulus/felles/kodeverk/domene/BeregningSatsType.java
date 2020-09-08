@@ -26,8 +26,7 @@ public enum BeregningSatsType implements Kodeverdi {
     UDEFINERT("-", "Ikke definert"),
     ;
     public static final String KODEVERK = "SATS_TYPE";
-    @Deprecated
-    public static final String DISCRIMINATOR = "SATS_TYPE";
+
     private static final Map<String, BeregningSatsType> KODER = new LinkedHashMap<>();
 
     static {
