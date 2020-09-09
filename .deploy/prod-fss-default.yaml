@@ -42,15 +42,13 @@ spec:
     paths:
       - mountPath: /var/run/secrets/nais.io/serviceuser
         kvPath: serviceuser/data/prod/srvftkalkulus
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: /kv/prod/fss/ftkalkulus/default
       - mountPath: /var/run/secrets/nais.io/appdynamics
         kvPath: /apikey/appdynamics/prod
   env:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.nais.adeo.no
     - name: ABAC_PDP_ENDPOINT_URL
-      value: http://abac-duplo/application/authorize
+      value: http://abac-duplo.default/application/authorize
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
     #OpenID
@@ -64,7 +62,7 @@ spec:
     - name: OIDC_STS_ISSUER_URL
       value: https://security-token-service.nais.adeo.no
     - name: OIDC_STS_JWKS_URL
-      value: https://security-token-service.nais.adeo.no/rest/v1/sts/jwks
+      value: http://security-token-service.default/rest/v1/sts/jwks
     #Sensu
     - name: SENSU_HOST
       value: sensu.nais

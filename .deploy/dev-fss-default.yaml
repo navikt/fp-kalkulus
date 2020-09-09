@@ -2,14 +2,15 @@ kind: "Application"
 apiVersion: "nais.io/v1alpha1"
 metadata:
   name: ftkalkulus
-  namespace: q1
+  namespace: default
   labels:
     team: teamforeldrepenger
 spec:
   image: {{ image }}
   port: 8080
   ingresses:
-    - "https://ftkalkulus-q1.nais.preprod.local/"
+    - "https://ftkalkulus.nais.preprod.local/"
+    - "https://ftkalkulus.dev.adeo.no/"
   liveness:
     path: "/ftkalkulus/internal/isAlive"
     initialDelay: 30
@@ -46,7 +47,7 @@ spec:
         kvPath: /apikey/appdynamics/dev
   env:
     - name: LOADBALANCER_URL
-      value: https://ftkalkulus-q1.nais.preprod.local
+      value: https://ftkalkulus.nais.preprod.local
     - name: ABAC_PDP_ENDPOINT_URL
       value: http://abac-duplo.default/application/authorize
     - name: SECURITYTOKENSERVICE_URL
