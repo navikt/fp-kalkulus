@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.response.v1;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,10 +20,13 @@ public class Arbeidsgiver {
 
     @JsonProperty(value = "arbeidsgiverOrgnr")
     @Valid
+    @Size(max=20)
+    @Pattern(regexp = "^\\d+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
     private String arbeidsgiverOrgnr;
 
     @JsonProperty(value = "arbeidsgiverAktørId")
     @Valid
+    @Pattern(regexp = "^\\d+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
     private String arbeidsgiverAktørId;
 
     public Arbeidsgiver() {
