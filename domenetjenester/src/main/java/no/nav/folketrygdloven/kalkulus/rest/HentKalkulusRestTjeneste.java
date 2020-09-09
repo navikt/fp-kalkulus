@@ -146,7 +146,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     public Response hentBeregningsgrunnlagDto(@NotNull @Valid HentBeregningsgrunnlagDtoForGUIRequestAbacDto spesifikasjon) {
         var startTx = Instant.now();
         Response response;
-        response = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(List.of(spesifikasjon)).entrySet()
+        response = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(List.of(spesifikasjon)).values()
                 .stream().findFirst()
                 .map(Response::ok)
                 .orElse(Response.noContent())
