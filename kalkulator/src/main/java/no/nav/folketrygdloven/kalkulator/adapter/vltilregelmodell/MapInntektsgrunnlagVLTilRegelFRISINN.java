@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
@@ -64,7 +64,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     @Override
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
-        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag, input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(input.getKoblingReferanse(), inntektsgrunnlag, input, skjæringstidspunktBeregning);
         return inntektsgrunnlag;
     }
 
@@ -172,7 +172,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                         .build()));
     }
 
-    private void hentInntektArbeidYtelse(BehandlingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+    private void hentInntektArbeidYtelse(KoblingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         AktørId aktørId = referanse.getAktørId();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
 

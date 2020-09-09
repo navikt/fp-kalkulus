@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
@@ -45,14 +45,14 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 
 public class BeregningIAYTestUtil {
 
-    public static void byggArbeidForBehandlingMedVirksomhetPåInntekt(BehandlingReferanse behandlingReferanse,
-                                                              LocalDate skjæringstidspunktOpptjening,
-                                                              LocalDate fraOgMed,
-                                                              LocalDate tilOgMed,
-                                                              InternArbeidsforholdRefDto arbId,
-                                                              Arbeidsgiver arbeidsgiver, BigDecimal inntektPrMnd,
-                                                              InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse.getId(), behandlingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
+    public static void byggArbeidForBehandlingMedVirksomhetPåInntekt(KoblingReferanse koblingReferanse,
+                                                                     LocalDate skjæringstidspunktOpptjening,
+                                                                     LocalDate fraOgMed,
+                                                                     LocalDate tilOgMed,
+                                                                     InternArbeidsforholdRefDto arbId,
+                                                                     Arbeidsgiver arbeidsgiver, BigDecimal inntektPrMnd,
+                                                                     InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
+        byggArbeidForBehandling(koblingReferanse.getId(), koblingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
             singletonList(inntektPrMnd), true, Optional.empty(), inntektArbeidYtelseGrunnlagBuilder);
     }
@@ -62,41 +62,41 @@ public class BeregningIAYTestUtil {
      * skjæringstidspunkt.
      *
      * Setter virksomhetstype til udefinert som mapper til inntektskategori SELVSTENDING_NÆRINGSDRIVENDE.
-     *  @param behandlingReferanse aktuell behandling
+     *  @param koblingReferanse aktuell behandling
      * @param skjæringstidspunktOpptjening skjæringstidpunkt for opptjening
      * @param nyIArbeidslivet spesifiserer om bruker er ny i arbeidslivet
      * @param iayGrunnlagBuilder
      */
-    public static void lagOppgittOpptjeningForSN(BehandlingReferanse behandlingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
-        iayGrunnlagBuilder.medOppgittOpptjening(lagOppgittOpptjeningForSN(behandlingReferanse, skjæringstidspunktOpptjening, nyIArbeidslivet, VirksomhetType.UDEFINERT));
+    public static void lagOppgittOpptjeningForSN(KoblingReferanse koblingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
+        iayGrunnlagBuilder.medOppgittOpptjening(lagOppgittOpptjeningForSN(koblingReferanse, skjæringstidspunktOpptjening, nyIArbeidslivet, VirksomhetType.UDEFINERT));
     }
 
     /**
      * Lager oppgitt opptjening for Selvstending næringsdrivende 6 måneder før skjæringstidspunkt med endringsdato en måned før
      * skjæringstidspunkt.
-     *  @param behandlingReferanse aktuell behandling
+     *  @param koblingReferanse aktuell behandling
      * @param skjæringstidspunktOpptjening skjæringstidpunkt for opptjening
      * @param nyIArbeidslivet spesifiserer om bruker er ny i arbeidslivet
      * @param virksomhetType spesifiserer virksomhetstype for næringsvirksomheten
      * @return
      */
-    private static OppgittOpptjeningDtoBuilder lagOppgittOpptjeningForSN(BehandlingReferanse behandlingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet,
+    private static OppgittOpptjeningDtoBuilder lagOppgittOpptjeningForSN(KoblingReferanse koblingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet,
                                                                          VirksomhetType virksomhetType) {
-        return lagOppgittOpptjeningForSN(behandlingReferanse, skjæringstidspunktOpptjening, nyIArbeidslivet, virksomhetType,
+        return lagOppgittOpptjeningForSN(koblingReferanse, skjæringstidspunktOpptjening, nyIArbeidslivet, virksomhetType,
             singletonList(Periode.of(skjæringstidspunktOpptjening.minusMonths(6), skjæringstidspunktOpptjening)));
     }
 
     /**
      * Lager oppgitt opptjening for Selvstending næringsdrivende 6 måneder før skjæringstidspunkt med endringsdato en måned før
      * skjæringstidspunkt.
-     *  @param behandlingReferanse aktuell behandling
+     *  @param koblingReferanse aktuell behandling
      * @param skjæringstidspunktOpptjening skjæringstidpunkt for opptjening
      * @param nyIArbeidslivet spesifiserer om bruker er ny i arbeidslivet
      * @param virksomhetType spesifiserer virksomhetstype for næringsvirksomheten
      * @param perioder spesifiserer perioder
      * @return
      */
-    private static OppgittOpptjeningDtoBuilder lagOppgittOpptjeningForSN(BehandlingReferanse behandlingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet, VirksomhetType virksomhetType,
+    private static OppgittOpptjeningDtoBuilder lagOppgittOpptjeningForSN(KoblingReferanse koblingReferanse, LocalDate skjæringstidspunktOpptjening, boolean nyIArbeidslivet, VirksomhetType virksomhetType,
                                                                          Collection<Periode> perioder) {
         OppgittOpptjeningDtoBuilder oppgittOpptjeningBuilder = OppgittOpptjeningDtoBuilder.ny();
         List<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> næringBuilders = new ArrayList<>();
@@ -206,7 +206,7 @@ public class BeregningIAYTestUtil {
     }
 
     public static AktørYtelseDto leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder,
-                                                    BehandlingReferanse behandlingReferanse,
+                                                    KoblingReferanse koblingReferanse,
                                                     LocalDate fom,
                                                     LocalDate tom, // NOSONAR - brukes bare til test
                                                     FagsakYtelseType ytelseType,
@@ -214,7 +214,7 @@ public class BeregningIAYTestUtil {
                                                     Periode... meldekortPerioder) {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = inntektArbeidYtelseAggregatBuilder
-            .getAktørYtelseBuilder(behandlingReferanse.getAktørId());
+            .getAktørYtelseBuilder(koblingReferanse.getAktørId());
         YtelseDtoBuilder ytelseBuilder = aktørYtelseBuilder.getYtelselseBuilderForType(ytelseType, Intervall.fraOgMedTilOgMed(fom, tom));
         if (meldekortPerioder != null) {
             Arrays.asList(meldekortPerioder).forEach(meldekortPeriode -> {
@@ -236,27 +236,27 @@ public class BeregningIAYTestUtil {
             .build();
     }
 
-    public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse,
+    public static void byggArbeidForBehandling(KoblingReferanse koblingReferanse,
                                                LocalDate skjæringstidspunktOpptjening,
                                                LocalDate fraOgMed,
                                                LocalDate tilOgMed,
                                                InternArbeidsforholdRefDto arbId,
                                                Arbeidsgiver arbeidsgiver,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse, skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver, BigDecimal.TEN, inntektArbeidYtelseGrunnlagBuilder);
+        byggArbeidForBehandling(koblingReferanse, skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver, BigDecimal.TEN, inntektArbeidYtelseGrunnlagBuilder);
     }
 
-    public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse,
-                                        LocalDate skjæringstidspunktOpptjening,
-                                        Intervall arbeidsperiode,
-                                        InternArbeidsforholdRefDto arbId,
-                                        Arbeidsgiver arbeidsgiver,
-                                        InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse, skjæringstidspunktOpptjening, arbeidsperiode.getFomDato(), arbeidsperiode.getTomDato(), arbId, arbeidsgiver,
+    public static void byggArbeidForBehandling(KoblingReferanse koblingReferanse,
+                                               LocalDate skjæringstidspunktOpptjening,
+                                               Intervall arbeidsperiode,
+                                               InternArbeidsforholdRefDto arbId,
+                                               Arbeidsgiver arbeidsgiver,
+                                               InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
+        byggArbeidForBehandling(koblingReferanse, skjæringstidspunktOpptjening, arbeidsperiode.getFomDato(), arbeidsperiode.getTomDato(), arbId, arbeidsgiver,
             BigDecimal.TEN, inntektArbeidYtelseGrunnlagBuilder);
     }
 
-    public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse,
+    public static void byggArbeidForBehandling(KoblingReferanse koblingReferanse,
                                                LocalDate skjæringstidspunktOpptjening,
                                                LocalDate fraOgMed,
                                                LocalDate tilOgMed,
@@ -264,7 +264,7 @@ public class BeregningIAYTestUtil {
                                                Arbeidsgiver arbeidsgiver,
                                                BigDecimal inntektPrMnd,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse.getId(), behandlingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
+        byggArbeidForBehandling(koblingReferanse.getId(), koblingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
             singletonList(inntektPrMnd),
             arbeidsgiver != null,
@@ -273,7 +273,7 @@ public class BeregningIAYTestUtil {
     }
 
 
-    public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse, // NOSONAR - brukes bare til test
+    public static void byggArbeidForBehandling(KoblingReferanse koblingReferanse, // NOSONAR - brukes bare til test
                                                LocalDate skjæringstidspunktOpptjening,
                                                LocalDate fraOgMed,
                                                LocalDate tilOgMed,
@@ -281,12 +281,12 @@ public class BeregningIAYTestUtil {
                                                Arbeidsgiver arbeidsgiver,
                                                Optional<LocalDate> lønnsendringsdato,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse.getId(), behandlingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
+        byggArbeidForBehandling(koblingReferanse.getId(), koblingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
             singletonList(BigDecimal.TEN), arbeidsgiver != null, lønnsendringsdato, inntektArbeidYtelseGrunnlagBuilder);
     }
 
-    public static void byggArbeidForBehandling(BehandlingReferanse behandlingReferanse, // NOSONAR - brukes bare til test
+    public static void byggArbeidForBehandling(KoblingReferanse koblingReferanse, // NOSONAR - brukes bare til test
                                                LocalDate skjæringstidspunktOpptjening,
                                                LocalDate fraOgMed,
                                                LocalDate tilOgMed,
@@ -296,7 +296,7 @@ public class BeregningIAYTestUtil {
                                                boolean virksomhetPåInntekt,
                                                Optional<LocalDate> lønnsendringsdato,
                                                InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
-        byggArbeidForBehandling(behandlingReferanse.getId(), behandlingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
+        byggArbeidForBehandling(koblingReferanse.getId(), koblingReferanse.getAktørId(), skjæringstidspunktOpptjening, fraOgMed, tilOgMed, arbId, arbeidsgiver,
             arbeidType, inntektPrMnd, virksomhetPåInntekt, lønnsendringsdato, inntektArbeidYtelseGrunnlagBuilder);
     }
 

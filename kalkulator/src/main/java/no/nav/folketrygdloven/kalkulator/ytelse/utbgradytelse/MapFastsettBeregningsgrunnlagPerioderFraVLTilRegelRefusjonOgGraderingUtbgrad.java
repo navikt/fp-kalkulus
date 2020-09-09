@@ -28,7 +28,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -94,8 +94,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         List<AndelGradering> endringerSøktYtelse = hentEndringSøktYtelseSVP(input, vlBeregningsgrunnlag);
         var regelEndringerSøktYtelse = endringerSøktYtelse.stream()
-                .filter(g -> erAnsattIPerioden(input.getBehandlingReferanse(), g, filter))
-                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(vlBeregningsgrunnlag, input.getBehandlingReferanse(),
+                .filter(g -> erAnsattIPerioden(input.getKoblingReferanse(), g, filter))
+                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(vlBeregningsgrunnlag, input.getKoblingReferanse(),
                         andelGradering, filter))
                 .collect(Collectors.toList());
 
@@ -110,7 +110,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .build();
     }
 
-    private boolean erAnsattIPerioden(BehandlingReferanse ref, AndelGradering g, YrkesaktivitetFilterDto filter) {
+    private boolean erAnsattIPerioden(KoblingReferanse ref, AndelGradering g, YrkesaktivitetFilterDto filter) {
         if (g.getAktivitetStatus().erSelvstendigNæringsdrivende() || g.getAktivitetStatus().erFrilanser()) {
             // Antar SN og FL er aktiv i hele uttaksperioden
             return true;

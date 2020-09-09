@@ -41,7 +41,7 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
 
         var beregnGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         Set<Arbeidsgiver> arbeidsgivere = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
-                input.getBehandlingReferanse(),
+                input.getKoblingReferanse(),
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
                 input.getRefusjonskravDatoer()

@@ -35,7 +35,7 @@ public class KortvarigArbeidsforholdTilfelleUtleder implements TilfelleUtleder {
     }
 
     protected Optional<FaktaOmBeregningTilfelle> utledTilfelleForKortvarigeArbeidsforhold(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return KortvarigArbeidsforholdTjeneste.harKortvarigeArbeidsforholdOgErIkkeSN(ref.getAktørId(), beregningsgrunnlag, input.getIayGrunnlag()) ?

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.VurderBeregningsgrunnlagTjeneste;
@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -44,7 +44,7 @@ public class MilitærTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = VerdikjedeTestHjelper.SKJÆRINGSTIDSPUNKT_OPPTJENING;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
 
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
 
@@ -68,7 +68,7 @@ public class MilitærTest {
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = byggMilitærForBehandling(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100, 3);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100, 3);
 
         // Act 1: Fastsett beregningaktiviteter og kontroller fakta beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -94,7 +94,7 @@ public class MilitærTest {
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         assertThat(resultat.getAksjonspunkter()).isEmpty();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(behandlingReferanse, grunnlag, resultat, iayGrunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(koblingReferanse, grunnlag, resultat, iayGrunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -115,7 +115,7 @@ public class MilitærTest {
         return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
     }
 
-    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BehandlingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag,
+    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag,
                                                            BeregningsgrunnlagRegelResultat resultat, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -127,7 +127,7 @@ public class MilitærTest {
             .medOppgittOpptjening(BeregningIAYTestUtil.lagAnnenAktivitetOppgittOpptjening(ArbeidType.MILITÆR_ELLER_SIVILTJENESTE, fom, tom));
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad, int grunnbeløpMilitærHarKravPå) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad, int grunnbeløpMilitærHarKravPå) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, grunnbeløpMilitærHarKravPå);
     }
 

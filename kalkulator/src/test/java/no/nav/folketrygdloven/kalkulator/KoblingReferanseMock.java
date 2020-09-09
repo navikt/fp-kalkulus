@@ -2,22 +2,22 @@ package no.nav.folketrygdloven.kalkulator;
 
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
-public class BehandlingReferanseMock extends BehandlingReferanse {
+public class KoblingReferanseMock extends KoblingReferanse {
 
     public static final AktørId AKTØR_ID = AktørId.dummy();
     private Skjæringstidspunkt skjæringstidspunkt;
 
 
-    public BehandlingReferanseMock() {
+    public KoblingReferanseMock() {
         super();
     }
 
-    public BehandlingReferanseMock(LocalDate skjæringstidspunktBeregning, LocalDate skjæringstidspunktOpptjening) {
+    public KoblingReferanseMock(LocalDate skjæringstidspunktBeregning, LocalDate skjæringstidspunktOpptjening) {
         super();
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(skjæringstidspunktBeregning)
@@ -26,7 +26,7 @@ public class BehandlingReferanseMock extends BehandlingReferanse {
                 .build();
     }
 
-    public BehandlingReferanseMock(LocalDate skjæringstidspunkt) {
+    public KoblingReferanseMock(LocalDate skjæringstidspunkt) {
         super();
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
             .medSkjæringstidspunktBeregning(skjæringstidspunkt)
@@ -66,7 +66,7 @@ public class BehandlingReferanseMock extends BehandlingReferanse {
     }
 
     @Override
-    public Long getBehandlingId() {
+    public Long getKoblingId() {
         return 1L;
     }
 }

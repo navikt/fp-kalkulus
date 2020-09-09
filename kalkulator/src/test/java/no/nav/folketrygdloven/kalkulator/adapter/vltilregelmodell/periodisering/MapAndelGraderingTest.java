@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -34,11 +34,11 @@ public class MapAndelGraderingTest {
 
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet("974761076");
 
-    private BehandlingReferanse ref;
+    private KoblingReferanse ref;
 
     @BeforeEach
     public void setUp() {
-        ref = mock(BehandlingReferanse.class);
+        ref = mock(KoblingReferanse.class);
         when(ref.getSkjæringstidspunktBeregning()).thenReturn(LocalDate.now());
         when(ref.getFagsakYtelseType()).thenReturn(FagsakYtelseType.FORELDREPENGER);
     }

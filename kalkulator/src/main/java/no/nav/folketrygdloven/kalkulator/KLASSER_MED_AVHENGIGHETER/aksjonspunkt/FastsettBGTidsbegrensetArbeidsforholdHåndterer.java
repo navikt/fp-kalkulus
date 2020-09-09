@@ -30,7 +30,7 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndterer {
         if (dto.getFrilansInntekt() != null) {
             for (BeregningsgrunnlagPeriodeDto periode : perioder) {
                 BeregningsgrunnlagPrStatusOgAndelDto frilansAndel = finnFrilansAndel(periode)
-                    .orElseThrow(() -> new IllegalStateException("Mangler frilansandel for behandling " + input.getBehandlingReferanse().getBehandlingId()));
+                    .orElseThrow(() -> new IllegalStateException("Mangler frilansandel for behandling " + input.getKoblingReferanse().getKoblingId()));
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(frilansAndel).medOverstyrtPrÅr(BigDecimal.valueOf(dto.getFrilansInntekt()));
             }
         }

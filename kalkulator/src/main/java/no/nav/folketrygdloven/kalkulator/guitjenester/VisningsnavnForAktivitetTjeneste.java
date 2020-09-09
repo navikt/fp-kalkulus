@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -48,14 +48,14 @@ public class VisningsnavnForAktivitetTjeneste {
     }
 
 
-    public static String lagVisningsnavn(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    public static String lagVisningsnavn(KoblingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         if (andel.getAktivitetStatus().erArbeidstaker()) {
             return finnVisningsnavnForArbeidstaker(ref, iayGrunnlag, andel);
         }
         return andel.getArbeidsforholdType() == null || OpptjeningAktivitetType.UDEFINERT.equals(andel.getArbeidsforholdType()) ? andel.getAktivitetStatus().getNavn() : andel.getArbeidsforholdType().getNavn();
     }
 
-    private static String finnVisningsnavnForArbeidstaker(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private static String finnVisningsnavnForArbeidstaker(KoblingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getBgAndelArbeidsforhold()
             .map(bgAndelArbeidsforhold -> {
                 Arbeidsgiver arbeidsgiver = bgAndelArbeidsforhold.getArbeidsgiver();
@@ -64,11 +64,11 @@ public class VisningsnavnForAktivitetTjeneste {
             }).orElse(andel.getArbeidsforholdType().getNavn());
     }
 
-    private static String finnVisningsnavnMedReferanseHvisFinnes(BehandlingReferanse ref, Arbeidsgiver arbeidsgiver, BGAndelArbeidsforholdDto bgAndelArbeidsforhold, String visningsnavnUtenReferanse, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    private static String finnVisningsnavnMedReferanseHvisFinnes(KoblingReferanse ref, Arbeidsgiver arbeidsgiver, BGAndelArbeidsforholdDto bgAndelArbeidsforhold, String visningsnavnUtenReferanse, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         String referanse = bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse();
         if (referanse != null) {
             if (inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon().isEmpty()) {
-                throw new IllegalStateException("Mangler arbeidsforholdinformasjon for behandlingId=" + ref.getBehandlingId());
+                throw new IllegalStateException("Mangler arbeidsforholdinformasjon for behandlingId=" + ref.getKoblingId());
             }
             var eksternArbeidsforholdRef = inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon().get().finnEkstern(arbeidsgiver, bgAndelArbeidsforhold.getArbeidsforholdRef());
             var eksternArbeidsforholdId = eksternArbeidsforholdRef.getReferanse();

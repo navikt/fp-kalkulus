@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -33,7 +33,7 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 public class BeregningsgrunnlagTestUtil {
 
-    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(BehandlingReferanse ref, LocalDate skjæringstidspunktOpptjening,
+    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref, LocalDate skjæringstidspunktOpptjening,
                                                                        Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlagDto,
                                                                        AktivitetStatus... statuser) {
         HashMap<String, Integer> avkortet = new HashMap<>();
@@ -43,7 +43,7 @@ public class BeregningsgrunnlagTestUtil {
             bruttoPrÅr, Collections.emptyMap(), perioder, Collections.singletonList(Collections.emptyList()), Collections.emptyMap(), inntektArbeidYtelseGrunnlagDto, statuser);
     }
 
-    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(BehandlingReferanse ref,
+    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref,
                                                                        LocalDate skjæringstidspunktOpptjening,
                                                                        List<LocalDateInterval> berPerioder,
                                                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -51,7 +51,7 @@ public class BeregningsgrunnlagTestUtil {
         return lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), berPerioder, Collections.emptyList(), Collections.emptyMap(), Optional.of(iayGrunnlag), statuser);
     }
 
-    private static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(BehandlingReferanse ref, // NOSONAR - brukes bare til test
+    private static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref, // NOSONAR - brukes bare til test
                                                                         LocalDate skjæringstidspunktOpptjening,
                                                                         Map<String, Integer> andelAvkortet,
                                                                         Map<String, Integer> bruttoPrÅr,
@@ -75,7 +75,7 @@ public class BeregningsgrunnlagTestUtil {
         return beregningsgrunnlag;
     }
 
-    private static void byggBGForSpesifikkeAktivitetstatuser(Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlag, BehandlingReferanse ref, LocalDate skjæringstidspunktOpptjening, BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus[] statuser) {
+    private static void byggBGForSpesifikkeAktivitetstatuser(Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlag, KoblingReferanse ref, LocalDate skjæringstidspunktOpptjening, BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus[] statuser) {
         BeregningsgrunnlagAktivitetStatusDto.Builder bgAktivitetStatusbuilder = BeregningsgrunnlagAktivitetStatusDto.builder();
         for (int i = 1; i < statuser.length; i++) {
             bgAktivitetStatusbuilder.medAktivitetStatus(statuser[i]);
@@ -156,16 +156,16 @@ public class BeregningsgrunnlagTestUtil {
         return enkeltstatuser;
     }
 
-    private static void lagPerioder(BehandlingReferanse ref, Map<String, Integer> avkortetAndel, // NOSONAR - brukes bare til test, men denne bør reskrives // TODO (Safir)
-                                 Map<String, Integer> bruttoPrÅr,
-                                 Map<String, List<Boolean>> lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
-                                 List<Integer> redusert,
-                                 List<Integer> avkortet,
-                                 List<LocalDateInterval> perioder,
-                                 BeregningsgrunnlagDto beregningsgrunnlag,
-                                 List<List<PeriodeÅrsak>> periodePeriodeÅrsaker,
-                                 Map<String, List<Inntektskategori>> inntektskategoriPrAndelIArbeidsforhold,
-                                 Map<String, Integer> refusjonPrÅr,
+    private static void lagPerioder(KoblingReferanse ref, Map<String, Integer> avkortetAndel, // NOSONAR - brukes bare til test, men denne bør reskrives // TODO (Safir)
+                                    Map<String, Integer> bruttoPrÅr,
+                                    Map<String, List<Boolean>> lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
+                                    List<Integer> redusert,
+                                    List<Integer> avkortet,
+                                    List<LocalDateInterval> perioder,
+                                    BeregningsgrunnlagDto beregningsgrunnlag,
+                                    List<List<PeriodeÅrsak>> periodePeriodeÅrsaker,
+                                    Map<String, List<Inntektskategori>> inntektskategoriPrAndelIArbeidsforhold,
+                                    Map<String, Integer> refusjonPrÅr,
                                     Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlag) {
         BeregningsgrunnlagAktivitetStatusDto.Builder bgAktivitetStatusbuilder = BeregningsgrunnlagAktivitetStatusDto.builder();
         bgAktivitetStatusbuilder.medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(beregningsgrunnlag);
@@ -183,7 +183,7 @@ public class BeregningsgrunnlagTestUtil {
         }
     }
 
-    private static void lagAndelerPrArbeidsforhold(BehandlingReferanse ref,//NOSONAR
+    private static void lagAndelerPrArbeidsforhold(KoblingReferanse ref,//NOSONAR
                                                    BeregningsgrunnlagDto beregningsgrunnlag,
                                                    Map<String, Integer> avkortetAndel,
                                                    Map<String, Integer> bruttoPrÅr,

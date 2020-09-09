@@ -13,13 +13,13 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 
 public class AksjonspunktUtlederForeslåBeregningTest {
 
-    private BehandlingReferanse referanse = new BehandlingReferanseMock();
+    private KoblingReferanse referanse = new KoblingReferanseMock();
 
     @Test
     public void skalIkkeFåAksjonspunkterVed100PDekningsgrad() {
@@ -127,7 +127,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
         assertThat(apDefs).isEmpty();
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse referanse) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse referanse) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         return new BeregningsgrunnlagInput(referanse, null, null, null, List.of(), foreldrepengerGrunnlag);
     }

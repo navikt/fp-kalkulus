@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -53,7 +53,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
 
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
@@ -73,12 +73,12 @@ public class ForeslåBeregningsgrunnlagSNTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, behandlingReferanse, registerBuilder);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, koblingReferanse, registerBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(registerBuilder)
             .medInntektsmeldinger(inntektsmeldinger).build();
-        BehandlingReferanse ref = lagReferanseMedStp(behandlingReferanse);
+        KoblingReferanse ref = lagReferanseMedStp(koblingReferanse);
         var input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
 
         // Act
@@ -128,8 +128,8 @@ public class ForeslåBeregningsgrunnlagSNTest {
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
     }
 
-    private static BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
-        return behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
+    private static KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
+        return koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .build());
     }

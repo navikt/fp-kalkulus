@@ -24,14 +24,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBeregningsgrunnlagATFLHåndterer;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.InntektPrAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -72,7 +72,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
     @Inject
     private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
@@ -103,14 +103,14 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
-        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
+        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
                 Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektPrMnd, iayGrunnlagBuilder);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT_OPPTJENING, refusjonPrMnd, inntektPrMnd);
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR);
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        input = lagInputMedTogglePå(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act steg FastsettBeregningAktiviteter
         BeregningResultatAggregat resultat = doStegFastsettSkjæringstidspunkt(input);
@@ -176,7 +176,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
-        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
+        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
                 Tid.TIDENES_ENDE, arbeidsforholdId, arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR), inntektIRegister, iayGrunnlagBuilder);
 
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT_OPPTJENING, ZERO, inntektFraIM);
@@ -184,7 +184,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        input = lagInputMedTogglePå(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act steg FastsettBeregningAktiviteter
         BeregningResultatAggregat resultat = doStegFastsettSkjæringstidspunkt(input);
@@ -258,17 +258,17 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
         // Arrange
         BigDecimal inntektIRegister = BigDecimal.valueOf(70000L);
         BigDecimal inntektPrÅrRegister = inntektIRegister.multiply(BigDecimal.valueOf(12L));
-        String arbeidsgiverAktørId = behandlingReferanse.getAktørId().getId();
+        String arbeidsgiverAktørId = koblingReferanse.getAktørId().getId();
 
-        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
-                Tid.TIDENES_ENDE, null, arbeidsgiverTestUtil.forArbeidsgiverpPrivatperson(behandlingReferanse.getAktørId()), inntektIRegister, iayGrunnlagBuilder);
+        BeregningIAYTestUtil.byggArbeidForBehandlingMedVirksomhetPåInntekt(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(7),
+                Tid.TIDENES_ENDE, null, arbeidsgiverTestUtil.forArbeidsgiverpPrivatperson(koblingReferanse.getAktørId()), inntektIRegister, iayGrunnlagBuilder);
 
         Periode periode = Periode.of(Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 7).getFom(), null);
 
         var opptjeningAktiviteteter = OpptjeningAktiviteterDto.fraAktørId(OpptjeningAktivitetType.ARBEID, periode, arbeidsgiverAktørId);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteteter, iayGrunnlag, 100);
+        input = lagInputMedTogglePå(koblingReferanse, opptjeningAktiviteteter, iayGrunnlag, 100);
 
         // Act steg FastsettBeregningAktiviteter
         var resultat = doStegFastsettSkjæringstidspunkt(input);
@@ -500,7 +500,7 @@ public class KomponenttestBeregningArbeidstakerMedTogglePåTest {
                 overstyrtViØnskerAssertPå);
     }
 
-    private BeregningsgrunnlagInput lagInputMedTogglePå(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInputMedTogglePå(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteterMedTogglePå(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 

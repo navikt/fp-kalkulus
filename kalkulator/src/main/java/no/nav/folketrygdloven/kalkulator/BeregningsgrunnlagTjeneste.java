@@ -138,7 +138,7 @@ public class BeregningsgrunnlagTjeneste {
                     .medBeregningsgrunnlag(fordeltBeregningsgrunnlag)
                     .build(OPPDATERT_MED_REFUSJON_OG_GRADERING);
             List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
-                    input.getBehandlingReferanse(),
+                    input.getKoblingReferanse(),
                     nyttGrunnlag,
                     input.getAktivitetGradering(),
                     input.getInntektsmeldinger());

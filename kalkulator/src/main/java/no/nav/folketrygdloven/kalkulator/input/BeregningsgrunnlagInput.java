@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -35,7 +35,7 @@ public class BeregningsgrunnlagInput {
     private final AktivitetGradering aktivitetGradering;
 
     /** Data som referer behandlingen beregningsgrunnlag inngår i. */
-    private BehandlingReferanse behandlingReferanse;
+    private KoblingReferanse koblingReferanse;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
@@ -92,13 +92,13 @@ public class BeregningsgrunnlagInput {
         return Optional.ofNullable(tilstandHistorikk.get(tilstand));
     }
 
-    public BeregningsgrunnlagInput(BehandlingReferanse behandlingReferanse,
+    public BeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                    OpptjeningAktiviteterDto opptjeningAktiviteter,
                                    AktivitetGradering aktivitetGradering,
                                    List<RefusjonskravDatoDto> refusjonskravDatoer,
                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        this.behandlingReferanse = Objects.requireNonNull(behandlingReferanse, "behandlingReferanse");
+        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.aktivitetGradering = aktivitetGradering;
@@ -107,7 +107,7 @@ public class BeregningsgrunnlagInput {
     }
 
     private BeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
-        this(input.getBehandlingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.tilstandHistorikk = input.getTilstandHistorikk();
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
@@ -152,11 +152,11 @@ public class BeregningsgrunnlagInput {
     }
 
     public AktørId getAktørId() {
-        return behandlingReferanse.getAktørId();
+        return koblingReferanse.getAktørId();
     }
 
-    public BehandlingReferanse getBehandlingReferanse() {
-        return behandlingReferanse;
+    public KoblingReferanse getKoblingReferanse() {
+        return koblingReferanse;
     }
 
     public BeregningsgrunnlagGrunnlagDto getBeregningsgrunnlagGrunnlag() {
@@ -176,7 +176,7 @@ public class BeregningsgrunnlagInput {
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
-        return behandlingReferanse.getFagsakYtelseType();
+        return koblingReferanse.getFagsakYtelseType();
     }
 
     public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {
@@ -186,7 +186,7 @@ public class BeregningsgrunnlagInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(getBehandlingReferanse(), skjæringstidspunktOpptjening);
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(getKoblingReferanse(), skjæringstidspunktOpptjening);
     }
 
     public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
@@ -206,11 +206,11 @@ public class BeregningsgrunnlagInput {
     }
 
     public Skjæringstidspunkt getSkjæringstidspunkt() {
-        return behandlingReferanse.getSkjæringstidspunkt();
+        return koblingReferanse.getSkjæringstidspunkt();
     }
 
     public LocalDate getSkjæringstidspunktForBeregning() {
-        return behandlingReferanse.getSkjæringstidspunktBeregning();
+        return koblingReferanse.getSkjæringstidspunktBeregning();
     }
 
     public LocalDate getSkjæringstidspunktOpptjening() {
@@ -264,16 +264,16 @@ public class BeregningsgrunnlagInput {
     }
 
     /** Overstyrer behandlingreferanse, eks for å få ny skjæringstidspunkt fra beregningsgrunnlag fra tidligere. */
-    public BeregningsgrunnlagInput medBehandlingReferanse(BehandlingReferanse ref) {
+    public BeregningsgrunnlagInput medBehandlingReferanse(KoblingReferanse ref) {
         var newInput = new BeregningsgrunnlagInput(this);
-        newInput.behandlingReferanse = Objects.requireNonNull(ref, "behandlingReferanse");
+        newInput.koblingReferanse = Objects.requireNonNull(ref, "behandlingReferanse");
         return newInput;
     }
 
     private BeregningsgrunnlagInput medSkjæringstidspunktForBeregning(LocalDate skjæringstidspunkt) {
         var newInput = new BeregningsgrunnlagInput(this);
-        var nyttSkjæringstidspunkt = Skjæringstidspunkt.builder(this.behandlingReferanse.getSkjæringstidspunkt()).medSkjæringstidspunktBeregning(skjæringstidspunkt).build();
-        newInput.behandlingReferanse = this.behandlingReferanse.medSkjæringstidspunkt(nyttSkjæringstidspunkt);
+        var nyttSkjæringstidspunkt = Skjæringstidspunkt.builder(this.koblingReferanse.getSkjæringstidspunkt()).medSkjæringstidspunktBeregning(skjæringstidspunkt).build();
+        newInput.koblingReferanse = this.koblingReferanse.medSkjæringstidspunkt(nyttSkjæringstidspunkt);
         return newInput;
     }
 
@@ -281,7 +281,7 @@ public class BeregningsgrunnlagInput {
     public String toString() {
         return "BeregningsgrunnlagInput{" +
             "aktivitetGradering=" + aktivitetGradering +
-            ", behandlingReferanse=" + behandlingReferanse +
+            ", behandlingReferanse=" + koblingReferanse +
             ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
             ", beregningsgrunnlagGrunnlagFraForrigeBehandling=" + beregningsgrunnlagGrunnlagFraForrigeBehandling +
             ", refusjonskravDatoer=" + refusjonskravDatoer +

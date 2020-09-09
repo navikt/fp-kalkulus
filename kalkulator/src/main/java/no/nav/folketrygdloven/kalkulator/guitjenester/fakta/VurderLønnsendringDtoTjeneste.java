@@ -18,7 +18,7 @@ public class VurderLønnsendringDtoTjeneste implements FaktaOmBeregningTilfelleD
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
         if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING)) {
-            var ref = input.getBehandlingReferanse();
+            var ref = input.getKoblingReferanse();
             List<FaktaOmBeregningAndelDto> arbeidsforholdUtenInntektsmeldingDtoList = FaktaOmBeregningAndelDtoTjeneste.lagArbeidsforholdUtenInntektsmeldingDtoList(ref.getAktørId(), beregningsgrunnlag, input.getIayGrunnlag());
             if (!arbeidsforholdUtenInntektsmeldingDtoList.isEmpty()) {
                 faktaOmBeregningDto.setArbeidsforholdMedLønnsendringUtenIM(arbeidsforholdUtenInntektsmeldingDtoList);

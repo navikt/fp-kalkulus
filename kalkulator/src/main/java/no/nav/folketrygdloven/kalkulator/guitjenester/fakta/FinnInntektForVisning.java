@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
@@ -29,7 +29,7 @@ public class FinnInntektForVisning {
         return andel.getBeregnetPrÅr() == null ? null : andel.getBeregnetPrÅr().divide(MND_I_1_ÅR, 10, RoundingMode.HALF_EVEN);
     }
 
-    public static Optional<BigDecimal> finnInntektForKunLese(BehandlingReferanse ref,
+    public static Optional<BigDecimal> finnInntektForKunLese(KoblingReferanse ref,
                                                              BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                              Optional<InntektsmeldingDto> inntektsmeldingForAndel,
                                                              InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
@@ -57,7 +57,7 @@ public class FinnInntektForVisning {
         return Optional.empty();
     }
 
-    private static Optional<BigDecimal> finnInntektsbeløpForArbeidstaker(BehandlingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private static Optional<BigDecimal> finnInntektsbeløpForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                          Optional<InntektsmeldingDto> inntektsmeldingForAndel,
                                                                          InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         Optional<BigDecimal> inntektsmeldingBeløp = inntektsmeldingForAndel
@@ -69,13 +69,13 @@ public class FinnInntektForVisning {
         return finnMånedsbeløpIBeregningsperiodenForArbeidstaker(ref, andel, inntektArbeidYtelseGrunnlag);
     }
 
-    private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForFrilanser(BehandlingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForFrilanser(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                        InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         return InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(ref.getAktørId(),
             inntektArbeidYtelseGrunnlag, andel, ref.getSkjæringstidspunktBeregning());
     }
 
-    private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForArbeidstaker(BehandlingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                           InntektArbeidYtelseGrunnlagDto grunnlag) {
         return grunnlag.getAktørInntektFraRegister(ref.getAktørId())
             .map(aktørInntekt -> {

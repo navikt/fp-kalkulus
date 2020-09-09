@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -93,9 +93,9 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
                 .medSkjæringstidspunktOpptjening(ANDEL_FOM).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
 
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse),
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse),
                 InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
@@ -148,8 +148,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
 
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse),
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse),
                 InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
@@ -190,8 +190,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
 
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(behandlingReferanse, null, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(koblingReferanse, null, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);
@@ -231,8 +231,8 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
 
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(behandlingReferanse, null, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(koblingReferanse, null, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);
@@ -243,10 +243,10 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
     }
 
 
-    private BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
+    private KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        return behandlingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
+        return koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
     }
 
     private BeregningAktivitetAggregatDto lagBeregningAktiviteter(Arbeidsgiver arbeidsgiver) {

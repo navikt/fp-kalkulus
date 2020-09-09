@@ -20,12 +20,12 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Re
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.BruttoBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -59,7 +59,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2018, Month.JANUARY, 9);
     private static final String ORGNR = "984661185";
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
     private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel mapperRefusjonGradering;
 
@@ -76,7 +76,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         InntektArbeidYtelseAggregatBuilder register = registerBuilder
-                .leggTilAktørArbeid(registerBuilder.getAktørArbeidBuilder(behandlingReferanse.getAktørId())
+                .leggTilAktørArbeid(registerBuilder.getAktørArbeidBuilder(koblingReferanse.getAktørId())
                         .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                                 .medArbeidsgiver(arbeidsgiver)
                                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
@@ -101,13 +101,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, arbeidsforholdId);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag,
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag,
                 null,
                 new AktivitetGradering(List.of(AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medGradering(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), 50)
                 .medArbeidsgiver(arbeidsgiver)
-                .medAndelsnr(1L).build())), opprett(behandlingReferanse, iayGrunnlag), null);
+                .medAndelsnr(1L).build())), opprett(koblingReferanse, iayGrunnlag), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -133,7 +133,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -153,7 +153,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
 
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
 
@@ -183,7 +183,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BigDecimal inntekt = BigDecimal.valueOf(20000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -217,7 +217,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -252,7 +252,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                 .build()));
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, aktivitetGradering, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, aktivitetGradering, List.of(), null);
 
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
 
@@ -272,7 +272,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         Intervall arbeidsperiode2 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusMonths(2), Tid.TIDENES_ENDE);
 
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
-            .medAktørId(behandlingReferanse.getAktørId());
+            .medAktørId(koblingReferanse.getAktørId());
         leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, ORGNR);
         leggTilYrkesaktivitet(arbeidsperiode2, aktørArbeidBuilder, ORGNR);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
@@ -287,7 +287,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -328,7 +328,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
 
     private void leggTilYrkesaktiviteter(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, List<String> orgnrs) {
         Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
-        var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty()).medAktørId(behandlingReferanse.getAktørId());
+        var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty()).medAktørId(koblingReferanse.getAktørId());
         for (String orgnr : orgnrs) {
             leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, orgnr);
         }
@@ -338,7 +338,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
     }
 
     private void leggTilYrkesaktiviteter(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, List<String> orgnrs, List<Intervall> perioder) {
-        var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty()).medAktørId(behandlingReferanse.getAktørId());
+        var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty()).medAktørId(koblingReferanse.getAktørId());
         for (int i = 0; i < orgnrs.size(); i++) {
             leggTilYrkesaktivitet(perioder.get(i), aktørArbeidBuilder, orgnrs.get(i));
         }

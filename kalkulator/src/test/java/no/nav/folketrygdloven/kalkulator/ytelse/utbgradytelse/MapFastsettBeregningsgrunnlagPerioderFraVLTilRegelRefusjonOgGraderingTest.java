@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -59,7 +59,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     public void skal_mappe_til_regel_for_arbeid_over_skjæringstidspunktet_med_inntektsmelding_med_id_og_arbeid_i_samme_virksomhet_som_tilkommer_etter_skjæringstidspunkt() {
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
-        BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+        KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -89,7 +89,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
-        BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
+        KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -120,7 +120,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
         MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
-        BehandlingReferanseMock behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
+        KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1);
 
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -307,7 +307,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .build();
     }
 
-    private InntektArbeidYtelseAggregatBuilder byggRegister(Arbeidsgiver ag1, LocalDate skjæringstidspunktOpptjening, BehandlingReferanse behandlingRef,
+    private InntektArbeidYtelseAggregatBuilder byggRegister(Arbeidsgiver ag1, LocalDate skjæringstidspunktOpptjening, KoblingReferanse behandlingRef,
                                                             InternArbeidsforholdRefDto arbeidsforholdRef2,
                                                             InternArbeidsforholdRefDto arbeidsforholdRef1,
                                                             LocalDate tilDato1, LocalDate tilDato2) {

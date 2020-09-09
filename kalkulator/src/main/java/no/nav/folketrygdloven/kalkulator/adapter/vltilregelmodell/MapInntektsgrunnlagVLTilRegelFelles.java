@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
@@ -59,7 +59,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         inntektsgrunnlag.setInntektRapporteringFristDag((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
-        hentInntektArbeidYtelse(input.getBehandlingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(input.getKoblingReferanse(), inntektsgrunnlag,  input, skjæringstidspunktBeregning);
 
         return inntektsgrunnlag;
     }
@@ -229,7 +229,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                         .build()));
     }
 
-    private void hentInntektArbeidYtelse(BehandlingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+    private void hentInntektArbeidYtelse(KoblingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         AktørId aktørId = referanse.getAktørId();
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -15,13 +15,13 @@ public class LagArbeidsgiverForSentRefusjonskravMap {
 
 
     /**
-     * @param behandlingReferanse
+     * @param koblingReferanse
      * @param yrkesaktivitetDatoMap en map med alle yrkeaaktiviteter og tilhørende refusjonskravdatodto (hentes fra abakus)
      * @param gjeldendeAktiviteter beregningaktivitetaggregatet
      * @param skjæringstidspunktBeregning skjæringstidspunktet for beregning
      * @return map av arbeidsgivere og boolsk verdi, der boolsk verdi representerer om arbeidsgiver har minst et ugyldig refusjonskrav
      */
-    public static Map<Arbeidsgiver, Boolean> lag(BehandlingReferanse behandlingReferanse,
+    public static Map<Arbeidsgiver, Boolean> lag(KoblingReferanse koblingReferanse,
                                                  Map<YrkesaktivitetDto, Optional<RefusjonskravDatoDto>> yrkesaktivitetDatoMap,
                                                  BeregningAktivitetAggregatDto gjeldendeAktiviteter,
                                                  LocalDate skjæringstidspunktBeregning) {
@@ -30,7 +30,7 @@ public class LagArbeidsgiverForSentRefusjonskravMap {
             if (entry.getValue().isPresent()) {
                 YrkesaktivitetDto yrkesaktivitet = entry.getKey();
                 boolean arbeidsgiverHarSøktForSent = harSøktForSentMap.containsKey(yrkesaktivitet.getArbeidsgiver()) && harSøktForSentMap.get(yrkesaktivitet.getArbeidsgiver());
-                boolean harSøktForSentForArbeidsforhold = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse,
+                boolean harSøktForSentForArbeidsforhold = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(koblingReferanse,
                         entry.getValue().get(),
                         yrkesaktivitet,
                         gjeldendeAktiviteter,

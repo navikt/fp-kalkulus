@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -31,11 +31,11 @@ public class KortvarigeArbeidsforholdDtoTjeneste implements FaktaOmBeregningTilf
         if (!beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD)) {
             return;
         }
-        List<KortvarigeArbeidsforholdDto> arbeidsforholdDto = lagKortvarigeArbeidsforholdDto(input.getBehandlingReferanse(), beregningsgrunnlag, input.getIayGrunnlag());
+        List<KortvarigeArbeidsforholdDto> arbeidsforholdDto = lagKortvarigeArbeidsforholdDto(input.getKoblingReferanse(), beregningsgrunnlag, input.getIayGrunnlag());
         faktaOmBeregningDto.setKortvarigeArbeidsforhold(arbeidsforholdDto);
     }
 
-    private List<KortvarigeArbeidsforholdDto> lagKortvarigeArbeidsforholdDto(BehandlingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    private List<KortvarigeArbeidsforholdDto> lagKortvarigeArbeidsforholdDto(KoblingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarige = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(ref.getAktørId(), beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         return kortvarige.entrySet().stream()
             .map(entry -> mapFraYrkesaktivitet(finnRestDtoForAndel(entry, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()), inntektArbeidYtelseGrunnlag))

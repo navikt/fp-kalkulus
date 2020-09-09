@@ -10,14 +10,14 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -65,7 +65,7 @@ public class FordelRefusjonTjenesteTest {
     private FastsettBeregningsgrunnlagPeriodeDto endretPeriode;
     private List<FastsettBeregningsgrunnlagAndelDto> andelListe = new ArrayList<>();
     private BeregningsgrunnlagDto oppdatertBg;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(FOM);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(FOM);
     private BeregningsgrunnlagInput input;
 
     @BeforeEach
@@ -77,7 +77,7 @@ public class FordelRefusjonTjenesteTest {
             .medBeregningsgrunnlagPeriode(FOM, TOM)
             .build(oppdatertBg);
         endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(andelListe, FOM, TOM);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 
     @Test
@@ -221,7 +221,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -251,7 +251,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER),
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER),
             new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
@@ -288,7 +288,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -323,7 +323,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -358,7 +358,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -398,7 +398,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -438,7 +438,7 @@ public class FordelRefusjonTjenesteTest {
             .medAndelsnr(2L)
             .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(behandlingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);

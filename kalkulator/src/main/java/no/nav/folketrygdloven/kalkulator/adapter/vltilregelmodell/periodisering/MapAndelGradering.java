@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforh
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapAktivitetStatusV2FraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -26,7 +26,7 @@ public final class MapAndelGradering {
     }
 
     public static AndelGraderingImpl mapTilRegelAndelGradering(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                               BehandlingReferanse ref,
+                                                               KoblingReferanse ref,
                                                                AndelGradering andelGradering,
                                                                YrkesaktivitetFilterDto filter) {
         var regelAktivitetStatus = MapAktivitetStatusV2FraVLTilRegel.map(andelGradering.getAktivitetStatus(), null);

@@ -11,9 +11,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.KortvarigArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -35,8 +35,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 public class KortvarigArbeidsforholdTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
-    private static final BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-    public static final AktørId AKTØR_ID = behandlingReferanse.getAktørId();
+    private static final KoblingReferanse KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    public static final AktørId AKTØR_ID = KOBLING_REFERANSE.getAktørId();
 
 
 
@@ -49,7 +49,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             LocalDate.of(2018, 8, 5),
             LocalDate.of(2019, 2, 4));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 5),
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 5),
             LocalDate.of(2019, 2, 4), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -69,7 +69,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             LocalDate.of(2018, 8, 29),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 29),
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 29),
             LocalDate.of(2019, 2, 28), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -89,7 +89,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             LocalDate.of(2018, 8, 31),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 31),
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 8, 31),
             LocalDate.of(2019, 2, 28), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -109,7 +109,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             LocalDate.of(2018, 9, 1),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 9, 1),
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, LocalDate.of(2018, 9, 1),
             LocalDate.of(2019, 2, 28), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -128,7 +128,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
             LocalDate.of(2018, 8, 30),
             LocalDate.of(2019, 2, 28));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             LocalDate.of(2018, 9, 30),
             LocalDate.of(2018, 8, 30),
             LocalDate.of(2019, 2, 28),
@@ -149,7 +149,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1),
@@ -171,7 +171,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.plusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusDays(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(1),
@@ -194,7 +194,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
@@ -216,7 +216,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
@@ -240,7 +240,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr = "123456780";
         Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
@@ -264,12 +264,12 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr1 = "123456780";
         String orgnr2 = "123456644";
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(10),
             arbId1, Arbeidsgiver.virksomhet(orgnr1), iayGrunnlaBuilder);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2).minusDays(2),
@@ -292,10 +292,10 @@ public class KortvarigArbeidsforholdTjenesteTest {
         String orgnr = "123456780";
         // Lager et kortvarig arbeidsforhold
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
             arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);
-        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, false, iayGrunnlaBuilder);
+        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, false, iayGrunnlaBuilder);
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlaBuilder.build();
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeidOgSN(iayGrunnlag.getAktørArbeidFraRegister(AKTØR_ID).orElseThrow().hentAlleYrkesaktiviteter(), SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -314,7 +314,7 @@ public class KortvarigArbeidsforholdTjenesteTest {
         // Lager et kortvarig arbeidsforhold
         Intervall periode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlaBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2),
             arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlaBuilder);

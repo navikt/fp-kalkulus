@@ -184,7 +184,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         return perioder.stream()
                 .filter(periode -> periode.getBeregningsgrunnlagPeriodeFom().equals(endretPeriode.getFom()))
                 .findFirst()
-                .orElseThrow(() -> FordelBeregningsgrunnlagHåndtererFeil.FACTORY.finnerIkkePeriodeFeil(input.getBehandlingReferanse().getBehandlingId()).toException());
+                .orElseThrow(() -> FordelBeregningsgrunnlagHåndtererFeil.FACTORY.finnerIkkePeriodeFeil(input.getKoblingReferanse().getKoblingId()).toException());
     }
 
     private static List<FastsettBeregningsgrunnlagAndelDto> sorterMedNyesteSist(FastsettBeregningsgrunnlagPeriodeDto endretPeriode) {

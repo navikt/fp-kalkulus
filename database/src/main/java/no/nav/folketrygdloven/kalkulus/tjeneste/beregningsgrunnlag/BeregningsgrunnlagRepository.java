@@ -69,6 +69,23 @@ public class BeregningsgrunnlagRepository {
     }
 
     /**
+     * Henter alle aktive BeregningsgrunnlagGrunnlagEntiteter
+     *
+     * @param koblingIds en liste med koblingId
+     * @return Liste med alle aktive grunnlag som matcher koblingider {@link BeregningsgrunnlagGrunnlagEntitet}
+     */
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(List<Long> koblingIds) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                        "where grunnlag.koblingId in :koblingId " +
+                        "and grunnlag.aktiv = :aktivt", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+        query.setParameter(KOBLING_ID, koblingIds); //$NON-NLS-1$
+        query.setParameter("aktivt", true); //$NON-NLS-1$
+        return query.getResultList();
+    }
+
+
+    /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
      *
      * @param koblingId en koblingId
@@ -321,7 +338,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
-    
+
     public boolean hvisEksistererKalkulatorInput(Long koblingId) {
         Number n = (Number) entityManager
             .createQuery("select count(*) from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv")

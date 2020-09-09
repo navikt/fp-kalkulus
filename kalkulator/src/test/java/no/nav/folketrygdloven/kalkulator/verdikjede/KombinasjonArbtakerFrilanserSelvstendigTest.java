@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -56,7 +56,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
 
     private BeregningTjenesteWrapper beregningTjenesteWrapper;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
@@ -120,7 +120,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             årsinntekterSN,
             ÅR.get(0),
-            null, behandlingReferanse);
+            null, koblingReferanse);
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ORGNR1), månedsinntekterAT.get(0),
             BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
@@ -136,7 +136,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR3)
             );
 
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -221,7 +221,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             årsinntekterSN,
             ÅR.get(0),
-            null, behandlingReferanse);
+            null, koblingReferanse);
 
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
@@ -230,7 +230,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR3)
             );
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -293,7 +293,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
     }
 
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 

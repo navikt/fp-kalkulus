@@ -30,7 +30,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         if (beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE)) {
             LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
-            var ref = input.getBehandlingReferanse();
+            var ref = input.getKoblingReferanse();
             var iayGrunnlag = input.getIayGrunnlag();
             AktørId aktørId = ref.getAktørId();
             byggVerdier(aktørId, iayGrunnlag, beregningsgrunnlag, faktaOmBeregningDto, skjæringstidspunkt);

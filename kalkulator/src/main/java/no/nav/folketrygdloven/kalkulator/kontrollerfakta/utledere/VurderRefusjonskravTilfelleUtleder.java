@@ -20,7 +20,7 @@ public class VurderRefusjonskravTilfelleUtleder implements TilfelleUtleder {
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         if (!InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
-            input.getBehandlingReferanse(),
+            input.getKoblingReferanse(),
             input.getIayGrunnlag(),
             beregningsgrunnlagGrunnlag,
             input.getRefusjonskravDatoer()).isEmpty()) {

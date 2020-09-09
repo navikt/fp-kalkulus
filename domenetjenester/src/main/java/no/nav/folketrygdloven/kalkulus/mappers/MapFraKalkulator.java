@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Builder;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
@@ -92,7 +92,7 @@ public class MapFraKalkulator {
                 .medFørsteUttaksdato(skjæringstidspunkt)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
 
-        var ref = BehandlingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
+        var ref = KoblingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
 
         AktivitetGraderingDto aktivitetGradering = input.getAktivitetGradering();
         var iayGrunnlag = input.getIayGrunnlag();

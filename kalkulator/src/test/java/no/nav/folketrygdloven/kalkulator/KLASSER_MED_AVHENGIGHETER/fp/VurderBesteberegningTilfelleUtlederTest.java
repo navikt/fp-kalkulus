@@ -7,10 +7,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -32,7 +32,7 @@ class VurderBesteberegningTilfelleUtlederTest {
 
     public static final LocalDate STP = LocalDate.now();
     private VurderBesteberegningTilfelleUtleder tilfelleUtleder = new VurderBesteberegningTilfelleUtleder();
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(STP);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(STP);
 
     @Test
     void skal_ikke_få_besteberegning_om_dagpenger_er_fjernet() {
@@ -73,7 +73,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                         .build())
                 .medBeregningsgrunnlag(bg)
                 .build(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(behandlingReferanse, null, null, null, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, null, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

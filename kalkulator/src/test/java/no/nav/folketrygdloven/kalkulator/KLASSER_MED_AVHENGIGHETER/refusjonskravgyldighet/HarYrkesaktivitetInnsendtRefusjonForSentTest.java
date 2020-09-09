@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -32,7 +32,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
             .medArbeidsgiver(VIRKSOMHET)
             .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef())
             .build();
-    private static BehandlingReferanseMock behandlingReferanse = new BehandlingReferanseMock();
+    private static KoblingReferanseMock behandlingReferanse = new KoblingReferanseMock();
 
     @Test
     void skal_returnere_true_for_refusjonskrav_som_har_kommet_inn_en_dag_for_sent() {
@@ -128,10 +128,10 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         RefusjonskravDatoDto refusjonskravdato = new RefusjonskravDatoDto(VIRKSOMHET, LocalDate.of(2019, 10, 1), LocalDate.of(2020, 3, 16), true);
         LocalDate stp = LocalDate.of(2019, 10, 1);
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(stp).build());
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(stp).build());
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(koblingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
 
         // Assert
         assertThat(vurder).isFalse();

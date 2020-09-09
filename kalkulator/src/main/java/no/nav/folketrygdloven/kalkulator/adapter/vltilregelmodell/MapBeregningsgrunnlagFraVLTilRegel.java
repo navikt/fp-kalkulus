@@ -34,7 +34,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -75,7 +75,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
     }
 
-    public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(BehandlingReferanse referanse,
+    public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(KoblingReferanse referanse,
                                                                                                                                 BeregningsgrunnlagDto Beregningsgrunnlag, BeregningsgrunnlagInput input) {
         Objects.requireNonNull(referanse, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(Beregningsgrunnlag, "Beregningsgrunnlag kan ikke være null!");
@@ -84,7 +84,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     public no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BeregningsgrunnlagInput input,
                                                                                                  BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         Objects.requireNonNull(ref, "BehandlingReferanse kan ikke være null!");
         Objects.requireNonNull(oppdatertGrunnlag, "BeregningsgrunnlagGrunnlag kan ikke være null");
         BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null);

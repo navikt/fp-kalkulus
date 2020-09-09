@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -46,7 +46,7 @@ public class SelvstendigNæringsdrivendeTest {
     private static final String ORGNR1 = "974761076";
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
     private BeregningTjenesteWrapper beregningTjenesteWrapper;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
@@ -75,13 +75,13 @@ public class SelvstendigNæringsdrivendeTest {
 
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(
-            List.of(), List.of(), null, årsinntekterSN, 2014, BigDecimal.valueOf(12 * varigEndringMånedsinntekt), new BehandlingReferanseMock());
+            List.of(), List.of(), null, årsinntekterSN, 2014, BigDecimal.valueOf(12 * varigEndringMånedsinntekt), new KoblingReferanseMock());
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -140,13 +140,13 @@ public class SelvstendigNæringsdrivendeTest {
         List<BigDecimal> årsinntekterSN = ÅRSINNTEKT.stream().map(BigDecimal::valueOf).collect(Collectors.toList());
 
         // Arrange
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new BehandlingReferanseMock());
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new KoblingReferanseMock());
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -204,13 +204,13 @@ public class SelvstendigNæringsdrivendeTest {
         List<BigDecimal> årsinntekterSN = ÅRSINNTEKT.stream().map(BigDecimal::valueOf).collect(Collectors.toList());
 
         // Arrange
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new BehandlingReferanseMock());
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new KoblingReferanseMock());
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -268,13 +268,13 @@ public class SelvstendigNæringsdrivendeTest {
         List<BigDecimal> årsinntekterSN = ÅRSINNTEKT.stream().map(BigDecimal::valueOf).collect(Collectors.toList());
 
         // Arrange
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new BehandlingReferanseMock());
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null, new KoblingReferanseMock());
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 80);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 80);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -323,7 +323,7 @@ public class SelvstendigNæringsdrivendeTest {
         return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag());
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 

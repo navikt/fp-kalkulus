@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -341,32 +341,32 @@ public class VerdikjedeTestHjelper {
     public InntektArbeidYtelseAggregatBuilder initBehandlingFor_AT_SN(BigDecimal skattbarInntekt,
                                                                       int førsteÅr, LocalDate skjæringstidspunkt, String virksomhetOrgnr,
                                                                       BigDecimal inntektSammenligningsgrunnlag,
-                                                                      BigDecimal inntektBeregningsgrunnlag, BehandlingReferanse behandlingReferanse,
+                                                                      BigDecimal inntektBeregningsgrunnlag, KoblingReferanse koblingReferanse,
                                                                       InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseBuilder) {
         InntektArbeidYtelseAggregatBuilder register = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
         for (LocalDate året = LocalDate.of(førsteÅr, Month.JANUARY, 1); året.getYear() < førsteÅr + 3; året = året.plusYears(1)) {
-            lagInntektForSN(register, behandlingReferanse.getAktørId(), året, skattbarInntekt);
+            lagInntektForSN(register, koblingReferanse.getAktørId(), året, skattbarInntekt);
         }
         LocalDate fraOgMed = skjæringstidspunkt.minusYears(1).withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(virksomhetOrgnr);
-        lagAktørArbeid(register, behandlingReferanse.getAktørId(), arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+        lagAktørArbeid(register, koblingReferanse.getAktørId(), arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
-            lagInntektForSammenligning(register, behandlingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
+            lagInntektForSammenligning(register, koblingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                 arbeidsgiver);
-            lagInntektForArbeidsforhold(register, behandlingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
+            lagInntektForArbeidsforhold(register, koblingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
                 arbeidsgiver);
-            lagInntektForOpptjening(register, behandlingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
+            lagInntektForOpptjening(register, koblingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
                 virksomhetOrgnr);
         }
         return register;
     }
 
     public void lagBehandlingForSN(BigDecimal skattbarInntekt,
-                                   int førsteÅr, BehandlingReferanse behandlingReferanse, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
+                                   int førsteÅr, KoblingReferanse koblingReferanse, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
         for (LocalDate året = LocalDate.of(førsteÅr, Month.JANUARY, 1); året.getYear() < førsteÅr + 3; året = året.plusYears(1)) {
-            lagInntektForSN(inntektArbeidYtelseAggregatBuilder, behandlingReferanse.getAktørId(), året, skattbarInntekt);
+            lagInntektForSN(inntektArbeidYtelseAggregatBuilder, koblingReferanse.getAktørId(), året, skattbarInntekt);
         }
     }
 
@@ -545,20 +545,20 @@ public class VerdikjedeTestHjelper {
                                                                   BigDecimal inntektFrilans,
                                                                   List<BigDecimal> årsinntekterSN,
                                                                   int førsteÅr,
-                                                                  BigDecimal årsinntektVarigEndring, BehandlingReferanse behandlingReferanse) {
+                                                                  BigDecimal årsinntektVarigEndring, KoblingReferanse koblingReferanse) {
         LocalDate fraOgMed = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
 
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
         beregningVirksomhetOrgnr
-            .forEach(orgnr -> lagAktørArbeid(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(),
+            .forEach(orgnr -> lagAktørArbeid(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(),
                 Arbeidsgiver.virksomhet(orgnr), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         String dummyVirksomhetOrgnr = "999";
         Arbeidsgiver dummyVirksomhet = Arbeidsgiver.virksomhet(dummyVirksomhetOrgnr);
         if (inntektFrilans != null) {
-            lagAktørArbeid(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), dummyVirksomhet, fraOgMed,
+            lagAktørArbeid(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), dummyVirksomhet, fraOgMed,
                 tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         }
 
@@ -566,25 +566,25 @@ public class VerdikjedeTestHjelper {
             for (int i = 0; i < beregningVirksomhetOrgnr.size(); i++) {
                 String virksomhetOrgnr_i = beregningVirksomhetOrgnr.get(i);
                 lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder,
-                    behandlingReferanse.getAktørId(),
+                    koblingReferanse.getAktørId(),
                     dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
                     Arbeidsgiver.virksomhet(virksomhetOrgnr_i));
                 lagInntektForOpptjening(inntektArbeidYtelseBuilder,
-                    behandlingReferanse.getAktørId(),
+                    koblingReferanse.getAktørId(),
                     dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
                     virksomhetOrgnr_i);
             }
             if (inntektFrilans != null) {
-                lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektFrilans,
+                lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektFrilans,
                     dummyVirksomhet);
-                lagInntektForOpptjening(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektFrilans,
+                lagInntektForOpptjening(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), dt, dt.plusMonths(1), inntektFrilans,
                     dummyVirksomhetOrgnr);
             }
         }
 
         if (årsinntekterSN != null) {
             for (int ix = 0; ix < 3; ix++) {
-                lagInntektForSN(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), LocalDate.of(førsteÅr + ix, Month.JANUARY, 1),
+                lagInntektForSN(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), LocalDate.of(førsteÅr + ix, Month.JANUARY, 1),
                     årsinntekterSN.get(ix));
             }
         }

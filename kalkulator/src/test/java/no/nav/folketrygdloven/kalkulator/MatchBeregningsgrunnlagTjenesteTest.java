@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -25,7 +25,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
 
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private static final Arbeidsgiver arbeidsgiverEn = Arbeidsgiver.virksomhet("973152351");
-    public BehandlingReferanse behandlingReferanse = mock(BehandlingReferanse.class);
+    public KoblingReferanse koblingReferanse = mock(KoblingReferanse.class);
 
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {

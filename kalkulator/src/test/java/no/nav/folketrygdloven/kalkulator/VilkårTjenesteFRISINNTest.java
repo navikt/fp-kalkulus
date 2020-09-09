@@ -36,7 +36,7 @@ class VilkårTjenesteFRISINNTest {
     void skal_gi_avslag_om_søkt_fl_uten_flandel_og_søkt_avkortet_næring() {
         // Arrange
         BeregningsgrunnlagDto bg = lagBgMedAvkortetNæring();
-        BehandlingReferanseMock behandlingReferanse = new BehandlingReferanseMock(LocalDate.now());
+        KoblingReferanseMock behandlingReferanse = new KoblingReferanseMock(LocalDate.now());
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayMedNæringOgFrilans();
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(
                 behandlingReferanse,

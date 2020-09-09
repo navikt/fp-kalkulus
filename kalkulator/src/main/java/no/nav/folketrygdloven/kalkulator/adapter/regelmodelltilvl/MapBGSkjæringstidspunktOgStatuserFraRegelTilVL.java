@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -51,7 +51,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
     }
 
     public BeregningsgrunnlagDto mapForSkjæringstidspunktOgStatuser(
-        BehandlingReferanse ref,
+        KoblingReferanse ref,
         AktivitetStatusModell regelModell,
         List<RegelResultat> regelResultater,
         InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -96,7 +96,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
         return beregningsgrunnlag;
     }
 
-    private void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(BehandlingReferanse ref, YrkesaktivitetFilterDto filter, AktivitetStatusModell regelmodell,
+    private void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(KoblingReferanse ref, YrkesaktivitetFilterDto filter, AktivitetStatusModell regelmodell,
                                                                                BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         var skjæringstidspunkt = regelmodell.getSkjæringstidspunktForBeregning();
         var beregningsperiode = lagBeregningsperiode(ref, skjæringstidspunkt);
@@ -151,7 +151,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
         return arbeidsgiver != null && arbeidsgiver.getErVirksomhet() && OrgNummer.KUNSTIG_ORG.equals(arbeidsgiver.getIdentifikator());
     }
 
-    protected Intervall lagBeregningsperiode(BehandlingReferanse ref, LocalDate skjæringstidspunkt) {
+    protected Intervall lagBeregningsperiode(KoblingReferanse ref, LocalDate skjæringstidspunkt) {
         var periodeTjeneste = FagsakYtelseTypeRef.Lookup.find(beregningperiodeTjenester, ref.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
         return periodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);

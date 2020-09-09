@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -26,7 +26,7 @@ public class BeregningsperiodeTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 1);
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private Arbeidsgiver arbeidsgiverA = Arbeidsgiver.virksomhet("123456789");
     private Arbeidsgiver arbeidsgiverB = Arbeidsgiver.virksomhet("987654321");
     private BeregningsgrunnlagInput input;
@@ -35,7 +35,7 @@ public class BeregningsperiodeTjenesteTest {
 
     @BeforeEach
     public void setUp() {
-        input = new BeregningsgrunnlagInput(behandlingReferanse, null, null, null, null, null);
+        input = new BeregningsgrunnlagInput(koblingReferanse, null, null, null, null, null);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
     }
 

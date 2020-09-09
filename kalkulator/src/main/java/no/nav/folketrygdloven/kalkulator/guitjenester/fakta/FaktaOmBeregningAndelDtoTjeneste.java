@@ -20,7 +20,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.LønnsendringTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -62,12 +62,12 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     }
 
     /// ATFL I samme organisasjon
-    static List<ATogFLISammeOrganisasjonDto> lagATogFLISAmmeOrganisasjonListe(BehandlingReferanse behandlingReferanse,
+    static List<ATogFLISammeOrganisasjonDto> lagATogFLISAmmeOrganisasjonListe(KoblingReferanse koblingReferanse,
                                                                               BeregningsgrunnlagDto beregningsgrunnlag,
                                                                               Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                               InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         Set<Arbeidsgiver> arbeidsgivere = KontrollerFaktaBeregningFrilanserTjeneste
-            .brukerErArbeidstakerOgFrilanserISammeOrganisasjon(behandlingReferanse.getAktørId(), beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+            .brukerErArbeidstakerOgFrilanserISammeOrganisasjon(koblingReferanse.getAktørId(), beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         if (arbeidsgivere.isEmpty()) {
             return Collections.emptyList();
         }

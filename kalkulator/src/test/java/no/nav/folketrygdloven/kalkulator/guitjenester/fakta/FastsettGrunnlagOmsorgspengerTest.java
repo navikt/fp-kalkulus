@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -84,9 +84,9 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         var skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
@@ -130,9 +130,9 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
@@ -162,9 +162,9 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
@@ -195,9 +195,9 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(ANDEL_FOM)
                 .medSkjæringstidspunktOpptjening(ANDEL_FOM).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,
@@ -246,9 +246,9 @@ public class FastsettGrunnlagOmsorgspengerTest {
                 .build();
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        BehandlingReferanse behandlingReferanse = BehandlingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
+        KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build();
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), omsorgspengerGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         FastsettGrunnlagOmsorgspenger fastsettGrunnlagOmsorgspenger = new FastsettGrunnlagOmsorgspenger();
         //Act
         boolean skalGrunnlagFastsettes = fastsettGrunnlagOmsorgspenger.skalGrunnlagFastsettes(input,

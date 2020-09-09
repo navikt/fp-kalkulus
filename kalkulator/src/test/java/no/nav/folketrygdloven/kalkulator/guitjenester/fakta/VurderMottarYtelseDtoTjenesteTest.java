@@ -12,11 +12,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -60,7 +60,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
     private static final BigDecimal INNTEKT_SNITT = INNTEKT1.add(INNTEKT2.add(INNTEKT3)).divide(BigDecimal.valueOf(3), 10, RoundingMode.HALF_EVEN);
     private static final String FRILANS_ORGNR = "853498598934";
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto periode;
     private VurderMottarYtelseDtoTjeneste dtoTjeneste;
@@ -91,7 +91,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel(null);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         dtoTjeneste.lagDto(input, dto);
@@ -117,7 +117,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel(true);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, dto);
 
@@ -138,7 +138,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(FRILANS_ORGNR);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         Intervall frilansPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(koblingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
                 .getYrkesaktivitetBuilderForType(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         yrkesaktivitetBuilderForType
@@ -146,7 +146,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver);
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilderForType);
         oppdatere.leggTilAktørArbeid(aktørArbeidBuilder);
-        BeregningIAYTestUtil.byggInntektForBehandling(behandlingReferanse.getAktørId(),
+        BeregningIAYTestUtil.byggInntektForBehandling(koblingReferanse.getAktørId(),
                 SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, arbeidsgiver);
 
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
@@ -166,7 +166,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(inntektArbeidYtelseGrunnlag.getRegisterVersjon(), VersjonTypeDto.REGISTER);
         Intervall ansettelsesPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10));
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(koblingReferanse.getAktørId());
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilderForType = aktørArbeidBuilder
                 .getYrkesaktivitetBuilderForType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
         yrkesaktivitetBuilderForType
@@ -183,7 +183,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .medArbeidsgiver(arbeidsgiver)
                 .medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING);
 
-        BeregningIAYTestUtil.byggInntektForBehandling(behandlingReferanse.getAktørId(),
+        BeregningIAYTestUtil.byggInntektForBehandling(koblingReferanse.getAktørId(),
                 SKJÆRINGSTIDSPUNKT_OPPTJENING, oppdatere, INNTEKT_PR_MND, true, arbeidsgiver);
 
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(inntektArbeidYtelseGrunnlag)

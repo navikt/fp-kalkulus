@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
@@ -26,7 +26,7 @@ class FinnInntektFraYtelse {
         // Skjul konstruktør
     }
 
-    static Optional<BigDecimal> finnÅrbeløpFraMeldekort(BehandlingReferanse ref, AktivitetStatus aktivitetStatus, InntektArbeidYtelseGrunnlagDto grunnlag) {
+    static Optional<BigDecimal> finnÅrbeløpFraMeldekort(KoblingReferanse ref, AktivitetStatus aktivitetStatus, InntektArbeidYtelseGrunnlagDto grunnlag) {
         LocalDate skjæringstidspunkt = ref.getSkjæringstidspunktBeregning();
         var ytelseFilter = new YtelseFilterDto(grunnlag.getAktørYtelseFraRegister(ref.getAktørId())).før(skjæringstidspunkt);
         if (ytelseFilter.isEmpty()) {

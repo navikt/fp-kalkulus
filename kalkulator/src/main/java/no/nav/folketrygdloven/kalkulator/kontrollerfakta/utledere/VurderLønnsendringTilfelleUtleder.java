@@ -22,7 +22,7 @@ public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         return LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(ref.getAktørId(), beregningsgrunnlag, input.getIayGrunnlag()) ?

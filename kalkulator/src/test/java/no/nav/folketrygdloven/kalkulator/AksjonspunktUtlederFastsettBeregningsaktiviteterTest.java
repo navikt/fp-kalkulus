@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -48,7 +48,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
 
     private static final String INNTEKT_RAPPORTERING_FRIST_DATO = "inntekt.rapportering.frist.dato";
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
-    private BehandlingReferanse ref;
+    private KoblingReferanse ref;
 
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private AksjonspunktUtlederFastsettBeregningsaktiviteterFelles apUtleder = new AksjonspunktUtlederFastsettBeregningsaktiviteterFelles();
@@ -75,7 +75,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         tom = SKJÆRINGSTIDSPUNKT.withDayOfMonth(1).minusDays(1);
 
 
-        ref = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+        ref = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();

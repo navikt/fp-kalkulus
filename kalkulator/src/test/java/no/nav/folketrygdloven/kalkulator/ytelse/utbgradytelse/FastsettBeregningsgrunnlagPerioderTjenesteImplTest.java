@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBer
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -74,7 +74,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste tjeneste;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
 
     @BeforeEach
@@ -152,7 +152,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         UtbetalingsgradPrAktivitetDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2),
             periode4, periode5);
 
-        InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2), koblingReferanse.getAktørId());
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER, ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
@@ -167,7 +167,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(iayAggregatBuilder)
             .medInntektsmeldinger(im1, im2).build();
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingReferanse, grunnlag, beregningsgrunnlag, iayGrunnlag, skjæringstidspunkt, svangerskapspengerGrunnlag);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(koblingReferanse, grunnlag, beregningsgrunnlag, iayGrunnlag, skjæringstidspunkt, svangerskapspengerGrunnlag);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -189,7 +189,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER), periode);
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2),
-            behandlingReferanse.getAktørId());
+            koblingReferanse.getAktørId());
 
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(List.of(ORG_NUMMER_2), beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
@@ -204,7 +204,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(iayAggregatBuilder)
             .medInntektsmeldinger(im2).build();
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingReferanse,
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(koblingReferanse,
             grunnlag, beregningsgrunnlag, iayGrunnlag, skjæringstidspunkt, svangerskapspengerGrunnlag);
 
         // Assert
@@ -218,13 +218,13 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     }
 
 
-    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(BehandlingReferanse behandlingReferanse,
+    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(KoblingReferanse koblingReferanse,
                                                                          BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                          BeregningsgrunnlagDto beregningsgrunnlag,
                                                                          InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                          Skjæringstidspunkt skjæringstidspunkt,
                                                                          SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
-        BehandlingReferanse refMeStp = behandlingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
+        KoblingReferanse refMeStp = koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
         var input = new BeregningsgrunnlagInput(refMeStp, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);

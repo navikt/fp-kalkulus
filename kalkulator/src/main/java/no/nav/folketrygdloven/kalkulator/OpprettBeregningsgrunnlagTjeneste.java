@@ -7,7 +7,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -42,7 +42,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
      * @param input en {@link BeregningsgrunnlagInput}
      */
     BeregningsgrunnlagDto opprettOgLagreBeregningsgrunnlag(BeregningsgrunnlagInput input) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
 
@@ -51,7 +51,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
                 .fastsett(input, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser())
                 .getBeregningsgrunnlag();
 
-        BehandlingReferanse refMedSkjæringstidspunkt = ref
+        KoblingReferanse refMedSkjæringstidspunkt = ref
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(beregningAktiviteter, bgMedAndeler));
         FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(bgMedAndeler, input.getIayGrunnlag());
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);

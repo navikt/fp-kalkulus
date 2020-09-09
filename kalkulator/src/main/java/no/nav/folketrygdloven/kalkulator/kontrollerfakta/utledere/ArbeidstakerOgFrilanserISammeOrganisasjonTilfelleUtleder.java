@@ -20,7 +20,7 @@ public class ArbeidstakerOgFrilanserISammeOrganisasjonTilfelleUtleder implements
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         boolean erATFLISammeOrg = KontrollerFaktaBeregningFrilanserTjeneste.erBrukerArbeidstakerOgFrilanserISammeOrganisasjon(
             ref.getAktørId(), beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null), input.getIayGrunnlag());
         return erATFLISammeOrg ? Optional.of(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON) : Optional.empty();

@@ -45,7 +45,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     public PeriodeModell map(BeregningsgrunnlagInput input,
                              BeregningsgrunnlagDto beregningsgrunnlag) {
         precondition(beregningsgrunnlag);
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         AktørId aktørId = ref.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
@@ -96,7 +96,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     private List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(BeregningsgrunnlagInput input,
                                                                        List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
-        var referanse = input.getBehandlingReferanse();
+        var referanse = input.getKoblingReferanse();
         AktørId aktørId = referanse.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
@@ -258,7 +258,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     private void lagArbeidsforholdOgInntektsmelding(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                     List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger,
                                                     YrkesaktivitetDto ya) {
-        var referanse = input.getBehandlingReferanse();
+        var referanse = input.getKoblingReferanse();
         AktørId aktørId = referanse.getAktørId();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         var iayGrunnlag = input.getIayGrunnlag();

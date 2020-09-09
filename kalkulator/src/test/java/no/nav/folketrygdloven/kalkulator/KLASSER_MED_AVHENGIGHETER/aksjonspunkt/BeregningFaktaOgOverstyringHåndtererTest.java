@@ -13,14 +13,14 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -44,7 +44,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     @Inject
     private FaktaOmBeregningTilfellerOppdaterer faktaOmBeregningTilfellerOppdaterer;
     private BeregningFaktaOgOverstyringHåndterer beregningFaktaOgOverstyringHåndterer;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(STP);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(STP);
 
     @BeforeEach
     public void setup() {
@@ -58,7 +58,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(Intervall.fraOgMedTilOgMed(STP, AbstractIntervall.TIDENES_ENDE)));
         int fastsattBeløp = 10000;
         OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp), null);
-        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(input, overstyrDto);
@@ -86,7 +86,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
             periodeList);
         int fastsattBeløp1 = 10000;
         OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp1), null);
-        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(input, overstyrDto);

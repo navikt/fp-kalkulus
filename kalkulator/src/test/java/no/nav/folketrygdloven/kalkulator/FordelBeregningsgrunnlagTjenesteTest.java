@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -65,7 +65,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
@@ -93,7 +93,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         orgnrsBeregnetMap.put(ORGNR2, beregnetPrÅr2);
         BigDecimal beregnetPrÅr3 = BigDecimal.valueOf(240_000);
         orgnrsBeregnetMap.put(ORGNR3, beregnetPrÅr3);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, behandlingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, koblingReferanse, beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         // Inntektsmelding
@@ -109,7 +109,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         var inntektsmeldinger = List.of(im1, im2, im3);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(behandlingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, opprett(behandlingReferanse, iayGrunnlag), null)
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), null)
                 .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
@@ -145,7 +145,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
             oversetterFraRegelTilVLRefusjonOgGradering);
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Map<String, BigDecimal> orgnrs, BehandlingReferanse behandlingReferanse,
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Map<String, BigDecimal> orgnrs, KoblingReferanse koblingReferanse,
                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()
@@ -181,7 +181,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
 
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
-            .medAktørId(behandlingReferanse.getAktørId());
+            .medAktørId(koblingReferanse.getAktørId());
         for (String orgnr : orgnrs) {
             Arbeidsgiver arbeidsgiver = leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, orgnr);
             fjernOgLeggTilNyBeregningAktivitet(arbeidsperiode1.getFomDato(), arbeidsperiode1.getTomDato(), arbeidsgiver, InternArbeidsforholdRefDto.nullRef());

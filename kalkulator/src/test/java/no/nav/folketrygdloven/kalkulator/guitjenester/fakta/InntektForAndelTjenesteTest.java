@@ -12,8 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -60,7 +60,7 @@ public class InntektForAndelTjenesteTest {
     private BeregningsgrunnlagPrStatusOgAndelDto arbeidstakerAndel;
     private BeregningsgrunnlagPrStatusOgAndelDto frilansAndel;
     private BeregningsgrunnlagPeriodeDto periode;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
 
     @BeforeEach
@@ -96,7 +96,7 @@ public class InntektForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagLikInntektSiste3Mnd(frilansArbeidsgiver));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(behandlingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(koblingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(INNTEKT1));
     }
 
@@ -105,7 +105,7 @@ public class InntektForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(behandlingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(koblingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER));
     }
 
@@ -114,13 +114,13 @@ public class InntektForAndelTjenesteTest {
         List<InntektDtoBuilder> inntekter = List.of(lagLikInntektSiste3Mnd(arbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver), lagUlikInntektSiste3Mnd(frilansArbeidsgiver2));
         List<YrkesaktivitetDto> aktiviteter = List.of(arbeidstakerYrkesaktivitet, frilans, frilansOppdrag, frilansOppdrag2);
         var grunnlagEntitet = lagIAYGrunnlagEntitet(inntekter, aktiviteter);
-        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(behandlingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        Optional<BigDecimal> snittIBeregningsperioden = InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(koblingReferanse.getAktørId(), grunnlagEntitet, frilansAndel, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         assertThat(snittIBeregningsperioden).hasValueSatisfying(a -> assertThat(a).isEqualByComparingTo(SNITT_AV_ULIKE_INNTEKTER.multiply(BigDecimal.valueOf(2))));
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIAYGrunnlagEntitet(List<InntektDtoBuilder> inntekter, List<YrkesaktivitetDto> aktiviteter) {
         var aggregatBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        var aktørInntektBuilder = aggregatBuilder.getAktørInntektBuilder(behandlingReferanse.getAktørId());
+        var aktørInntektBuilder = aggregatBuilder.getAktørInntektBuilder(koblingReferanse.getAktørId());
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
                 .leggTilAktørArbeid(lagAktørArbeid(aktiviteter))
@@ -130,7 +130,7 @@ public class InntektForAndelTjenesteTest {
 
     private InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder lagAktørArbeid(List<YrkesaktivitetDto> aktiviteter) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
-            .medAktørId(behandlingReferanse.getAktørId());
+            .medAktørId(koblingReferanse.getAktørId());
         aktiviteter.forEach(builder::leggTilYrkesaktivitet);
         return builder;
     }

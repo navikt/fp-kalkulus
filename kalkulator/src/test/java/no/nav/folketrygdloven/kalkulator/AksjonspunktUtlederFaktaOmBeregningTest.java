@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.Foreldrepenge
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -73,7 +73,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
     private Arbeidsgiver arbeidsgiver;
     private Arbeidsgiver arbeidsgiver2;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     @BeforeEach
     public void setup() {
@@ -95,13 +95,13 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         opptjeningMap.put(orgnr2, Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 12));
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
+        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
 
         BeregningIAYTestUtil.byggArbeidForBehandling(
-            behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+                koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, arbeidsgiver, iayGrunnlagBuilder);
         arbeidsgiver2 = Arbeidsgiver.virksomhet(orgnr2);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1), arbId2, arbeidsgiver2, iayGrunnlagBuilder);
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
@@ -167,11 +167,11 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         opptjeningMap.put(orgnr3, periode);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         iayGrunnlag.medOppgittOpptjening(BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(true, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2)));
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, arbeidsgiver, Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2L)), iayGrunnlag);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId3, Arbeidsgiver.virksomhet(orgnr3), iayGrunnlag);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), (InternArbeidsforholdRefDto) null, arbeidsgiver,
             ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedATFL(periode);
@@ -214,9 +214,9 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         opptjeningMap.put(orgnr, Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 12));
         opptjeningMap.put(orgnr2, Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 12));
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlag);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1), arbId2, Arbeidsgiver.virksomhet(orgnr2), iayGrunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
@@ -285,12 +285,12 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
     public void skalUtledeAksjonspunktForFellesTilfeller() {
         // Act
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
+        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
         HashMap<String, Periode> opptjeningMap = new HashMap<>();
         Periode periode = Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 12);
         opptjeningMap.put(orgnr, periode);
 
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlagBuilder);
         BeregningsgrunnlagDto bg = lagBeregningsgrunnlagMedATSN(periode);
 
@@ -317,11 +317,11 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
     public void skalUtledeAksjonspunktForFellesTilfellerOgReturnereOverstyring() {
         // Act
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
+        BeregningIAYTestUtil.lagOppgittOpptjeningForSN(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, true, iayGrunnlagBuilder);
         HashMap<String, Periode> opptjeningMap = new HashMap<>();
         Periode periode = Periode.månederFør(SKJÆRINGSTIDSPUNKT_OPPTJENING, 12);
         opptjeningMap.put(orgnr, periode);
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlagBuilder);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedATSN(periode);
 
@@ -384,7 +384,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
 
     private BeregningsgrunnlagInput lagInput(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        return new BeregningsgrunnlagInput(behandlingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), AktivitetGradering.INGEN_GRADERING, List.of(), foreldrepengerGrunnlag);
+        return new BeregningsgrunnlagInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), AktivitetGradering.INGEN_GRADERING, List.of(), foreldrepengerGrunnlag);
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedATSN(Periode periode) {

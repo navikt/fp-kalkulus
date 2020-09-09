@@ -37,11 +37,11 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -89,7 +89,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private static final Integer INNTEKT_BELOP = 25000;
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private YrkesaktivitetDtoBuilder yrkesaktivitetBuilder;
     private String virksomhetA = "42";
     private String virksomhetB = "47";
@@ -104,9 +104,9 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(iayGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
-        lagAktørArbeid(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), Arbeidsgiver.virksomhet(virksomhetA), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, Optional.empty());
+        lagAktørArbeid(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), Arbeidsgiver.virksomhet(virksomhetA), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, Optional.empty());
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
-            lagInntekt(inntektArbeidYtelseBuilder, behandlingReferanse.getAktørId(), virksomhetA, dt, dt.plusMonths(1));
+            lagInntekt(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), virksomhetA, dt, dt.plusMonths(1));
         }
         return inntektArbeidYtelseBuilder;
     }
@@ -114,7 +114,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private void lagIAYforTilstøtendeYtelser(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, BeregningsgrunnlagDto beregningsgrunnlag) {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
-        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(koblingReferanse.getAktørId());
         YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
             skjæring.minusMonths(1).plusDays(1),
             skjæring.plusMonths(6),
@@ -135,10 +135,10 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         iayGrunnlagBuilder.medData(iayBuilder);
     }
 
-    private BehandlingReferanse lagIAYforTilstøtendeYtelserForMarginalTilfelle(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private KoblingReferanse lagIAYforTilstøtendeYtelserForMarginalTilfelle(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, BeregningsgrunnlagDto beregningsgrunnlag) {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
-        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(koblingReferanse.getAktørId());
         YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
             skjæring.minusWeeks(2),
             skjæring.plusMonths(6),
@@ -149,7 +149,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         aktørYtelseBuilder.leggTilYtelse(ytelse);
         iayBuilder.leggTilAktørYtelse(aktørYtelseBuilder);
         iayGrunnlagBuilder.medData(iayBuilder);
-        return behandlingReferanse;
+        return koblingReferanse;
     }
 
     private YtelseDtoBuilder lagYtelse(FagsakYtelseType relatertYtelseType, InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder,
@@ -214,7 +214,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLSammenligningsgrunnlag(beregningsgrunnlag);
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_SN);
         buildVLBGAktivitetStatus(beregningsgrunnlag);
-        var aktørInntektBuilder = leggTilInntekterFraSigrun(behandlingReferanse.getAktørId());
+        var aktørInntektBuilder = leggTilInntekterFraSigrun(koblingReferanse.getAktørId());
         Optional<InntektArbeidYtelseAggregatDto> registerVersjon = iayGrunnlagBuilder.getKladd().getRegisterVersjon();
         InntektArbeidYtelseAggregatBuilder.oppdatere(registerVersjon, VersjonTypeDto.REGISTER)
             .leggTilAktørInntekt(aktørInntektBuilder);
@@ -223,7 +223,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
 
         //Act
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningsgrunnlag);
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, grunnlag, iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, grunnlag, iayGrunnlagBuilder);
 
         //Assert
         assertThat(resultatBG).isNotNull();
@@ -253,10 +253,10 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
             .getAvvikPromille()).isEqualTo(220L);
     }
 
-    private no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(BehandlingReferanse behandlingReferanse, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
+    private no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag map(KoblingReferanse koblingReferanse, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, grunnlagDtoBuilder, grunnlag.getBeregningsgrunnlagTilstand(), iayGrunnlag);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlagDtoBuilder, grunnlag.getBeregningsgrunnlagTilstand(), iayGrunnlag);
         return mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
     }
 
@@ -299,7 +299,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetB), OpptjeningAktivitetType.ARBEID);
 
         //Act
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         //Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -334,7 +334,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
 
         //Act
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         //Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -367,7 +367,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
 
         //Act
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
         //Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
         final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatBGP = resultatBG.getBeregningsgrunnlagPerioder().get(0);
@@ -395,7 +395,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
 
         // Act
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         // Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
@@ -422,7 +422,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLBGPStatus(bgPeriode, AktivitetStatus.DAGPENGER, Inntektskategori.DAGPENGER, MINUS_DAYS_10, NOW);
 
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         List<Periodeinntekt> dpMånedsInntekter = resultatBG.getInntektsgrunnlag().getPeriodeinntekter().stream()
             .filter(mi -> mi.getInntektskilde().equals(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP))
@@ -439,13 +439,13 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         //Arrange
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        behandlingReferanse = lagIAYforTilstøtendeYtelserForMarginalTilfelle(iayGrunnlagBuilder, beregningsgrunnlag);
+        koblingReferanse = lagIAYforTilstøtendeYtelserForMarginalTilfelle(iayGrunnlagBuilder, beregningsgrunnlag);
         buildVLBGAktivitetStatus(beregningsgrunnlag);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.DAGPENGER, Inntektskategori.DAGPENGER, MINUS_DAYS_10, NOW);
 
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         List<Periodeinntekt> dpMånedsInntekter = resultatBG.getInntektsgrunnlag().getPeriodeinntekter().stream()
             .filter(mi -> mi.getInntektskilde().equals(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP))
@@ -469,7 +469,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
         // Act
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
         // Assert
         assertThat(resultatBG.getSammenligningsGrunnlag()).isNull();
     }
@@ -487,7 +487,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLSammenligningsgrunnlag(beregningsgrunnlag);
 
         // Act
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         // Assert
         SammenligningsGrunnlag resultatSG = resultatBG.getSammenligningsGrunnlag();
@@ -509,7 +509,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLBGPeriode(beregningsgrunnlag);
 
         // Act
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
 
         // Assert
         assertThat(resultatBG.getSammenligningsGrunnlag()).isNull();
@@ -528,7 +528,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
         //Act
 
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
         //Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
         final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatBGP = resultatBG.getBeregningsgrunnlagPerioder().get(0);
@@ -558,7 +558,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetB), OpptjeningAktivitetType.ARBEID);
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_AT);
         //Act
-        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(behandlingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
+        final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatBG = map(koblingReferanse, lagGrunnlag(beregningsgrunnlag), iayGrunnlagBuilder);
         //Assert
         assertThat(resultatBG.getBeregningsgrunnlagPerioder()).hasSize(1);
         final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatBGP = resultatBG.getBeregningsgrunnlagPerioder().get(0);

@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BekreftetPermisjon
 public class UtledBekreftetPermisjonerTilDtoTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
     @Test
     public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_er_present(){
@@ -51,7 +51,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(koblingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref);
@@ -80,7 +80,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(koblingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
@@ -110,7 +110,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(koblingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
@@ -140,7 +140,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(koblingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
@@ -170,7 +170,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         AktivitetsAvtaleDtoBuilder aa = lagAktivitetsAvtaleBuilder(yaBuilder, fom, tom);
         YrkesaktivitetDtoBuilder ya = lagYrkesaktivitetBuilder(yaBuilder, aa, arbeidsgiver, ref);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(behandlingReferanse, List.of(ya));
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = lagAktørArbeidBuilder(koblingReferanse, List.of(ya));
 
         ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
         ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref)
@@ -190,9 +190,9 @@ public class UtledBekreftetPermisjonerTilDtoTest {
 
     }
 
-    private InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder lagAktørArbeidBuilder(BehandlingReferanse behandlingReferanse, List<YrkesaktivitetDtoBuilder> yrkesaktiviteter) {
+    private InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder lagAktørArbeidBuilder(KoblingReferanse koblingReferanse, List<YrkesaktivitetDtoBuilder> yrkesaktiviteter) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder
-            .oppdatere(Optional.empty()).medAktørId(behandlingReferanse.getAktørId());
+            .oppdatere(Optional.empty()).medAktørId(koblingReferanse.getAktørId());
         yrkesaktiviteter.forEach(aktørArbeidBuilder::leggTilYrkesaktivitet);
         return aktørArbeidBuilder;
     }

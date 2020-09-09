@@ -44,7 +44,7 @@ public class FastsettSkjæringstidspunktOgStatuser {
         List<RegelResultat> regelResultater = List.of(
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
-        return new BeregningsgrunnlagRegelResultat(mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getBehandlingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser), Collections.emptyList());
+        return new BeregningsgrunnlagRegelResultat(mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser), Collections.emptyList());
     }
 
     protected AktivitetStatusModell mapTilRegel(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {

@@ -18,10 +18,10 @@ import javax.enterprise.inject.Instance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -51,7 +51,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
     public static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.now();
 
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(LocalDate.now());
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now());
 
     @BeforeEach
     public void setUp() {
@@ -95,7 +95,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
             .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         // Act
@@ -126,7 +126,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste.lagDto(input);
@@ -150,7 +150,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagRestInput(behandlingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste

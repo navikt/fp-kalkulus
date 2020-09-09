@@ -7,7 +7,7 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleInput;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -20,10 +20,10 @@ public class AksjonspunktUtlederFordelBeregning {
         // Skjul
     }
 
-    protected static List<BeregningAksjonspunktResultat> utledAksjonspunkterFor(BehandlingReferanse ref,
-                                                                         BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                                         AktivitetGradering aktivitetGradering,
-                                                                         Collection<InntektsmeldingDto> inntektsmeldinger) {
+    protected static List<BeregningAksjonspunktResultat> utledAksjonspunkterFor(KoblingReferanse ref,
+                                                                                BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
+                                                                                AktivitetGradering aktivitetGradering,
+                                                                                Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultater = new ArrayList<>();
         if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, aktivitetGradering, inntektsmeldinger)) {
             BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
@@ -32,7 +32,7 @@ public class AksjonspunktUtlederFordelBeregning {
         return aksjonspunktResultater;
     }
 
-    private static boolean harTilfellerForFordeling(@SuppressWarnings("unused") BehandlingReferanse ref,
+    private static boolean harTilfellerForFordeling(@SuppressWarnings("unused") KoblingReferanse ref,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                     AktivitetGradering aktivitetGradering,
                                                     Collection<InntektsmeldingDto> inntektsmeldinger) {

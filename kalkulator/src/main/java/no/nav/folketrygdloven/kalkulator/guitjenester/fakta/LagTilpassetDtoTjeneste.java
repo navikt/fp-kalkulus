@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
@@ -34,9 +34,9 @@ class LagTilpassetDtoTjeneste  {
     private LagTilpassetDtoTjeneste() {
     }
 
-    static BeregningsgrunnlagPrStatusOgAndelDto opprettTilpassetDTO(BehandlingReferanse ref,
-                                                                                                               no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                                                               InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    static BeregningsgrunnlagPrStatusOgAndelDto opprettTilpassetDTO(KoblingReferanse ref,
+                                                                    no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                    InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
             return opprettSNDto(andel, inntektArbeidYtelseGrunnlag, ref.getSkjæringstidspunktBeregning());
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
@@ -103,7 +103,7 @@ class LagTilpassetDtoTjeneste  {
         return dtoFL;
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelYtelseDto opprettYtelseDto(BehandlingReferanse ref,
+    private static BeregningsgrunnlagPrStatusOgAndelYtelseDto opprettYtelseDto(KoblingReferanse ref,
                                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelYtelseDto dtoYtelse = new BeregningsgrunnlagPrStatusOgAndelYtelseDto();

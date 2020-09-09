@@ -29,7 +29,7 @@ public class VurderVarigEndretNyoppstartetSNHåndterer {
                 BeregningsgrunnlagPrStatusOgAndelDto bgAndel = bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(bpsa -> AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(bpsa.getAktivitetStatus()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Mangler BeregningsgrunnlagPrStatusOgAndel[SELVSTENDIG_NÆRINGSDRIVENDE] for behandling " + input.getBehandlingReferanse().getBehandlingId()));
+                    .orElseThrow(() -> new IllegalStateException("Mangler BeregningsgrunnlagPrStatusOgAndel[SELVSTENDIG_NÆRINGSDRIVENDE] for behandling " + input.getKoblingReferanse().getKoblingId()));
 
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
                     .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag));

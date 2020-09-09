@@ -14,11 +14,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.InntektPrAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -36,7 +36,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
 
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
     private final List<VirksomhetEntitet> virksomheter = new ArrayList<>();
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
@@ -212,7 +212,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
             LocalDate tom = fom.plusDays(5);
             leggTilBeregningsgrunnlagPeriode(beregningsgrunnlagBuilder, fom, tom, erArbeidstakerPrPeriode.get(i), inntektskategoriPrPeriode.get(i));
         }
-        input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlagBuilder.build(), BeregningsgrunnlagTilstand.FORESLÅTT);
+        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlagBuilder.build(), BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
     private void buildOgLagreBeregningsgrunnlag(boolean erArbeidstaker, int antallPerioder, int antallAndeler) {
@@ -225,7 +225,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
             LocalDate tom = fom.plusDays(5);
             leggTilBeregningsgrunnlagPeriode(beregningsgrunnlagBuilder, fom, tom, erArbeidstaker, antallAndeler);
         }
-        input = lagInputMedBeregningsgrunnlag(behandlingReferanse, beregningsgrunnlagBuilder.build(), BeregningsgrunnlagTilstand.FORESLÅTT);
+        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlagBuilder.build(), BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
     private void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder, LocalDate fomDato, LocalDate tomDato, List<Boolean> erArbeidstakerList, List<Inntektskategori> inntektskategoriList) {

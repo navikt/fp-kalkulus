@@ -60,7 +60,7 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
 
     public BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(BeregningsgrunnlagInput input,
                                                                         BeregningsgrunnlagDto beregningsgrunnlag) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         var mapper = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjonOgGradering, ref.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
 

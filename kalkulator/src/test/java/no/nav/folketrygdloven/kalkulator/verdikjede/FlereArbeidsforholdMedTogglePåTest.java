@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -65,7 +65,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
     private static final String ARBEIDSFORHOLD_ORGNR4 = "973152351";
     public static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING));
     private static double SEKS_G = GRUNNBELØP.multiply(BigDecimal.valueOf(6)).doubleValue();
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
 
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
 
@@ -90,12 +90,12 @@ public class FlereArbeidsforholdMedTogglePåTest {
     @AfterAll
     public static void teardown(){input.leggTilToggle(TOGGLE, false);}
 
-    private Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> lagBehandlingAT(BigDecimal inntektSammenligningsgrunnlag,
-                                                                                           List<String> beregningVirksomhet) {
+    private Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> lagBehandlingAT(BigDecimal inntektSammenligningsgrunnlag,
+                                                                                        List<String> beregningVirksomhet) {
         LocalDate fraOgMed = MINUS_YEARS_2;
         LocalDate tilOgMed = fraOgMed.plusYears(4);
 
-        AktørId aktørId = behandlingReferanse.getAktørId();
+        AktørId aktørId = koblingReferanse.getAktørId();
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         beregningVirksomhet
             .forEach(virksomhetOrgnr -> {
@@ -107,7 +107,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
             verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                 Arbeidsgiver.virksomhet(beregningVirksomhet.get(0)));
         }
-        return new Tuple<>(behandlingReferanse, inntektArbeidYtelseBuilder);
+        return new Tuple<>(koblingReferanse, inntektArbeidYtelseBuilder);
     }
 
     @Test
@@ -126,10 +126,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         List<String> virksomhetene = List.of(orgnr1);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
@@ -204,10 +204,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         List<String> virksomhetene = List.of(orgnr1);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12 / 2),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
@@ -272,7 +272,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
             overstyrt - forventetRedusert1);
     }
 
-    private BeregningsgrunnlagInput lagInputMedTogglePå(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInputMedTogglePå(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteterMedTogglePå(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 
@@ -293,7 +293,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         final long forventetDagsats = Math.round(SEKS_G / 260);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12 / 2),
             virksomhetene);
 
@@ -307,7 +307,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(tuple.getElement2())
             .medInntektsmeldinger(inntektsmeldinger).build();
-        input = lagInputMedTogglePå(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        input = lagInputMedTogglePå(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
@@ -379,10 +379,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         List<String> virksomhetene = List.of(orgnr1);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(ÅRSINNTEKT.get(0) / 12 / 2),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
@@ -466,10 +466,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         List<String> virksomhetene = List.of(orgnr1, orgnr2);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(totalÅrsinntekt / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
@@ -550,10 +550,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
             forventetRedusertBrukersAndel.stream().mapToLong(dv -> Math.round(dv / 260)).sum();
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(totalÅrsinntekt / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), månedsinntekter.get(0));
@@ -640,10 +640,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
             forventetRedusertBrukersAndel.stream().mapToLong(dv -> Math.round(dv / 260)).sum();
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(totalÅrsinntekt / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
@@ -745,10 +745,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         List<String> virksomhetene = List.of(orgnr1, orgnr2, orgnr3, orgnr4);
 
         // Arrange 1
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> tuple = lagBehandlingAT(
             BigDecimal.valueOf(totalÅrsinntekt / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(tuple.getElement1());
+        KoblingReferanse ref = lagReferanse(tuple.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
@@ -833,10 +833,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         // Arrange 1
         List<String> virksomhetene = List.of(orgnr1, orgnr2);
-        Tuple<BehandlingReferanse, InntektArbeidYtelseAggregatBuilder> behandlingReferanse = lagBehandlingAT(
+        Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> behandlingReferanse = lagBehandlingAT(
             BigDecimal.valueOf(totalÅrsinntekt / 12),
             virksomhetene);
-        BehandlingReferanse ref = lagReferanse(behandlingReferanse.getElement1());
+        KoblingReferanse ref = lagReferanse(behandlingReferanse.getElement1());
 
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(beregningVirksomhet1),
             månedsinntekter.get(0), BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
@@ -930,8 +930,8 @@ public class FlereArbeidsforholdMedTogglePåTest {
             resultat.getBeregningsgrunnlag());
     }
 
-    private BehandlingReferanse lagReferanse(BehandlingReferanse behandlingReferanse) {
-        return behandlingReferanse.medSkjæringstidspunkt(
+    private KoblingReferanse lagReferanse(KoblingReferanse koblingReferanse) {
+        return koblingReferanse.medSkjæringstidspunkt(
             Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)

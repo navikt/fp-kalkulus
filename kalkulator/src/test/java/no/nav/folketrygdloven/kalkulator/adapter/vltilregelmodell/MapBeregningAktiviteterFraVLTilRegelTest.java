@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
@@ -33,7 +33,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
     private static final AktørId aktørId = AktørId.dummy();
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
 
     @Test
     public void skal_mappe_arbeidsforhold_med_virksomhetarbeidsgiver_fra_opptjening_med_info_i_iay() {
@@ -46,7 +46,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktivitet = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR, arbId);
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktivitet, List.of());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, List.of());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -62,14 +62,14 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         assertThat(arbeidsforhold.getArbeidsforholdId()).isEqualTo(null);
     }
 
-    private AktivitetStatusModell mapForSkjæringstidspunkt(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
+    private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            InntektsmeldingDto inntektsmelding) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
     }
 
-    private AktivitetStatusModell mapForSkjæringstidspunkt(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
+    private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
@@ -90,7 +90,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var inntektsmelding = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, arbId, SKJÆRINGSTIDSPUNKT);
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktivitet, inntektsmelding);
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, inntektsmelding);
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -116,7 +116,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, periode, ORGNR, null);
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, Collections.emptyList());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, Collections.emptyList());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -160,7 +160,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of(im1, im2, im3));
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of(im1, im2, im3));
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -200,7 +200,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -236,7 +236,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of(im1));
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of(im1));
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -262,7 +262,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktivitet = OpptjeningAktiviteterDto.fraAktørId(OpptjeningAktivitetType.ARBEID, periode, aktørId.getId());
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktivitet, Collections.emptyList());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktivitet, Collections.emptyList());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -287,7 +287,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fra(OpptjeningAktivitetType.FRILANS, periode);
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, Collections.emptyList());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, Collections.emptyList());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -308,7 +308,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -330,7 +330,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -350,7 +350,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, Collections.emptyList());
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, Collections.emptyList());
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);
@@ -414,7 +414,7 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(opptj1, opptj2, opptj3, opptj4, opptj5, opptj6));
 
         // Act
-        AktivitetStatusModell modell = mapForSkjæringstidspunkt(behandlingReferanse, opptjeningAktiviteter, List.of(im1, im2, im3, im4, im5, im6));
+        AktivitetStatusModell modell = mapForSkjæringstidspunkt(koblingReferanse, opptjeningAktiviteter, List.of(im1, im2, im3, im4, im5, im6));
 
         // Assert
         assertThat(modell.getSkjæringstidspunktForOpptjening()).isEqualTo(SKJÆRINGSTIDSPUNKT);

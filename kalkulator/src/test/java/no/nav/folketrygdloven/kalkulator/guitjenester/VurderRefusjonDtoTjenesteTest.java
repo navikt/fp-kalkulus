@@ -13,10 +13,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -41,7 +41,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 class VurderRefusjonDtoTjenesteTest {
     private Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(LocalDate.now())
             .medSkjæringstidspunktOpptjening(LocalDate.now()).build();
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock().medSkjæringstidspunkt(skjæringstidspunkt);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock().medSkjæringstidspunkt(skjæringstidspunkt);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto bgPeriode;
     private BeregningsgrunnlagDto beregningsgrunnlagOrginal;
@@ -150,7 +150,7 @@ class VurderRefusjonDtoTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlagOrginal = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(beregningsgrunnlagOrginal).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
 
-        input = new BeregningsgrunnlagRestInput(behandlingReferanse, iay, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        input = new BeregningsgrunnlagRestInput(koblingReferanse, iay, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag)
                 .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
     }

@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -38,19 +38,19 @@ public class AksjonspunktUtlederFordelBeregningTest {
     private BeregningAktivitetAggregatDto.Builder beregningAktivitetBuilder = BeregningAktivitetAggregatDto.builder()
         .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
 
     @Test
     public void skal_ikke_lage_aksjonspunkt_dersom_det_ikke_er_endret_bg() {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlagutenNyttArbeidsforhold();
 
-        List<BeregningAksjonspunktResultat> aksjonspunktResultats = utledAksjonspunkter(behandlingReferanse, grunnlag);
+        List<BeregningAksjonspunktResultat> aksjonspunktResultats = utledAksjonspunkter(koblingReferanse, grunnlag);
 
         assertThat(aksjonspunktResultats).isEmpty();
     }
 
-    private List<BeregningAksjonspunktResultat> utledAksjonspunkter(BehandlingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag) {
+    private List<BeregningAksjonspunktResultat> utledAksjonspunkter(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultats = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(ref, grunnlag, AktivitetGradering.INGEN_GRADERING, List.of());
         return aksjonspunktResultats;
     }
@@ -59,7 +59,7 @@ public class AksjonspunktUtlederFordelBeregningTest {
     public void skal_lage_aksjonspunkt_når_det_er_endring() {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlagMedNyttArbeidsforhold();
 
-        List<BeregningAksjonspunktResultat> aksjonspunktResultats = utledAksjonspunkter(behandlingReferanse, grunnlag);
+        List<BeregningAksjonspunktResultat> aksjonspunktResultats = utledAksjonspunkter(koblingReferanse, grunnlag);
 
         assertThat(aksjonspunktResultats).hasSize(1);
         assertThat(aksjonspunktResultats.get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);

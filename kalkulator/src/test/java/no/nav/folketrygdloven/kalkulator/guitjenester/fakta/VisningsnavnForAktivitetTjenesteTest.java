@@ -15,9 +15,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -48,7 +48,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
     private static final String EKSTERN_ARBEIDSFORHOLD_ID = "EKSTERNREF";
     public static final String AKTØR_ID = "1234567890987";
 
-    private BehandlingReferanse ref = new BehandlingReferanseMock();
+    private KoblingReferanse ref = new KoblingReferanseMock();
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto periode;
     private InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);

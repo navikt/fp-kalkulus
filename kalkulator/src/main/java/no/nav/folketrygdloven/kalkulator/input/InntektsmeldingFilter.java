@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -32,11 +32,11 @@ public class InntektsmeldingFilter {
      * inntektsmeldingene som er koblet til inaktive arbeidsforhold.
      * Spesial håndtering i forbindelse med beregning.
      *
-     * @param ref {@link BehandlingReferanse}
+     * @param ref {@link KoblingReferanse}
      * @param skjæringstidspunktForOpptjening datoen arbeidsforhold må inkludere eller starte etter for å bli regnet som aktive
      * @return Liste med inntektsmeldinger {@link InntektsmeldingDto}
      */
-    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(BehandlingReferanse ref,
+    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(KoblingReferanse ref,
                                                                    LocalDate skjæringstidspunktForOpptjening) {
         AktørId aktørId = ref.getAktørId();
         LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktForOpptjening);

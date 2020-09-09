@@ -14,11 +14,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -51,7 +51,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BeregningsgrunnlagPrStatusOgAndelDto arbeidstakerAndel;
     private BGAndelArbeidsforholdDto.Builder arbeidsforholdBuilder;
     private BeregningsgrunnlagPeriodeDto periode;
-    private BehandlingReferanse referanse = new BehandlingReferanseMock();
+    private KoblingReferanse referanse = new KoblingReferanseMock();
     private BeregningsgrunnlagGrunnlagDto grunnlagEntitet;
 
     @BeforeEach

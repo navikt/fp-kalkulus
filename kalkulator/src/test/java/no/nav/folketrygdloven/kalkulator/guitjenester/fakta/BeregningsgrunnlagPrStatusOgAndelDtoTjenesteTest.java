@@ -12,11 +12,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -43,7 +43,7 @@ import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
     private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
     private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
@@ -76,7 +76,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -98,7 +98,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -120,7 +120,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -141,7 +141,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -160,7 +160,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -178,7 +178,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -199,7 +199,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -221,7 +221,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         var beregningsgrunnlagPrStatusOgAndelDto = tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -242,7 +242,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         lagBehandling(Beregningsgrunnlag, arbeidsgiver);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
-        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(behandlingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagRestInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste tjeneste = new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste(new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()));
         //Act
         tjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input,
@@ -408,10 +408,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .build();
     }
 
-    private BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
+    private KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        return behandlingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
+        return koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
     }
 
     private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {

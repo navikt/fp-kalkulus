@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -54,7 +54,7 @@ public class FrilanserTest {
     private static final String ARBEIDSFORHOLD_ORGNR1 = "915933149";
     private static final String ARBEIDSFORHOLD_ORGNR2 = "923609016";
     private static final String ARBEIDSFORHOLD_ORGNR3 = "973152351";
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
 
     private double seksG;
 
@@ -107,7 +107,7 @@ public class FrilanserTest {
             BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(behandlingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene,
@@ -122,7 +122,7 @@ public class FrilanserTest {
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
             );
 
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -210,7 +210,7 @@ public class FrilanserTest {
             BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(behandlingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
@@ -224,7 +224,7 @@ public class FrilanserTest {
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
             );
 
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -314,7 +314,7 @@ public class FrilanserTest {
             BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(behandlingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
@@ -328,7 +328,7 @@ public class FrilanserTest {
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
             );
 
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -389,7 +389,7 @@ public class FrilanserTest {
 
         double forventetBrukersAndelFL = frilansÅrsinntekt;
 
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(behandlingReferanse.getAktørId(),
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
             BigDecimal.valueOf(sammenligning / 12),
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             ARBEIDSFORHOLD_ORGNR1);
@@ -401,7 +401,7 @@ public class FrilanserTest {
             );
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -455,7 +455,7 @@ public class FrilanserTest {
 
         double forventetBrukersAndelFL = Math.min(seksG, frilansÅrsinntekt);
 
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(behandlingReferanse.getAktørId(),
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
             BigDecimal.valueOf(sammenligning / 12),
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             ARBEIDSFORHOLD_ORGNR1);
@@ -467,7 +467,7 @@ public class FrilanserTest {
             );
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
@@ -570,7 +570,7 @@ public class FrilanserTest {
             .medData(iayAggregatBuilder);
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 

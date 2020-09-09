@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusjonskravgyldighet.LagArbeidsgiverForSentRefusjonskravMap;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -27,17 +27,17 @@ public class InntektsmeldingMedRefusjonTjeneste {
         return input.getRefusjonskravDatoer().stream().collect(Collectors.toMap(RefusjonskravDatoDto::getArbeidsgiver, RefusjonskravDatoDto::getFørsteInnsendingAvRefusjonskrav));
     }
 
-    public static Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(BehandlingReferanse behandlingReferanse,
+    public static Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
                                                                               InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                               BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                               List<RefusjonskravDatoDto> refusjonskravDatoer
                                                                               ) {
-        Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(behandlingReferanse, iayGrunnlag, grunnlag);
+        Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(koblingReferanse, iayGrunnlag, grunnlag);
         Map<YrkesaktivitetDto, Optional<RefusjonskravDatoDto>> yrkesaktivitetDatoMap = map(yrkesaktiviteterForBeregning, refusjonskravDatoer);
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
-        Map<Arbeidsgiver, Boolean> harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lag(behandlingReferanse, yrkesaktivitetDatoMap,
+        Map<Arbeidsgiver, Boolean> harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lag(koblingReferanse, yrkesaktivitetDatoMap,
                 gjeldendeAktiviteter,
                 skjæringstidspunktBeregning
         );

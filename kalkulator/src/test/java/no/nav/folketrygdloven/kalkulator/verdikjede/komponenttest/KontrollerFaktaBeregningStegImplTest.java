@@ -17,11 +17,11 @@ import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -49,7 +49,7 @@ public class KontrollerFaktaBeregningStegImplTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.DECEMBER, 23);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     @Inject
     BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
@@ -75,7 +75,7 @@ public class KontrollerFaktaBeregningStegImplTest {
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, periode, orgnr2),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, periode, orgnr3),
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, periode),
-            OpptjeningAktiviteterDto.nyPeriodeAktør(OpptjeningAktivitetType.SYKEPENGER, periode, behandlingReferanse.getAktørId().getId())));
+            OpptjeningAktiviteterDto.nyPeriodeAktør(OpptjeningAktivitetType.SYKEPENGER, periode, koblingReferanse.getAktørId().getId())));
 
         BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(true, List.of(Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5))), iayGrunnlagBuilder);
 
@@ -87,7 +87,7 @@ public class KontrollerFaktaBeregningStegImplTest {
 
         // Act 1
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
         var resultat1 = doStegFastsettSkjæringstidspunkt(input);
         BeregningsgrunnlagInput utvidet = utvidMedBeregningsgrunnlagGrunnlagDto(input, resultat1.getBeregningsgrunnlagGrunnlag(), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
 
@@ -133,7 +133,7 @@ public class KontrollerFaktaBeregningStegImplTest {
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, periode, orgnr),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.FRILANS, periode, orgnr2),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING, periode, orgnr3),
-            OpptjeningAktiviteterDto.nyPeriodeAktør(OpptjeningAktivitetType.SYKEPENGER, periode, behandlingReferanse.getAktørId().getId())));
+            OpptjeningAktiviteterDto.nyPeriodeAktør(OpptjeningAktivitetType.SYKEPENGER, periode, koblingReferanse.getAktørId().getId())));
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
 
@@ -144,7 +144,7 @@ public class KontrollerFaktaBeregningStegImplTest {
 
         // Act
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = lagInput(behandlingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
+        var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
         var resultat1 = doStegFastsettSkjæringstidspunkt(input);
         BeregningsgrunnlagInput utvidet = utvidMedBeregningsgrunnlagGrunnlagDto(input, resultat1.getBeregningsgrunnlagGrunnlag(), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
 
@@ -174,23 +174,23 @@ public class KontrollerFaktaBeregningStegImplTest {
     }
 
     private void leggTilAT(InternArbeidsforholdRefDto arbId, String orgnr, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, Arbeidsgiver.virksomhet(orgnr), iayGrunnlagBuilder);
     }
 
     private void leggTilATMedLønnsendring(InternArbeidsforholdRefDto arbId, String orgnr, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, Arbeidsgiver.virksomhet(orgnr), Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2L)), iayGrunnlagBuilder);
     }
 
     private void leggTilFrilans(InternArbeidsforholdRefDto arbId2, String orgnr2, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1), arbId2, Arbeidsgiver.virksomhet(orgnr2),
             ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER, singletonList(BigDecimal.TEN), false, Optional.empty(), iayGrunnlagBuilder);
     }
 
     private void leggTilTidsbegrenset(InternArbeidsforholdRefDto arbId2, String orgnr2, InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
+        BeregningIAYTestUtil.byggArbeidForBehandling(koblingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(1), arbId2, Arbeidsgiver.virksomhet(orgnr2), iayGrunnlagBuilder);
     }
 
@@ -222,7 +222,7 @@ public class KontrollerFaktaBeregningStegImplTest {
         return newInput;
     }
 
-    private BeregningsgrunnlagInput lagInput(BehandlingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
+    private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
 

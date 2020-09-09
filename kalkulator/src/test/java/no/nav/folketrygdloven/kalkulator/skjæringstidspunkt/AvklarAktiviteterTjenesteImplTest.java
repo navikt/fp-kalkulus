@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.AvklarAktiviteterTjeneste;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -45,11 +45,11 @@ public class AvklarAktiviteterTjenesteImplTest {
     private static final AktørId AKTØR_ID = AktørId.dummy();
     private static final long BEHANDLING_ID = 4234034L;
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
     @BeforeEach
     public void setUp() {
-        behandlingReferanse = nyBehandling();
+        koblingReferanse = nyBehandling();
     }
 
     @Test
@@ -217,7 +217,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(koblingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -234,7 +234,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(behandlingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(koblingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();
@@ -283,8 +283,8 @@ public class AvklarAktiviteterTjenesteImplTest {
         return new Tuple<>(Periode.of(tom.minusDays(13), tom), utbetalingsgrad);
     }
 
-    private BehandlingReferanse nyBehandling() {
-        return BehandlingReferanse.fra(
+    private KoblingReferanse nyBehandling() {
+        return KoblingReferanse.fra(
             FagsakYtelseType.FORELDREPENGER,
                 AKTØR_ID,
             BEHANDLING_ID,
@@ -294,7 +294,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         );
     }
 
-    private Optional<AktørYtelseDto> getAktørYtelseFraRegister(BehandlingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private Optional<AktørYtelseDto> getAktørYtelseFraRegister(KoblingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return iayGrunnlag.getAktørYtelseFraRegister(ref.getAktørId());
     }
 }

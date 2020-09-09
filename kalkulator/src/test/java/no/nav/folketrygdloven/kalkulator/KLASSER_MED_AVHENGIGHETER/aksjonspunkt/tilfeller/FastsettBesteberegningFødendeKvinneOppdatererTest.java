@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.BesteberegningFødendeKvinneAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.BesteberegningFødendeKvinneDto;
@@ -74,7 +74,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode1);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT), beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT), beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
             Inntektskategori.ARBEIDSTAKER, false);
         BesteberegningFødendeKvinneDto bbDto = new BesteberegningFødendeKvinneDto(List.of(atDto), dpDto);
         dto.setBesteberegningAndeler(bbDto);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT), bg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT), bg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
@@ -149,7 +149,7 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
             Inntektskategori.ARBEIDSTAKER, false);
         BesteberegningFødendeKvinneDto bbDto = new BesteberegningFødendeKvinneDto(List.of(dpDto, atDto));
         dto.setBesteberegningAndeler(bbDto);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT), nyttBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT), nyttBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
 
         // Act

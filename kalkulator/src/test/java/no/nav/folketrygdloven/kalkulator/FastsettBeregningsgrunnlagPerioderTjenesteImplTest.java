@@ -27,7 +27,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -92,7 +92,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste tjeneste;
 
-    private BehandlingReferanse behandlingRef = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
 
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
@@ -272,7 +272,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         assertThat(bgaOpt).hasValueSatisfying(bga -> assertThat(bga.getRefusjonskravPrÅr()).isEqualByComparingTo(inntekt.multiply(ANTALL_MÅNEDER_I_ÅR)));
     }
 
-    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(BehandlingReferanse ref,
+    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(KoblingReferanse ref,
                                                                          BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                          BeregningsgrunnlagDto beregningsgrunnlag,
                                                                          AktivitetGradering aktivitetGradering,
@@ -285,7 +285,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     }
 
 
-    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(BehandlingReferanse ref,
+    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(KoblingReferanse ref,
                                                                          BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                          BeregningsgrunnlagDto beregningsgrunnlag,
                                                                          AktivitetGradering aktivitetGradering,
@@ -296,7 +296,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
     }
 
-    private BeregningsgrunnlagDto fastsettPerioderForNaturalytelse(BehandlingReferanse ref,
+    private BeregningsgrunnlagDto fastsettPerioderForNaturalytelse(KoblingReferanse ref,
                                                                    BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                    BeregningsgrunnlagDto beregningsgrunnlag,
                                                                    AktivitetGradering aktivitetGradering) {
@@ -2145,7 +2145,7 @@ BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedOverstyring(Lis
         return lagBeregningsgrunnlag(orgnrs, beregningAktivitetAggregat, null);
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlagMedSaksbehandlet(List<String> orgnrs, BehandlingReferanse behandlingRef,
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlagMedSaksbehandlet(List<String> orgnrs, KoblingReferanse behandlingRef,
                                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningAktivitetAggregatDto saksbehandlet) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()

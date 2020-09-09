@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGene
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -70,7 +70,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private static final LocalDate SAMMENLIGNING_TOM = LocalDate.now();
 
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock();
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
     private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
     private BeregningsgrunnlagGrunnlagDto grunnlag;
     private BeregningAktivitetAggregatDto beregningAktiviteter;
@@ -95,7 +95,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         // Arrange
         lagBehandlingMedBgOgOpprettFagsakRelasjon(virksomhet);
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag,
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag,
                 InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
 
         // Assert
@@ -110,7 +110,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(virksomhet);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
 
         // Assert
         SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlag();
@@ -137,7 +137,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(arbeidsgiver);
 
         // Act
-        BeregningsgrunnlagDto grunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto grunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
 
         // Assert
         assertThat(grunnlagDto).isNotNull();
@@ -162,7 +162,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
 
         // Assert
         assertBeregningsgrunnlag(beregnetEtterFastsattSteg, beregningsgrunnlagDto);
@@ -173,7 +173,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(virksomhet);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
 
         // Assert
         var beregningsgrunnlagPeriodeDtoList = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode();
@@ -203,7 +203,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(person);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1)));
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, builder.build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
 
         // Assert
         var beregningsgrunnlagPeriodeDtoList = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode();
@@ -232,7 +232,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         lagBehandlingMedBgOgOpprettFagsakRelasjonFlereAndeler(arbeidsgiver);
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
         // Assert
         SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
         assertThat(sammenligningsgrunnlag).isNotNull();
@@ -268,7 +268,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         lagBehandlingMedBgOgOpprettFagsakRelasjonFlereAndeler(arbeidsgiver);
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
         // Assert
         var beregningsgrunnlagPrStatusOgAndelDto = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode().get(0).getBeregningsgrunnlagPrStatusOgAndel().get(0);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto).isNotNull();
@@ -292,7 +292,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         lagBehandlingMedBgOgOpprettFagsakRelasjon(arbeidsgiver);
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
         // Assert
         var beregningsgrunnlagPrStatusOgAndelDto = beregningsgrunnlagDto.getBeregningsgrunnlagPeriode().get(0).getBeregningsgrunnlagPrStatusOgAndel().get(0);
         assertThat(beregningsgrunnlagPrStatusOgAndelDto).isNotNull();
@@ -307,7 +307,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(arbeidsgiver);
         grunnlag.getBeregningsgrunnlag().get().getSammenligningsgrunnlagPrStatusListe().clear();
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(behandlingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
+        BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of()).build());
         // Assert
         assertThat(beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().size()).isOne();
         SammenligningsgrunnlagDto sammenligningsgrunnlag = beregningsgrunnlagDto.getSammenligningsgrunnlagPrStatus().get(0);
@@ -320,13 +320,13 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(sammenligningsgrunnlag.getDifferanseBeregnet()).isEqualTo(BRUTTO_PR_AAR.subtract(RAPPORTERT_PR_AAR));
     }
 
-    private BehandlingReferanse lagReferanseMedStp(BehandlingReferanse behandlingReferanse) {
+    private KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
-        return behandlingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
+        return koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BehandlingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagDto(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var input = new BeregningsgrunnlagRestInput(ref, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         return beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);

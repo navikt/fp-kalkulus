@@ -67,7 +67,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var iayGrunnlag = input.getIayGrunnlag();
         var inntektsmeldinger = input.getInntektsmeldinger();
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
         BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag);
         LocalDate skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
@@ -119,7 +119,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
     private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagRestInput input,
                                                     no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
         return FagsakYtelseTypeRef.Lookup.find(fastsettGrunnlag, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getBehandlingReferanse()))
+                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getKoblingReferanse()))
                 .skalGrunnlagFastsettes(input, andel);
     }
 

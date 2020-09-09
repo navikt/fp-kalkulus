@@ -12,9 +12,9 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 /**
  * Minimal metadata for en behandling.
  */
-public class BehandlingReferanse {
+public class KoblingReferanse {
 
-    private Long behandlingId;
+    private Long koblingId;
 
     private FagsakYtelseType fagsakYtelseType;
 
@@ -26,7 +26,7 @@ public class BehandlingReferanse {
     /**
      * Original behandling id (i tilfelle dette f.eks er en revurdering av en annen behandling.
      */
-    private Optional<Long> originalBehandlingId;
+    private Optional<Long> originalKoblingId;
 
     /**
      * Inneholder relevante tidspunkter for en behandling
@@ -34,52 +34,48 @@ public class BehandlingReferanse {
     private Skjæringstidspunkt skjæringstidspunkt;
 
     /** Eksternt refererbar UUID for behandling. */
-    private UUID behandlingUuid;
+    private UUID koblingUuid;
 
-    public BehandlingReferanse() {
+    public KoblingReferanse() {
     }
 
-    private BehandlingReferanse(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
-                                Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId, Skjæringstidspunkt skjæringstidspunkt) {
+    private KoblingReferanse(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
+                             Long koblingId, UUID koblingUuid, Optional<Long> originalKoblingId, Skjæringstidspunkt skjæringstidspunkt) {
         this.fagsakYtelseType = fagsakYtelseType;
         this.aktørId = aktørId;
-        this.behandlingId = behandlingId;
-        this.behandlingUuid = behandlingUuid;
-        this.originalBehandlingId = originalBehandlingId;
+        this.koblingId = koblingId;
+        this.koblingUuid = koblingUuid;
+        this.originalKoblingId = originalKoblingId;
         this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
 
-    public static BehandlingReferanse fra(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
-                                          Long behandlingId, UUID behandlingUuid, Optional<Long> originalBehandlingId, Skjæringstidspunkt skjæringstidspunkt) {
-        return new BehandlingReferanse(fagsakYtelseType,
+    public static KoblingReferanse fra(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
+                                       Long koblingId, UUID koblingUuid, Optional<Long> originalKoblingId, Skjæringstidspunkt skjæringstidspunkt) {
+        return new KoblingReferanse(fagsakYtelseType,
                 aktørId,
-                behandlingId,
-            behandlingUuid,
-            originalBehandlingId,
+                koblingId,
+            koblingUuid,
+            originalKoblingId,
             skjæringstidspunkt);
     }
 
 
-    public Long getBehandlingId() {
-        return behandlingId;
-    }
-
     // skal byttes til koblingId
     public Long getKoblingId() {
-        return behandlingId;
+        return koblingId;
     }
 
-    public UUID getBehandlingUuid() {
-        return behandlingUuid;
+    public UUID getKoblingUuid() {
+        return koblingUuid;
     }
 
     public Long getId() {
-        return getBehandlingId();
+        return getKoblingId();
     }
 
-    public Optional<Long> getOriginalBehandlingId() {
-        return originalBehandlingId;
+    public Optional<Long> getOriginalKoblingId() {
+        return originalKoblingId;
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
@@ -112,7 +108,7 @@ public class BehandlingReferanse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(behandlingId, originalBehandlingId, fagsakYtelseType, aktørId);
+        return Objects.hash(koblingId, originalKoblingId, fagsakYtelseType, aktørId);
     }
 
     @Override
@@ -123,11 +119,11 @@ public class BehandlingReferanse {
         if (obj == null || !getClass().equals(obj.getClass())) {
             return false;
         }
-        BehandlingReferanse other = (BehandlingReferanse) obj;
-        return Objects.equals(behandlingId, other.behandlingId)
+        KoblingReferanse other = (KoblingReferanse) obj;
+        return Objects.equals(koblingId, other.koblingId)
             && Objects.equals(aktørId, other.aktørId)
             && Objects.equals(fagsakYtelseType, other.fagsakYtelseType)
-            && Objects.equals(originalBehandlingId, other.originalBehandlingId);
+            && Objects.equals(originalKoblingId, other.originalKoblingId);
     }
 
 
@@ -135,18 +131,18 @@ public class BehandlingReferanse {
     public String toString() {
         return getClass().getSimpleName() + String.format(
             "<behandlingId=%s, fagsakType=%s, aktørId=%s, skjæringstidspunjkt=%s, originalBehandlingId=%s>",
-            behandlingId, fagsakYtelseType, aktørId, skjæringstidspunkt, originalBehandlingId);
+                koblingId, fagsakYtelseType, aktørId, skjæringstidspunkt, originalKoblingId);
     }
 
     /**
      * Lag immutable copy av referanse med satt utledet skjæringstidspunkt.
      */
-    public BehandlingReferanse medSkjæringstidspunkt(LocalDate utledetSkjæringstidspunkt) {
-        return new BehandlingReferanse(getFagsakYtelseType(),
+    public KoblingReferanse medSkjæringstidspunkt(LocalDate utledetSkjæringstidspunkt) {
+        return new KoblingReferanse(getFagsakYtelseType(),
             getAktørId(),
                 getId(),
-            getBehandlingUuid(),
-            getOriginalBehandlingId(),
+            getKoblingUuid(),
+            getOriginalKoblingId(),
             Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(utledetSkjæringstidspunkt)
                 .build());
@@ -155,12 +151,12 @@ public class BehandlingReferanse {
     /**
      * Lag immutable copy av referanse med mulighet til å legge til skjæringstidspunkt av flere typer
      */
-    public BehandlingReferanse medSkjæringstidspunkt(Skjæringstidspunkt skjæringstidspunkt) {
-        return new BehandlingReferanse(getFagsakYtelseType(),
+    public KoblingReferanse medSkjæringstidspunkt(Skjæringstidspunkt skjæringstidspunkt) {
+        return new KoblingReferanse(getFagsakYtelseType(),
             getAktørId(),
                 getId(),
-            getBehandlingUuid(),
-            getOriginalBehandlingId(),
+            getKoblingUuid(),
+            getOriginalKoblingId(),
             skjæringstidspunkt);
     }
 }

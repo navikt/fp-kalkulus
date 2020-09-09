@@ -49,7 +49,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
     }
 
     private static AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
         Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
         AndelForFaktaOmBeregningDto andelDto = new AndelForFaktaOmBeregningDto();

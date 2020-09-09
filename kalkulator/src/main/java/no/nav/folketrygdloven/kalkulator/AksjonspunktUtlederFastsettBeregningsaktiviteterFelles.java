@@ -34,7 +34,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
                                                                                     BeregningsgrunnlagInput input,
                                                                                     boolean erOverstyrt,
                                                                                     FagsakYtelseType fagsakYtelseType) {
-        Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getBehandlingReferanse().getAktørId());
+        Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getKoblingReferanse().getAktørId());
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
         if (no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, FPDateUtil.iDag())) {

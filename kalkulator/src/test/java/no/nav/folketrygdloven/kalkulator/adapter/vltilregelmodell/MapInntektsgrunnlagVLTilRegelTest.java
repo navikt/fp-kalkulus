@@ -11,10 +11,10 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -32,7 +32,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("94632432");
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
 
     @Test
@@ -50,7 +50,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
                 List.of(p1, p2),
                 List.of(im));
 
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(koblingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
@@ -71,7 +71,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
                 List.of(im));
 
 
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(koblingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
@@ -90,7 +90,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
                 Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12), SKJÆRINGSTIDSPUNKT_BEREGNING),
                 List.of(im));
 
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(koblingReferanse, null, iayGrunnlag, 100, 2);
 
 
         // Act
@@ -110,7 +110,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
                 Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(1)),
                 List.of(im));
 
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(behandlingReferanse, null, iayGrunnlag, 100, 2);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(koblingReferanse, null, iayGrunnlag, 100, 2);
 
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
@@ -121,7 +121,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     private InntektArbeidYtelseGrunnlagDto lagIAYGrunnlagMedArbeidIPeriode(Intervall periode,
                                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = registerBuilder.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = registerBuilder.getAktørArbeidBuilder(koblingReferanse.getAktørId());
         aktørArbeidBuilder.leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(periode))
@@ -136,7 +136,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
     private InntektArbeidYtelseGrunnlagDto lagIAYGrunnlagMedArbeidIPerioder(List<Intervall> perioder,
                                                                             List<InntektsmeldingDto> inntektsmeldinger) {
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = registerBuilder.getAktørArbeidBuilder(behandlingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = registerBuilder.getAktørArbeidBuilder(koblingReferanse.getAktørId());
         perioder.forEach(periode -> aktørArbeidBuilder.leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(periode))

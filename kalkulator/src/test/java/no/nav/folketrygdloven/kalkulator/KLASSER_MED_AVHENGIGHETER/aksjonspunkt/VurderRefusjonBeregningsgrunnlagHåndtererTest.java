@@ -12,12 +12,12 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
@@ -30,7 +30,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 
 class VurderRefusjonBeregningsgrunnlagHåndtererTest {
     private BeregningRefusjonOverstyringerDto eksisterendeOverstyringer;
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(LocalDate.now().minusDays(5));
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now().minusDays(5));
     private BeregningsgrunnlagInput input;
 
     @Test
@@ -144,7 +144,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
     private void lagBehandlingMedBeregningsgrunnlag() {
         BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagDto = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRefusjonOverstyring(eksisterendeOverstyringer);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagGrunnlag(behandlingReferanse, beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagGrunnlag(koblingReferanse, beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
     }
 
 }

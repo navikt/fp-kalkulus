@@ -42,7 +42,7 @@ public class FastsettBeregningsgrunnlagATFLHåndterer {
                 BeregningsgrunnlagPrStatusOgAndelDto korresponderendeAndelIFørstePeriode = arbeidstakerList.stream()
                     .filter(andel -> andel.getAndelsnr().equals(inntekPrAndel.getAndelsnr()))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Fant ingen korresponderende andel med andelsnr " + inntekPrAndel.getAndelsnr() + " i første periode for behandling " + input.getBehandlingReferanse().getBehandlingId()));
+                    .orElseThrow(() -> new IllegalStateException("Fant ingen korresponderende andel med andelsnr " + inntekPrAndel.getAndelsnr() + " i første periode for behandling " + input.getKoblingReferanse().getKoblingId()));
                 for (BeregningsgrunnlagPeriodeDto periode : beregningsgrunnlagPerioder) {
                     Optional<BeregningsgrunnlagPrStatusOgAndelDto> korresponderendeAndelOpt = finnRiktigAndel(korresponderendeAndelIFørstePeriode, periode);
                     korresponderendeAndelOpt.ifPresent(andel-> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)

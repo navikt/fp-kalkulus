@@ -10,9 +10,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -97,7 +97,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         assertThat(faktaOmBeregningDto.getVurderBesteberegning().getSkalHaBesteberegning()).isNull();
     }
 
-    private BehandlingReferanse lagReferanse() {
-        return new BehandlingReferanseMock(STP);
+    private KoblingReferanse lagReferanse() {
+        return new KoblingReferanseMock(STP);
     }
 }

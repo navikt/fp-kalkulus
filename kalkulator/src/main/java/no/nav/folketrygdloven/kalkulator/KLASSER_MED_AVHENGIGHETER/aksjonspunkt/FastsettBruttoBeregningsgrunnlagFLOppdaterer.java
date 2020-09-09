@@ -32,7 +32,7 @@ class FastsettBruttoBeregningsgrunnlagFLOppdaterer implements FaktaOmBeregningTi
             BeregningsgrunnlagPrStatusOgAndelDto bgAndel = bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bpsa -> AktivitetStatus.FRILANSER.equals(bpsa.getAktivitetStatus()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Mangler BeregningsgrunnlagPrStatusOgAndel[FRILANS] for behandling " + input.getBehandlingReferanse().getId()));
+                .orElseThrow(() -> new IllegalStateException("Mangler BeregningsgrunnlagPrStatusOgAndel[FRILANS] for behandling " + input.getKoblingReferanse().getId()));
             BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
                 .medBeregnetPrÅr(årsinntektFL)
                 .medFastsattAvSaksbehandler(true);

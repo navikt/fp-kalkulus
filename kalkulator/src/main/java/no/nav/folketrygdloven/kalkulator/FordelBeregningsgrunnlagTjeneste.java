@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVLFordel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -38,11 +38,11 @@ public class FordelBeregningsgrunnlagTjeneste {
     public BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         BeregningsgrunnlagDto bgMedRefusjon = fastsettBeregningsgrunnlagPerioderTjeneste
             .fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
-        var ref = input.getBehandlingReferanse();
+        var ref = input.getKoblingReferanse();
         return kjørRegelForOmfordeling(input, ref, bgMedRefusjon);
     }
 
-    private BeregningsgrunnlagDto kjørRegelForOmfordeling(BeregningsgrunnlagInput input, BehandlingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private BeregningsgrunnlagDto kjørRegelForOmfordeling(BeregningsgrunnlagInput input, KoblingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag) {
         var regelPerioder = mapBeregningsgrunnlagFraVLTilRegel.mapTilFordelingsregel(ref, beregningsgrunnlag, input);
         String regelinput = toJson(regelPerioder);
         List<RegelResultat> regelResultater = new ArrayList<>();

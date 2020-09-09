@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.BehandlingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -38,8 +38,8 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHand
 public class LønnsendringTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
-    private static final BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-    private static final AktørId AKTØR_ID = behandlingReferanse.getAktørId();
+    private static final KoblingReferanse KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+    private static final AktørId AKTØR_ID = KOBLING_REFERANSE.getAktørId();
 
     @Test
     public void skalTesteAtAksjonspunktOpprettesNårBrukerHarLønnsendringUtenInntektsmelding() {
@@ -49,7 +49,7 @@ public class LønnsendringTjenesteTest {
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE, SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
             Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2L)),
             iayGrunnlagBuilder);
@@ -103,7 +103,7 @@ public class LønnsendringTjenesteTest {
         Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        BeregningIAYTestUtil.byggArbeidForBehandling(behandlingReferanse,
+        BeregningIAYTestUtil.byggArbeidForBehandling(KOBLING_REFERANSE,
             SKJÆRINGSTIDSPUNKT_OPPTJENING,
             SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             null, arbId, arbeidsgiver, arbeidType,

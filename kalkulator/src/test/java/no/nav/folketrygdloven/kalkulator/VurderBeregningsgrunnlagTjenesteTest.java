@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -55,7 +55,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
 
     private Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
@@ -74,8 +74,8 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new BehandlingReferanseMock(), registerBuilder);
-        BehandlingReferanse ref = lagReferanseMedSkjæringstidspunkt(behandlingReferanse);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new KoblingReferanseMock(), registerBuilder);
+        KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag);
@@ -106,9 +106,9 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new BehandlingReferanseMock(), registerBuilder);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new KoblingReferanseMock(), registerBuilder);
 
-        BehandlingReferanse ref = lagReferanseMedSkjæringstidspunkt(behandlingReferanse);
+        KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag);
@@ -154,8 +154,8 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         return bg;
     }
 
-    private static BehandlingReferanse lagReferanseMedSkjæringstidspunkt(BehandlingReferanse behandlingReferanse) {
-        return behandlingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
+    private static KoblingReferanse lagReferanseMedSkjæringstidspunkt(KoblingReferanse koblingReferanse) {
+        return koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
             .build());

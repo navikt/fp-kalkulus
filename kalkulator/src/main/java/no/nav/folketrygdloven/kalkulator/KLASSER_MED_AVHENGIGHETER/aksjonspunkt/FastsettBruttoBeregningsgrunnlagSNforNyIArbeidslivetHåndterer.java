@@ -22,7 +22,7 @@ public class FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer {
                 BeregningsgrunnlagPrStatusOgAndelDto bgAndel = bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(bpsa -> bpsa.getAktivitetStatus().erSelvstendigNæringsdrivende())
                     .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Mangler andel for selvstendig næringsdrivende (eller kombinasjon med SN) for behandling "  + input.getBehandlingReferanse().getBehandlingId()));
+                    .orElseThrow(() -> new IllegalStateException("Mangler andel for selvstendig næringsdrivende (eller kombinasjon med SN) for behandling "  + input.getKoblingReferanse().getKoblingId()));
 
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
                     .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag))

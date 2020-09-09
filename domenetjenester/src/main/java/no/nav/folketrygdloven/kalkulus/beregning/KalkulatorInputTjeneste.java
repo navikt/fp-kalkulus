@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -95,13 +96,14 @@ public class KalkulatorInputTjeneste {
         return lagInputMedBeregningsgrunnlag(koblingId, false);
     }
 
-    public BeregningsgrunnlagInput lagInputForGUI(Long koblingId) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-        BeregningsgrunnlagInput input = lagInput(koblingId, beregningsgrunnlagGrunnlagEntitet);
-        BeregningsgrunnlagGrunnlagDto mappedGrunnlag = beregningsgrunnlagGrunnlagEntitet.map(grunnlagEntitet -> mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), false))
-                .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusHarIkkeBeregningsgrunnlag(koblingId).toException());
-        leggTilGrunnlagForTilstand(input, false, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
-        return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
+    public List<BeregningsgrunnlagInput> lagInputForGUI(List<Long> koblingId) {
+        List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId);
+        return beregningsgrunnlagGrunnlagEntiteter.stream().map(grunnlagEntitet -> {
+            BeregningsgrunnlagInput input = lagInput(grunnlagEntitet.getKoblingId(), Optional.of(grunnlagEntitet));
+            BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), false);
+            leggTilGrunnlagForTilstand(input, false, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+            return input.medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
+        }).collect(Collectors.toList());
     }
 
     public boolean lagreKalkulatorInput(Long koblingId, KalkulatorInputDto kalkulatorInput) {
@@ -126,7 +128,7 @@ public class KalkulatorInputTjeneste {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(gr -> MonthDay.from(gr.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
-                .getSkjæringstidspunkt()).isAfter(ENDRING_AV_GRUNNBELØP))
+                        .getSkjæringstidspunkt()).isAfter(ENDRING_AV_GRUNNBELØP))
                 .min(Comparator.comparing(BaseEntitet::getOpprettetTidspunkt));
     }
 
@@ -137,8 +139,8 @@ public class KalkulatorInputTjeneste {
     }
 
     private void leggTilGrunnlagForTilstand(BeregningsgrunnlagInput input, boolean medSporingslogg, BeregningsgrunnlagTilstand tilstand) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getBehandlingReferanse().getBehandlingId(),
-                input.getBehandlingReferanse().getOriginalBehandlingId(), tilstand);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(input.getKoblingReferanse().getKoblingId(),
+                input.getKoblingReferanse().getOriginalKoblingId(), tilstand);
         sisteBg.ifPresent(gr -> input.leggTilBeregningsgrunnlagIHistorikk(mapGrunnlag(gr, input.getInntektsmeldinger(), medSporingslogg),
                 BeregningsgrunnlagTilstand.fraKode(tilstand.getKode())));
     }

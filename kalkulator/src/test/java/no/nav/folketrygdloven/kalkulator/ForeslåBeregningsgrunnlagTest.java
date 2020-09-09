@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.OmsorgspengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.BehandlingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -91,7 +91,7 @@ public class ForeslåBeregningsgrunnlagTest {
     private static final LocalDate ARBEIDSPERIODE_FOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1);
     private static final LocalDate ARBEIDSPERIODE_TOM = SKJÆRINGSTIDSPUNKT_OPPTJENING.plusYears(2);
 
-    private BehandlingReferanse behandlingReferanse = new BehandlingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private AktørId beregningsAkrød1 = AktørId.dummy();
     private BeregningsgrunnlagDto beregningsgrunnlag;
 
@@ -180,7 +180,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
-        AktørId aktørId = behandlingReferanse.getAktørId();
+        AktørId aktørId = koblingReferanse.getAktørId();
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed, tilOgMed,
             ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
@@ -199,7 +199,7 @@ public class ForeslåBeregningsgrunnlagTest {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(iayGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, virksomhetOrgnr, fraOgMed, tilOgMed, behandlingReferanse.getAktørId(), registerBuilder);
+        verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, virksomhetOrgnr, fraOgMed, tilOgMed, koblingReferanse.getAktørId(), registerBuilder);
         iayGrunnlagBuilder.medData(registerBuilder);
     }
 
@@ -217,14 +217,14 @@ public class ForeslåBeregningsgrunnlagTest {
 
         Optional<AktørArbeidDto> aktørArbeid = registerVersjon.stream()
         .flatMap(iay -> iay.getAktørArbeid().stream())
-        .filter(a -> a.getAktørId().equals(behandlingReferanse.getAktørId())).findFirst();
+        .filter(a -> a.getAktørId().equals(koblingReferanse.getAktørId())).findFirst();
         YrkesaktivitetDto ya = aktørArbeid.get().hentAlleYrkesaktiviteter()
         .stream()
         .filter(y -> y.equals(yrkesaktivitet))
         .findFirst().get();
 
         Intervall periode = ya.getAlleAktivitetsAvtaler().iterator().next().getPeriode();
-        builder.getAktørArbeidBuilder(behandlingReferanse.getAktørId())
+        builder.getAktørArbeidBuilder(koblingReferanse.getAktørId())
             .getYrkesaktivitetBuilderForNøkkelAvType(new OpptjeningsnøkkelDto(yrkesaktivitet), ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
             .getAktivitetsAvtaleBuilder(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()), true)
             .medPeriode(Intervall.fraOgMedTilOgMed(fomDato, tomDato));
@@ -282,7 +282,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagGrunnlagDtoBuilder bgGrunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
         toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, skalSplitte);
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
@@ -293,7 +293,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagGrunnlagDtoBuilder bgGrunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(behandlingReferanse, bgGrunnlagBuilder,
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, bgGrunnlagBuilder,
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, omsorgspengerGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
         toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, skalSplitte);
@@ -612,7 +612,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN(true);
         InntektArbeidYtelseAggregatBuilder register = verdikjedeTestHjelper.initBehandlingFor_AT_SN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1),
             2014, SKJÆRINGSTIDSPUNKT_BEREGNING, ARBEIDSFORHOLD_ORGNR1,
-            BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), new BehandlingReferanseMock(),
+            BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), new KoblingReferanseMock(),
             iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
 
@@ -756,7 +756,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        AktørId aktørId = behandlingReferanse.getAktørId();
+        AktørId aktørId = koblingReferanse.getAktørId();
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1),
                 MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         for (LocalDate dt = MINUS_YEARS_2.withDayOfMonth(1); dt.isBefore(MINUS_YEARS_1.withDayOfMonth(1).plusYears(2)); dt = dt.plusMonths(1)) {
@@ -797,7 +797,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
-        AktørId aktørId = behandlingReferanse.getAktørId();
+        AktørId aktørId = koblingReferanse.getAktørId();
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver1, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed, tilOgMed,
                 ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
