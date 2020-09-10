@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FordelBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -87,10 +87,10 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
 
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndelInklNaturalytelse(andel, arbId, andelsnr, false, false, null, 0, inntektskategori);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndelInklNaturalytelse(andel2, arbId2, andelsnr2, false, false, null, 210_000, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndelInklNaturalytelse(andel, arbId, andelsnr, false, false, null, 0, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndelInklNaturalytelse(andel2, arbId2, andelsnr2, false, false, null, 210_000, inntektskategori);
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -131,12 +131,12 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer fastsatt = 10_000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
         Inntektskategori inntektskategori2 = Inntektskategori.DAGPENGER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, false, false, null, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(andel2, arbId2, andelsnr2, false, false, null, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(andel3, arbId2, andelsnr3, false, true, null, fastsatt, inntektskategori2);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel4 = lagFordeltAndel(null, arbId, andelsnr, true, true, null, fastsatt, inntektskategori2);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, false, false, null, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(andel2, arbId2, andelsnr2, false, false, null, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(andel3, arbId2, andelsnr3, false, true, null, fastsatt, inntektskategori2);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel4 = lagFordeltAndel(null, arbId, andelsnr, true, true, null, fastsatt, inntektskategori2);
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel4, fordeltAndel3, fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel4, fordeltAndel3, fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -170,8 +170,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         Integer fastsatt = 10_000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltDPAndel(andel, andelsnr, false, true, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltDPAndel(andel, andelsnr, false, true, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -200,8 +200,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = null;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -237,10 +237,10 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer fastsatt2 = 5000;
         Integer fastsatt3 = 5000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(eksisterendeAndel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(eksisterendeAndel2, arbId2, andelsnr2, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt2, inntektskategori);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(null, arbId2, andelsnr2, true, true, refusjon, fastsatt3, Inntektskategori.FRILANSER);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2, fordeltAndel3), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(eksisterendeAndel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(eksisterendeAndel2, arbId2, andelsnr2, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt2, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(null, arbId2, andelsnr2, true, true, refusjon, fastsatt3, Inntektskategori.FRILANSER);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2, fordeltAndel3), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -266,7 +266,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(andel3.getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
     }
 
-    private FastsettBeregningsgrunnlagAndelDto lagFordeltAndelInklNaturalytelse(BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private FordelBeregningsgrunnlagAndelDto lagFordeltAndelInklNaturalytelse(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                InternArbeidsforholdRefDto arbId,
                                                                Long andelsnr,
                                                                boolean nyAndel,
@@ -274,18 +274,18 @@ public class FordelBeregningsgrunnlagHåndtererTest {
                                                                Integer refusjon,
                                                                Integer fastsatt,
                                                                Inntektskategori inntektskategori) {
-        FastsatteVerdierDto fastsatteVerdier = FastsatteVerdierDto.Builder.ny()
+        FordelFastsatteVerdierDto fastsatteVerdier = FordelFastsatteVerdierDto.Builder.ny()
                 .medRefusjonPrÅr(refusjon == null ? null : refusjon * 12)
                 .medFastsattBeløpPrÅrInklNaturalytelse(fastsatt)
                 .medInntektskategori(inntektskategori)
                 .build();
         RedigerbarAndelDto andelDto = new RedigerbarAndelDto(nyAndel, ORG_NUMMER, arbId, andelsnr, lagtTilAvSaksbehandler, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-        return new FastsettBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.ARBEIDSTAKER,
+        return new FordelBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.ARBEIDSTAKER,
                 andel != null ? andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO).intValue() : null,
                 andel != null ? finnBrutto(andel) : null);
     }
 
-    private FastsettBeregningsgrunnlagAndelDto lagFordeltAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+    private FordelBeregningsgrunnlagAndelDto lagFordeltAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                InternArbeidsforholdRefDto arbId,
                                                                Long andelsnr,
                                                                boolean nyAndel,
@@ -293,24 +293,24 @@ public class FordelBeregningsgrunnlagHåndtererTest {
                                                                Integer refusjon,
                                                                Integer fastsatt,
                                                                Inntektskategori inntektskategori) {
-        FastsatteVerdierDto fastsatteVerdier = FastsatteVerdierDto.Builder.ny()
+        FordelFastsatteVerdierDto fastsatteVerdier = FordelFastsatteVerdierDto.Builder.ny()
                 .medRefusjonPrÅr(refusjon == null ? null : refusjon * 12)
                 .medFastsattBeløpPrMnd(fastsatt)
                 .medInntektskategori(inntektskategori)
                 .build();
         RedigerbarAndelDto andelDto = new RedigerbarAndelDto(nyAndel, ORG_NUMMER, arbId, andelsnr, lagtTilAvSaksbehandler, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-        return new FastsettBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.ARBEIDSTAKER,
+        return new FordelBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.ARBEIDSTAKER,
                 andel != null ? andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO).intValue() : null,
                 andel != null ? finnBrutto(andel) : null);
     }
 
-    private FastsettBeregningsgrunnlagAndelDto lagFordeltDPAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, Long andelsnr, boolean nyAndel, boolean lagtTilAvSaksbehandler, Integer fastsatt, Inntektskategori inntektskategori) {
-        FastsatteVerdierDto fastsatteVerdier = FastsatteVerdierDto.Builder.ny()
+    private FordelBeregningsgrunnlagAndelDto lagFordeltDPAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, Long andelsnr, boolean nyAndel, boolean lagtTilAvSaksbehandler, Integer fastsatt, Inntektskategori inntektskategori) {
+        FordelFastsatteVerdierDto fastsatteVerdier = FordelFastsatteVerdierDto.Builder.ny()
                 .medFastsattBeløpPrMnd(fastsatt)
                 .medInntektskategori(inntektskategori)
                 .build();
         RedigerbarAndelDto andelDto = new RedigerbarAndelDto(nyAndel, andelsnr, lagtTilAvSaksbehandler, AktivitetStatus.DAGPENGER, OpptjeningAktivitetType.DAGPENGER);
-        return new FastsettBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.DAGPENGER, null,
+        return new FordelBeregningsgrunnlagAndelDto(andelDto, fastsatteVerdier, Inntektskategori.DAGPENGER, null,
                 andel != null ? finnBrutto(andel) : null);
     }
 
@@ -374,8 +374,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel1, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel1, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(singletonList(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -404,16 +404,16 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
 
         final boolean nyAndel2 = true;
         final boolean lagtTilAvSaksbehandler2 = true;
         Integer refusjon2 = 3000;
         Integer fastsatt2 = 20000;
         Inntektskategori inntektskategori2 = Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel2, fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel2, fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -475,7 +475,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler,
                 refusjon, fastsatt, inntektskategori);
 
         final boolean nyAndel2 = false;
@@ -483,11 +483,11 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon2 = 3000;
         Integer fastsatt2 = 20000;
         Inntektskategori inntektskategori2 = Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnrForAndelLagtTilAvSaksbehandler, nyAndel2, lagtTilAvSaksbehandler2,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnrForAndelLagtTilAvSaksbehandler, nyAndel2, lagtTilAvSaksbehandler2,
                 refusjon2, fastsatt2, inntektskategori2);
 
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel2, fordeltAndel),
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel2, fordeltAndel),
                 SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
@@ -552,15 +552,15 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
 
         final boolean nyAndel2 = false;
         final boolean lagtTilAvSaksbehandler2 = true;
         Integer refusjon2 = 3000;
         Integer fastsatt2 = 20000;
         Inntektskategori inntektskategori2 = Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr2, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr2, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -625,9 +625,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel), SKJÆRINGSTIDSPUNKT, null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(singletonList(endretPeriode));
 
         // Act
@@ -698,31 +698,31 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Integer refusjon = 5000;
         Integer fastsatt = 10000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndel(andel, arbId, andelsnr, nyAndel, lagtTilAvSaksbehandler, refusjon, fastsatt, inntektskategori);
 
         final boolean nyAndel2 = false;
         final boolean lagtTilAvSaksbehandler2 = true;
         Integer refusjon2 = 3000;
         Integer fastsatt2 = 20000;
         Inntektskategori inntektskategori2 = Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr2, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = lagFordeltAndel(null, arbId, andelsnr2, nyAndel2, lagtTilAvSaksbehandler2, refusjon2, fastsatt2, inntektskategori2);
 
         final boolean nyAndel3 = true;
         final boolean lagtTilAvSaksbehandler3 = true;
         Integer refusjon3 = 2000;
         Integer fastsatt3 = 30000;
         Inntektskategori inntektskategori3 = Inntektskategori.JORDBRUKER;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(null, arbId, andelsnr, nyAndel3, lagtTilAvSaksbehandler3, refusjon3, fastsatt3, inntektskategori3);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = lagFordeltAndel(null, arbId, andelsnr, nyAndel3, lagtTilAvSaksbehandler3, refusjon3, fastsatt3, inntektskategori3);
 
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode1 = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel3, fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1));
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode1 = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel3, fordeltAndel, fordeltAndel2), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1));
 
         final boolean nyAndel4 = false;
         final boolean lagtTilAvSaksbehandler4 = false;
         Integer refusjon4 = 10000;
         Integer fastsatt4 = 40000;
         Inntektskategori inntektskategori4 = Inntektskategori.SJØMANN;
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel4 = lagFordeltAndel(andel3, arbId2, andelsnr3, nyAndel4, lagtTilAvSaksbehandler4, refusjon4, fastsatt4, inntektskategori4);
-        FastsettBeregningsgrunnlagPeriodeDto endretPeriode2 = new FastsettBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel3, fordeltAndel, fordeltAndel4), SKJÆRINGSTIDSPUNKT.plusMonths(2), null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel4 = lagFordeltAndel(andel3, arbId2, andelsnr3, nyAndel4, lagtTilAvSaksbehandler4, refusjon4, fastsatt4, inntektskategori4);
+        FordelBeregningsgrunnlagPeriodeDto endretPeriode2 = new FordelBeregningsgrunnlagPeriodeDto(List.of(fordeltAndel3, fordeltAndel, fordeltAndel4), SKJÆRINGSTIDSPUNKT.plusMonths(2), null);
         FordelBeregningsgrunnlagDto dto = new FordelBeregningsgrunnlagDto(List.of(endretPeriode2, endretPeriode1));
 
         // Act

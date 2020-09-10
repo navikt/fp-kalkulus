@@ -10,12 +10,12 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -50,20 +50,20 @@ public class FordelRefusjonTjenesteTest {
     private final RedigerbarAndelDto ANDEL_LAGT_TIL_FORRIGE_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR2, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
     private final RedigerbarAndelDto ANDEL_NY_INFO = new RedigerbarAndelDto(true, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
 
-    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_NULL_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
 
     private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(BigDecimal.ZERO);
 
     private BeregningsgrunnlagPeriodeDto periode;
-    private FastsettBeregningsgrunnlagPeriodeDto endretPeriode;
-    private List<FastsettBeregningsgrunnlagAndelDto> andelListe = new ArrayList<>();
+    private FordelBeregningsgrunnlagPeriodeDto endretPeriode;
+    private List<FordelBeregningsgrunnlagAndelDto> andelListe = new ArrayList<>();
     private BeregningsgrunnlagDto oppdatertBg;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(FOM);
     private BeregningsgrunnlagInput input;
@@ -76,20 +76,20 @@ public class FordelRefusjonTjenesteTest {
         periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(FOM, TOM)
             .build(oppdatertBg);
-        endretPeriode = new FastsettBeregningsgrunnlagPeriodeDto(andelListe, FOM, TOM);
+        endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(andelListe, FOM, TOM);
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 
     @Test
     public void skal_filtrere_ut_andel_uten_arbeidsforhold() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_UTEN_ARBEID_LAGT_TIL_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_UTEN_ARBEID_LAGT_TIL_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
             Inntektskategori.DAGPENGER, null, 123_723);
         andelListe.add(fordeltAndel);
         lagDPAndelLagtTilAvSaksbehandler();
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
@@ -99,12 +99,12 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_sette_refusjon_lik_0_for_arbeidsforhold_uten_refusjonskrav() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 0, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 0, FORRIGE_ARBEIDSTINNTEKT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
@@ -113,7 +113,7 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_ikkje_fordele_refusjon_for_andeler_uten_arbeidsforhold() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
             Inntektskategori.ARBEIDSTAKER, 0, FORRIGE_ARBEIDSTINNTEKT);
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -124,7 +124,7 @@ public class FordelRefusjonTjenesteTest {
             .build(periode);
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
@@ -133,14 +133,14 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_endre_refusjon_for_en_andel_med_refusjon_fastsatt_større_enn_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,
             REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -149,14 +149,14 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_endre_refusjon_for_en_andel_med_refusjon_fastsatt_lik_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0,
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0,
             Inntektskategori.ARBEIDSTAKER, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -165,13 +165,13 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_ikkje_endre_refusjon_for_en_andel_uten_refusjon_fastsatt_lik_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_NULL_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_NULL_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
@@ -180,7 +180,7 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_sette_refusjon_lik_0_en_andel_med_refusjon_og_fastsatt_lik_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -189,7 +189,7 @@ public class FordelRefusjonTjenesteTest {
             .build(periode);
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
 
         // Assert
@@ -199,8 +199,8 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_2_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_med_lik_refusjon_og_fordeling_større_enn_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
@@ -224,7 +224,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -234,8 +234,8 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_2_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_med_lik_refusjon_og_ulik_fordeling_større_enn_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
@@ -255,7 +255,7 @@ public class FordelRefusjonTjenesteTest {
             new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;
@@ -268,8 +268,8 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_2_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_med_refusjon_lik_null_og_ulik_fordeling() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
@@ -291,7 +291,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;
@@ -304,9 +304,9 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_lik_fordeling_ulik_0() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, null, null, null);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
@@ -326,7 +326,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;
@@ -339,9 +339,9 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_ulik_fordeling() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN,null, null, null);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN,null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
@@ -361,7 +361,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;
@@ -376,9 +376,9 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_ulik_fordeling_refusjon_lik_null() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
@@ -401,7 +401,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;
@@ -416,9 +416,9 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_lik_fordeling_refusjon_lik_null() {
         // Arrange
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel = new FastsettBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,  2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel2 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
-        FastsettBeregningsgrunnlagAndelDto fordeltAndel3 = new FastsettBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,  2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
@@ -441,7 +441,7 @@ public class FordelRefusjonTjenesteTest {
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2* REFUSJONPRÅR;

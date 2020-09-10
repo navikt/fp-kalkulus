@@ -3,22 +3,16 @@ package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
-public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
+public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelFaktaOmBeregningDto {
 
     private FastsatteVerdierDto fastsatteVerdier;
     private Inntektskategori forrigeInntektskategori;
     private Integer forrigeRefusjonPrÅr;
     private Integer forrigeArbeidsinntektPrÅr;
 
-    FastsettBeregningsgrunnlagAndelDto() { // NOSONAR
-        // Jackson
-    }
-
-    public FastsettBeregningsgrunnlagAndelDto(RedigerbarAndelDto andelDto,
+    public FastsettBeregningsgrunnlagAndelDto(RedigerbarAndelFaktaOmBeregningDto andelDto,
                                               FastsatteVerdierDto fastsatteVerdier, Inntektskategori forrigeInntektskategori, Integer forrigeRefusjonPrÅr, Integer forrigeArbeidsinntektPrÅr) {
-        super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getReferanse(),
-                andelDto.getNyAndel(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
-                andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom());
+        super(andelDto.getAndelsnr().orElse(null), andelDto.getNyAndel(), andelDto.getAktivitetStatus().orElse(null), andelDto.getLagtTilAvSaksbehandler());
         this.fastsatteVerdier = fastsatteVerdier;
         this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;
         this.forrigeInntektskategori = forrigeInntektskategori;

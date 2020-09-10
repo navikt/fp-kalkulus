@@ -40,9 +40,6 @@ public class FastsettBeregningVerdierTjeneste {
         if (andel.getAndelsnr().isEmpty() && andel.getAktivitetStatus().isEmpty()) {
             throw new IllegalArgumentException("Enten andelsnr eller aktivitetstatus må vere satt.");
         }
-        if (andel.getAktivitetStatus().isPresent() && !andel.getNyAndel()) {
-            throw new IllegalArgumentException("Kun nye andeler kan identifiseres med aktivitetstatus");
-        }
         if (!andel.getLagtTilAvSaksbehandler() && !andel.getNyAndel() && andel.getAndelsnr().isEmpty()) {
             throw new IllegalArgumentException("Eksisterende andeler som ikkje er lagt til av saksbehandler må ha andelsnr.");
         }
@@ -77,11 +74,6 @@ public class FastsettBeregningVerdierTjeneste {
             .medBeregnetPrÅr(fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr())
             .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr() : null)
             .medFastsattAvSaksbehandler(true);
-        if (fastsatteVerdier.getRefusjonPrÅr() != null) {
-            BGAndelArbeidsforholdDto.Builder builder = korrektAndel.getBgAndelArbeidsforholdDtoBuilder()
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(fastsatteVerdier.getRefusjonPrÅr()));
-            korrektAndel.medBGAndelArbeidsforhold(builder);
-        }
         if (andel.getNyAndel() || andel.getLagtTilAvSaksbehandler()) {
             korrektAndel.nyttAndelsnr(korrektPeriode).medLagtTilAvSaksbehandler(true).build(korrektPeriode);
         }

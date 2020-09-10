@@ -10,7 +10,6 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregnin
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.OverstyrBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelFaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -69,12 +68,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
                 .finnOverlappendePeriodeOmKunEnFinnes(bgPeriode, forrigeBg);
             overstyrteAndeler
                 .forEach(andelDto ->
-                    FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(mapTilRedigerbarAndelDto(andelDto), andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
+                    FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(andelDto, andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
         }
     }
-
-    private RedigerbarAndelFaktaOmBeregningDto mapTilRedigerbarAndelDto(FastsettBeregningsgrunnlagAndelDto andelDto) {
-        return new RedigerbarAndelFaktaOmBeregningDto(false, andelDto.getAndelsnr(), andelDto.getLagtTilAvSaksbehandler());
-    }
-
 }

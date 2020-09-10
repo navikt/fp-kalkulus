@@ -14,19 +14,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
+public class FordelBeregningsgrunnlagAndelDto extends FordelRedigerbarAndelDto {
 
     @JsonProperty("fastsatteVerdier")
     @Valid
     @NotNull
-    private FastsatteVerdierDto fastsatteVerdier;
+    private FordelFastsatteVerdierDto fastsatteVerdier;
 
     @JsonProperty("forrigeInntektskategori")
     @Valid
@@ -44,16 +42,16 @@ public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
     @Max(Long.MAX_VALUE)
     private Integer forrigeArbeidsinntektPrÅr;
 
-    FastsettBeregningsgrunnlagAndelDto() { // NOSONAR
+    FordelBeregningsgrunnlagAndelDto() { // NOSONAR
         // Jackson
     }
 
 
-    public FastsettBeregningsgrunnlagAndelDto(@NotNull @Valid RedigerbarAndelDto andelDto,
-                                              @NotNull @Valid FastsatteVerdierDto fastsatteVerdier,
-                                              @Valid Inntektskategori forrigeInntektskategori,
-                                              @Valid Integer forrigeRefusjonPrÅr,
-                                              @Valid Integer forrigeArbeidsinntektPrÅr) {
+    public FordelBeregningsgrunnlagAndelDto(@NotNull @Valid FordelRedigerbarAndelDto andelDto,
+                                            @NotNull @Valid FordelFastsatteVerdierDto fastsatteVerdier,
+                                            @Valid Inntektskategori forrigeInntektskategori,
+                                            @Valid Integer forrigeRefusjonPrÅr,
+                                            @Valid Integer forrigeArbeidsinntektPrÅr) {
         super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getAbakusReferanse(),
                 andelDto.getNyAndel(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
                 andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom());
@@ -63,7 +61,7 @@ public class FastsettBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
         this.forrigeRefusjonPrÅr = forrigeRefusjonPrÅr;
     }
 
-    public FastsatteVerdierDto getFastsatteVerdier() {
+    public FordelFastsatteVerdierDto getFastsatteVerdier() {
         return fastsatteVerdier;
     }
 

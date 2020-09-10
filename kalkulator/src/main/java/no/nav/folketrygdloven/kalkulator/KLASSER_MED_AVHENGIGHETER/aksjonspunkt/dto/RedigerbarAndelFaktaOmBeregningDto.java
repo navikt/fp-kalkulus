@@ -31,6 +31,13 @@ public class RedigerbarAndelFaktaOmBeregningDto {
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
     }
 
+    public RedigerbarAndelFaktaOmBeregningDto(Long andelsnr, Boolean nyAndel, AktivitetStatus aktivitetStatus, Boolean lagtTilAvSaksbehandler) {
+        this.andelsnr = andelsnr;
+        this.nyAndel = nyAndel;
+        this.aktivitetStatus = aktivitetStatus;
+        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
+    }
+
     public Optional<AktivitetStatus> getAktivitetStatus() {
         return Optional.ofNullable(aktivitetStatus);
     }

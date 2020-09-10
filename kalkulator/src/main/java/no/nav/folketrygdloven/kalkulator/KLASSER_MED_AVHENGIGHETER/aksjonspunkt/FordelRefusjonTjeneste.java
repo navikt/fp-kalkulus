@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -33,11 +33,11 @@ public class FordelRefusjonTjeneste {
      * @param korrektPeriode periode fra beregningsgrunnlag
      * @return Map fra andel til refusjonsbeløp
      */
-    static Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> getRefusjonPrÅrMap(BeregningsgrunnlagInput input,
-                                                                           FastsettBeregningsgrunnlagPeriodeDto fordeltPeriode,
-                                                                           BeregningsgrunnlagPeriodeDto korrektPeriode) {
+    static Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> getRefusjonPrÅrMap(BeregningsgrunnlagInput input,
+                                                                                FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,
+                                                                                BeregningsgrunnlagPeriodeDto korrektPeriode) {
         Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> beløpMap = getTotalbeløpPrArbeidsforhold(input, fordeltPeriode, korrektPeriode);
-        Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = new HashMap<>();
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = new HashMap<>();
         fordeltPeriode.getAndeler()
             .stream()
             .filter(a -> a.getArbeidsgiverId() != null)
@@ -49,8 +49,8 @@ public class FordelRefusjonTjeneste {
     }
 
     private static void fordelRefusjonTilAndel(Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> beløpMap,
-                                               Map<FastsettBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
-                                               FastsettBeregningsgrunnlagAndelDto fordeltAndel,
+                                               Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                                               FordelBeregningsgrunnlagAndelDto fordeltAndel,
                                                BGAndelArbeidsforholdDto arbeidsforhold) {
         RefusjonOgFastsattBeløp refusjonOgFastsattBeløp = beløpMap.get(arbeidsforhold);
         if (refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr().compareTo(BigDecimal.ZERO) == 0 ||
@@ -64,7 +64,7 @@ public class FordelRefusjonTjeneste {
         refusjonMap.put(fordeltAndel, refusjonPrÅr);
     }
 
-    private static BigDecimal getAndelAvTotalRefusjonPrÅr(FastsettBeregningsgrunnlagAndelDto fordeltAndel,
+    private static BigDecimal getAndelAvTotalRefusjonPrÅr(FordelBeregningsgrunnlagAndelDto fordeltAndel,
                                                           RefusjonOgFastsattBeløp refusjonOgFastsattBeløp) {
         int fastsatt = fordeltAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr().intValue();
         BigDecimal totalFastsatt = refusjonOgFastsattBeløp.getTotalFastsattBeløpPrÅr();
@@ -74,7 +74,7 @@ public class FordelRefusjonTjeneste {
     }
 
     private static Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> getTotalbeløpPrArbeidsforhold(BeregningsgrunnlagInput input,
-                                                                                                        FastsettBeregningsgrunnlagPeriodeDto fordeltPeriode,
+                                                                                                        FordelBeregningsgrunnlagPeriodeDto fordeltPeriode,
                                                                                                         BeregningsgrunnlagPeriodeDto korrektPeriode) {
         Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap = new HashMap<>();
         fordeltPeriode.getAndeler()
@@ -89,7 +89,7 @@ public class FordelRefusjonTjeneste {
 
     private static void leggTilFastsattFordeling(BeregningsgrunnlagInput input,
                                                  Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap,
-                                                 FastsettBeregningsgrunnlagAndelDto fordeltAndel) {
+                                                 FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         BGAndelArbeidsforholdDto korrektArbeidsforhold = getKorrektArbeidsforhold(input, fordeltAndel);
         BigDecimal fastsattBeløpPrÅr = fordeltAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr();
         settEllerOppdaterFastsattBeløp(arbeidsforholdRefusjonMap, korrektArbeidsforhold, fastsattBeløpPrÅr);
@@ -107,7 +107,7 @@ public class FordelRefusjonTjeneste {
     }
 
     private static void leggTilRefusjon(BeregningsgrunnlagInput input, BeregningsgrunnlagPeriodeDto korrektPeriode, Map<BGAndelArbeidsforholdDto,
-        RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, FastsettBeregningsgrunnlagAndelDto fordeltAndel) {
+        RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         if (fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr() == null) {
             leggTilForKunEndretFordeling(korrektPeriode, arbeidsforholdRefusjonMap, fordeltAndel);
         } else {
@@ -117,14 +117,14 @@ public class FordelRefusjonTjeneste {
 
     private static void leggTilForEndretFordelingOgRefusjon(BeregningsgrunnlagInput input,
                                                             Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap,
-                                                            FastsettBeregningsgrunnlagAndelDto fordeltAndel) {
+                                                            FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         var korrektArbeidsforhold = getKorrektArbeidsforhold(input, fordeltAndel);
         BigDecimal refusjonskravPrÅr = BigDecimal.valueOf(fordeltAndel.getFastsatteVerdier().getRefusjonPrÅr());
         settEllerOppdaterTotalRefusjon(arbeidsforholdRefusjonMap, korrektArbeidsforhold, refusjonskravPrÅr);
     }
 
     private static void leggTilForKunEndretFordeling(BeregningsgrunnlagPeriodeDto korrektPeriode,
-                                                     Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, FastsettBeregningsgrunnlagAndelDto fordeltAndel) {
+                                                     Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         if (!fordeltAndel.getLagtTilAvSaksbehandler()) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndelOpt = korrektPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> andel.getAndelsnr().equals(fordeltAndel.getAndelsnr())).findFirst();
@@ -152,7 +152,7 @@ public class FordelRefusjonTjeneste {
         }
     }
 
-    private static BGAndelArbeidsforholdDto getKorrektArbeidsforhold(BeregningsgrunnlagInput input, FastsettBeregningsgrunnlagAndelDto fordeltAndel) {
+    private static BGAndelArbeidsforholdDto getKorrektArbeidsforhold(BeregningsgrunnlagInput input, FordelBeregningsgrunnlagAndelDto fordeltAndel) {
         var arbeidsforholdId = fordeltAndel.getArbeidsforholdId();
         var arbeidsgiverId = fordeltAndel.getArbeidsgiverId();
         return MatchBeregningsgrunnlagTjeneste.matchArbeidsforholdIAktivtGrunnlag(input, arbeidsgiverId, arbeidsforholdId)

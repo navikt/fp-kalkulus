@@ -39,10 +39,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivite
  */
 public class KalkulatorTilEntitetMapper {
 
-    public static BeregningsgrunnlagTilstand mapTilstand(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        return BeregningsgrunnlagTilstand.fraKode(beregningsgrunnlagTilstand.getKode());
-    }
-
     public static BeregningsgrunnlagEntitet mapBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus) {
         BeregningsgrunnlagEntitet.Builder builder = BeregningsgrunnlagEntitet.builder();
 

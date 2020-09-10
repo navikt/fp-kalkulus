@@ -1,0 +1,44 @@
+package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling;
+
+
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+
+public class FordelBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
+
+    private FordelFastsatteVerdierDto fastsatteVerdier;
+    private Inntektskategori forrigeInntektskategori;
+    private Integer forrigeRefusjonPrÅr;
+    private Integer forrigeArbeidsinntektPrÅr;
+
+    FordelBeregningsgrunnlagAndelDto() { // NOSONAR
+        // Jackson
+    }
+
+    public FordelBeregningsgrunnlagAndelDto(RedigerbarAndelDto andelDto,
+                                            FordelFastsatteVerdierDto fastsatteVerdier,
+                                            Inntektskategori forrigeInntektskategori, Integer forrigeRefusjonPrÅr, Integer forrigeArbeidsinntektPrÅr) {
+        super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getReferanse(),
+                andelDto.getNyAndel(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
+                andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom());
+        this.fastsatteVerdier = fastsatteVerdier;
+        this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;
+        this.forrigeInntektskategori = forrigeInntektskategori;
+        this.forrigeRefusjonPrÅr = forrigeRefusjonPrÅr;
+    }
+
+    public FordelFastsatteVerdierDto getFastsatteVerdier() {
+        return fastsatteVerdier;
+    }
+
+    public Inntektskategori getForrigeInntektskategori() {
+        return forrigeInntektskategori;
+    }
+
+    public Integer getForrigeRefusjonPrÅr() {
+        return forrigeRefusjonPrÅr;
+    }
+
+    public Integer getForrigeArbeidsinntektPrÅr() {
+        return forrigeArbeidsinntektPrÅr;
+    }
+}

@@ -18,12 +18,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class FastsettBeregningsgrunnlagPeriodeDto {
+public class FordelBeregningsgrunnlagPeriodeDto {
 
     @JsonProperty("andeler")
     @Valid
     @Size(min = 1)
-    private List<FastsettBeregningsgrunnlagAndelDto> andeler;
+    private List<FordelBeregningsgrunnlagAndelDto> andeler;
 
     @JsonProperty("fom")
     @Valid
@@ -35,11 +35,11 @@ public class FastsettBeregningsgrunnlagPeriodeDto {
     @NotNull
     private LocalDate tom;
 
-    public FastsettBeregningsgrunnlagPeriodeDto() {
+    public FordelBeregningsgrunnlagPeriodeDto() {
         // For Json deserialisering
     }
 
-    public FastsettBeregningsgrunnlagPeriodeDto(List<FastsettBeregningsgrunnlagAndelDto> andeler, LocalDate fom, LocalDate tom) { // NOSONAR
+    public FordelBeregningsgrunnlagPeriodeDto(List<FordelBeregningsgrunnlagAndelDto> andeler, LocalDate fom, LocalDate tom) { // NOSONAR
         this.andeler = andeler;
         this.fom = fom;
         this.tom = tom;
@@ -53,7 +53,7 @@ public class FastsettBeregningsgrunnlagPeriodeDto {
         return tom;
     }
 
-    public List<FastsettBeregningsgrunnlagAndelDto> getAndeler() {
+    public List<FordelBeregningsgrunnlagAndelDto> getAndeler() {
         return andeler;
     }
 
