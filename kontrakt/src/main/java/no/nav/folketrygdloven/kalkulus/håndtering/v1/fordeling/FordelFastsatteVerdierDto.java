@@ -38,6 +38,7 @@ public class FordelFastsatteVerdierDto {
     @NotNull
     private Inntektskategori inntektskategori;
 
+    @JsonProperty("fastsattÅrsbeløpInklNaturalytelse")
     @Min(0)
     @Max(Integer.MAX_VALUE)
     @NotNull
