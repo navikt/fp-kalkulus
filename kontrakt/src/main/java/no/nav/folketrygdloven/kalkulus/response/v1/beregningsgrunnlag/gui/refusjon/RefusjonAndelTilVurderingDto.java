@@ -43,6 +43,10 @@ public class RefusjonAndelTilVurderingDto {
     private LocalDate fastsattNyttRefusjonskravFom;
 
     @Valid
+    @JsonProperty("tidligsteMuligeRefusjonsdato")
+    private LocalDate tidligsteMuligeRefusjonsdato;
+
+    @Valid
     @JsonProperty("arbeidsgiverId")
     private Arbeidsgiver arbeidsgiverId;
 
@@ -125,6 +129,14 @@ public class RefusjonAndelTilVurderingDto {
         this.arbeidsgiverNavn = arbeidsgiverNavn;
     }
 
+    public LocalDate getTidligsteMuligeRefusjonsdato() {
+        return tidligsteMuligeRefusjonsdato;
+    }
+
+    public void setTidligsteMuligeRefusjonsdato(LocalDate tidligsteMuligeRefusjonsdato) {
+        this.tidligsteMuligeRefusjonsdato = tidligsteMuligeRefusjonsdato;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -136,6 +148,7 @@ public class RefusjonAndelTilVurderingDto {
                 Objects.equals(arbeidsgiverNavn, that.arbeidsgiverNavn) &&
                 Objects.equals(fastsattNyttRefusjonskravFom, that.fastsattNyttRefusjonskravFom) &&
                 Objects.equals(arbeidsgiverId, that.arbeidsgiverId) &&
+                Objects.equals(tidligsteMuligeRefusjonsdato, that.tidligsteMuligeRefusjonsdato) &&
                 Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
                 Objects.equals(eksternArbeidsforholdRef, that.eksternArbeidsforholdRef);
     }
@@ -149,6 +162,7 @@ public class RefusjonAndelTilVurderingDto {
                 fastsattNyttRefusjonskravFom,
                 arbeidsgiverId,
                 internArbeidsforholdRef,
-                eksternArbeidsforholdRef);
+                eksternArbeidsforholdRef,
+                tidligsteMuligeRefusjonsdato);
     }
 }

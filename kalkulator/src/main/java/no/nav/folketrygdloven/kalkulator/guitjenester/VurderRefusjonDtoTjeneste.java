@@ -47,7 +47,7 @@ public class VurderRefusjonDtoTjeneste {
                 .orElse(Collections.emptyList());
         List<RefusjonAndelTilVurderingDto> dtoer = tilkomneInntektsmeldinger.stream()
                 .filter(im -> im.getStartDatoPermisjon().isPresent())
-                .map(im -> lagDto(orginaltBG, im, agOpplysninger, gjeldendeOverstyringer))
+                .map(im -> lagDto(orginaltBG, im, agOpplysninger, gjeldendeOverstyringer, input.getSkjæringstidspunktForBeregning()))
                 .collect(Collectors.toList());
         return dtoer.isEmpty() ? Optional.empty() : Optional.of(new RefusjonTilVurderingDto(dtoer));
 
@@ -56,7 +56,8 @@ public class VurderRefusjonDtoTjeneste {
     private static RefusjonAndelTilVurderingDto lagDto(BeregningsgrunnlagDto orginaltBG,
                                                        InntektsmeldingDto im,
                                                        List<ArbeidsgiverOpplysningerDto> agOpplysninger,
-                                                       List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer) {
+                                                       List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer,
+                                                       LocalDate skjæringstidspunktForBeregning) {
         RefusjonAndelTilVurderingDto dto = new RefusjonAndelTilVurderingDto();
         Arbeidsgiver ag = mapArbeidsgiver(im);
         dto.setArbeidsgiverId(ag);
@@ -66,9 +67,20 @@ public class VurderRefusjonDtoTjeneste {
         mapArbeidsgivernavn(im, agOpplysninger).ifPresent(ago -> dto.setArbeidsgiverNavn(ago.getNavn()));
         List<TidligereUtbetalingDto> tidligereUtbetalinger = finnTidligereUtbetalinger(im, orginaltBG);
         dto.setTidligereUtbetalinger(tidligereUtbetalinger);
+
+        Optional<LocalDate> tidligsteMuligeRefusjonsdato = getTidligsteMuligeRefusjonsdato(im, gjeldendeOvertyringer);
+        dto.setTidligsteMuligeRefusjonsdato(tidligsteMuligeRefusjonsdato.orElse(skjæringstidspunktForBeregning));
         Optional<LocalDate> fastsattDato = getFastsattRefusjonsdato(im, gjeldendeOvertyringer);
         fastsattDato.ifPresent(dto::setFastsattNyttRefusjonskravFom);
+
         return dto;
+    }
+
+    private static Optional<LocalDate> getTidligsteMuligeRefusjonsdato(InntektsmeldingDto im, List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer) {
+        return gjeldendeOvertyringer.stream()
+                .filter(os -> os.getArbeidsgiver().getIdentifikator().equals(im.getArbeidsgiver().getIdentifikator()))
+                .findFirst()
+                .flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
     }
 
     private static Optional<ArbeidsgiverOpplysningerDto> mapArbeidsgivernavn(InntektsmeldingDto im, List<ArbeidsgiverOpplysningerDto> agOpplysninger) {

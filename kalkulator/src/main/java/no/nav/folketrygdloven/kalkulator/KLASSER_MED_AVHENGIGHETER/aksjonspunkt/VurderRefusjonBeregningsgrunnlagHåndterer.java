@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,8 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
             if (eksisterendeOverstyringForAG.isPresent()) {
                 BeregningRefusjonOverstyringDto eksisterendeOverstyring = eksisterendeOverstyringForAG.get();
 
+                validerStartdato(eksisterendeOverstyring, entry.getValue());
+
                 List<BeregningRefusjonPeriodeDto> nyeRefusjonsperioder = lagListeMedRefusjonsperioder(entry.getValue());
                 List<BeregningRefusjonPeriodeDto> eksisterendeOverstyrtePerioder = eksisterendeOverstyring.getRefusjonPerioder()
                         .stream()
@@ -66,6 +69,16 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
             }
         }
         return liste;
+    }
+
+    private static void validerStartdato(BeregningRefusjonOverstyringDto eksisterendeOverstyring, List<VurderRefusjonAndelBeregningsgrunnlagDto> avklarteStartdatoer) {
+        if (eksisterendeOverstyring.getFørsteMuligeRefusjonFom().isPresent()) {
+            LocalDate tidligsteStartdato = eksisterendeOverstyring.getFørsteMuligeRefusjonFom().get();
+            Optional<VurderRefusjonAndelBeregningsgrunnlagDto> ugyldigOverstyring = avklarteStartdatoer.stream().filter(os -> os.getFastsattRefusjonFom().isBefore(tidligsteStartdato)).findFirst();
+            if (ugyldigOverstyring.isPresent()) {
+                throw VurderRefusjonBeregningsgrunnlagHåndtererFeil.FACTORY.ugyldigStartdatoFeil(ugyldigOverstyring.get().getFastsattRefusjonFom(), tidligsteStartdato).toException();
+            }
+        }
     }
 
     private static BeregningRefusjonOverstyringDto lagNyOverstyring(Arbeidsgiver ag, List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {

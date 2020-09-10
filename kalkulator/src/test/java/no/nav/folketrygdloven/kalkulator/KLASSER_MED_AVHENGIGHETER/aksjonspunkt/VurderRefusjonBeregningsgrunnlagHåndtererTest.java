@@ -12,10 +12,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
@@ -137,7 +137,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
     }
 
     private void lagTidligereOverstyringBeregningsgrunnlag(Arbeidsgiver ag) {
-        BeregningRefusjonOverstyringDto refOS = new BeregningRefusjonOverstyringDto(ag, LocalDate.now());
+        BeregningRefusjonOverstyringDto refOS = new BeregningRefusjonOverstyringDto(ag, LocalDate.of(2020,4,1));
         eksisterendeOverstyringer = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refOS).build();
     }
 
