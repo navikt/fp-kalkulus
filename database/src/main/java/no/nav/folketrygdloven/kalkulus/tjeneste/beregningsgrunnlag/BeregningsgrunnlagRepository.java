@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -339,6 +340,13 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 
+    public List<KalkulatorInputEntitet> hentHvisEksistererKalkulatorInput(Collection<Long> koblingId) {
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId IN (:koblingId) and aktiv =:aktiv", KalkulatorInputEntitet.class);
+        query.setParameter("koblingId", koblingId); //$NON-NLS-1$
+        query.setParameter("aktiv", true); //$NON-NLS-1$
+        return query.getResultList();
+    }
+    
     public boolean hvisEksistererKalkulatorInput(Long koblingId) {
         Number n = (Number) entityManager
             .createQuery("select count(*) from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv")

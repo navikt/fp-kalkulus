@@ -15,4 +15,7 @@ public interface KalkulatorInputFeil extends DeklarerteFeil {
 
     @TekniskFeil(feilkode = "FT-KALKULUS-INPUT-1000002", feilmelding = "Kalkulus klarte ikke lagre ned input for koblingId: %s", logLevel = LogLevel.ERROR)
     Feil kalkulusKlarteIkkeLagreNedInput(Long koblingId);
+
+    @TekniskFeil(feilkode = "FT-KALKULUS-INPUT-1000003", feilmelding = "Kalkulus finner ikke kobling: %s", logLevel = LogLevel.ERROR)
+    Feil kalkulusFinnerIkkeKobling(Long koblingId);
 }

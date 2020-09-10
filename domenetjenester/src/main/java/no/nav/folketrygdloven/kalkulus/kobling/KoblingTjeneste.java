@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kobling;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -40,7 +42,7 @@ public class KoblingTjeneste {
     }
 
     public KoblingEntitet hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
-        return repository.hentSisteKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
+        return repository.hentKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
     }
 
     public Long hentKoblingId(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
@@ -55,10 +57,10 @@ public class KoblingTjeneste {
         return repository.hentFor(referanse, ytelseType);
     }
 
-    public Optional<KoblingEntitet> hentSisteFor(AktørId aktørId, Saksnummer saksnummer, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
-        return repository.hentSisteKoblingReferanseFor(aktørId, saksnummer, ytelseTyperKalkulusStøtter);
+    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, Collection<YtelseTyperKalkulusStøtter> ytelseSomSkalBeregnes) {
+        return repository.hentKoblingerFor(koblingReferanser, ytelseSomSkalBeregnes);
     }
-
+    
     public void lagre(KoblingEntitet kobling) {
         repository.lagre(kobling);
     }
@@ -83,5 +85,6 @@ public class KoblingTjeneste {
     public void oppdaterLåsVersjon(KoblingLås lås) {
         låsRepository.oppdaterLåsVersjon(lås);
     }
+
 
 }
