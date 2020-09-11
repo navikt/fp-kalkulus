@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
-public class BeregningsgrunnlagRestInput {
+public class BeregningsgrunnlagGUIInput {
 
     /** Aktiviteter for graderign av uttak. */
     private final AktivitetGradering aktivitetGradering;
@@ -50,11 +50,11 @@ public class BeregningsgrunnlagRestInput {
     private BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag;
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
-    private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
+    private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
-    public BeregningsgrunnlagRestInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
+    public BeregningsgrunnlagGUIInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
         this.koblingReferanse = input.getKoblingReferanse();
         InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(input.getIayGrunnlag());
         arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
@@ -70,11 +70,11 @@ public class BeregningsgrunnlagRestInput {
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
     }
 
-    public BeregningsgrunnlagRestInput(KoblingReferanse koblingReferanse,
-                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                       AktivitetGradering aktivitetGradering,
-                                       List<RefusjonskravDatoDto> refusjonskravDatoer,
-                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+    public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
+                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                      AktivitetGradering aktivitetGradering,
+                                      List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.aktivitetGradering = aktivitetGradering;
@@ -82,12 +82,12 @@ public class BeregningsgrunnlagRestInput {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
-    public BeregningsgrunnlagRestInput(KoblingReferanse koblingReferanse,
-                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                       AktivitetGradering aktivitetGradering,
-                                       List<RefusjonskravDatoDto> refusjonskravDatoer,
-                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                       BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag) {
+    public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
+                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                      AktivitetGradering aktivitetGradering,
+                                      List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                      BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.aktivitetGradering = aktivitetGradering;
@@ -95,9 +95,10 @@ public class BeregningsgrunnlagRestInput {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
         this.faktaOmBeregningPreutfyllingsgrunnlag = faktaOmBeregningPreutfyllingsgrunnlag;
     }
-    private BeregningsgrunnlagRestInput(BeregningsgrunnlagRestInput input) {
+    private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
         this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
@@ -172,8 +173,23 @@ public class BeregningsgrunnlagRestInput {
         return (V) ytelsespesifiktGrunnlag;
     }
 
-    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        var newInput = new BeregningsgrunnlagRestInput(this);
+    /**
+     * Oppdaterer iaygrunnlag med informasjon om arbeidsgiver og referanser for visning
+     *
+     * @param arbeidsgiverOpplysninger arbeidsgiveropplysninger (fra abakus og ereg)
+     * @param referanser Referanser
+     */
+    public void oppdaterArbeidsgiverinformasjon( List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
+        InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(iayGrunnlag);
+        arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
+        ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonDtoBuilder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.ofNullable(oppdatere.getInformasjon()));
+        referanser.forEach(arbeidsforholdInformasjonDtoBuilder::leggTilNyReferanse);
+        oppdatere.medInformasjon(arbeidsforholdInformasjonDtoBuilder.build());
+        this.iayGrunnlag = oppdatere.build();
+    }
+
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlag = grunnlag;
         newInput = grunnlag.getBeregningsgrunnlag()
             .map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
@@ -182,23 +198,23 @@ public class BeregningsgrunnlagRestInput {
         return newInput;
     }
 
-    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        var newInput = new BeregningsgrunnlagRestInput(this);
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
         return newInput;
     }
 
-    public BeregningsgrunnlagRestInput medBeregningsgrunnlagGrunnlagFraFordel(BeregningsgrunnlagGrunnlagDto grunnlag) {
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraFordel(BeregningsgrunnlagGrunnlagDto grunnlag) {
         if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
             throw new IllegalArgumentException("Grunnlaget er ikke fra fordel.");
         }
-        var newInput = new BeregningsgrunnlagRestInput(this);
+        var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.fordelBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 
-    private BeregningsgrunnlagRestInput medSkjæringstidspunktForBeregning(LocalDate skjæringstidspunkt) {
-        var newInput = new BeregningsgrunnlagRestInput(this);
+    private BeregningsgrunnlagGUIInput medSkjæringstidspunktForBeregning(LocalDate skjæringstidspunkt) {
+        var newInput = new BeregningsgrunnlagGUIInput(this);
         var nyttSkjæringstidspunkt = Skjæringstidspunkt.builder(this.koblingReferanse.getSkjæringstidspunkt()).medSkjæringstidspunktBeregning(skjæringstidspunkt).build();
         newInput.koblingReferanse = this.koblingReferanse.medSkjæringstidspunkt(nyttSkjæringstidspunkt);
         return newInput;

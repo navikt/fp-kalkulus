@@ -9,7 +9,7 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
@@ -31,7 +31,7 @@ public class FaktaOmBeregningDtoTjeneste {
     }
 
     // TODO (Denne burde splittes i ein del som krever bg og ein del som ikkje krever det)
-    public Optional<FaktaOmBeregningDto> lagDto(BeregningsgrunnlagRestInput input) {
+    public Optional<FaktaOmBeregningDto> lagDto(BeregningsgrunnlagGUIInput input) {
         FaktaOmBeregningDto faktaOmBeregningDto = new FaktaOmBeregningDto();
         var grunnlagEntitet = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto registerAktivitetAggregat = Optional.ofNullable(grunnlagEntitet.getRegisterAktiviteter())
@@ -57,7 +57,7 @@ public class FaktaOmBeregningDtoTjeneste {
         return !beregningsgrunnlag.getFaktaOmBeregningTilfeller().isEmpty();
     }
 
-    private void utledDtoerForTilfeller(BeregningsgrunnlagRestInput input,
+    private void utledDtoerForTilfeller(BeregningsgrunnlagGUIInput input,
                                         FaktaOmBeregningDto faktaOmBeregningDto) {
         dtoTjenester.forEach(dtoTjeneste -> dtoTjeneste.lagDto(input, faktaOmBeregningDto));
     }

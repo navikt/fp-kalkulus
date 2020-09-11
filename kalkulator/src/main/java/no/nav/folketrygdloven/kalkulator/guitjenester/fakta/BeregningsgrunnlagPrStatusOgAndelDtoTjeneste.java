@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -43,8 +43,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         // Skjul
     }
 
-    public List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagRestInput input,
-                                                                                                     List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
+    public List<BeregningsgrunnlagPrStatusOgAndelDto> lagBeregningsgrunnlagPrStatusOgAndelDto(BeregningsgrunnlagGUIInput input,
+                                                                                              List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList) {
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> usortertDtoList = new ArrayList<>();
         for (no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel : beregningsgrunnlagPrStatusOgAndelList) {
@@ -63,8 +63,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return dtoList;
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto lagDto(BeregningsgrunnlagRestInput input,
-                                                               no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private BeregningsgrunnlagPrStatusOgAndelDto lagDto(BeregningsgrunnlagGUIInput input,
+                                                        no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var iayGrunnlag = input.getIayGrunnlag();
         var inntektsmeldinger = input.getInntektsmeldinger();
         var ref = input.getKoblingReferanse();
@@ -116,7 +116,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         return dto;
     }
 
-    private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagRestInput input,
+    private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagGUIInput input,
                                                     no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
         return FagsakYtelseTypeRef.Lookup.find(fastsettGrunnlag, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for om grunnlag skal fastsettes for BehandlingReferanse " + input.getKoblingReferanse()))

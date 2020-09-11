@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -59,7 +59,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagRestInput(lagReferanse(), null, null, List.of(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 
@@ -89,7 +89,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagRestInput(lagReferanse(), null, null, List.of(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 

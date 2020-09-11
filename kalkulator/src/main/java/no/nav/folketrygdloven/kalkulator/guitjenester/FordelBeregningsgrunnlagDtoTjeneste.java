@@ -5,11 +5,10 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 
 import java.util.Comparator;
 import java.util.List;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagPeriodeDto;
@@ -24,7 +23,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
         // Skjul
     }
 
-    public static void lagDto(BeregningsgrunnlagRestInput input,
+    public static void lagDto(BeregningsgrunnlagGUIInput input,
                               FordelingDto dto) {
         boolean harUtførtSteg = input.getFordelBeregningsgrunnlag().isPresent();
         if (!harUtførtSteg) {
@@ -36,7 +35,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
         dto.setFordelBeregningsgrunnlag(bgDto);
     }
 
-    private static List<FordelBeregningsgrunnlagPeriodeDto> lagPerioder(BeregningsgrunnlagRestInput input) {
+    private static List<FordelBeregningsgrunnlagPeriodeDto> lagPerioder(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<BeregningsgrunnlagPeriodeDto> bgPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         List<FordelBeregningsgrunnlagPeriodeDto> fordelPerioder = bgPerioder.stream()
@@ -45,7 +44,7 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
         return fordelPerioder;
     }
 
-    private static FordelBeregningsgrunnlagPeriodeDto mapTilPeriodeDto(BeregningsgrunnlagRestInput input,
+    private static FordelBeregningsgrunnlagPeriodeDto mapTilPeriodeDto(BeregningsgrunnlagGUIInput input,
                                                                        BeregningsgrunnlagPeriodeDto periode,
                                                                        Beløp grunnbeløp) {
         FordelBeregningsgrunnlagPeriodeDto fordelBGPeriode = new FordelBeregningsgrunnlagPeriodeDto();
@@ -56,14 +55,14 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
         return fordelBGPeriode;
     }
 
-    private static void settEndretArbeidsforholdDto(BeregningsgrunnlagRestInput input, FordelBeregningsgrunnlagDto bgDto) {
+    private static void settEndretArbeidsforholdDto(BeregningsgrunnlagGUIInput input, FordelBeregningsgrunnlagDto bgDto) {
         RefusjonEllerGraderingArbeidsforholdDtoTjeneste
                 .lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(input, input.getSkjæringstidspunktForBeregning())
                 .forEach(bgDto::leggTilArbeidsforholdTilFordeling);
     }
 
     private static List<FordelBeregningsgrunnlagAndelDto> lagFordelBGAndeler(FordelBeregningsgrunnlagPeriodeDto fordelBGPeriode,
-                                                                             BeregningsgrunnlagRestInput input,
+                                                                             BeregningsgrunnlagGUIInput input,
                                                                              BeregningsgrunnlagPeriodeDto periode,
                                                                              Beløp grunnbeløp) {
         var aktivitetGradering = input.getAktivitetGradering();

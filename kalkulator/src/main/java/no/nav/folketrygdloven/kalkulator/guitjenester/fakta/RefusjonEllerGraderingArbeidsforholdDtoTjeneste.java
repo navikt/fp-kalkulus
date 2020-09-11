@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulator.fordeling.FordelingTilfelle;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -36,7 +36,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         // Skjul
     }
 
-    public static List<FordelBeregningsgrunnlagArbeidsforholdDto> lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(BeregningsgrunnlagRestInput input, LocalDate skjæringstidspunktForBeregning) {
+    public static List<FordelBeregningsgrunnlagArbeidsforholdDto> lagListeMedDtoForArbeidsforholdSomSøkerRefusjonEllerGradering(BeregningsgrunnlagGUIInput input, LocalDate skjæringstidspunktForBeregning) {
         List<BeregningsgrunnlagPeriodeDto> perioder = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         FordelBeregningsgrunnlagTilfelleInput fordelingInput = FordelBeregningsgrunnlagTilfelleInput.fraBeregningsgrunnlagRestInput(input);
         var tilfelleMap = finnFordelingTilfelleMap(input.getBeregningsgrunnlag(), fordelingInput);
@@ -66,7 +66,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         return tilfelleMap;
     }
 
-    private static Optional<FordelBeregningsgrunnlagArbeidsforholdDto> mapTilEndretArbeidsforholdDto(BeregningsgrunnlagRestInput input,
+    private static Optional<FordelBeregningsgrunnlagArbeidsforholdDto> mapTilEndretArbeidsforholdDto(BeregningsgrunnlagGUIInput input,
                                                                                                      Map.Entry<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> tilfelleEntry,
                                                                                                      LocalDate stp, List<BeregningsgrunnlagPeriodeDto> perioder) {
         BeregningsgrunnlagPrStatusOgAndelDto andel = tilfelleEntry.getKey();

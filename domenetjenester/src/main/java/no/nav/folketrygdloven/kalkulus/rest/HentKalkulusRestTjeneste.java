@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,10 +29,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
-import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -190,7 +186,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
             .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputForKobling(koblingId.get());
+        BeregningsgrunnlagGUIInput input = kalkulatorInputTjeneste.lagInputForKoblinger(List.of(koblingId.get())).iterator().next();
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
             .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
             .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
@@ -235,20 +231,19 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseSomSkalBeregnes);
         var koblingIds = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
 
-        List<BeregningsgrunnlagInput> beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputForKobling(koblingIds);
+        List<BeregningsgrunnlagGUIInput> beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputForKoblinger(koblingIds);
         return beregningsgrunnlagInput.stream().collect(Collectors.toMap(
             input -> input.getKoblingReferanse().getKoblingUuid(),
             input -> mapTilDto(spesifikasjoner, input)));
     }
 
-    private BeregningsgrunnlagDto mapTilDto(List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagInput input) {
+    private BeregningsgrunnlagDto mapTilDto(List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagGUIInput input) {
         var spesifikasjon = spesifikasjoner.stream().filter(s -> s.getKoblingReferanse().equals(input.getKoblingReferanse().getKoblingUuid()))
             .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
-        Set<ArbeidsforholdReferanseDto> referanser = MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser());
-        List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = MapIAYTilKalulator
-            .mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger());
-        BeregningsgrunnlagRestInput restInput = new BeregningsgrunnlagRestInput(input, arbeidsgiverOpplysninger, referanser);
-        BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(restInput);
+        input.oppdaterArbeidsgiverinformasjon(
+                MapIAYTilKalulator.mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger()),
+                MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
+        BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
         beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
         return beregningsgrunnlagDto;
     }

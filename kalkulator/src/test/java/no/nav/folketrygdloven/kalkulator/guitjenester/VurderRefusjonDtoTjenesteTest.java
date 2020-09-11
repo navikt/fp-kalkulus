@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -49,7 +49,7 @@ class VurderRefusjonDtoTjenesteTest {
     private BeregningsgrunnlagDto beregningsgrunnlagOrginal;
     private BeregningsgrunnlagPeriodeDto bgPeriodeOrginal;
     private InntektArbeidYtelseGrunnlagDto iay;
-    private BeregningsgrunnlagRestInput input;
+    private BeregningsgrunnlagGUIInput input;
     private BeregningRefusjonOverstyringerDto.Builder refusjonOverstyringerBuilder;
 
     @BeforeEach
@@ -209,7 +209,7 @@ class VurderRefusjonDtoTjenesteTest {
             grunnlag.medRefusjonOverstyring(refusjonOverstyringerBuilder.build());
         }
         BeregningsgrunnlagGrunnlagDto byggetGrunnlag = grunnlag.build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
-        input = new BeregningsgrunnlagRestInput(koblingReferanse, iay, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, AktivitetGradering.INGEN_GRADERING, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(byggetGrunnlag)
                 .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
     }

@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -30,7 +30,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
 
 
     @Override
-    public void lagDto(BeregningsgrunnlagRestInput input,
+    public void lagDto(BeregningsgrunnlagGUIInput input,
                        FaktaOmBeregningDto faktaOmBeregningDto) {
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         if (beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE)) {
@@ -38,7 +38,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         }
     }
 
-    KunYtelseDto lagKunYtelseDto(BeregningsgrunnlagRestInput input) {
+    KunYtelseDto lagKunYtelseDto(BeregningsgrunnlagGUIInput input) {
         KunYtelseDto dto = new KunYtelseDto();
 
         dto.setErBesteberegning(harBesteberegning(input.getBeregningsgrunnlag(), input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand()));

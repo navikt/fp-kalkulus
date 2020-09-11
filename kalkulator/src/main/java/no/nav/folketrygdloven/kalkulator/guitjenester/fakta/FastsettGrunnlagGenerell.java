@@ -8,7 +8,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -24,7 +24,7 @@ public class FastsettGrunnlagGenerell {
                 SammenligningsgrunnlagType.SAMMENLIGNING_SN, no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
-    public boolean skalGrunnlagFastsettes(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
+    public boolean skalGrunnlagFastsettes(BeregningsgrunnlagGUIInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel){
         if(finnesIngenSammenligningsgrunnlagPrStatus(input)){
             return skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(input, andel, input.getBeregningsgrunnlag().getSammenligningsgrunnlag());
         }
@@ -46,11 +46,11 @@ public class FastsettGrunnlagGenerell {
                 .anyMatch(s -> erAvvikStørreEnn25Prosent(s.getAvvikPromilleNy()));
     }
 
-    private static boolean finnesIngenSammenligningsgrunnlagPrStatus(BeregningsgrunnlagRestInput input){
+    private static boolean finnesIngenSammenligningsgrunnlagPrStatus(BeregningsgrunnlagGUIInput input){
         return input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().isEmpty();
     }
 
-    private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagRestInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private static boolean skalGrunnlagFastsettesForSN(BeregningsgrunnlagGUIInput input, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         Optional<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatus =  input.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().stream()
                 .filter(s -> no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(SAMMENLIGNINGSGRUNNLAGTYPE_AKTIVITETSTATUS_MAP.get(s.getSammenligningsgrunnlagType())))
                 .findAny();
@@ -60,9 +60,9 @@ public class FastsettGrunnlagGenerell {
         return Boolean.TRUE.equals(andel.getNyIArbeidslivet());
     }
 
-    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
-                                                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                                   SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus){
+    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagGUIInput input,
+                                                                                  no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                                  SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus){
         if(finnesSelvstendigNæringsdrivendeAndel(input)) {
             if(andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
                 return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy()) || Boolean.TRUE.equals(andel.getNyIArbeidslivet());
@@ -73,7 +73,7 @@ public class FastsettGrunnlagGenerell {
         return erAvvikStørreEnn25Prosent(sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
     }
 
-    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagRestInput input,
+    private static boolean skalGrunnlagFastsettesForGammeltSammenligningsgrunnlag(BeregningsgrunnlagGUIInput input,
                                                                                   no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                   SammenligningsgrunnlagDto sammenligningsgrunnlag){
         if(finnesSelvstendigNæringsdrivendeAndel(input)) {
@@ -97,7 +97,7 @@ public class FastsettGrunnlagGenerell {
         return avvikPromille.compareTo(BigDecimal.valueOf(250)) > 0;
     }
 
-    private static boolean finnesSelvstendigNæringsdrivendeAndel(BeregningsgrunnlagRestInput input){
+    private static boolean finnesSelvstendigNæringsdrivendeAndel(BeregningsgrunnlagGUIInput input){
         List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndel = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         return beregningsgrunnlagPrStatusOgAndel.stream().anyMatch(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende());
     }

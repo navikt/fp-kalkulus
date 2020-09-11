@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagOmsorgspenger;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Ytelse
 public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnlagTjeneste{
 
     @Override
-    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagRestInput input){
+    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input){
         var beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag();
         var omsorgspengeGrunnlagDto = new OmsorgspengeGrunnlagDto();
         var førsteBeregningsperiode = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
@@ -34,7 +34,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnl
         return !beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
-    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagRestInput input){
+    private static boolean erBrukerKunArbeidstaker(BeregningsgrunnlagGUIInput input){
         return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .allMatch(a -> AktivitetStatus.ARBEIDSTAKER.equals(a.getAktivitetStatus()));
     }

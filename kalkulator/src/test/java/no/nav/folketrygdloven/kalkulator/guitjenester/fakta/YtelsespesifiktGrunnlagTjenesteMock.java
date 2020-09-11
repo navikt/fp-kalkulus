@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.YtelsespesifiktGrunnlagDto;
 
 public class YtelsespesifiktGrunnlagTjenesteMock implements YtelsespesifiktGrunnlagTjeneste {
@@ -13,7 +13,7 @@ public class YtelsespesifiktGrunnlagTjenesteMock implements YtelsespesifiktGrunn
     }
 
     @Override
-    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagRestInput input) {
+    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input) {
         return Optional.empty();
     }
 }

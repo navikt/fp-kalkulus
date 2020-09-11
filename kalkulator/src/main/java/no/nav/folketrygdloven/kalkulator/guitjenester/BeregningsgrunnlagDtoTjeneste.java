@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPr
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisningstall;
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
@@ -45,7 +45,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     private Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester;
 
 
-    private final Map<FagsakYtelseType, BiConsumer<BeregningsgrunnlagRestInput, BeregningsgrunnlagDto>> ytelsespesifikkMapper = Map
+    private final Map<FagsakYtelseType, BiConsumer<BeregningsgrunnlagGUIInput, BeregningsgrunnlagDto>> ytelsespesifikkMapper = Map
         .of(FagsakYtelseType.FORELDREPENGER, this::mapDtoForeldrepenger);
 
     BeregningsgrunnlagDtoTjeneste() {
@@ -61,11 +61,11 @@ public class BeregningsgrunnlagDtoTjeneste {
         this.ytelsetjenester = ytelsetjenester;
     }
 
-    public BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BeregningsgrunnlagRestInput input) {
+    public BeregningsgrunnlagDto lagBeregningsgrunnlagDto(BeregningsgrunnlagGUIInput input) {
         return lagDto(input);
     }
 
-    private BeregningsgrunnlagDto lagDto(BeregningsgrunnlagRestInput input) {
+    private BeregningsgrunnlagDto lagDto(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagDto dto = new BeregningsgrunnlagDto();
 
         mapFaktaOmBeregning(input, dto);
@@ -87,40 +87,40 @@ public class BeregningsgrunnlagDtoTjeneste {
         return dto;
     }
 
-    private void mapFaktaOmRefusjon(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         VurderRefusjonDtoTjeneste.lagDto(input).ifPresent(dto::setRefusjonTilVurdering);
     }
 
-    private void mapOverstyring(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapOverstyring(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         boolean overstyrt = input.getBeregningsgrunnlag().isOverstyrt();
         dto.setErOverstyrtInntekt(overstyrt);
     }
 
-    private void mapYtelsesspesifiktGrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapYtelsesspesifiktGrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         Optional<YtelsespesifiktGrunnlagTjeneste> ytelsemapper = FagsakYtelseTypeRef.Lookup.find(ytelsetjenester, input.getFagsakYtelseType());
         ytelsemapper.flatMap(ytelsespesifiktGrunnlagTjeneste -> ytelsespesifiktGrunnlagTjeneste.map(input)).ifPresent(dto::setYtelsesspesifiktGrunnlag);
     }
 
-    private void mapDekningsgrad(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapDekningsgrad(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad();
         dto.setDekningsgrad(dekningsgrad);
     }
 
-    private void mapFaktaOmFordeling(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapFaktaOmFordeling(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         FaktaOmFordelingDtoTjeneste.lagDto(input).ifPresent(dto::setFaktaOmFordeling);
     }
 
-    private void mapFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapFaktaOmBeregning(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         faktaOmBeregningDtoTjeneste.lagDto(input).ifPresent(dto::setFaktaOmBeregning);
     }
 
-    private void mapSammenligningsgrunnlag(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapSammenligningsgrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDto(beregningsgrunnlag);
         sammenligningsgrunnlagDto.ifPresent(dto::setSammenligningsgrunnlag);
     }
 
-    private void mapSammenlingingsgrunnlagPrStatus(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapSammenlingingsgrunnlagPrStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag);
         if(sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null){
@@ -132,24 +132,24 @@ public class BeregningsgrunnlagDtoTjeneste {
         }
     }
 
-    private void mapBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         dto.setAktivitetStatus(lagAktivitetStatusListe(beregningsgrunnlag));
     }
 
-    private void mapBeregningsgrunnlagPerioder(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapBeregningsgrunnlagPerioder(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlagPerioder = lagBeregningsgrunnlagPeriodeRestDto(input);
         dto.setBeregningsgrunnlagPeriode(beregningsgrunnlagPerioder);
     }
 
-    private void mapSkjæringstidspunkt(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapSkjæringstidspunkt(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
         dto.setSkjaeringstidspunktBeregning(skjæringstidspunktForBeregning);
         dto.setSkjæringstidspunkt(skjæringstidspunktForBeregning);
         dto.setLedetekstBrutto("Brutto beregningsgrunnlag");
     }
 
-    private void mapBeløp(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapBeløp(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         Beløp grunnbeløp = Optional.ofNullable(beregningsgrunnlag.getGrunnbeløp()).orElse(Beløp.ZERO);
         long seksG = Math.round(grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6)).doubleValue());
@@ -163,7 +163,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         FinnÅrsinntektvisningstall.finn(beregningsgrunnlag).ifPresent(dto::setÅrsinntektVisningstall);
     }
 
-    private void mapAktivitetGradering(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapAktivitetGradering(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var aktivitetGradering = input.getAktivitetGradering();
         var andelerMedGraderingUtenBG = GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag,
@@ -174,12 +174,12 @@ public class BeregningsgrunnlagDtoTjeneste {
         }
     }
 
-    private void mapDtoYtelsespesifikk(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapDtoYtelsespesifikk(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         this.ytelsespesifikkMapper.getOrDefault(input.getFagsakYtelseType(), (in, dt) -> {
         }).accept(input, dto);
     }
 
-    private void mapDtoForeldrepenger(BeregningsgrunnlagRestInput input, BeregningsgrunnlagDto dto) {
+    private void mapDtoForeldrepenger(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad();
         dto.setLedetekstRedusert("Redusert beregningsgrunnlag (" + dekningsgrad + "%)");
     }
@@ -279,7 +279,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             .anyMatch(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
     }
 
-    private List<BeregningsgrunnlagPeriodeDto> lagBeregningsgrunnlagPeriodeRestDto(BeregningsgrunnlagRestInput input) {
+    private List<BeregningsgrunnlagPeriodeDto> lagBeregningsgrunnlagPeriodeRestDto(BeregningsgrunnlagGUIInput input) {
         List<BeregningsgrunnlagPeriodeDto> dtoList = new ArrayList<>();
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -290,7 +290,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         return dtoList;
     }
 
-    private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(BeregningsgrunnlagRestInput input,
+    private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(BeregningsgrunnlagGUIInput input,
                                                                       no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto periode) {
         BeregningsgrunnlagPeriodeDto dto = new BeregningsgrunnlagPeriodeDto();
         dto.setBeregningsgrunnlagPeriodeFom(periode.getBeregningsgrunnlagPeriodeFom());

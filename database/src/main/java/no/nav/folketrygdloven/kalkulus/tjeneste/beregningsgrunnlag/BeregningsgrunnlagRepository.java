@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.hibernate.jpa.QueryHints;
@@ -85,7 +86,6 @@ public class BeregningsgrunnlagRepository {
         return query.getResultList();
     }
 
-
     /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
      *
@@ -101,8 +101,6 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("aktivt", true); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
-
-
 
     /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
@@ -139,6 +137,27 @@ public class BeregningsgrunnlagRepository {
         query.setMaxResults(1);
         return query.getResultStream().findFirst();
     }
+
+    /**
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for alle koblinger. Ignorerer om grunnlaget er aktivt eller ikke.
+     *
+     * @param koblingIds en liste med koblingId
+     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
+     */
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(List<Long> koblingIds, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        Query query = entityManager.createNativeQuery(
+                "select gr.* from gr_beregningsgrunnlag gr " +
+                        "join (select max(opprettet_tid) as max_opprettet,  gr2.kobling_id from gr_beregningsgrunnlag gr2 " +
+                        "where steg_opprettet = :beregningsgrunnlagTilstand " +
+                        "group by gr2.kobling_id) max on max.max_opprettet = opprettet_tid and gr.kobling_id = max.kobling_id " +
+                        "where gr.kobling_id in :koblingId " +
+                        "and steg_opprettet = :beregningsgrunnlagTilstand", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
+        query.setParameter(KOBLING_ID, koblingIds); //$NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); //$NON-NLS-1$
+        return query.getResultList();
+    }
+
 
     public BeregningSats finnGrunnbeløp(LocalDate dato) {
         TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" + //$NON-NLS-1$
@@ -346,7 +365,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return query.getResultList();
     }
-    
+
     public boolean hvisEksistererKalkulatorInput(Long koblingId) {
         Number n = (Number) entityManager
             .createQuery("select count(*) from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv")

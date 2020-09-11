@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -58,7 +58,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -79,7 +79,7 @@ public class KunYtelseDtoTjenesteTest {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = new SvangerskapspengerGrunnlag(List.of());
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), svangerskapspengerGrunnlag)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -98,7 +98,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -118,7 +118,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -151,7 +151,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -169,7 +169,7 @@ public class KunYtelseDtoTjenesteTest {
         var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlagMedLagtTilAndel(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -198,7 +198,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), medBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);
@@ -226,7 +226,7 @@ public class KunYtelseDtoTjenesteTest {
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
         // Act
-        var input = new BeregningsgrunnlagRestInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), null, List.of(), utenBesteberegning)
                 .medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
 
         KunYtelseDto kunytelse = kunYtelseDtoTjeneste.lagKunYtelseDto(input);

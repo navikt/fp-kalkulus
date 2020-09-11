@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
@@ -37,11 +37,11 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
     }
 
     @Override
-    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagRestInput input) {
+    public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input) {
         return Optional.of(mapFrisinngrunnlag(input));
     }
 
-    private FrisinnGrunnlagDto mapFrisinngrunnlag(BeregningsgrunnlagRestInput input) {
+    private FrisinnGrunnlagDto mapFrisinngrunnlag(BeregningsgrunnlagGUIInput input) {
         YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
 
         FrisinnGrunnlag frisinngrunnlag = (FrisinnGrunnlag) ytelsespesifiktGrunnlag;
@@ -69,7 +69,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
     }
 
     @NotNull
-    private List<AvslagsårsakPrPeriodeDto> mapAvslagsårsakPerioder(BeregningsgrunnlagRestInput input, FrisinnGrunnlag frisinnGrunnlag, Optional<OppgittOpptjeningDto> oppgitOpptjening) {
+    private List<AvslagsårsakPrPeriodeDto> mapAvslagsårsakPerioder(BeregningsgrunnlagGUIInput input, FrisinnGrunnlag frisinnGrunnlag, Optional<OppgittOpptjeningDto> oppgitOpptjening) {
         return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
                     .map(periode -> new AvslagsårsakPrPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(),
                             MapTilAvslagsårsakerFRISINN.finnForPeriode(periode, frisinnGrunnlag,
@@ -82,7 +82,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
 
 
 
-    private List<OpplystPeriodeDto> mapSøktePerider(BeregningsgrunnlagRestInput input) {
+    private List<OpplystPeriodeDto> mapSøktePerider(BeregningsgrunnlagGUIInput input) {
         List<OpplystPeriodeDto> søktePerioder = new ArrayList<>();
         YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         FrisinnGrunnlag frisinnGrunnlag = (FrisinnGrunnlag) ytelsespesifiktGrunnlag;
@@ -96,7 +96,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         return søktePerioder;
     }
 
-    private List<OpplystPeriodeDto> mapSøktePerioderForFrilans(BeregningsgrunnlagRestInput input, LocalDate stpBG) {
+    private List<OpplystPeriodeDto> mapSøktePerioderForFrilans(BeregningsgrunnlagGUIInput input, LocalDate stpBG) {
         Optional<OppgittFrilansDto> oppgittFL = input.getIayGrunnlag().getOppgittOpptjening()
                 .flatMap(OppgittOpptjeningDto::getFrilans);
         if (oppgittFL.isEmpty()) {
@@ -108,7 +108,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
                 .collect(Collectors.toList());
     }
 
-    private List<OpplystPeriodeDto> mapSøktePerioderForNæring(BeregningsgrunnlagRestInput input, LocalDate stpBG) {
+    private List<OpplystPeriodeDto> mapSøktePerioderForNæring(BeregningsgrunnlagGUIInput input, LocalDate stpBG) {
         List<OppgittEgenNæringDto> oppgitteNæringer = input.getIayGrunnlag().getOppgittOpptjening()
                 .map(OppgittOpptjeningDto::getEgenNæring)
                 .orElse(Collections.emptyList());
@@ -136,7 +136,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         return dto;
     }
 
-    private SøknadsopplysningerDto mapNæringsopplysninger(BeregningsgrunnlagRestInput input) {
+    private SøknadsopplysningerDto mapNæringsopplysninger(BeregningsgrunnlagGUIInput input) {
         LocalDate stpBg = input.getSkjæringstidspunktForBeregning();
         List<OppgittEgenNæringDto> næringer = input.getIayGrunnlag().getOppgittOpptjening()
                 .map(OppgittOpptjeningDto::getEgenNæring)
@@ -163,7 +163,7 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         return dto;
     }
 
-    private SøknadsopplysningerDto mapFrilansopplysninger(BeregningsgrunnlagRestInput input) {
+    private SøknadsopplysningerDto mapFrilansopplysninger(BeregningsgrunnlagGUIInput input) {
         LocalDate stpBg = input.getSkjæringstidspunktForBeregning();
         Boolean erNyoppstartetFrilans = input.getIayGrunnlag().getOppgittOpptjening()
                 .flatMap(OppgittOpptjeningDto::getFrilans)

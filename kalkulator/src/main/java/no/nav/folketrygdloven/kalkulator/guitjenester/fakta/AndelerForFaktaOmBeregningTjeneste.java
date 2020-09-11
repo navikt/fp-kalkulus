@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -26,7 +26,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         // Skjul
     }
 
-    public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagRestInput input) {
+    public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagGrunnlagDto gjeldendeGrunnlag;
         if (input.getFaktaOmBeregningPreutfyllingsgrunnlag().isPresent()) {
             gjeldendeGrunnlag = input.getFaktaOmBeregningPreutfyllingsgrunnlag().get();
@@ -48,7 +48,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
 
     }
 
-    private static AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagRestInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private static AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var ref = input.getKoblingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
         Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);

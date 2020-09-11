@@ -13,7 +13,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -31,7 +31,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         // Skjul
     }
 
-    static List<FordelBeregningsgrunnlagAndelDto> lagEndretBgAndelListe(BeregningsgrunnlagRestInput input,
+    static List<FordelBeregningsgrunnlagAndelDto> lagEndretBgAndelListe(BeregningsgrunnlagGUIInput input,
                                                                         BeregningsgrunnlagPeriodeDto periode) {
         List<FordelBeregningsgrunnlagAndelDto> endringAndeler = new ArrayList<>();
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
@@ -45,7 +45,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         return endringAndeler;
     }
 
-    private static FordelBeregningsgrunnlagAndelDto lagEndretBGAndel(BeregningsgrunnlagRestInput input,
+    private static FordelBeregningsgrunnlagAndelDto lagEndretBGAndel(BeregningsgrunnlagGUIInput input,
                                                                      BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningsgrunnlagPeriodeDto periode) {
         FordelBeregningsgrunnlagAndelDto endringAndel = new FordelBeregningsgrunnlagAndelDto(BeregningsgrunnlagDtoUtil.lagFaktaOmBeregningAndel(
             andel,
@@ -66,7 +66,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         inntektsmeldingOpt.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
     }
 
-    private static void settFordelingForrigeBehandling(BeregningsgrunnlagRestInput input,
+    private static void settFordelingForrigeBehandling(BeregningsgrunnlagGUIInput input,
                                                        BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        FordelBeregningsgrunnlagAndelDto endringAndel) {
         if (andel.getLagtTilAvSaksbehandler()) {

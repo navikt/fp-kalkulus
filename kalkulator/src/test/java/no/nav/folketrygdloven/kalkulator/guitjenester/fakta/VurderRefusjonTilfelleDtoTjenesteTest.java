@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -87,7 +87,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
                 .medData(registerBuilder)
                 .medInntektsmeldinger(List.of(im1, im2))
                 .medArbeidsgiverOpplysninger(arbeidsgiverArbeidsgiverOpplysningerDtoList).build();
-        BeregningsgrunnlagRestInput input = lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
+        BeregningsgrunnlagGUIInput input = lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
         FaktaOmBeregningDto faktaOmBeregningDto = new FaktaOmBeregningDto();
@@ -158,12 +158,12 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
     }
 
 
-    public static BeregningsgrunnlagRestInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
-                                                                                 BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
-                                                                                 BeregningsgrunnlagTilstand tilstand,
-                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                 Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
-        BeregningsgrunnlagRestInput input = new BeregningsgrunnlagRestInput(koblingReferanse, iayGrunnlag,
+    public static BeregningsgrunnlagGUIInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
+                                                                                BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                                BeregningsgrunnlagTilstand tilstand,
+                                                                                InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag,
                 AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         return input.medBeregningsgrunnlagGrunnlag(grunnlag);

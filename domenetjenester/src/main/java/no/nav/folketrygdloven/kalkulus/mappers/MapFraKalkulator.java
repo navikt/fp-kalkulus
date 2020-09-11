@@ -74,7 +74,7 @@ public class MapFraKalkulator {
 
         throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
     }
-    
+
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
                                                                                                  KalkulatorInputEntitet kalkulatorInputEntitet,
                                                                                                  Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
@@ -109,7 +109,7 @@ public class MapFraKalkulator {
                                                                                           Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
                                                                                           Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
                                                                                           List<BeregningSats> satser) {
-    
+
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             var beregningsgrunnlagInputUtenGrunnbeløp = mapFraKalkulatorInputTilBeregningsgrunnlagInputUtenGrunnbeløp(kobling, input, beregningsgrunnlagGrunnlagEntitet);
             var grunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
@@ -121,7 +121,7 @@ public class MapFraKalkulator {
             return grunnlagInput;
         } else {
             return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, satser);
-    
+
         }
     }
 
@@ -130,7 +130,7 @@ public class MapFraKalkulator {
             return null;
         }
         return arbeidsgiver.getErOrganisasjon() ? Arbeidsgiver.virksomhet(arbeidsgiver.getIdent()) : Arbeidsgiver.person(new AktørId(arbeidsgiver.getIdent()));
-    
+
     }
 
     private static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInputUtenGrunnbeløp(KoblingEntitet kobling,
@@ -165,7 +165,7 @@ public class MapFraKalkulator {
         return utenGrunnbeløp;
     }
 
-    private static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,
+    public static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,
                                                      KalkulatorInputDto input,
                                                      no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                      Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
@@ -225,7 +225,7 @@ public class MapFraKalkulator {
             .collect(Collectors.toList());
     }
 
-    private static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {
+    public static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer) {
         if (refusjonskravDatoer == null) {
             return Collections.emptyList();
         }
@@ -237,7 +237,7 @@ public class MapFraKalkulator {
             .collect(Collectors.toList());
     }
 
-    private static AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
+    public static AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
         List<AndelGradering> res = new ArrayList<>();
         aktivitetGradering.getAndelGraderingDto().forEach(andel -> {
             Builder builder = AndelGradering.builder();

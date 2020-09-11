@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagRestInput;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -32,7 +32,7 @@ public class VurderRefusjonDtoTjeneste {
         // Skjul
     }
 
-    public static Optional<RefusjonTilVurderingDto> lagDto(BeregningsgrunnlagRestInput input) {
+    public static Optional<RefusjonTilVurderingDto> lagDto(BeregningsgrunnlagGUIInput input) {
         List<InntektsmeldingDto> tilkomneInntektsmeldinger = input.getIayGrunnlag().getInntektsmeldinger()
                 .map(InntektsmeldingAggregatDto::getInntektsmeldingdiffFraOriginalbehandling)
                 .orElse(Collections.emptyList());
