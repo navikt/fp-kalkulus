@@ -44,6 +44,10 @@ public class GUIBeregningsgrunnlagInputTjeneste {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository
                 .hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
 
+        List<BeregningsgrunnlagTilstand> aktiveTilstander = beregningsgrunnlagGrunnlagEntiteter.stream().map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
+                .distinct()
+                .collect(Collectors.toList());
+
         Set<Long> koblingerMedBeregningsgrunnlag = beregningsgrunnlagGrunnlagEntiteter
                 .stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
 
@@ -54,22 +58,29 @@ public class GUIBeregningsgrunnlagInputTjeneste {
         Map<Long, KoblingEntitet> koblinger = koblingRepository.hentKoblingerFor(koblingerMedBeregningsgrunnlag)
                 .stream().collect(Collectors.toMap(KoblingEntitet::getId, Function.identity()));
 
-        Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
+
+        Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel = alleTilstanderErFørFordel(aktiveTilstander) ? Map.of() :
+                beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                        .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
 
         return mapInputListe(beregningsgrunnlagGrunnlagEntiteter, grunnlagFraFordel, koblingKalkulatorInput, koblinger, medSporingslogg);
     }
 
+    private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {
+        return aktiveTilstander.stream()
+                .allMatch(tilstand -> tilstand.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
+    }
+
     /**
      * Mapper alle databaseentiteter til GUI-input (for å lage beregningsgrunnlagdto til gui)
-     *
+     * <p>
      * Ingen databasekall skal gjøres her inne for å unngå at databasekall gjøres i loop.
      *
      * @param beregningsgrunnlagGrunnlagEntiteter Alle aktive grunnlagsentiteter for koblinger
-     * @param grunnlagFraFordel Grunnlag fra fordel-steget om dette er kjørt
-     * @param koblingKalkulatorInput KalkulatorInput for koblinger
-     * @param koblinger Koblingentiteter
-     * @param medSporingslogg Flagg for om sporingslogg skal mappes
+     * @param grunnlagFraFordel                   Grunnlag fra fordel-steget om dette er kjørt
+     * @param koblingKalkulatorInput              KalkulatorInput for koblinger
+     * @param koblinger                           Koblingentiteter
+     * @param medSporingslogg                     Flagg for om sporingslogg skal mappes
      * @return Liste med restinput
      */
     private static List<BeregningsgrunnlagGUIInput> mapInputListe(
