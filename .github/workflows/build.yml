@@ -106,30 +106,17 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Deploy av ${{ env.TAG }}
-          labels: deployment
+          labels: bygg
           body: |
-            Kommenter med <b>/promote env namespace</b>, hvor <b>env</b> er et gyldig clusternavn og <b>namespace</b> et eksisterende namespace i det clusteret.
-            <table>
-            <tr><th>Cluster</th><th>Namespace</th></tr>
-            <tr><td>dev-fss</td><td>default, q1</td></tr>
-            <tr><td>prod-fss</td><td>default</td></tr>
-            </table>
+            Kommenter med <b>/promote env</b>, hvor <b>env</b> er et gyldig clusternavn (dev-fss, prod-fss).
 
-      - name: Trigg deploy til preprod
+      - name: Trigg deploy til dev
         if: success()
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
           issue-number: ${{ steps.createdeployissue.outputs.number }}
-          body: /promote dev-fss q1
-
-      - name: Trigg deploy til preprod
-        if: success()
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          issue-number: ${{ steps.createdeployissue.outputs.number }}
-          body: /promote dev-fss default
+          body: /promote dev-fss
 
       - name: Trigger verdikjedetester K9
         if: success()
