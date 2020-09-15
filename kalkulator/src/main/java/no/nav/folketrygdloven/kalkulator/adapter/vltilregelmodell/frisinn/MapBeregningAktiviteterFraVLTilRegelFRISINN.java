@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -58,10 +59,17 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
         if (relevanteAktiviteter.stream().noneMatch(a -> a.getType().equals(OpptjeningAktivitetType.NÆRING)) && harSNEtterStp) {
             modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forAndre(Aktivitet.NÆRINGSINNTEKT, hardkodetOpptjeningsperiode));
         }
-        if (relevanteAktiviteter.stream().noneMatch(a -> a.getType().equals(OpptjeningAktivitetType.ARBEID)) && harATEtterSTP) {
+        if (!erArbeidstakerPåOpptjeningsSTP(relevanteAktiviteter, opptjeningSkjæringstidspunkt) && harATEtterSTP) {
             modell.leggTilEllerOppdaterAktivPeriode(AktivPeriode.forArbeidstakerHosVirksomhet(hardkodetOpptjeningsperiode, OrgNummer.KUNSTIG_ORG, null));
         }
         return modell;
+    }
+
+    private boolean erArbeidstakerPåOpptjeningsSTP(Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter, LocalDate opptjeningSkjæringstidspunkt) {
+        List<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> arbeidstakeraktiviteter = relevanteAktiviteter.stream()
+                .filter(a -> a.getType().equals(OpptjeningAktivitetType.ARBEID))
+                .collect(Collectors.toList());
+        return arbeidstakeraktiviteter.stream().anyMatch(akt -> akt.getPeriode().inneholder(opptjeningSkjæringstidspunkt));
     }
 
     private boolean harOppgittArbeidsinntektEtterSTP(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
