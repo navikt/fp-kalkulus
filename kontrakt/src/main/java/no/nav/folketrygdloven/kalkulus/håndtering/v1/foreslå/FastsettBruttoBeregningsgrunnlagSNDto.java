@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FastsettBruttoBeregningsgrunnlagSNDto {
@@ -14,7 +15,8 @@ public class FastsettBruttoBeregningsgrunnlagSNDto {
     @Max(Long.MAX_VALUE)
     private Integer bruttoBeregningsgrunnlag;
 
-    public FastsettBruttoBeregningsgrunnlagSNDto(Integer bruttoBeregningsgrunnlag) {
+    @JsonCreator
+    public FastsettBruttoBeregningsgrunnlagSNDto(@JsonProperty("bruttoBeregningsgrunnlag") Integer bruttoBeregningsgrunnlag) {
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }
 
