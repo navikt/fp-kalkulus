@@ -42,13 +42,15 @@ public class FaktaOmBeregningDtoTjeneste {
                 saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
 
         // Denne delen krever Beregningsgrunnlag
-        faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
-        if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
-            List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
-            faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller.stream()
-                    .map(t -> new no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle(t.getKode())).collect(Collectors.toList()));
-            utledDtoerForTilfeller(input, faktaOmBeregningDto);
+        if (grunnlagEntitet.getBeregningsgrunnlag().isPresent()) {
+            faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
+            BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
+            if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
+                List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
+                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller.stream()
+                        .map(t -> new no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle(t.getKode())).collect(Collectors.toList()));
+                utledDtoerForTilfeller(input, faktaOmBeregningDto);
+            }
         }
         return Optional.of(faktaOmBeregningDto);
     }
