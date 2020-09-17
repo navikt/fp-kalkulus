@@ -1,6 +1,17 @@
 package no.nav.folketrygdloven.kalkulator.refusjon;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -11,15 +22,6 @@ import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RefusjonTidslinjeTjeneste {
 
@@ -59,10 +61,16 @@ public class RefusjonTidslinjeTjeneste {
     }
 
     private static Map<Arbeidsgiver, Set<BeregningsgrunnlagPrStatusOgAndelDto>> lagAndelsmap(BeregningsgrunnlagPeriodeDto periode) {
-        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
+        Map<Arbeidsgiver, Set<BeregningsgrunnlagPrStatusOgAndelDto>> resultatMap = new HashMap<>();
+        periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .filter(a -> a.getArbeidsgiver().isPresent())
-                .collect(Collectors.toMap(a -> a.getArbeidsgiver().get(), Set::of, (s1, s2) -> { s1.addAll(s2); return s1; }));
+                .forEach(andel ->  {
+                    Set<BeregningsgrunnlagPrStatusOgAndelDto> andelSet = resultatMap.getOrDefault(andel.getArbeidsgiver().get(), new HashSet<>());
+                    andelSet.add(andel);
+                    resultatMap.put(andel.getArbeidsgiver().get(), andelSet);
+                });
+        return resultatMap;
     }
 
     public static LocalDateTimeline<RefusjonPeriodeEndring> kombinerTidslinjer(LocalDateTimeline<RefusjonPeriode> originalePerioder, LocalDateTimeline<RefusjonPeriode> revurderingPerioder) {

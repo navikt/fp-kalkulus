@@ -1,5 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.refusjon;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Month;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -8,26 +17,21 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
-
+import no.nav.fpsak.tidsserie.LocalDateInterval;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class RefusjonTidslinjeTjenesteTest {
     private static final Arbeidsgiver AG1 = Arbeidsgiver.virksomhet("999999999");
+    private static final Arbeidsgiver AG2 = Arbeidsgiver.virksomhet("999999998");
     private static final InternArbeidsforholdRefDto REF1 = InternArbeidsforholdRefDto.nyRef();
+    private static final InternArbeidsforholdRefDto REF2 = InternArbeidsforholdRefDto.nyRef();
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
     private static BeregningsgrunnlagDto originaltBG;
@@ -63,7 +67,7 @@ class RefusjonTidslinjeTjenesteTest {
     }
 
     @Test
-    public void tester_at_timeline_lages_korrekt() {
+    public void tester_at_timeline_lages_korrekt_med_en_andel_pr_periode() {
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
                 .build(originaltBG);
@@ -77,6 +81,73 @@ class RefusjonTidslinjeTjenesteTest {
         LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
         LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
         assertThat(tidslinje.toSegments()).hasSize(1);
+    }
+
+    @Test
+    public void tester_at_timeline_lages_og_kombineres_korrekt_med_ulikt_antall_andeler() {
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 500000);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF2, 100000, 500000);
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(revurderingBG);
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, InternArbeidsforholdRefDto.nullRef(), 100000, 400000);
+
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
+        LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
+        assertThat(tidslinje.toSegments()).hasSize(1);
+        LocalDateSegment<RefusjonPeriodeEndring> segment = tidslinje.getSegment(new LocalDateInterval(beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeTom()));
+        assertThat(segment).isNotNull();
+        RefusjonPeriodeEndring periodeEndring = segment.getValue();
+        assertThat(periodeEndring).isNotNull();
+        assertThat(periodeEndring.getOriginalBrutto()).isEqualByComparingTo(BigDecimal.valueOf(200000));
+        assertThat(periodeEndring.getOriginalRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(1000000));
+        assertThat(periodeEndring.getRevurderingBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
+        assertThat(periodeEndring.getRevurderingRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(400000));
+    }
+
+    @Test
+    public void tester_at_timeline_lages_og_kombineres_korrekt_med_ulike_arbeidsgivere() {
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 500000);
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(revurderingBG);
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, InternArbeidsforholdRefDto.nullRef(), 100000, 400000);
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, InternArbeidsforholdRefDto.nullRef(), 200000, 200000);
+
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
+        LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
+        assertThat(tidslinje.toSegments()).hasSize(1);
+        LocalDateSegment<RefusjonPeriodeEndring> segment = tidslinje.getSegment(new LocalDateInterval(beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeTom()));
+        assertThat(segment).isNotNull();
+        RefusjonPeriodeEndring periodeEndring = segment.getValue();
+        assertThat(periodeEndring).isNotNull();
+        assertThat(periodeEndring.getOriginaleAndeler()).hasSize(1);
+        assertThat(periodeEndring.getRevurderingAndeler()).hasSize(2);
+
+        RefusjonAndel orginalAndel = periodeEndring.getOriginaleAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG1)).findFirst().orElse(null);
+        assertThat(orginalAndel).isNotNull();
+        assertThat(orginalAndel.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
+        assertThat(orginalAndel.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(500000));
+
+        RefusjonAndel revurderingAndelAG1 = periodeEndring.getRevurderingAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG1)).findFirst().orElse(null);
+        assertThat(revurderingAndelAG1).isNotNull();
+        assertThat(revurderingAndelAG1.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(100000));
+        assertThat(revurderingAndelAG1.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(400000));
+
+        RefusjonAndel revurderingAndelAG2 = periodeEndring.getRevurderingAndeler().stream().filter(a -> a.getArbeidsgiver().equals(AG2)).findFirst().orElse(null);
+        assertThat(revurderingAndelAG2).isNotNull();
+        assertThat(revurderingAndelAG2.getBrutto()).isEqualByComparingTo(BigDecimal.valueOf(200000));
+        assertThat(revurderingAndelAG2.getRefusjon()).isEqualByComparingTo(BigDecimal.valueOf(200000));
     }
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
