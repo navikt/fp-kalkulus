@@ -27,11 +27,8 @@ public final class BeregningRefusjonTjeneste {
         // SKjuler default
     }
 
-    public static boolean måVurdereRefusjonskravForBeregning(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, Optional<BeregningsgrunnlagDto> originaltBeregningsgrunnlag) {
-        if (originaltBeregningsgrunnlag.isEmpty()) {
-            return false;
-        }
-        return !finnPerioderMedAndelerMedØktRefusjon(revurderingBeregningsgrunnlag, originaltBeregningsgrunnlag.get()).isEmpty();
+    public static boolean måVurdereRefusjonskravForBeregning(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
+        return !finnPerioderMedAndelerMedØktRefusjon(revurderingBeregningsgrunnlag, originaltBeregningsgrunnlag).isEmpty();
     }
 
     public static Map<Intervall, List<RefusjonAndel>> finnPerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
@@ -48,7 +45,7 @@ public final class BeregningRefusjonTjeneste {
             RefusjonPeriodeEndring refusjonsendring = segment.getValue();
             if (erMindreAndelTilgjengeligForBruker(refusjonsendring)) {
                 // Bruker vil få mindre andel av beregningsgrunnlaget, vi må lage liste med hvilker andeler som nå får en større andel
-                List<RefusjonAndel> andelerMedØktRefusjon = finnAndelerSomHarØktRefusjon(refusjonsendring);
+                List<RefusjonAndel> andelerMedØktRefusjon = finnAndelerMedMindreTilgjengeligForBruker(refusjonsendring);
                 Intervall interval = Intervall.fraOgMedTilOgMed(segment.getFom(), segment.getTom());
                 if (!andelerMedØktRefusjon.isEmpty()) {
                     andelerIPeriode.put(interval, andelerMedØktRefusjon);
@@ -58,20 +55,20 @@ public final class BeregningRefusjonTjeneste {
         return andelerIPeriode;
     }
 
-    private static List<RefusjonAndel> finnAndelerSomHarØktRefusjon(RefusjonPeriodeEndring refusjonsendring) {
+    private static List<RefusjonAndel> finnAndelerMedMindreTilgjengeligForBruker(RefusjonPeriodeEndring refusjonsendring) {
         List<RefusjonAndel> revurderingAndeler = refusjonsendring.getRevurderingAndeler();
         List<RefusjonAndel> originaleAndeler = refusjonsendring.getOriginaleAndeler();
         List<RefusjonAndel> andelerMedØktRefusjon = new ArrayList<>();
         revurderingAndeler.forEach(andel -> {
             Optional<RefusjonAndel> originalAndel = finnOriginalAndel(andel, originaleAndeler);
-            if (andelHarØktRef(andel, originalAndel)) {
+            if (andelHarMindreTilgjengeligForBruker(andel, originalAndel)) {
                 andelerMedØktRefusjon.add(andel);
             }
         });
         return andelerMedØktRefusjon;
     }
 
-    private static boolean andelHarØktRef(RefusjonAndel revurderingAndel, Optional<RefusjonAndel> originalAndelOpt) {
+    private static boolean andelHarMindreTilgjengeligForBruker(RefusjonAndel revurderingAndel, Optional<RefusjonAndel> originalAndelOpt) {
         if (originalAndelOpt.isEmpty()) {
             // Det har tilkommet en revurderingAndel, sant dersom det er refusjon på den
             return revurderingAndel.getRefusjon().compareTo(BigDecimal.ZERO) > 0;
@@ -81,7 +78,10 @@ public final class BeregningRefusjonTjeneste {
         BigDecimal originalBrukersAndel = originalAndel.getBrutto().subtract(originalAndel.getRefusjon()).max(BigDecimal.ZERO);
         BigDecimal revurderingBrukersAndel = revurderingAndel.getBrutto().subtract(revurderingAndel.getRefusjon()).max(BigDecimal.ZERO);
 
-        return revurderingBrukersAndel.compareTo(originalBrukersAndel) < 0;
+        boolean refusjonHarØkt = revurderingAndel.getRefusjon().compareTo(originalAndel.getRefusjon()) > 0;
+        boolean andelTilBrukerErMindre = revurderingBrukersAndel.compareTo(originalBrukersAndel) < 0;
+
+        return refusjonHarØkt && andelTilBrukerErMindre;
 
     }
 

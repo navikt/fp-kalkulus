@@ -44,7 +44,7 @@ public class BeregningRefusjonAksjonspunktutleder {
     public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input) {
         BeregningsgrunnlagDto bgMedRef = hentRefusjonForBG(input);
         Optional<BeregningsgrunnlagDto> originaltGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-        boolean harTilkommetRefkravSomMåVurderes = BeregningRefusjonTjeneste.måVurdereRefusjonskravForBeregning(bgMedRef, originaltGrunnlag);
+        boolean harTilkommetRefkravSomMåVurderes = originaltGrunnlag.map(og -> BeregningRefusjonTjeneste.måVurdereRefusjonskravForBeregning(bgMedRef, og)).orElse(false);
         List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
         if (harTilkommetRefkravSomMåVurderes) {
             aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.VURDER_REFUSJONSKRAV));

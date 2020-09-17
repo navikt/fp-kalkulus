@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonAndel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
@@ -245,9 +245,12 @@ class BeregningRefusjonTjenesteTest {
         assertThat(resultat).isEmpty();
     }
 
-    // TODO Bør egenlig denne ikke gi ap?
+    /**
+     * I tilfeller der det blir mindre til bruker men refusjonskravet er likt skal det ikke opprettes aksjonspunkt.
+     * Dette betyr da at brutto er senket, enten av saksbehandler eller av ny inntektsmelding og skal ikke vurderes.
+     */
     @Test
-    public void skal_finne_riktig_andel_i_ritktig_periode_når_brutto_senkes() {
+    public void skal_ikke_finne_noen_andel_dersom_det_blir_mindre_til_bruker_men_refkrav_er_likt() {
         // Original
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(20))
@@ -272,10 +275,7 @@ class BeregningRefusjonTjenesteTest {
 
         Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnPerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG);
 
-        assertThat(resultat).hasSize(1);
-        RefusjonAndel forventetAndel = lagForventetAndel(AktivitetStatus.ARBEIDSTAKER, AG1, 50000, 50000);
-        Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(21), Intervall.TIDENES_ENDE);
-        assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
+        assertThat(resultat).hasSize(0);
     }
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
