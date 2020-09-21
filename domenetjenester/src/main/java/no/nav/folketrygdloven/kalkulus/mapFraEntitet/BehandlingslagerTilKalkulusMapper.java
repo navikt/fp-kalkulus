@@ -37,8 +37,8 @@ public class BehandlingslagerTilKalkulusMapper {
 
         beregningsgrunnlagFraFagsystem.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto, inntektsmeldinger, medSporingslogg)));
         beregningsgrunnlagFraFagsystem.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
-        oppdatere.medRegisterAktiviteter(mapRegisterAktiviteter(beregningsgrunnlagFraFagsystem.getRegisterAktiviteter()));
-        beregningsgrunnlagFraFagsystem.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
+        oppdatere.medRegisterAktiviteter(mapAktiviteter(beregningsgrunnlagFraFagsystem.getRegisterAktiviteter()));
+        beregningsgrunnlagFraFagsystem.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapAktiviteter(beregningAktivitetAggregatDto)));
         beregningsgrunnlagFraFagsystem.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
 
         return oppdatere.build(beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagTilstand());
@@ -51,7 +51,7 @@ public class BehandlingslagerTilKalkulusMapper {
         //med
         builder.medGrunnbeløp(beregningsgrunnlagFraFagsystem.getGrunnbeløp().getVerdi());
         builder.medOverstyring(beregningsgrunnlagFraFagsystem.isOverstyrt());
-        
+
         if (medSporingslogg) {
             leggTilSporingHvisFinnes(beregningsgrunnlagFraFagsystem, builder, BeregningsgrunnlagRegelType.PERIODISERING);
             leggTilSporingHvisFinnes(beregningsgrunnlagFraFagsystem, builder, BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
@@ -90,13 +90,6 @@ public class BehandlingslagerTilKalkulusMapper {
         return dtoBuilder.build();
     }
 
-    private static BeregningAktivitetAggregatDto mapSaksbehandletAktivitet(BeregningAktivitetAggregatEntitet saksbehandletAktiviteterFraFpsak) {
-        BeregningAktivitetAggregatDto.Builder dtoBuilder = BeregningAktivitetAggregatDto.builder();
-        dtoBuilder.medSkjæringstidspunktOpptjening(saksbehandletAktiviteterFraFpsak.getSkjæringstidspunktOpptjening());
-        saksbehandletAktiviteterFraFpsak.getBeregningAktiviteter().forEach(mapAktivitet(dtoBuilder));
-        return dtoBuilder.build();
-    }
-
     private static Consumer<BeregningAktivitetEntitet> mapAktivitet(BeregningAktivitetAggregatDto.Builder dtoBuilder) {
         return beregningAktivitet -> {
             BeregningAktivitetDto.Builder builder = BeregningAktivitetDto.builder();
@@ -126,7 +119,7 @@ public class BehandlingslagerTilKalkulusMapper {
         return dtoBuilder.build();
     }
 
-    private static BeregningAktivitetAggregatDto mapRegisterAktiviteter(BeregningAktivitetAggregatEntitet registerAktiviteter) {
+    public static BeregningAktivitetAggregatDto mapAktiviteter(BeregningAktivitetAggregatEntitet registerAktiviteter) {
         BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder();
         builder.medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
         registerAktiviteter.getBeregningAktiviteter().forEach(mapAktivitet(builder));

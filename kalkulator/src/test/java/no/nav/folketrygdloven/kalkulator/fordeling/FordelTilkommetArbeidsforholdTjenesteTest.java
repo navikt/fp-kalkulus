@@ -40,7 +40,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto, beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isFalse();
@@ -66,7 +66,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto, beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isTrue();
@@ -92,7 +92,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto, beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isTrue();

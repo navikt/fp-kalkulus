@@ -1,10 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.modell.svp;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
-public class PeriodeMedUtbetalingsgradDto {
+public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbetalingsgradDto> {
     private Intervall periode;
     private BigDecimal utbetalingsgrad;
 
@@ -19,6 +22,26 @@ public class PeriodeMedUtbetalingsgradDto {
 
     public BigDecimal getUtbetalingsgrad() {
         return utbetalingsgrad;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PeriodeMedUtbetalingsgradDto that = (PeriodeMedUtbetalingsgradDto) o;
+        return Objects.equals(periode, that.periode) &&
+                Objects.equals(utbetalingsgrad, that.utbetalingsgrad);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(periode, utbetalingsgrad);
+    }
+
+
+    @Override
+    public int compareTo(@NotNull PeriodeMedUtbetalingsgradDto periode) {
+        return this.getPeriode().compareTo(periode.getPeriode());
     }
 }
 

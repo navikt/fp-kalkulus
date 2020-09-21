@@ -30,11 +30,11 @@ public class LagArbeidsgiverForSentRefusjonskravMap {
             if (entry.getValue().isPresent()) {
                 YrkesaktivitetDto yrkesaktivitet = entry.getKey();
                 boolean arbeidsgiverHarSøktForSent = harSøktForSentMap.containsKey(yrkesaktivitet.getArbeidsgiver()) && harSøktForSentMap.get(yrkesaktivitet.getArbeidsgiver());
-                boolean harSøktForSentForArbeidsforhold = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(koblingReferanse,
+                boolean harSøktForSentForArbeidsforhold = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(
                         entry.getValue().get(),
                         yrkesaktivitet,
                         gjeldendeAktiviteter,
-                        skjæringstidspunktBeregning);
+                        skjæringstidspunktBeregning, koblingReferanse.getFagsakYtelseType());
                 harSøktForSentMap.put(yrkesaktivitet.getArbeidsgiver(), harSøktForSentForArbeidsforhold || arbeidsgiverHarSøktForSent);
             }
         }

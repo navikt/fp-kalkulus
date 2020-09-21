@@ -273,7 +273,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medMaksimalRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
                 .medAvkortetRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
                 .medRedusertRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
-
                 .medPgi(resultatBGPStatus.getGjennomsnittligPGI(), resultatBGPStatus.getPgiListe())
                 .medÅrsbeløpFraTilstøtendeYtelse(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse())
                 .medNyIArbeidslivet(resultatBGPStatus.getNyIArbeidslivet())

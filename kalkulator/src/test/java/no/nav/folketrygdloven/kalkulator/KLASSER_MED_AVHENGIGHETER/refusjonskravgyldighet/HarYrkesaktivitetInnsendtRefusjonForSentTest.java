@@ -27,10 +27,11 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 class HarYrkesaktivitetInnsendtRefusjonForSentTest {
 
     public static final Arbeidsgiver VIRKSOMHET = Arbeidsgiver.virksomhet("786284722");
+    public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
     public static final YrkesaktivitetDto YRKESAKTIVITET = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
             .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
             .medArbeidsgiver(VIRKSOMHET)
-            .medArbeidsforholdId(InternArbeidsforholdRefDto.nyRef())
+            .medArbeidsforholdId(ARBEIDSFORHOLD_ID)
             .build();
     private static KoblingReferanseMock behandlingReferanse = new KoblingReferanseMock();
 
@@ -42,7 +43,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isTrue();
@@ -57,7 +58,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isFalse();
@@ -72,7 +73,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isFalse();
@@ -87,7 +88,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isFalse();
@@ -102,7 +103,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isTrue();
@@ -116,7 +117,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetEtterStp(stp);
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(behandlingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, behandlingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isFalse();
@@ -131,7 +132,7 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(stp).build());
 
         // Act
-        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(koblingReferanse, refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp);
+        boolean vurder = HarYrkesaktivitetInnsendtRefusjonForSent.vurder(refusjonskravdato, YRKESAKTIVITET, gjeldendeAktiviteter, stp, koblingReferanse.getFagsakYtelseType());
 
         // Assert
         assertThat(vurder).isFalse();

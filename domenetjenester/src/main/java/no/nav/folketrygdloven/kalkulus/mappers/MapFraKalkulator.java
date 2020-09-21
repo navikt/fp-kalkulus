@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
+import static no.nav.folketrygdloven.kalkulus.mappers.OmsorgspengeGrunnlagMapper.mapOmsorgspengegrunnlag;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,24 +58,6 @@ public class MapFraKalkulator {
     private static final ObjectReader READER = JsonMapper.getMapper().reader();
     private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
 
-    public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                                 KalkulatorInputEntitet kalkulatorInputEntitet,
-                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                                 List<BeregningSats> satser) {
-        String json = kalkulatorInputEntitet.getInput();
-        KalkulatorInputDto input = null;
-
-        try {
-            input = READER.forType(KalkulatorInputDto.class).readValue(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        if (input != null) {
-            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, satser);
-        }
-
-        throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
-    }
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
                                                                                                  KalkulatorInputEntitet kalkulatorInputEntitet,
@@ -158,7 +142,10 @@ public class MapFraKalkulator {
             mapFraDto(opptjeningAktiviteter),
             aktivitetGradering != null ? mapFraDto(aktivitetGradering) : null,
             mapFraDto(refusjonskravDatoer),
-            mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
+            mapFraDto(kobling.getYtelseTyperKalkulusStøtter(),
+                    input,
+                    iayGrunnlagMappet,
+                    beregningsgrunnlagGrunnlagEntitet));
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
@@ -201,12 +188,7 @@ public class MapFraKalkulator {
                     frisinnPerioder, frisinnGrunnlag.getFrisinnBehandlingType() == null ? FrisinnBehandlingType.NY_SØKNADSPERIODE
                         : FrisinnBehandlingType.fraKode(frisinnGrunnlag.getFrisinnBehandlingType().getKode()));
             case OMSORGSPENGER:
-                OmsorgspengerGrunnlag omsorgspengerGrunnlag = (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag;
-                no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(
-                    UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
-                kalkulatorGrunnlag
-                    .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.OMSORGSPENGER).getAntallGMilitærHarKravPå().intValue());
-                return kalkulatorGrunnlag;
+                return mapOmsorgspengegrunnlag(input, beregningsgrunnlagGrunnlagEntitet, (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);
             default:
                 return new StandardGrunnlag();
         }

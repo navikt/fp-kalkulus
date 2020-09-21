@@ -4,12 +4,13 @@ import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
-class HarYrkesaktivitetInnsendtRefusjonForSent {
+public class HarYrkesaktivitetInnsendtRefusjonForSent {
 
     /**
      * Vurderer om refusjonskrav for en aktivitet isolert sett har komt inn for sent. Tar ikke hensyn til at andre aktiviteter for samme arbeidsgiver har refusjonskrav som har kommet inn i tide.
@@ -20,23 +21,54 @@ class HarYrkesaktivitetInnsendtRefusjonForSent {
      * Refusjonkrav kommer inn 15.01.2020 og kravet ber om refusjon fom 01.09.2019. Dette refusjonskravet er ugylig fordi første gyldige dato for dette kravet er 01.10.2019.
      *
      *
-     * @param koblingReferanse Behandlingreferanse
      * @param refusjonsdato Sammensatt objekt for refusjonskravdatoer
      * @param yrkesaktivitet aktuell yrkesaktivitet
      * @param gjeldendeAktiviteter gjeldende aktiviteter på skjæringstidspunktet
      * @param skjæringstidspunktBeregning skjæringstidspunkt for beregning
+     * @param fagsakYtelseType ytelsetype
      * @return Om refusjonskrav for aktivitet har komt inn for sent eller ikke
      */
-    static boolean vurder(KoblingReferanse koblingReferanse, RefusjonskravDatoDto refusjonsdato, YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto gjeldendeAktiviteter, LocalDate skjæringstidspunktBeregning) {
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitet, gjeldendeAktiviteter, skjæringstidspunktBeregning);
+    public static boolean vurder(RefusjonskravDatoDto refusjonsdato, YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto gjeldendeAktiviteter, LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
+        LocalDate førsteLovligeDatoForRefusjon = finnFørsteGyldigeDatoMedRefusjon(refusjonsdato, fagsakYtelseType);
+        LocalDate førsteDagMedRefusjon = finnFørsteDagMedSøktRefusjon(refusjonsdato, gjeldendeAktiviteter, skjæringstidspunktBeregning, yrkesaktivitet.getArbeidsforholdRef());
+        return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
+    }
+
+    /**
+     * Finner første dato det er søkt refusjon for f
+     *
+     * @param refusjonsdato Dto for datoer for innsendte krav
+     * @param gjeldendeAktiviteter Alle gjeldende aktiviteter i beregning
+     * @param skjæringstidspunktBeregning Skjæringstidspunkt for beregning
+     * @param arbeidsforholdRef Arbeidsforholdreferanse
+     * @return Første dag med søkt refusjon
+     */
+    public static LocalDate finnFørsteDagMedSøktRefusjon(RefusjonskravDatoDto refusjonsdato,
+                                                         BeregningAktivitetAggregatDto gjeldendeAktiviteter,
+                                                         LocalDate skjæringstidspunktBeregning,
+                                                         InternArbeidsforholdRefDto arbeidsforholdRef) {
         LocalDate førsteDagMedRefusjon = refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(skjæringstidspunktBeregning);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(
+                refusjonsdato.getArbeidsgiver(),
+                arbeidsforholdRef,
+                gjeldendeAktiviteter, skjæringstidspunktBeregning);
         boolean harRefusjonFraStart = refusjonsdato.harRefusjonFraStart();
         if (!erNyttArbeidsforhold && harRefusjonFraStart) {
             førsteDagMedRefusjon = skjæringstidspunktBeregning;
         }
-        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(koblingReferanse.getFagsakYtelseType()).getFristMånederEtterRefusjon(refusjonsdato.getFørsteInnsendingAvRefusjonskrav()) + 1;
-        LocalDate førsteLovligeDatoForRefusjon = refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
-        return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
+        return førsteDagMedRefusjon;
+    }
+
+    /**
+     * Finner første gyldige dato med refusjon.
+     *
+     * @param refusjonsdato Dto for datoer for innsendte krav
+     * @param fagsakYtelseType Ytelsetype
+     * @return Første lovlige dato med refusjon på grunnlag av opplysninger tilgjengelig i register
+     */
+    public static LocalDate finnFørsteGyldigeDatoMedRefusjon(RefusjonskravDatoDto refusjonsdato, FagsakYtelseType fagsakYtelseType) {
+        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(fagsakYtelseType).getFristMånederEtterRefusjon(refusjonsdato.getFørsteInnsendingAvRefusjonskrav()) + 1;
+        return refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
     }
 
 }
