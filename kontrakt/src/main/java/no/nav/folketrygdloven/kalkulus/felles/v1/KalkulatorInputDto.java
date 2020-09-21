@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.felles.v1;
 
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +17,10 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
+/**
+ * NB: Denne blir lagret som json struktur i db for senere sammenligning. Endringer her kan derfor påvirke hvordan det blir lagret, og hva
+ * som oppfattes som endret input senere.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class KalkulatorInputDto {
@@ -49,7 +52,6 @@ public class KalkulatorInputDto {
     @Valid
     @NotNull
     private LocalDate skjæringstidspunkt;
-
 
     protected KalkulatorInputDto() {
         // default ctor

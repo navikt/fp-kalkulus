@@ -145,6 +145,7 @@ public class BeregningsgrunnlagRepository {
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
+    @SuppressWarnings("unchecked")
     public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(List<Long> koblingIds, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +

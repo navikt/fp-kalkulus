@@ -67,7 +67,7 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse fastsettBeregningsaktiviteter(BeregningsgrunnlagInput input) {
         BeregningResultatAggregat resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
-        TilstandResponse tilstandResponse = mapTilstandResponse(lagreOgKopier(input.getKoblingReferanse(), resultat));
+        TilstandResponse tilstandResponse = mapTilstandResponse(input.getKoblingReferanse(), lagreOgKopier(input.getKoblingReferanse(), resultat));
 
         if (resultat.getBeregningVilkårResultat() != null) {
             tilstandResponse.medVilkårResultat(resultat.getBeregningVilkårResultat().getErVilkårOppfylt());
@@ -89,7 +89,7 @@ public class BeregningStegTjeneste {
         BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(input.getKoblingReferanse().getKoblingId(), beregningResultatAggregat.getBeregningsgrunnlagGrunnlag(), OPPDATERT_MED_ANDELER);
         BeregningsgrunnlagEntitet nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER);
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetGrunnlag, nyttGrunnlag, nyttBg);
-        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
     /**
@@ -104,7 +104,7 @@ public class BeregningStegTjeneste {
         Optional<BeregningsgrunnlagEntitet> forrigeBekreftetBeregningsgrunnlag = finnForrigeBgFraTilstand(input, FORESLÅTT_UT);
         BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         lagreOgKopier(input, beregningResultatAggregat, forrigeBekreftetBeregningsgrunnlag, nyttBg, FORESLÅTT, FORESLÅTT_UT);
-        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
     /**
@@ -119,7 +119,7 @@ public class BeregningStegTjeneste {
         BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
         Long koblingId = input.getKoblingReferanse().getKoblingId();
         repository.lagre(koblingId, beregningsgrunnlagEntitet, VURDERT_REFUSJON);
-        return mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
 
     /**
@@ -138,7 +138,7 @@ public class BeregningStegTjeneste {
         if (vilkårResultat == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
-        TilstandResponse tilstandResponse = mapTilstandResponse(beregningResultatAggregat.getBeregningAksjonspunktResultater());
+        TilstandResponse tilstandResponse = mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
         if (!vilkårResultat.getErVilkårOppfylt()) {
             tilstandResponse.medVilkårsavslagsårsak(new Vilkårsavslagsårsak(vilkårResultat.getVilkårsavslagsårsak().getKode()));
         }
@@ -160,7 +160,7 @@ public class BeregningStegTjeneste {
             BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningsgrunnlag.get());
             repository.lagre(koblingId, beregningsgrunnlagEntitet, FASTSATT);
         }
-        TilstandResponse tilstandResponse = mapTilstandResponse(List.of());
+        TilstandResponse tilstandResponse = mapTilstandResponse(input.getKoblingReferanse(), List.of());
 
         BeregningVilkårResultat vilkårResultat = beregningResultatAggregat.getBeregningVilkårResultat();
         if (vilkårResultat != null && !vilkårResultat.getErVilkårOppfylt()) {
@@ -248,12 +248,13 @@ public class BeregningStegTjeneste {
                 .flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
     }
 
-    private TilstandResponse mapTilstandResponse(List<BeregningAksjonspunktResultat> resultat) {
-        return new TilstandResponse(resultat.stream()
+    private TilstandResponse mapTilstandResponse(KoblingReferanse koblingReferanse, List<BeregningAksjonspunktResultat> resultat) {
+        List<AksjonspunktMedTilstandDto> aksjonspunkter = resultat.stream()
                 .map(res -> new AksjonspunktMedTilstandDto(
                         new BeregningAksjonspunkt(res.getBeregningAksjonspunktDefinisjon().getKode()),
                         res.getVenteårsak() != null ? new BeregningVenteårsak(res.getVenteårsak().getKode()) : null,
-                        res.getVentefrist())).collect(Collectors.toList()));
+                        res.getVentefrist())).collect(Collectors.toList());
+        return new TilstandResponse(koblingReferanse.getKoblingUuid(), aksjonspunkter);
     }
 
     public TilstandResponse beregnFor(StegType stegType, BeregningsgrunnlagInput input, Long koblingId) {

@@ -20,7 +20,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
  * Spesifikasjon for å fortsette en beregning.
  *
  * Må minimum angi en referanser kobling
+ * @deprecated Bruk {@link FortsettBeregningListeRequest}
  */
+@Deprecated(forRemoval=true, since="1.0")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)

@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -17,11 +16,12 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
-
 /**
  * Spesifikasjon for å starte en beregning.
  * Oppretter starter en ny beregning
+ * @deprecated Bruk {@link StartBeregningListeRequest}
  */
+@Deprecated(forRemoval=true, since="1.0")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -90,11 +90,4 @@ public class StartBeregningRequest {
         return kalkulatorInput;
     }
 
-    @AssertTrue(message = "Krever ytelsespesifikt grunnlag for ytelsen pleiepenger sykt barn")
-    private boolean isPSB() {
-        if (ytelseSomSkalBeregnes == YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN) {
-            return kalkulatorInput.getYtelsespesifiktGrunnlag() != null;
-        }
-        return true;
-    }
 }
