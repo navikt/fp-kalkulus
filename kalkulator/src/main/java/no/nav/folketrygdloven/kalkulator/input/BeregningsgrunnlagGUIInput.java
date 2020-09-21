@@ -47,7 +47,7 @@ public class BeregningsgrunnlagGUIInput {
     private List<RefusjonskravDatoDto> refusjonskravDatoer = new ArrayList<>();
 
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
-    private BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag;
+    private BeregningsgrunnlagGrunnlagDto faktaOmBeregningBeregningsgrunnlagGrunnlag;
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
@@ -82,23 +82,12 @@ public class BeregningsgrunnlagGUIInput {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
-    public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
-                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                      AktivitetGradering aktivitetGradering,
-                                      List<RefusjonskravDatoDto> refusjonskravDatoer,
-                                      YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                      BeregningsgrunnlagGrunnlagDto faktaOmBeregningPreutfyllingsgrunnlag) {
-        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
-        this.iayGrunnlag = iayGrunnlag;
-        this.aktivitetGradering = aktivitetGradering;
-        this.refusjonskravDatoer = refusjonskravDatoer;
-        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
-        this.faktaOmBeregningPreutfyllingsgrunnlag = faktaOmBeregningPreutfyllingsgrunnlag;
-    }
     private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
         this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
+        this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
+
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
@@ -163,8 +152,8 @@ public class BeregningsgrunnlagGUIInput {
         return refusjonskravDatoer;
     }
 
-    public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningPreutfyllingsgrunnlag() {
-        return Optional.ofNullable(faktaOmBeregningPreutfyllingsgrunnlag);
+    public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningBeregningsgrunnlagGrunnlag() {
+        return Optional.ofNullable(faktaOmBeregningBeregningsgrunnlagGrunnlag);
     }
 
     /** Sjekk fagsakytelsetype før denne kalles. */
@@ -201,6 +190,16 @@ public class BeregningsgrunnlagGUIInput {
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
+        return newInput;
+    }
+
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraFaktaOmBeregning(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        if (!(grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)
+                || grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))) {
+            throw new IllegalArgumentException("Grunnlaget er ikke fra fakta om beregning.");
+        }
+        var newInput = new BeregningsgrunnlagGUIInput(this);
+        newInput.faktaOmBeregningBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

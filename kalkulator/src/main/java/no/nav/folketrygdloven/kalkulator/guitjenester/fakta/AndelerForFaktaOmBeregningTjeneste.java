@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.fordeling.FordelTilkommetArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
+import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -17,8 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelForFaktaOmBeregningDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 
 public class AndelerForFaktaOmBeregningTjeneste {
 
@@ -28,8 +28,8 @@ public class AndelerForFaktaOmBeregningTjeneste {
 
     public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagGrunnlagDto gjeldendeGrunnlag;
-        if (input.getFaktaOmBeregningPreutfyllingsgrunnlag().isPresent()) {
-            gjeldendeGrunnlag = input.getFaktaOmBeregningPreutfyllingsgrunnlag().get();
+        if (input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag().isPresent()) {
+            gjeldendeGrunnlag = input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag().get();
         } else {
             gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         }
