@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jetbrains.annotations.NotNull;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -68,7 +66,6 @@ public class YtelsespesifiktGrunnlagTjenesteFRISINN implements YtelsespesifiktGr
         return frisinnGrunnlagDto;
     }
 
-    @NotNull
     private List<AvslagsårsakPrPeriodeDto> mapAvslagsårsakPerioder(BeregningsgrunnlagGUIInput input, FrisinnGrunnlag frisinnGrunnlag, Optional<OppgittOpptjeningDto> oppgitOpptjening) {
         return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
                     .map(periode -> new AvslagsårsakPrPeriodeDto(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(),

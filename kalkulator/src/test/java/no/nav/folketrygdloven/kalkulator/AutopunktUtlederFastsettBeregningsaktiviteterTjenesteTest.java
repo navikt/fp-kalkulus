@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
@@ -18,17 +17,10 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.vedtak.util.FPDateUtil;
 
 public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
 
     private KoblingReferanse ref = new KoblingReferanseMock();
-
-    @AfterEach
-    public void after() {
-        System.clearProperty(FPDateUtil.SystemConfiguredClockProvider.PROPERTY_KEY_OFFSET_PERIODE);
-        FPDateUtil.init();
-    }
 
     @Test
     public void skal_vente_på_meldekort_når_har_AAP_og_meldekort_uten_AAP_status() {

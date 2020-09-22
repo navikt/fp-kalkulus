@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.vedtak.util.FPDateUtil;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("*")
@@ -37,10 +36,10 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getKoblingReferanse().getAktørId());
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
-        if (no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, FPDateUtil.iDag())) {
+        if (no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, LocalDate.now())) {
             return List.of(opprettSettPåVentAutopunktForVentPåRapportering(input, beregningsgrunnlag));
         }
-        Optional<LocalDate> ventPåMeldekortFrist = no.nav.folketrygdloven.kalkulator.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, beregningsgrunnlag, FPDateUtil.iDag());
+        Optional<LocalDate> ventPåMeldekortFrist = no.nav.folketrygdloven.kalkulator.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, beregningsgrunnlag, LocalDate.now());
         if (ventPåMeldekortFrist.isPresent()) {
             return List.of(opprettSettPåVentAutopunktMeldekort(ventPåMeldekortFrist.get()));
         }

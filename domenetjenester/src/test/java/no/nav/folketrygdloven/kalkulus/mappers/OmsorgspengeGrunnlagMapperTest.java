@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
@@ -66,7 +65,6 @@ class OmsorgspengeGrunnlagMapperTest {
 
     }
 
-    @NotNull
     private OmsorgspengerGrunnlag lagOmsorgspengegrunnlag() {
         return new OmsorgspengerGrunnlag(List.of(
                     new UtbetalingsgradPrAktivitetDto(new UtbetalingsgradArbeidsforholdDto(

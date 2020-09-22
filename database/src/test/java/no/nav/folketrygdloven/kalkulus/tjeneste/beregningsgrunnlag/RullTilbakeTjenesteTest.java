@@ -6,11 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
@@ -21,33 +20,28 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.EntityManagerFtKalkulusAwareExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.felles.testutilities.db.RepositoryRule;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
+@ExtendWith({EntityManagerFtKalkulusAwareExtension.class})
+public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
-public class RullTilbakeTjenesteTest {
-
-    @Rule
-    public RepositoryRule repositoryRule = new UnittestRepositoryRule();
-
-    private BeregningsgrunnlagRepository repository = new BeregningsgrunnlagRepository(repositoryRule.getEntityManager());
-    private KoblingRepository koblingRepository = new KoblingRepository(repositoryRule.getEntityManager());
-    private RullTilbakeTjeneste rullTilbakeTjeneste = new RullTilbakeTjeneste(repository);
-
+    private BeregningsgrunnlagRepository repository;
+    private KoblingRepository koblingRepository;
+    private RullTilbakeTjeneste rullTilbakeTjeneste;
     private Long koblingId;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        AktørId aktørId = new AktørId("1234123412341");
-        KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
-        Saksnummer saksnummer = new Saksnummer("1234");
-        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtter.FORELDREPENGER, saksnummer, aktørId);
-        koblingRepository.lagre(koblingEntitet);
-        koblingId = koblingEntitet.getId();
+        repository = new BeregningsgrunnlagRepository(getEntityManager());
+        koblingRepository = new KoblingRepository(getEntityManager());
+        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository);
     }
 
     @Test
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
+        prepareTestData();
         // Arrange
         repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -71,6 +65,7 @@ public class RullTilbakeTjenesteTest {
 
     @Test
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
+        prepareTestData();
         // Arrange
         repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -95,6 +90,7 @@ public class RullTilbakeTjenesteTest {
 
     @Test
     public void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
+        prepareTestData();
         // Arrange
         repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -118,6 +114,7 @@ public class RullTilbakeTjenesteTest {
 
     @Test
     public void skal_deaktivere_beregningsgrunnlag_og_input() {
+        prepareTestData();
         // Arrange
         String json = getTestJSON();
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
@@ -152,6 +149,16 @@ public class RullTilbakeTjenesteTest {
                 "  },\n" +
                 "  \"kalkulus\" : \"okey?\"\n" +
                 "}";
+    }
+
+
+    private void prepareTestData() {
+        AktørId aktørId = new AktørId("1234123412341");
+        KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
+        Saksnummer saksnummer = new Saksnummer("1234");
+        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtter.FORELDREPENGER, saksnummer, aktørId);
+        koblingRepository.lagre(koblingEntitet);
+        koblingId = koblingEntitet.getId();
     }
 
 

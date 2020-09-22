@@ -49,7 +49,7 @@
 
         <beregningsgrunnlag.regelmodell.version>2.1-20200827102644-b03e7cb</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>2.1.0-20200831113621-6a21716</felles.version>
+        <felles.version>2.3.0-20200921081815-27ae9b5</felles.version>
 
         <prometheus.version>0.9.0</prometheus.version>
         <junit.version>5.7.0</junit.version>
@@ -147,6 +147,10 @@
                     <exclusion>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.junit.vintage</groupId>
+                        <artifactId>junit-vintage-engine</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

@@ -1,18 +1,18 @@
 package no.nav.folketrygdloven.kalkulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.vedtak.util.FPDateUtil;
 
 
 public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
@@ -59,18 +58,14 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
     private InntektArbeidYtelseGrunnlagDto iayMock = mock(InntektArbeidYtelseGrunnlagDto.class);
     private AktørYtelseDto ay = mock(AktørYtelseDto.class);
     private BeregningsgrunnlagInput input;
-    private static final String FUNKSJONELT_TIDSOFFSET = FPDateUtil.SystemConfiguredClockProvider.PROPERTY_KEY_OFFSET_PERIODE;
     private LocalDate tom;
-
 
     @BeforeEach
     public void setUp() {
-        settSimulertNåtidTil(LocalDate.of(2020, 1, 8));
-        FPDateUtil.init();
 
         erOverstyrt = false;
 
-        LocalDate SKJÆRINGSTIDSPUNKT = FPDateUtil.iDag();
+        LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
         LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(3).withDayOfMonth(1);
         tom = SKJÆRINGSTIDSPUNKT.withDayOfMonth(1).minusDays(1);
 
@@ -93,13 +88,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 100000);
     }
 
-    @AfterEach
-    public void teardown() {
-        settSimulertNåtidTil(LocalDate.now());
-        FPDateUtil.init();
-    }
-
-
     @Test
     public void skalSettePåVentNårFørRapporteringsfrist() {
         // Arrange
@@ -112,12 +100,18 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         // Assert
         assertThat(resultater).hasSize(1);
         BeregningAksjonspunktResultat beregningAksjonspunktResultat = resultater.get(0);
-        assertThat(beregningAksjonspunktResultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST);
-        assertThat(beregningAksjonspunktResultat.getVentefrist()).isNotNull();
-        assertThat(beregningAksjonspunktResultat.getVenteårsak()).isNotNull();
 
-        assertThat(beregningAksjonspunktResultat.getVenteårsak()).isEqualTo(BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST);
-        assertThat(beregningAksjonspunktResultat.getVentefrist()).isEqualTo(frist);
+        assertThat(beregningAksjonspunktResultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST);
+
+        assertThat(beregningAksjonspunktResultat.getVenteårsak())
+                .isNotNull()
+                .isEqualTo(BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST);
+
+        assertThat(beregningAksjonspunktResultat.getVentefrist())
+                .isNotNull()
+                .isAfterOrEqualTo(frist)
+                .isBeforeOrEqualTo(frist.plusDays(2))
+                .isCloseTo(frist, within(2, ChronoUnit.DAYS));
     }
 
     @Test
@@ -334,12 +328,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
 
     private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput() {
         return new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
-    }
-
-    private void settSimulertNåtidTil(LocalDate dato) {
-        Period periode = Period.between(LocalDate.now(), dato);
-        System.setProperty(FUNKSJONELT_TIDSOFFSET, periode.toString());
-        FPDateUtil.init();
     }
 
     private InntektArbeidYtelseGrunnlagDto getIAYGrunnlag() {

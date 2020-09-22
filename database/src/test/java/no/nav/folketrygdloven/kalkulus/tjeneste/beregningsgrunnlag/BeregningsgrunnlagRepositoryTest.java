@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
@@ -26,18 +26,22 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.EntityManagerFtKalkulusAwareExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.felles.testutilities.db.RepositoryRule;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
-public class BeregningsgrunnlagRepositoryTest {
-
-    @Rule
-    public RepositoryRule repositoryRule = new UnittestRepositoryRule();
+@ExtendWith(EntityManagerFtKalkulusAwareExtension.class)
+public class BeregningsgrunnlagRepositoryTest  extends EntityManagerAwareTest {
 
 
-    private BeregningsgrunnlagRepository repository = new BeregningsgrunnlagRepository(repositoryRule.getEntityManager());
-    private KoblingRepository koblingRepository = new KoblingRepository(repositoryRule.getEntityManager());
+    private BeregningsgrunnlagRepository repository;
+    private KoblingRepository koblingRepository;
 
+    @BeforeEach
+    public void beforeEach() {
+        repository = new BeregningsgrunnlagRepository(getEntityManager());
+        koblingRepository = new KoblingRepository(getEntityManager());
+    }
 
     @Test
     public void skal_lagre_ned_input() {

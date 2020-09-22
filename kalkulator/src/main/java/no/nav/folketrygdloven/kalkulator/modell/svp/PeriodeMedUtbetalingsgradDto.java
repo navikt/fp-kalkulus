@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulator.modell.svp;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbetalingsgradDto> {
@@ -40,7 +38,7 @@ public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbeta
 
 
     @Override
-    public int compareTo(@NotNull PeriodeMedUtbetalingsgradDto periode) {
+    public int compareTo( PeriodeMedUtbetalingsgradDto periode) {
         return this.getPeriode().compareTo(periode.getPeriode());
     }
 }

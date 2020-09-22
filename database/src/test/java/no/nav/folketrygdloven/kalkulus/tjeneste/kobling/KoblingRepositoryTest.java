@@ -4,25 +4,34 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.kobling;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.UUID;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.dbstoette.UnittestRepositoryRule;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.vedtak.felles.testutilities.db.RepositoryRule;
+import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.EntityManagerFtKalkulusAwareExtension;
+import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 
-public class KoblingRepositoryTest {
+@ExtendWith(EntityManagerFtKalkulusAwareExtension.class)
+public class KoblingRepositoryTest extends EntityManagerAwareTest {
 
-    @Rule
-    public RepositoryRule repositoryRule = new UnittestRepositoryRule();
+    private KoblingRepository koblingRepository;
 
-    private final KoblingRepository koblingRepository = new KoblingRepository(repositoryRule.getEntityManager());
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Oslo"));
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        koblingRepository = new KoblingRepository(getEntityManager());
+    }
 
     @Test
     public void skal_lagre_ned_beregningsgrunnlag() {
