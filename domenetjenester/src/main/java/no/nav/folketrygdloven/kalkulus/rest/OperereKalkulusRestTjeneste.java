@@ -360,7 +360,7 @@ public class OperereKalkulusRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public class DeaktiverBeregningsgrunnlagRequestAbacDto extends BeregningsgrunnlagListeRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+    public static class DeaktiverBeregningsgrunnlagRequestAbacDto extends BeregningsgrunnlagListeRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
 
         public DeaktiverBeregningsgrunnlagRequestAbacDto() {
         }
