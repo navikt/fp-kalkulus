@@ -70,20 +70,21 @@ public class BeregningsgrunnlagDtoTjeneste {
 
         mapFaktaOmBeregning(input, dto);
 
-
-        mapOverstyring(input, dto);
-        mapSkjæringstidspunkt(input, dto);
-        mapFaktaOmRefusjon(input, dto);
-        mapFaktaOmFordeling(input, dto);
-        mapSammenligningsgrunnlag(input, dto);
-        mapSammenlingingsgrunnlagPrStatus(input, dto);
-        mapBeregningsgrunnlagAktivitetStatus(input, dto);
-        mapBeregningsgrunnlagPerioder(input, dto);
-        mapBeløp(input, dto);
-        mapAktivitetGradering(input, dto);
-        mapDtoYtelsespesifikk(input, dto);
-        mapDekningsgrad(input, dto);
-        mapYtelsesspesifiktGrunnlag(input, dto);
+        if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isPresent()) {
+            mapOverstyring(input, dto);
+            mapSkjæringstidspunkt(input, dto);
+            mapFaktaOmRefusjon(input, dto);
+            mapFaktaOmFordeling(input, dto);
+            mapSammenligningsgrunnlag(input, dto);
+            mapSammenlingingsgrunnlagPrStatus(input, dto);
+            mapBeregningsgrunnlagAktivitetStatus(input, dto);
+            mapBeregningsgrunnlagPerioder(input, dto);
+            mapBeløp(input, dto);
+            mapAktivitetGradering(input, dto);
+            mapDtoYtelsespesifikk(input, dto);
+            mapDekningsgrad(input, dto);
+            mapYtelsesspesifiktGrunnlag(input, dto);
+        }
         return dto;
     }
 
