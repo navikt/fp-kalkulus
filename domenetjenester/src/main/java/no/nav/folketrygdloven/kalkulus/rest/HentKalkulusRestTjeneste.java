@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,10 +32,8 @@ import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjene
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
@@ -60,7 +56,7 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transactional
-public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
+public class HentKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
@@ -75,8 +71,7 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                     GUIBeregningsgrunnlagInputTjeneste kalkulatorInputTjeneste,
-                                    BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste, MetrikkerTjeneste metrikkerTjeneste) {
-        super(metrikkerTjeneste);
+                                    BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
@@ -90,11 +85,9 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/fastsatt")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         final Response response = hentFastsattBeregningsgrunnlagForSpesifikasjon(spesifikasjon)
             .map(bgDto -> Response.ok(bgDto).build())
             .orElse(Response.noContent().build());
-        logMetrikk("/kalkulus/v1/fastsatt", Duration.between(startTx, Instant.now()));
         return response;
     }
 
@@ -105,14 +98,12 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/fastsattListe")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
     public Response hentFastsattBeregningsgrunnlagListe(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
             .map(spes -> this.hentFastsattBeregningsgrunnlagForSpesifikasjon(spes)
                 .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
                 .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto>(
                     spes.getKoblingReferanse(), null)))
             .collect(Collectors.toList());
-        logMetrikk("/kalkulus/v1/fastsattListe", Duration.between(startTx, Instant.now()));
         return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
 
@@ -123,13 +114,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/grunnlag")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         final Response response = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(spesifikasjon).stream()
             .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, spesifikasjon.getInkluderRegelSporing()))
             .map(bgDto -> Response.ok(bgDto).build())
             .findFirst()
             .orElse(Response.noContent().build());
-        logMetrikk("/kalkulus/v1/grunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
 
@@ -140,14 +129,12 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/beregningsgrunnlag")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDto(@NotNull @Valid HentBeregningsgrunnlagDtoForGUIRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         Response response;
         response = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(List.of(spesifikasjon)).values()
             .stream().findFirst()
             .map(Response::ok)
             .orElse(Response.noContent())
             .build();
-        logMetrikk("/kalkulus/v1/beregningsgrunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
 
@@ -158,13 +145,11 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/beregningsgrunnlagListe")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> dtoPrReferanse = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(
             spesifikasjon.getRequestPrReferanse()).entrySet()
                 .stream()
                 .map(e -> new BeregningsgrunnlagPrReferanse<>(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
-        logMetrikk("/kalkulus/v1/beregningsgrunnlagListe", Duration.between(startTx, Instant.now()));
         return Response.ok(new BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
 
@@ -175,7 +160,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/frisinnGrunnlag")
     @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
             .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
@@ -193,7 +177,6 @@ public class HentKalkulusRestTjeneste extends FellesRestTjeneste {
             .map(bgDto -> Response.ok(bgDto).build())
             .findFirst()
             .orElse(Response.noContent().build());
-        logMetrikk("/kalkulus/v1/frisinnGrunnlag", Duration.between(startTx, Instant.now()));
         return response;
     }
 

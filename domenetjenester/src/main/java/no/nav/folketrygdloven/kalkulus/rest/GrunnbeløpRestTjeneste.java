@@ -3,9 +3,6 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
-import java.time.Duration;
-import java.time.Instant;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -22,8 +19,6 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
-import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningSats;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentGrunnbeløpRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -34,7 +29,7 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transactional
-public class GrunnbeløpRestTjeneste extends FellesRestTjeneste {
+public class GrunnbeløpRestTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
 
@@ -43,9 +38,7 @@ public class GrunnbeløpRestTjeneste extends FellesRestTjeneste {
     }
 
     @Inject
-    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                  MetrikkerTjeneste metrikkerTjeneste) {
-        super(metrikkerTjeneste);
+    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
     }
 
@@ -55,10 +48,8 @@ public class GrunnbeløpRestTjeneste extends FellesRestTjeneste {
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/grunnbelop")
     public Response hentGrunnbeløp(@NotNull @Valid HentGrunnbeløpRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         BeregningSats grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(spesifikasjon.getDato());
         final Response response = Response.ok(MapBeregningSats.map(grunnbeløp)).build();
-        logMetrikk("/kalkulus/v1/grunnbelop", Duration.between(startTx, Instant.now()));
         return response;
     }
 

@@ -7,6 +7,7 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDAT
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,7 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -45,10 +46,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
@@ -82,7 +81,7 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transactional
-public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
+public class OperereKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningStegTjeneste beregningStegTjeneste;
@@ -99,9 +98,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
                                        BeregningStegTjeneste beregningStegTjeneste,
                                        KalkulatorInputTjeneste kalkulatorInputTjeneste,
                                        HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
-                                       RullTilbakeTjeneste rullTilbakeTjeneste,
-                                       MetrikkerTjeneste metrikkerTjeneste) {
-        super(metrikkerTjeneste);
+                                       RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
@@ -122,7 +119,6 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse().getReferanse());
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
@@ -142,7 +138,6 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
 
         TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
 
-        logMetrikk("/kalkulus/v1/start", Duration.between(startTx, Instant.now()));
         return Response.ok(tilstandResponse).build();
     }
 
@@ -197,7 +192,6 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
@@ -206,7 +200,6 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
         BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 
-        logMetrikk("/kalkulus/v1/fortsett", Duration.between(startTx, Instant.now()));
         return Response.ok(tilstandResponse).build();
     }
 
@@ -250,14 +243,13 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         List<OppdateringPrRequest> oppdateringer = spesifikasjon.getHåndterBeregningListe().stream()
-            .map(request -> {
-                var oppdatering = håndterForKobling(request);
-                return new OppdateringPrRequest(oppdatering, request.getEksternReferanse());
-            })
-            .collect(Collectors.toList());
-        logMetrikk("/kalkulus/v1/oppdaterBolk", Duration.between(startTx, Instant.now()));
+                .map(request -> {
+                    var oppdatering = håndterForKobling(request);
+                    return new OppdateringPrRequest(oppdatering, request.getEksternReferanse());
+                })
+                .collect(Collectors.toList());
+
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
@@ -270,9 +262,7 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         OppdateringRespons respons = håndterForKobling(spesifikasjon);
-        logMetrikk("/kalkulus/v1/oppdater", Duration.between(startTx, Instant.now()));
         return Response.ok(Objects.requireNonNullElseGet(respons, OppdateringRespons::TOM_RESPONS)).build();
     }
 
@@ -287,11 +277,9 @@ public class OperereKalkulusRestTjeneste extends FellesRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
-        logMetrikk("/kalkulus/v1/deaktiver", Duration.between(startTx, Instant.now()));
         return Response.ok().build();
     }
 

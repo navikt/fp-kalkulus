@@ -38,7 +38,7 @@ public class PeriodeMedUtbetalingsgradDto implements Comparable<PeriodeMedUtbeta
 
 
     @Override
-    public int compareTo( PeriodeMedUtbetalingsgradDto periode) {
+    public int compareTo(PeriodeMedUtbetalingsgradDto periode) {
         return this.getPeriode().compareTo(periode.getPeriode());
     }
 }

@@ -406,11 +406,6 @@
                 <version>${swagger.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>no.nav.foreldrepenger.felles.integrasjon</groupId>
-                <artifactId>sensu-klient</artifactId>
-                <version>${felles.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

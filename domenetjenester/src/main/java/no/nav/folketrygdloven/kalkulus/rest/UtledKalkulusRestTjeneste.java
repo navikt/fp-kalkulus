@@ -3,8 +3,6 @@ package no.nav.folketrygdloven.kalkulus.rest;
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,9 +35,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.FellesRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.folketrygdloven.kalkulus.felles.metrikker.MetrikkerTjeneste;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.ErEndringIBeregningRequest;
@@ -53,7 +49,7 @@ import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 @Path("/kalkulus/v1")
 @ApplicationScoped
 @Transactional
-public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
+public class UtledKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
@@ -63,8 +59,7 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
     }
 
     @Inject
-    public UtledKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste, MetrikkerTjeneste metrikkerTjeneste) {
-        super(metrikkerTjeneste);
+    public UtledKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
     }
@@ -76,7 +71,6 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
     @Path("/erEndring")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response erEndringIBeregning(@NotNull @Valid ErEndringIBeregningRequestAbacDto spesifikasjon) {
-        var startTx = Instant.now();
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         var koblingReferanse1 = new KoblingReferanse(spesifikasjon.getKoblingReferanse1());
         koblingTjeneste.hentFor(koblingReferanse1).map(KoblingEntitet::getSaksnummer)
@@ -87,7 +81,6 @@ public class UtledKalkulusRestTjeneste extends FellesRestTjeneste {
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag1 = koblingId1.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagHvisFinnes(k).flatMap(BeregningsgrunnlagInput::getBeregningsgrunnlagHvisFinnes));
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag2 = koblingId2.flatMap(k -> kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlagHvisFinnes(k).flatMap(BeregningsgrunnlagInput::getBeregningsgrunnlagHvisFinnes));
         boolean erEndring = ErEndringIBeregning.vurder(beregningsgrunnlag1, beregningsgrunnlag2);
-        logMetrikk("/kalkulus/v1/erEndring", Duration.between(startTx, Instant.now()));
 
         return Response.ok(erEndring).build();
     }
