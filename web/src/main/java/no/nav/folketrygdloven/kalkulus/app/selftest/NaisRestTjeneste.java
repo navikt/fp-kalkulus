@@ -55,7 +55,6 @@ public class NaisRestTjeneste {
     @Operation(description = "sjekker om poden er klar", tags = "nais", hidden = true)
     public Response isReady() {
         if (!selftestService.kritiskTjenesteFeilet()) {
-            logger.debug("Application is ready.");
             return Response
                 .ok(RESPONSE_OK)
                 .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)

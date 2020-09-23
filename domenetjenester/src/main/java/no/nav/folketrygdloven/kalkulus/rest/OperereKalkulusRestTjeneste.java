@@ -4,8 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -64,7 +62,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
-import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste.DeaktiverBeregningsgrunnlagRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.FortsettBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningListeRequestAbacDto;

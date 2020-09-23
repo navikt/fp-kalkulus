@@ -5,10 +5,14 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -54,14 +58,17 @@ public class BeregningsgrunnlagRepository {
     }
 
     /**
-     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for revurdering. Ignorerer om grunnlaget er aktivt eller ikke.
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for revurdering. Ignorerer om grunnlaget er aktivt
+     * eller ikke.
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
-     * @param koblingId                  en koblingId
+     * @param koblingId en koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
-     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den som ble opprettet sist
+     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
+     *         som ble opprettet sist
      */
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(Long koblingId, Optional<Long> originalKoblingId,
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(Long koblingId,
+                                                                                                                 Optional<Long> originalKoblingId,
                                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, beregningsgrunnlagTilstand);
         if (!sisteBg.isPresent() && originalKoblingId.isPresent()) {
@@ -78,10 +85,11 @@ public class BeregningsgrunnlagRepository {
      */
     public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(List<Long> koblingIds) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
-                        "where grunnlag.koblingId in :koblingId " +
-                        "and grunnlag.aktiv = :aktivt", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingIds); //$NON-NLS-1$
+            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "where grunnlag.koblingId in :koblingId " +
+                "and grunnlag.aktiv = :aktivt", //$NON-NLS-1$
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
         query.setParameter("aktivt", true); //$NON-NLS-1$
         return query.getResultList();
     }
@@ -94,10 +102,11 @@ public class BeregningsgrunnlagRepository {
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
-                        "where grunnlag.koblingId=:koblingId " +
-                        "and grunnlag.aktiv = :aktivt", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
+            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "where grunnlag.koblingId=:koblingId " +
+                "and grunnlag.aktiv = :aktivt", //$NON-NLS-1$
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter("aktivt", true); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
@@ -105,16 +114,17 @@ public class BeregningsgrunnlagRepository {
     /**
      * Henter aktivt BeregningsgrunnlagGrunnlagEntitet
      *
-     * @param koblingId         en koblingId
+     * @param koblingId en koblingId
      * @param grunnlagReferanse en referanse til et lagret grunnlag
      * @return Hvis det finnes en aktiv {@link BeregningsgrunnlagGrunnlagEntitet} returneres denne
      */
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForReferanse(Long koblingId, UUID grunnlagReferanse) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
-                        "where grunnlag.koblingId=:koblingId " +
-                        "and grunnlag.grunnlagReferanse.referanse = :referanse", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
+            "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
+                "where grunnlag.koblingId=:koblingId " +
+                "and grunnlag.grunnlagReferanse.referanse = :referanse", //$NON-NLS-1$
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter("referanse", grunnlagReferanse); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
@@ -122,48 +132,53 @@ public class BeregningsgrunnlagRepository {
     /**
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
      *
-     * @param koblingId                  en koblingId
+     * @param koblingId en koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
-     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den som ble opprettet sist
+     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
+     *         som ble opprettet sist
      */
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitet(Long koblingId,
+                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
-                "from BeregningsgrunnlagGrunnlagEntitet " +
-                        "where koblingId=:koblingId " +
-                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
-                        "order by opprettetTidspunkt desc, id desc", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); //$NON-NLS-1$
+            "from BeregningsgrunnlagGrunnlagEntitet " +
+                "where koblingId=:koblingId " +
+                "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
         query.setMaxResults(1);
         return query.getResultStream().findFirst();
     }
 
     /**
-     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for alle koblinger. Ignorerer om grunnlaget er aktivt eller ikke.
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg for alle koblinger. Ignorerer om grunnlaget er aktivt
+     * eller ikke.
      *
-     * @param koblingIds                 en liste med koblingId
+     * @param koblingIds en liste med koblingId
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
     @SuppressWarnings("unchecked")
-    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(List<Long> koblingIds, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(List<Long> koblingIds,
+                                                                                                          BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Query query = entityManager.createNativeQuery(
-                "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
-                        "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
-                        "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
-                        "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
-                        "GR.KOBLING_ID IN :koblingId AND " +
-                        "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", BeregningsgrunnlagGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingIds); //$NON-NLS-1$
-        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); //$NON-NLS-1$
+            "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +
+                "WHERE GR.OPPRETTET_TID = (SELECT max(GR2.OPPRETTET_TID) FROM GR_BEREGNINGSGRUNNLAG GR2 " +
+                "WHERE GR2.KOBLING_ID = GR.KOBLING_ID AND " +
+                "GR2.STEG_OPPRETTET = :beregningsgrunnlagTilstand) AND " +
+                "GR.KOBLING_ID IN :koblingId AND " +
+                "GR.STEG_OPPRETTET = :beregningsgrunnlagTilstand", //$NON-NLS-1$
+            BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingIds); // $NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand.getKode()); // $NON-NLS-1$
         return query.getResultList();
     }
 
-
     public BeregningSats finnGrunnbeløp(LocalDate dato) {
         TypedQuery<BeregningSats> query = entityManager.createQuery("from BeregningSats where satsType=:satsType" + //$NON-NLS-1$
-                " and periode.fomDato<=:dato" + //$NON-NLS-1$
-                " and periode.tomDato>=:dato", BeregningSats.class); //$NON-NLS-1$
+            " and periode.fomDato<=:dato" + //$NON-NLS-1$
+            " and periode.tomDato>=:dato", BeregningSats.class); //$NON-NLS-1$
 
         query.setParameter("satsType", BeregningSatsType.GRUNNBELØP); //$NON-NLS-1$
         query.setParameter("dato", dato); //$NON-NLS-1$
@@ -179,7 +194,8 @@ public class BeregningsgrunnlagRepository {
         return query.getResultList();
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagEntitet beregningsgrunnlag, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+    public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagEntitet beregningsgrunnlag,
+                                                   BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(beregningsgrunnlag, BEREGNINGSGRUNNLAG);
         Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
@@ -191,7 +207,8 @@ public class BeregningsgrunnlagRepository {
         return grunnlagEntitet;
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagGrunnlagBuilder builder, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+    public BeregningsgrunnlagGrunnlagEntitet lagre(Long koblingId, BeregningsgrunnlagGrunnlagBuilder builder,
+                                                   BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(builder, BUILDER);
         Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
@@ -223,16 +240,16 @@ public class BeregningsgrunnlagRepository {
         }
         nyttGrunnlag.getSaksbehandletAktiviteter().ifPresent(this::lagreBeregningAktivitetAggregat);
         nyttGrunnlag.getOverstyring()
-                .ifPresent(this::lagreOverstyring);
+            .ifPresent(this::lagreOverstyring);
         nyttGrunnlag.getBeregningsgrunnlag().ifPresent(entityManager::persist);
         nyttGrunnlag.getRefusjonOverstyringer()
-                .ifPresent(this::lagreRefusjonOverstyring);
+            .ifPresent(this::lagreRefusjonOverstyring);
 
         entityManager.persist(nyttGrunnlag);
 
         nyttGrunnlag.getBeregningsgrunnlag().stream()
-                .flatMap(beregningsgrunnlagEntitet -> beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream())
-                .forEach(this::lagreSammenligningsgrunnlagPrStatus);
+            .flatMap(beregningsgrunnlagEntitet -> beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream())
+            .forEach(this::lagreSammenligningsgrunnlagPrStatus);
     }
 
     private void lagreOverstyring(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringer) {
@@ -281,7 +298,6 @@ public class BeregningsgrunnlagRepository {
         kalkulatorInputEntitet.ifPresent(this::deaktiverKalkulatorInput);
     }
 
-
     public void deaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         entitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
@@ -306,7 +322,8 @@ public class BeregningsgrunnlagRepository {
     public boolean reaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         aktivEntitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> kontrollerFaktaEntitetOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, beregningsgrunnlagTilstand);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> kontrollerFaktaEntitetOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId,
+            beregningsgrunnlagTilstand);
         boolean reaktiverer = kontrollerFaktaEntitetOpt.isPresent();
         kontrollerFaktaEntitetOpt.ifPresent(entitet -> setAktivOgLagre(entitet, true));
         entityManager.flush();
@@ -317,7 +334,8 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         aktivEntitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
         Optional<BeregningsgrunnlagTilstand> forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(beregningsgrunnlagTilstand);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
+        Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeEntitet = forrigeTilstand
+            .flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
         while (forrigeEntitet.isEmpty() && forrigeTilstand.isPresent()) {
             forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(forrigeTilstand.get());
             forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
@@ -347,33 +365,44 @@ public class BeregningsgrunnlagRepository {
     }
 
     public KalkulatorInputEntitet hentKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv", KalkulatorInputEntitet.class);
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv",
+            KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentEksaktResultat(query);
     }
 
     public Optional<KalkulatorInputEntitet> hentHvisEksitererKalkulatorInput(Long koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv", KalkulatorInputEntitet.class);
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv",
+            KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return hentUniktResultat(query);
     }
 
     public List<KalkulatorInputEntitet> hentHvisEksistererKalkulatorInput(Collection<Long> koblingId) {
-        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId IN (:koblingId) and aktiv =:aktiv", KalkulatorInputEntitet.class);
+        TypedQuery<KalkulatorInputEntitet> query = entityManager.createQuery("from KalkulatorInput where koblingId IN (:koblingId) and aktiv =:aktiv",
+            KalkulatorInputEntitet.class);
         query.setParameter("koblingId", koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return query.getResultList();
     }
 
     public boolean hvisEksistererKalkulatorInput(Long koblingId) {
-        Number n = (Number) entityManager
-                .createQuery("select count(*) from KalkulatorInput where koblingId =:koblingId and aktiv =:aktiv")
-                .setParameter("koblingId", koblingId)
-                .setParameter("aktiv", true)
-                .getSingleResult();
-        return n.longValue() > 0L;
+        return !hvisEksistererKalkulatorInput(List.of(koblingId)).isEmpty();
+    }
+
+    /** returnerer koblingIder som har kalkulator input fra angitt input. */
+    public NavigableSet<Long> hvisEksistererKalkulatorInput(Collection<Long> koblingIder) {
+        @SuppressWarnings("unchecked")
+        var resultat = (NavigableSet<Long>) entityManager
+            .createQuery("select k.koblingId from KalkulatorInput k where k.koblingId IN (:koblingIder) and k.aktiv =:aktiv")
+            .setParameter("koblingIder", koblingIder)
+            .setParameter("aktiv", true)
+            .getResultStream()
+            .map(r -> ((Number) r).longValue())
+            .collect(Collectors.toCollection(TreeSet::new));
+        return Collections.unmodifiableNavigableSet(resultat);
+
     }
 }
-

@@ -57,8 +57,8 @@ public class KoblingTjeneste {
         return repository.hentFor(referanse, ytelseType);
     }
 
-    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, Collection<YtelseTyperKalkulusStøtter> ytelseSomSkalBeregnes) {
-        return repository.hentKoblingerFor(koblingReferanser, ytelseSomSkalBeregnes);
+    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, YtelseTyperKalkulusStøtter ytelseType) {
+        return repository.hentKoblingerFor(koblingReferanser, ytelseType);
     }
     
     public void lagre(KoblingEntitet kobling) {
