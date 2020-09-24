@@ -81,6 +81,8 @@ public class HentKalkulusRestTjeneste {
         this.beregningsgrunnlagDtoTjeneste = beregningsgrunnlagDtoTjeneste;
     }
 
+    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
+    @Deprecated(forRemoval = true, since="1.1")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
@@ -96,6 +98,8 @@ public class HentKalkulusRestTjeneste {
         return response;
     }
 
+    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
+    @Deprecated(forRemoval = true, since="1.1")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
@@ -121,6 +125,8 @@ public class HentKalkulusRestTjeneste {
         return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
 
+    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
+    @Deprecated(forRemoval = true, since="1.1")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
@@ -163,6 +169,8 @@ public class HentKalkulusRestTjeneste {
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
 
+    /** @deprecated Bruk {@link #hentBeregningsgrunnlagDtoListe(HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto). */
+    @Deprecated(forRemoval = true, since="1.1")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
