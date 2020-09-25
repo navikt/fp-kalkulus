@@ -166,7 +166,6 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     private void leggTilArbeidstakerOver6GOgNæring(BeregningsgrunnlagPeriodeDto periode) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
-                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(true).build())
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
@@ -174,14 +173,12 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(ANDELSNR2)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
-                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
                 .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(3L)
-                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())
                 .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medBeregnetPrÅr(BigDecimal.TEN)
@@ -205,7 +202,6 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, null);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
-                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(true).build())
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.TEN)
@@ -213,7 +209,6 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAndelsnr(ANDELSNR2)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2))
-                .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(false).build())
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.TEN)

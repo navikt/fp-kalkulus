@@ -144,9 +144,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         if (!Objects.equals(getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER) || !bgAndelArbeidsforholdOpt.isPresent()) {
             return false;
         }
-        if(beregningsgrunnlagArbeidstakerAndel != null && !beregningsgrunnlagArbeidstakerAndel.getHarInntektsmelding()) {
-            return false;
-        }
         if (!Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver), Optional.of(arbeidsgiver))) {
             return false;
         }
@@ -175,11 +172,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             && this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).map(ref -> Objects.equals(ref, internArbeidsforholdRefDto)).orElse(internArbeidsforholdRefDto == null || internArbeidsforholdRefDto.getReferanse() == null)
             && Objects.equals(this.getArbeidsforholdType(), arbeidsforholdType);
     }
-
-    public boolean harInntektsmelding() {
-        return beregningsgrunnlagArbeidstakerAndel != null && beregningsgrunnlagArbeidstakerAndel.getHarInntektsmelding();
-    }
-
 
     public Optional<BeregningsgrunnlagArbeidstakerAndelDto> getBeregningsgrunnlagArbeidstakerAndel() {
         return Optional.ofNullable(beregningsgrunnlagArbeidstakerAndel);

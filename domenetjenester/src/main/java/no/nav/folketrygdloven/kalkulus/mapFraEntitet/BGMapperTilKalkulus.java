@@ -55,14 +55,14 @@ public class BGMapperTilKalkulus {
         builder.medBeregningsgrunnlagPeriode(fraFagsystem.getBeregningsgrunnlagPeriodeFom(), fraFagsystem.getBeregningsgrunnlagPeriodeTom());
         builder.medBruttoPrÅr(fraFagsystem.getBruttoPrÅr());
         builder.medRedusertPrÅr(fraFagsystem.getRedusertPrÅr());
-        
+
         if(medRegelEvaluering) {
             builder.medRegelEvalueringFastsett(fraFagsystem.getRegelInputFastsett(), fraFagsystem.getRegelEvalueringFastsett());
             builder.medRegelEvalueringFinnGrenseverdi(fraFagsystem.getRegelInputFinnGrenseverdi(), fraFagsystem.getRegelEvalueringFinnGrenseverdi());
             builder.medRegelEvalueringForeslå(fraFagsystem.getRegelInput(), fraFagsystem.getRegelEvaluering());
             builder.medRegelEvalueringVilkårsvurdering(fraFagsystem.getRegelInputVilkårvurdering(), fraFagsystem.getRegelEvalueringVilkårvurdering());
         }
-        
+
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
         fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach( statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel, inntektsmeldinger)));
@@ -105,7 +105,6 @@ public class BGMapperTilKalkulus {
 
         if (fraFagsystem.getAktivitetStatus().erArbeidstaker()) {
             builder.medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder()
-                .medHarInntektsmelding(inntektsmeldinger.stream().anyMatch(im -> gjelderInntektsmeldingFor(fraFagsystem, im.getArbeidsgiver(), im.getArbeidsforholdRef())))
                 .medMottarYtelse(fraFagsystem.mottarYtelse().orElse(null))
                 .build());
         }

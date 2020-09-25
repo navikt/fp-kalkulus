@@ -386,7 +386,6 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                         .medAndelsnr(1L)
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medBeregnetPrÅr(BigDecimal.TEN)
-                        .medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder().medHarInntektsmelding(true).build())
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                                 .medArbeidsforholdRef(arbeidsforholdRef)
                             .medArbeidsgiver(arbeidsgiver))))

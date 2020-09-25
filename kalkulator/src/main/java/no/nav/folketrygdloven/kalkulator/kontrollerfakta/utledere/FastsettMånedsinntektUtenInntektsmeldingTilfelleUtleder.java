@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.kontrollerfakta.utledere;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -27,16 +29,20 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        return utled(beregningsgrunnlagGrunnlag);
+        return utled(beregningsgrunnlagGrunnlag, input.getInntektsmeldinger());
     }
 
-    protected Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+    protected Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
+                                                       Collection<InntektsmeldingDto> inntektsmeldinger) {
         boolean harKunstigVirksomhet = harBeregningsgrunnlagKunstigVirksomhet(beregningsgrunnlagGrunnlag);
-        boolean harAndelerForSammeVirksomhetMedOgUtenInntektsmelding = harArbeidstakerandelerForSammeVirksomhetMedOgUtenReferanse(beregningsgrunnlagGrunnlag);
-        return harKunstigVirksomhet || harAndelerForSammeVirksomhetMedOgUtenInntektsmelding ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING) : Optional.empty();
+        if (harKunstigVirksomhet) {
+            return Optional.of(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING);
+        }
+        boolean harAndelerForSammeVirksomhetMedOgUtenInntektsmelding = harArbeidstakerandelerForSammeVirksomhetMedOgUtenInntektsmelding(beregningsgrunnlagGrunnlag, inntektsmeldinger);
+        return harAndelerForSammeVirksomhetMedOgUtenInntektsmelding ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING) : Optional.empty();
     }
 
-    private boolean harArbeidstakerandelerForSammeVirksomhetMedOgUtenReferanse(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+    private boolean harArbeidstakerandelerForSammeVirksomhetMedOgUtenInntektsmelding(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
         Map<Arbeidsgiver, List<BeregningsgrunnlagPrStatusOgAndelDto>> arbeidsgiverTilAndelerMap = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
                 .map(bg -> bg.getBeregningsgrunnlagPerioder().get(0))
                 .stream()
@@ -45,11 +51,24 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements
                 .collect(Collectors.groupingBy(a -> a.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer å ha arbeidsgiver her"))));
         return arbeidsgiverTilAndelerMap.entrySet().stream().anyMatch(entry -> {
             List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = entry.getValue();
-            long antallAndelerForSpesifikkeArbeidsforhold = andeler.stream().filter(a -> a.getArbeidsforholdRef().isPresent() && a.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()).count();
-            long antallAndelerUtenReferanse = andeler.stream().filter(a -> a.getArbeidsforholdRef().isEmpty() || !a.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()).count();
-            return antallAndelerUtenReferanse > 0 && antallAndelerForSpesifikkeArbeidsforhold > 0;
+            long antallAndelerlerMedInntektsmelding = finnAntallAndelerMedInntektsmelding(inntektsmeldinger, andeler);
+            long antallAndelerlerUtenInntektsmelding = finnAntallAndelerUtenInntektsmelding(inntektsmeldinger, andeler);
+            return antallAndelerlerMedInntektsmelding > 0 && antallAndelerlerUtenInntektsmelding > 0;
         });
     }
+
+    private long finnAntallAndelerMedInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+        return andeler.stream()
+                .filter(a -> inntektsmeldinger.stream().anyMatch(im -> a.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef())))
+                .count();
+    }
+
+    private long finnAntallAndelerUtenInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+        return andeler.stream()
+                .filter(a -> inntektsmeldinger.stream().noneMatch(im -> a.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef())))
+                .count();
+    }
+
 
     private boolean harBeregningsgrunnlagKunstigVirksomhet(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         return beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
