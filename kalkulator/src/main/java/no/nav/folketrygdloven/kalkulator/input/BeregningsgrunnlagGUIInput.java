@@ -87,7 +87,7 @@ public class BeregningsgrunnlagGUIInput {
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
-
+        this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
