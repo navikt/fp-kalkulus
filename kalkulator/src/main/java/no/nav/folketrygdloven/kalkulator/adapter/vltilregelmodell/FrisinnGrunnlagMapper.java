@@ -21,7 +21,7 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
 
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
-        if (!(input.getYtelsespesifiktGrunnlag() instanceof no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag)) {
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag)) {
             throw new IllegalStateException("Mangler frisinngrunnlag for frisinnberegning");
         }
         List<FrisinnPeriode> regelPerioder = mapFrisinnPerioder(input);
@@ -32,7 +32,7 @@ public class FrisinnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
     }
 
     public static List<FrisinnPeriode> mapFrisinnPerioder(BeregningsgrunnlagInput input) {
-        no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
+        no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag frisinnGrunnlag = input.getYtelsespesifiktGrunnlag();
         return frisinnGrunnlag.getFrisinnPerioder().stream()
                 .map(fg -> new FrisinnPeriode(mapPeriode(fg.getPeriode()), fg.getSøkerFrilans(), fg.getSøkerNæring()))
                 .collect(Collectors.toList());

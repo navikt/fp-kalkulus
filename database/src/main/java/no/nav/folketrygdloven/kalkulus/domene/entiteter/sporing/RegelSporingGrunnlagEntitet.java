@@ -37,7 +37,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
-    @JoinColumn(name = "kobling_id", nullable = false, updatable = false)
+    @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
     @Lob
@@ -105,8 +105,8 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
         this.aktiv = aktiv;
     }
 
-    public static RegelSporingPeriodeEntitet.Builder ny() {
-        return new RegelSporingPeriodeEntitet.Builder();
+    public static Builder ny() {
+        return new Builder();
     }
 
     public static class Builder {
@@ -115,11 +115,6 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
         Builder() {
             kladd = new RegelSporingGrunnlagEntitet();
-        }
-
-        public Builder medKobling(Long koblingId) {
-            kladd.koblingId = koblingId;
-            return this;
         }
 
         public Builder medRegelInput(String regelInput) {
@@ -134,17 +129,13 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder medRegelType(BeregningsgrunnlagRegelType regelType) {
+        public RegelSporingGrunnlagEntitet build(Long koblingId, BeregningsgrunnlagRegelType regelType) {
+            Objects.requireNonNull(koblingId, "koblingId");
             Objects.requireNonNull(regelType, "regelType");
-            kladd.regelType = regelType;
-            return this;
-        }
-
-        public RegelSporingGrunnlagEntitet build() {
-            Objects.requireNonNull(kladd.koblingId, "koblingId");
             Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
             Objects.requireNonNull(kladd.regelInput, "regelInput");
-            Objects.requireNonNull(kladd.regelType, "regelType");
+            kladd.koblingId = koblingId;
+            kladd.regelType = regelType;
             kladd.aktiv = true;
             return kladd;
         }

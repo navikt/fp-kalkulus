@@ -13,9 +13,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.FastsettBeregningAktiviteter;
-import no.nav.folketrygdloven.kalkulator.FastsettInntektskategoriFraSøknadTjeneste;
-import no.nav.folketrygdloven.kalkulator.FastsettSkjæringstidspunktOgStatuser;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriFraSøknadTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -527,7 +527,7 @@ public class VerdikjedeTestHjelper {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningAktivitetAggregat, regelResultat.getBeregningsgrunnlag(),
             BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag());
+        var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
         FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
         return lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }

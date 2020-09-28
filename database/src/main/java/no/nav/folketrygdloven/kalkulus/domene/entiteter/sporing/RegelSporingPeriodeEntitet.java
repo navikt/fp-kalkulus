@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.persistence.AttributeOverride;
@@ -41,7 +42,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "versjon", nullable = false)
     private long versjon;
 
-    @JoinColumn(name = "kobling_id", nullable = false, updatable = false)
+    @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
     @Lob
@@ -132,11 +133,6 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             kladd = new RegelSporingPeriodeEntitet();
         }
 
-        public Builder medKobling(Long koblingId) {
-            kladd.koblingId = koblingId;
-            return this;
-        }
-
         public Builder medRegelInput(String regelInput) {
             Objects.requireNonNull(regelInput, "regelInput");
             kladd.regelInput = ClobProxy.generateProxy(regelInput);
@@ -149,17 +145,20 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder medRegelType(BeregningsgrunnlagPeriodeRegelType regelType) {
-            Objects.requireNonNull(regelType, "regelType");
-            kladd.regelType = regelType;
+        public Builder medPeriode(IntervallEntitet intervall) {
+            Objects.requireNonNull(intervall, "intervall");
+            kladd.periode = intervall;
             return this;
         }
 
-        public RegelSporingPeriodeEntitet build() {
-            Objects.requireNonNull(kladd.koblingId, "koblingId");
+        public RegelSporingPeriodeEntitet build(Long koblingId, BeregningsgrunnlagPeriodeRegelType regelType) {
+            Objects.requireNonNull(koblingId, "koblingId");
+            Objects.requireNonNull(regelType, "regelType");
             Objects.requireNonNull(kladd.regelEvaluering, "regelEvaluering");
             Objects.requireNonNull(kladd.regelInput, "regelInput");
-            Objects.requireNonNull(kladd.regelType, "regelType");
+            Objects.requireNonNull(kladd.periode, "periode");
+            kladd.koblingId = koblingId;
+            kladd.regelType = regelType;
             return kladd;
         }
 

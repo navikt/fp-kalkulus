@@ -1,9 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.verdikjede;
 
-import no.nav.folketrygdloven.kalkulator.AksjonspunktUtlederFaktaOmBeregning;
-import no.nav.folketrygdloven.kalkulator.FastsettBeregningsgrunnlagPerioderTjeneste;
-import no.nav.folketrygdloven.kalkulator.FordelBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
 
 class BeregningTjenesteWrapper {
 

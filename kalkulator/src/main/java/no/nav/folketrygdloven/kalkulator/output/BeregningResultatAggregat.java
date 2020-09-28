@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -17,6 +19,10 @@ public class BeregningResultatAggregat {
 
     private BeregningVilkårResultat beregningVilkårResultat;
 
+    private List<RegelSporingPeriode> regelsporinger = new ArrayList<>();
+
+    private RegelSporingAggregat regelSporingAggregat;
+
     public List<BeregningAksjonspunktResultat> getBeregningAksjonspunktResultater() {
         return beregningAksjonspunktResultater;
     }
@@ -32,6 +38,14 @@ public class BeregningResultatAggregat {
 
     public BeregningVilkårResultat getBeregningVilkårResultat() {
         return beregningVilkårResultat;
+    }
+
+    public List<RegelSporingPeriode> getRegelsporinger() {
+        return regelsporinger;
+    }
+
+    public Optional<RegelSporingAggregat> getRegelSporingAggregat() {
+        return Optional.ofNullable(regelSporingAggregat);
     }
 
     public static Builder builder() {
@@ -72,6 +86,12 @@ public class BeregningResultatAggregat {
             this.kladd.beregningVilkårResultat = vilkårResultat;
             return this;
         }
+
+        public Builder medRegelSporingAggregat(RegelSporingAggregat regelsporing) {
+            this.kladd.regelSporingAggregat = regelsporing;
+            return this;
+        }
+
 
         public BeregningResultatAggregat build() {
             if (this.tilstand != null && this.grunnlagBuilder != null) {

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleInput;
-import no.nav.folketrygdloven.kalkulator.fordeling.FordelBeregningsgrunnlagTilfelleTjeneste;
-import no.nav.folketrygdloven.kalkulator.fordeling.FordelingTilfelle;
-import no.nav.folketrygdloven.kalkulator.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingTilfelle;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;

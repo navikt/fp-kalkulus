@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 
 public class HarFrilansUtenInntekt {

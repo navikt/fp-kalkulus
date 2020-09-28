@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
@@ -8,16 +9,25 @@ public class BeregningsgrunnlagRegelResultat {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private List<BeregningAksjonspunktResultat> aksjonspunkter;
     private List<BeregningVilkårResultat> vilkårsresultat;
+    private RegelSporingAggregat regelsporinger;
 
-    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, List<BeregningAksjonspunktResultat> aksjonspunktResultatListe) {
+    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
+                                           List<BeregningAksjonspunktResultat> aksjonspunktResultatListe) {
         this.beregningsgrunnlag = beregningsgrunnlag;
         this.aksjonspunkter = aksjonspunktResultatListe;
     }
 
-    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, List<BeregningAksjonspunktResultat> aksjonspunktResultatListe, List<BeregningVilkårResultat> vilkårsresultat) {
+    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, RegelSporingAggregat regelsporinger) {
         this.beregningsgrunnlag = beregningsgrunnlag;
-        this.aksjonspunkter = aksjonspunktResultatListe;
-        this.vilkårsresultat = vilkårsresultat;
+        this.regelsporinger = regelsporinger;
+    }
+
+    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
+                                           List<BeregningAksjonspunktResultat> aksjonspunkter,
+                                           RegelSporingAggregat regelsporinger) {
+        this.beregningsgrunnlag = beregningsgrunnlag;
+        this.aksjonspunkter = aksjonspunkter;
+        this.regelsporinger = regelsporinger;
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
@@ -44,5 +54,9 @@ public class BeregningsgrunnlagRegelResultat {
 
     public List<BeregningVilkårResultat> getVilkårsresultat() {
         return vilkårsresultat;
+    }
+
+    public Optional<RegelSporingAggregat> getRegelsporinger() {
+        return Optional.ofNullable(regelsporinger);
     }
 }

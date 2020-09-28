@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
-import static no.nav.folketrygdloven.kalkulator.SplittBGPerioder.splitBeregningsgrunnlagPeriode;
+import static no.nav.folketrygdloven.kalkulator.steg.foreslå.SplittBGPerioder.splitBeregningsgrunnlagPeriode;
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
 import java.time.LocalDate;
@@ -19,9 +19,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
-import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagVerifisererFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.ForeslåBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;

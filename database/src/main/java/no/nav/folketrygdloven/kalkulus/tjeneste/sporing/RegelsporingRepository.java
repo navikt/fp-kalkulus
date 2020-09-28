@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ public class RegelsporingRepository {
         TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(
                 "from RegelSporingGrunnlag sporing " +
                         "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktivt", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
+                        "and sporing.aktiv = :aktiv", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return query.getResultList();
@@ -58,7 +59,7 @@ public class RegelsporingRepository {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
                 "from RegelSporingPeriodeEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktivt", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
+                        "and sporing.aktiv = :aktiv", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         return query.getResultList();
@@ -67,18 +68,23 @@ public class RegelsporingRepository {
     /**
      * Lagrer regelsporing for periode
      *
-     * @param regelSporingPeriode reglsporingperiode som skal lagres
+     * @param regelSporingPerioder reglsporingperioder som skal lagres
      */
-    public void lagre(RegelSporingPeriodeEntitet regelSporingPeriode) {
-        if (!regelSporingPeriode.erAktiv()) {
-            throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
-        }
-        var eksisterendeRegelsporing = hentRegelSporingPeriodeMedGittType(regelSporingPeriode.getKoblingId(), regelSporingPeriode.getRegelType());
-        eksisterendeRegelsporing.ifPresent(rs -> {
-            rs.setAktiv(false);
-            entityManager.persist(rs);
+    public void lagre(Long koblingId, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> regelSporingPerioder) {
+        regelSporingPerioder.forEach((key, value) -> {
+            var eksisterendeRegelsporinger = hentRegelSporingPeriodeMedGittType(koblingId, key);
+            eksisterendeRegelsporinger.forEach(rs -> {
+                rs.setAktiv(false);
+                entityManager.persist(rs);
+            });
+            value.stream().map(builder -> builder.build(koblingId, key)).forEach(sporing -> {
+                if (!sporing.erAktiv()) {
+                    throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
+                }
+                entityManager.persist(sporing);
+            });
         });
-        entityManager.persist(regelSporingPeriode);
+        entityManager.flush();
     }
 
     /**
@@ -86,16 +92,16 @@ public class RegelsporingRepository {
      *
      * @param regelSporingGrunnlag Regelsporing
      */
-    public void lagre(RegelSporingGrunnlagEntitet regelSporingGrunnlag) {
-        if (!regelSporingGrunnlag.erAktiv()) {
-            throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
-        }
-        var eksisterendeRegelsporing = hentRegelSporingGrunnlagMedGittType(regelSporingGrunnlag.getKoblingId(), regelSporingGrunnlag.getRegelType());
+    public void lagre(Long koblingId,
+                      RegelSporingGrunnlagEntitet.Builder regelSporingGrunnlag,
+                      BeregningsgrunnlagRegelType regelType) {
+        var eksisterendeRegelsporing = hentRegelSporingGrunnlagMedGittType(koblingId, regelType);
         eksisterendeRegelsporing.ifPresent(rs -> {
             rs.setAktiv(false);
             entityManager.persist(rs);
         });
-        entityManager.persist(regelSporingGrunnlag);
+        entityManager.persist(regelSporingGrunnlag.build(koblingId, regelType));
+        entityManager.flush();
     }
 
     /**
@@ -104,16 +110,16 @@ public class RegelsporingRepository {
      * @param koblingId en koblingId
      * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
      */
-    private Optional<RegelSporingPeriodeEntitet> hentRegelSporingPeriodeMedGittType(Long koblingId, BeregningsgrunnlagPeriodeRegelType regelType) {
+    private List<RegelSporingPeriodeEntitet> hentRegelSporingPeriodeMedGittType(Long koblingId, BeregningsgrunnlagPeriodeRegelType regelType) {
         TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
                 "from RegelSporingPeriodeEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktivt " +
+                        "and sporing.aktiv = :aktiv " +
                 "and sporing.regelType = :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         query.setParameter("regeltype", regelType);
-        return HibernateVerktøy.hentUniktResultat(query);
+        return query.getResultList();
     }
 
     /**
@@ -126,7 +132,7 @@ public class RegelsporingRepository {
         TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(
                 "from RegelSporingGrunnlagEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktivt " +
+                        "and sporing.aktiv = :aktiv " +
                         "and sporing.regelType = :regeltype", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$

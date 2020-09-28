@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Arbei
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
-import no.nav.folketrygdloven.kalkulator.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -28,12 +28,7 @@ import no.nav.vedtak.feil.LogLevel;
 import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
 import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
 
-@ApplicationScoped
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
-
-    public MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse() {
-        // For CDI
-    }
 
     @Override
     protected void mapInntektsmelding(BeregningsgrunnlagInput input, Collection<InntektsmeldingDto> inntektsmeldinger,
