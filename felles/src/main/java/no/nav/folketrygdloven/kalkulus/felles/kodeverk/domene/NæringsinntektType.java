@@ -29,6 +29,7 @@ public enum NæringsinntektType implements Kodeverdi, YtelseType {
     DAGPENGER_VED_ARBEIDSLØSHET("DAGPENGER_VED_ARBEIDSLØSHET", "Dagpenger ved arbeidsløshet", "dagpengerVedArbeidsloeshet"),
     DAGPENGER_TIL_FISKER("DAGPENGER_TIL_FISKER", "Dagpenger til fisker", "dagpengerTilFisker"),
     ANNET("ANNET", "Annet", "annet"),
+    KOMPENSASJON_FOR_TAPT_PERSONINNTEKT("KOMPENSASJON_FOR_TAPT_PERSONINNTEKT", "Kompensasjon for tapt personinntekt", "kompensasjonForTaptPersoninntekt"),
     UDEFINERT("-", "Udefinert", null),
 
     ;
