@@ -19,8 +19,6 @@ public class AndelGradering {
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private List<Gradering> graderinger = new ArrayList<>();
-    @Deprecated(forRemoval = true)
-    private Long andelsnr;
 
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
@@ -36,11 +34,6 @@ public class AndelGradering {
 
     public List<Gradering> getGraderinger() {
         return graderinger;
-    }
-
-    @Deprecated(forRemoval = true)
-    public Long getAndelsnr() {
-        return andelsnr;
     }
 
     public boolean matcher(BeregningsgrunnlagPrStatusOgAndelDto andel) {
@@ -117,12 +110,6 @@ public class AndelGradering {
 
         public Builder medArbeidsforholdRef(InternArbeidsforholdRefDto arbeidsforholdRef) {
             kladd.arbeidsforholdRef = arbeidsforholdRef;
-            return this;
-        }
-
-        @Deprecated(forRemoval = true)
-        public Builder medAndelsnr(Long andelsnr) {
-            kladd.andelsnr = andelsnr;
             return this;
         }
 

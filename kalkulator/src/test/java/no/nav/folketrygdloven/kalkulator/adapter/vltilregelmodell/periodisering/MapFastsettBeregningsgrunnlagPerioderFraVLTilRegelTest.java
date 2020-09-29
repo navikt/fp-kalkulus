@@ -105,8 +105,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                 new AktivitetGradering(List.of(AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medGradering(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), 50)
-                .medArbeidsgiver(arbeidsgiver)
-                .medAndelsnr(1L).build())), opprett(koblingReferanse, iayGrunnlag), null);
+                .medArbeidsgiver(arbeidsgiver).build())), opprett(koblingReferanse, iayGrunnlag), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);

@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMapper.mapAktivitetStatus;
+import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapUttakArbeidTypeTilAktivitetStatusV2.mapAktivitetStatus;
 import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FinnAndelsnrForAktivitetMedUtbgrad.finnAndelsnrIFørstePeriode;
 
 import java.math.BigDecimal;
@@ -13,20 +13,23 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodisertBruttoBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapAndelGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -35,11 +38,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
@@ -89,35 +92,30 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                                              List<SplittetPeriode> eksisterendePerioder,
                                              List<ArbeidsforholdOgInntektsmelding> regelInntektsmeldinger,
                                              List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> regelAndelGraderinger) {
-
-        List<PeriodisertBruttoBeregningsgrunnlag> periodiseringBruttoBg = MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag);
-
-        List<AndelGradering> endringerSøktYtelse = hentEndringSøktYtelseSVP(input, vlBeregningsgrunnlag);
-        var regelEndringerSøktYtelse = endringerSøktYtelse.stream()
-                .filter(g -> erAnsattIPerioden(input.getKoblingReferanse(), g, filter))
-                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(vlBeregningsgrunnlag, input.getKoblingReferanse(),
-                        andelGradering, filter))
-                .collect(Collectors.toList());
-
         return PeriodeModell.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
                 .medInntektsmeldinger(regelInntektsmeldinger)
                 .medAndelGraderinger(regelAndelGraderinger)
-                .medEndringISøktYtelse(List.copyOf(regelEndringerSøktYtelse))
+                .medEndringISøktYtelse(mapUtbetalingsgradPerioder(input, vlBeregningsgrunnlag, filter))
                 .medEksisterendePerioder(eksisterendePerioder)
-                .medPeriodisertBruttoBeregningsgrunnlag(periodiseringBruttoBg)
+                .medPeriodisertBruttoBeregningsgrunnlag(MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag))
                 .build();
     }
 
-    private boolean erAnsattIPerioden(KoblingReferanse ref, AndelGradering g, YrkesaktivitetFilterDto filter) {
-        if (g.getAktivitetStatus().erSelvstendigNæringsdrivende() || g.getAktivitetStatus().erFrilanser()) {
+    private boolean erAnsattIPerioden(KoblingReferanse ref,
+                                      UtbetalingsgradArbeidsforholdDto utbetalingsgradPrAktivitetDto,
+                                      YrkesaktivitetFilterDto filter) {
+        if (!utbetalingsgradPrAktivitetDto.getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID)) {
             // Antar SN og FL er aktiv i hele uttaksperioden
             return true;
         }
+        if (utbetalingsgradPrAktivitetDto.getArbeidsgiver().isEmpty()) {
+            throw new IllegalArgumentException("Forventer arbeidsgiver for aktivitettype " + utbetalingsgradPrAktivitetDto.getUttakArbeidType());
+        }
         Optional<YrkesaktivitetDto> yrkesaktivitet = FinnYrkesaktiviteterForBeregningTjeneste.finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(ref, filter)
                 .stream()
-                .filter(ya -> ya.gjelderFor(g.getArbeidsgiver(), g.getArbeidsforholdRef()))
+                .filter(ya -> ya.gjelderFor(utbetalingsgradPrAktivitetDto.getArbeidsgiver().get(), utbetalingsgradPrAktivitetDto.getInternArbeidsforholdRef()))
                 .findFirst();
         if (yrkesaktivitet.isEmpty()) {
             return false;
@@ -127,42 +125,61 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return ansettelsesPeriodeSomSlutterVedEllerEtterStp.isPresent();
     }
 
-    private List<AndelGradering> hentEndringSøktYtelseSVP(BeregningsgrunnlagInput input, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    private List<AndelGradering> mapUtbetalingsgradPerioder(BeregningsgrunnlagInput input, BeregningsgrunnlagDto vlBeregningsgrunnlag, YrkesaktivitetFilterDto filter) {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = ((UtbetalingsgradGrunnlag) input.getYtelsespesifiktGrunnlag()).getUtbetalingsgradPrAktivitet();
-        return mapTilrettelegginger(utbetalingsgradPrAktivitet, vlBeregningsgrunnlag);
+        return mapTilrettelegginger(input.getKoblingReferanse(), utbetalingsgradPrAktivitet, vlBeregningsgrunnlag, filter);
     }
 
-    private AndelGradering mapUttak(UtbetalingsgradPrAktivitetDto tilrettelegging, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    private AndelGradering mapUttak(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradPrAktivitetDto tilrettelegging, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         var tilretteleggingArbeidsforhold = tilrettelegging.getUtbetalingsgradArbeidsforhold();
-        Arbeidsgiver tilretteleggingArbeidsgiver = tilretteleggingArbeidsforhold.getArbeidsgiver().orElse(null);
-        InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
-        AktivitetStatus tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
-        // TODO TFP-3398 (Andelsnr skal fjernes fra AndelGradering så dette må settes på en annen måte)
-        AndelGradering.Builder builder = AndelGradering.builder()
-                .medStatus(tilretteleggingAktivitetStatus)
-                .medArbeidsgiver(tilretteleggingArbeidsgiver)
-                .medArbeidsforholdRef(tilretteleggingArbeidsforholdRef)
+        AktivitetStatusV2 tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
+
+        AndelGraderingImpl.Builder builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl.builder()
+                .medAktivitetStatus(tilretteleggingAktivitetStatus)
                 .medAndelsnr(finnAndelsnrIFørstePeriode(vlBeregningsgrunnlag, tilretteleggingArbeidsforhold).orElse(null));
 
-        tilrettelegging.getPeriodeMedUtbetalingsgrad().stream()
+        mapArbeidsforholdMedPeriode(ref, filter, tilretteleggingArbeidsforhold, builder)
+                .ifPresent(builder::medArbeidsforhold);
+        List<Gradering> graderinger = tilrettelegging.getPeriodeMedUtbetalingsgrad().stream()
                 .filter(p -> !p.getPeriode().getTomDato().isBefore(vlBeregningsgrunnlag.getSkjæringstidspunkt()))
-                .forEach(periode -> builder.leggTilGradering(mapUttakPeriode(periode, vlBeregningsgrunnlag.getSkjæringstidspunkt())));
+                .map(periode -> mapUttakPeriode(periode, vlBeregningsgrunnlag.getSkjæringstidspunkt()))
+                .collect(Collectors.toList());
+        builder.medGraderinger(graderinger);
         return builder.build();
     }
 
-    private AndelGradering.Gradering mapUttakPeriode(PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad, LocalDate skjæringstidspunkt) {
-        Intervall periode;
-        if (periodeMedUtbetalingsgrad.getPeriode().getFomDato().isBefore(skjæringstidspunkt)) {
-            periode = Intervall.fraOgMedTilOgMed(skjæringstidspunkt, periodeMedUtbetalingsgrad.getPeriode().getTomDato());
+    private Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold, AndelGraderingImpl.Builder builder) {
+        return tilretteleggingArbeidsforhold.getArbeidsgiver().map(arbeidsgiver -> {
+            InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
+            // Finner yrkesaktiviteter inkludert fjernet i overstyring siden vi kun er interessert i å lage nye arbeidsforhold for nye aktiviteter (Disse kan ikke fjernes)
+            Optional<YrkesaktivitetDto> yrkesaktivitet = FinnYrkesaktiviteterForBeregningTjeneste.finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(ref, filter)
+                    .stream()
+                    .filter(ya -> ya.gjelderFor(arbeidsgiver, tilretteleggingArbeidsforholdRef))
+                    .findFirst();
+            Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(arbeidsgiver, tilretteleggingArbeidsforholdRef);
+            yrkesaktivitet.ifPresent(ya -> Arbeidsforhold.builder(arbeidsforhold)
+                    .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya),
+                            ref.getSkjæringstidspunktBeregning())));
+            return arbeidsforhold;
+        });
+    }
+
+    private Gradering mapUttakPeriode(PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgrad, LocalDate skjæringstidspunkt) {
+        Periode periode;
+        Intervall utbetalingsgradPeriode = periodeMedUtbetalingsgrad.getPeriode();
+        if (utbetalingsgradPeriode.getFomDato().isBefore(skjæringstidspunkt)) {
+            periode = Periode.of(skjæringstidspunkt, utbetalingsgradPeriode.getTomDato());
         } else {
-            periode = periodeMedUtbetalingsgrad.getPeriode();
+            periode = Periode.of(utbetalingsgradPeriode.getFomDato(), utbetalingsgradPeriode.getTomDato());
         }
-        return new AndelGradering.Gradering(periode, periodeMedUtbetalingsgrad.getUtbetalingsgrad());
+        return new Gradering(periode, periodeMedUtbetalingsgrad.getUtbetalingsgrad());
     }
 
     // TODO: Denne bør vere private
-    List<AndelGradering> mapTilrettelegginger(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
-        return utbetalingsgradPrAktivitet.stream().map(a -> mapUttak(a, vlBeregningsgrunnlag)).collect(Collectors.toList());
+    List<AndelGradering> mapTilrettelegginger(KoblingReferanse ref, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, BeregningsgrunnlagDto vlBeregningsgrunnlag, YrkesaktivitetFilterDto filter) {
+        return utbetalingsgradPrAktivitet.stream()
+                .filter(dto -> erAnsattIPerioden(ref, dto.getUtbetalingsgradArbeidsforhold(),filter))
+                .map(a -> mapUttak(ref, filter, a, vlBeregningsgrunnlag)).collect(Collectors.toList());
     }
 
 }

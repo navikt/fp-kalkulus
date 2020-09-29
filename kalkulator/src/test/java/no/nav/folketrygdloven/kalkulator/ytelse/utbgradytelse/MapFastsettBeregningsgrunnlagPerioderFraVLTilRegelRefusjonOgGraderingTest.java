@@ -11,11 +11,12 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -33,7 +34,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
@@ -48,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
+    public static final KoblingReferanseMock REF = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagDto bg = lagBgMedEnPeriode();
 
 
@@ -156,36 +160,44 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         UtbetalingsgradPrAktivitetDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(orgnr2),
             periode3);
 
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(List.of(byggYA(orgnr1, date), byggYA(orgnr2, date)));
+
+
         var tilrettelegginger = List.of(tilrette1, tilrette2);
 
         // Act
         var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
 
-        List<AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(tilrettelegginger, bg);
+        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(REF, tilrettelegginger, bg, filter);
 
         // Assert
         assertThat(andelGraderingList).hasSize(2);
-        List<AndelGradering> andelArb1 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr1), AktivitetStatus.ARBEIDSTAKER);
-        List<AndelGradering> andelArb2 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr2), AktivitetStatus.ARBEIDSTAKER);
+        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> andelArb1 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr1), AktivitetStatusV2.AT);
+        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> andelArb2 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr2), AktivitetStatusV2.AT);
         assertThat(andelArb1).hasSize(1);
         assertThat(andelArb2).hasSize(1);
         assertThat(andelArb1.get(0).getGraderinger()).hasSize(2);
         assertThat(andelArb2.get(0).getGraderinger()).hasSize(1);
         assertThat(andelArb1.get(0).getGraderinger()).anySatisfy(gradering -> {
-            assertThat(gradering.getPeriode().getFomDato()).isEqualTo(periode1.getPeriode().getFomDato());
-            assertThat(gradering.getPeriode().getTomDato()).isEqualTo(periode1.getPeriode().getTomDato());
-            assertThat(gradering.getArbeidstidProsent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
+            assertThat(gradering.getPeriode().getFom()).isEqualTo(periode1.getPeriode().getFomDato());
+            assertThat(gradering.getPeriode().getTom()).isEqualTo(periode1.getPeriode().getTomDato());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
         });
         assertThat(andelArb1.get(0).getGraderinger()).anySatisfy(gradering -> {
-            assertThat(gradering.getPeriode().getFomDato()).isEqualTo(periode2.getPeriode().getFomDato());
-            assertThat(gradering.getPeriode().getTomDato()).isEqualTo(periode2.getPeriode().getTomDato());
-            assertThat(gradering.getArbeidstidProsent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
+            assertThat(gradering.getPeriode().getFom()).isEqualTo(periode2.getPeriode().getFomDato());
+            assertThat(gradering.getPeriode().getTom()).isEqualTo(periode2.getPeriode().getTomDato());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
         });
         assertThat(andelArb2.get(0).getGraderinger()).anySatisfy(gradering -> {
-            assertThat(gradering.getPeriode().getFomDato()).isEqualTo(periode3.getPeriode().getFomDato());
-            assertThat(gradering.getPeriode().getTomDato()).isEqualTo(periode3.getPeriode().getTomDato());
-            assertThat(gradering.getArbeidstidProsent()).isEqualByComparingTo(periode3.getUtbetalingsgrad());
+            assertThat(gradering.getPeriode().getFom()).isEqualTo(periode3.getPeriode().getFomDato());
+            assertThat(gradering.getPeriode().getTom()).isEqualTo(periode3.getPeriode().getTomDato());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode3.getUtbetalingsgrad());
         });
+    }
+
+    private YrkesaktivitetDto byggYA(String orgnr1, LocalDate date) {
+        return YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD).medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr1))
+                    .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medPeriode(Intervall.fraOgMedTilOgMed(date.minusMonths(10), date.plusMonths(10))).medErAnsettelsesPeriode(true)).build();
     }
 
     @Test
@@ -200,26 +212,28 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         var tilrettelegginger = List.of(tilrette1);
 
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(List.of(byggYA(orgnr1, date)));
+        
         // Act
 
         var mapper = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
 
-        List<AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(tilrettelegginger, bg);
+        List<AndelGradering> andelGraderingList = mapper.mapTilrettelegginger(REF, tilrettelegginger, bg, filter);
 
         // Assert
         assertThat(andelGraderingList).hasSize(1);
-        List<AndelGradering> andelArb1 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr1), AktivitetStatus.ARBEIDSTAKER);
+        List<AndelGradering> andelArb1 = forArbeidsgiver(andelGraderingList, Arbeidsgiver.virksomhet(orgnr1), AktivitetStatusV2.AT);
         assertThat(andelArb1).hasSize(1);
         assertThat(andelArb1.get(0).getGraderinger()).hasSize(2);
         assertThat(andelArb1.get(0).getGraderinger()).anySatisfy(gradering -> {
-            assertThat(gradering.getPeriode().getFomDato()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-            assertThat(gradering.getPeriode().getTomDato()).isEqualTo(periode1.getPeriode().getTomDato());
-            assertThat(gradering.getArbeidstidProsent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
+            assertThat(gradering.getPeriode().getFom()).isEqualTo(SKJÆRINGSTIDSPUNKT);
+            assertThat(gradering.getPeriode().getTom()).isEqualTo(periode1.getPeriode().getTomDato());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode1.getUtbetalingsgrad());
         });
         assertThat(andelArb1.get(0).getGraderinger()).anySatisfy(gradering -> {
-            assertThat(gradering.getPeriode().getFomDato()).isEqualTo(periode2.getPeriode().getFomDato());
-            assertThat(gradering.getPeriode().getTomDato()).isEqualTo(periode2.getPeriode().getTomDato());
-            assertThat(gradering.getArbeidstidProsent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
+            assertThat(gradering.getPeriode().getFom()).isEqualTo(periode2.getPeriode().getFomDato());
+            assertThat(gradering.getPeriode().getTom()).isEqualTo(periode2.getPeriode().getTomDato());
+            assertThat(gradering.getUtbetalingsprosent()).isEqualByComparingTo(periode2.getUtbetalingsgrad());
         });
     }
 
@@ -232,9 +246,9 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return bg;
     }
 
-    private List<AndelGradering> forArbeidsgiver(List<AndelGradering> andelGraderingList, Arbeidsgiver arbeidsgiver, AktivitetStatus status) {
+    private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> forArbeidsgiver(List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering> andelGraderingList, Arbeidsgiver arbeidsgiver, AktivitetStatusV2 status) {
         return andelGraderingList.stream()
-            .filter(ag -> Objects.equals(arbeidsgiver, ag.getArbeidsgiver()) && ag.getAktivitetStatus().equals(status))
+            .filter(ag -> Objects.equals(arbeidsgiver.getIdentifikator(), ag.getArbeidsforhold().getOrgnr()) && ag.getAktivitetStatus().equals(status))
             .collect(Collectors.toList());
     }
 

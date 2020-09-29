@@ -25,20 +25,21 @@ public final class MapAndelGradering {
         // private constructor
     }
 
-    public static AndelGraderingImpl mapTilRegelAndelGradering(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                               KoblingReferanse ref,
-                                                               AndelGradering andelGradering,
-                                                               YrkesaktivitetFilterDto filter) {
+    public static AndelGraderingImpl mapTilRegelAndelGraderingForFLSN(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                      KoblingReferanse ref,
+                                                                      AndelGradering andelGradering,
+                                                                      YrkesaktivitetFilterDto filter) {
+        if (andelGradering.getAktivitetStatus().erArbeidstaker()) {
+            throw new IllegalArgumentException("Gradering for arbeidstaker skal ikke mappes her");
+        }
         var regelAktivitetStatus = MapAktivitetStatusV2FraVLTilRegel.map(andelGradering.getAktivitetStatus(), null);
         List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering> graderinger = mapGraderingPerioder(andelGradering.getGraderinger());
         AndelGraderingImpl.Builder builder = AndelGraderingImpl.builder()
             .medAktivitetStatus(regelAktivitetStatus)
             .medGraderinger(graderinger);
 
-        // TODO (Andelsnr skal fjernes. Matching av perioder med utebetalingsgrad må fikses før denne fjernes)
-        if ( andelGradering.getAndelsnr() != null) {
-            builder.medAndelsnr(andelGradering.getAndelsnr());
-        } else if (andelGradering.getAktivitetStatus().erFrilanser() || andelGradering.getAktivitetStatus().erSelvstendigNæringsdrivende()){
+
+        if (andelGradering.getAktivitetStatus().erFrilanser() || andelGradering.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             settAndelsnrForStatus(beregningsgrunnlag, builder, andelGradering.getAktivitetStatus());
         }
 

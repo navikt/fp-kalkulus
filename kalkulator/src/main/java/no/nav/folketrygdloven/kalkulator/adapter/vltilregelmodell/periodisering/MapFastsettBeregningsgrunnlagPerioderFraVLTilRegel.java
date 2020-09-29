@@ -61,7 +61,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var regelInntektsmeldinger = mapInntektsmeldinger(input, andeler);
         var regelAndelGraderinger = graderinger.stream()
                 .filter(ag -> !AktivitetStatus.ARBEIDSTAKER.equals(ag.getAktivitetStatus()))
-                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGradering(beregningsgrunnlag, ref, andelGradering, filter))
+                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGraderingForFLSN(beregningsgrunnlag, ref, andelGradering, filter))
                 .collect(Collectors.toList());
 
         return mapPeriodeModell(input,

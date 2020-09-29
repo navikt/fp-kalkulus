@@ -154,7 +154,6 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
                 .medStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING,
                         graderingTom), BigDecimal.valueOf(50)))
-                .medAndelsnr(3L)
                 .build();
     }
 
@@ -188,8 +187,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         return no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
                 .leggTilGradering(new AndelGradering.Gradering(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE), BigDecimal.valueOf(50)))
-                .medArbeidsgiver(ARBEIDSGIVER2)
-                .medAndelsnr(ANDELSNR2).build();
+                .medArbeidsgiver(ARBEIDSGIVER2).build();
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagFørFordeling() {
