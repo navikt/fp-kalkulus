@@ -9,12 +9,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -39,6 +39,9 @@ public class BeregningsgrunnlagGUIInput {
 
     /** Grunnlag fra fordelsteget. Brukes i visning av automatisk fordeling og utledning av andeler som skal redigeres */
     private BeregningsgrunnlagGrunnlagDto fordelBeregningsgrunnlagGrunnlag;
+
+    /** Grunnlag fra vurderrefusjonsteget. Brukes i visning av aksjonspunkt og andeler som kan redigeres. */
+    private BeregningsgrunnlagGrunnlagDto vurderRefusjonBeregningsgrunnlagGrunnlag;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
@@ -88,6 +91,8 @@ public class BeregningsgrunnlagGUIInput {
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
+        this.vurderRefusjonBeregningsgrunnlagGrunnlag = input.vurderRefusjonBeregningsgrunnlagGrunnlag;
+
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
@@ -156,6 +161,10 @@ public class BeregningsgrunnlagGUIInput {
         return Optional.ofNullable(faktaOmBeregningBeregningsgrunnlagGrunnlag);
     }
 
+    public Optional<BeregningsgrunnlagGrunnlagDto> getVurderRefusjonBeregningsgrunnlagGrunnlag() {
+        return Optional.ofNullable(vurderRefusjonBeregningsgrunnlagGrunnlag);
+    }
+
     /** Sjekk fagsakytelsetype før denne kalles. */
     @SuppressWarnings("unchecked")
     public <V extends YtelsespesifiktGrunnlag> V getYtelsespesifiktGrunnlag() {
@@ -209,6 +218,15 @@ public class BeregningsgrunnlagGUIInput {
         }
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.fordelBeregningsgrunnlagGrunnlag = grunnlag;
+        return newInput;
+    }
+
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraVurderRefusjon(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
+            throw new IllegalArgumentException("Grunnlaget er ikke fra vurderRefusjon.");
+        }
+        var newInput = new BeregningsgrunnlagGUIInput(this);
+        newInput.vurderRefusjonBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

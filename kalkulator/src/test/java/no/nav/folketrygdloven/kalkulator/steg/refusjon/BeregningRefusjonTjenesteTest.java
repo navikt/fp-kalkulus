@@ -85,6 +85,30 @@ class BeregningRefusjonTjenesteTest {
     }
 
     @Test
+    public void skal_matche_andel_når_arbeidsforhold_ref_er_tilkommet_med_økt_refkrav() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, InternArbeidsforholdRefDto.nullRef(), 100000, 0);
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(revurderingBG);
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
+
+        // Act
+        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnPerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG);
+
+        // Assert
+        assertThat(resultat).hasSize(1);
+        RefusjonAndel forventetAndel = lagForventetAndel(AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 50000, 100000);
+        Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE);
+        assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
+    }
+
+
+    @Test
     public void skal_finne_andel_hvis_refusjonskrav_har_økt() {
         // Arrange
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
@@ -102,7 +126,7 @@ class BeregningRefusjonTjenesteTest {
 
         // Assert
         assertThat(resultat).hasSize(1);
-        RefusjonAndel forventetAndel = lagForventetAndel(AktivitetStatus.ARBEIDSTAKER, AG1, 50000, 100000);
+        RefusjonAndel forventetAndel = lagForventetAndel(AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 50000, 100000);
         Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE);
         assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
     }
@@ -309,7 +333,11 @@ class BeregningRefusjonTjenesteTest {
     }
 
     private RefusjonAndel lagForventetAndel(AktivitetStatus status, Arbeidsgiver ag, int refusjon, int brutto) {
-        return new RefusjonAndel(ag, BigDecimal.valueOf(brutto), BigDecimal.valueOf(refusjon));
+        return lagForventetAndel(status, ag, null, brutto, refusjon);
+    }
+
+    private RefusjonAndel lagForventetAndel(AktivitetStatus status, Arbeidsgiver ag, InternArbeidsforholdRefDto ref, int refusjon, int brutto) {
+        return new RefusjonAndel(ag, ref, BigDecimal.valueOf(brutto), BigDecimal.valueOf(refusjon));
     }
 
 }

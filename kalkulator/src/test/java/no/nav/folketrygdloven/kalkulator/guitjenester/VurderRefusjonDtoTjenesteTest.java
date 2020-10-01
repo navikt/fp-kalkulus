@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.LagVurderRefusjonDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
@@ -27,13 +30,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
@@ -43,7 +46,9 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 class VurderRefusjonDtoTjenesteTest {
     private Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(LocalDate.of(2020,1,1))
             .medSkjæringstidspunktOpptjening(LocalDate.of(2020,1,1)).build();
+    private Intervall BG_PERIODE = Intervall.fraOgMedTilOgMed(STP.getSkjæringstidspunktBeregning(), Intervall.TIDENES_ENDE);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock().medSkjæringstidspunkt(STP);
+    private Map<Intervall, List<RefusjonAndel>> andelMap = new HashMap<>();
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto bgPeriode;
     private BeregningsgrunnlagDto beregningsgrunnlagOrginal;
@@ -73,26 +78,13 @@ class VurderRefusjonDtoTjenesteTest {
         }
 
     @Test
-    public void skal_ikke_lage_dto_når_det_ikke_finnes_tilkommetIM() {
+    public void skal_ikke_lage_dto_når_det_ikke_finnes_andeler_med_økt_ref() {
         String internRef = UUID.randomUUID().toString();
         lagIAYGrunnlag();
         byggBGAndel(Arbeidsgiver.virksomhet("999999999"), internRef);
         ferdigstillInput();
 
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
-
-        assertThat(resultat).isEmpty();
-    }
-
-    @Test
-    public void skal_ikke_lage_dto_når_tilkommetIM_ikke_har_refusjonskrav() {
-        String internRef = UUID.randomUUID().toString();
-        InntektsmeldingDto im = lagTilkommetIM("999999999", internRef, null, null);
-        lagIAYGrunnlag(im);
-        byggBGAndel(Arbeidsgiver.virksomhet("999999999"), internRef);
-        ferdigstillInput();
-
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
 
         assertThat(resultat).isEmpty();
     }
@@ -101,14 +93,13 @@ class VurderRefusjonDtoTjenesteTest {
     public void skal_lage_dto_når_tilkommetIM_har_refusjonskrav_tidligere_utbetalt_bruker() {
         String internRef = UUID.randomUUID().toString();
         String orgnr = "999999999";
-        LocalDate refusjonFom = LocalDate.now();
-        InntektsmeldingDto im = lagTilkommetIM(orgnr, internRef, null, refusjonFom);
-        lagIAYGrunnlag(im);
+        LocalDate refusjonFom = BG_PERIODE.getFomDato();
+        lagIAYGrunnlag();
         byggBGAndel(Arbeidsgiver.virksomhet(orgnr), internRef);
+        byggRefusjonAndel(Arbeidsgiver.virksomhet(orgnr), internRef);
         byggBGAndelOrginal(Arbeidsgiver.virksomhet(orgnr), internRef, 500000, 0);
         ferdigstillInput();
-
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
         TidligereUtbetalingDto tidligereUtb = new TidligereUtbetalingDto(bgPeriodeOrginal.getBeregningsgrunnlagPeriodeFom(), bgPeriodeOrginal.getBeregningsgrunnlagPeriodeTom(), false);
         assertThat(resultat).isPresent();
         assertThat(resultat.get().getAndeler()).hasSize(1);
@@ -119,14 +110,14 @@ class VurderRefusjonDtoTjenesteTest {
     public void skal_lage_dto_når_tilkommetIM_har_refusjonskrav_tidligere_utbetalt_refusjon() {
         String internRef = UUID.randomUUID().toString();
         String orgnr = "999999999";
-        LocalDate refusjonFom = LocalDate.now();
-        InntektsmeldingDto im = lagTilkommetIM(orgnr, internRef, null, refusjonFom);
-        lagIAYGrunnlag(im);
+        LocalDate refusjonFom = BG_PERIODE.getFomDato();
+        lagIAYGrunnlag();
         byggBGAndel(Arbeidsgiver.virksomhet(orgnr), internRef);
+        byggRefusjonAndel(Arbeidsgiver.virksomhet(orgnr), internRef);
         byggBGAndelOrginal(Arbeidsgiver.virksomhet(orgnr), internRef, 0, 500000);
         ferdigstillInput();
 
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
         TidligereUtbetalingDto tidligereUtb = new TidligereUtbetalingDto(bgPeriodeOrginal.getBeregningsgrunnlagPeriodeFom(), bgPeriodeOrginal.getBeregningsgrunnlagPeriodeTom(), true);
         assertThat(resultat).isPresent();
         assertThat(resultat.get().getAndeler()).hasSize(1);
@@ -137,17 +128,40 @@ class VurderRefusjonDtoTjenesteTest {
     public void skal_sette_tidligste_refusjonsdato_lik_avklaring_fra_fakta_om_beregnign() {
         String internRef = UUID.randomUUID().toString();
         String orgnr = "999999999";
-        LocalDate refusjonFom = LocalDate.now();
-        InntektsmeldingDto im = lagTilkommetIM(orgnr, internRef, null, refusjonFom);
-        lagIAYGrunnlag(im);
+        LocalDate refusjonFom = BG_PERIODE.getFomDato();
+        lagIAYGrunnlag();
         Arbeidsgiver ag = Arbeidsgiver.virksomhet(orgnr);
         byggBGAndel(ag, internRef);
+        byggRefusjonAndel(ag, internRef);
         byggBGAndelOrginal(ag, internRef, 0, 500000);
         LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
         byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom);
         ferdigstillInput();
 
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
+        TidligereUtbetalingDto tidligereUtb = new TidligereUtbetalingDto(bgPeriodeOrginal.getBeregningsgrunnlagPeriodeFom(), bgPeriodeOrginal.getBeregningsgrunnlagPeriodeTom(), true);
+        assertThat(resultat).isPresent();
+        assertThat(resultat.get().getAndeler()).hasSize(1);
+        assertAndeler(resultat.get().getAndeler(), orgnr, internRef, refusjonFom, tidligsteRefusjonFom, tidligereUtb);
+    }
+
+    @Test
+    public void ved_flere_andeler_skal_kun_andel_i_første_periode_brukes() {
+        String internRef = UUID.randomUUID().toString();
+        String orgnr = "999999999";
+        lagIAYGrunnlag();
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet(orgnr);
+        byggBGAndel(ag, internRef);
+        byggRefusjonAndel(ag, internRef);
+        Intervall eldrePeriode = Intervall.fraOgMedTilOgMed(BG_PERIODE.getFomDato().minusYears(1), BG_PERIODE.getFomDato().minusDays(1));
+        byggRefusjonAndel(ag, internRef, eldrePeriode);
+        byggBGAndelOrginal(ag, internRef, 0, 500000);
+        LocalDate refusjonFom = eldrePeriode.getFomDato();
+        LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
+        byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom);
+        ferdigstillInput();
+
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
         TidligereUtbetalingDto tidligereUtb = new TidligereUtbetalingDto(bgPeriodeOrginal.getBeregningsgrunnlagPeriodeFom(), bgPeriodeOrginal.getBeregningsgrunnlagPeriodeTom(), true);
         assertThat(resultat).isPresent();
         assertThat(resultat.get().getAndeler()).hasSize(1);
@@ -158,17 +172,17 @@ class VurderRefusjonDtoTjenesteTest {
     public void skal_ignorere_tidligere_avklaring_fra_fakta_om_beregning_når_dette_gjeder_annet_arbfor() {
         String internRef = UUID.randomUUID().toString();
         String orgnr = "999999999";
-        LocalDate refusjonFom = LocalDate.now();
-        InntektsmeldingDto im = lagTilkommetIM(orgnr, internRef, null, refusjonFom);
-        lagIAYGrunnlag(im);
+        LocalDate refusjonFom = BG_PERIODE.getFomDato();
+        lagIAYGrunnlag();
         Arbeidsgiver ag = Arbeidsgiver.virksomhet(orgnr);
         byggBGAndel(ag, internRef);
+        byggRefusjonAndel(ag, internRef);
         byggBGAndelOrginal(ag, internRef, 0, 500000);
         LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
         byggTidligereRefusjonoverstyring(Arbeidsgiver.virksomhet("99999998"), tidligsteRefusjonFom);
         ferdigstillInput();
 
-        Optional<RefusjonTilVurderingDto> resultat = VurderRefusjonDtoTjeneste.lagDto(input);
+        Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
         TidligereUtbetalingDto tidligereUtb = new TidligereUtbetalingDto(bgPeriodeOrginal.getBeregningsgrunnlagPeriodeFom(), bgPeriodeOrginal.getBeregningsgrunnlagPeriodeTom(), true);
         assertThat(resultat).isPresent();
         assertThat(resultat.get().getAndeler()).hasSize(1);
@@ -199,6 +213,17 @@ class VurderRefusjonDtoTjenesteTest {
         assertThat(matchetAndel.getTidligereUtbetalinger()).containsAll(tidligereUtb);
     }
 
+    private void byggRefusjonAndel(Arbeidsgiver arbeidsgiver, String internRef) {
+        byggRefusjonAndel(arbeidsgiver, internRef, BG_PERIODE);
+    }
+
+    private void byggRefusjonAndel(Arbeidsgiver arbeidsgiver, String internRef, Intervall periode) {
+        List<RefusjonAndel> andeler = andelMap.getOrDefault(periode, new ArrayList<>());
+        andeler.add(new RefusjonAndel(arbeidsgiver, InternArbeidsforholdRefDto.ref(internRef), BigDecimal.ZERO, BigDecimal.ZERO));
+        andelMap.put(periode, andeler);
+    }
+
+
     private void ferdigstillInput() {
         BeregningsgrunnlagGrunnlagDto grunnlagOrginal = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(beregningsgrunnlagOrginal).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
@@ -214,21 +239,13 @@ class VurderRefusjonDtoTjenesteTest {
                 .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
     }
 
-    private void lagIAYGrunnlag(InntektsmeldingDto... imer) {
-        iay = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(), Arrays.asList(imer)).build();
-    }
-
-    private InntektsmeldingDto lagTilkommetIM(String orgnr, String internRef, String eksternRef, LocalDate refusjonFom) {
-        return InntektsmeldingDtoBuilder.builder()
-                .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
-                .medArbeidsforholdId(InternArbeidsforholdRefDto.ref(internRef))
-                .medArbeidsforholdId(EksternArbeidsforholdRef.ref(eksternRef))
-                .medStartDatoPermisjon(refusjonFom).build();
+    private void lagIAYGrunnlag() {
+        iay = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
     }
 
     private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return BeregningsgrunnlagPeriodeDto.builder()
-                .medBeregningsgrunnlagPeriode(LocalDate.now(), null)
+                .medBeregningsgrunnlagPeriode(BG_PERIODE.getFomDato(), BG_PERIODE.getTomDato())
                 .build(beregningsgrunnlag);
     }
 

@@ -11,14 +11,16 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
+import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -31,11 +33,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.AndelerMedØktRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
@@ -80,14 +84,20 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     public void setup() {
         FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances());
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
-                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell()))
-);
+                new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell())));
+        VurderRefusjonDtoTjeneste vurderRefusjonDtoTjeneste = getVurderRefusjonDtoTjeneste();
         beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
                 faktaOmBeregningDtoTjeneste,
                 beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock())
-        );
+                vurderRefusjonDtoTjeneste, new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock()));
         virksomhet.setNavn(VIRKSOMHET_NAVN);
+    }
+
+    private VurderRefusjonDtoTjeneste getVurderRefusjonDtoTjeneste() {
+        MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon();
+        MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+        AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste = new AndelerMedØktRefusjonTjeneste(mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon, oversetterFraRegelRefusjonsOgGradering);
+        return new VurderRefusjonDtoTjeneste(andelerMedØktRefusjonTjeneste);
     }
 
     @Test
