@@ -1,9 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.sql.Clob;
-import java.sql.SQLException;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -12,17 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.PersistenceException;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.hibernate.engine.jdbc.ClobProxy;
+import org.hibernate.annotations.Type;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 
 @Entity(name = "RegelSporingGrunnlagEntitet")
@@ -40,13 +31,13 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Lob
-    @Column(name = "regel_evaluering", nullable = false)
-    private Clob regelEvaluering;
+    @Type(type = "jsonb")
+    @Column(name = "regel_evaluering_json")
+    private String regelEvaluering;
 
-    @Lob
-    @Column(name = "regel_input", nullable = false)
-    private Clob regelInput;
+    @Type(type = "jsonb")
+    @Column(name = "regel_input_json")
+    private String regelInput;
 
     @Convert(converter= BeregningsgrunnlagRegelType.KodeverdiConverter.class)
     @Column(name="regel_type", nullable = false)
@@ -67,30 +58,11 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     }
 
     public String getRegelEvaluering() {
-        return getStringFromLob(this.regelEvaluering);
-    }
-
-    private String getStringFromLob(Clob clob) {
-        if (clob == null) {
-            return null;
-        }
-        String string;
-        try {
-            BufferedReader in = new BufferedReader(clob.getCharacterStream());
-            String line;
-            StringBuilder sb = new StringBuilder(2048);
-            while ((line = in.readLine()) != null) {
-                sb.append(line);
-            }
-            string = sb.toString();
-        } catch (SQLException | IOException e) {
-            throw new PersistenceException("Kunne ikke konvertere clob til string: ", e);
-        }
-        return string;
+        return this.regelEvaluering;
     }
 
     public String getRegelInput() {
-        return getStringFromLob(regelInput);
+        return regelInput;
     }
 
     public BeregningsgrunnlagRegelType getRegelType() {
@@ -119,13 +91,13 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
         public Builder medRegelInput(String regelInput) {
             Objects.requireNonNull(regelInput, "regelInput");
-            kladd.regelInput = ClobProxy.generateProxy(regelInput);
+            kladd.regelInput = regelInput;
             return this;
         }
 
         public Builder medRegelEvaluering(String regelEvaluering) {
             Objects.requireNonNull(regelEvaluering, "regelInput");
-            kladd.regelEvaluering = ClobProxy.generateProxy(regelEvaluering);
+            kladd.regelEvaluering = regelEvaluering;
             return this;
         }
 
