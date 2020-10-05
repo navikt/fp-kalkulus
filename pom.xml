@@ -53,7 +53,7 @@
 
         <prometheus.version>0.9.0</prometheus.version>
         <junit.version>5.7.0</junit.version>
-        <swagger.version>2.1.4</swagger.version>
+        <swagger.version>2.1.5</swagger.version>
     </properties>
 
     <dependencyManagement>
