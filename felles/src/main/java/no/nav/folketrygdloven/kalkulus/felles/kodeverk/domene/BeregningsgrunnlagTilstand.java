@@ -54,6 +54,8 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         KOFAKBER_UT,
         FORESLÅTT,
         FORESLÅTT_UT,
+        VURDERT_REFUSJON,
+        VURDERT_REFUSJON_UT,
         OPPDATERT_MED_REFUSJON_OG_GRADERING,
         FASTSATT_INN,
         FASTSATT
@@ -76,6 +78,10 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         this.kode = kode;
         this.navn = navn;
         this.obligatoriskTilstand = obligatoriskTilstand;
+    }
+
+    public static List<BeregningsgrunnlagTilstand> getTilstandRekkefølge() {
+        return Collections.unmodifiableList(tilstandRekkefølge);
     }
 
     @JsonCreator
