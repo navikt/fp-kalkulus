@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
 /**
  * Tjeneste for å finne andeler i nytt beregningsgrunnlag som har økt refusjon siden orginalbehandlingen.
@@ -44,6 +45,10 @@ public class AndelerMedØktRefusjonTjeneste {
     }
 
     public Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjon(BeregningsgrunnlagInput input) {
+        if (input.getBeregningsgrunnlagGrunnlag() == null || input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)) {
+            // Tjenesten er kalt før vi er klar for å vurdere refusjon, returnere tomt map
+            return Collections.emptyMap();
+        }
         BeregningsgrunnlagDto bgMedRef = hentRefusjonForBG(input);
         Optional<BeregningsgrunnlagDto> originaltGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         return originaltGrunnlag.map(og -> BeregningRefusjonTjeneste.finnPerioderMedAndelerMedØktRefusjon(bgMedRef, og)).orElse(Collections.emptyMap());

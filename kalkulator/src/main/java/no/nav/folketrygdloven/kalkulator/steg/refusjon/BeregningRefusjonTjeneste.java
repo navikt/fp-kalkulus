@@ -28,10 +28,6 @@ public final class BeregningRefusjonTjeneste {
         // SKjuler default
     }
 
-    public static boolean måVurdereRefusjonskravForBeregning(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
-        return !finnPerioderMedAndelerMedØktRefusjon(revurderingBeregningsgrunnlag, originaltBeregningsgrunnlag).isEmpty();
-    }
-
     public static Map<Intervall, List<RefusjonAndel>> finnPerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
         LocalDate alleredeUtbetaltTOM = FinnAlleredeUtbetaltTom.finn();
         if (alleredeUtbetaltTOM.isBefore(revurderingBeregningsgrunnlag.getSkjæringstidspunkt())) {
