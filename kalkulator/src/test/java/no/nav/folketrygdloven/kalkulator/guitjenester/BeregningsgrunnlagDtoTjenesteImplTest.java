@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AndelerMedØktRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -94,9 +95,9 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     }
 
     private VurderRefusjonDtoTjeneste getVurderRefusjonDtoTjeneste() {
-        MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon();
-        MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste = new AndelerMedØktRefusjonTjeneste(mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon, oversetterFraRegelRefusjonsOgGradering);
+        FordelPerioderTjeneste fordelPerioderTjeneste = new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon()),
+                new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering());
+        AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste = new AndelerMedØktRefusjonTjeneste(fordelPerioderTjeneste);
         return new VurderRefusjonDtoTjeneste(andelerMedØktRefusjonTjeneste);
     }
 

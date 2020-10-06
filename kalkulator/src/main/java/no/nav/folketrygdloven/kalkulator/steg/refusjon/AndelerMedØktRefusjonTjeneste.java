@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +10,11 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.perioder.FastsettPeriodeRegel;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -30,15 +25,11 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 @ApplicationScoped
 public class AndelerMedØktRefusjonTjeneste {
 
-    public static final RegelResultat DUMMY_REGEL_RESULTAT = new RegelResultat(null, "", "");
-    private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
-    private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering;
+    private FordelPerioderTjeneste fordelPerioderTjeneste;
 
     @Inject
-    public AndelerMedØktRefusjonTjeneste(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon,
-                                         MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering) {
-        this.mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon = mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
-        this.oversetterFraRegelRefusjonsOgGradering = oversetterFraRegelRefusjonsOgGradering;
+    public AndelerMedØktRefusjonTjeneste(FordelPerioderTjeneste fordelPerioderTjeneste) {
+        this.fordelPerioderTjeneste = fordelPerioderTjeneste;
     }
 
     public AndelerMedØktRefusjonTjeneste() {
@@ -57,15 +48,9 @@ public class AndelerMedØktRefusjonTjeneste {
     }
 
     private BeregningsgrunnlagDto hentRefusjonForBG(BeregningsgrunnlagInput input) {
-        PeriodeModell modell = mapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon.map(input, input.getBeregningsgrunnlag());
-        List<SplittetPeriode> splittedePerioder = kjørRegel(modell);
-        return oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, DUMMY_REGEL_RESULTAT, input.getBeregningsgrunnlag());
-    }
-
-    private List<SplittetPeriode> kjørRegel(PeriodeModell modell) {
-        List<SplittetPeriode> splittedePerioder = new ArrayList<>();
-        new FastsettPeriodeRegel().evaluer(modell, splittedePerioder);
-        return splittedePerioder;
+        // TODO TFP-3792 Vi bør flytte splitting av perioder slik at vi ikke trenger å gjøre dette to ganger, en gang her for å "sniktitte" og en gang i neste steg permanent
+        BeregningsgrunnlagRegelResultat resultat = fordelPerioderTjeneste.fastsettPerioderForRefusjonOgGradering(input, input.getBeregningsgrunnlag());
+        return resultat.getBeregningsgrunnlag();
     }
 
 }
