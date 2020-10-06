@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,8 @@ public class AndelerMedØktRefusjonTjeneste {
         }
         BeregningsgrunnlagDto bgMedRef = hentRefusjonForBG(input);
         Optional<BeregningsgrunnlagDto> originaltGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-        return originaltGrunnlag.map(og -> BeregningRefusjonTjeneste.finnPerioderMedAndelerMedØktRefusjon(bgMedRef, og)).orElse(Collections.emptyMap());
+        LocalDate alleredeUtbetaltTOM = FinnAlleredeUtbetaltTom.finn();
+        return originaltGrunnlag.map(og -> BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(bgMedRef, og, alleredeUtbetaltTOM)).orElse(Collections.emptyMap());
     }
 
     private BeregningsgrunnlagDto hentRefusjonForBG(BeregningsgrunnlagInput input) {

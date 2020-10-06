@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -24,14 +22,9 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class RefusjonTidslinjeTjeneste {
 
-    public static LocalDateTimeline<RefusjonPeriode> lagTidslinje(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate alleredeUtbetaltTOM) {
-        Periode utbetaltPeriode = Periode.of(beregningsgrunnlag.getSkjæringstidspunkt(), alleredeUtbetaltTOM);
+    public static LocalDateTimeline<RefusjonPeriode> lagTidslinje(BeregningsgrunnlagDto beregningsgrunnlag) {
         List<LocalDateSegment<RefusjonPeriode>> periodeSegmenter = beregningsgrunnlag.getBeregningsgrunnlagPerioder()
                 .stream()
-                .filter(bgPeriode -> {
-                    Periode periode = Periode.of(bgPeriode.getBeregningsgrunnlagPeriodeFom(), bgPeriode.getBeregningsgrunnlagPeriodeTom());
-                    return periode.overlapper(utbetaltPeriode);
-                })
                 .map(periode -> new LocalDateSegment<>(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), lagRefusjonsperiode(periode)))
                 .collect(Collectors.toList());
         return new LocalDateTimeline<>(periodeSegmenter).compress();

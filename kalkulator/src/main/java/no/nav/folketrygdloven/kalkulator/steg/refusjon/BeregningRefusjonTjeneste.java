@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.vedtak.konfig.Tid;
 
 /**
  * Tjeneste for å vurdere refusjonskrav for beregning
@@ -28,16 +29,25 @@ public final class BeregningRefusjonTjeneste {
         // SKjuler default
     }
 
-    public static Map<Intervall, List<RefusjonAndel>> finnPerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag, BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
-        LocalDate alleredeUtbetaltTOM = FinnAlleredeUtbetaltTom.finn();
+    public static Map<Intervall, List<RefusjonAndel>> finnUtbetaltePerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag,
+                                                                                                    BeregningsgrunnlagDto originaltBeregningsgrunnlag,
+                                                                                                    LocalDate alleredeUtbetaltTOM) {
         if (alleredeUtbetaltTOM.isBefore(revurderingBeregningsgrunnlag.getSkjæringstidspunkt())) {
             return Collections.emptyMap();
         }
-        LocalDateTimeline<RefusjonPeriode> originalTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBeregningsgrunnlag, alleredeUtbetaltTOM);
-        LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag, alleredeUtbetaltTOM);
-        LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(originalTidslinje, revurderingTidslinje);
+        LocalDateTimeline<RefusjonPeriode> alleredeUtbetaltPeriode = finnAlleredeUtbetaltPeriode(alleredeUtbetaltTOM);
+        LocalDateTimeline<RefusjonPeriode> originalUtbetaltTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBeregningsgrunnlag).intersection(alleredeUtbetaltPeriode);
+        LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag);
+        LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(originalUtbetaltTidslinje, revurderingTidslinje);
 
         return vurderPerioder(endringTidslinje);
+    }
+
+    private static LocalDateTimeline<RefusjonPeriode> finnAlleredeUtbetaltPeriode(LocalDate alleredeUtbetaltTOM) {
+        return new LocalDateTimeline<>(
+                Tid.TIDENES_BEGYNNELSE,
+                alleredeUtbetaltTOM,
+                null);
     }
 
     private static Map<Intervall, List<RefusjonAndel>> vurderPerioder(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje) {
