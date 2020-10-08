@@ -52,7 +52,7 @@ public class AktørId  {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + aktørId + ">";
+        return getClass().getSimpleName() + "<********>";
     }
 
 }

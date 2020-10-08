@@ -74,7 +74,7 @@ public class AktørId implements Serializable, Comparable<AktørId>, IndexKey {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + aktørId + ">";
+        return getClass().getSimpleName() + "<********>";
     }
 
     @Override

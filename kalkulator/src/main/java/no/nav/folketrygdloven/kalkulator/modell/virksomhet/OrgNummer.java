@@ -76,7 +76,7 @@ public class OrgNummer implements Serializable, Comparable<OrgNummer>, IndexKey,
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + orgNummer + ">";
+        return getClass().getSimpleName() + "<********>";
     }
 
     /** @return false hvis ikke gyldig orgnr. */

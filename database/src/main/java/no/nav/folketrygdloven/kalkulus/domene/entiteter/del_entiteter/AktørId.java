@@ -79,7 +79,7 @@ public class AktørId implements Serializable, IndexKey {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + aktørId + ">";
+        return getClass().getSimpleName() + "<********>";
     }
 
     private static final AtomicLong DUMMY_AKTØRID = new AtomicLong(1000000000000L);
