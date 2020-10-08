@@ -3,13 +3,18 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
@@ -29,6 +34,60 @@ public final class BeregningRefusjonTjeneste {
         // SKjuler default
     }
 
+    /**
+     * @param andelerMedØktRefusjonIUtbetaltPeriode - map mellom en periode og alle andeler i perioden som har økt refusjonskrav
+     * @param originaltBeregningsgrunnlag - det orginale beregningsgrunnlaget
+     * @return - sjekker andelerMedØktRefusjonIUtbetaltPeriode mot originaltBeregningsgrunnlag for å se
+     * hvilke andeler med økt refusjon i ubtetalt periode som har hatt tidligerer utbetalt refusjon
+     */
+    public static Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjonMedTidligereRefusjon(Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode,
+                                                                                                    BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndelerIOrginaltGrunnlag = originaltBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereUtbetaltRefusjon = new HashMap<>();
+        andelerMedØktRefusjonIUtbetaltPeriode.entrySet().forEach(entry -> {
+            List<RefusjonAndel> andelerMedØktRefusjonOgTidligereRefusjon = finnAndelerMedTidligereRefusjon(entry, alleAndelerIOrginaltGrunnlag);
+            if (!andelerMedØktRefusjonOgTidligereRefusjon.isEmpty()) {
+                andelerMedØktRefusjonOgTidligereUtbetaltRefusjon.put(entry.getKey(), andelerMedØktRefusjonOgTidligereRefusjon);
+            }
+        });
+        return andelerMedØktRefusjonOgTidligereUtbetaltRefusjon;
+    }
+
+    private static List<RefusjonAndel> finnAndelerMedTidligereRefusjon(Map.Entry<Intervall, List<RefusjonAndel>> entry, List<BeregningsgrunnlagPrStatusOgAndelDto> alleOrginaleAndeler) {
+        return entry.getValue().stream()
+                .filter(andelMedØktRefusjon -> andelFinnesIOrginaltGrunnlagMedRefusjon(andelMedØktRefusjon, alleOrginaleAndeler))
+                .collect(Collectors.toList());
+    }
+
+    private static boolean andelFinnesIOrginaltGrunnlagMedRefusjon(RefusjonAndel andelMedØktRefusjon, List<BeregningsgrunnlagPrStatusOgAndelDto> alleOrginaleAndeler) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndeler = finnMatchendeAndelIOrginalperiode(andelMedØktRefusjon, alleOrginaleAndeler);
+        return matchendeAndeler.stream().anyMatch(BeregningRefusjonTjeneste::harRefusjon);
+    }
+
+    private static boolean harRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        BigDecimal refusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO);
+        return refusjonskrav.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> finnMatchendeAndelIOrginalperiode(RefusjonAndel andelMedØktRefusjon, List<BeregningsgrunnlagPrStatusOgAndelDto> orginaleAndeler) {
+        return orginaleAndeler.stream()
+                .filter(bgAndel -> bgAndel.getAktivitetStatus().erArbeidstaker() && bgAndel.getBgAndelArbeidsforhold().isPresent())
+                .filter(bgAndel -> andelMedØktRefusjon.getArbeidsgiver().equals(bgAndel.getArbeidsgiver().orElse(null)))
+                .filter(bgAndel -> bgAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef()).gjelderFor(andelMedØktRefusjon.getArbeidsforholdRef()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @param revurderingBeregningsgrunnlag - nytt beregningsgrunnlag
+     * @param originaltBeregningsgrunnlag - beregningsgrunnlag fra forrige behandling
+     * @param alleredeUtbetaltTOM - datoen ytelse er utbetalt til, det er kun relevant å se på perioder frem til denne datoen
+     * @return - Ser på revurderingBeregningsgrunnlag og sjekker hvilke andeler i hvilke perioder
+     * frem til alleredeUtbetaltTOM som har hatt økt refusjon i forhold til originaltBeregningsgrunnlag
+     */
     public static Map<Intervall, List<RefusjonAndel>> finnUtbetaltePerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag,
                                                                                                     BeregningsgrunnlagDto originaltBeregningsgrunnlag,
                                                                                                     LocalDate alleredeUtbetaltTOM) {
