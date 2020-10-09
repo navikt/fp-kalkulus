@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
@@ -40,8 +42,9 @@ public final class BeregningRefusjonTjeneste {
      * @return - sjekker andelerMedØktRefusjonIUtbetaltPeriode mot originaltBeregningsgrunnlag for å se
      * hvilke andeler med økt refusjon i ubtetalt periode som har hatt tidligerer utbetalt refusjon
      */
-    public static Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjonMedTidligereRefusjon(Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode,
-                                                                                                    BeregningsgrunnlagDto originaltBeregningsgrunnlag) {
+    public static Map<Intervall, List<RefusjonAndel>> finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode,
+                                                                                                                        BeregningsgrunnlagDto originaltBeregningsgrunnlag,
+                                                                                                                        List<BeregningRefusjonOverstyringDto> orginaleOverstyringer) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndelerIOrginaltGrunnlag = originaltBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList)
                 .flatMap(Collection::stream)
@@ -53,8 +56,30 @@ public final class BeregningRefusjonTjeneste {
                 andelerMedØktRefusjonOgTidligereUtbetaltRefusjon.put(entry.getKey(), andelerMedØktRefusjonOgTidligereRefusjon);
             }
         });
-        return andelerMedØktRefusjonOgTidligereUtbetaltRefusjon;
+
+        // Hvis det er vurdert før må man kunne vurdere igjen
+        List<Arbeidsgiver> arbeidsgivereOrginaltVurdert = hentArbeidsgivereDetTidligereErVurdertRefusjonFor(orginaleOverstyringer);
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjonIkkeTidligereVurdert = new HashMap<>();
+        andelerMedØktRefusjonOgTidligereUtbetaltRefusjon.forEach((key, value) -> {
+            List<RefusjonAndel> andelerIkkeTidligereVurdert = value.stream()
+                    .filter(andel -> !arbeidsgivereOrginaltVurdert.contains(andel.getArbeidsgiver()))
+                    .collect(Collectors.toList());
+            if (!andelerIkkeTidligereVurdert.isEmpty()) {
+                andelerMedØktRefusjonOgTidligereRefusjonIkkeTidligereVurdert.put(key, andelerIkkeTidligereVurdert);
+            }
+        });
+
+
+        return andelerMedØktRefusjonOgTidligereRefusjonIkkeTidligereVurdert;
     }
+
+    private static List<Arbeidsgiver> hentArbeidsgivereDetTidligereErVurdertRefusjonFor(List<BeregningRefusjonOverstyringDto> orginaleOverstyringer) {
+        return orginaleOverstyringer.stream()
+                .filter(ro -> !ro.getRefusjonPerioder().isEmpty())
+                .map(BeregningRefusjonOverstyringDto::getArbeidsgiver)
+                .collect(Collectors.toList());
+    }
+
 
     private static List<RefusjonAndel> finnAndelerMedTidligereRefusjon(Map.Entry<Intervall, List<RefusjonAndel>> entry, List<BeregningsgrunnlagPrStatusOgAndelDto> alleOrginaleAndeler) {
         return entry.getValue().stream()

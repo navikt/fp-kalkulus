@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
@@ -55,11 +58,14 @@ public class BeregningRefusjonAksjonspunktutleder {
         // Vi skal ikke opprette aksjonspunkt hvis en andel alltid har hatt refusjon, men refusjonskravet har økt, da vi ikke har løsning for disse.
         // Dette skal løses i https://jira.adeo.no/browse/TFP-3795
         BeregningsgrunnlagDto orginaltBG = orginaltBGOpt.get();
+        List<BeregningRefusjonOverstyringDto> orginaleOverstyringer = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling()
+                .flatMap(BeregningsgrunnlagGrunnlagDto::getRefusjonOverstyringer)
+                .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
+                .orElse(Collections.emptyList());
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon =
-                BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjon(andelerMedØktRefusjonIUtbetaltPeriode, orginaltBG);
+                BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefusjonIUtbetaltPeriode, orginaltBG, orginaleOverstyringer);
 
         // Vi vet at det finnes andeler med økt refusjon, vi skal ha aksjonspunkt hvis ingen av disse tidligere har hatt refusjon
         return andelerMedØktRefusjonOgTidligereRefusjon.isEmpty();
     }
-
 }

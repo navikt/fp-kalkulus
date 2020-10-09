@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -368,7 +371,7 @@ class BeregningRefusjonTjenesteTest {
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
         andelerMedØktRefIUtbetaltPeriode.put(intervall, Collections.singletonList(refusjonAndel));
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjon(andelerMedØktRefIUtbetaltPeriode, originaltBG);
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, Collections.emptyList());
         assertThat(andelerMedØktRefusjonOgTidligereRefusjon).hasSize(1);
         assertMap(andelerMedØktRefusjonOgTidligereRefusjon, intervall, Collections.singletonList(refusjonAndel));
     }
@@ -385,7 +388,7 @@ class BeregningRefusjonTjenesteTest {
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
         andelerMedØktRefIUtbetaltPeriode.put(intervall, Collections.singletonList(refusjonAndel));
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjon(andelerMedØktRefIUtbetaltPeriode, originaltBG);
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, Collections.emptyList());
         assertThat(andelerMedØktRefusjonOgTidligereRefusjon).isEmpty();
     }
 
@@ -403,7 +406,7 @@ class BeregningRefusjonTjenesteTest {
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
         andelerMedØktRefIUtbetaltPeriode.put(intervall, List.of(refusjonAndel1, refusjonAndel2));
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjon(andelerMedØktRefIUtbetaltPeriode, originaltBG);
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, Collections.emptyList());
         assertThat(andelerMedØktRefusjonOgTidligereRefusjon).hasSize(1);
         assertMap(andelerMedØktRefusjonOgTidligereRefusjon, intervall, Collections.singletonList(refusjonAndel2));
     }
@@ -425,11 +428,55 @@ class BeregningRefusjonTjenesteTest {
 
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
         andelerMedØktRefIUtbetaltPeriode.put(intervall, List.of(refusjonAndel1));
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjon(andelerMedØktRefIUtbetaltPeriode, originaltBG);
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, Collections.emptyList());
         assertThat(andelerMedØktRefusjonOgTidligereRefusjon).hasSize(1);
         assertMap(andelerMedØktRefusjonOgTidligereRefusjon, intervall, Collections.singletonList(refusjonAndel1));
     }
 
+    @Test
+    public void andeler_tidligere_vurdert_skal_filtreres_ut_slik_at_de_ikke_stopper_opprettelse_av_aksjonspunkt() {
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(20))
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 100000);
+        List<BeregningRefusjonOverstyringDto> tidligereOverstyringer = new ArrayList<>();
+        tidligereOverstyringer.add(lagTidligereOverstyring(AG1));
+        Intervall intervall = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(21), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(50));
+        RefusjonAndel refusjonAndel1 = lagForventetAndel(AG1, REF1, 200000, 200000);
+
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
+        andelerMedØktRefIUtbetaltPeriode.put(intervall, List.of(refusjonAndel1));
+
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, tidligereOverstyringer);
+        assertThat(andelerMedØktRefusjonOgTidligereRefusjon).isEmpty();
+    }
+
+    @Test
+    public void skal_finne_korrekt_andel_når_en_har_økt_refusjon_og_ikke_var_vurdert_sist() {
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(20))
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 100000);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 200000, 100000);
+        List<BeregningRefusjonOverstyringDto> tidligereOverstyringer = new ArrayList<>();
+        tidligereOverstyringer.add(lagTidligereOverstyring(AG1));
+        Intervall intervall = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(21), SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(50));
+        RefusjonAndel refusjonAndel1 = lagForventetAndel(AG1, REF1, 200000, 200000);
+        RefusjonAndel refusjonAndel2 = lagForventetAndel(AG2, REF1, 200000, 200000);
+
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefIUtbetaltPeriode = new HashMap<>();
+        andelerMedØktRefIUtbetaltPeriode.put(intervall, List.of(refusjonAndel1, refusjonAndel2));
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon = BeregningRefusjonTjeneste.finnAndelerMedØktRefusjonMedTidligereRefusjonIkkeTidligereVurdert(andelerMedØktRefIUtbetaltPeriode, originaltBG, tidligereOverstyringer);
+
+        assertThat(andelerMedØktRefusjonOgTidligereRefusjon).hasSize(1);
+        assertMap(andelerMedØktRefusjonOgTidligereRefusjon, intervall, Collections.singletonList(refusjonAndel2));
+    }
+
+
+    private BeregningRefusjonOverstyringDto lagTidligereOverstyring(Arbeidsgiver ag1) {
+        BeregningRefusjonPeriodeDto tidligereFastsattDato = new BeregningRefusjonPeriodeDto(InternArbeidsforholdRefDto.nullRef(), LocalDate.now());
+        return new BeregningRefusjonOverstyringDto(ag1, null, Collections.singletonList(tidligereFastsattDato));
+    }
 
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
