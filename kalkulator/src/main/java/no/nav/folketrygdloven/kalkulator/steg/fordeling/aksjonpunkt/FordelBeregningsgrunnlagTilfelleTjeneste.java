@@ -19,17 +19,12 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FordelBeregningsgrunnlagTilfelleTjeneste.class);
-
-
     private FordelBeregningsgrunnlagTilfelleTjeneste() {
         // Skjuler default konstruktør
     }
 
     public static boolean harTilfelleForFordeling(FordelBeregningsgrunnlagTilfelleInput input) {
-        LOGGER.info("Utleder fordelingtilfelle for input ({})", input);
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = vurderManuellBehandling(input);
-        andelTilfelleMap.forEach((key, value) -> LOGGER.info("Andel ({}) krever manuell behandling av tilfelle ({})", key, value));
         return !andelTilfelleMap.isEmpty();
 
     }

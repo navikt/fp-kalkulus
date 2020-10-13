@@ -20,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class BeregningUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(BeregningUtils.class);
 
     public static final BigDecimal MAX_UTBETALING_PROSENT_AAP_DAG = BigDecimal.valueOf(200);
 
@@ -38,12 +37,9 @@ public class BeregningUtils {
                                                                      LocalDate skjæringstidspunkt,
                                                                      Set<FagsakYtelseType> ytelseTyper,
                                                                      FagsakYtelseType ytelseType) {
-        LOG.info("Finner siste meldekort for vedtak " + sisteVedtak + " på skjæringstidspunkt " + skjæringstidspunkt + " for ytelser " + ytelseTyper);
         final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
         List<YtelseAnvistDto> alleMeldekort = finnAlleMeldekort(ytelseFilter, ytelseTyper);
-
-        LOG.info("Antall meldekort funnet: " + alleMeldekort.size());
 
         Optional<YtelseAnvistDto> sisteMeldekort = alleMeldekort.stream()
             .filter(ytelseAnvist -> sisteVedtakFom.minus(KonfigTjeneste.forYtelse(ytelseType).getMeldekortPeriode()).isBefore(ytelseAnvist.getAnvistTOM()))
@@ -54,12 +50,10 @@ public class BeregningUtils {
             return Optional.empty();
         }
 
-        LOG.info("Fant meldekort " + sisteMeldekort.get());
         // Vi er nødt til å sjekke om vi har flere meldekort med samme periode
         List<YtelseAnvistDto> alleMeldekortMedPeriode = alleMeldekortMedPeriode(sisteMeldekort.get().getAnvistFOM(), sisteMeldekort.get().getAnvistTOM(), alleMeldekort);
 
         if (alleMeldekortMedPeriode.size() > 1) {
-            LOG.info("Fant " +alleMeldekortMedPeriode.size() + " meldekort med samme periode som " + sisteMeldekort.get());
             return finnMeldekortSomGjelderForVedtak(alleMeldekortMedPeriode, sisteVedtak);
         }
 

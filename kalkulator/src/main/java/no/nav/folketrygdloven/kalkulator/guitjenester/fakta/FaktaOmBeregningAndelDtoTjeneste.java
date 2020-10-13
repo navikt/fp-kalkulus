@@ -39,7 +39,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaO
 // TODO (Safir) Denne bør splittes opp til tre klasser: ei klasse for ATFL i samme org, ei for frilanser og ei for AT med lønnsendring (uten inntektsmelding)
 @ApplicationScoped
 public class FaktaOmBeregningAndelDtoTjeneste {
-    private static final Logger logger = LoggerFactory.getLogger(FaktaOmBeregningAndelDtoTjeneste.class);
 
     static Optional<FaktaOmBeregningAndelDto> lagFrilansAndelDto(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
@@ -136,7 +135,6 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         for (YrkesaktivitetDto yrkesaktivitet : aktiviteterMedLønnsendring) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = finnKorrektAndelFraArbeidsgiver(andeler, yrkesaktivitet.getArbeidsgiver());
             if(!korrektAndel.isPresent()){
-                logger.info("Aktivitet med lønnsendring ={}, andeler={}", aktiviteterMedLønnsendring, andeler);
                 throw new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten");
             }
             FaktaOmBeregningAndelDto dto = lagArbeidsforholdUtenInntektsmeldingDto(korrektAndel.get(), inntektArbeidYtelseGrunnlag);

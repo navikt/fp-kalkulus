@@ -9,15 +9,11 @@ import java.util.function.Consumer;
 
 import no.nav.folketrygdloven.kalkulator.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
@@ -28,8 +24,6 @@ import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
 import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
 
 public final class BeregningsgrunnlagVerifiserer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BeregningsgrunnlagVerifiserer.class);
 
     private BeregningsgrunnlagVerifiserer() {}
 
@@ -110,7 +104,6 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserAtAndelerSomGraderesHarGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG = GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag, aktivitetGradering);
         if (!andelerMedGraderingUtenBG.isEmpty()) {
-            LOG.info("Gradering på bgandeler {} med disse graderingsaktivitetene: {}", andelerMedGraderingUtenBG, aktivitetGradering);
             throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.graderingUtenBG(andelerMedGraderingUtenBG.get(0).getAktivitetStatus().getKode()).toException();
         }
     }
