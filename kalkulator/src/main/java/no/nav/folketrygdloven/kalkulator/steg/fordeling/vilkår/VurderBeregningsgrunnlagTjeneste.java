@@ -21,8 +21,8 @@ import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 import no.nav.fpsak.nare.evaluation.Evaluation;
@@ -59,18 +60,25 @@ public class VurderBeregningsgrunnlagTjeneste {
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
+        return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, aksjonspunkter);
+    }
+
+    protected BeregningsgrunnlagRegelResultat mapTilRegelresultat(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater,
+                                                                  BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                  List<BeregningAksjonspunktResultat> aksjonspunkter) {
         List<Intervall> perioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList());
         List<RegelSporingPeriode> regelsporinger = MapRegelSporingFraRegelTilVL.mapRegelsporingPerioder(regelResultater, perioder, BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(
                 beregningsgrunnlag,
                 aksjonspunkter,
                 new RegelSporingAggregat(regelsporinger));
-        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag));
+        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag, input.getYtelsespesifiktGrunnlag()));
         return beregningsgrunnlagRegelResultat;
     }
 
-    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
-                                                                    BeregningsgrunnlagDto beregningsgrunnlag) {
+    protected List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
+                                                                      BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                      YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
         Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();
         for (var periode : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {

@@ -18,18 +18,20 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.vurder.frisinn.RegelVurderBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -58,10 +60,7 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
         BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, aksjonspunkter);
-        beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag,
-                input.getYtelsespesifiktGrunnlag()));
-        return beregningsgrunnlagRegelResultat;
+        return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, aksjonspunkter);
     }
 
     @Override
@@ -81,9 +80,11 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
         return regelResultater;
     }
 
-    private List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
+    @Override
+    protected List<BeregningVilkårResultat> mapTilVilkårResultatListe(List<RegelResultat> regelResultater,
                                                                     BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                    FrisinnGrunnlag frisinnGrunnlag) {
+                                                                    YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
+        FrisinnGrunnlag frisinnGrunnlag = (FrisinnGrunnlag) ytelsesSpesifiktGrunnlag;
         List<BeregningVilkårResultat> vilkårsResultatListe = new ArrayList<>();
         Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();
         for (var periode : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
