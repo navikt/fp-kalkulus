@@ -172,7 +172,7 @@ public class FrilanserMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_40);
@@ -275,7 +275,7 @@ public class FrilanserMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_40);
@@ -385,7 +385,7 @@ public class FrilanserMedTogglePåTest {
         var fordeltGrunnlag = nyttGrunnlag(grunnlag, fordeltBeregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
         input = input.medBeregningsgrunnlagGrunnlag(fordeltGrunnlag);
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_40);
@@ -454,7 +454,7 @@ public class FrilanserMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_38);
@@ -520,7 +520,7 @@ public class FrilanserMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_38);

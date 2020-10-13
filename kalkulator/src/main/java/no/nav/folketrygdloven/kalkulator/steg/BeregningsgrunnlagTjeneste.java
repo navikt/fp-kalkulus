@@ -119,9 +119,12 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = fullføre.fullføreBeregningsgrunnlag(input);
-        Builder resultatBuilder = Builder.fra(input).medBeregningsgrunnlag(fastsattBeregningsgrunnlag, FASTSATT);
-        var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste).lagVilkårResultatFullføre(input, fastsattBeregningsgrunnlag);
+        var resultat = fullføre.fullføreBeregningsgrunnlag(input);
+        Builder resultatBuilder = Builder.fra(input)
+                .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
+                .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), FASTSATT);
+        var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFullføre(input, resultat.getBeregningsgrunnlag());
         resultatBuilder.medVilkårResultat(vilkårResultat.orElse(null));
         if (SkalAvslagSettesPåVent.skalSettesPåVent(input)) {
             resultatBuilder.medAksjonspunkter(SkalAvslagSettesPåVent.avslagPåVent());

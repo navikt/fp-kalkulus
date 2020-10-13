@@ -24,7 +24,9 @@ public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
     VILKÅR_VURDERING("VILKÅR_VURDERING", "Vurder beregningsvilkår"),
     FORDEL("FORDEL", "Fordel beregningsgrunnlag"),
     FASTSETT("FASTSETT", "Fastsett/fullføre beregningsgrunnlag"),
+    @Deprecated
     OPPDATER_GRUNNLAG_SVP("OPPDATER_GRUNNLAG_SVP", "Oppdater grunnlag for SVP"),
+    @Deprecated
     FASTSETT2("FASTSETT2", "Fastsette/fullføre beregningsgrunnlag for andre gangs kjøring for SVP"),
     FINN_GRENSEVERDI("FINN_GRENSEVERDI", "Finne grenseverdi til kjøring av fastsett beregningsgrunnlag for SVP"),
     UDEFINERT("-", "Ikke definert"),

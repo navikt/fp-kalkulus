@@ -19,15 +19,14 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @FagsakYtelseTypeRef("FRISINN")
 @ApplicationScoped
 public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunnlagUtbgrad {
 
-    private VilkårTjenesteFRISINN vilkårTjeneste;
     private VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste;
 
     public FullføreBeregningsgrunnlagFRISINN() {
@@ -36,10 +35,8 @@ public class FullføreBeregningsgrunnlagFRISINN extends FullføreBeregningsgrunn
 
     @Inject
     public FullføreBeregningsgrunnlagFRISINN(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel,
-                                             @FagsakYtelseTypeRef("FRISINN") VilkårTjenesteFRISINN vilkårTjeneste,
                                              @FagsakYtelseTypeRef("FRISINN") VurderBeregningsgrunnlagTjenesteFRISINN vurderBeregningsgrunnlagTjeneste) {
         super(mapBeregningsgrunnlagFraVLTilRegel);
-        this.vilkårTjeneste = vilkårTjeneste;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
     }
 

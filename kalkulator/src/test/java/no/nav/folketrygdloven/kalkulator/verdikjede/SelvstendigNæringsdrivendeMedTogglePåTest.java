@@ -122,7 +122,7 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_35);
@@ -185,7 +185,7 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_35);
@@ -249,7 +249,7 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_35);
@@ -313,7 +313,7 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
 
         // Act 4: fastsette beregningsgrunnlag
         var fastsattBeregningsgrunnlag = beregningTjenesteWrapper.getFullføreBeregningsgrunnlagTjeneste().fullføreBeregningsgrunnlag(input
-        );
+        ).getBeregningsgrunnlag();
 
         // Assert 3
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_35);

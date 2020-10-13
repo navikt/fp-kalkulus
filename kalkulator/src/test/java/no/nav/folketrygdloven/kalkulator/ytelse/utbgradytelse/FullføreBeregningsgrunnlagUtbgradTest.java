@@ -1084,7 +1084,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
             .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengerGrunnlag);
-        return tjeneste.fullføreBeregningsgrunnlag(input);
+        return tjeneste.fullføreBeregningsgrunnlag(input).getBeregningsgrunnlag();
     }
 
     private List<UtbetalingsgradPrAktivitetDto> lagUttakResultat(BigDecimal utbetalingsgrad) {
