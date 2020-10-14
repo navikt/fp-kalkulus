@@ -9,13 +9,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
@@ -33,7 +32,7 @@ public class AksjonspunktUtlederFaktaOmBeregning {
         this.faktaOmBeregningTilfelleTjeneste = faktaOmBeregningTilfelleTjeneste;
     }
 
-    public FaktaOmBeregningAksjonspunktResultat utledAksjonspunkterFor(BeregningsgrunnlagInput input,
+    public FaktaOmBeregningAksjonspunktResultat utledAksjonspunkterFor(FaktaOmBeregningInput input,
                                                                        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                                        boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);

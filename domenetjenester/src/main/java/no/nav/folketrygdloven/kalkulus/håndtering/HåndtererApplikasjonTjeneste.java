@@ -10,7 +10,8 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -24,25 +25,25 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTj
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
 
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private HåndteringInputTjeneste håndteringInputTjeneste;
 
     public HåndtererApplikasjonTjeneste() {
         // CDI
     }
 
     @Inject
-    public HåndtererApplikasjonTjeneste(KalkulatorInputTjeneste kalkulatorInputTjeneste, RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository, HåndteringInputTjeneste håndteringInputTjeneste) {
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.håndteringInputTjeneste = håndteringInputTjeneste;
     }
 
     public OppdateringRespons håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
         rullTilbakeVedBehov(koblingId, håndterBeregningDto);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndterBeregningDto.getKode().getKode());
-        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingId));
+        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, håndteringInputTjeneste.lagInput(koblingId, håndterBeregningDto.getKode()));
         BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, resultat.getNyttGrunnlag(), MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode()));
         beregningsgrunnlagRepository.lagreOgFlush(koblingId, beregningsgrunnlagGrunnlagEntitet);
         return resultat.getEndring();

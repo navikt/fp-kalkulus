@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -77,7 +79,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(input, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = tilfelleUtleder.utled(new FaktaOmBeregningInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)), grunnlag);
 
         // Assert
         assertThat(tilfelle).isEmpty();

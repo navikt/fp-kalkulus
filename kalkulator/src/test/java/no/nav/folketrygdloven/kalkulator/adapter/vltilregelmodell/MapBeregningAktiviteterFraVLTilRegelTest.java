@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -65,14 +66,14 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            InntektsmeldingDto inntektsmelding) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
-        var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
     }
 

@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriFraSøknadTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
@@ -517,7 +519,7 @@ public class VerdikjedeTestHjelper {
             naturalYtelse);
     }
 
-    BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(BeregningsgrunnlagInput input,
+    BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(FastsettBeregningsaktiviteterInput input,
                                                           BeregningTjenesteWrapper beregningTjenesteWrapper) {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = new FastsettBeregningAktiviteter(
                 new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegel())).fastsettAktiviteter(input);

@@ -6,9 +6,9 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 
@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 public class ArbeidstakerOgFrilanserISammeOrganisasjonTilfelleUtleder implements TilfelleUtleder {
 
     @Override
-    public Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
+    public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         var ref = input.getKoblingReferanse();
         boolean erATFLISammeOrg = KontrollerFaktaBeregningFrilanserTjeneste.erBrukerArbeidstakerOgFrilanserISammeOrganisasjon(

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.verdikjede;
 
+import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
 import static no.nav.folketrygdloven.kalkulator.verdikjede.BeregningsgrunnlagGrunnlagTestUtil.nyttGrunnlag;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,17 +13,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
-import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
+import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -34,6 +39,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
@@ -84,16 +91,16 @@ public class SelvstendigNæringsdrivendeTest {
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_35);
@@ -107,7 +114,7 @@ public class SelvstendigNæringsdrivendeTest {
         assertThat(sg.getAvvikPromilleNy().compareTo(forventetAvvikPromille)).isEqualTo(0);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
@@ -149,16 +156,16 @@ public class SelvstendigNæringsdrivendeTest {
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_35);
@@ -170,7 +177,7 @@ public class SelvstendigNæringsdrivendeTest {
         assertThat(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag()).isNull();
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
@@ -213,16 +220,16 @@ public class SelvstendigNæringsdrivendeTest {
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_35);
@@ -234,7 +241,7 @@ public class SelvstendigNæringsdrivendeTest {
         assertThat(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag()).isNull();
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
@@ -277,16 +284,16 @@ public class SelvstendigNæringsdrivendeTest {
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 80);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_35);
@@ -298,7 +305,7 @@ public class SelvstendigNæringsdrivendeTest {
         assertThat(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag()).isNull();
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
             nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
@@ -315,7 +322,7 @@ public class SelvstendigNæringsdrivendeTest {
         verdikjedeTestHjelper.verifiserBGSNetterAvkorting(periode, forventetBrutto, forventetBrutto, forventetAvkortet, forventetRedusert, 2016);
     }
 
-    private BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(BeregningsgrunnlagInput input) {
+    private BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(FastsettBeregningsaktiviteterInput input) {
         return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
     }
 
@@ -326,5 +333,31 @@ public class SelvstendigNæringsdrivendeTest {
     private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
+
+    private StegProsesseringInput lagStegInput(BeregningsgrunnlagTilstand tilstand, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        return new StegProsesseringInput(beregningsgrunnlagInput, tilstand);
+    }
+
+    private FaktaOmBeregningInput lagFaktaOmBeregningInput(BeregningsgrunnlagInput input) {
+        return new FaktaOmBeregningInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    private FastsettBeregningsaktiviteterInput lagFastsettBeregningsaktiviteteterInput(BeregningsgrunnlagInput input) {
+        return new FastsettBeregningsaktiviteterInput(lagStegInput(BeregningsgrunnlagTilstand.OPPRETTET, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+
+    private ForeslåBeregningsgrunnlagInput lagForeslåBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new ForeslåBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    private FordelBeregningsgrunnlagInput lagFordelBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new FordelBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+                .medUregulertGrunnbeløp(BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING)));
+    }
+
 
 }

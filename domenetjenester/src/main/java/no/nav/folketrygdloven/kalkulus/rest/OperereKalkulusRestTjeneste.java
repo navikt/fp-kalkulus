@@ -5,11 +5,9 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.CREAT
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,9 +35,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
@@ -83,6 +82,7 @@ public class OperereKalkulusRestTjeneste {
     private KoblingTjeneste koblingTjeneste;
     private BeregningStegTjeneste beregningStegTjeneste;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+    private StegProsessInputTjeneste stegInputTjeneste;
     private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
 
@@ -94,11 +94,13 @@ public class OperereKalkulusRestTjeneste {
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                        BeregningStegTjeneste beregningStegTjeneste,
                                        KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                       StegProsessInputTjeneste stegInputTjeneste,
                                        HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
                                        RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningStegTjeneste = beregningStegTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.stegInputTjeneste = stegInputTjeneste;
         this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
     }
@@ -127,12 +129,11 @@ public class OperereKalkulusRestTjeneste {
 
         boolean inputHarEndretSeg = kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), spesifikasjon.getKalkulatorInput());
 
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId(), Optional.empty());
-
         if (inputHarEndretSeg) {
             rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingEntitet.getId(), BeregningsgrunnlagTilstand.OPPRETTET);
         }
 
+        var input = stegInputTjeneste.lagStartInput(koblingEntitet, spesifikasjon.getKalkulatorInput());
         TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
 
         return Response.ok(tilstandResponse).build();
@@ -164,12 +165,11 @@ public class OperereKalkulusRestTjeneste {
 
             boolean inputHarEndretSeg = kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), kalkulatorInput);
 
-            var input = kalkulatorInputTjeneste.lagInput(koblingEntitet.getId(), Optional.empty());
-
             if (inputHarEndretSeg) {
                 rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingEntitet.getId(), BeregningsgrunnlagTilstand.OPPRETTET);
             }
 
+            var input = stegInputTjeneste.lagStartInput(koblingEntitet, kalkulatorInput);
             var tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
             resultat.add(tilstandResponse);
         }
@@ -194,7 +194,7 @@ public class OperereKalkulusRestTjeneste {
         KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
         MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer().getVerdi());
         MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
-        BeregningsgrunnlagInput input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(koblingEntitet.getId());
+        StegProsesseringInput input = stegInputTjeneste.lagFortsettInput(koblingEntitet.getId(), spesifikasjon.getStegType());
         TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
 
         return Response.ok(tilstandResponse).build();
@@ -221,8 +221,8 @@ public class OperereKalkulusRestTjeneste {
             if(!Objects.equals(kobling.getSaksnummer().getVerdi(), saksnummer)){
                 throw new IllegalArgumentException("Kobling tilhører ikke saksnummer [" +saksnummer+"]: " + kobling);
             }
-            
-            var input = kalkulatorInputTjeneste.lagInputMedBeregningsgrunnlag(kobling.getId());
+
+            var input = stegInputTjeneste.lagFortsettInput(kobling.getId(), spesifikasjon.getStegType());
             var tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, kobling.getId());
 
             resultat.add(tilstandResponse);
@@ -264,7 +264,7 @@ public class OperereKalkulusRestTjeneste {
     }
 
     /**
-     * @deprecated bytt til {@link #deaktiver(DeaktiverBeregningsgrunnlagRequestAbacDto)}
+     * @deprecated bytt til {@link #deaktiverBeregningsgrunnlag(DeaktiverBeregningsgrunnlagRequestAbacDto)}
      */
     @Deprecated(forRemoval = true, since = "1.0")
     @POST
@@ -322,7 +322,7 @@ public class OperereKalkulusRestTjeneste {
 
         public StartBeregningListeRequestAbacDto() {
         }
-        
+
         public StartBeregningListeRequestAbacDto(Map<UUID, KalkulatorInputDto> kalkulatorInput, String saksnummer, PersonIdent aktør, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
             super(kalkulatorInput, saksnummer, aktør, ytelseSomSkalBeregnes);
         }

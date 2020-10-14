@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mapFraEntitet;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -14,7 +13,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
@@ -32,10 +30,10 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 public class BehandlingslagerTilKalkulusMapper {
 
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagFraFagsystem, Collection<InntektsmeldingDto> inntektsmeldinger, boolean medSporingslogg) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagFraFagsystem, boolean medSporingslogg) {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty());
 
-        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto, inntektsmeldinger, medSporingslogg)));
+        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto, medSporingslogg)));
         beregningsgrunnlagFraFagsystem.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
         oppdatere.medRegisterAktiviteter(mapAktiviteter(beregningsgrunnlagFraFagsystem.getRegisterAktiviteter()));
         beregningsgrunnlagFraFagsystem.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapAktiviteter(beregningAktivitetAggregatDto)));
@@ -45,7 +43,7 @@ public class BehandlingslagerTilKalkulusMapper {
     }
 
 
-    private static BeregningsgrunnlagDto mapBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem, Collection<InntektsmeldingDto> inntektsmeldinger, boolean medSporingslogg) {
+    public static BeregningsgrunnlagDto mapBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem, boolean medSporingslogg) {
         BeregningsgrunnlagDto.Builder builder = BeregningsgrunnlagDto.builder();
 
         //med
@@ -66,7 +64,7 @@ public class BehandlingslagerTilKalkulusMapper {
 
         //lister
         beregningsgrunnlagFraFagsystem.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(BGMapperTilKalkulus.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));
-        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, inntektsmeldinger, medSporingslogg)));
+        beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagPerioder().forEach(beregningsgrunnlagPeriode -> builder.leggTilBeregningsgrunnlagPeriode(BGMapperTilKalkulus.mapBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, medSporingslogg)));
         builder.leggTilFaktaOmBeregningTilfeller(beregningsgrunnlagFraFagsystem.getFaktaOmBeregningTilfeller().stream().map(fakta -> FaktaOmBeregningTilfelle.fraKode(fakta.getKode())).collect(Collectors.toList()));
         beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 

@@ -57,22 +57,6 @@ public class BeregningsgrunnlagGUIInput {
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
-    public BeregningsgrunnlagGUIInput(BeregningsgrunnlagInput input, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
-        this.koblingReferanse = input.getKoblingReferanse();
-        InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(input.getIayGrunnlag());
-        arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
-        ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonDtoBuilder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.ofNullable(oppdatere.getInformasjon()));
-        referanser.forEach(arbeidsforholdInformasjonDtoBuilder::leggTilNyReferanse);
-        oppdatere.medInformasjon(arbeidsforholdInformasjonDtoBuilder.build());
-        this.iayGrunnlag = oppdatere.build();
-        this.aktivitetGradering = input.getAktivitetGradering();
-        this.refusjonskravDatoer = input.getRefusjonskravDatoer();
-        this.ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
-        this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
-        this.fordelBeregningsgrunnlagGrunnlag = input.getTilstandHistorikk().get(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
-        this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
-    }
-
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                       AktivitetGradering aktivitetGradering,

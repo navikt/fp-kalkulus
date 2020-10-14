@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.BeregningFaktaOgOverstyringHåndterer;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
@@ -29,7 +29,7 @@ class OverstyrBeregningsgrunnlagHåndterer implements BeregningHåndterer<Overst
     }
 
     @Override
-    public HåndteringResultat håndter(OverstyrBeregningsgrunnlagHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+    public HåndteringResultat håndter(OverstyrBeregningsgrunnlagHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(beregningsgrunnlagInput, mapOverstyrBeregningsgrunnlagDto(dto));
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);

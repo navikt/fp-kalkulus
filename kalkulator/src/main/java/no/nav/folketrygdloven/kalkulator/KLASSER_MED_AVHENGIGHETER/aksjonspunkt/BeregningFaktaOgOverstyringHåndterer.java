@@ -11,7 +11,7 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -32,23 +32,25 @@ public class BeregningFaktaOgOverstyringHåndterer {
         this.faktaOmBeregningTilfellerOppdaterer = faktaOmBeregningTilfellerOppdaterer;
     }
 
-    public BeregningsgrunnlagGrunnlagDto håndter(BeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
+    public BeregningsgrunnlagGrunnlagDto håndter(HåndterBeregningsgrunnlagInput input, FaktaBeregningLagreDto faktaDto) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
 
-        Optional<BeregningsgrunnlagDto> forrigeBg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
 
         faktaOmBeregningTilfellerOppdaterer.oppdater(faktaDto, forrigeBg, input, grunnlagBuilder);
-        return grunnlagBuilder.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        return grunnlagBuilder.build(input.getHåndteringTilstand());
     }
 
 
-    public BeregningsgrunnlagGrunnlagDto håndterMedOverstyring(BeregningsgrunnlagInput input, OverstyrBeregningsgrunnlagDto dto) {
+    public BeregningsgrunnlagGrunnlagDto håndterMedOverstyring(HåndterBeregningsgrunnlagInput input, OverstyrBeregningsgrunnlagDto dto) {
         // Overstyring kan kun gjøres på grunnlaget fra 98-steget
-        BeregningsgrunnlagGrunnlagDto grunnlagOppdatertMedAndeler = input.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)
-            .orElseThrow(() -> new IllegalStateException("Kan ikke overstyre uten et opprettet beregningsgrunnlag"));
+        BeregningsgrunnlagGrunnlagDto grunnlagOppdatertMedAndeler = input.getBeregningsgrunnlagGrunnlag();
+        if (!grunnlagOppdatertMedAndeler.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)) {
+            throw new IllegalStateException("Kan ikke overstyre uten et OPPDATERT_MED_ANDELER beregningsgrunnlag");
+        }
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlagOppdatertMedAndeler);
 
-        Optional<BeregningsgrunnlagDto> forrigeBg = input.hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
 
         FaktaBeregningLagreDto fakta = dto.getFakta();
         if (fakta != null) {
@@ -56,7 +58,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         }
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder().medOverstyring(true);
         overstyrInntekterPrPeriode(beregningsgrunnlagBuilder.getBeregningsgrunnlag(), forrigeBg, dto.getOverstyrteAndeler());
-        return grunnlagBuilder.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        return grunnlagBuilder.build(input.getHåndteringTilstand());
     }
 
     private void overstyrInntekterPrPeriode(BeregningsgrunnlagDto nyttGrunnlag,
@@ -65,10 +67,10 @@ public class BeregningFaktaOgOverstyringHåndterer {
         List<BeregningsgrunnlagPeriodeDto> bgPerioder = nyttGrunnlag.getBeregningsgrunnlagPerioder();
         for (BeregningsgrunnlagPeriodeDto bgPeriode : bgPerioder) {
             Optional<BeregningsgrunnlagPeriodeDto> forrigeBgPeriode = MatchBeregningsgrunnlagTjeneste
-                .finnOverlappendePeriodeOmKunEnFinnes(bgPeriode, forrigeBg);
+                    .finnOverlappendePeriodeOmKunEnFinnes(bgPeriode, forrigeBg);
             overstyrteAndeler
-                .forEach(andelDto ->
-                    FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(andelDto, andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
+                    .forEach(andelDto ->
+                            FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(andelDto, andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
         }
     }
 }

@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputFeil;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -97,7 +98,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
                             .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKobling(koblingId).toException());
                     BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
-                    BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet, input.getInntektsmeldinger(), medSporingslogg);
+                    BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet, medSporingslogg);
                     return leggTilGrunnlagFraFordel(input, grunnlagFraFordel, medSporingslogg).medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
                 }).collect(Collectors.toList());
     }
@@ -116,7 +117,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                                                                        boolean medSporingslogg) {
         Long koblingId = input.getKoblingReferanse().getKoblingId();
         if (grunnlagFraFordel.containsKey(koblingId)) {
-            return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId), input.getInntektsmeldinger(), medSporingslogg));
+            return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId), medSporingslogg));
         }
         return input;
     }

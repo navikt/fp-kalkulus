@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
@@ -18,6 +18,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
  * kontroller fakta om beregning.
  */
 public interface TilfelleUtleder {
-    Optional<FaktaOmBeregningTilfelle> utled(BeregningsgrunnlagInput input,
+    Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                              BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag);
 }

@@ -10,6 +10,8 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
@@ -50,7 +52,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
      *
      * @param input en {@link BeregningsgrunnlagInput}
      */
-    public BeregningsgrunnlagRegelResultat opprettOgLagreBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+    public BeregningsgrunnlagRegelResultat opprettOgLagreBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var ref = input.getKoblingReferanse();
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
@@ -78,7 +80,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
             .medSkjæringstidspunktBeregning(beregningsgrunnlag.getSkjæringstidspunkt()).build();
     }
 
-    public BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public BeregningsgrunnlagRegelResultat fastsettSkjæringstidspunktOgStatuser(FastsettBeregningsaktiviteterInput input, BeregningAktivitetAggregatDto beregningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
                 .fastsett(input, beregningAktiviteter, iayGrunnlag, input.getGrunnbeløpsatser());

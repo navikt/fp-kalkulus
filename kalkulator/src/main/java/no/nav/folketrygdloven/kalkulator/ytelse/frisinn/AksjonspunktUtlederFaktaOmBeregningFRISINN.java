@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -33,7 +34,7 @@ public class AksjonspunktUtlederFaktaOmBeregningFRISINN extends AksjonspunktUtle
     }
 
     @Override
-    public FaktaOmBeregningAksjonspunktResultat utledAksjonspunkterFor(BeregningsgrunnlagInput input,
+    public FaktaOmBeregningAksjonspunktResultat utledAksjonspunkterFor(FaktaOmBeregningInput input,
                                                                        BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                                        boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);

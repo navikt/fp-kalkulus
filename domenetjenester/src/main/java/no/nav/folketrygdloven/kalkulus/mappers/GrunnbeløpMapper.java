@@ -11,7 +11,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 
-class GrunnbeløpMapper {
+public class GrunnbeløpMapper {
 
     private List<BeregningSats> satser;
 

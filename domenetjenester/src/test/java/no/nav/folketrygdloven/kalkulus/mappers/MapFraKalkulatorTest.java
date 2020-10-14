@@ -80,7 +80,7 @@ class MapFraKalkulatorTest {
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
 
-        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty(), Optional.empty(), satser);
+        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
 
         assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
     }

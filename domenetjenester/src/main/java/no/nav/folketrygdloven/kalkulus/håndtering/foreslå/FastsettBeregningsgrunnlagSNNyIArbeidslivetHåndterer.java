@@ -6,7 +6,7 @@ import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoM
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregning
 public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndterer implements BeregningHåndterer<FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto> {
 
     @Override
-    public HåndteringResultat håndter(FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+    public HåndteringResultat håndter(FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetHåndterer.oppdater(beregningsgrunnlagInput, mapFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto(dto.getFastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto()));
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);

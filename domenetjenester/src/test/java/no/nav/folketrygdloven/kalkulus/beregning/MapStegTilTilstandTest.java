@@ -19,7 +19,7 @@ public class MapStegTilTilstandTest {
             if (felt.getType().getName().equals(StegType.class.getName())) {
                 try {
                     StegType stegType = (StegType) felt.get(null);
-                    BeregningsgrunnlagTilstand tilstand = MapStegTilTilstand.map(stegType);
+                    BeregningsgrunnlagTilstand tilstand = MapStegTilTilstand.mapTilStegTilstand(stegType);
                     assertThat(tilstand).isNotNull();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

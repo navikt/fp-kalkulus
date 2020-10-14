@@ -112,7 +112,6 @@ public class FordelBeregningsgrunnlagTjenesteTest {
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
         var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), null)
-                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

@@ -9,25 +9,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectReader;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Builder;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Builder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
@@ -35,14 +30,12 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnBehandlingType;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
@@ -51,63 +44,14 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 
 public class MapFraKalkulator {
 
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
     private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
+    public static final boolean MED_SPORINGSLOGG = true;
 
-
-    public static BeregningsgrunnlagInput mapFraKalkulatorInputEntitetTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                                 KalkulatorInputEntitet kalkulatorInputEntitet,
-                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
-                                                                                                 List<BeregningSats> satser) {
-        String json = kalkulatorInputEntitet.getInput();
-        KalkulatorInputDto input = null;
-
-        try {
-            input = READER.forType(KalkulatorInputDto.class).readValue(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        if (input != null) {
-            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, førsteFastsatteGrunnlagEntitet, satser);
-        }
-
-        throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
-    }
-
-    private static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                          KalkulatorInputDto input,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                          List<BeregningSats> satser) {
-        return mapFraKalkulatorInputTilBeregningsgrunnlagInputUtenGrunnbeløp(kobling, input, beregningsgrunnlagGrunnlagEntitet)
-            .medGrunnbeløpsatser(new GrunnbeløpMapper(satser).mapGrunnbeløpSatser());
-
-    }
-
-    static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
-                                                                                          KalkulatorInputDto input,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
-                                                                                          List<BeregningSats> satser) {
-
-        if (førsteFastsatteGrunnlagEntitet.isPresent()) {
-            var beregningsgrunnlagInputUtenGrunnbeløp = mapFraKalkulatorInputTilBeregningsgrunnlagInputUtenGrunnbeløp(kobling, input, beregningsgrunnlagGrunnlagEntitet);
-            var grunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
-                .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
-                .map(Beløp::getVerdi)
-                .map(beregningsgrunnlagInputUtenGrunnbeløp::medUregulertGrunnbeløp)
-                .orElse(beregningsgrunnlagInputUtenGrunnbeløp)
-                .medGrunnbeløpsatser(new GrunnbeløpMapper(satser).mapGrunnbeløpSatser());
-            return grunnlagInput;
-        } else {
-            return mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, beregningsgrunnlagGrunnlagEntitet, satser);
-
-        }
-    }
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
         if (arbeidsgiver == null) {
@@ -117,7 +61,7 @@ public class MapFraKalkulator {
 
     }
 
-    private static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInputUtenGrunnbeløp(KoblingEntitet kobling,
+    public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
                                                                                                          KalkulatorInputDto input,
                                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var koblingId = kobling.getId();
@@ -147,9 +91,12 @@ public class MapFraKalkulator {
                     iayGrunnlagMappet,
                     beregningsgrunnlagGrunnlagEntitet));
 
+
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
-        return utenGrunnbeløp;
+        return beregningsgrunnlagGrunnlagEntitet.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG))
+                .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
+                .orElse(utenGrunnbeløp);
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtter ytelseType,
@@ -237,7 +184,7 @@ public class MapFraKalkulator {
         return new AktivitetGradering(res);
     }
 
-    private static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
+    public static no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto mapFraDto(OpptjeningAktiviteterDto opptjeningAktiviteter) {
         return new no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto(
             opptjeningAktiviteter.getPerioder().stream()
                 .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(

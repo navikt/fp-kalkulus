@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningAktiviteterFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
@@ -26,7 +26,7 @@ public class FastsettBeregningAktiviteter {
         this.mapperTilRegel = mapperTilRegel;
     }
 
-    public BeregningAktivitetAggregatDto fastsettAktiviteter(BeregningsgrunnlagInput input) {
+    public BeregningAktivitetAggregatDto fastsettAktiviteter(FastsettBeregningsaktiviteterInput input) {
         // Oversetter Opptjening -> regelmodell, hvor også skjæringstidspunkt for Opptjening er lagret
         AktivitetStatusModell regelmodell = FagsakYtelseTypeRef.Lookup.find(mapperTilRegel, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Forventer å finne implementasjon for ytelse " + input.getFagsakYtelseType().getKode()))

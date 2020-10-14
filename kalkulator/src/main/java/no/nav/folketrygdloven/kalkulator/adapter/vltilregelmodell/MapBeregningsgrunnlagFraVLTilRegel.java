@@ -33,6 +33,10 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -118,17 +122,28 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medSammenligningsgrunnlag(sammenligningsgrunnlag)
                 .medDekningsgrad(dekningsgrad)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
-                .medUregulertGrunnbeløp(input.getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi()))
-                .medGrunnbeløpSatser(input.getGrunnbeløpsatser())
                 .medMilitærIOpptjeningsperioden(erMilitærIOpptjeningsperioden)
-                .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
-                .medAntallGMinstekravVilkår(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår())
-                .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
                 .medSplitteATFLToggleVerdi(input.isEnabled(TOGGLE, false))
+                // Verdier som kun brukes av FORESLÅ (skille ut i egen mapping?)
+                .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
+                .medAntallGMinstekravVilkår(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår())
+                .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
+                .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
+                .medGrunnbeløpSatser((input instanceof ForeslåBeregningsgrunnlagInput) ? ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser() : Collections.emptyList())
                 .build();
+    }
+
+    private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        if ((input instanceof FordelBeregningsgrunnlagInput)) {
+            return ((FordelBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        }
+        if ((input instanceof FullføreBeregningsgrunnlagInput)) {
+            return ((FullføreBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        }
+        return null;
     }
 
     private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {

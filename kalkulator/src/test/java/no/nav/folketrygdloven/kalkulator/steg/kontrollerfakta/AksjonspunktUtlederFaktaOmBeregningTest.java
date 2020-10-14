@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -383,9 +384,9 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         assertThat(resultater.getBeregningAksjonspunktResultatList()).isEmpty();
     }
 
-    private BeregningsgrunnlagInput lagInput(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
+    private FaktaOmBeregningInput lagInput(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        return new BeregningsgrunnlagInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), AktivitetGradering.INGEN_GRADERING, List.of(), foreldrepengerGrunnlag);
+        return new FaktaOmBeregningInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), AktivitetGradering.INGEN_GRADERING, List.of(), foreldrepengerGrunnlag);
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedATSN(Periode periode) {

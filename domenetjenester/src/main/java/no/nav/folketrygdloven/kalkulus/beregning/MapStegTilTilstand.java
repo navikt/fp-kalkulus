@@ -2,27 +2,40 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 
-class MapStegTilTilstand {
+public class MapStegTilTilstand {
 
-    private static Map<StegType, BeregningsgrunnlagTilstand> map = new HashMap<>();
+    private static Map<StegType, BeregningsgrunnlagTilstand> mapStegTilstand = new HashMap<>();
+    private static Map<StegType, BeregningsgrunnlagTilstand> mapStegUtTilstand = new HashMap<>();
 
     static {
-        map.put(StegType.KOFAKBER, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-        map.put(StegType.FORS_BERGRUNN, BeregningsgrunnlagTilstand.FORESLÅTT);
-        map.put(StegType.VURDER_REF_BERGRUNN, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
-        map.put(StegType.FORDEL_BERGRUNN, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
-        map.put(StegType.FAST_BERGRUNN, BeregningsgrunnlagTilstand.FASTSATT);
+        mapStegTilstand.put(StegType.KOFAKBER, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        mapStegTilstand.put(StegType.FORS_BERGRUNN, BeregningsgrunnlagTilstand.FORESLÅTT);
+        mapStegTilstand.put(StegType.VURDER_REF_BERGRUNN, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
+        mapStegTilstand.put(StegType.FORDEL_BERGRUNN, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        mapStegTilstand.put(StegType.FAST_BERGRUNN, BeregningsgrunnlagTilstand.FASTSATT);
+
+        mapStegUtTilstand.put(StegType.KOFAKBER, BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        mapStegUtTilstand.put(StegType.FORS_BERGRUNN, BeregningsgrunnlagTilstand.FORESLÅTT_UT);
+        mapStegUtTilstand.put(StegType.VURDER_REF_BERGRUNN, BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT);
+        mapStegUtTilstand.put(StegType.FORDEL_BERGRUNN, BeregningsgrunnlagTilstand.FASTSATT_INN);
     }
 
-    public static BeregningsgrunnlagTilstand map(StegType kode) {
-        if (map.containsKey(kode)) {
-            return map.get(kode);
+    public static BeregningsgrunnlagTilstand mapTilStegTilstand(StegType kode) {
+        if (mapStegTilstand.containsKey(kode)) {
+            return mapStegTilstand.get(kode);
         }
         throw new IllegalStateException("Finner ikke tilstand for steg " + kode.getKode());
     }
+
+    public static Optional<BeregningsgrunnlagTilstand> mapTilStegUtTilstand(StegType kode) {
+        return Optional.ofNullable(mapStegUtTilstand.get(kode));
+    }
+
+
 
 }

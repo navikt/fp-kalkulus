@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.BeregningFaktaOgOverstyringHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
@@ -33,11 +34,10 @@ class FaktaOmBeregningHåndterer implements BeregningHåndterer<FaktaOmBeregning
     }
 
     @Override
-    public HåndteringResultat håndter(FaktaOmBeregningHåndteringDto dto, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+    public HåndteringResultat håndter(FaktaOmBeregningHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndter(beregningsgrunnlagInput, mapTilFaktaOmBeregningLagreDto(dto.getFakta()));
-        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.KOFAKBER_UT);
-        BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)
-                .orElseThrow(() -> new IllegalStateException("Skal ha grunnlag fra steg her."));
+        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand();
+        BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
         OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto);
         return new HåndteringResultat(nyttGrunnlag, endring);
     }

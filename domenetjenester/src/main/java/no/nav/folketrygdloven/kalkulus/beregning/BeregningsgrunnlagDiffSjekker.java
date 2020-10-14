@@ -7,6 +7,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
@@ -25,7 +33,7 @@ class BeregningsgrunnlagDiffSjekker {
         // Skjul
     }
 
-    static boolean harSignifikantDiffIAktiviteter(BeregningAktivitetAggregatEntitet aktivt, BeregningAktivitetAggregatEntitet forrige) {
+    static boolean harSignifikantDiffIAktiviteter(BeregningAktivitetAggregatDto aktivt, BeregningAktivitetAggregatDto forrige) {
         if (aktivt.getBeregningAktiviteter().size() != forrige.getBeregningAktiviteter().size()) {
             return true;
         }
@@ -38,7 +46,7 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    static boolean harSignifikantDiffIBeregningsgrunnlag(BeregningsgrunnlagEntitet aktivt, BeregningsgrunnlagEntitet forrige) {
+    static boolean harSignifikantDiffIBeregningsgrunnlag(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
         if (!erLike(aktivt.getGrunnbeløp() == null ? null : aktivt.getGrunnbeløp().getVerdi(), forrige.getGrunnbeløp() == null ? null : forrige.getGrunnbeløp().getVerdi())) {
             return true;
         }
@@ -69,12 +77,12 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
 
-        List<BeregningsgrunnlagPeriode> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
-        List<BeregningsgrunnlagPeriode> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
         return harPeriodeDiff(aktivePerioder, forrigePerioder);
     }
 
-    private static boolean harSammenligningsgrunnlagDiff(Sammenligningsgrunnlag aktivt, Sammenligningsgrunnlag forrige) {
+    private static boolean harSammenligningsgrunnlagDiff(SammenligningsgrunnlagDto aktivt, SammenligningsgrunnlagDto forrige) {
         if (aktivt == null || forrige == null) {
             return !Objects.equals(aktivt, forrige);
         }
@@ -93,7 +101,7 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean harSammenligningsgrunnlagPrStatusDiff(List<SammenligningsgrunnlagPrStatus> aktivt, List<SammenligningsgrunnlagPrStatus> forrige) {
+    private static boolean harSammenligningsgrunnlagPrStatusDiff(List<SammenligningsgrunnlagPrStatusDto> aktivt, List<SammenligningsgrunnlagPrStatusDto> forrige) {
         if(aktivt.isEmpty() != forrige.isEmpty()){
             return true;
         }
@@ -102,8 +110,8 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
 
-        for(SammenligningsgrunnlagPrStatus aktivSgPrStatus : aktivt){
-            SammenligningsgrunnlagPrStatus forrigeSgPrStatus = forrige.stream().filter(s -> aktivSgPrStatus.getSammenligningsgrunnlagType().equals(s.getSammenligningsgrunnlagType())).findFirst().get();
+        for(SammenligningsgrunnlagPrStatusDto aktivSgPrStatus : aktivt){
+            SammenligningsgrunnlagPrStatusDto forrigeSgPrStatus = forrige.stream().filter(s -> aktivSgPrStatus.getSammenligningsgrunnlagType().equals(s.getSammenligningsgrunnlagType())).findFirst().get();
 
             if(!erLike(aktivSgPrStatus.getAvvikPromilleNy(), forrigeSgPrStatus.getAvvikPromilleNy())){
                 return true;
@@ -121,14 +129,14 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean harPeriodeDiff(List<BeregningsgrunnlagPeriode> aktivePerioder, List<BeregningsgrunnlagPeriode> forrigePerioder) {
+    private static boolean harPeriodeDiff(List<BeregningsgrunnlagPeriodeDto> aktivePerioder, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
         if (aktivePerioder.size() != forrigePerioder.size()) {
             return true;
         }
         // begge listene er sorter på fom dato så det er mulig å benytte indeks her
         for (int i = 0; i < aktivePerioder.size(); i++) {
-            BeregningsgrunnlagPeriode aktivPeriode = aktivePerioder.get(i);
-            BeregningsgrunnlagPeriode forrigePeriode = forrigePerioder.get(i);
+            BeregningsgrunnlagPeriodeDto aktivPeriode = aktivePerioder.get(i);
+            BeregningsgrunnlagPeriodeDto forrigePeriode = forrigePerioder.get(i);
             if (!aktivPeriode.getBeregningsgrunnlagPeriodeFom().equals(forrigePeriode.getBeregningsgrunnlagPeriodeFom())) {
                 return true;
             }
@@ -141,7 +149,7 @@ class BeregningsgrunnlagDiffSjekker {
             if (aktivPeriode.getRegelInput() != null && !aktivPeriode.getRegelInput().equals(forrigePeriode.getRegelInput())) {
                 return true;
             }
-            Tuple<List<BeregningsgrunnlagPrStatusOgAndel>, List<BeregningsgrunnlagPrStatusOgAndel>> resultat = finnAndeler(aktivPeriode, forrigePeriode);
+            Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> resultat = finnAndeler(aktivPeriode, forrigePeriode);
             if (resultat.getElement1().size() != resultat.getElement2().size()) {
                 return true;
             }
@@ -152,15 +160,15 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean sjekkAndeler(List<BeregningsgrunnlagPrStatusOgAndel> aktiveAndeler, List<BeregningsgrunnlagPrStatusOgAndel> forrigeAndeler) {
-        for (BeregningsgrunnlagPrStatusOgAndel aktivAndel : aktiveAndeler) {
-            Optional<BeregningsgrunnlagPrStatusOgAndel> forrigeAndelOpt = forrigeAndeler
+    private static boolean sjekkAndeler(List<BeregningsgrunnlagPrStatusOgAndelDto> aktiveAndeler, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
+        for (BeregningsgrunnlagPrStatusOgAndelDto aktivAndel : aktiveAndeler) {
+            Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndelOpt = forrigeAndeler
                 .stream().filter(a -> a.getAndelsnr().equals(aktivAndel.getAndelsnr()))
                 .findFirst();
             if (forrigeAndelOpt.isEmpty()) {
                 return true;
             }
-            BeregningsgrunnlagPrStatusOgAndel forrigeAndel = forrigeAndelOpt.get();
+            BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = forrigeAndelOpt.get();
             if (harAndelDiff(aktivAndel, forrigeAndel)) {
                 return true;
             }
@@ -168,7 +176,7 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean harAndelDiff(BeregningsgrunnlagPrStatusOgAndel aktivAndel, BeregningsgrunnlagPrStatusOgAndel forrigeAndel) {
+    private static boolean harAndelDiff(BeregningsgrunnlagPrStatusOgAndelDto aktivAndel, BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel) {
         if (!aktivAndel.getAktivitetStatus().equals(forrigeAndel.getAktivitetStatus())) {
             return true;
         }
@@ -176,8 +184,8 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
 
-        Optional<BGAndelArbeidsforhold> aktivArbeidsforhold = aktivAndel.getBgAndelArbeidsforhold();
-        Optional<BGAndelArbeidsforhold> forrigeArbeidsforhold = forrigeAndel.getBgAndelArbeidsforhold();
+        Optional<BGAndelArbeidsforholdDto> aktivArbeidsforhold = aktivAndel.getBgAndelArbeidsforhold();
+        Optional<BGAndelArbeidsforholdDto> forrigeArbeidsforhold = forrigeAndel.getBgAndelArbeidsforhold();
 
         if (aktivArbeidsforhold.isPresent() && forrigeArbeidsforhold.isPresent()) {
             return aktivArbeidsforholdFørerTilDiff(aktivArbeidsforhold.get(), forrigeArbeidsforhold.get());
@@ -200,11 +208,11 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean hvisArbforManglerHosKunEn(BeregningsgrunnlagPrStatusOgAndel aktivAndel, BeregningsgrunnlagPrStatusOgAndel forrigeAndel) {
+    private static boolean hvisArbforManglerHosKunEn(BeregningsgrunnlagPrStatusOgAndelDto aktivAndel, BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel) {
         return aktivAndel.getBgAndelArbeidsforhold().isPresent() != forrigeAndel.getBgAndelArbeidsforhold().isPresent();
     }
 
-    private static boolean aktivArbeidsforholdFørerTilDiff(BGAndelArbeidsforhold aktivArbeidsforhold, BGAndelArbeidsforhold forrigeArbeidsforhold) {
+    private static boolean aktivArbeidsforholdFørerTilDiff(BGAndelArbeidsforholdDto aktivArbeidsforhold, BGAndelArbeidsforholdDto forrigeArbeidsforhold) {
         if (!aktivArbeidsforhold.getArbeidsgiver().equals(forrigeArbeidsforhold.getArbeidsgiver())) {
             return true;
         }
@@ -220,7 +228,7 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean inneholderLikeSammenligningstyper(List<SammenligningsgrunnlagPrStatus> aktivt, List<SammenligningsgrunnlagPrStatus> forrige){
+    private static boolean inneholderLikeSammenligningstyper(List<SammenligningsgrunnlagPrStatusDto> aktivt, List<SammenligningsgrunnlagPrStatusDto> forrige){
         EnumSet<SammenligningsgrunnlagType> sammenligningsgrunnlagTyper = EnumSet.allOf(SammenligningsgrunnlagType.class);
 
         for(SammenligningsgrunnlagType sgType : sammenligningsgrunnlagTyper){
@@ -232,13 +240,13 @@ class BeregningsgrunnlagDiffSjekker {
         return true;
     }
 
-    private static List<AktivitetStatus> hentStatuser(BeregningsgrunnlagEntitet aktivt) {
-        return aktivt.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus).collect(Collectors.toList());
+    private static List<AktivitetStatus> hentStatuser(BeregningsgrunnlagDto aktivt) {
+        return aktivt.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).collect(Collectors.toList());
     }
 
-    private static Tuple<List<BeregningsgrunnlagPrStatusOgAndel>, List<BeregningsgrunnlagPrStatusOgAndel>> finnAndeler(BeregningsgrunnlagPeriode aktivPeriode, BeregningsgrunnlagPeriode forrigePeriode) {
-        List<BeregningsgrunnlagPrStatusOgAndel> aktiveAndeler = aktivPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
-        List<BeregningsgrunnlagPrStatusOgAndel> forrigeAndeler = forrigePeriode
+    private static Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> finnAndeler(BeregningsgrunnlagPeriodeDto aktivPeriode, BeregningsgrunnlagPeriodeDto forrigePeriode) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> aktiveAndeler = aktivPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
+        List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
             .filter(a -> !a.getLagtTilAvSaksbehandler())

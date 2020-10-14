@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -24,8 +21,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
@@ -44,21 +39,7 @@ public class BeregningsgrunnlagInput {
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
-    private List<RefusjonskravDatoDto> refusjonskravDatoer = new ArrayList<>();
-
-    private Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk = new HashMap<>();
-
-    /**
-     * Grunnbeløpsatser
-     */
-    private List<Grunnbeløp> grunnbeløpsatser = new ArrayList<>();
-
-    /**
-     * Uregulert grunnbeløp om det finnes beregningsgrunnlag som ble fastsatt etter 1. mai.
-     *
-     * En G-regulering ikke skal påvirke utfallet av beregningsgrunnlagvilkåret (se TFP-3599 og https://confluence.adeo.no/display/TVF/G-regulering)
-     */
-    private Beløp uregulertGrunnbeløp;
+    private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private final InntektArbeidYtelseGrunnlagDto iayGrunnlag;
@@ -71,26 +52,6 @@ public class BeregningsgrunnlagInput {
     private Map<String, Boolean> toggles = new HashMap<>();
 
     private Map<String, Object> konfigverdier = new HashMap<>();
-
-    public Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> getTilstandHistorikk() {
-        return tilstandHistorikk;
-    }
-
-    public void setTilstandHistorikk(Map<BeregningsgrunnlagTilstand, BeregningsgrunnlagGrunnlagDto> tilstandHistorikk) {
-        this.tilstandHistorikk = tilstandHistorikk;
-    }
-
-    public void leggTilBeregningsgrunnlagIHistorikk(BeregningsgrunnlagGrunnlagDto grunnlag, BeregningsgrunnlagTilstand tilstand) {
-        this.tilstandHistorikk.put(tilstand, grunnlag);
-    }
-
-    public Optional<BeregningsgrunnlagDto> hentForrigeBeregningsgrunnlag(BeregningsgrunnlagTilstand tilstand) {
-        return Optional.ofNullable(tilstandHistorikk.get(tilstand)).flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-    }
-
-    public Optional<BeregningsgrunnlagGrunnlagDto> hentForrigeBeregningsgrunnlagGrunnlag(BeregningsgrunnlagTilstand tilstand) {
-        return Optional.ofNullable(tilstandHistorikk.get(tilstand));
-    }
 
     public BeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -106,11 +67,9 @@ public class BeregningsgrunnlagInput {
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
-    private BeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+    protected BeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
         this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
-        this.tilstandHistorikk = input.getTilstandHistorikk();
-        this.grunnbeløpsatser = input.getGrunnbeløpsatser();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
@@ -161,10 +120,6 @@ public class BeregningsgrunnlagInput {
 
     public BeregningsgrunnlagGrunnlagDto getBeregningsgrunnlagGrunnlag() {
         return beregningsgrunnlagGrunnlag;
-    }
-
-    public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlagHvisFinnes() {
-        return beregningsgrunnlagGrunnlag == null ? Optional.empty() : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag();
     }
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
@@ -221,13 +176,6 @@ public class BeregningsgrunnlagInput {
         return refusjonskravDatoer;
     }
 
-    public List<Grunnbeløp> getGrunnbeløpsatser() {
-        return grunnbeløpsatser;
-    }
-
-    public Optional<Beløp> getUregulertGrunnbeløp() {
-        return Optional.ofNullable(uregulertGrunnbeløp);
-    }
 
     /** Sjekk fagsakytelsetype før denne kalles. */
     @SuppressWarnings("unchecked")
@@ -245,23 +193,14 @@ public class BeregningsgrunnlagInput {
         return newInput;
     }
 
+
+    // Brukes av fp-sak
     public BeregningsgrunnlagInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new BeregningsgrunnlagInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
         return newInput;
     }
 
-    public BeregningsgrunnlagInput medGrunnbeløpsatser(List<Grunnbeløp> grunnbeløpsatser) {
-        var newInput = new BeregningsgrunnlagInput(this);
-        newInput.grunnbeløpsatser = grunnbeløpsatser;
-        return newInput;
-    }
-
-    public BeregningsgrunnlagInput medUregulertGrunnbeløp(BigDecimal uregulertGrunnbeløp) {
-        var newInput = new BeregningsgrunnlagInput(this);
-        newInput.uregulertGrunnbeløp = new Beløp(uregulertGrunnbeløp);
-        return newInput;
-    }
 
     /** Overstyrer behandlingreferanse, eks for å få ny skjæringstidspunkt fra beregningsgrunnlag fra tidligere. */
     public BeregningsgrunnlagInput medBehandlingReferanse(KoblingReferanse ref) {
@@ -285,8 +224,6 @@ public class BeregningsgrunnlagInput {
             ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
             ", beregningsgrunnlagGrunnlagFraForrigeBehandling=" + beregningsgrunnlagGrunnlagFraForrigeBehandling +
             ", refusjonskravDatoer=" + refusjonskravDatoer +
-            ", tilstandHistorikk=" + tilstandHistorikk +
-            ", grunnbeløpsatser=" + grunnbeløpsatser +
             ", iayGrunnlag=" + iayGrunnlag +
             ", opptjeningAktiviteter=" + opptjeningAktiviteter +
             ", ytelsespesifiktGrunnlag=" + ytelsespesifiktGrunnlag +

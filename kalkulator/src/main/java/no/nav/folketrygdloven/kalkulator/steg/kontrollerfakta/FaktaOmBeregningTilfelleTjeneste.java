@@ -12,9 +12,9 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.TilfelleUtleder;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.TilfelleUtleder;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
@@ -42,7 +42,7 @@ public class FaktaOmBeregningTilfelleTjeneste {
      * @param beregningsgrunnlagGrunnlag Beregningsgrunnlag
      * @return Liste med tilfeller
      */
-    public List<FaktaOmBeregningTilfelle> finnTilfellerForFellesAksjonspunkt(BeregningsgrunnlagInput input,
+    public List<FaktaOmBeregningTilfelle> finnTilfellerForFellesAksjonspunkt(FaktaOmBeregningInput input,
                                                                              BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         List<FaktaOmBeregningTilfelle> tilfeller = new ArrayList<>();
         List<TilfelleUtleder> utledere = finnUtledere(input.getFagsakYtelseType());

@@ -72,8 +72,6 @@ public class ForeslåBeregningsgrunnlagSNTest {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medRegisterAktiviteter(beregningAktiviteter)
             .medBeregningsgrunnlag(beregningsgrunnlag);
-        BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
-            .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, koblingReferanse, registerBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
@@ -81,7 +79,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
             .medData(registerBuilder)
             .medInntektsmeldinger(inntektsmeldinger).build();
         KoblingReferanse ref = lagReferanseMedStp(koblingReferanse);
-        var input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
+        var input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
 
         // Act
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);

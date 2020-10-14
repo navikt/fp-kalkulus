@@ -12,15 +12,17 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.vedtak.util.Tuple;
 
@@ -44,10 +46,8 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, aktivt.getElement2());
         for (Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> bg : forrige) {
             BeregningsgrunnlagGrunnlagDto gr = lagGrunnlag(bg.getElement1(), bg.getElement2());
-            inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(gr, bg.getElement2());
         }
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -58,7 +58,6 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningsgrunnlag, beregningsgrunnlagTilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, beregningsgrunnlagTilstand);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);
         return inputMedBeregningsgrunnlag;
@@ -72,7 +71,6 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);
         return inputMedBeregningsgrunnlag;
@@ -86,9 +84,8 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
             AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         input.setToggles(toggles);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = input.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return input;
     }
 
     public static BeregningsgrunnlagInput lagInputMedIAYOgOpptjeningsaktiviteterMedTogglePå(KoblingReferanse koblingReferanse,
@@ -99,9 +96,24 @@ public class BeregningsgrunnlagInputTestUtil {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
                 AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         input.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNING, true);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = input.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return input;
+    }
+
+    public static ForeslåBeregningsgrunnlagInput lagForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
+                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                             BeregningsgrunnlagTilstand tilstand,
+                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
+                AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+        BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
+        BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return new ForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
@@ -114,11 +126,9 @@ public class BeregningsgrunnlagInputTestUtil {
             AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.setToggles(toggles);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedBeregningsgrunnlag;
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagGrunnlag(KoblingReferanse koblingReferanse,
@@ -130,11 +140,9 @@ public class BeregningsgrunnlagInputTestUtil {
                 AktivitetGradering.INGEN_GRADERING, Collections.emptyList(), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.setToggles(toggles);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedBeregningsgrunnlag;
     }
 
 
@@ -147,14 +155,12 @@ public class BeregningsgrunnlagInputTestUtil {
             AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), svangerskapspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.setToggles(toggles);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return inputMedBeregningsgrunnlag;
     }
 
-    public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
+    public static ForeslåBeregningsgrunnlagInput lagForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
                                                                              BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
                                                                              BeregningsgrunnlagTilstand tilstand,
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
@@ -163,11 +169,10 @@ public class BeregningsgrunnlagInputTestUtil {
                 AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), omsorgspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.setToggles(toggles);
-        BeregningsgrunnlagInput inputMedGrunnbeløp = inputMedBeregningsgrunnlag.medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
-        inputMedGrunnbeløp.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
-        return inputMedGrunnbeløp;
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        return new ForeslåBeregningsgrunnlagInput(new StegProsesseringInput(inputMedBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlagOgIAY(KoblingReferanse koblingReferanse,
@@ -179,7 +184,6 @@ public class BeregningsgrunnlagInputTestUtil {
             AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        inputMedBeregningsgrunnlag.leggTilBeregningsgrunnlagIHistorikk(grunnlag, tilstand);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);
         return inputMedBeregningsgrunnlag;

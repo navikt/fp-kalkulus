@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -41,24 +42,17 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
     @Test
     public void skal_gi_tilfelle_om_beregningsgrunnlag_har_andel_med_kunstig_arbeid() {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(true);
-
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse,
-                BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag),
-                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER,
-                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build());
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(input, grunnlag);
+        FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of());
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle.get()).isEqualTo(FaktaOmBeregningTilfelle.FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING);
     }
 
     @Test
     public void skal_ikkje_gi_tilfelle_om_beregningsgrunnlag_ikkje_har_andel_med_kunstig_arbeid() {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(false);
-        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse,
-                BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag),
-                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER,
-                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build());
+        FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of());
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(input, grunnlag);
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isNotPresent();
     }
 
@@ -90,8 +84,10 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
+        FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of(im));
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(grunnlag, List.of(im));
+
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isPresent();
     }
 
@@ -129,11 +125,21 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
                 .medArbeidsforholdId(ref2)
                 .medBeløp(BigDecimal.TEN).build();
 
-        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(grunnlag, List.of(im, im2));
+        FaktaOmBeregningInput faktaOmBeregningInput = lagFaktaOmBeregningInput(grunnlag, List.of(im, im2));
+
+        Optional<FaktaOmBeregningTilfelle> tilfelle = utleder.utled(faktaOmBeregningInput, grunnlag);
         assertThat(tilfelle).isNotPresent();
     }
 
-
+    private FaktaOmBeregningInput lagFaktaOmBeregningInput(BeregningsgrunnlagGrunnlagDto grunnlag, List<InntektsmeldingDto> inntektsmeldinger) {
+        BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse,
+                BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag),
+                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER,
+                InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                        .medInntektsmeldinger(inntektsmeldinger)
+                        .build());
+        return new FaktaOmBeregningInput(input.getKoblingReferanse(), input.getIayGrunnlag(), null, input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+    }
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(boolean medKunstigArbeid) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()

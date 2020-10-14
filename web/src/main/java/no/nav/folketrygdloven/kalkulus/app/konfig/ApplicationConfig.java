@@ -22,7 +22,6 @@ import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
 import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.rest.UtledKalkulusRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -60,7 +59,6 @@ public class ApplicationConfig extends Application {
 
         //kalkulus rest
         classes.add(OperereKalkulusRestTjeneste.class);
-        classes.add(UtledKalkulusRestTjeneste.class);
         classes.add(HentKalkulusRestTjeneste.class);
         classes.add(GrunnbeløpRestTjeneste.class);
 

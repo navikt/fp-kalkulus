@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,6 +22,8 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -82,10 +85,10 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag);
-
+        FordelBeregningsgrunnlagInput fordelBeregningsgrunnlagInput = new FordelBeregningsgrunnlagInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
+        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(fordelBeregningsgrunnlagInput, grunnlag);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -116,8 +119,10 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(ref, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag);
 
+        FordelBeregningsgrunnlagInput fordelBeregningsgrunnlagInput = new FordelBeregningsgrunnlagInput(new StegProsesseringInput(input, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
+
         // Act
-        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input, grunnlag);
+        BeregningsgrunnlagRegelResultat resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(fordelBeregningsgrunnlagInput, grunnlag);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();

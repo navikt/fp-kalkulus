@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.håndtering.avklaraktiviteter;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
@@ -15,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper;
 class AvklarAktiviteterHåndterer implements BeregningHåndterer<AvklarAktiviteterHåndteringDto> {
 
     @Override
-    public HåndteringResultat håndter(AvklarAktiviteterHåndteringDto dto, BeregningsgrunnlagInput input) {
+    public HåndteringResultat håndter(AvklarAktiviteterHåndteringDto dto, HåndterBeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.AvklarAktiviteterHåndterer.håndter(OppdatererDtoMapper.mapAvklarteAktiviteterDto(dto.getAvklarteAktiviteterDto()), input);
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);

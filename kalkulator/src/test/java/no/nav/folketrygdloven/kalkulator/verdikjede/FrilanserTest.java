@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.verdikjede;
 
+import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
 import static no.nav.folketrygdloven.kalkulator.verdikjede.BeregningsgrunnlagGrunnlagTestUtil.nyttGrunnlag;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +17,11 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
+import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
+import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
@@ -102,33 +109,33 @@ public class FrilanserTest {
 
         // Arrange
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), månedsinntekter.get(0),
-            BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
         var im2 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), månedsinntekter.get(1),
-            BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
-            månedsinntekter,
-            BigDecimal.valueOf(frilansÅrsinntekt / 12),
-            virksomhetene,
-            inntektsmeldinger
-            );
+                månedsinntekter,
+                BigDecimal.valueOf(frilansÅrsinntekt / 12),
+                virksomhetene,
+                inntektsmeldinger
+        );
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
-            OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
-            );
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
+                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
+        );
 
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
@@ -137,7 +144,7 @@ public class FrilanserTest {
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_40);
@@ -148,15 +155,15 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlag(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag(),
-            sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(37.037037000));
+                sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(37.037037000));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+                resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
 
@@ -169,7 +176,7 @@ public class FrilanserTest {
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
-            ÅRSINNTEKT, forventetFordelt, virksomhetene, forventetFordelt, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
+                ÅRSINNTEKT, forventetFordelt, virksomhetene, forventetFordelt, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
         verdikjedeTestHjelper.verifiserFLetterAvkorting(periode, frilansÅrsinntekt, fordeltÅrsinntektFL, forventetBrukersAndelFL, forventetBrukersAndelFL);
     }
 
@@ -177,7 +184,7 @@ public class FrilanserTest {
     public void treArbeidsforholdOgFrilansMedBgUnder6gOgRefusjonUnder6G() {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 13_000d, 12 * 12_000d, 12 * 8_000d);
-        final List<Double> refusjonsKrav = List.of(12 * 13_000d, 12 * 9_000d, 12 *8_000d);
+        final List<Double> refusjonsKrav = List.of(12 * 13_000d, 12 * 9_000d, 12 * 8_000d);
         final Double sammenligning = 12 * 60000d;
         final Double frilansÅrsinntekt = 12 * 13000d;
 
@@ -203,33 +210,33 @@ public class FrilanserTest {
 
         // Arrange
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), månedsinntekter.get(0),
-            BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
         var im2 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), månedsinntekter.get(1),
-            BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         var im3 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR3), månedsinntekter.get(2),
-            BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
-            månedsinntekter,
-            BigDecimal.valueOf(frilansÅrsinntekt / 12),
-            virksomhetene, inntektsmeldinger);
+                månedsinntekter,
+                BigDecimal.valueOf(frilansÅrsinntekt / 12),
+                virksomhetene, inntektsmeldinger);
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR3),
-            OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
-            );
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR3),
+                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
+        );
 
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
@@ -238,7 +245,7 @@ public class FrilanserTest {
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_40);
@@ -249,15 +256,15 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlag(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag(),
-            sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(233.333333300));
+                sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(233.333333300));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+                resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -269,7 +276,7 @@ public class FrilanserTest {
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
-            ÅRSINNTEKT, forventetFordelt, virksomhetene, forventetFordelt, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
+                ÅRSINNTEKT, forventetFordelt, virksomhetene, forventetFordelt, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
         verdikjedeTestHjelper.verifiserFLetterAvkorting(periode, frilansÅrsinntekt, fordeltÅrsinntektFL, fordeltÅrsinntektFL, forventetBrukersAndelFL);
     }
 
@@ -296,7 +303,7 @@ public class FrilanserTest {
         double forventetBrukersAndelFL = 0;
 
         final List<Double> avkortetBG = List.of(forventetBrukersAndel1 + forventetRedusert1, forventetBrukersAndel2 + forventetRedusert2,
-            forventetBrukersAndel3 + forventetRedusert3);
+                forventetBrukersAndel3 + forventetRedusert3);
 
         final List<Double> forventetRedusert = List.of(forventetRedusert1, forventetRedusert2, forventetRedusert3);
         final List<Double> forventetRedusertBrukersAndel = List.of(forventetBrukersAndel1, forventetBrukersAndel2, forventetBrukersAndel3);
@@ -307,34 +314,34 @@ public class FrilanserTest {
 
         // Arrange
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), månedsinntekter.get(0),
-            BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(0) / 12));
         var im2 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), månedsinntekter.get(1),
-            BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         var im3 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR3), månedsinntekter.get(2),
-            BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
+                BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
-            månedsinntekter,
-            BigDecimal.valueOf(frilansÅrsinntekt / 12),
-            virksomhetene, inntektsmeldinger);
+                månedsinntekter,
+                BigDecimal.valueOf(frilansÅrsinntekt / 12),
+                virksomhetene, inntektsmeldinger);
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
-            OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR3),
-            OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
-            );
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR2),
+                OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR3),
+                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
+        );
 
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
@@ -343,7 +350,7 @@ public class FrilanserTest {
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Assert 2
@@ -355,15 +362,15 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlag(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag(),
-            sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(8.196721300));
+                sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.valueOf(8.196721300));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+                resultat.getBeregningsgrunnlag(), grunnlag);
 
         // Act 4: fastsette beregningsgrunnlag
         var fordeltGrunnlag = nyttGrunnlag(grunnlag, fordeltBeregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
@@ -376,7 +383,7 @@ public class FrilanserTest {
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
-            ÅRSINNTEKT, forventetFordelt, virksomhetene, avkortetBG, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
+                ÅRSINNTEKT, forventetFordelt, virksomhetene, avkortetBG, forventetRedusert, forventetRedusert, forventetRedusertBrukersAndel, false);
         verdikjedeTestHjelper.verifiserFLetterAvkorting(periode, frilansÅrsinntekt, forventetFordeltFL, 0.0d, forventetBrukersAndelFL);
     }
 
@@ -390,23 +397,23 @@ public class FrilanserTest {
         double forventetBrukersAndelFL = frilansÅrsinntekt;
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
-            BigDecimal.valueOf(sammenligning / 12),
-            BigDecimal.valueOf(frilansÅrsinntekt / 12),
-            ARBEIDSFORHOLD_ORGNR1);
+                BigDecimal.valueOf(sammenligning / 12),
+                BigDecimal.valueOf(frilansÅrsinntekt / 12),
+                ARBEIDSFORHOLD_ORGNR1);
 
 
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-            OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
-            );
+                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
+        );
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
@@ -415,7 +422,7 @@ public class FrilanserTest {
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_38);
@@ -425,15 +432,15 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlag(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag(),
-            sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
+                sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+                resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -456,23 +463,23 @@ public class FrilanserTest {
         double forventetBrukersAndelFL = Math.min(seksG, frilansÅrsinntekt);
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
-            BigDecimal.valueOf(sammenligning / 12),
-            BigDecimal.valueOf(frilansÅrsinntekt / 12),
-            ARBEIDSFORHOLD_ORGNR1);
+                BigDecimal.valueOf(sammenligning / 12),
+                BigDecimal.valueOf(frilansÅrsinntekt / 12),
+                ARBEIDSFORHOLD_ORGNR1);
 
         // Arrange
         var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
-            OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
-            );
+                OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
+        );
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
         var input = lagInput(koblingReferanse, opptjeningAktiviteter, iayGrunnlag, 100);
 
         // Act 1: kontroller fakta om beregning
-        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(input, grunnlag, false);
+        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
         assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
@@ -481,7 +488,7 @@ public class FrilanserTest {
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
         // Act 2: foreslå beregningsgrunnlag
-        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
+        BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(resultat, Hjemmel.F_14_7_8_38);
@@ -491,15 +498,15 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlag(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag(),
-            sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
+                sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
+                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(input,
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+                resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -513,8 +520,8 @@ public class FrilanserTest {
         verdikjedeTestHjelper.verifiserFLetterAvkorting(periode, frilansÅrsinntekt, frilansÅrsinntekt, seksG, forventetBrukersAndelFL);
     }
 
-    private BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(BeregningsgrunnlagInput input) {
-       return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
+    private BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(FastsettBeregningsaktiviteterInput input) {
+        return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
     }
 
     private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input,
@@ -534,30 +541,30 @@ public class FrilanserTest {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(DUMMY_ORGNR),
-            fraOgMed, tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+                fraOgMed, tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
 
         virksomhetOrgnr
-            .forEach(virksomhetEntitet -> verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(virksomhetEntitet),
-                fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
+                .forEach(virksomhetEntitet -> verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(virksomhetEntitet),
+                        fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             for (int i = 0; i < virksomhetOrgnr.size(); i++) {
                 verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder,
-                    aktørId,
-                    dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
-                    Arbeidsgiver.virksomhet(virksomhetOrgnr.get(i)));
+                        aktørId,
+                        dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
+                        Arbeidsgiver.virksomhet(virksomhetOrgnr.get(i)));
             }
             verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
-                Arbeidsgiver.virksomhet(DUMMY_ORGNR));
+                    Arbeidsgiver.virksomhet(DUMMY_ORGNR));
             verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektFrilans,
-                Arbeidsgiver.virksomhet(DUMMY_ORGNR));
+                    Arbeidsgiver.virksomhet(DUMMY_ORGNR));
             verdikjedeTestHjelper.lagInntektForOpptjening(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektFrilans,
-                DUMMY_ORGNR);
+                    DUMMY_ORGNR);
         }
 
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medInntektsmeldinger(inntektsmeldinger)
-            .medData(inntektArbeidYtelseBuilder).build();
+                .medInntektsmeldinger(inntektsmeldinger)
+                .medData(inntektArbeidYtelseBuilder).build();
     }
 
     private InntektArbeidYtelseGrunnlagDtoBuilder lagBehandlingFL(AktørId aktørId,
@@ -567,11 +574,37 @@ public class FrilanserTest {
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, beregningVirksomhet, fraOgMed, tilOgMed, aktørId, InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER));
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(iayAggregatBuilder);
+                .medData(iayAggregatBuilder);
     }
 
     private BeregningsgrunnlagInput lagInput(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter, InntektArbeidYtelseGrunnlagDto iayGrunnlag, int dekningsgrad) {
         return BeregningsgrunnlagInputTestUtil.lagInputMedIAYOgOpptjeningsaktiviteter(ref, opptjeningAktiviteter, iayGrunnlag, dekningsgrad, 2);
     }
+
+    private StegProsesseringInput lagStegInput(BeregningsgrunnlagTilstand tilstand, BeregningsgrunnlagInput beregningsgrunnlagInput) {
+        return new StegProsesseringInput(beregningsgrunnlagInput, tilstand);
+    }
+
+    private FaktaOmBeregningInput lagFaktaOmBeregningInput(BeregningsgrunnlagInput input) {
+        return new FaktaOmBeregningInput(
+                lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    private FastsettBeregningsaktiviteterInput lagFastsettBeregningsaktiviteterInput(BeregningsgrunnlagInput input) {
+        return new FastsettBeregningsaktiviteterInput(lagStegInput(BeregningsgrunnlagTilstand.OPPRETTET, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    private ForeslåBeregningsgrunnlagInput lagForeslåBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new ForeslåBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+                .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
+    }
+
+    private FordelBeregningsgrunnlagInput lagFordelBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new FordelBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+                .medUregulertGrunnbeløp(BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING)));
+    }
+
 
 }

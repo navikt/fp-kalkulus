@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
@@ -32,7 +33,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
     public static final String INGEN_AKTIVITET_MELDING = "Må ha aktiviteter for å sette status.";
 
     @Override
-    public AktivitetStatusModell mapForSkjæringstidspunkt(BeregningsgrunnlagInput input) {
+    public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
         LocalDate opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
 
         AktivitetStatusModell modell = new AktivitetStatusModell();

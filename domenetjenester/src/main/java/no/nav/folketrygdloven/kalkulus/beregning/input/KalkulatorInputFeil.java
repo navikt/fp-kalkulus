@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.beregning;
+package no.nav.folketrygdloven.kalkulus.beregning.input;
 
 import no.nav.vedtak.feil.Feil;
 import no.nav.vedtak.feil.LogLevel;
