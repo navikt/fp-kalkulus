@@ -38,7 +38,7 @@ public class HåndterBeregningsgrunnlagInput extends BeregningsgrunnlagInput {
     }
 
     protected HåndterBeregningsgrunnlagInput(HåndterBeregningsgrunnlagInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        super(input);
         this.forrigeGrunnlagFraHåndteringTilstand = input.getForrigeGrunnlagFraHåndteringTilstand().orElse(null);
         this.håndteringTilstand = input.getStegUtTilstandHvisFinnes().orElse(null);
     }

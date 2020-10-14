@@ -148,7 +148,7 @@ public class BeregningsgrunnlagRepository {
                                                                                                        YtelseTyperKalkulusStøtter ytelsetype,
                                                                                                        LocalDate skjæringstidspunkt) {
         Query query = entityManager.createNativeQuery(
-                "FROM GR.* " +
+                "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
                         "WHERE exists (SELECT 1 FROM KOBLING " +
                         "WHERE SAKSNUMMER = :saksnummer " +
                         "AND YTELSE_TYPE = :ytelsetype " +
@@ -158,7 +158,7 @@ public class BeregningsgrunnlagRepository {
                         "AND exists (SELECT 1 FROM BG_AKTIVITETER " +
                         "WHERE SKJARINGSTIDSPUNKT_OPPTJENING = :skjæringstidspunkt " +
                         "AND ID = GR.REGISTER_AKTIVITETER_ID) " +
-                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                        "order by OPPRETTET_TID desc, id desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter("saksnummer", saksnummer.getVerdi()); // $NON-NLS-1$
         query.setParameter("ytelsetype", ytelsetype.getKode()); // $NON-NLS-1$

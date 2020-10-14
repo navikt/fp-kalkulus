@@ -36,13 +36,15 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
         this.stegTilstand = stegTilstand;
     }
 
-    public StegProsesseringInput(KoblingReferanse koblingReferanse,
+    public StegProsesseringInput(BeregningsgrunnlagTilstand stegTilstand,
+                                 KoblingReferanse koblingReferanse,
                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                  OpptjeningAktiviteterDto opptjeningAktiviteter,
                                  AktivitetGradering aktivitetGradering,
                                  List<RefusjonskravDatoDto> refusjonskravDatoer,
                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        this.stegTilstand = stegTilstand;
     }
 
     protected StegProsesseringInput(StegProsesseringInput input) {

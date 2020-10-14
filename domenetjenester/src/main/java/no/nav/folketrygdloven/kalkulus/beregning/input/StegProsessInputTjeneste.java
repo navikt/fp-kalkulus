@@ -65,7 +65,7 @@ public class StegProsessInputTjeneste {
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG)).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(beregningsgrunnlagFraFagsystem1 -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem1, MED_SPORINGSLOGG)).orElse(null))
                 .medStegUtTilstand(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        return new FastsettBeregningsaktiviteterInput(stegProsesseringInput);
+        return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
 
 

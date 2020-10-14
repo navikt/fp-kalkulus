@@ -35,11 +35,12 @@ public class FaktaOmBeregningInput extends StegProsesseringInput {
                                  AktivitetGradering aktivitetGradering,
                                  List<RefusjonskravDatoDto> refusjonskravDatoer,
                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER,
+                koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
     }
 
     protected FaktaOmBeregningInput(FaktaOmBeregningInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        super(input);
         this.grunnbeløpsatser = input.getGrunnbeløpsatser();
     }
 
