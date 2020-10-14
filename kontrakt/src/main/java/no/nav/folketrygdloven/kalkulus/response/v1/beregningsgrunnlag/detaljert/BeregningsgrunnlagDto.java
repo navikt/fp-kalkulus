@@ -66,12 +66,6 @@ public class BeregningsgrunnlagDto {
     @JsonProperty(value = "overstyrt")
     private boolean overstyrt;
 
-    @JsonInclude(value = Include.NON_EMPTY)
-    @JsonProperty(value = "regelSporingMap")
-    @Valid
-    @Size(min = 0, max = 100)
-    private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> regelSporingMap;
-
     @JsonProperty(value = "grunnbeløp")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -89,7 +83,6 @@ public class BeregningsgrunnlagDto {
                                  @Size(max = 10) @Valid List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe,
                                  @Size(max = 50) @Valid List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
                                  boolean overstyrt,
-                                 Map<BeregningsgrunnlagRegelType, @Valid BeregningsgrunnlagRegelSporing> regelSporingMap,
                                  @Valid BigDecimal grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
@@ -98,7 +91,6 @@ public class BeregningsgrunnlagDto {
         this.sammenligningsgrunnlagPrStatusListe = sammenligningsgrunnlagPrStatusListe;
         this.faktaOmBeregningTilfeller = faktaOmBeregningTilfeller;
         this.overstyrt = overstyrt;
-        this.regelSporingMap = regelSporingMap == null ? Collections.emptyMap() : regelSporingMap;
         this.grunnbeløp = grunnbeløp;
     }
 
@@ -131,10 +123,6 @@ public class BeregningsgrunnlagDto {
 
     public boolean isOverstyrt() {
         return overstyrt;
-    }
-
-    public Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> getRegelSporingMap() {
-        return regelSporingMap;
     }
 
     public BigDecimal getGrunnbeløp() {

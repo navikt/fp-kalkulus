@@ -41,6 +41,13 @@ public class HentBeregningsgrunnlagRequest {
     }
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
+                                         @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+
+        this.eksternReferanse = eksternReferanse;
+        this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+    }
+
+    public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
                                          @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                          Boolean inkluderRegelSporing) {
 

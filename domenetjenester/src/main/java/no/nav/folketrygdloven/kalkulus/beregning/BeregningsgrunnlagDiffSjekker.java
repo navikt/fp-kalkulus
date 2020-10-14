@@ -59,16 +59,6 @@ class BeregningsgrunnlagDiffSjekker {
         if (aktivt.getFaktaOmBeregningTilfeller().size() != forrige.getFaktaOmBeregningTilfeller().size() || !aktivt.getFaktaOmBeregningTilfeller().containsAll(forrige.getFaktaOmBeregningTilfeller())) {
             return true;
         }
-        if (aktivt.getRegelInputBrukersStatus() != null && !aktivt.getRegelInputBrukersStatus().equals(forrige.getRegelInputBrukersStatus())) {
-            return true;
-        }
-        if (aktivt.getRegelInputSkjæringstidspunkt() != null && !aktivt.getRegelInputSkjæringstidspunkt().equals(forrige.getRegelInputSkjæringstidspunkt())) {
-            return true;
-        }
-        if (aktivt.getRegelinputPeriodisering() != null && !aktivt.getRegelinputPeriodisering().equals(forrige.getRegelinputPeriodisering())) {
-            return true;
-        }
-
         if (harSammenligningsgrunnlagDiff(aktivt.getSammenligningsgrunnlag(), forrige.getSammenligningsgrunnlag())) {
             return true;
         }
@@ -141,12 +131,6 @@ class BeregningsgrunnlagDiffSjekker {
                 return true;
             }
             if (!erLike(aktivPeriode.getBruttoPrÅr(), forrigePeriode.getBruttoPrÅr())) {
-                return true;
-            }
-            if (aktivPeriode.getRegelInputVilkårvurdering() != null && !aktivPeriode.getRegelInputVilkårvurdering().equals(forrigePeriode.getRegelInputVilkårvurdering())) {
-                return true;
-            }
-            if (aktivPeriode.getRegelInput() != null && !aktivPeriode.getRegelInput().equals(forrigePeriode.getRegelInput())) {
                 return true;
             }
             Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> resultat = finnAndeler(aktivPeriode, forrigePeriode);

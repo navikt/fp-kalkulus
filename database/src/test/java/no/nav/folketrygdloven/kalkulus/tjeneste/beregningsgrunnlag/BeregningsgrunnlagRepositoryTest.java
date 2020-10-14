@@ -78,7 +78,6 @@ public class BeregningsgrunnlagRepositoryTest  extends EntityManagerAwareTest {
 
         BeregningsgrunnlagEntitet build = BeregningsgrunnlagEntitet.builder()
                 .medSkjæringstidspunkt(LocalDate.now())
-                .medRegelinputPeriodisering(getTestJSON())
                 .build();
         BeregningsgrunnlagGrunnlagBuilder builder = BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(build)
@@ -94,7 +93,6 @@ public class BeregningsgrunnlagRepositoryTest  extends EntityManagerAwareTest {
 
         assertThat(grunnlagForReferanse).isPresent();
         assertThat(grunnlagForReferanse.get()).isEqualTo(lagretGrunnlag);
-        assertThat(grunnlagForReferanse.get().getBeregningsgrunnlag().get().getRegelinputPeriodisering()).isEqualTo(getTestJSON());
     }
 
     private String getTestJSON() {

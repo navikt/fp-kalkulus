@@ -73,15 +73,10 @@ public class BeregningsgrunnlagPeriodeDto {
     @Valid
     private List<PeriodeÅrsak> periodeÅrsaker;
 
-    @JsonProperty(value = "regelSporingMap")
-    @Valid
-    @Size
-    private Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap;
-
     public BeregningsgrunnlagPeriodeDto() {
     }
 
-    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker, Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporing> regelSporingMap) {
+    public BeregningsgrunnlagPeriodeDto(@NotNull @Valid List<BeregningsgrunnlagPrStatusOgAndelDto> beregningsgrunnlagPrStatusOgAndelList, @NotNull @Valid Periode periode, @Valid BigDecimal bruttoPrÅr, @Valid BigDecimal avkortetPrÅr, @Valid BigDecimal redusertPrÅr, @Valid Long dagsats, @NotNull @Valid List<PeriodeÅrsak> periodeÅrsaker) {
         this.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndelList;
         this.periode = periode;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -89,7 +84,6 @@ public class BeregningsgrunnlagPeriodeDto {
         this.redusertPrÅr = redusertPrÅr;
         this.dagsats = dagsats;
         this.periodeÅrsaker = periodeÅrsaker;
-        this.regelSporingMap = regelSporingMap;
     }
 
     public LocalDate getBeregningsgrunnlagPeriodeFom() {

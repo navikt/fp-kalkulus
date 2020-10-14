@@ -22,7 +22,6 @@ import no.nav.vedtak.feil.FeilFactory;
 @ApplicationScoped
 public class HåndteringInputTjeneste {
 
-    public static final boolean MED_SPORINGSLOGG = true;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingRepository koblingRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
@@ -63,7 +62,7 @@ public class HåndteringInputTjeneste {
                                                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraHåndteringTilstand) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(aktivGrunnlagEntitet));
         return new HåndterBeregningsgrunnlagInput(beregningsgrunnlagInput, MapHåndteringskodeTilTilstand.map(håndteringKode))
-                .medForrigeGrunnlagFraHåndtering(grunnlagFraHåndteringTilstand.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG)).orElse(null));
+                .medForrigeGrunnlagFraHåndtering(grunnlagFraHåndteringTilstand.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null));
     }
 
 

@@ -27,7 +27,6 @@ import no.nav.vedtak.feil.FeilFactory;
 @Dependent
 public class GUIBeregningsgrunnlagInputTjeneste {
 
-    private final boolean medSporingslogg = false;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingRepository koblingRepository;
 
@@ -64,7 +63,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
                         .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
 
-        return mapInputListe(beregningsgrunnlagGrunnlagEntiteter, grunnlagFraFordel, koblingKalkulatorInput, koblinger, medSporingslogg);
+        return mapInputListe(beregningsgrunnlagGrunnlagEntiteter, grunnlagFraFordel, koblingKalkulatorInput, koblinger);
     }
 
     private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {
@@ -81,15 +80,13 @@ public class GUIBeregningsgrunnlagInputTjeneste {
      * @param grunnlagFraFordel                   Grunnlag fra fordel-steget om dette er kjørt
      * @param koblingKalkulatorInput              KalkulatorInput for koblinger
      * @param koblinger                           Koblingentiteter
-     * @param medSporingslogg                     Flagg for om sporingslogg skal mappes
      * @return Liste med restinput
      */
     private static List<BeregningsgrunnlagGUIInput> mapInputListe(
             List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
             Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel,
             Map<Long, KalkulatorInputEntitet> koblingKalkulatorInput,
-            Map<Long, KoblingEntitet> koblinger,
-            boolean medSporingslogg) {
+            Map<Long, KoblingEntitet> koblinger) {
         return beregningsgrunnlagGrunnlagEntiteter.stream()
                 .map(grunnlagEntitet -> {
                     Long koblingId = grunnlagEntitet.getKoblingId();
@@ -98,8 +95,8 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
                             .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKobling(koblingId).toException());
                     BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
-                    BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet, medSporingslogg);
-                    return leggTilGrunnlagFraFordel(input, grunnlagFraFordel, medSporingslogg).medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
+                    BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet);
+                    return leggTilGrunnlagFraFordel(input, grunnlagFraFordel).medBeregningsgrunnlagGrunnlag(mappedGrunnlag);
                 }).collect(Collectors.toList());
     }
 
@@ -113,11 +110,10 @@ public class GUIBeregningsgrunnlagInputTjeneste {
     }
 
     private static BeregningsgrunnlagGUIInput leggTilGrunnlagFraFordel(BeregningsgrunnlagGUIInput input,
-                                                                       Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel,
-                                                                       boolean medSporingslogg) {
+                                                                       Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel) {
         Long koblingId = input.getKoblingReferanse().getKoblingId();
         if (grunnlagFraFordel.containsKey(koblingId)) {
-            return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId), medSporingslogg));
+            return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId)));
         }
         return input;
     }

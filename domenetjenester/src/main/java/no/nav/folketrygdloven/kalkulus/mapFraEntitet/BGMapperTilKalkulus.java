@@ -45,7 +45,7 @@ public class BGMapperTilKalkulus {
         return builder;
     }
 
-    public static BeregningsgrunnlagPeriodeDto.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode fraFagsystem, boolean medRegelEvaluering) {
+    public static BeregningsgrunnlagPeriodeDto.Builder mapBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode fraFagsystem) {
         BeregningsgrunnlagPeriodeDto.Builder builder = new BeregningsgrunnlagPeriodeDto.Builder();
 
         //med
@@ -53,13 +53,6 @@ public class BGMapperTilKalkulus {
         builder.medBeregningsgrunnlagPeriode(fraFagsystem.getBeregningsgrunnlagPeriodeFom(), fraFagsystem.getBeregningsgrunnlagPeriodeTom());
         builder.medBruttoPrÅr(fraFagsystem.getBruttoPrÅr());
         builder.medRedusertPrÅr(fraFagsystem.getRedusertPrÅr());
-
-        if(medRegelEvaluering) {
-            builder.medRegelEvalueringFastsett(fraFagsystem.getRegelInputFastsett(), fraFagsystem.getRegelEvalueringFastsett());
-            builder.medRegelEvalueringFinnGrenseverdi(fraFagsystem.getRegelInputFinnGrenseverdi(), fraFagsystem.getRegelEvalueringFinnGrenseverdi());
-            builder.medRegelEvalueringForeslå(fraFagsystem.getRegelInput(), fraFagsystem.getRegelEvaluering());
-            builder.medRegelEvalueringVilkårsvurdering(fraFagsystem.getRegelInputVilkårvurdering(), fraFagsystem.getRegelEvalueringVilkårvurdering());
-        }
 
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));

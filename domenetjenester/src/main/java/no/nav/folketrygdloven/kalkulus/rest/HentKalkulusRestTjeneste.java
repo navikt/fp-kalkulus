@@ -137,7 +137,7 @@ public class HentKalkulusRestTjeneste {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         var ytelseType = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         var response = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanse, ytelseType).stream()
-            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, spesifikasjon.getInkluderRegelSporing()))
+            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg))
             .map(bgDto -> Response.ok(bgDto).build())
             .findFirst()
             .orElse(Response.noContent().build());
@@ -163,9 +163,9 @@ public class HentKalkulusRestTjeneste {
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
             .collect(Collectors.toList());
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType).stream()
-            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg, false))
+            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg))
             .collect(Collectors.toList());
-        
+
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
 
@@ -276,7 +276,7 @@ public class HentKalkulusRestTjeneste {
     private Map<UUID, BeregningsgrunnlagDto> hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
 
         var koblingReferanser = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getKoblingReferanse)
-            .map(r -> new KoblingReferanse(r))
+            .map(KoblingReferanse::new)
             .collect(Collectors.toSet());
 
         var ytelseSomSkalBeregnes = spesifikasjoner.stream()

@@ -32,39 +32,6 @@ public class RegelsporingRepository {
         this.entityManager = entityManager;
     }
 
-
-    /**
-     * Henter alle aktive RegelsporingGrunnlag
-     *
-     * @param koblingId en koblingId
-     * @return Alle aktive {@link RegelSporingGrunnlagEntitet}
-     */
-    public List<RegelSporingGrunnlagEntitet> hentAlleRegelSporingGrunnlag(Long koblingId) {
-        TypedQuery<RegelSporingGrunnlagEntitet> query = entityManager.createQuery(
-                "from RegelSporingGrunnlag sporing " +
-                        "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktiv", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        return query.getResultList();
-    }
-
-    /**
-     * Henter alle aktive RegelsporingPeriode
-     *
-     * @param koblingId en koblingId
-     * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
-     */
-    public List<RegelSporingPeriodeEntitet> hentAlleRegelSporingPerioder(Long koblingId) {
-        TypedQuery<RegelSporingPeriodeEntitet> query = entityManager.createQuery(
-                "from RegelSporingPeriodeEntitet sporing " +
-                        "where sporing.koblingId=:koblingId " +
-                        "and sporing.aktiv = :aktiv", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        return query.getResultList();
-    }
-
     /**
      * Lagrer regelsporing for periode
      *

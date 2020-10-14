@@ -62,8 +62,8 @@ public class StegProsessInputTjeneste {
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(koblingEntitet.getId(), Optional.empty(), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(koblingEntitet.getId(), Optional.empty(), BeregningsgrunnlagTilstand.OPPRETTET);
         StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.OPPRETTET)
-                .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG)).orElse(null))
-                .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(beregningsgrunnlagFraFagsystem1 -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem1, MED_SPORINGSLOGG)).orElse(null))
+                .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
+                .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medStegUtTilstand(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
@@ -109,8 +109,8 @@ public class StegProsessInputTjeneste {
                 .flatMap(tilstand -> beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), tilstand));
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), mapTilStegTilstand(stegType));
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
-                .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG)).orElse(null))
-                .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(beregningsgrunnlagFraFagsystem1 -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem1, MED_SPORINGSLOGG)).orElse(null))
+                .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
+                .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medStegUtTilstand(mapTilStegUtTilstand(stegType).orElse(null));
     }
 

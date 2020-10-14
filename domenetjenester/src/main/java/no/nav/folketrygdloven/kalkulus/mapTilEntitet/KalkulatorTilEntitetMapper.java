@@ -45,11 +45,6 @@ public class KalkulatorTilEntitetMapper {
         //med
         builder.medGrunnbeløp(new Beløp(beregningsgrunnlagFraKalkulus.getGrunnbeløp().getVerdi()));
         builder.medOverstyring(beregningsgrunnlagFraKalkulus.isOverstyrt());
-        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING);
-        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE);
-        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON);
-        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.BRUKERS_STATUS);
-        leggTilRegelsporing(beregningsgrunnlagFraKalkulus, builder, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT);
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraKalkulus.getSkjæringstidspunkt());
         if (beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag() != null) {
             builder.medSammenligningsgrunnlagOld(KalkulatorTilBGMapper.mapSammenligningsgrunnlag(beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlag()));
@@ -62,13 +57,6 @@ public class KalkulatorTilEntitetMapper {
         beregningsgrunnlagFraKalkulus.getSammenligningsgrunnlagPrStatusListe().forEach(sammenligningsgrunnlagPrStatus -> builder.leggTilSammenligningsgrunnlag(KalkulatorTilBGMapper.mapSammenligningsgrunnlagMedStatus(sammenligningsgrunnlagPrStatus)));
 
         return builder.build();
-    }
-
-    private static void leggTilRegelsporing(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus, BeregningsgrunnlagEntitet.Builder builder, BeregningsgrunnlagRegelType regelType) {
-        BeregningsgrunnlagRegelSporingDto regelLogg = beregningsgrunnlagFraKalkulus.getRegelLogg(regelType);
-        if (regelLogg != null) {
-            builder.medRegellogg(regelLogg.getRegelInput(), regelLogg.getRegelEvaluering(), regelType);
-        }
     }
 
     public static BeregningRefusjonOverstyringerEntitet mapRefusjonOverstyring(BeregningRefusjonOverstyringerDto refusjonOverstyringerFraKalkulus) {

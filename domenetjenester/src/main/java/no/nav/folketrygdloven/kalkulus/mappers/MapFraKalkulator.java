@@ -94,7 +94,7 @@ public class MapFraKalkulator {
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
-        return beregningsgrunnlagGrunnlagEntitet.map(beregningsgrunnlagFraFagsystem -> BehandlingslagerTilKalkulusMapper.mapGrunnlag(beregningsgrunnlagFraFagsystem, MED_SPORINGSLOGG))
+        return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
     }

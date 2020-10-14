@@ -1,15 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.PERIODISERING;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -23,7 +18,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -34,7 +28,6 @@ import org.hibernate.annotations.BatchSize;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
 @Entity(name = "Beregningsgrunnlag")
@@ -66,11 +59,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size=20)
     private List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    @MapKey(name = "regelType")
-    @BatchSize(size=20)
-    private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> regelSporingMap = new HashMap<>();
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep")))
@@ -126,26 +114,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
     }
 
-    public Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporing> getRegelSporingMap() {
-        return regelSporingMap;
-    }
-
-    public BeregningsgrunnlagRegelSporing getRegelsporing(BeregningsgrunnlagRegelType regelType) {
-        return regelSporingMap.getOrDefault(regelType, null);
-    }
-
-    public String getRegelinputPeriodisering() {
-        return regelSporingMap.containsKey(PERIODISERING) ? regelSporingMap.get(PERIODISERING).getRegelInput() : null;
-    }
-
-    public String getRegelInputSkjæringstidspunkt() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
-    }
-
-    public String getRegelInputBrukersStatus() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
-    }
-
     public List<FaktaOmBeregningTilfelle> getFaktaOmBeregningTilfeller() {
         return faktaOmBeregningTilfeller
                 .stream()
@@ -195,11 +163,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     public static Builder builder(BeregningsgrunnlagEntitet original) {
         return new Builder(original);
-    }
-
-    void leggTilBeregningsgrunnlagRegel(BeregningsgrunnlagRegelSporing beregningsgrunnlagRegelSporing) {
-        Objects.requireNonNull(beregningsgrunnlagRegelSporing, "beregningsgrunnlagRegelSporing");
-        regelSporingMap.put(beregningsgrunnlagRegelSporing.getRegelType(), beregningsgrunnlagRegelSporing);
     }
 
     public static class Builder {
@@ -272,28 +235,6 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
             return this;
         }
 
-        public Builder medRegelinputPeriodisering(String regelInput) {
-            verifiserKanModifisere();
-            if (regelInput != null) {
-                BeregningsgrunnlagRegelSporing.ny()
-                    .medRegelInput(regelInput)
-                    .medRegelType(PERIODISERING)
-                    .build(kladd);
-            }
-            return this;
-        }
-
-        public Builder medRegellogg(String regelInput, String regelEvaluering, BeregningsgrunnlagRegelType regelType) {
-            verifiserKanModifisere();
-            if (regelInput != null) {
-                BeregningsgrunnlagRegelSporing.ny()
-                        .medRegelInput(regelInput)
-                        .medRegelEvaluering(regelEvaluering)
-                        .medRegelType(regelType)
-                        .build(kladd);
-            }
-            return this;
-        }
         public Builder medOverstyring(boolean overstyrt) {
             verifiserKanModifisere();
             kladd.overstyrt = overstyrt;
