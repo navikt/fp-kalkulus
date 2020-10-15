@@ -224,7 +224,7 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(FastsettBeregningsaktiviteterInput input) {
-        Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.getForrigeGrunnlagFraSteg();
+        Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.getForrigeGrunnlagFraStegUt();
         return overstyrtGrunnlag
                 .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
     }
