@@ -39,7 +39,6 @@ import no.nav.vedtak.feil.FeilFactory;
 public class StegProsessInputTjeneste {
 
     public static final MonthDay ENDRING_AV_GRUNNBELØP = MonthDay.of(5, 1);
-    public static final boolean MED_SPORINGSLOGG = true;
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private KoblingRepository koblingRepository;

@@ -24,6 +24,9 @@
     <sequence-generator name="SEQ_BG_REFUSJON_PERIODE" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_PERIODE"/>
     <sequence-generator name="SEQ_REGEL_SPORING_GRUNNLAG" allocation-size="50" sequence-name="SEQ_REGEL_SPORING_GRUNNLAG"/>
     <sequence-generator name="SEQ_REGEL_SPORING_PERIODE" allocation-size="50" sequence-name="SEQ_REGEL_SPORING_PERIODE"/>
+    <sequence-generator name="SEQ_FAKTA_AGGREGAT" allocation-size="50" sequence-name="SEQ_FAKTA_AGGREGAT"/>
+    <sequence-generator name="SEQ_FAKTA_ARBEIDSFORHOLD" allocation-size="50" sequence-name="SEQ_FAKTA_ARBEIDSFORHOLD"/>
+    <sequence-generator name="SEQ_FAKTA_AKTOER" allocation-size="50" sequence-name="SEQ_FAKTA_AKTOER"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
@@ -45,6 +48,9 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonPeriodeEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet" />
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />

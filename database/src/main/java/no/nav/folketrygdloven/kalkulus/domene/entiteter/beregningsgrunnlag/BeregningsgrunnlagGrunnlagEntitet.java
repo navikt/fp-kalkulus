@@ -69,6 +69,10 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     @JoinColumn(name = "br_overstyringer_id", updatable = false, unique = true)
     private BeregningRefusjonOverstyringerEntitet refusjonOverstyringer;
 
+    @ManyToOne
+    @JoinColumn(name = "fakta_aggregat_id", updatable = false, unique = true)
+    private FaktaAggregatEntitet faktaAggregat;
+
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 
