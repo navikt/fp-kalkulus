@@ -47,7 +47,7 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
     private static Optional<FordelingTilfelle> utledTilfelleForAndel(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         LocalDate skjæringstidspunkt = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        if (FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, input.getAktivitetAggregat(), skjæringstidspunkt)) {
+        if (FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, input.getAktivitetAggregat(), skjæringstidspunkt) && !erAutomatiskFordelt(andel)) {
             return Optional.of(FordelingTilfelle.NY_AKTIVITET);
         }
 
@@ -73,5 +73,9 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
             }
         }
         return Optional.empty();
+    }
+
+    private static boolean erAutomatiskFordelt(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getInntektskategori() != null && andel.getFordeltPrÅr() != null;
     }
 }

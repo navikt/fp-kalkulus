@@ -25,11 +25,7 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
         if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
             return erNyAktivitetSomIkkeErArbeid(andel, aktivitetAggregat, skjæringstidspunkt);
         }
-        return erNyttArbeidsforhold(andel.getArbeidsgiver().get(), andel.getArbeidsforholdRef().get(), aktivitetAggregat, skjæringstidspunkt) && !erAutomatiskFordelt(andel);
-    }
-
-    private static boolean erAutomatiskFordelt(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getInntektskategori() != null && andel.getFordeltPrÅr() != null;
+        return erNyttArbeidsforhold(andel.getArbeidsgiver().get(), andel.getArbeidsforholdRef().get(), aktivitetAggregat, skjæringstidspunkt);
     }
 
     private static Boolean erNyAktivitetSomIkkeErArbeid(BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningAktivitetAggregatDto aktivitetAggregat, LocalDate skjæringstidspunkt) {
