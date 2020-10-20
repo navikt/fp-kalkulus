@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
@@ -257,11 +258,12 @@ public class BeregningsgrunnlagRepository {
         return grunnlagEntitet;
     }
 
-    public void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
+    private void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
         Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         if (tidligereAggregat.isPresent()) {
+            nyttGrunnlag = settFaktaFraTidligere(koblingId, nyttGrunnlag, tidligereAggregat);
             tidligereAggregat.get().setAktiv(false);
             entityManager.persist(tidligereAggregat.get());
         }
@@ -273,11 +275,21 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
+    private BeregningsgrunnlagGrunnlagEntitet settFaktaFraTidligere(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag, Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat) {
+        if (!nyttGrunnlag.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.KOFAKBER_UT) && !nyttGrunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
+            nyttGrunnlag = BeregningsgrunnlagGrunnlagBuilder.oppdatere(nyttGrunnlag)
+                    .medFaktaAggregat(tidligereAggregat.get().getFaktaAggregat().orElse(null))
+                    .build(koblingId, nyttGrunnlag.getBeregningsgrunnlagTilstand());
+        }
+        return nyttGrunnlag;
+    }
+
     private void lagreGrunnlag(BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         BeregningAktivitetAggregatEntitet registerAktiviteter = nyttGrunnlag.getRegisterAktiviteter();
         if (registerAktiviteter != null) {
             lagreBeregningAktivitetAggregat(registerAktiviteter);
         }
+        nyttGrunnlag.getFaktaAggregat().ifPresent(this::lagreFaktaAggregat);
         nyttGrunnlag.getSaksbehandletAktiviteter().ifPresent(this::lagreBeregningAktivitetAggregat);
         nyttGrunnlag.getOverstyring()
                 .ifPresent(this::lagreOverstyring);
@@ -290,6 +302,14 @@ public class BeregningsgrunnlagRepository {
         nyttGrunnlag.getBeregningsgrunnlag().stream()
                 .flatMap(beregningsgrunnlagEntitet -> beregningsgrunnlagEntitet.getSammenligningsgrunnlagPrStatusListe().stream())
                 .forEach(this::lagreSammenligningsgrunnlagPrStatus);
+    }
+
+    private void lagreFaktaAggregat(FaktaAggregatEntitet faktaAggregat) {
+        if (faktaAggregat.getId() == null) {
+            entityManager.persist(faktaAggregat);
+            faktaAggregat.getFaktaArbeidsforhold().forEach(entityManager::persist);
+            faktaAggregat.getFaktaAktør().ifPresent(entityManager::persist);
+        }
     }
 
     private void lagreOverstyring(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringer) {

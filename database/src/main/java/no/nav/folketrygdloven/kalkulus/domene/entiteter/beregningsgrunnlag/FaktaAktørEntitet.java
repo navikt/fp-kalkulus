@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -61,7 +60,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
     }
 
 
-    void setBeregningAktiviteter(FaktaAggregatEntitet faktaAggregat) {
+    void setFaktaAggregat(FaktaAggregatEntitet faktaAggregat) {
         this.faktaAggregat = faktaAggregat;
     }
 
@@ -135,13 +134,17 @@ public class FaktaAktørEntitet extends BaseEntitet {
         }
 
         private void verifyStateForBuild() {
-            if (mal.erNyIArbeidslivetSN == null
+            if (erUgyldig()) {
+                throw new IllegalStateException("Må ha satt minst et faktafelt.");
+            }
+        }
+
+        public boolean erUgyldig() {
+            return mal.erNyIArbeidslivetSN == null
                     && mal.erNyoppstartetFL == null
                     && mal.harFLMottattYtelse == null
                     && mal.skalBesteberegnes == null
-                    && mal.mottarEtterlønnSluttpakke == null) {
-                throw new IllegalStateException("Må ha satt minst et faktafelt.");
-            }
+                    && mal.mottarEtterlønnSluttpakke == null;
         }
     }
 }

@@ -71,7 +71,7 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
         return arbeidsforholdRef == null ? InternArbeidsforholdRef.nullRef() : arbeidsforholdRef;
     }
 
-    void setBeregningAktiviteter(FaktaAggregatEntitet faktaAggregat) {
+    void setFaktaAggregat(FaktaAggregatEntitet faktaAggregat) {
         this.faktaAggregat = faktaAggregat;
     }
 
@@ -141,9 +141,13 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
 
         private void verifyStateForBuild() {
             Objects.requireNonNull(mal.arbeidsgiver, "arbeidsgiver");
-            if (mal.erTidsbegrenset == null && mal.harMottattYtelse == null) {
+            if (erUgyldig()) {
                 throw new IllegalStateException("Må ha satt minst et faktafelt.");
             }
+        }
+
+        public boolean erUgyldig() {
+            return mal.erTidsbegrenset == null && mal.harMottattYtelse == null;
         }
     }
 }

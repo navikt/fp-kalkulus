@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -52,13 +53,18 @@ public class FaktaAggregatEntitet extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public FaktaAktørEntitet getFaktaAktør() {
-        return faktaAktør;
+    public Optional<FaktaAktørEntitet> getFaktaAktør() {
+        return Optional.ofNullable(faktaAktør);
     }
 
     private void leggTilFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforhold) {
-        faktaArbeidsforhold.setBeregningAktiviteter(this);
+        faktaArbeidsforhold.setFaktaAggregat(this);
         this.faktaArbeidsforholdListe.add(faktaArbeidsforhold);
+    }
+
+    void setFaktaAktør(FaktaAktørEntitet faktaAktør) {
+        this.faktaAktør = faktaAktør;
+        faktaAktør.setFaktaAggregat(this);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class FaktaAggregatEntitet extends BaseEntitet {
         }
 
         public Builder medFaktaAktør(FaktaAktørEntitet faktaAktør) { // NOSONAR
-            kladd.faktaAktør = faktaAktør;
+            kladd.setFaktaAktør(faktaAktør);
             return this;
         }
 
@@ -96,9 +102,13 @@ public class FaktaAggregatEntitet extends BaseEntitet {
         }
 
         private void verifyStateForBuild() {
-            if (kladd.faktaArbeidsforholdListe.isEmpty() && kladd.faktaAktør == null) {
+            if (manglerFakta()) {
                 throw new IllegalStateException("Må ha satt enten faktaArbeidsforhold eller faktaAktør");
             }
+        }
+
+        public boolean manglerFakta() {
+            return kladd.faktaArbeidsforholdListe.isEmpty() && kladd.faktaAktør == null;
         }
     }
 }

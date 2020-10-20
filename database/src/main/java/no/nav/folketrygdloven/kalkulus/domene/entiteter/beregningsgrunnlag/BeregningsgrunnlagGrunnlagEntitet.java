@@ -89,6 +89,7 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
         grunnlag.getSaksbehandletAktiviteter().ifPresent(this::setSaksbehandletAktiviteter);
         grunnlag.getOverstyring().ifPresent(this::setOverstyringer);
         grunnlag.getRefusjonOverstyringer().ifPresent(this::setRefusjonOverstyringer);
+        grunnlag.getFaktaAggregat().ifPresent(this::setFaktaAggregat);
     }
 
     public Long getId() {
@@ -153,6 +154,10 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
         return registerAktiviteter;
     }
 
+    public Optional<FaktaAggregatEntitet> getFaktaAggregat() {
+        return Optional.ofNullable(faktaAggregat);
+    }
+
     public BeregningsgrunnlagTilstand getBeregningsgrunnlagTilstand() {
         return beregningsgrunnlagTilstand;
     }
@@ -183,6 +188,10 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
 
     void setBeregningsgrunnlagTilstand(BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         this.beregningsgrunnlagTilstand = beregningsgrunnlagTilstand;
+    }
+
+    void setFaktaAggregat(FaktaAggregatEntitet faktaAggregat) {
+        this.faktaAggregat = faktaAggregat;
     }
 
     void setOverstyringer(BeregningAktivitetOverstyringerEntitet overstyringer) {

@@ -49,6 +49,12 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         return this;
     }
 
+    public BeregningsgrunnlagGrunnlagBuilder medFaktaAggregat(FaktaAggregatEntitet faktaAggregatEntitet) {
+        verifiserKanModifisere();
+        kladd.setFaktaAggregat(faktaAggregatEntitet);
+        return this;
+    }
+
     public BeregningsgrunnlagGrunnlagEntitet build(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         if(built) {
             return kladd;
@@ -59,10 +65,6 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         kladd.setKoblingId(koblingId);
         kladd.setBeregningsgrunnlagTilstand(beregningsgrunnlagTilstand);
         built = true;
-        return kladd;
-    }
-
-    public BeregningsgrunnlagGrunnlagEntitet buildUtenIdOgTilstand() {
         return kladd;
     }
 

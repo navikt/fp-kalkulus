@@ -43,16 +43,14 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
         prepareTestData();
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                        .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+                        .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Act
@@ -67,16 +65,14 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
         prepareTestData();
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                        .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+                        .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
@@ -92,16 +88,14 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
         prepareTestData();
         // Arrange
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                        .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT));
+                        .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT_UT);
 
         // Act
@@ -119,11 +113,10 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         String json = getTestJSON();
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
         repository.lagreOgSjekkStatus(input);
-        repository.lagreOgFlush(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
-                        .build())
-                .build(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
+                        .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
 
         // Act

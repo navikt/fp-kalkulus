@@ -10,10 +10,9 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
@@ -42,11 +41,21 @@ public class HåndtererApplikasjonTjeneste {
 
     public OppdateringRespons håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
         rullTilbakeVedBehov(koblingId, håndterBeregningDto);
-        BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndterBeregningDto.getKode().getKode());
-        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, håndteringInputTjeneste.lagInput(koblingId, håndterBeregningDto.getKode()));
-        BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, resultat.getNyttGrunnlag(), MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode()));
-        beregningsgrunnlagRepository.lagreOgFlush(koblingId, beregningsgrunnlagGrunnlagEntitet);
+        HåndteringKode håndteringKode = håndterBeregningDto.getKode();
+        BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
+        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, håndteringInputTjeneste.lagInput(koblingId, håndteringKode));
+        var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
+        mapFaktaBeregning(håndteringKode, resultat, beregningsgrunnlagGrunnlagBuilder);
+        beregningsgrunnlagRepository.lagre(koblingId, beregningsgrunnlagGrunnlagBuilder, MapHåndteringskodeTilTilstand.map(håndteringKode));
         return resultat.getEndring();
+    }
+
+    // TODO: Fjernes når domenemodellen er utvidet med ny faktastruktur (TSF-1340)
+    private void mapFaktaBeregning(HåndteringKode håndteringKode, HåndteringResultat resultat, BeregningsgrunnlagGrunnlagBuilder beregningsgrunnlagGrunnlagBuilder) {
+        if (håndteringKode.equals(HåndteringKode.FAKTA_OM_BEREGNING)) {
+            beregningsgrunnlagGrunnlagBuilder.medFaktaAggregat(KalkulatorTilEntitetMapper.mapFaktaAggregat(resultat.getNyttGrunnlag().getBeregningsgrunnlag()
+                    .orElseThrow(() -> new IllegalStateException("Forventer beregningsgrunnlag"))).orElse(null));
+        }
     }
 
     private void rullTilbakeVedBehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {

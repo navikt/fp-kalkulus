@@ -1,9 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.FASTSATT;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.KOFAKBER_UT;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
+import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapFaktaAggregat;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +36,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrun
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
@@ -191,8 +187,8 @@ public class BeregningStegTjeneste {
                 input.getForrigeGrunnlagFraSteg(),
                 input.getForrigeGrunnlagFraStegUt()
         );
-        BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag = KalkulatorTilEntitetMapper.mapGrunnlag(koblingId, resultat.getBeregningsgrunnlagGrunnlag(), input.getStegTilstand());
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(nyttGrunnlag), input.getStegTilstand());
+        var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag());
+        repository.lagre(koblingId, beregningsgrunnlagGrunnlagBuilder, input.getStegTilstand());
         if (kanKopiereGrunnlag) {
             forrigeBekreftetGrunnlag.ifPresent(gr -> repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(gr), input.getStegUtTilstand()));
         }
@@ -210,10 +206,9 @@ public class BeregningStegTjeneste {
                 input.getForrigeGrunnlagFraStegUt().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
         );
 
-        BeregningsgrunnlagEntitet nyttBg = KalkulatorTilEntitetMapper.mapGrunnlag(input.getKoblingReferanse().getKoblingId(), beregningResultatAggregat.getBeregningsgrunnlagGrunnlag(), input.getStegTilstand())
-        .getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER);
-
-        repository.lagre(behandlingId, nyttBg, input.getStegTilstand());
+        Long koblingId = input.getKoblingReferanse().getKoblingId();
+        var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag());
+        repository.lagre(behandlingId, beregningsgrunnlagGrunnlagBuilder, input.getStegTilstand());
         if (kanKopiereFraBekreftet) {
             input.getForrigeGrunnlagFraStegUt().map(gr -> {
                         BeregningsgrunnlagGrunnlagDtoBuilder b = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag())
@@ -221,11 +216,14 @@ public class BeregningStegTjeneste {
                                 gr.getRefusjonOverstyringer().ifPresent(b::medRefusjonOverstyring);
                                 return b;
                             })
-                    .map(gr -> KalkulatorTilEntitetMapper.mapGrunnlag(input.getKoblingReferanse().getKoblingId(), gr.build(input.getStegUtTilstand()), input.getStegUtTilstand()))
-                    .map(BeregningsgrunnlagGrunnlagBuilder::oppdatere)
+                    .map(builder -> builder.build(input.getStegUtTilstand()))
+                    .map(gr -> KalkulatorTilEntitetMapper.mapGrunnlag(gr)
+                            .medFaktaAggregat(mapFaktaAggregat(gr.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER))
+                                        .orElse(null))
+)
                     .ifPresent(b -> repository.lagre(behandlingId, b, input.getStegUtTilstand()));
         }
-        lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
+        lagreRegelsporing(koblingId, beregningResultatAggregat.getRegelSporingAggregat());
     }
 
     private void lagreOgKopier(StegProsesseringInput input,
@@ -242,8 +240,7 @@ public class BeregningStegTjeneste {
         repository.lagre(behandlingId, nyttBg, input.getStegTilstand());
         if (kanKopiereBekreftet) {
             input.getForrigeGrunnlagFraStegUt()
-                    .map(gr -> KalkulatorTilEntitetMapper.mapGrunnlag(input.getKoblingReferanse().getKoblingId(), gr, input.getStegUtTilstand()))
-                    .map(BeregningsgrunnlagGrunnlagBuilder::oppdatere)
+                    .map(gr -> KalkulatorTilEntitetMapper.mapGrunnlag(gr))
                     .ifPresent(bg -> repository.lagre(behandlingId, bg, input.getStegUtTilstand()));
         }
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
