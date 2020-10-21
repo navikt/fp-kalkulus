@@ -37,6 +37,7 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
 
@@ -147,6 +148,9 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name="inntektskategori", nullable = false)
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
 
+    @Convert(converter= AndelKilde.KodeverdiConverter.class)
+    @Column(name = "kilde", nullable = false)
+    private AndelKilde kilde = AndelKilde.PROSESS_START;
 
     @Column(name = "lagt_til_av_saksbehandler", nullable = false)
     private Boolean lagtTilAvSaksbehandler = false;
