@@ -35,5 +35,11 @@ public class FordelBeregningsgrunnlagTjeneste {
                 konkatiner(resultatFraPeriodisering.getRegelsporinger().orElse(null), resultatFraOmfordeling.getRegelsporinger().orElse(null)));
     }
 
+    // TODO TSF-1315 vi bør kunne slette #fordelBeregningsgrunnlag og kun bruke denne etter at k9sak har tatt ibruk nytt steg for refusjon
+    public BeregningsgrunnlagRegelResultat omfordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
+        var resultatFraOmfordeling = omfordelTjeneste.omfordel(input, input.getBeregningsgrunnlag());
+        return new BeregningsgrunnlagRegelResultat(resultatFraOmfordeling.getBeregningsgrunnlag(),
+                resultatFraOmfordeling.getRegelsporinger().orElse(null));
+    }
 
 }

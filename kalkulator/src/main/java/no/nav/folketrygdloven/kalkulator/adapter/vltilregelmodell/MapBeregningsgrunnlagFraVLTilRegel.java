@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -139,6 +139,9 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         if ((input instanceof FordelBeregningsgrunnlagInput)) {
             return ((FordelBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        }
+        if ((input instanceof VurderRefusjonBeregningsgrunnlagInput)) {
+            return ((VurderRefusjonBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
         if ((input instanceof FullføreBeregningsgrunnlagInput)) {
             return ((FullføreBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());

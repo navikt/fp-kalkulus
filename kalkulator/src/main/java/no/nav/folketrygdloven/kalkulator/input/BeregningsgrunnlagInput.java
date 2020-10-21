@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -34,9 +33,6 @@ public class BeregningsgrunnlagInput {
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
-
-    /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
-    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
@@ -72,7 +68,6 @@ public class BeregningsgrunnlagInput {
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();
-        this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
     }
 
     public Map<String, Boolean> getToggles() {
@@ -124,10 +119,6 @@ public class BeregningsgrunnlagInput {
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
         return beregningsgrunnlagGrunnlag == null ? null: beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
-    }
-
-    public Optional<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
-        return Optional.ofNullable(beregningsgrunnlagGrunnlagFraForrigeBehandling);
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
@@ -194,13 +185,6 @@ public class BeregningsgrunnlagInput {
     }
 
 
-    // Brukes av fp-sak
-    public BeregningsgrunnlagInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        var newInput = new BeregningsgrunnlagInput(this);
-        newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
-        return newInput;
-    }
-
 
     /** Overstyrer behandlingreferanse, eks for å få ny skjæringstidspunkt fra beregningsgrunnlag fra tidligere. */
     public BeregningsgrunnlagInput medBehandlingReferanse(KoblingReferanse ref) {
@@ -222,7 +206,6 @@ public class BeregningsgrunnlagInput {
             "aktivitetGradering=" + aktivitetGradering +
             ", behandlingReferanse=" + koblingReferanse +
             ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
-            ", beregningsgrunnlagGrunnlagFraForrigeBehandling=" + beregningsgrunnlagGrunnlagFraForrigeBehandling +
             ", refusjonskravDatoer=" + refusjonskravDatoer +
             ", iayGrunnlag=" + iayGrunnlag +
             ", opptjeningAktiviteter=" + opptjeningAktiviteter +

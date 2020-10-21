@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -25,41 +23,41 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspu
  * Hvis det har kommet nye inntektsmeldinger siden forrige beregningsgrunnlag og disse leder til mindre
  * utbetaling til bruker skal det opprettes aksjonspunkt for å vurdere når disse refusjonskravene skal tas med.
  */
-@ApplicationScoped
-public class BeregningRefusjonAksjonspunktutleder {
-    private AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste;
+public final class AksjonspunktutlederVurderRefusjon {
 
-    @Inject
-    public BeregningRefusjonAksjonspunktutleder(AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste) {
-        this.andelerMedØktRefusjonTjeneste = andelerMedØktRefusjonTjeneste;
+    private AksjonspunktutlederVurderRefusjon() {
+        // Skjuler default konstruktør
     }
 
-    public BeregningRefusjonAksjonspunktutleder() {
-        // CDI
-    }
-
-    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input) {
+    public static List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input,
+                                                                   BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
 
-        if (skalHaAksjonspunktVurderRefusjonskrav(input)) {
+        if (skalHaAksjonspunktVurderRefusjonskrav(input, periodisertMedRefusjonOgGradering)) {
             aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.VURDER_REFUSJONSKRAV));
         }
 
         return aksjonspunkter;
     }
 
-    private boolean skalHaAksjonspunktVurderRefusjonskrav(BeregningsgrunnlagInput input) {
-        Optional<BeregningsgrunnlagDto> orginaltBGOpt = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode = andelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(input);
-        if (orginaltBGOpt.isEmpty() || andelerMedØktRefusjonIUtbetaltPeriode.isEmpty()) {
+    private static boolean skalHaAksjonspunktVurderRefusjonskrav(BeregningsgrunnlagInput input, BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
+        if (!(input instanceof VurderRefusjonBeregningsgrunnlagInput)) {
+            throw new IllegalStateException("Har ikke korrekt input for å vurdere aksjsonspunkt i vurder_refusjon steget");
+        }
+        VurderRefusjonBeregningsgrunnlagInput vurderInput = (VurderRefusjonBeregningsgrunnlagInput) input;
+        Optional<BeregningsgrunnlagGrunnlagDto> orginaltBGGrunnlag = vurderInput.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
+        if (orginaltBGGrunnlag.isEmpty() || orginaltBGGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag).isEmpty()) {
+            return false;
+        }
+        BeregningsgrunnlagDto orginaltBG = orginaltBGGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag).get();
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonIUtbetaltPeriode = AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(periodisertMedRefusjonOgGradering, orginaltBG);
+        if (andelerMedØktRefusjonIUtbetaltPeriode.isEmpty()) {
             return false;
         }
 
         // Vi skal ikke opprette aksjonspunkt hvis en andel alltid har hatt refusjon, men refusjonskravet har økt, da vi ikke har løsning for disse.
         // Dette skal løses i https://jira.adeo.no/browse/TFP-3795
-        BeregningsgrunnlagDto orginaltBG = orginaltBGOpt.get();
-        List<BeregningRefusjonOverstyringDto> orginaleOverstyringer = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling()
-                .flatMap(BeregningsgrunnlagGrunnlagDto::getRefusjonOverstyringer)
+        List<BeregningRefusjonOverstyringDto> orginaleOverstyringer = orginaltBGGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getRefusjonOverstyringer)
                 .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
                 .orElse(Collections.emptyList());
         Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjonOgTidligereRefusjon =

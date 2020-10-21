@@ -13,14 +13,11 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
-import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -39,8 +36,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.refusjon.AndelerMedØktRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
@@ -86,19 +81,10 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste = new FaktaOmBeregningDtoTjeneste(FaktaOmBeregningTilfelleDtoTjenesteProviderMock.getTjenesteInstances());
         BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste =
                 new BeregningsgrunnlagPrStatusOgAndelDtoTjeneste((new UnitTestLookupInstanceImpl<>(new FastsettGrunnlagGenerell())));
-        VurderRefusjonDtoTjeneste vurderRefusjonDtoTjeneste = getVurderRefusjonDtoTjeneste();
         beregningsgrunnlagDtoTjeneste = new BeregningsgrunnlagDtoTjeneste(
                 faktaOmBeregningDtoTjeneste,
-                beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                vurderRefusjonDtoTjeneste, new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock()));
+                beregningsgrunnlagPrStatusOgAndelDtoTjeneste, new UnitTestLookupInstanceImpl<>(new YtelsespesifiktGrunnlagTjenesteMock()));
         virksomhet.setNavn(VIRKSOMHET_NAVN);
-    }
-
-    private VurderRefusjonDtoTjeneste getVurderRefusjonDtoTjeneste() {
-        FordelPerioderTjeneste fordelPerioderTjeneste = new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjon()),
-                new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering());
-        AndelerMedØktRefusjonTjeneste andelerMedØktRefusjonTjeneste = new AndelerMedØktRefusjonTjeneste(fordelPerioderTjeneste);
-        return new VurderRefusjonDtoTjeneste(andelerMedØktRefusjonTjeneste);
     }
 
     @Test

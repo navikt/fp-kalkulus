@@ -309,7 +309,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                         resultatGrunnlagPeriode.getBeregningsgrunnlagPeriode().getFom(),
                         resultatGrunnlagPeriode.getBeregningsgrunnlagPeriode().getTomOrNull()
                 )
-                .tilbakestillPeriodeÅrsaker()
+                .fjernPeriodeårsaker()
                 .leggTilPeriodeÅrsaker(mapPeriodeÅrsaker(resultatGrunnlagPeriode.getPeriodeÅrsaker()));
         BeregningsgrunnlagPeriodeDto.Builder periodeBuilderMedRegel = leggTilRegelEvaluering(regelResultat, steg, periodeBuilder);
         regelResultat.getRegelSporingFinnGrenseverdi()

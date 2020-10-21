@@ -41,8 +41,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregnings
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
-import no.nav.folketrygdloven.kalkulator.steg.refusjon.BeregningRefusjonAksjonspunktutleder;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.SkalAvslagSettesPåVent;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /**
@@ -59,7 +58,7 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
-    private BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder;
+    private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
     private Instance<VilkårTjeneste> vilkårTjeneste;
 
 
@@ -73,7 +72,7 @@ public class BeregningsgrunnlagTjeneste {
                                       @Any Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
-                                      BeregningRefusjonAksjonspunktutleder beregningRefusjonAksjonspunktutleder,
+                                      VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
                                       FastsettBeregningAktiviteter fastsettBeregningAktiviteter,
@@ -83,7 +82,7 @@ public class BeregningsgrunnlagTjeneste {
         this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
-        this.beregningRefusjonAksjonspunktutleder = beregningRefusjonAksjonspunktutleder;
+        this.vurderRefusjonBeregningsgrunnlag = vurderRefusjonBeregningsgrunnlag;
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
         this.fastsettBeregningAktiviteter = fastsettBeregningAktiviteter;
@@ -122,9 +121,6 @@ public class BeregningsgrunnlagTjeneste {
         var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
                 .lagVilkårResultatFullføre(input, resultat.getBeregningsgrunnlag());
         resultatBuilder.medVilkårResultat(vilkårResultat.orElse(null));
-        if (SkalAvslagSettesPåVent.skalSettesPåVent(input)) {
-            resultatBuilder.medAksjonspunkter(SkalAvslagSettesPåVent.avslagPåVent());
-        }
         return resultatBuilder.build();
     }
 
@@ -136,20 +132,12 @@ public class BeregningsgrunnlagTjeneste {
                 .lagVilkårResultatFordel(input, vilkårVurderingResultat.getVilkårsresultat());
         if (!vilkårResultat.getErVilkårOppfylt()) {
             // Om vilkåret ikke er oppfylt kan vi returnere uten å kjøre fordeling
-            if (SkalAvslagSettesPåVent.skalSettesPåVent(input)) {
-                return BeregningResultatAggregat.Builder.fra(input)
-                        .medAksjonspunkter(SkalAvslagSettesPåVent.avslagPåVent())
-                        .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
-                        .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
-                        .build();
-            } else {
-                return BeregningResultatAggregat.Builder.fra(input)
-                        .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
-                        .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
-                        .medVilkårResultat(vilkårResultat)
-                        .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
-                        .build();
-            }
+            return BeregningResultatAggregat.Builder.fra(input)
+                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
+                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
+                    .medVilkårResultat(vilkårResultat)
+                    .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
+                    .build();
         } else {
             var fordelResultat = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, vurdertBeregningsgrunnlag);
             BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
@@ -173,13 +161,54 @@ public class BeregningsgrunnlagTjeneste {
         }
     }
 
-    public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(StegProsesseringInput input) {
-        List<BeregningAksjonspunktResultat> beregningAksjonspunktResultats = beregningRefusjonAksjonspunktutleder.utledAksjonspunkter(input);
-        BeregningsgrunnlagDto nyttBG = BeregningsgrunnlagDto.builder(input.getBeregningsgrunnlag()).build();
-        return BeregningResultatAggregat.Builder.fra(input)
-                .medAksjonspunkter(beregningAksjonspunktResultats)
-                .medBeregningsgrunnlag(nyttBG, input.getStegTilstand())
+    // TODO TSF-1315 rename denne metoden til #fordelBeregningsgrunnlag og slett den eksisterende #fordelBeregningsgrunnlag metoden
+    public BeregningResultatAggregat fordelBeregningsgrunnlagUtenPeriodisering(StegProsesseringInput input) {
+        var fordelResultat = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input);
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
+                .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
+                .build(input.getStegTilstand());
+        List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
+                input.getKoblingReferanse(),
+                nyttGrunnlag,
+                input.getAktivitetGradering(),
+                input.getInntektsmeldinger());
+        return Builder.fra(input)
+                .medAksjonspunkter(aksjonspunkter)
+                .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                .medRegelSporingAggregat(new RegelSporingAggregat(
+                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
+                        fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream)
+                                .collect(Collectors.toList())))
                 .build();
+    }
+
+    public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(StegProsesseringInput input) {
+        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
+                .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
+        BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
+        BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFordel(input, vilkårVurderingResultat.getVilkårsresultat());
+        if (!vilkårResultat.getErVilkårOppfylt()) {
+            // Om vilkåret ikke er oppfylt kan vi returnere uten å kjøre fordeling
+            return BeregningResultatAggregat.Builder.fra(input)
+                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
+                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
+                    .medVilkårResultat(vilkårResultat)
+                    .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
+                    .build();
+        } else {
+            BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input, vurdertBeregningsgrunnlag);
+            return Builder.fra(input)
+                    .medAksjonspunkter(vurderRefusjonResultat.getAksjonspunkter())
+                    .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                    .medVilkårResultat(vilkårResultat)
+                    .medRegelSporingAggregat(new RegelSporingAggregat(
+                            vurderRefusjonResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
+                            Stream.concat(vurderRefusjonResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream),
+                                    vilkårVurderingResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream))
+                                    .collect(Collectors.toList())))
+                    .build();
+        }
     }
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {

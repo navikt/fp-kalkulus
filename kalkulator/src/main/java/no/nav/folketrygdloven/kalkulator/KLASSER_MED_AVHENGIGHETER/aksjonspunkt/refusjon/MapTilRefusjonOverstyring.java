@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
+package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.refusjon;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,33 +14,28 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
-public class VurderRefusjonBeregningsgrunnlagHåndterer {
+public final class MapTilRefusjonOverstyring {
 
-    private VurderRefusjonBeregningsgrunnlagHåndterer() {
-        // skjul
+    private MapTilRefusjonOverstyring() {
+        // Skjuler default
     }
 
-    public static BeregningsgrunnlagGrunnlagDto håndter(VurderRefusjonBeregningsgrunnlagDto dto, BeregningsgrunnlagInput input) {
+    public static BeregningRefusjonOverstyringerDto map(VurderRefusjonBeregningsgrunnlagDto dto, BeregningsgrunnlagInput input) {
         List<BeregningRefusjonOverstyringDto> eksisterendeOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer()
                 .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
                 .orElse(Collections.emptyList());
         BeregningRefusjonOverstyringerDto.Builder nyttRefusjonAggregat = BeregningRefusjonOverstyringerDto.builder();
         Map<Arbeidsgiver, List<VurderRefusjonAndelBeregningsgrunnlagDto>> vurderingerSortertPåAG = dto.getAndeler().stream()
-                .collect(Collectors.groupingBy(VurderRefusjonBeregningsgrunnlagHåndterer::lagArbeidsgiver));
+                .collect(Collectors.groupingBy(MapTilRefusjonOverstyring::lagArbeidsgiver));
 
         lagListeMedRefusjonOverstyringer(vurderingerSortertPåAG, eksisterendeOverstyringer)
                 .forEach(nyttRefusjonAggregat::leggTilOverstyring);
 
-        BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-        grunnlagBuilder.medRefusjonOverstyring(nyttRefusjonAggregat.build());
-        return grunnlagBuilder.build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT);
+        return nyttRefusjonAggregat.build();
     }
 
     private static List<BeregningRefusjonOverstyringDto> lagListeMedRefusjonOverstyringer(Map<Arbeidsgiver, List<VurderRefusjonAndelBeregningsgrunnlagDto>> vurderingerSortertPåAG, List<BeregningRefusjonOverstyringDto> eksisterendeOverstyringer) {
@@ -54,11 +49,6 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
                 validerStartdato(eksisterendeOverstyring, entry.getValue());
 
                 List<BeregningRefusjonPeriodeDto> nyeRefusjonsperioder = lagListeMedRefusjonsperioder(entry.getValue());
-                List<BeregningRefusjonPeriodeDto> eksisterendeOverstyrtePerioder = eksisterendeOverstyring.getRefusjonPerioder()
-                        .stream()
-                        .map(rp -> new BeregningRefusjonPeriodeDto(rp.getArbeidsforholdRef(), rp.getStartdatoRefusjon()))
-                        .collect(Collectors.toList());
-                nyeRefusjonsperioder.addAll(eksisterendeOverstyrtePerioder);
 
                 BeregningRefusjonOverstyringDto oppdatertOverstyring = new BeregningRefusjonOverstyringDto(ag,
                         eksisterendeOverstyring.getFørsteMuligeRefusjonFom().orElse(null), nyeRefusjonsperioder);
@@ -76,7 +66,7 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
             LocalDate tidligsteStartdato = eksisterendeOverstyring.getFørsteMuligeRefusjonFom().get();
             Optional<VurderRefusjonAndelBeregningsgrunnlagDto> ugyldigOverstyring = avklarteStartdatoer.stream().filter(os -> os.getFastsattRefusjonFom().isBefore(tidligsteStartdato)).findFirst();
             if (ugyldigOverstyring.isPresent()) {
-                throw VurderRefusjonBeregningsgrunnlagHåndtererFeil.FACTORY.ugyldigStartdatoFeil(ugyldigOverstyring.get().getFastsattRefusjonFom(), tidligsteStartdato).toException();
+                throw MapTilRefusjonOverstyringFeil.FACTORY.ugyldigStartdatoFeil(ugyldigOverstyring.get().getFastsattRefusjonFom(), tidligsteStartdato).toException();
             }
         }
     }
@@ -88,7 +78,7 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
 
     private static List<BeregningRefusjonPeriodeDto> lagListeMedRefusjonsperioder(List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsattAndel) {
         return fastsattAndel.stream()
-                .map(VurderRefusjonBeregningsgrunnlagHåndterer::lagRefusjonsperiode)
+                .map(MapTilRefusjonOverstyring::lagRefusjonsperiode)
                 .collect(Collectors.toList());
     }
 
@@ -111,4 +101,5 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer {
             return Arbeidsgiver.person(new AktørId(fastsattAndel.getArbeidsgiverAktørId()));
         }
     }
+
 }

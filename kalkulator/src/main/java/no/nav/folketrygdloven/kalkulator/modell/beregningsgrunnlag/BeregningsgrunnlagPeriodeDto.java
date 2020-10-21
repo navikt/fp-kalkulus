@@ -401,7 +401,7 @@ public class BeregningsgrunnlagPeriodeDto {
             return this;
         }
 
-        public Builder tilbakestillPeriodeÅrsaker() {
+        public Builder fjernPeriodeårsaker() {
             verifiserKanModifisere();
             kladd.beregningsgrunnlagPeriodeÅrsaker.clear();
             return this;

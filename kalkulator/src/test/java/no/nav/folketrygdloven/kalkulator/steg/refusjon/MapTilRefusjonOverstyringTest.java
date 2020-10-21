@@ -1,10 +1,9 @@
-package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
+package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,20 +14,20 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.refusjon.MapTilRefusjonOverstyring;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
-class VurderRefusjonBeregningsgrunnlagHåndtererTest {
+class MapTilRefusjonOverstyringTest {
     private BeregningRefusjonOverstyringerDto eksisterendeOverstyringer;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(LocalDate.now().minusDays(5));
     private BeregningsgrunnlagInput input;
@@ -39,7 +38,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
         VurderRefusjonAndelBeregningsgrunnlagDto oppdatering = lagDtoForAG(Arbeidsgiver.virksomhet("999999999"), null, LocalDate.of(2020, 7, 1));
 
         // Act
-        BeregningsgrunnlagGrunnlagDto resultat = håndter(lagDto(oppdatering));
+        BeregningRefusjonOverstyringerDto resultat = håndter(lagDto(oppdatering));
 
         // Assert
         assertResultat(resultat, oppdatering);
@@ -53,7 +52,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
         VurderRefusjonAndelBeregningsgrunnlagDto oppdatering3 = lagDtoForAG(Arbeidsgiver.virksomhet("999999997"), null, LocalDate.of(2020, 5, 1));
 
         // Act
-        BeregningsgrunnlagGrunnlagDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
+        BeregningRefusjonOverstyringerDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
 
         // Assert
         assertResultat(resultat, oppdatering, oppdatering2, oppdatering3);
@@ -67,7 +66,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
         VurderRefusjonAndelBeregningsgrunnlagDto oppdatering3 = lagDtoForAG(Arbeidsgiver.virksomhet("999999999"), UUID.randomUUID().toString(), LocalDate.of(2020, 5, 1));
 
         // Act
-        BeregningsgrunnlagGrunnlagDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
+        BeregningRefusjonOverstyringerDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
 
         // Assert
         assertResultat(resultat, oppdatering, oppdatering2, oppdatering3);
@@ -82,7 +81,7 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
         VurderRefusjonAndelBeregningsgrunnlagDto oppdatering3 = lagDtoForAG(ag, UUID.randomUUID().toString(), LocalDate.of(2020, 5, 1));
         lagTidligereOverstyringBeregningsgrunnlag(ag);
         // Act
-        BeregningsgrunnlagGrunnlagDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
+        BeregningRefusjonOverstyringerDto resultat = håndter(lagDto(oppdatering, oppdatering2, oppdatering3));
 
         // Assert
         assertResultat(resultat, oppdatering, oppdatering2, oppdatering3);
@@ -90,11 +89,9 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
 
 
 
-    private void assertResultat(BeregningsgrunnlagGrunnlagDto resultat, VurderRefusjonAndelBeregningsgrunnlagDto... oppdateringDtoer) {
+    private void assertResultat(BeregningRefusjonOverstyringerDto resultat, VurderRefusjonAndelBeregningsgrunnlagDto... oppdateringDtoer) {
         List<VurderRefusjonAndelBeregningsgrunnlagDto> oppdateringer = Arrays.asList(oppdateringDtoer);
-        List<BeregningRefusjonOverstyringDto> refusjonOverstyringer = resultat.getRefusjonOverstyringer()
-                .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
-                .orElse(Collections.emptyList());
+        List<BeregningRefusjonOverstyringDto> refusjonOverstyringer = resultat.getRefusjonOverstyringer();
         oppdateringer.forEach(dto -> assertDto(refusjonOverstyringer, dto));
     }
 
@@ -121,9 +118,9 @@ class VurderRefusjonBeregningsgrunnlagHåndtererTest {
         assertThat(matchendeRefusjonPeriode.getStartdatoRefusjon()).isEqualTo(dto.getFastsattRefusjonFom());
     }
 
-    private BeregningsgrunnlagGrunnlagDto håndter(VurderRefusjonBeregningsgrunnlagDto dto) {
+    private BeregningRefusjonOverstyringerDto håndter(VurderRefusjonBeregningsgrunnlagDto dto) {
         lagBehandlingMedBeregningsgrunnlag();
-        return VurderRefusjonBeregningsgrunnlagHåndterer.håndter(dto, input);
+        return MapTilRefusjonOverstyring.map(dto, input);
     }
 
     private VurderRefusjonBeregningsgrunnlagDto lagDto(VurderRefusjonAndelBeregningsgrunnlagDto... dto) {

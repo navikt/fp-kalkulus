@@ -43,7 +43,6 @@ public class BeregningsgrunnlagDtoTjeneste {
     private static final int SEKS = 6;
     private BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
-    private VurderRefusjonDtoTjeneste vurderRefusjonDtoTjeneste;
     private Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester;
 
 
@@ -57,11 +56,9 @@ public class BeregningsgrunnlagDtoTjeneste {
     @Inject
     public BeregningsgrunnlagDtoTjeneste(FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste,
                                          BeregningsgrunnlagPrStatusOgAndelDtoTjeneste beregningsgrunnlagPrStatusOgAndelDtoTjeneste,
-                                         VurderRefusjonDtoTjeneste vurderRefusjonDtoTjeneste,
                                          @Any Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester) {
         this.faktaOmBeregningDtoTjeneste = faktaOmBeregningDtoTjeneste;
         this.beregningsgrunnlagPrStatusOgAndelDtoTjeneste = beregningsgrunnlagPrStatusOgAndelDtoTjeneste;
-        this.vurderRefusjonDtoTjeneste = vurderRefusjonDtoTjeneste;
         this.ytelsetjenester = ytelsetjenester;
     }
 
@@ -93,7 +90,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        vurderRefusjonDtoTjeneste.lagDto(input).ifPresent(dto::setRefusjonTilVurdering);
+        VurderRefusjonDtoTjeneste.lagDto(input).ifPresent(dto::setRefusjonTilVurdering);
     }
 
     private void mapOverstyring(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
