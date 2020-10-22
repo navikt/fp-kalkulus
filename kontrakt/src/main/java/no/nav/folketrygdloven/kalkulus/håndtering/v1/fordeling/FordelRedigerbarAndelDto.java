@@ -52,7 +52,6 @@ public class FordelRedigerbarAndelDto {
 
     @JsonProperty("kilde")
     @Valid
-    @NotNull
     private AndelKilde kilde;
 
     @JsonProperty("aktivitetStatus")
