@@ -371,6 +371,10 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return besteberegningPrÅr;
     }
 
+    public AndelKilde getKilde() {
+        return kilde;
+    }
+
     public Boolean getLagtTilAvSaksbehandler() {
         return lagtTilAvSaksbehandler;
     }

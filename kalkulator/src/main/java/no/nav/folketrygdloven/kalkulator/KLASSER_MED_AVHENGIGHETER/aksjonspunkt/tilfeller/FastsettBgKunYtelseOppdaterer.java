@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 
@@ -56,38 +57,39 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
     private void settInntektskategoriOgFastsattBeløp(FastsattBrukersAndel andel, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel,
                                                      BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning) {
         Inntektskategori inntektskategori = andel.getInntektskategori();
-        BigDecimal fastsattBeløp = BigDecimal.valueOf(andel.getFastsattBeløp()*(long)MND_I_1_ÅR);
+        BigDecimal fastsattBeløp = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);
         if (andel.getNyAndel()) {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(korrektAndel)
-                .medBeregnetPrÅr(fastsattBeløp)
-                .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
-                .medInntektskategori(inntektskategori)
-                .medFastsattAvSaksbehandler(true)
-                .nyttAndelsnr(periode)
-                .medLagtTilAvSaksbehandler(true).build(periode);
+                    .medBeregnetPrÅr(fastsattBeløp)
+                    .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
+                    .medInntektskategori(inntektskategori)
+                    .medFastsattAvSaksbehandler(true)
+                    .nyttAndelsnr(periode)
+                    .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                    .medLagtTilAvSaksbehandler(true).build(periode);
         } else {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchetAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream().filter(bgAndel -> bgAndel.equals(korrektAndel)).findFirst();
+                    .stream().filter(bgAndel -> bgAndel.equals(korrektAndel)).findFirst();
             matchetAndel.ifPresentOrElse(endreEksisterende(skalBrukeBesteberegning, inntektskategori, fastsattBeløp),
-                leggTilFraForrige(korrektAndel, periode, skalBrukeBesteberegning, inntektskategori, fastsattBeløp)
+                    leggTilFraForrige(korrektAndel, periode, skalBrukeBesteberegning, inntektskategori, fastsattBeløp)
             );
         }
     }
 
     private Runnable leggTilFraForrige(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPeriodeDto periode, Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
-        return () ->  BeregningsgrunnlagPrStatusOgAndelDto.kopier(korrektAndel)
-            .medBeregnetPrÅr(fastsattBeløp)
-            .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
-            .medInntektskategori(inntektskategori)
-            .medFastsattAvSaksbehandler(true).build(periode);
+        return () -> BeregningsgrunnlagPrStatusOgAndelDto.kopier(korrektAndel)
+                .medBeregnetPrÅr(fastsattBeløp)
+                .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
+                .medInntektskategori(inntektskategori)
+                .medFastsattAvSaksbehandler(true).build(periode);
     }
 
     private Consumer<BeregningsgrunnlagPrStatusOgAndelDto> endreEksisterende(Boolean skalBrukeBesteberegning, Inntektskategori inntektskategori, BigDecimal fastsattBeløp) {
         return match -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(match)
-            .medBeregnetPrÅr(fastsattBeløp)
-            .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
-            .medInntektskategori(inntektskategori)
-            .medFastsattAvSaksbehandler(true);
+                .medBeregnetPrÅr(fastsattBeløp)
+                .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsattBeløp : null)
+                .medInntektskategori(inntektskategori)
+                .medFastsattAvSaksbehandler(true);
     }
 
 
@@ -95,13 +97,14 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                                          FastsattBrukersAndel andel, Boolean skalBrukeBesteberegning) {
         BigDecimal fastsatt = BigDecimal.valueOf(andel.getFastsattBeløp() * (long) MND_I_1_ÅR);// NOSONAR
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-            .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
-            .medInntektskategori(andel.getInntektskategori())
-            .medBeregnetPrÅr(fastsatt)
-            .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsatt : null)
-            .medFastsattAvSaksbehandler(true)
-            .medLagtTilAvSaksbehandler(true)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
+                .medInntektskategori(andel.getInntektskategori())
+                .medBeregnetPrÅr(fastsatt)
+                .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsatt : null)
+                .medFastsattAvSaksbehandler(true)
+                .medLagtTilAvSaksbehandler(true)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .build(periode);
     }
 
 
@@ -110,23 +113,23 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
             return finnAndelFraForrigeGrunnlag(periode, andel, forrigeBg);
         }
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
-            .findFirst()
-            .orElseThrow(() -> FastsettBGKunYtelseOppdatererFeil.FACTORY.finnerIkkeAndelFeil().toException());
+                .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
+                .findFirst()
+                .orElseThrow(() -> FastsettBGKunYtelseOppdatererFeil.FACTORY.finnerIkkeAndelFeil().toException());
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto finnAndelFraForrigeGrunnlag(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
         List<BeregningsgrunnlagPeriodeDto> matchendePerioder = forrigeBg.stream()
-            .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
-            .filter(periodeIGjeldendeGrunnlag -> periodeIGjeldendeGrunnlag.getPeriode().overlapper(periode.getPeriode())).collect(Collectors.toList());
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(periodeIGjeldendeGrunnlag -> periodeIGjeldendeGrunnlag.getPeriode().overlapper(periode.getPeriode())).collect(Collectors.toList());
         if (matchendePerioder.size() != 1) {
             throw MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil.FACTORY.fantFlereEnn1Periode().toException();
         }
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelIForrigeGrunnlag = matchendePerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
-            .findFirst();
+                .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
+                .findFirst();
         return andelIForrigeGrunnlag
-            .orElseGet(() -> MatchBeregningsgrunnlagTjeneste
-                .matchMedAndelFraPeriode(periode, andel.getAndelsnr(), null));
+                .orElseGet(() -> MatchBeregningsgrunnlagTjeneste
+                        .matchMedAndelFraPeriode(periode, andel.getAndelsnr(), null));
     }
 }

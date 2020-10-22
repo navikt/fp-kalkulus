@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 public class BeregningsgrunnlagPrStatusOgAndelDto {
@@ -46,6 +47,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private Boolean fastsattAvSaksbehandler = false;
     private BigDecimal besteberegningPrÅr;
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
+    private AndelKilde kilde = AndelKilde.PROSESS_START;
     private Boolean lagtTilAvSaksbehandler = false;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
@@ -81,6 +83,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.fastsattAvSaksbehandler = kopiereFra.fastsattAvSaksbehandler;
         this.besteberegningPrÅr = kopiereFra.besteberegningPrÅr;
         this.inntektskategori = kopiereFra.inntektskategori;
+        this.kilde = kopiereFra.kilde;
         this.lagtTilAvSaksbehandler = kopiereFra.lagtTilAvSaksbehandler;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
         if (kopiereFra.bgAndelArbeidsforhold != null) {
@@ -293,6 +296,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public BigDecimal getBesteberegningPrÅr() {
         return besteberegningPrÅr;
+    }
+
+    public AndelKilde getKilde() {
+        return kilde;
     }
 
     public Boolean getLagtTilAvSaksbehandler() {
@@ -658,6 +665,15 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             }
             return this;
         }
+
+        public Builder medKilde(AndelKilde kilde) {
+            if (!erOppdatering) {
+                verifiserKanModifisere();
+                kladd.kilde = kilde;
+            }
+            return this;
+        }
+
 
         public Builder medLagtTilAvSaksbehandler(Boolean lagtTilAvSaksbehandler) {
             if (!erOppdatering) {

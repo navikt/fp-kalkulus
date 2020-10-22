@@ -70,7 +70,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
                     .finnOverlappendePeriodeOmKunEnFinnes(bgPeriode, forrigeBg);
             overstyrteAndeler
                     .forEach(andelDto ->
-                            FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(andelDto, andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
+                            FastsettFaktaOmBeregningVerdierTjeneste.fastsettVerdierForAndel(andelDto, andelDto.getFastsatteVerdier(), bgPeriode, forrigeBgPeriode));
         }
     }
 }

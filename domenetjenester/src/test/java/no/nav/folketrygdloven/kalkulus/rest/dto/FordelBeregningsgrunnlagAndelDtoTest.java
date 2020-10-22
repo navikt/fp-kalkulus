@@ -9,6 +9,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
@@ -21,7 +22,7 @@ public class FordelBeregningsgrunnlagAndelDtoTest {
 
         FaktaOmBeregningAndelDto superDto = new FaktaOmBeregningAndelDto(1L, null,
                 Inntektskategori.ARBEIDSTAKER, AktivitetStatus.ARBEIDSTAKER,
-                false, false, Collections.emptyList());
+                false, false, Collections.emptyList(), AndelKilde.PROSESS_START);
         FordelBeregningsgrunnlagAndelDto andel = new FordelBeregningsgrunnlagAndelDto(superDto);
         andel.setRefusjonskravPrAar(BigDecimal.valueOf(122_000.61));
 

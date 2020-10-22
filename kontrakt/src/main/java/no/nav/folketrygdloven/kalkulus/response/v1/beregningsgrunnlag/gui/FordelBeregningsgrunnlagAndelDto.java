@@ -74,7 +74,7 @@ public class FordelBeregningsgrunnlagAndelDto extends FaktaOmBeregningAndelDto {
 
     public FordelBeregningsgrunnlagAndelDto(FaktaOmBeregningAndelDto superDto) {
         super(superDto.getAndelsnr(), superDto.getArbeidsforhold(), superDto.getInntektskategori(),
-            superDto.getAktivitetStatus(), superDto.getLagtTilAvSaksbehandler(), superDto.getFastsattAvSaksbehandler(), superDto.getAndelIArbeid());
+            superDto.getAktivitetStatus(), superDto.getLagtTilAvSaksbehandler(), superDto.getFastsattAvSaksbehandler(), superDto.getAndelIArbeid(), superDto.getKilde());
     }
 
     public void setBelopFraInntektsmelding(BigDecimal belopFraInntektsmelding) {

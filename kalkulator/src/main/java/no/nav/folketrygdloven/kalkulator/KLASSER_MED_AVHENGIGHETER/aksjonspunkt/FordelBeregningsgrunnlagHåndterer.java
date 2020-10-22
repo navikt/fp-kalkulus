@@ -22,6 +22,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.vedtak.feil.Feil;
 import no.nav.vedtak.feil.FeilFactory;
@@ -121,6 +122,7 @@ public class FordelBeregningsgrunnlagHåndterer {
                 .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
                 .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
                 .medLagtTilAvSaksbehandler(endretAndel.getLagtTilAvSaksbehandler())
+                .medKilde(endretAndel.getKilde() == null ? AndelKilde.PROSESS_START : endretAndel.getKilde())
                 .medArbforholdType(endretAndel.getArbeidsforholdType())
                 .medFastsattAvSaksbehandler(true);
     }

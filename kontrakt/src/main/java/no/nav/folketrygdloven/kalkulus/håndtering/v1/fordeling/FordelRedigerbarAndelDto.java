@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
@@ -48,6 +49,11 @@ public class FordelRedigerbarAndelDto {
     @Valid
     @NotNull
     private Boolean nyAndel;
+
+    @JsonProperty("kilde")
+    @Valid
+    @NotNull
+    private AndelKilde kilde;
 
     @JsonProperty("aktivitetStatus")
     @Valid
@@ -84,56 +90,17 @@ public class FordelRedigerbarAndelDto {
                                     OpptjeningAktivitetType arbeidsforholdType,
                                     Boolean lagtTilAvSaksbehandler,
                                     LocalDate beregningsperiodeFom,
-                                    LocalDate beregningsperiodeTom) {
+                                    LocalDate beregningsperiodeTom, AndelKilde kilde) {
         this.andelsnr = andelsnr;
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId;
         this.nyAndel = nyAndel;
+        this.kilde = kilde;
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsforholdType = arbeidsforholdType;
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.beregningsperiodeFom = beregningsperiodeFom;
         this.beregningsperiodeTom = beregningsperiodeTom;
-    }
-
-    public FordelRedigerbarAndelDto(Boolean nyAndel,
-                                    String arbeidsgiverId, String internArbeidsforholdId,
-                                    Long andelsnr,
-                                    Boolean lagtTilAvSaksbehandler,
-                                    AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
-        Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
-        Objects.requireNonNull(arbeidsforholdType, "arbeidsforholdType");
-        this.nyAndel = nyAndel;
-        this.arbeidsgiverId = arbeidsgiverId;
-        this.arbeidsforholdId = internArbeidsforholdId;
-        this.andelsnr = andelsnr;
-        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsforholdType = arbeidsforholdType;
-    }
-
-    public FordelRedigerbarAndelDto(Boolean nyAndel,
-                                    String arbeidsgiverId, InternArbeidsforholdRefDto arbeidsforholdId,
-                                    Long andelsnr,
-                                    Boolean lagtTilAvSaksbehandler,
-                                    AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
-        Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
-        Objects.requireNonNull(arbeidsforholdType, "arbeidsforholdType");
-        this.nyAndel = nyAndel;
-        this.arbeidsgiverId = arbeidsgiverId;
-        this.arbeidsforholdId = arbeidsforholdId == null ? null : arbeidsforholdId.getAbakusReferanse();
-        this.andelsnr = andelsnr;
-        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsforholdType = arbeidsforholdType;
-    }
-
-
-    public FordelRedigerbarAndelDto(Boolean nyAndel,
-                                    Long andelsnr,
-                                    Boolean lagtTilAvSaksbehandler,
-                                    AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
-        this(nyAndel, null, (InternArbeidsforholdRefDto) null, andelsnr, lagtTilAvSaksbehandler, aktivitetStatus, arbeidsforholdType);
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -158,6 +125,10 @@ public class FordelRedigerbarAndelDto {
 
     public Boolean getNyAndel() {
         return nyAndel;
+    }
+
+    public AndelKilde getKilde() {
+        return kilde;
     }
 
     public Boolean getLagtTilAvSaksbehandler() {

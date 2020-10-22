@@ -7,6 +7,7 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 
 public class RedigerbarAndelDto {
 
@@ -14,6 +15,7 @@ public class RedigerbarAndelDto {
     private String arbeidsgiverId;
     private String arbeidsforholdId;
     private Boolean nyAndel;
+    private AndelKilde kilde;
     private AktivitetStatus aktivitetStatus;
     private OpptjeningAktivitetType arbeidsforholdType;
     private Boolean lagtTilAvSaksbehandler;
@@ -29,6 +31,7 @@ public class RedigerbarAndelDto {
                               String arbeidsgiverId,
                               String arbeidsforholdId,
                               Boolean nyAndel,
+                              AndelKilde kilde,
                               AktivitetStatus aktivitetStatus,
                               OpptjeningAktivitetType arbeidsforholdType,
                               Boolean lagtTilAvSaksbehandler,
@@ -38,6 +41,7 @@ public class RedigerbarAndelDto {
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId;
         this.nyAndel = nyAndel;
+        this.kilde = kilde;
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsforholdType = arbeidsforholdType;
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
@@ -119,5 +123,9 @@ public class RedigerbarAndelDto {
 
     public LocalDate getBeregningsperiodeTom() {
         return beregningsperiodeTom;
+    }
+
+    public AndelKilde getKilde() {
+        return kilde;
     }
 }

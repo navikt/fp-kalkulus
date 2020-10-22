@@ -49,6 +49,7 @@ public class BeregningsgrunnlagDtoUtil {
         andelDto.setInntektskategori(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(andel.getInntektskategori().getKode()));
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         andelDto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
+        andelDto.setKilde(new no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde(andel.getKilde().getKode()));
         List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).stream()
             .sorted().collect(Collectors.toList());
         finnArbeidsprosenterIPeriode(graderingForAndelIPeriode, andel.getBeregningsgrunnlagPeriode().getPeriode()).forEach(andelDto::leggTilAndelIArbeid);

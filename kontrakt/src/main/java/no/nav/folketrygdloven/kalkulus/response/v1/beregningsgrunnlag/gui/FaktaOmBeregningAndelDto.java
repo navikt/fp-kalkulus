@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -44,6 +45,10 @@ public class FaktaOmBeregningAndelDto {
     private AktivitetStatus aktivitetStatus;
 
     @Valid
+    @JsonProperty("kilde")
+    private AndelKilde kilde;
+
+    @Valid
     @JsonProperty("lagtTilAvSaksbehandler")
     private Boolean lagtTilAvSaksbehandler = false;
 
@@ -56,7 +61,13 @@ public class FaktaOmBeregningAndelDto {
     @Size
     private List<BigDecimal> andelIArbeid = new ArrayList<>();
 
-    public FaktaOmBeregningAndelDto(Long andelsnr, BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, Inntektskategori inntektskategori, AktivitetStatus aktivitetStatus, Boolean lagtTilAvSaksbehandler, Boolean fastsattAvSaksbehandler, List<BigDecimal> andelIArbeid) {
+    public FaktaOmBeregningAndelDto(Long andelsnr,
+                                    BeregningsgrunnlagArbeidsforholdDto arbeidsforhold,
+                                    Inntektskategori inntektskategori,
+                                    AktivitetStatus aktivitetStatus,
+                                    Boolean lagtTilAvSaksbehandler,
+                                    Boolean fastsattAvSaksbehandler,
+                                    List<BigDecimal> andelIArbeid, AndelKilde kilde) {
         this.andelsnr = andelsnr;
         this.arbeidsforhold = arbeidsforhold;
         this.inntektskategori = inntektskategori;
@@ -64,6 +75,7 @@ public class FaktaOmBeregningAndelDto {
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.fastsattAvSaksbehandler = fastsattAvSaksbehandler;
         this.andelIArbeid = andelIArbeid;
+        this.kilde = kilde;
     }
 
     public FaktaOmBeregningAndelDto() {
@@ -145,4 +157,11 @@ public class FaktaOmBeregningAndelDto {
         this.andelIArbeid.add(andelIArbeid);
     }
 
+    public AndelKilde getKilde() {
+        return kilde;
+    }
+
+    public void setKilde(AndelKilde kilde) {
+        this.kilde = kilde;
+    }
 }

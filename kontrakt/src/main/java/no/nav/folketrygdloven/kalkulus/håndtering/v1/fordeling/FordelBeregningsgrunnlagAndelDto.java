@@ -54,7 +54,7 @@ public class FordelBeregningsgrunnlagAndelDto extends FordelRedigerbarAndelDto {
                                             @Valid Integer forrigeArbeidsinntektPrÅr) {
         super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getAbakusReferanse(),
                 andelDto.getNyAndel(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
-                andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom());
+                andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom(), andelDto.getKilde());
         this.fastsatteVerdier = fastsatteVerdier;
         this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;
         this.forrigeInntektskategori = forrigeInntektskategori;

@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 
 @ApplicationScoped
@@ -72,6 +73,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                             a.getBeregningsperiodeFom().equals(beregningsperiode.getFomDato()) && a.getBeregningsperiodeTom().equals(beregningsperiode.getTomDato()));
             if (!eksisterende) {
                 BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                        .medKilde(AndelKilde.PROSESS_PERIODISERING)
                         .medAktivitetStatus(aktivitetStatus)
                         .medArbforholdType(aktivitetTypeMap.get(aktivitetStatus))
                         .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
@@ -88,6 +90,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                     .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr())
                     .medHjemmel(MapHjemmelFraRegelTilVL.map(nyAndel.getAnvendtRefusjonskravfristHjemmel()));
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                    .medKilde(AndelKilde.PROSESS_PERIODISERING)
                     .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medArbforholdType(OpptjeningAktivitetType.ARBEID)

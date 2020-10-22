@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 
 public class MapBeregningsgrunnlagFraRegelTilVLFordel extends MapBeregningsgrunnlagFraRegelTilVL {
 
@@ -49,6 +50,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLFordel extends MapBeregningsgrunn
 
         if (andelOpt.isPresent()) {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder nyAndelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                    .medKilde(AndelKilde.PROSESS_OMFORDELING)
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER);
             if (andelOpt.get().getBeregningsperiodeFom() != null) {
                 nyAndelBuilder.medBeregningsperiode(andelOpt.get().getBeregningsperiodeFom(), andelOpt.get().getBeregningsperiodeTom());

@@ -9,15 +9,24 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 
-public class FastsettBeregningVerdierTjeneste {
+public class FastsettFaktaOmBeregningVerdierTjeneste {
 
-    private FastsettBeregningVerdierTjeneste() {
+    private FastsettFaktaOmBeregningVerdierTjeneste() {
         // skjul
     }
 
+    /**
+     * Setter inntekt/inntektskategori verdier for fakta om beregning
+     *
+     * @param andel                  Informasjon om andel
+     * @param fastsatteVerdier       Verdier som er fastsatt
+     * @param periode                Beregningsgrunnlagperiode
+     * @param periodeForrigeGrunnlag Periode fra forrige grunnlag
+     */
     public static void fastsettVerdierForAndel(RedigerbarAndelFaktaOmBeregningDto andel,
                                                FastsatteVerdierDto fastsatteVerdier,
                                                BeregningsgrunnlagPeriodeDto periode,
@@ -70,11 +79,14 @@ public class FastsettBeregningVerdierTjeneste {
             korrektAndel.medInntektskategori(nyInntektskategori);
         }
         korrektAndel
-            .medBeregnetPrÅr(fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr())
-            .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr() : null)
-            .medFastsattAvSaksbehandler(true);
+                .medBeregnetPrÅr(fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr())
+                .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatteVerdier.finnEllerUtregnFastsattBeløpPrÅr() : null)
+                .medFastsattAvSaksbehandler(true);
         if (andel.getNyAndel() || andel.getLagtTilAvSaksbehandler()) {
-            korrektAndel.nyttAndelsnr(korrektPeriode).medLagtTilAvSaksbehandler(true).build(korrektPeriode);
+            korrektAndel.nyttAndelsnr(korrektPeriode)
+                    .medLagtTilAvSaksbehandler(true)
+                    .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                    .build(korrektPeriode);
         }
     }
 
@@ -88,19 +100,20 @@ public class FastsettBeregningVerdierTjeneste {
             throw new IllegalStateException("Kan ikke sette inntektskategori lik null på ny andel.");
         }
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(aktivitetStatus)
-            .medInntektskategori(nyInntektskategori)
-            .medBeregnetPrÅr(fastsatt)
-            .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatt : null)
-            .medFastsattAvSaksbehandler(true)
-            .medLagtTilAvSaksbehandler(true)
-            .build(periode);
+                .medAktivitetStatus(aktivitetStatus)
+                .medInntektskategori(nyInntektskategori)
+                .medBeregnetPrÅr(fastsatt)
+                .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatt : null)
+                .medFastsattAvSaksbehandler(true)
+                .medLagtTilAvSaksbehandler(true)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .build(periode);
     }
 
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder getKorrektAndel(BeregningsgrunnlagPeriodeDto periode,
-                                                                        Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
-                                                                        RedigerbarAndelFaktaOmBeregningDto andel) {
+                                                                                Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode,
+                                                                                RedigerbarAndelFaktaOmBeregningDto andel) {
         if (andel.getAndelsnr().isEmpty()) {
             throw new IllegalArgumentException("Har ikke andelsnr når man burde ha hatt det.");
         }

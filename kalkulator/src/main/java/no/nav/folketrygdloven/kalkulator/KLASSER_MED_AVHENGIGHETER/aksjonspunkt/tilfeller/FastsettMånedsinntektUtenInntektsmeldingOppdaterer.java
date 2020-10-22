@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettBeregningVerdierTjeneste;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.FastsettFaktaOmBeregningVerdierTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettMånedsinntektUtenInntektsmeldingAndelDto;
@@ -48,7 +48,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
                 Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelForArbeidsforhold = finnAndelIPeriode(beregningsgrunnlagAndel, periode);
                 if (andelForArbeidsforhold.isPresent()) {
                     RedigerbarAndelFaktaOmBeregningDto redigerbarAndel = lagRedigerbarAndel(andelForArbeidsforhold.get());
-                    FastsettBeregningVerdierTjeneste.fastsettVerdierForAndel(redigerbarAndel, mapTilFastsatteVerdier(andelForArbeidsforhold.get(), dtoAndel), periode, forrigePeriode);
+                    FastsettFaktaOmBeregningVerdierTjeneste.fastsettVerdierForAndel(redigerbarAndel, mapTilFastsatteVerdier(andelForArbeidsforhold.get(), dtoAndel), periode, forrigePeriode);
                 }
             }
         }
