@@ -1,5 +1,17 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
+
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
@@ -12,18 +24,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagPrStatusOgAndelDto;
-
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class MapBeregningsgrunnlagTest {
 
@@ -221,7 +221,7 @@ class MapBeregningsgrunnlagTest {
         if (!(Optional.ofNullable(faktisk.getNaturalytelseTilkommetPrÅr()).orElse(BigDecimal.ZERO).compareTo(forventet.getNaturalytelseTilkommetPrÅr().orElse(BigDecimal.ZERO)) == 0)) {
             return false;
         }
-        if (!(faktisk.getRefusjonskravPrÅr().compareTo(forventet.getRefusjonskravPrÅr()) == 0)) {
+        if (!(faktisk.getRefusjonskravPrÅr().compareTo(forventet.getGjeldendeRefusjonPrÅr()) == 0)) {
             return false;
         }
         if (!(Objects.equals(faktisk.getArbeidsperiodeFom(), forventet.getArbeidsperiodeFom()))) {

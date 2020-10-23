@@ -173,7 +173,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             .map(BeregningsgrunnlagPrStatusOgAndel::getBgAndelArbeidsforhold)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .map(BGAndelArbeidsforhold::getRefusjonskravPrÅr)
+            .map(BGAndelArbeidsforhold::getGjeldendeRefusjonPrÅr)
             .filter(Objects::nonNull)
             .reduce(BigDecimal::add)
             .orElse(BigDecimal.ZERO));

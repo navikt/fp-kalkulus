@@ -96,13 +96,13 @@ public class KalkulatorTilBGMapper {
             builder.medPgi(fraKalkulus.getPgiSnitt(), List.of(fraKalkulus.getPgi1(), fraKalkulus.getPgi2(), fraKalkulus.getPgi3()));
         }
 
-        fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(KalkulatorTilBGMapper.magBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
+        fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(KalkulatorTilBGMapper.mapBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
         fraKalkulus.erNyoppstartet().ifPresent(aBoolean -> builder.medNyoppstartet(aBoolean, AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode())));
         fraKalkulus.mottarYtelse().ifPresent(aBoolean -> builder.medMottarYtelse(aBoolean, AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode())));
         return builder;
     }
 
-    private static BGAndelArbeidsforhold.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
+    private static BGAndelArbeidsforhold.Builder mapBGAndelArbeidsforhold(BGAndelArbeidsforholdDto fraKalkulus) {
         BGAndelArbeidsforhold.Builder builder = BGAndelArbeidsforhold.builder();
         builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
@@ -110,6 +110,8 @@ public class KalkulatorTilBGMapper {
         builder.medLønnsendringIBeregningsperioden(fraKalkulus.erLønnsendringIBeregningsperioden());
         builder.medTidsbegrensetArbeidsforhold(fraKalkulus.getErTidsbegrensetArbeidsforhold());
         builder.medRefusjonskravPrÅr(fraKalkulus.getRefusjonskravPrÅr());
+        builder.medSaksbehandletRefusjonPrÅr(fraKalkulus.getSaksbehandletRefusjonPrÅr());
+        builder.medFordeltRefusjonPrÅr(fraKalkulus.getFordeltRefusjonPrÅr());
         builder.medHjemmel(fraKalkulus.getHjemmelForRefusjonskravfrist() == null
                 || fraKalkulus.getHjemmelForRefusjonskravfrist().equals(Hjemmel.UDEFINERT) ?
                 null : fraKalkulus.getHjemmelForRefusjonskravfrist());

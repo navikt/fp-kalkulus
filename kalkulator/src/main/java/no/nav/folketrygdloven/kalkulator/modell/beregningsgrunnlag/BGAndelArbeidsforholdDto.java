@@ -17,6 +17,8 @@ public class BGAndelArbeidsforholdDto {
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private BigDecimal refusjonskravPrÅr;
+    private BigDecimal saksbehandletRefusjonPrÅr;
+    private BigDecimal fordeltRefusjonPrÅr;
     private BigDecimal naturalytelseBortfaltPrÅr;
     private BigDecimal naturalytelseTilkommetPrÅr;
     private Boolean erTidsbegrensetArbeidsforhold;
@@ -89,6 +91,29 @@ public class BGAndelArbeidsforholdDto {
 
     public Hjemmel getHjemmelForRefusjonskravfrist() {
         return hjemmelForRefusjonskravfrist;
+    }
+
+    public BigDecimal getSaksbehandletRefusjonPrÅr() {
+        return saksbehandletRefusjonPrÅr;
+    }
+
+    public BigDecimal getFordeltRefusjonPrÅr() {
+        return fordeltRefusjonPrÅr;
+    }
+
+    /**
+     * Refusjonskrav settes på forskjellige steder i beregning dersom aksjonspunkt oppstår.
+     * Først settes refusjonskravPrÅr, deretter saksbehandletRefusjonPrÅr og til slutt fordeltRefusjonPrÅr.
+     * Det er det sist avklarte beløpet som til en hver tid skal være gjeldende.
+     * @return returnerer det refusjonskravet som skal være gjeldende
+     */
+    public BigDecimal getGjeldendeRefusjonPrÅr() {
+        if (fordeltRefusjonPrÅr != null) {
+            return fordeltRefusjonPrÅr;
+        } else if (saksbehandletRefusjonPrÅr != null) {
+            return saksbehandletRefusjonPrÅr;
+        }
+        return refusjonskravPrÅr;
     }
 
     @Override
@@ -189,6 +214,16 @@ public class BGAndelArbeidsforholdDto {
 
         public Builder medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr) {
             bgAndelArbeidsforhold.refusjonskravPrÅr = refusjonskravPrÅr;
+            return this;
+        }
+
+        public Builder medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
+            bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
+            return this;
+        }
+
+        public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
+            bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
             return this;
         }
 
