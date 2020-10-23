@@ -294,14 +294,16 @@ public class OperereKalkulusRestTjeneste {
             MDC.put("prosess_koblingreferanse", k.toString());
             var kopt = koblingTjeneste.hentFor(koblingReferanse);
 
-            if (kopt.isEmpty()) {
-                throw new IllegalArgumentException("Kan ikke finne kobling: " + k.getKoblingReferanse());
+            // Vi kaster ikkje feil om vi ikkje finner kobling
+            // Grunnen til dette er fordi i nokon FRISINN-saker hopper man over beregning ved avslag og dermed vil ikkje beregning vere kjørt
+            // Vurderingen er at dette er noko som kan håndteres utan feil sidan målet er å deaktivere (vi vil deaktivere ein beregning som blei avslått før den nådde beregning)
+            if (kopt.isPresent()) {
+                KoblingEntitet kobling = kopt.get();
+                if (!Objects.equals(kobling.getSaksnummer().getVerdi(), saksnummer)) {
+                    throw new IllegalArgumentException("Kobling tilhører ikke saksnummer [" + saksnummer + "]: " + kobling);
+                }
+                rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(kobling.getId());
             }
-            KoblingEntitet kobling = kopt.get();
-            if(!Objects.equals(kobling.getSaksnummer().getVerdi(), saksnummer)){
-                throw new IllegalArgumentException("Kobling tilhører ikke saksnummer [" +saksnummer+"]: " + kobling);
-            }
-            rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(kobling.getId());
         }
 
         return Response.ok().build();
