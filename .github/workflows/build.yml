@@ -13,6 +13,9 @@ on:
       - 'dokumentasjon/**'
       - 'lokalutvikling/**'
 
+  schedule:
+    - cron: '0 4 * * 1'
+
 env:
   IMAGE_BASE: docker.pkg.github.com/${{ github.repository }}/ftkalkulus
 
@@ -35,19 +38,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
       - name: Set cache key
         run: |
-          echo "::set-env name=CACHE_KEY::$(expr $(date +%V) - 1 + 1)"
-          echo "::set-env name=PREVIOUS_CACHE_KEY::$(expr $(date +%V) - 1)"
+          echo "CACHE_KEY=$(expr $(date +%V) - 1 + 1)" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ env.CACHE_KEY }}
-          restore-keys: |
-            ${{ runner.os }}-maven-${{ env.PREVIOUS_CACHE_KEY }}
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 1.11
+
       - name: Build artifacts & deploy
         shell: bash
         run: |
@@ -65,6 +67,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           DATASOURCE_HOST: localhost
           DATASOURCE_PORT: ${{ job.services.postgres.ports[5433] }} # get randomly assigned published port
+
       - name: Bygg og push docker-image
         env:
           GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
@@ -85,7 +88,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Trigger verdikjede test
+      - name: Trigger kalkulus verdikjede test
         if: success()
         shell: bash
         run: |
@@ -97,8 +100,10 @@ jobs:
                    "client_payload": {
                       "trigger": "${{ github.repository }}",
                       "version": "${{ env.TAG }}",
-                      "image": "${{ env.IMAGE }}"
+                      "image": "${{ env.IMAGE }}",
+                      "issue_number": "${{ steps.createdeployissue.outputs.number }}"
                   }}'
+                  
       - name: Opprett deployment issue
         if: success()
         uses: maxkomarychev/oction-create-issue@v0.7.1
@@ -110,19 +115,16 @@ jobs:
           body: |
             Kommenter med <b>/promote env</b>, hvor <b>env</b> er et gyldig clusternavn (dev-fss, prod-fss).
 
-      - name: Trigg deploy til dev
-        if: success()
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          issue-number: ${{ steps.createdeployissue.outputs.number }}
-          body: /promote dev-fss
+      - name: Trigger k9 verdikjede test
+        shell: bash
+        run: |
+          curl -XPOST -u "x-access-token:${{ steps.get-token.outputs.token }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/navikt/k9-verdikjede/actions/workflows/build.yml/dispatches \
+          -d '{"ref":"master",
+                  "inputs":{
+                      "trigger": "${{ github.repository }}",
+                      "version": "${{ env.TAG }}",
+                      "issue_number": "${{ steps.createdeployissue.outputs.number }}"
+                  }}'
 
-      - name: Trigger verdikjedetester K9
-        if: success()
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          repository: navikt/k9-verdikjede
-          event-type: saksbehandling-verdikjede
-          client-payload: '{ "trigger": "${{ github.repository }}", "version": "${{ env.TAG }}", "image": "${{ github.event.client_payload.github.payload.package.package_version.release.url }}"}'
