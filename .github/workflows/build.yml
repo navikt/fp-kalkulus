@@ -87,7 +87,18 @@ jobs:
           release_name: Release ${{ env.TAG }}
           draft: false
           prerelease: false
-
+                  
+      - name: Opprett deployment issue
+        if: success()
+        uses: maxkomarychev/oction-create-issue@v0.7.1
+        id: createdeployissue
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Deploy av ${{ env.TAG }}
+          labels: bygg
+          body: |
+            Kommenter med <b>/promote env</b>, hvor <b>env</b> er et gyldig clusternavn (dev-fss, prod-fss).
+            
       - name: Trigger kalkulus verdikjede test
         if: success()
         shell: bash
@@ -103,22 +114,11 @@ jobs:
                       "image": "${{ env.IMAGE }}",
                       "issue_number": "${{ steps.createdeployissue.outputs.number }}"
                   }}'
-                  
-      - name: Opprett deployment issue
-        if: success()
-        uses: maxkomarychev/oction-create-issue@v0.7.1
-        id: createdeployissue
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Deploy av ${{ env.TAG }}
-          labels: bygg
-          body: |
-            Kommenter med <b>/promote env</b>, hvor <b>env</b> er et gyldig clusternavn (dev-fss, prod-fss).
 
       - name: Trigger k9 verdikjede test
         shell: bash
         run: |
-          curl -XPOST -u "x-access-token:${{ steps.get-token.outputs.token }}" \
+          curl -XPOST -u "x-access-token:${{secrets.GITHUB_ACCESS_TOKEN}}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/navikt/k9-verdikjede/actions/workflows/build.yml/dispatches \
           -d '{"ref":"master",
