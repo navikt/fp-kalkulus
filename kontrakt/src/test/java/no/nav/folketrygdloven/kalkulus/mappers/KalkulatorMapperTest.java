@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
 
 public class KalkulatorMapperTest {
 
@@ -80,17 +81,20 @@ public class KalkulatorMapperTest {
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
-        StartBeregningRequest spesifikasjon = new StartBeregningRequest(koblingReferanse, saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN, kalkulatorInputDto);
+        StartBeregningListeRequest spesifikasjon = new StartBeregningListeRequest(
+                Map.of(koblingReferanse.toUuidReferanse(), kalkulatorInputDto),
+                saksnummer, dummy,
+                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN);
 
         String json = WRITER_JSON.writeValueAsString(spesifikasjon);
         System.out.println(json);
 
-        StartBeregningRequest roundTripped = READER_JSON.forType(StartBeregningRequest.class).readValue(json);
+        StartBeregningListeRequest roundTripped = READER_JSON.forType(StartBeregningListeRequest.class).readValue(json);
 
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
         assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getEksternReferanse().getReferanse()).isEqualTo(koblingReferanse.getReferanse());
+        assertThat(roundTripped.getKalkulatorInputPerKoblingReferanse().keySet().iterator().next()).isEqualTo(koblingReferanse.toUuidReferanse());
         validateResult(roundTripped);
     }
 

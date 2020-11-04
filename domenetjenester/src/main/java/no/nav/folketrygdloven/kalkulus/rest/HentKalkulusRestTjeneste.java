@@ -47,7 +47,6 @@ import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGU
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrReferanse;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagListe;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagDtoForGUIRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagListeRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
@@ -81,68 +80,6 @@ public class HentKalkulusRestTjeneste {
         this.beregningsgrunnlagDtoTjeneste = beregningsgrunnlagDtoTjeneste;
     }
 
-    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
-    @Deprecated(forRemoval = true, since="1.1")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/fastsatt")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
-    public Response hentFastsattBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
-        var ytelseType = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        final Response response = hentFastsattBeregningsgrunnlagForSpesifikasjon(koblingReferanse, ytelseType)
-            .map(bgDto -> Response.ok(bgDto).build())
-            .orElse(Response.noContent().build());
-        return response;
-    }
-
-    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
-    @Deprecated(forRemoval = true, since="1.1")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent beregningsgrunnlag for angitt behandling", summary = ("Returnerer beregningsgrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/fastsattListe")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT" })
-    public Response hentFastsattBeregningsgrunnlagListe(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
-        if (spesifikasjon.getRequestPrReferanse().isEmpty()) {
-            return Response.noContent().build();
-        }
-        var ytelseTyper = spesifikasjon.getRequestPrReferanse().stream().map(v -> v.getYtelseSomSkalBeregnes()).collect(Collectors.toSet());
-        if (ytelseTyper.size() != 1) {
-            return Response.status(Status.BAD_REQUEST).entity("Feil input, all requests må ha samme ytelsetype. Fikk: " + ytelseTyper).build();
-        }
-        var ytelseType = YtelseTyperKalkulusStøtter.fraKode(ytelseTyper.iterator().next().getKode());
-
-        var dtoPrReferanse = spesifikasjon.getRequestPrReferanse().stream()
-            .map(spes -> this.hentFastsattBeregningsgrunnlagForSpesifikasjon(new KoblingReferanse(spes.getKoblingReferanse()), ytelseType)
-                .map(dto -> new BeregningsgrunnlagPrReferanse<>(spes.getKoblingReferanse(), dto))
-                .orElse(new BeregningsgrunnlagPrReferanse<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto>(
-                    spes.getKoblingReferanse(), null)))
-            .collect(Collectors.toList());
-        return Response.ok(new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagListe(dtoPrReferanse)).build();
-    }
-
-    /** @deprecated Bruk {@link #hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection, YtelseTyperKalkulusStøtter)}. */
-    @Deprecated(forRemoval = true, since="1.1")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent aktivt BeregningsgrunnlagGrunnlag for angitt behandling", summary = ("Returnerer aktivt BeregningsgrunnlagGrunnlag for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/grunnlag")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
-    public Response hentAktivtBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
-        var ytelseType = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        var response = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanse, ytelseType).stream()
-            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg))
-            .map(bgDto -> Response.ok(bgDto).build())
-            .findFirst()
-            .orElse(Response.noContent().build());
-        return response;
-    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -169,23 +106,6 @@ public class HentKalkulusRestTjeneste {
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
 
-    /** @deprecated Bruk {@link #hentBeregningsgrunnlagDtoListe(HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto). */
-    @Deprecated(forRemoval = true, since="1.1")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(description = "Hent beregningsgrunnlagDto for angitt behandling som brukes frontend", summary = ("Returnerer beregningsgrunnlagDto for behandling."), tags = "beregningsgrunnlag")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
-    @Path("/beregningsgrunnlag")
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response hentBeregningsgrunnlagDto(@NotNull @Valid HentBeregningsgrunnlagDtoForGUIRequestAbacDto spesifikasjon) {
-        Response response;
-        response = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(List.of(spesifikasjon)).values()
-            .stream().findFirst()
-            .map(Response::ok)
-            .orElse(Response.noContent())
-            .build();
-        return response;
-    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

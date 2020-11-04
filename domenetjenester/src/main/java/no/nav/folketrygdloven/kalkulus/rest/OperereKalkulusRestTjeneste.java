@@ -35,7 +35,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
@@ -61,11 +60,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
-import no.nav.folketrygdloven.kalkulus.rest.abac.FortsettBeregningRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningListeRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.StartBeregningRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
@@ -105,40 +100,6 @@ public class OperereKalkulusRestTjeneste {
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
     }
 
-    /**
-     * @deprecated bytt til {@link #beregn(StartBeregningListeRequestAbacDto)}
-     */
-    @Deprecated(forRemoval = true, since = "1.0")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/start")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
-    })
-    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response beregn(@NotNull @Valid StartBeregningRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse().getReferanse());
-        var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
-        var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-
-        KoblingEntitet koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
-
-        boolean inputHarEndretSeg = kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), spesifikasjon.getKalkulatorInput());
-
-        if (inputHarEndretSeg) {
-            rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingEntitet.getId(), BeregningsgrunnlagTilstand.OPPRETTET);
-        }
-
-        var input = stegInputTjeneste.lagStartInput(koblingEntitet, spesifikasjon.getKalkulatorInput());
-        TilstandResponse tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
-
-        return Response.ok(tilstandResponse).build();
-    }
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start/bolk")
@@ -175,29 +136,6 @@ public class OperereKalkulusRestTjeneste {
         }
 
         return Response.ok(new TilstandListeResponse(resultat)).build();
-    }
-
-    /**
-     * @deprecated bytt til {@link #beregnVidere(FortsettBeregningListeRequestAbacDto)}
-     */
-    @Deprecated(forRemoval = true, since = "1.0")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/fortsett")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Fortsetter en beregning basert på stegInput."), responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
-    })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
-    public Response beregnVidere(@NotNull @Valid FortsettBeregningRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getEksternReferanse());
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        KoblingEntitet koblingEntitet = koblingTjeneste.hentFor(koblingReferanse, ytelseTyperKalkulusStøtter);
-        MDC.put("prosess_saksnummer", koblingEntitet.getSaksnummer().getVerdi());
-        MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
-        StegProsesseringInput input = stegInputTjeneste.lagFortsettInput(koblingEntitet.getId(), spesifikasjon.getStegType());
-        TilstandResponse tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), input, koblingEntitet.getId());
-
-        return Response.ok(tilstandResponse).build();
     }
 
     @POST
@@ -248,36 +186,6 @@ public class OperereKalkulusRestTjeneste {
                 .collect(Collectors.toList());
 
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/oppdater")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt."), responses = {
-            @ApiResponse(description = "Endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringRespons.class)))
-    })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response håndter(@NotNull @Valid HåndterBeregningRequestAbacDto spesifikasjon) {
-        OppdateringRespons respons = håndterForKobling(spesifikasjon);
-        return Response.ok(Objects.requireNonNullElseGet(respons, OppdateringRespons::TOM_RESPONS)).build();
-    }
-
-    /**
-     * @deprecated bytt til {@link #deaktiverBeregningsgrunnlag(DeaktiverBeregningsgrunnlagRequestAbacDto)}
-     */
-    @Deprecated(forRemoval = true, since = "1.0")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/deaktiver")
-    @Operation(description = "Deaktiverer aktivt beregningsgrunnlag. Nullstiller beregning.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response deaktiverBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
-        var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
-        Long koblingId = koblingTjeneste.hentKoblingId(koblingReferanse);
-        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
-        return Response.ok().build();
     }
 
     @POST
