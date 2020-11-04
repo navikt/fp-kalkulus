@@ -6,12 +6,12 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnBehandlingType;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 
 public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private final int dekningsgrad = 80;
+    private final int DEKNINGSGRAD_80 = 80;
+    private final int DEKNINGSGRAD_60 = 60;
+    private final LocalDate FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD = LocalDate.of(2020,11,1);
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
     private final List<FrisinnPeriode> frisinnPerioder;
@@ -23,10 +23,22 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
         this.frisinnBehandlingType = frisinnBehandlingType;
     }
 
-
     @Override
     public int getDekningsgrad() {
-        return dekningsgrad;
+        return DEKNINGSGRAD_80;
+    }
+
+    /**
+     * Det er besluttet at frisinnsøknader som gjelder de to siste månedene det er mulig å søke (november og desember)
+     * skal utbetales med redusert dekningsgrad.
+     * https://jira.adeo.no/browse/TSF-1370
+     */
+    public int getDekningsgradForDato(LocalDate dato) {
+        if (dato.isBefore(FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD)) {
+            return DEKNINGSGRAD_80;
+        } else {
+            return DEKNINGSGRAD_60;
+        }
     }
 
     @Override
