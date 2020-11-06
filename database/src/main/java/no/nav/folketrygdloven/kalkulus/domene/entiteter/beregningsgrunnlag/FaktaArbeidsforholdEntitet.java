@@ -50,6 +50,9 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     @Column(name = "HAR_MOTTATT_YTELSE")
     private Boolean harMottattYtelse;
 
+    @Column(name = "HAR_LONNSENDRING_I_BEREGNINGSPERIODEN")
+    private Boolean harLønnsendringIBeregningsperioden;
+
 
     public FaktaArbeidsforholdEntitet() {
         // hibernate
@@ -87,6 +90,10 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
 
     public Boolean getHarMottattYtelse() {
         return harMottattYtelse;
+    }
+
+    public Boolean getHarLønnsendringIBeregningsperioden() {
+        return harLønnsendringIBeregningsperioden;
     }
 
     public static Builder builder() {
@@ -133,6 +140,10 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
             return this;
         }
 
+        public Builder medHarLønnsendringIBeregningsperioden(boolean harLønnsendringIBeregningsperioden) {
+            mal.harLønnsendringIBeregningsperioden = harLønnsendringIBeregningsperioden;
+            return this;
+        }
 
         public FaktaArbeidsforholdEntitet build() {
             verifyStateForBuild();
@@ -147,7 +158,9 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
         }
 
         public boolean erUgyldig() {
-            return mal.erTidsbegrenset == null && mal.harMottattYtelse == null;
+            return mal.erTidsbegrenset == null
+                    && mal.harLønnsendringIBeregningsperioden == null
+                    && mal.harMottattYtelse == null;
         }
     }
 }

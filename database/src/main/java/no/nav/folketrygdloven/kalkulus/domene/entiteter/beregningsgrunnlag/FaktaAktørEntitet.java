@@ -47,6 +47,10 @@ public class FaktaAktørEntitet extends BaseEntitet {
     @Column(name = "MOTTAR_ETTERLONN_SLUTTPAKKE")
     private Boolean mottarEtterlønnSluttpakke;
 
+    @Column(name = "SKAL_BEREGNES_SOM_MILITAER")
+    private Boolean skalBeregnesSomMilitær;
+
+
     public FaktaAktørEntitet() {
         // hibernate
     }
@@ -82,6 +86,10 @@ public class FaktaAktørEntitet extends BaseEntitet {
 
     public Boolean getMottarEtterlønnSluttpakke() {
         return mottarEtterlønnSluttpakke;
+    }
+
+    public Boolean getSkalBeregnesSomMilitær() {
+        return skalBeregnesSomMilitær;
     }
 
     public static Builder builder() {
@@ -128,6 +136,11 @@ public class FaktaAktørEntitet extends BaseEntitet {
             return this;
         }
 
+        public Builder medSkalBeregnesSomMilitær(boolean skalBeregnesSomMilitær) {
+            mal.skalBeregnesSomMilitær = skalBeregnesSomMilitær;
+            return this;
+        }
+
         public FaktaAktørEntitet build() {
             verifyStateForBuild();
             return mal;
@@ -142,6 +155,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
         public boolean erUgyldig() {
             return mal.erNyIArbeidslivetSN == null
                     && mal.erNyoppstartetFL == null
+                    && mal.skalBeregnesSomMilitær == null
                     && mal.harFLMottattYtelse == null
                     && mal.skalBesteberegnes == null
                     && mal.mottarEtterlønnSluttpakke == null;
