@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
@@ -203,7 +204,7 @@ public class MapDetaljertBeregningsgrunnlag {
             beregningsgrunnlagPrStatusOgAndel.getNyIArbeidslivet(),
             beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler(),
             beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr(),
-            beregningsgrunnlagPrStatusOgAndel.getLagtTilAvSaksbehandler(),
+                beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING),
             beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse(),
             beregningsgrunnlagPrStatusOgAndel.mottarYtelse().orElse(null),
             beregningsgrunnlagPrStatusOgAndel.erNyoppstartet().orElse(null));

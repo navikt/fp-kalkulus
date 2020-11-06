@@ -125,7 +125,7 @@ public class FordelRefusjonTjeneste {
 
     private static void leggTilForKunEndretFordeling(BeregningsgrunnlagPeriodeDto korrektPeriode,
                                                      Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, FordelBeregningsgrunnlagAndelDto fordeltAndel) {
-        if (!fordeltAndel.getLagtTilAvSaksbehandler()) {
+        if (!fordeltAndel.erLagtTilAvSaksbehandler()) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndelOpt = korrektPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> andel.getAndelsnr().equals(fordeltAndel.getAndelsnr())).findFirst();
             korrektAndelOpt.ifPresent(korrektAndel ->

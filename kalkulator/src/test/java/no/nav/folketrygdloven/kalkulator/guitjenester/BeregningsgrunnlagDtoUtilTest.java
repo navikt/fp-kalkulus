@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 
@@ -116,7 +117,7 @@ public class BeregningsgrunnlagDtoUtilTest {
             .build(bg);
         var andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
+            .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medArbforholdType(null)
@@ -139,7 +140,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(orgnr);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
+            .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
@@ -166,7 +167,7 @@ public class BeregningsgrunnlagDtoUtilTest {
         Arbeidsgiver person = Arbeidsgiver.person(AktørId.dummy());
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
+            .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(person))

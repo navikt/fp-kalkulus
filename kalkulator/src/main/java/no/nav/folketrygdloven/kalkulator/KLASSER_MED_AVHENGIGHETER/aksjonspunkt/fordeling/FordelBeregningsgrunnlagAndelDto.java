@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling;
 
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 
 public class FordelBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
@@ -19,7 +18,7 @@ public class FordelBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
                                             FordelFastsatteVerdierDto fastsatteVerdier,
                                             Inntektskategori forrigeInntektskategori, Integer forrigeRefusjonPrÅr, Integer forrigeArbeidsinntektPrÅr) {
         super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getReferanse(),
-                andelDto.getNyAndel(), AndelKilde.PROSESS_START, andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
+                andelDto.getNyAndel(), andelDto.getKilde(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(),
                 andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom());
         this.fastsatteVerdier = fastsatteVerdier;
         this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;

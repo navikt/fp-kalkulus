@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
@@ -271,7 +272,7 @@ public class BeregningsgrunnlagTestUtil {
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medAvkortetPrÅr(avkortetPrÅr != null ? BigDecimal.valueOf(avkortetPrÅr) : null)
             .medBeregnetPrÅr(bruttoPrÅr != null ? BigDecimal.valueOf(bruttoPrÅr) : null)
-            .medLagtTilAvSaksbehandler(lagtTilAvSaksbehandler)
+            .medKilde(lagtTilAvSaksbehandler ? AndelKilde.SAKSBEHANDLER_KOFAKBER : AndelKilde.PROSESS_START)
             .medInntektskategori(inntektskategori)
             .build(beregningsgrunnlagPeriode);
     }

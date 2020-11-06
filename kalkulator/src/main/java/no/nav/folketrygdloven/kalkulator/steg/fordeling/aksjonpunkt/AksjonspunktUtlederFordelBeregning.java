@@ -38,7 +38,7 @@ public class AksjonspunktUtlederFordelBeregning {
                                                     Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Mangler beregningsgrunnlagGrunnlag"));
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(beregningsgrunnlag, beregningsgrunnlagGrunnlag.getGjeldendeAktiviteter(), aktivitetGradering, inntektsmeldinger);
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(beregningsgrunnlag, aktivitetGradering, inntektsmeldinger);
         return FordelBeregningsgrunnlagTilfelleTjeneste.harTilfelleForFordeling(fordelingInput);
     }
 }

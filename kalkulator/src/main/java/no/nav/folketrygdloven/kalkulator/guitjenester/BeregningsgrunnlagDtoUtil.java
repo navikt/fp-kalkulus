@@ -48,7 +48,7 @@ public class BeregningsgrunnlagDtoUtil {
         andelDto.setAktivitetStatus(new no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus(andel.getAktivitetStatus().getKode()));
         andelDto.setInntektskategori(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(andel.getInntektskategori().getKode()));
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
-        andelDto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
+        andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         andelDto.setKilde(new no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde(andel.getKilde().getKode()));
         List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).stream()
             .sorted().collect(Collectors.toList());

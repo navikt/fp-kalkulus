@@ -62,14 +62,12 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
             .build(beregningsgrunnlag);
         dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_DAGPENGER)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .build(periode1);
         arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -121,13 +119,13 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
 
         // Assert
         BeregningsgrunnlagPrStatusOgAndelDto dpAndel = bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(andel -> andel.getLagtTilAvSaksbehandler())
+            .filter(andel -> andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
         assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
         assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
         assertThat(dpAndel.getFastsattAvSaksbehandler()).isTrue();
         BeregningsgrunnlagPrStatusOgAndelDto atAndel = bg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(andel -> !andel.getLagtTilAvSaksbehandler())
+            .filter(andel -> !andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
         assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(arbeidstakerBeregnet*12));
         assertThat(atAndel.getFastsattAvSaksbehandler()).isTrue();
@@ -157,13 +155,13 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
         fastsettBesteberegningFødendeKvinneOppdaterer.oppdater(dto, Optional.of(beregningsgrunnlag), input, builder);
 
         // Assert
-        BeregningsgrunnlagPrStatusOgAndelDto dpAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(andel -> andel.getLagtTilAvSaksbehandler())
+        BeregningsgrunnlagPrStatusOgAndelDto dpAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(andel -> andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
         assertThat(dpAndel.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
         assertThat(dpAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(dagpengerBeregnet*12));
         assertThat(dpAndel.getFastsattAvSaksbehandler()).isTrue();
         BeregningsgrunnlagPrStatusOgAndelDto atAndel = nyttBg.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(andel -> !andel.getLagtTilAvSaksbehandler())
+            .filter(andel -> !andel.erLagtTilAvSaksbehandler())
             .findFirst().get();
         assertThat(atAndel.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(arbeidstakerBeregnet*12));
         assertThat(atAndel.getFastsattAvSaksbehandler()).isTrue();
@@ -180,7 +178,6 @@ public class FastsettBesteberegningFødendeKvinneOppdatererTest {
             .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))

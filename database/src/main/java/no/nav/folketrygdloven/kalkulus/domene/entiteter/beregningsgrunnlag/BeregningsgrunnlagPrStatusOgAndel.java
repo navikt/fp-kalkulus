@@ -152,9 +152,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "kilde", nullable = false)
     private AndelKilde kilde = AndelKilde.PROSESS_START;
 
-    @Column(name = "lagt_til_av_saksbehandler", nullable = false)
-    private Boolean lagtTilAvSaksbehandler = false;
-
     @OneToOne(mappedBy = "beregningsgrunnlagPrStatusOgAndel", cascade = CascadeType.PERSIST)
     private BGAndelArbeidsforhold bgAndelArbeidsforhold;
 
@@ -373,10 +370,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
 
     public AndelKilde getKilde() {
         return kilde;
-    }
-
-    public Boolean getLagtTilAvSaksbehandler() {
-        return lagtTilAvSaksbehandler;
     }
 
     public Optional<BGAndelArbeidsforhold> getBgAndelArbeidsforhold() {
@@ -684,12 +677,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medLagtTilAvSaksbehandler(Boolean lagtTilAvSaksbehandler) {
-            verifiserKanModifisere();
-            kladd.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
-            return this;
-        }
-
         public Builder medBGAndelArbeidsforhold(BGAndelArbeidsforhold.Builder bgAndelArbeidsforholdBuilder) {
             verifiserKanModifisere();
             kladd.bgAndelArbeidsforhold = bgAndelArbeidsforholdBuilder.build(kladd);
@@ -711,9 +698,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             if (kladd.andelsnr == null) {
                 // TODO (OleSandbu): Ikke mod input!
                 finnOgSettAndelsnr(beregningsgrunnlagPeriode);
-            }
-            if (kladd.lagtTilAvSaksbehandler == null) {
-                kladd.lagtTilAvSaksbehandler = false;
             }
             // TODO (OleSandbu): Ikke mod input!
             beregningsgrunnlagPeriode.addBeregningsgrunnlagPrStatusOgAndel(kladd);

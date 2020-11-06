@@ -11,9 +11,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -27,13 +27,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
 public class KunYtelseDtoTjenesteTest {
 
@@ -52,8 +52,8 @@ public class KunYtelseDtoTjenesteTest {
     public void fødende_kvinne_uten_dagpenger() {
         // Arrange
         Intervall periode = Intervall.fraOgMedTilOgMed(
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
         var beregningsgrunnlagGrunnlag = lagBeregningsgrunnlag(beregningAktivitetAggregat);
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, false);
@@ -132,15 +132,15 @@ public class KunYtelseDtoTjenesteTest {
 
     private BeregningAktivitetAggregatDto beregningAktivitetSykepengerOgDagpenger() {
         BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
         builder.leggTilAktivitet(BeregningAktivitetDto.builder()
-            .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)))
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.SYKEPENGER)
-            .build());
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)))
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.SYKEPENGER)
+                .build());
         builder.leggTilAktivitet(BeregningAktivitetDto.builder()
-            .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8).minusDays(1)))
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.DAGPENGER)
-            .build());
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(12), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8).minusDays(1)))
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.DAGPENGER)
+                .build());
         return builder.build();
     }
 
@@ -187,15 +187,14 @@ public class KunYtelseDtoTjenesteTest {
     }
 
 
-
     @Test
     public void skal_sette_verdier_fra_forrige_med_besteberegning() {
         // Arrange
         Intervall periode = Intervall.fraOgMedTilOgMed(
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
-        var beregningsgrunnlagGrunnlag  = lagForrigeBeregningsgrunnlag(true, beregningAktivitetAggregat);
+        var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlag(true, beregningAktivitetAggregat);
         ForeldrepengerGrunnlag medBesteberegning = new ForeldrepengerGrunnlag(100, true);
 
         // Act
@@ -220,10 +219,10 @@ public class KunYtelseDtoTjenesteTest {
     public void skal_sette_verdier_fra_forrige_uten_besteberegning() {
         // Arrange
         Intervall periode = Intervall.fraOgMedTilOgMed(
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(8),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, periode, OpptjeningAktivitetType.SYKEPENGER);
-        var beregningsgrunnlagGrunnlag  = lagForrigeBeregningsgrunnlag(false, beregningAktivitetAggregat);
+        var beregningsgrunnlagGrunnlag = lagForrigeBeregningsgrunnlag(false, beregningAktivitetAggregat);
         ForeldrepengerGrunnlag utenBesteberegning = new ForeldrepengerGrunnlag(100, false);
 
         // Act
@@ -256,19 +255,18 @@ public class KunYtelseDtoTjenesteTest {
 
     private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlag(boolean medBesteberegning, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-            .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
-            .build();
+                .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
+                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
+                .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(bg);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medLagtTilAvSaksbehandler(false)
-            .medBesteberegningPrÅr(medBesteberegning ? BigDecimal.valueOf(BRUTTO_PR_ÅR) : null)
-            .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_ÅR))
-            .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
-            .build(periode1);
+                .medBesteberegningPrÅr(medBesteberegning ? BigDecimal.valueOf(BRUTTO_PR_ÅR) : null)
+                .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_ÅR))
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
+                .build(periode1);
 
         var builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)
@@ -279,17 +277,16 @@ public class KunYtelseDtoTjenesteTest {
 
     private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-            .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
-            .build();
+                .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
+                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
+                .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(bg);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medLagtTilAvSaksbehandler(false)
-            .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
-            .build(periode1);
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
+                .build(periode1);
 
         var builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)
@@ -300,23 +297,22 @@ public class KunYtelseDtoTjenesteTest {
 
     private BeregningsgrunnlagGrunnlagDto lagForrigeBeregningsgrunnlagMedLagtTilAndel(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
-            .medGrunnbeløp(BigDecimal.valueOf(90000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
-            .build();
+                .medSkjæringstidspunkt(LocalDate.now().minusDays(5))
+                .medGrunnbeløp(BigDecimal.valueOf(90000))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.KUN_YTELSE))
+                .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(bg);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medLagtTilAvSaksbehandler(false)
-            .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
-            .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
-            .build(periode1);
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
+                .build(periode1);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medLagtTilAvSaksbehandler(true)
-            .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
-            .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.FRILANSER)
-            .build(periode1);
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.BRUKERS_ANDEL)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.FRILANSER)
+                .build(periode1);
 
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(bg)

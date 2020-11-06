@@ -10,12 +10,12 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.RedigerbarAndelDto;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.vedtak.util.Tuple;
@@ -42,18 +43,18 @@ public class FordelRefusjonTjenesteTest {
     private final long ANDELSNR2 = 2L;
     private final Integer FASTSATT = 10000;
     private final Integer REFUSJON = 10000;
-    private final Integer REFUSJONPRÅR = REFUSJON *12;
+    private final Integer REFUSJONPRÅR = REFUSJON * 12;
 
-    private final RedigerbarAndelDto ANDEL_UTEN_ARBEID_LAGT_TIL_OPPRETTET_INFO = new RedigerbarAndelDto(false, ANDELSNR1, true, AktivitetStatus.DAGPENGER, OpptjeningAktivitetType.DAGPENGER);
-    private final RedigerbarAndelDto ANDEL_FRA_OPPRETTET_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, false, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-    private final RedigerbarAndelDto ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO = new RedigerbarAndelDto(false, ANDELSNR1, false, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-    private final RedigerbarAndelDto ANDEL_LAGT_TIL_FORRIGE_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR2, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
-    private final RedigerbarAndelDto ANDEL_NY_INFO = new RedigerbarAndelDto(true, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, true, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID);
+    private final RedigerbarAndelDto ANDEL_UTEN_ARBEID_LAGT_TIL_OPPRETTET_INFO = new RedigerbarAndelDto(false, ANDELSNR1, AktivitetStatus.DAGPENGER, OpptjeningAktivitetType.DAGPENGER, AndelKilde.PROSESS_START);
+    private final RedigerbarAndelDto ANDEL_FRA_OPPRETTET_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID, AndelKilde.PROSESS_START);
+    private final RedigerbarAndelDto ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO = new RedigerbarAndelDto(false, ANDELSNR1, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID, AndelKilde.PROSESS_START);
+    private final RedigerbarAndelDto ANDEL_LAGT_TIL_FORRIGE_INFO = new RedigerbarAndelDto(false, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR2, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID, AndelKilde.SAKSBEHANDLER_FORDELING);
+    private final RedigerbarAndelDto ANDEL_NY_INFO = new RedigerbarAndelDto(true, ARBEIDSGIVER_ORGNR, ARB_ID1, ANDELSNR1, AktivitetStatus.ARBEIDSTAKER, OpptjeningAktivitetType.ARBEID, AndelKilde.SAKSBEHANDLER_FORDELING);
 
     private final FordelFastsatteVerdierDto REFUSJON_NULL_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
-    private final FordelFastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT/2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(FASTSATT / 2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
+    private final FordelFastsatteVerdierDto REFUSJON_NULL_FASTSATT_HALVPARTEN = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(FASTSATT / 2).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(REFUSJONPRÅR).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
@@ -71,11 +72,11 @@ public class FordelRefusjonTjenesteTest {
     @BeforeEach
     public void setUp() {
         oppdatertBg = BeregningsgrunnlagDto.builder()
-            .medGrunnbeløp(BigDecimal.TEN)
-            .medSkjæringstidspunkt(FOM).build();
+                .medGrunnbeløp(BigDecimal.TEN)
+                .medSkjæringstidspunkt(FOM).build();
         periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(FOM, TOM)
-            .build(oppdatertBg);
+                .medBeregningsgrunnlagPeriode(FOM, TOM)
+                .build(oppdatertBg);
         endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(andelListe, FOM, TOM);
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
@@ -84,7 +85,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_filtrere_ut_andel_uten_arbeidsforhold() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_UTEN_ARBEID_LAGT_TIL_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
-            Inntektskategori.DAGPENGER, null, 123_723);
+                Inntektskategori.DAGPENGER, null, 123_723);
         andelListe.add(fordeltAndel);
         lagDPAndelLagtTilAvSaksbehandler();
 
@@ -114,14 +115,14 @@ public class FordelRefusjonTjenesteTest {
     public void skal_ikkje_fordele_refusjon_for_andeler_uten_arbeidsforhold() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_UTEN_ARBEID_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0,
-            Inntektskategori.ARBEIDSTAKER, 0, FORRIGE_ARBEIDSTINNTEKT);
+                Inntektskategori.ARBEIDSTAKER, 0, FORRIGE_ARBEIDSTINNTEKT);
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
-            .medAndelsnr(1L)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.BRUKERS_ANDEL)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medAndelsnr(1L)
+                .build(periode);
 
         // Act
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -134,7 +135,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_endre_refusjon_for_en_andel_med_refusjon_fastsatt_større_enn_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,
-            REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
+                REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
@@ -150,7 +151,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_endre_refusjon_for_en_andel_med_refusjon_fastsatt_lik_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0,
-            Inntektskategori.ARBEIDSTAKER, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
+                Inntektskategori.ARBEIDSTAKER, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
@@ -184,9 +185,9 @@ public class FordelRefusjonTjenesteTest {
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder1)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder1)
+                .build(periode);
 
         // Act
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
@@ -206,20 +207,20 @@ public class FordelRefusjonTjenesteTest {
 
         afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
-            .medAndelsnr(1L)
-            .medBGAndelArbeidsforhold(afBuilder1)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medAndelsnr(1L)
+                .medBGAndelArbeidsforhold(afBuilder1)
+                .build(periode);
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -246,21 +247,21 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER),
-            new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+                new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon1 = (int) (2*totalRefusjon/3);
-        int forventetRefusjon2 = (int) (totalRefusjon/3);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon1 = (int) (2 * totalRefusjon / 3);
+        int forventetRefusjon2 = (int) (totalRefusjon / 3);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
     }
@@ -268,12 +269,12 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_2_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_med_refusjon_lik_null_og_ulik_fordeling() {
         // Arrange
-        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2 * REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
         FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2* REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -281,12 +282,12 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .medBGAndelArbeidsforhold(afBuilder3);
+                .medBGAndelArbeidsforhold(afBuilder3);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -294,9 +295,9 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon1 = (int) (2*totalRefusjon/3);
-        int forventetRefusjon2 = (int) (totalRefusjon/3);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon1 = (int) (2 * totalRefusjon / 3);
+        int forventetRefusjon2 = (int) (totalRefusjon / 3);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
     }
@@ -318,10 +319,10 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -329,8 +330,8 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon = (int) (totalRefusjon/3);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon = (int) (totalRefusjon / 3);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
@@ -340,7 +341,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_ulik_fordeling() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 54654, FORRIGE_ARBEIDSTINNTEKT);
-        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN,null, null, null);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_HALVPARTEN, null, null, null);
         FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
@@ -353,10 +354,10 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -364,10 +365,10 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon1 = (int) (2*totalRefusjon/4);
-        int forventetRefusjon2 = (int) (totalRefusjon/4);
-        int forventetRefusjon3 = (int) (totalRefusjon/4);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon1 = (int) (2 * totalRefusjon / 4);
+        int forventetRefusjon2 = (int) (totalRefusjon / 4);
+        int forventetRefusjon3 = (int) (totalRefusjon / 4);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
@@ -376,14 +377,14 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_ulik_fordeling_refusjon_lik_null() {
         // Arrange
-        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2 * REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
         FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_HALVPARTEN, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2* REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -391,12 +392,12 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .medBGAndelArbeidsforhold(afBuilder3);
+                .medBGAndelArbeidsforhold(afBuilder3);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -404,10 +405,10 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon1 = (int) (2*totalRefusjon/4);
-        int forventetRefusjon2 = (int) (totalRefusjon/4);
-        int forventetRefusjon3 = (int) (totalRefusjon/4);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon1 = (int) (2 * totalRefusjon / 4);
+        int forventetRefusjon2 = (int) (totalRefusjon / 4);
+        int forventetRefusjon3 = (int) (totalRefusjon / 4);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
@@ -416,14 +417,14 @@ public class FordelRefusjonTjenesteTest {
     @Test
     public void skal_fordele_refusjon_for_3_andeler_en_fra_opprettet_med_og_en_lagt_til_forrige_en_ny_andel_lik_fordeling_refusjon_lik_null() {
         // Arrange
-        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,  2* REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
+        FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI, 2 * REFUSJONPRÅR, FORRIGE_ARBEIDSTINNTEKT);
         FordelBeregningsgrunnlagAndelDto fordeltAndel2 = new FordelBeregningsgrunnlagAndelDto(ANDEL_LAGT_TIL_FORRIGE_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
         FordelBeregningsgrunnlagAndelDto fordeltAndel3 = new FordelBeregningsgrunnlagAndelDto(ANDEL_NY_INFO, REFUSJON_NULL_FASTSATT_STØRRE_ENN_0, null, null, null);
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2* REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -431,12 +432,12 @@ public class FordelRefusjonTjenesteTest {
         BeregningsgrunnlagDto forrigeBg = BeregningsgrunnlagDto.builder(oppdatertBg).build();
         BeregningsgrunnlagPeriodeDto periodeForrige = forrigeBg.getBeregningsgrunnlagPerioder().get(0);
         BeregningsgrunnlagPrStatusOgAndelDto.kopier(periodeForrige.getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .medBGAndelArbeidsforhold(afBuilder3);
+                .medBGAndelArbeidsforhold(afBuilder3);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(afBuilder2)
-            .medAndelsnr(2L)
-            .build(periodeForrige);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(afBuilder2)
+                .medAndelsnr(2L)
+                .build(periodeForrige);
 
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -444,8 +445,8 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        double totalRefusjon = 2* REFUSJONPRÅR;
-        int forventetRefusjon = (int) (totalRefusjon/3);
+        double totalRefusjon = 2 * REFUSJONPRÅR;
+        int forventetRefusjon = (int) (totalRefusjon / 3);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
         AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
@@ -453,34 +454,34 @@ public class FordelRefusjonTjenesteTest {
 
     private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav() {
         return BGAndelArbeidsforholdDto.builder()
-            .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
-            .medArbeidsforholdRef(ARB_ID1)
-            .medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR)));
+                .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
+                .medArbeidsforholdRef(ARB_ID1)
+                .medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR)));
     }
 
     private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav(BigDecimal refusjonskrav) {
         return BGAndelArbeidsforholdDto.builder()
-            .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
-            .medArbeidsforholdRef(ARB_ID1)
-            .medRefusjonskravPrÅr(refusjonskrav);
+                .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
+                .medArbeidsforholdRef(ARB_ID1)
+                .medRefusjonskravPrÅr(refusjonskrav);
     }
 
     private void lagArbeidstakerAndel() {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(FORRIGE_INNTEKTSKATEGORI)
-            .medBGAndelArbeidsforhold(afBuilder1)
-            .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
-            .medAndelsnr(1L)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medInntektskategori(FORRIGE_INNTEKTSKATEGORI)
+                .medBGAndelArbeidsforhold(afBuilder1)
+                .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
+                .medAndelsnr(1L)
+                .build(periode);
     }
 
     private void lagDPAndelLagtTilAvSaksbehandler() {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.DAGPENGER)
-            .medInntektskategori(Inntektskategori.DAGPENGER)
-            .medAndelsnr(1L)
-            .medLagtTilAvSaksbehandler(true)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.DAGPENGER)
+                .medInntektskategori(Inntektskategori.DAGPENGER)
+                .medAndelsnr(1L)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .build(periode);
     }
 }

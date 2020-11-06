@@ -2,41 +2,32 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleInput;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingTilfelle;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingTilfelle;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 
 public class RefusjonOgGraderingTjenesteTest {
@@ -46,71 +37,13 @@ public class RefusjonOgGraderingTjenesteTest {
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100_000);
     private Arbeidsgiver arbeidsgiver1 = Arbeidsgiver.virksomhet(ORG_NUMMER);
     private Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet("456456456456");
-    private BeregningAktivitetAggregatDto beregningAktivitetAggregat = mock(BeregningAktivitetAggregatDto.class);
-    private List<BeregningAktivitetDto> aktivitetList = new ArrayList<>();
-
-    @BeforeEach
-    public void setup() {
-        when(beregningAktivitetAggregat.getBeregningAktiviteter()).thenReturn(aktivitetList);
-    }
-
-    @Test
-    public void returnererFalseOmArbeidsforholdStarterFørStp() {
-        // Arrange
-        String orgnr = "123456780";
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
-        setAktivitetFørStp(arbeidsgiver, null);
-
-        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-        BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10))
-                .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1))
-                .medArbeidsgiver(arbeidsgiver)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(10000)))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .build(periode);
-        // Act
-        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
-
-        // Assert
-        assertThat(tilkomEtter).isFalse();
-    }
-
-    @Test
-    public void returnererTrueForArbeidsforholdSomStarterEtterSkjæringstidspunkt() {
-        // Arrange
-        BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-        BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), null)
-            .build(bg);
-        BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3))
-                .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(5))
-                .medArbeidsgiver(arbeidsgiver1)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(10000)))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .build(periode2);
-        // Act
-        boolean tilkomEtter = FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, SKJÆRINGSTIDSPUNKT_BEREGNING);
-        // Assert
-        assertThat(tilkomEtter).isTrue();
-    }
 
     @Test
     public void returnererTrueForFLMedGraderingSomTilkommer() {
         // Arrange
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), InternArbeidsforholdRefDto.nullRef());
-        setAktivitetFørStp(arbeidsgiver1, InternArbeidsforholdRefDto.nullRef());
+        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), InternArbeidsforholdRefDto.nullRef(), false);
         lagFLAndel(periode1);
 
         // Act
@@ -118,7 +51,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medStatus(AktivitetStatus.FRILANSER)
             .medGradering(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(18).minusDays(1), 50)
             .build());
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
@@ -131,9 +64,8 @@ public class RefusjonOgGraderingTjenesteTest {
         LocalDate tom = fom.plusWeeks(18).minusDays(1);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), InternArbeidsforholdRefDto.nullRef());
-        setAktivitetFørStp(arbeidsgiver1, InternArbeidsforholdRefDto.nullRef());
-        lagSNAndel(periode1);
+        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), InternArbeidsforholdRefDto.nullRef(), false);
+        lagSNAndel(periode1, true);
 
         // Act
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
@@ -141,7 +73,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medGradering(fom, tom, 50)
             .build());
 
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
@@ -152,20 +84,18 @@ public class RefusjonOgGraderingTjenesteTest {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
-        Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(orgnr);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBg();
         BeregningsgrunnlagPeriodeDto p1 = lagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(2), Collections.emptyList(), beregningsgrunnlag);
-        lagAndel(Arbeidsgiver.virksomhet(orgnr), null, p1, false, null, BigDecimal.valueOf(10), arbId);
+        lagAndel(Arbeidsgiver.virksomhet(orgnr), null, p1, false, null, BigDecimal.valueOf(10), arbId, false);
         BeregningsgrunnlagPeriodeDto p2 = lagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING.plusWeeks(2).plusDays(1), null, Collections.singletonList(PeriodeÅrsak.GRADERING), beregningsgrunnlag);
-        lagAndel(Arbeidsgiver.virksomhet(orgnr), null, p2, false, null, BigDecimal.valueOf(10), arbId);
+        lagAndel(Arbeidsgiver.virksomhet(orgnr), null, p2, false, null, BigDecimal.valueOf(10), arbId, false);
 
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(orgnr, arbId, SKJÆRINGSTIDSPUNKT_BEREGNING);
-        setAktivitetFørStp(virksomhet, arbId);
 
 
         // Act
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(beregningsgrunnlag,
-            beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+                AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
@@ -183,16 +113,16 @@ public class RefusjonOgGraderingTjenesteTest {
         var arbId = InternArbeidsforholdRefDto.nyRef();
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, null, periode1, true, null, BigDecimal.valueOf(10), arbId);
+        lagAndel(arbeidsgiver1, null, periode1, true, null, BigDecimal.valueOf(10), arbId, true);
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medArbeidsgiver(arbeidsgiver1)
+                .medArbeidsforholdRef(arbId)
+                .medGradering(fom, tom, 50)
+                .build());
 
         // Act
-        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
-            .medStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medArbeidsgiver(arbeidsgiver1)
-            .medArbeidsforholdRef(arbId)
-            .medGradering(fom, tom, 50)
-            .build());
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
@@ -211,11 +141,18 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(orgnr1, arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, 0);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 0, periode1, false, null, BigDecimal.valueOf(10), arbId1);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
+        lagAndel(arbeidsgiver1, 0, periode1, false, null, BigDecimal.valueOf(10), arbId1, false);
+        LocalDate fom = SKJÆRINGSTIDSPUNKT_BEREGNING;
+        LocalDate tom = fom.plusWeeks(18).minusDays(1);
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medArbeidsgiver(arbeidsgiver1)
+                .medArbeidsforholdRef(arbId1)
+                .medGradering(fom, tom, 50)
+                .build());
 
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
@@ -239,10 +176,8 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver2.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, refusjon2PerÅr / 12);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, null, periode1, false, null, BigDecimal.valueOf(10), arbId1);
-        lagAndel(arbeidsgiver2, refusjon2PerÅr, periode1, false, null, BigDecimal.valueOf(10), arbId2);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
-        setAktivitetFørStp(arbeidsgiver2, arbId2);
+        lagAndel(arbeidsgiver1, null, periode1, false, null, BigDecimal.valueOf(10), arbId1, false);
+        lagAndel(arbeidsgiver2, refusjon2PerÅr, periode1, false, null, BigDecimal.valueOf(10), arbId2, false);
 
         // Act
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
@@ -251,7 +186,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medArbeidsforholdRef(arbId1)
             .medGradering(fom, tom, 50)
             .build());
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G));
@@ -274,13 +209,19 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, null, periode1, false, null, BigDecimal.valueOf(10), arbId1);
-        lagAndel(arbeidsgiver2, refusjon2 / 12, periode1, false, null, BigDecimal.valueOf(10), arbId2);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
-        setAktivitetFørStp(arbeidsgiver2, arbId2);
+        lagAndel(arbeidsgiver1, null, periode1, false, null, BigDecimal.valueOf(10), arbId1, false);
+        lagAndel(arbeidsgiver2, refusjon2 / 12, periode1, false, null, BigDecimal.valueOf(10), arbId2, false);
+        LocalDate fom = SKJÆRINGSTIDSPUNKT_BEREGNING;
+        LocalDate tom = fom.plusWeeks(18).minusDays(1);
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medArbeidsgiver(arbeidsgiver1)
+                .medArbeidsforholdRef(arbId1)
+                .medGradering(fom, tom, 50)
+                .build());
 
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1, im2));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1, im2));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
@@ -290,8 +231,6 @@ public class RefusjonOgGraderingTjenesteTest {
     // Refusjon: Ja
     // Tilkom etter skjæringstidspunktet: Ja
     // Returnerer True
-
-    // FIXME: Sender inn INGEN_GRADERING når testen seier den skal ha gradering
     @Test
     public void returnererTrueForGraderingOgRefusjonUtenGjeldendeBG() {
         // Arrange
@@ -300,9 +239,18 @@ public class RefusjonOgGraderingTjenesteTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING, 100);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 100, periode1, true, null, BigDecimal.valueOf(10), arbId1);
+        lagAndel(arbeidsgiver1, 100, periode1, true, null, BigDecimal.valueOf(10), arbId1, true);
+        LocalDate fom = SKJÆRINGSTIDSPUNKT_BEREGNING;
+        LocalDate tom = fom.plusWeeks(18).minusDays(1);
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medArbeidsgiver(arbeidsgiver1)
+                .medArbeidsforholdRef(arbId1)
+                .medGradering(fom, tom, 50)
+                .build());
+
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
@@ -312,7 +260,6 @@ public class RefusjonOgGraderingTjenesteTest {
     // Refusjon: Ja
     // Tilkom etter skjæringstidspunktet: Nei
     // Returnerer False
-    // FIXME: Seier at den skal ha gradering, men sender inn INGEN_GRADERING
     @Test
     public void returnererFalseForGraderingOgRefusjon() {
         // Arrange
@@ -321,11 +268,17 @@ public class RefusjonOgGraderingTjenesteTest {
             SKJÆRINGSTIDSPUNKT_BEREGNING, 100);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 100, periode1, false, null, BigDecimal.valueOf(10), arbId1);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
-
+        lagAndel(arbeidsgiver1, 100, periode1, false, null, BigDecimal.valueOf(10), arbId1, false);
+        LocalDate fom = SKJÆRINGSTIDSPUNKT_BEREGNING;
+        LocalDate tom = fom.plusWeeks(18).minusDays(1);
+        AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
+                .medStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medArbeidsgiver(arbeidsgiver1)
+                .medArbeidsforholdRef(arbId1)
+                .medGradering(fom, tom, 50)
+                .build());
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
@@ -342,10 +295,10 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, 1000);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, true, null, BigDecimal.valueOf(10), arbId1);
+        lagAndel(arbeidsgiver1, 1000, periode1, true, null, BigDecimal.valueOf(10), arbId1, true);
 
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
@@ -362,11 +315,10 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, 1000);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), arbId1);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
+        lagAndel(arbeidsgiver1, 1000, periode1, false, null, BigDecimal.valueOf(10), arbId1, false);
 
         // Act
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, AktivitetGradering.INGEN_GRADERING, List.of(im1));
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.isEmpty()).isTrue();
@@ -382,10 +334,8 @@ public class RefusjonOgGraderingTjenesteTest {
         InntektsmeldingDto im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(arbeidsgiver1.getIdentifikator(), arbId1, SKJÆRINGSTIDSPUNKT_BEREGNING, refusjon);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagAndel(arbeidsgiver1, refusjon*12, periode1, false, null, seksG.add(BigDecimal.ONE), arbId1);
-        lagSNAndel(periode1);
-        setAktivitetFørStp(arbeidsgiver1, arbId1);
-        setAktivitetFørStp(OpptjeningAktivitetType.NÆRING);
+        lagAndel(arbeidsgiver1, refusjon*12, periode1, false, null, seksG.add(BigDecimal.ONE), arbId1, false);
+        lagSNAndel(periode1, false);
         LocalDate fom = SKJÆRINGSTIDSPUNKT_BEREGNING;
         LocalDate tom = fom.plusWeeks(18).minusDays(1);
 
@@ -395,7 +345,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .build());
 
         // Act
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, beregningAktivitetAggregat, aktivitetGradering, List.of(im1));
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, List.of(im1));
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelerMedTilfeller = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
 
         // Assert
@@ -409,8 +359,7 @@ public class RefusjonOgGraderingTjenesteTest {
         LocalDate tom = fom.plusWeeks(18).minusDays(1);
         BeregningsgrunnlagDto bg = lagBg();
         BeregningsgrunnlagPeriodeDto periode1 = lagPeriode(bg);
-        lagSNAndel(periode1, 0);
-        setAktivitetFørStp(OpptjeningAktivitetType.NÆRING);
+        lagSNAndel(periode1, 0, false);
 
         // Act
         AktivitetGradering aktivitetGradering = new AktivitetGradering(AndelGradering.builder()
@@ -418,29 +367,15 @@ public class RefusjonOgGraderingTjenesteTest {
             .leggTilGradering(fom, tom, BigDecimal.valueOf(50))
             .build());
 
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, beregningAktivitetAggregat, aktivitetGradering, List.of());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
         assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0));
     }
 
-    private void setAktivitetFørStp(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
-        List<BeregningAktivitetDto> aktiviteterFørStp = Collections.singletonList(BeregningAktivitetDto.builder()
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-            .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10)))
-            .medArbeidsgiver(arbeidsgiver).medArbeidsforholdRef(arbeidsforholdRef).build());
-        aktivitetList.addAll(aktiviteterFørStp);
-    }
 
-    private void setAktivitetFørStp(OpptjeningAktivitetType type) {
-        List<BeregningAktivitetDto> aktiviteterFørStp = Collections.singletonList(BeregningAktivitetDto.builder()
-            .medOpptjeningAktivitetType(type)
-            .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10))).build());
-        aktivitetList.addAll(aktiviteterFørStp);
-    }
-
-    private Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(BeregningsgrunnlagDto bg, BeregningAktivitetAggregatDto beregningAktivitetAggregat, AktivitetGradering aktivitetGradering, Collection<InntektsmeldingDto> inntektsmeldinger) {
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, beregningAktivitetAggregat, aktivitetGradering, inntektsmeldinger);
+    private Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(BeregningsgrunnlagDto bg, AktivitetGradering aktivitetGradering, Collection<InntektsmeldingDto> inntektsmeldinger) {
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, inntektsmeldinger);
         return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
     }
 
@@ -469,8 +404,10 @@ public class RefusjonOgGraderingTjenesteTest {
                           boolean tilkomEtter,
                           BigDecimal overstyrtPrÅr,
                           BigDecimal beregnetPrÅr,
-                          InternArbeidsforholdRefDto arbeidsforholdRef) {
+                          InternArbeidsforholdRefDto arbeidsforholdRef,
+                          boolean tilkommer) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medKilde(tilkommer ? AndelKilde.PROSESS_PERIODISERING : AndelKilde.PROSESS_START)
             .medBeregnetPrÅr(beregnetPrÅr)
             .medOverstyrtPrÅr(overstyrtPrÅr)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
@@ -483,15 +420,17 @@ public class RefusjonOgGraderingTjenesteTest {
 
     private void lagFLAndel(BeregningsgrunnlagPeriodeDto periode1) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medKilde(AndelKilde.PROSESS_PERIODISERING)
             .build(periode1);
     }
 
-    private void lagSNAndel(BeregningsgrunnlagPeriodeDto periode1) {
-        lagSNAndel(periode1, 10);
+    private void lagSNAndel(BeregningsgrunnlagPeriodeDto periode1, boolean tilkommer) {
+        lagSNAndel(periode1, 10, tilkommer);
     }
 
-    private void lagSNAndel(BeregningsgrunnlagPeriodeDto periode1, int beregnetPrÅr) {
+    private void lagSNAndel(BeregningsgrunnlagPeriodeDto periode1, int beregnetPrÅr, boolean tilkommer) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medKilde(tilkommer ? AndelKilde.PROSESS_PERIODISERING : AndelKilde.PROSESS_START)
             .medBeregnetPrÅr(BigDecimal.valueOf(beregnetPrÅr))
             .build(periode1);
     }

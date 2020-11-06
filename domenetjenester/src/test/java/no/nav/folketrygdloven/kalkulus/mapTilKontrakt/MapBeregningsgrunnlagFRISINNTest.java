@@ -381,7 +381,6 @@ class MapBeregningsgrunnlagFRISINNTest {
         BeregningsgrunnlagPrStatusOgAndel.Builder builder = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAndelsnr(andelsnr)
                 .medAktivitetStatus(status)
-                .medLagtTilAvSaksbehandler(false)
                 .medFastsattAvSaksbehandler(true)
                 .medBeregnetPrÅr(brutto)
                 .medBeregningsperiode(LocalDate.now().minusMonths(3), LocalDate.now());

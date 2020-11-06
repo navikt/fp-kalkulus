@@ -57,7 +57,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
                                                                                                                  Collection<InntektsmeldingDto> inntektsmeldinger) {
         var beregningAktivitetAggregat = grunnlag.getGjeldendeAktiviteter();
         FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(grunnlag.getBeregningsgrunnlag().orElse(null),
-                beregningAktivitetAggregat, aktivitetGradering, inntektsmeldinger);
+                aktivitetGradering, inntektsmeldinger);
         return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periode, fordelingInput);
     }
 

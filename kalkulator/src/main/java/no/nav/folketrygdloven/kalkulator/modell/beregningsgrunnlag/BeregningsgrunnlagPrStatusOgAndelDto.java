@@ -48,7 +48,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal besteberegningPrÅr;
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
     private AndelKilde kilde = AndelKilde.PROSESS_START;
-    private Boolean lagtTilAvSaksbehandler = false;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
     private BeregningsgrunnlagFrilansAndelDto beregningsgrunnlagFrilansAndel;
@@ -84,7 +83,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.besteberegningPrÅr = kopiereFra.besteberegningPrÅr;
         this.inntektskategori = kopiereFra.inntektskategori;
         this.kilde = kopiereFra.kilde;
-        this.lagtTilAvSaksbehandler = kopiereFra.lagtTilAvSaksbehandler;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
         if (kopiereFra.bgAndelArbeidsforhold != null) {
             this.bgAndelArbeidsforhold = BGAndelArbeidsforholdDto.Builder.kopier(kopiereFra.bgAndelArbeidsforhold).build(this);
@@ -302,8 +300,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return kilde;
     }
 
-    public Boolean getLagtTilAvSaksbehandler() {
-        return lagtTilAvSaksbehandler;
+    public Boolean erLagtTilAvSaksbehandler() {
+        return kilde.equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || kilde.equals(AndelKilde.SAKSBEHANDLER_FORDELING);
     }
 
     public Optional<BGAndelArbeidsforholdDto> getBgAndelArbeidsforhold() {
@@ -674,15 +672,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-
-        public Builder medLagtTilAvSaksbehandler(Boolean lagtTilAvSaksbehandler) {
-            if (!erOppdatering) {
-                verifiserKanModifisere();
-                kladd.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
-            }
-            return this;
-        }
-
         public BeregningsgrunnlagArbeidstakerAndelDto.Builder getBeregningsgrunnlagArbeidstakerAndelBuilder() {
             return BeregningsgrunnlagArbeidstakerAndelDto.builder(kladd.beregningsgrunnlagArbeidstakerAndel);
         }
@@ -728,9 +717,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             if (kladd.andelsnr == null) {
                 // TODO (OleSandbu): Ikke mod input!
                 finnOgSettAndelsnr(beregningsgrunnlagPeriode);
-            }
-            if (kladd.lagtTilAvSaksbehandler == null) {
-                kladd.lagtTilAvSaksbehandler = false;
             }
             // TODO (OleSandbu): Ikke mod input!
             beregningsgrunnlagPeriode.addBeregningsgrunnlagPrStatusOgAndel(kladd);

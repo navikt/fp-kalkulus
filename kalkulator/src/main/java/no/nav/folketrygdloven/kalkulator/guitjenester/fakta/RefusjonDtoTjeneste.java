@@ -70,7 +70,7 @@ public class RefusjonDtoTjeneste {
                                          Intervall periode,
                                          FordelBeregningsgrunnlagAndelDto endringAndel,
                                          Collection<InntektsmeldingDto> inntektsmeldinger) {
-        if (andel.getLagtTilAvSaksbehandler()) {
+        if (andel.erLagtTilAvSaksbehandler()) {
             endringAndel.setRefusjonskravFraInntektsmeldingPrÅr(BigDecimal.ZERO);
         } else {
             Optional<BigDecimal> refusjonsKravPrÅr = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode, inntektsmeldinger);

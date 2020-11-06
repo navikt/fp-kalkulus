@@ -195,7 +195,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medAvkortetBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getAvkortetBrukersAndelPrÅr()))
                 .medRedusertBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getRedusertBrukersAndelPrÅr()))
                 .medFastsattAvSaksbehandler(arbeidsforhold.getFastsattAvSaksbehandler())
-                .medLagtTilAvSaksbehandler(arbeidsforhold.getLagtTilAvSaksbehandler())
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(arbeidsforhold.getArbeidsforhold().getAktivitet()))
                 .medInntektskategori(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()));
     }
@@ -278,7 +277,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medNyIArbeidslivet(resultatBGPStatus.getNyIArbeidslivet())
                 .medInntektskategori(MapInntektskategoriRegelTilVL.map(resultatBGPStatus.getInntektskategori()))
                 .medFastsattAvSaksbehandler(resultatBGPStatus.erFastsattAvSaksbehandler())
-                .medLagtTilAvSaksbehandler(resultatBGPStatus.erLagtTilAvSaksbehandler())
                 .medBesteberegningPrÅr(resultatBGPStatus.getBesteberegningPrÅr())
                 .medOrginalDagsatsFraTilstøtendeYtelse(resultatBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
                 .build(vlBGPeriode);

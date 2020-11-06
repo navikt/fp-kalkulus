@@ -8,7 +8,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 
 public final class FordelTilkommetArbeidsforholdTjeneste {
 
@@ -16,26 +16,8 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
         // Skjuler default
     }
 
-    public static boolean erNyAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                        BeregningAktivitetAggregatDto aktivitetAggregat,
-                                        LocalDate skjæringstidspunkt) {
-        if (andel.getLagtTilAvSaksbehandler() || andel.getAktivitetStatus().equals(AktivitetStatus.BRUKERS_ANDEL)) {
-            return false;
-        }
-        if (andel.getBgAndelArbeidsforhold().isEmpty() || andel.getArbeidsgiver().isEmpty() || andel.getArbeidsforholdRef().isEmpty()) {
-            return erNyAktivitetSomIkkeErArbeid(andel, aktivitetAggregat, skjæringstidspunkt);
-        }
-        return erNyttArbeidsforhold(andel.getArbeidsgiver().get(), andel.getArbeidsforholdRef().get(), aktivitetAggregat, skjæringstidspunkt);
-    }
-
-    private static Boolean erNyAktivitetSomIkkeErArbeid(BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningAktivitetAggregatDto aktivitetAggregat, LocalDate skjæringstidspunkt) {
-        if (!andel.getAktivitetStatus().erArbeidstaker()) {
-            var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
-            return beregningAktiviteter.stream()
-                    .filter(beregningAktivitet -> erIkkeAktivDagenFørSkjæringstidspunktet(skjæringstidspunkt, beregningAktivitet))
-                    .noneMatch(b -> MapAktivitetstatusTilOpptjeningAktivitetType.map(andel.getAktivitetStatus()).equals(b.getOpptjeningAktivitetType()));
-        }
-        return false;
+    public static boolean erAktivitetLagtTilIPeriodisering(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getKilde().equals(AndelKilde.PROSESS_PERIODISERING);
     }
 
     public static boolean erNyttArbeidsforhold(Arbeidsgiver arbeidsgiver,

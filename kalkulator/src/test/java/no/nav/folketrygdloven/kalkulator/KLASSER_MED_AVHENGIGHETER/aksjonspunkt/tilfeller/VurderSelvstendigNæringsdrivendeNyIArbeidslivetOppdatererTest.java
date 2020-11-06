@@ -53,7 +53,6 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
             .build(beregningsgrunnlag);
         snAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .build(periode1);

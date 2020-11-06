@@ -56,14 +56,12 @@ public class VurderLønnsendringOppdatererTest {
             .build(beregningsgrunnlag);
         frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(3252L)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode1);
         arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomheten))
             .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode1);

@@ -93,7 +93,6 @@ public class BGMapperTilKalkulus {
             .medÅrsbeløpFraTilstøtendeYtelse(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
             .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
             .medKilde(AndelKilde.fraKode(fraFagsystem.getKilde().getKode()))
-            .medLagtTilAvSaksbehandler(fraFagsystem.getLagtTilAvSaksbehandler())
             .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse());
 
         if (fraFagsystem.getAktivitetStatus().erArbeidstaker()) {

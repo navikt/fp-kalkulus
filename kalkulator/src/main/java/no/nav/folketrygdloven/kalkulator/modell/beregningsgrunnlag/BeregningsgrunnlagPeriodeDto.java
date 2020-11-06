@@ -278,7 +278,7 @@ public class BeregningsgrunnlagPeriodeDto {
             verifiserKanModifisere();
             List<BeregningsgrunnlagPrStatusOgAndelDto> andelerSomSkalFjernes = new ArrayList<>();
             for (BeregningsgrunnlagPrStatusOgAndelDto andel : kladd.getBeregningsgrunnlagPrStatusOgAndelList()) {
-                if (!listeAvAndelsnr.contains(andel.getAndelsnr()) && andel.getLagtTilAvSaksbehandler()) {
+                if (!listeAvAndelsnr.contains(andel.getAndelsnr()) && andel.erLagtTilAvSaksbehandler()) {
                     andelerSomSkalFjernes.add(andel);
                 }
             }

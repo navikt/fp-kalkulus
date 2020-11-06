@@ -85,7 +85,6 @@ public class KalkulatorTilBGMapper {
                 .medÅrsbeløpFraTilstøtendeYtelse(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
                 .medNyIArbeidslivet(fraKalkulus.getNyIArbeidslivet())
                 .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
-                .medLagtTilAvSaksbehandler(fraKalkulus.getLagtTilAvSaksbehandler())
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse());
 
         if (fraKalkulus.getBeregningsperiodeFom() != null) {

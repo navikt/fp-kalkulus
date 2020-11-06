@@ -101,7 +101,6 @@ class MapBeregningsgrunnlagTest {
         BeregningsgrunnlagPrStatusOgAndel.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAndelsnr(andelsnr)
                 .medAktivitetStatus(status)
-                .medLagtTilAvSaksbehandler(false)
                 .medFastsattAvSaksbehandler(true)
                 .medBeregnetPrÅr(BigDecimal.valueOf(33000))
                 .medOverstyrtPrÅr(BigDecimal.valueOf(10000))

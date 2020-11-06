@@ -77,7 +77,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         andelDto.setAndelsnr(andel.getAndelsnr());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(andelDto::setArbeidsforhold);
-        andelDto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
+        andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         andelDto.setKilde(new AndelKilde(andel.getKilde().getKode()));
         andelDto.setFastsattAvSaksbehandler(Boolean.TRUE.equals(andel.getFastsattAvSaksbehandler()));
         andelDto.setAktivitetStatus(new AktivitetStatus(andel.getAktivitetStatus().getKode()));

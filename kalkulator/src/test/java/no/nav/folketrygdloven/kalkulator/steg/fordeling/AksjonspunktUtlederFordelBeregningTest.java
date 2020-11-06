@@ -27,6 +27,7 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetTy
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.AksjonspunktUtlederFordelBeregning;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -39,7 +40,7 @@ public class AksjonspunktUtlederFordelBeregningTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MARCH, 23);
 
     private BeregningAktivitetAggregatDto.Builder beregningAktivitetBuilder = BeregningAktivitetAggregatDto.builder()
-        .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
@@ -69,57 +70,55 @@ public class AksjonspunktUtlederFordelBeregningTest {
     }
 
 
-
     private BeregningsgrunnlagGrunnlagDto lagGrunnlagMedNyttArbeidsforhold(FaktaOmBeregningTilfelle... tilfeller) {
         List<FaktaOmBeregningTilfelle> listeMedTilfeller = Arrays.asList(tilfeller);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
-            .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
+                .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("1234534")))
-            .build(periode);
+                .medKilde(AndelKilde.PROSESS_PERIODISERING)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("1234534")))
+                .build(periode);
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .medRegisterAktiviteter(beregningAktivitetBuilder.build())
-            .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetBuilder.build())
+                .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         return grunnlag;
     }
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlagutenNyttArbeidsforhold(FaktaOmBeregningTilfelle... tilfeller) {
         List<FaktaOmBeregningTilfelle> listeMedTilfeller = Arrays.asList(tilfeller);
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
-            .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
-            .build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
+                .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
+                .build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+                .build(beregningsgrunnlag);
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet("1234534");
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
+                .build(periode);
 
         beregningAktivitetBuilder.leggTilAktivitet(BeregningAktivitetDto.builder()
-            .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2)))
-            .medArbeidsgiver(virksomhet)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef()).build());
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2)))
+                .medArbeidsgiver(virksomhet)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID).medArbeidsforholdRef(InternArbeidsforholdRefDto.nullRef()).build());
 
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .medRegisterAktiviteter(beregningAktivitetBuilder.build())
-            .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(beregningAktivitetBuilder.build())
+                .build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         return grunnlag;
     }
-
-
 
 
 }

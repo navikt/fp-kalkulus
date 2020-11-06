@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,8 +45,7 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     private static Optional<FordelingTilfelle> utledTilfelleForAndel(BeregningsgrunnlagPeriodeDto periode, FordelBeregningsgrunnlagTilfelleInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        LocalDate skjæringstidspunkt = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        if (FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, input.getAktivitetAggregat(), skjæringstidspunkt) && !erAutomatiskFordelt(andel)) {
+        if (FordelTilkommetArbeidsforholdTjeneste.erAktivitetLagtTilIPeriodisering(andel) && !erAutomatiskFordelt(andel)) {
             return Optional.of(FordelingTilfelle.NY_AKTIVITET);
         }
 

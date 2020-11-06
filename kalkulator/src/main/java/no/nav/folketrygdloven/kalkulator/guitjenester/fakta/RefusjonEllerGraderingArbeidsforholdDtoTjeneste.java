@@ -59,7 +59,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                             .orElseThrow(() -> new IllegalStateException("Forventet å finne matchende periode"));
                     var andelTilfelleMap = vurderManuellBehandlingForPeriode(periodeFraSteg, fordelingInput);
                     andelTilfelleMap.entrySet().stream()
-                            .filter(e -> Boolean.FALSE.equals(e.getKey().getLagtTilAvSaksbehandler()))
+                            .filter(e -> Boolean.FALSE.equals(e.getKey().erLagtTilAvSaksbehandler()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                             .forEach(tilfelleMap::put);
                 });
@@ -132,7 +132,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
     private static Optional<BigDecimal> finnRefusjonsbeløpForAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,
                                                                            BeregningsgrunnlagPeriodeDto periode) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(andel -> !andel.getLagtTilAvSaksbehandler())
+                .filter(andel -> !andel.erLagtTilAvSaksbehandler())
                 .filter(andel -> andel.gjelderSammeArbeidsforhold(distinctAndel))
                 .filter(andel -> andel.getBgAndelArbeidsforhold()
                         .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO).compareTo(BigDecimal.ZERO) != 0)

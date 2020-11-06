@@ -84,7 +84,6 @@ public class FastsettFaktaOmBeregningVerdierTjeneste {
                 .medFastsattAvSaksbehandler(true);
         if (andel.getNyAndel() || andel.getLagtTilAvSaksbehandler()) {
             korrektAndel.nyttAndelsnr(korrektPeriode)
-                    .medLagtTilAvSaksbehandler(true)
                     .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
                     .build(korrektPeriode);
         }
@@ -105,7 +104,6 @@ public class FastsettFaktaOmBeregningVerdierTjeneste {
                 .medBeregnetPrÅr(fastsatt)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(fastsatteVerdier.getSkalHaBesteberegning()) ? fastsatt : null)
                 .medFastsattAvSaksbehandler(true)
-                .medLagtTilAvSaksbehandler(true)
                 .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
                 .build(periode);
     }

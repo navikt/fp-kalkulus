@@ -236,39 +236,9 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             kladd = eksisterendeBeregningsgrunnlagPeriod;
         }
 
-        public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
-            verifiserKanModifisere();
-            kladd.beregningsgrunnlagPrStatusOgAndelList.add(beregningsgrunnlagPrStatusOgAndel);
-            return this;
-        }
-
-        public Builder fjernBeregningsgrunnlagPrStatusOgAndelerSomIkkeLiggerIListeAvAndelsnr(List<Long> listeAvAndelsnr) {
-            verifiserKanModifisere();
-            List<BeregningsgrunnlagPrStatusOgAndel> andelerSomSkalFjernes = new ArrayList<>();
-            for (BeregningsgrunnlagPrStatusOgAndel andel : kladd.getBeregningsgrunnlagPrStatusOgAndelList()) {
-                if (!listeAvAndelsnr.contains(andel.getAndelsnr()) && andel.getLagtTilAvSaksbehandler()) {
-                    andelerSomSkalFjernes.add(andel);
-                }
-            }
-            kladd.beregningsgrunnlagPrStatusOgAndelList.removeAll(andelerSomSkalFjernes);
-            return this;
-        }
-
         public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.Builder prStatusOgAndelBuilder) {
             verifiserKanModifisere();
             prStatusOgAndelBuilder.build(kladd);
-            return this;
-        }
-
-        public Builder medBeregningsgrunnlagPrStatusOgAndel(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndeler) {
-            verifiserKanModifisere();
-            kladd.beregningsgrunnlagPrStatusOgAndelList = beregningsgrunnlagPrStatusOgAndeler;
-            return this;
-        }
-
-        public Builder fjernBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
-            verifiserKanModifisere();
-            kladd.beregningsgrunnlagPrStatusOgAndelList.remove(beregningsgrunnlagPrStatusOgAndel);
             return this;
         }
 
@@ -309,12 +279,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         public Builder leggTilPeriodeÅrsaker(Collection<PeriodeÅrsak> periodeÅrsaker) {
             verifiserKanModifisere();
             periodeÅrsaker.forEach(this::leggTilPeriodeÅrsak);
-            return this;
-        }
-
-        public Builder tilbakestillPeriodeÅrsaker() {
-            verifiserKanModifisere();
-            kladd.beregningsgrunnlagPeriodeÅrsaker.clear();
             return this;
         }
 

@@ -17,13 +17,12 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -94,8 +93,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setErNyIArbeidslivet(andel.getNyIArbeidslivet());
         dto.setLonnsendringIBeregningsperioden(andel.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdDto::erLønnsendringIBeregningsperioden).orElse(null));
-        dto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
-        dto.setErTilkommetAndel(erTilkommetAndel(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning));
+        dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
+        dto.setErTilkommetAndel(!andel.getKilde().equals(AndelKilde.PROSESS_START));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettesForYtelse(input, andel));
         }
@@ -115,27 +114,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
                 .ifPresent(dto::setBelopPrMndEtterAOrdningen);
         }
         return dto;
-    }
-
-    /**
-     * Bestemmer om andel er tilkommet eller lagt til ved automatisk omfordeling i fordel-steget.
-     *
-     * Disse andelene skal ikke vises i beregningspunktet under avviksvurdering og visning av registerinntekt.
-     *
-     * @param andel Andel fra beregningsgrunnlag
-     * @param beregningAktivitetAggregat beregningsaktiviteter
-     * @param skjæringstidspunktForBeregning Skjæringstidspunkt for beregning
-     * @return Om andel er lagt til i fordelsteget
-     */
-    private boolean erTilkommetAndel(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningAktivitetAggregatDto beregningAktivitetAggregat, LocalDate skjæringstidspunktForBeregning) {
-        // Om fordel er ulik null betyr det at vi enten har passert manuell omfordeling eller automatisk omfordeling
-        if (andel.getFordeltPrÅr() != null) {
-            // Andeler som er lagt til i fordelsteget vil ikke ha satt beregnet eller overstyrt
-            return andel.getBeregnetPrÅr() == null && andel.getOverstyrtPrÅr() == null;
-        }
-        // Om vi ikke har passert fordeling betyr det enten at vi ikke har omfordelt eller at vi står i aksjonspunkt
-        // Grunnen til at vi ikkje kan bruke denne ved automatisk omfordeling er fordi den alltid vil
-        return FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, skjæringstidspunktForBeregning);
     }
 
     private boolean skalGrunnlagFastsettesForYtelse(BeregningsgrunnlagGUIInput input,

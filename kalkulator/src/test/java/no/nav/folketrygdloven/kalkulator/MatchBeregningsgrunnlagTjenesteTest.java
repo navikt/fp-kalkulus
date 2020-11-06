@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.vedtak.exception.TekniskException;
 
@@ -41,14 +42,14 @@ public class MatchBeregningsgrunnlagTjenesteTest {
         Long andelsnr = 1L;
 
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
-        BeregningsgrunnlagPeriodeDto periode =    lagPeriode(beregningsgrunnlag);
+        BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
-            .medInntektskategori(Inntektskategori.SJØMANN)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn))
-            .build(periode);
+                .medAndelsnr(andelsnr)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .medInntektskategori(Inntektskategori.SJØMANN)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn))
+                .build(periode);
 
         // Act
         BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, andelsnr, arbId);
@@ -66,12 +67,12 @@ public class MatchBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
-            .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
-            .medInntektskategori(Inntektskategori.SJØMANN)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode);
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
+                .medAndelsnr(andelsnr)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .medInntektskategori(Inntektskategori.SJØMANN)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
 
         // Act
         BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, null, arbId);
@@ -88,12 +89,12 @@ public class MatchBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
-            .medAndelsnr(andelsnr)
-            .medLagtTilAvSaksbehandler(true)
-            .medInntektskategori(Inntektskategori.SJØMANN)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode);
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverEn).medArbeidsforholdRef(arbId))
+                .medAndelsnr(andelsnr)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .medInntektskategori(Inntektskategori.SJØMANN)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode);
 
         // Act
         Assertions.assertThrows(TekniskException.class, () -> {

@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 
 
 public class SkalKunneEndreAktivitetTest {
@@ -26,15 +27,15 @@ public class SkalKunneEndreAktivitetTest {
     public void setUp() {
         beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING).medGrunnbeløp(BigDecimal.valueOf(600000)).build();
         periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
-            .build(beregningsgrunnlag);
+                .build(beregningsgrunnlag);
     }
 
     @Test
     public void skalIkkjeKunneEndreAktivitetOmLagtTilAvSaksbehandlerOgDagpenger() {
         BeregningsgrunnlagPrStatusOgAndelDto dagpengeAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.DAGPENGER)
-            .medLagtTilAvSaksbehandler(true)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.DAGPENGER)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .build(periode);
 
         Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(dagpengeAndel);
 
@@ -44,9 +45,8 @@ public class SkalKunneEndreAktivitetTest {
     @Test
     public void skalIkkjeKunneEndreAktivitetOmIkkjeLagtTilAvSaksbehandler() {
         BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medLagtTilAvSaksbehandler(false)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .build(periode);
 
         Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans);
 
@@ -56,9 +56,9 @@ public class SkalKunneEndreAktivitetTest {
     @Test
     public void skalKunneEndreAktivitetOmLagtTilAvSaksbehandler() {
         BeregningsgrunnlagPrStatusOgAndelDto frilans = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medLagtTilAvSaksbehandler(true)
-            .build(periode);
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
+                .build(periode);
 
         Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans);
 

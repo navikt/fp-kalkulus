@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -16,6 +15,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelForFaktaOmBeregningDto;
@@ -33,14 +33,13 @@ public class AndelerForFaktaOmBeregningTjeneste {
         } else {
             gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         }
-        var beregningAktivitetAggregat = gjeldendeGrunnlag.getGjeldendeAktiviteter();
         BeregningsgrunnlagDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIFørstePeriode = beregningsgrunnlag
             .getBeregningsgrunnlagPerioder()
             .get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
-            .filter(a -> !FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(a, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()))
+            .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START) || a.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER))
             .collect(Collectors.toList());
         return andelerIFørstePeriode.stream()
             .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))
@@ -60,7 +59,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
         andelDto.setVisningsnavn(VisningsnavnForAktivitetTjeneste.lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
         andelDto.setSkalKunneEndreAktivitet(SkalKunneEndreAktivitet.skalKunneEndreAktivitet(andel));
-        andelDto.setLagtTilAvSaksbehandler(andel.getLagtTilAvSaksbehandler());
+        andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag).ifPresent(andelDto::setArbeidsforhold);
         finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(andelDto::setRefusjonskrav);
         FinnInntektForVisning.finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,

@@ -18,7 +18,6 @@ public class RedigerbarAndelDto {
     private AndelKilde kilde;
     private AktivitetStatus aktivitetStatus;
     private OpptjeningAktivitetType arbeidsforholdType;
-    private Boolean lagtTilAvSaksbehandler;
     private LocalDate beregningsperiodeFom;
     private LocalDate beregningsperiodeTom;
 
@@ -34,7 +33,6 @@ public class RedigerbarAndelDto {
                               AndelKilde kilde,
                               AktivitetStatus aktivitetStatus,
                               OpptjeningAktivitetType arbeidsforholdType,
-                              Boolean lagtTilAvSaksbehandler,
                               LocalDate beregningsperiodeFom,
                               LocalDate beregningsperiodeTom) {
         this.andelsnr = andelsnr;
@@ -44,7 +42,6 @@ public class RedigerbarAndelDto {
         this.kilde = kilde;
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsforholdType = arbeidsforholdType;
-        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.beregningsperiodeFom = beregningsperiodeFom;
         this.beregningsperiodeTom = beregningsperiodeTom;
     }
@@ -52,15 +49,14 @@ public class RedigerbarAndelDto {
     public RedigerbarAndelDto(Boolean nyAndel,
                               String arbeidsgiverId, String internArbeidsforholdId,
                               Long andelsnr,
-                              Boolean lagtTilAvSaksbehandler,
-                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
+                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType, AndelKilde kilde) {
         Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
         Objects.requireNonNull(arbeidsforholdType, "arbeidsforholdType");
         this.nyAndel = nyAndel;
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = internArbeidsforholdId;
         this.andelsnr = andelsnr;
-        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
+        this.kilde = kilde;
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsforholdType = arbeidsforholdType;
     }
@@ -68,15 +64,14 @@ public class RedigerbarAndelDto {
     public RedigerbarAndelDto(Boolean nyAndel,
                               String arbeidsgiverId, InternArbeidsforholdRefDto arbeidsforholdId,
                               Long andelsnr,
-                              Boolean lagtTilAvSaksbehandler,
-                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
+                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType, AndelKilde kilde) {
         Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
         Objects.requireNonNull(arbeidsforholdType, "arbeidsforholdType");
         this.nyAndel = nyAndel;
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId == null ? null : arbeidsforholdId.getReferanse();
         this.andelsnr = andelsnr;
-        this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
+        this.kilde = kilde;
         this.aktivitetStatus = aktivitetStatus;
         this.arbeidsforholdType = arbeidsforholdType;
     }
@@ -84,9 +79,8 @@ public class RedigerbarAndelDto {
 
     public RedigerbarAndelDto(Boolean nyAndel,
                               Long andelsnr,
-                              Boolean lagtTilAvSaksbehandler,
-                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType) {
-        this(nyAndel, null, (InternArbeidsforholdRefDto) null, andelsnr, lagtTilAvSaksbehandler, aktivitetStatus, arbeidsforholdType);
+                              AktivitetStatus aktivitetStatus, OpptjeningAktivitetType arbeidsforholdType, AndelKilde kilde) {
+        this(nyAndel, null, (InternArbeidsforholdRefDto) null, andelsnr, aktivitetStatus, arbeidsforholdType, kilde);
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -113,8 +107,8 @@ public class RedigerbarAndelDto {
         return nyAndel;
     }
 
-    public Boolean getLagtTilAvSaksbehandler() {
-        return lagtTilAvSaksbehandler;
+    public Boolean erLagtTilAvSaksbehandler() {
+        return kilde.equals(AndelKilde.SAKSBEHANDLER_FORDELING) || kilde.equals(AndelKilde.SAKSBEHANDLER_KOFAKBER);
     }
 
     public LocalDate getBeregningsperiodeFom() {

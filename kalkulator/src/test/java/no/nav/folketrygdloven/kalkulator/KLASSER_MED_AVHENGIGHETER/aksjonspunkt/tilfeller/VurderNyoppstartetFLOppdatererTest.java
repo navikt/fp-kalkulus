@@ -53,7 +53,6 @@ public class VurderNyoppstartetFLOppdatererTest {
             .build(beregningsgrunnlag);
         frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
-            .medLagtTilAvSaksbehandler(false)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode1);

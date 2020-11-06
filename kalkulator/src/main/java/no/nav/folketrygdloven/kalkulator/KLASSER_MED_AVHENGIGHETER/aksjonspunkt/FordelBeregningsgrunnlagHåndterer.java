@@ -121,7 +121,6 @@ public class FordelBeregningsgrunnlagHåndterer {
                 .medAktivitetStatus(endretAndel.getAktivitetStatus())
                 .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
                 .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
-                .medLagtTilAvSaksbehandler(endretAndel.getLagtTilAvSaksbehandler())
                 .medKilde(endretAndel.getKilde() == null ? AndelKilde.PROSESS_START : endretAndel.getKilde())
                 .medArbforholdType(endretAndel.getArbeidsforholdType())
                 .medFastsattAvSaksbehandler(true);
@@ -141,7 +140,7 @@ public class FordelBeregningsgrunnlagHåndterer {
                     .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
                     .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null))
                     .medHjemmel(arbeidsforhold.getHjemmelForRefusjonskravfrist());
-            if (!endretAndel.getLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {
+            if (!endretAndel.erLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {
                 mapNaturalytelse(arbeidsforhold, abeidsforholdBuilder);
             }
             andelBuilder.medBGAndelArbeidsforhold(abeidsforholdBuilder);

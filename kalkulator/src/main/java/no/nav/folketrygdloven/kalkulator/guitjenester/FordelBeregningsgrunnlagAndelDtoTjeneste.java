@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -21,9 +21,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
 
 class FordelBeregningsgrunnlagAndelDtoTjeneste {
 
@@ -37,8 +37,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, periode);
             RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
-            var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
-            endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erNyAktivitet(andel, beregningAktivitetAggregat, input.getSkjæringstidspunktForBeregning()));
+            endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erAktivitetLagtTilIPeriodisering(andel));
             endringAndel.setArbeidsforholdType(new OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
             endringAndeler.add(endringAndel);
         }
@@ -69,7 +68,7 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
     private static void settFordelingForrigeBehandling(BeregningsgrunnlagGUIInput input,
                                                        BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        FordelBeregningsgrunnlagAndelDto endringAndel) {
-        if (andel.getLagtTilAvSaksbehandler()) {
+        if (andel.erLagtTilAvSaksbehandler()) {
             endringAndel.setFordelingForrigeBehandling(null);
             return;
         }

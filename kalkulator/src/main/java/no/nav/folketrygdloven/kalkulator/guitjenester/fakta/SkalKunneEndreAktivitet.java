@@ -19,7 +19,7 @@ public class SkalKunneEndreAktivitet {
      * @return boolean som seier om andel/aktivitet skal kunne endres i gui
      */
     public static Boolean skalKunneEndreAktivitet(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getLagtTilAvSaksbehandler() && !andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER);
+        return andel.erLagtTilAvSaksbehandler() && !andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER);
     }
 
 }

@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 
 public class BeregningsperiodeTjenesteTest {
 
@@ -219,7 +220,7 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverA))
-            .medLagtTilAvSaksbehandler(lagtTilAvSaksbehandler)
+            .medKilde(lagtTilAvSaksbehandler ? AndelKilde.SAKSBEHANDLER_KOFAKBER : AndelKilde.PROSESS_START)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .build(periode);
         return beregningsgrunnlag;

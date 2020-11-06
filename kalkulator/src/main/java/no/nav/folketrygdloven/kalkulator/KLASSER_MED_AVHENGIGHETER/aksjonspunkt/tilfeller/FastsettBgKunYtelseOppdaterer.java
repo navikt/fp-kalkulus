@@ -65,8 +65,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                     .medInntektskategori(inntektskategori)
                     .medFastsattAvSaksbehandler(true)
                     .nyttAndelsnr(periode)
-                    .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
-                    .medLagtTilAvSaksbehandler(true).build(periode);
+                    .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER).build(periode);
         } else {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchetAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList()
                     .stream().filter(bgAndel -> bgAndel.equals(korrektAndel)).findFirst();
@@ -102,7 +101,6 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                 .medBeregnetPrÅr(fastsatt)
                 .medBesteberegningPrÅr(Boolean.TRUE.equals(skalBrukeBesteberegning) ? fastsatt : null)
                 .medFastsattAvSaksbehandler(true)
-                .medLagtTilAvSaksbehandler(true)
                 .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
                 .build(periode);
     }
