@@ -61,6 +61,7 @@ public class BehandlingslagerTilKalkulusMapper {
         return new FaktaArbeidsforholdDto.Builder(mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()), mapArbeidsforholdRef(faktaArbeidsforholdEntitet.getArbeidsforholdRef()))
                 .medErTidsbegrenset(faktaArbeidsforholdEntitet.getErTidsbegrenset())
                 .medHarMottattYtelse(faktaArbeidsforholdEntitet.getHarMottattYtelse())
+                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperioden())
                 .build();
     }
 
@@ -71,6 +72,7 @@ public class BehandlingslagerTilKalkulusMapper {
                 .medMottarEtterlønnSluttpakke(faktaAktørEntitet.getMottarEtterlønnSluttpakke())
                 .medHarFLMottattYtelse(faktaAktørEntitet.getHarFLMottattYtelse())
                 .medSkalBesteberegnes(faktaAktørEntitet.getSkalBesteberegnes())
+                .medErMilitærSiviltjeneste(faktaAktørEntitet.getSkalBeregnesSomMilitær())
                 .build();
     }
 

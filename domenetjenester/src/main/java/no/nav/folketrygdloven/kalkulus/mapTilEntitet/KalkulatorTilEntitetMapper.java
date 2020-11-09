@@ -155,6 +155,7 @@ public class KalkulatorTilEntitetMapper {
                 .medArbeidsforholdRef(mapArbeidsforholdRef(faktaArbeidsforholdDto.getArbeidsforholdRef()))
                 .medErTidsbegrenset(faktaArbeidsforholdDto.getErTidsbegrenset())
                 .medHarMottattYtelse(faktaArbeidsforholdDto.getHarMottattYtelse())
+                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdDto.getHarLønnsendringIBeregningsperioden())
                 .build();
     }
 
@@ -165,6 +166,7 @@ public class KalkulatorTilEntitetMapper {
                 .medErNyIArbeidslivetSN(faktaAktørDto.getErNyIArbeidslivetSN())
                 .medErNyoppstartetFL(faktaAktørDto.getErNyoppstartetFL())
                 .medHarFLMottattYtelse(faktaAktørDto.getHarFLMottattYtelse())
+                .medSkalBeregnesSomMilitær(faktaAktørDto.getSkalBeregnesSomMilitær())
                 .build();
     }
 

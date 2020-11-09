@@ -5,7 +5,7 @@ public class FaktaAktørDto {
     private Boolean erNyIArbeidslivetSN;
     private Boolean erNyoppstartetFL;
     private Boolean harFLMottattYtelse;
-    private Boolean erMilitærSiviltjeneste;
+    private Boolean skalBeregnesSomMilitær;
     private Boolean skalBesteberegnes;
     private Boolean mottarEtterlønnSluttpakke;
 
@@ -17,7 +17,7 @@ public class FaktaAktørDto {
         this.harFLMottattYtelse = original.getHarFLMottattYtelse();
         this.skalBesteberegnes = original.getSkalBesteberegnes();
         this.mottarEtterlønnSluttpakke = original.getMottarEtterlønnSluttpakke();
-        this.erMilitærSiviltjeneste = original.getErMilitærSiviltjeneste();
+        this.skalBeregnesSomMilitær = original.getSkalBeregnesSomMilitær();
     }
 
     public Boolean getErNyIArbeidslivetSN() {
@@ -40,8 +40,8 @@ public class FaktaAktørDto {
         return mottarEtterlønnSluttpakke;
     }
 
-    public Boolean getErMilitærSiviltjeneste() {
-        return erMilitærSiviltjeneste;
+    public Boolean getSkalBeregnesSomMilitær() {
+        return skalBeregnesSomMilitær;
     }
 
     @Override
@@ -78,33 +78,33 @@ public class FaktaAktørDto {
             return faktaAktørDto == null ? new Builder() : new Builder(faktaAktørDto);
         }
 
-        public Builder medErNyIArbeidslivetSN(boolean erNyIArbeidslivetSN) {
+        public Builder medErNyIArbeidslivetSN(Boolean erNyIArbeidslivetSN) {
             mal.erNyIArbeidslivetSN = erNyIArbeidslivetSN;
             return this;
         }
 
-        public Builder medErNyoppstartetFL(boolean erNyoppstartetFL) {
+        public Builder medErNyoppstartetFL(Boolean erNyoppstartetFL) {
             mal.erNyoppstartetFL = erNyoppstartetFL;
             return this;
         }
 
-        public Builder medHarFLMottattYtelse(boolean harFLMottattYtelse) {
+        public Builder medHarFLMottattYtelse(Boolean harFLMottattYtelse) {
             mal.harFLMottattYtelse = harFLMottattYtelse;
             return this;
         }
 
-        public Builder medSkalBesteberegnes(boolean skalBesteberegnes) {
+        public Builder medSkalBesteberegnes(Boolean skalBesteberegnes) {
             mal.skalBesteberegnes = skalBesteberegnes;
             return this;
         }
 
-        public Builder medErMilitærSiviltjeneste(boolean erMilitærSiviltjeneste) {
-            mal.erMilitærSiviltjeneste = erMilitærSiviltjeneste;
+        public Builder medErMilitærSiviltjeneste(Boolean skalBeregnesSomMilitær) {
+            mal.skalBeregnesSomMilitær = skalBeregnesSomMilitær;
             return this;
         }
 
 
-        public Builder medMottarEtterlønnSluttpakke(boolean mottarEtterlønnSluttpakke) {
+        public Builder medMottarEtterlønnSluttpakke(Boolean mottarEtterlønnSluttpakke) {
             mal.mottarEtterlønnSluttpakke = mottarEtterlønnSluttpakke;
             return this;
         }
@@ -123,7 +123,7 @@ public class FaktaAktørDto {
         public boolean erUgyldig() {
             return mal.erNyIArbeidslivetSN == null
                     && mal.erNyoppstartetFL == null
-                    && mal.erMilitærSiviltjeneste == null
+                    && mal.skalBeregnesSomMilitær == null
                     && mal.harFLMottattYtelse == null
                     && mal.skalBesteberegnes == null
                     && mal.mottarEtterlønnSluttpakke == null;

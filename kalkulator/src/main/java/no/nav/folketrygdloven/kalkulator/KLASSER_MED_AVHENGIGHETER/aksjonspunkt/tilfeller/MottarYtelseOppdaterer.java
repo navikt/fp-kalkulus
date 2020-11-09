@@ -38,9 +38,11 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
 
         // Setter fakta aggregat
         FaktaAggregatDto.Builder faktaBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
-        FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medHarFLMottattYtelse(mottarYtelseDto.getFrilansMottarYtelse());
-        faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        if  (mottarYtelseDto.getFrilansMottarYtelse() != null) {
+            FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
+            faktaAktørBuilder.medHarFLMottattYtelse(mottarYtelseDto.getFrilansMottarYtelse());
+            faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        }
         mottarYtelseDto.getArbeidstakerUtenIMMottarYtelse()
                 .forEach(arbMottarYtelse ->
                         andelListe.stream()

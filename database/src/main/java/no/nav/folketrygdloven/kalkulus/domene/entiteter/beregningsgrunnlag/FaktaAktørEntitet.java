@@ -61,6 +61,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
         this.harFLMottattYtelse = original.getHarFLMottattYtelse();
         this.skalBesteberegnes = original.getSkalBesteberegnes();
         this.mottarEtterlønnSluttpakke = original.getMottarEtterlønnSluttpakke();
+        this.skalBeregnesSomMilitær = original.getSkalBeregnesSomMilitær();
     }
 
 
@@ -111,32 +112,32 @@ public class FaktaAktørEntitet extends BaseEntitet {
             mal = new FaktaAktørEntitet(kopi);
         }
 
-        public Builder medErNyIArbeidslivetSN(boolean erNyIArbeidslivetSN) {
+        public Builder medErNyIArbeidslivetSN(Boolean erNyIArbeidslivetSN) {
             mal.erNyIArbeidslivetSN = erNyIArbeidslivetSN;
             return this;
         }
 
-        public Builder medErNyoppstartetFL(boolean erNyoppstartetFL) {
+        public Builder medErNyoppstartetFL(Boolean erNyoppstartetFL) {
             mal.erNyoppstartetFL = erNyoppstartetFL;
             return this;
         }
 
-        public Builder medHarFLMottattYtelse(boolean harFLMottattYtelse) {
+        public Builder medHarFLMottattYtelse(Boolean harFLMottattYtelse) {
             mal.harFLMottattYtelse = harFLMottattYtelse;
             return this;
         }
 
-        public Builder medSkalBesteberegnes(boolean skalBesteberegnes) {
+        public Builder medSkalBesteberegnes(Boolean skalBesteberegnes) {
             mal.skalBesteberegnes = skalBesteberegnes;
             return this;
         }
 
-        public Builder medMottarEtterlønnSluttpakke(boolean mottarEtterlønnSluttpakke) {
+        public Builder medMottarEtterlønnSluttpakke(Boolean mottarEtterlønnSluttpakke) {
             mal.mottarEtterlønnSluttpakke = mottarEtterlønnSluttpakke;
             return this;
         }
 
-        public Builder medSkalBeregnesSomMilitær(boolean skalBeregnesSomMilitær) {
+        public Builder medSkalBeregnesSomMilitær(Boolean skalBeregnesSomMilitær) {
             mal.skalBeregnesSomMilitær = skalBeregnesSomMilitær;
             return this;
         }

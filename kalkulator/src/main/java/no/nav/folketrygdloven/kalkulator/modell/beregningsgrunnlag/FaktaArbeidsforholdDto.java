@@ -91,17 +91,17 @@ public class FaktaArbeidsforholdDto {
             return this;
         }
 
-        public Builder medHarMottattYtelse(boolean harMottattYtelse) {
+        public Builder medHarMottattYtelse(Boolean harMottattYtelse) {
             mal.harMottattYtelse = harMottattYtelse;
             return this;
         }
 
-        public Builder medErTidsbegrenset(boolean erTidsbegrenset) {
+        public Builder medErTidsbegrenset(Boolean erTidsbegrenset) {
             mal.erTidsbegrenset = erTidsbegrenset;
             return this;
         }
 
-        public Builder medHarLønnsendringIBeregningsperioden(boolean harLønnsendringIBeregningsperioden) {
+        public Builder medHarLønnsendringIBeregningsperioden(Boolean harLønnsendringIBeregningsperioden) {
             mal.harLønnsendringIBeregningsperioden = harLønnsendringIBeregningsperioden;
             return this;
         }
