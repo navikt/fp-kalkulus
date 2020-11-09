@@ -99,7 +99,8 @@ public class FaktaAggregatDto  {
             }
         }
 
-        private boolean manglerFakta() {
+        // Brukes i fp-sak
+        public boolean manglerFakta() {
             return kladd.faktaArbeidsforholdListe.isEmpty() && kladd.faktaAktør == null;
         }
 
