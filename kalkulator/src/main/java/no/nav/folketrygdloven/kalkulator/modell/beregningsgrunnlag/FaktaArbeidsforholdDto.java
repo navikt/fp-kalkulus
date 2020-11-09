@@ -118,7 +118,8 @@ public class FaktaArbeidsforholdDto {
             }
         }
 
-        private boolean manglerFakta() {
+        // Brukes av fp-sak og må vere public
+        public boolean manglerFakta() {
             return mal.erTidsbegrenset == null &&
                     mal.harLønnsendringIBeregningsperioden == null &&
                     mal.harMottattYtelse == null;

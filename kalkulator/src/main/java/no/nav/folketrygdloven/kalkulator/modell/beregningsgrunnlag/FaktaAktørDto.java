@@ -120,6 +120,7 @@ public class FaktaAktørDto {
             }
         }
 
+        // Brukes av fp-sak og må vere public
         public boolean erUgyldig() {
             return mal.erNyIArbeidslivetSN == null
                     && mal.erNyoppstartetFL == null
