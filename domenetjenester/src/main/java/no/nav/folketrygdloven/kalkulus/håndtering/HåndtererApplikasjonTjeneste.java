@@ -45,17 +45,8 @@ public class HåndtererApplikasjonTjeneste {
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
         HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, håndteringInputTjeneste.lagInput(koblingId, håndteringKode));
         var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
-        mapFaktaBeregning(håndteringKode, resultat, beregningsgrunnlagGrunnlagBuilder);
         beregningsgrunnlagRepository.lagre(koblingId, beregningsgrunnlagGrunnlagBuilder, MapHåndteringskodeTilTilstand.map(håndteringKode));
         return resultat.getEndring();
-    }
-
-    // TODO: Fjernes når domenemodellen er utvidet med ny faktastruktur (TSF-1340)
-    private void mapFaktaBeregning(HåndteringKode håndteringKode, HåndteringResultat resultat, BeregningsgrunnlagGrunnlagBuilder beregningsgrunnlagGrunnlagBuilder) {
-        if (håndteringKode.equals(HåndteringKode.FAKTA_OM_BEREGNING)) {
-            beregningsgrunnlagGrunnlagBuilder.medFaktaAggregat(KalkulatorTilEntitetMapper.mapFaktaAggregat(resultat.getNyttGrunnlag().getBeregningsgrunnlag()
-                    .orElseThrow(() -> new IllegalStateException("Forventer beregningsgrunnlag"))).orElse(null));
-        }
     }
 
     private void rullTilbakeVedBehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {

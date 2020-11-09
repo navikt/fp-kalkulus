@@ -30,6 +30,14 @@ public class BeregningsgrunnlagGrunnlagDtoBuilder {
         return BeregningsgrunnlagDto.Builder.oppdater(kladd.getBeregningsgrunnlag());
     }
 
+    /** Henter oppdaterere for fakta-aggregat
+     **
+     * @return Builder som lager kopi og oppdaterer fakta. Må settes på grunnlaget etter endring.
+     */
+    public FaktaAggregatDto.Builder getFaktaAggregatBuilder() {
+        return kladd.getFaktaAggregat().map(FaktaAggregatDto.Builder::oppdater).orElse(FaktaAggregatDto.builder());
+    }
+
     public BeregningsgrunnlagGrunnlagDtoBuilder medBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserKanModifisere();
         kladd.setBeregningsgrunnlag(beregningsgrunnlag);
@@ -71,6 +79,12 @@ public class BeregningsgrunnlagGrunnlagDtoBuilder {
     public BeregningsgrunnlagGrunnlagDtoBuilder medOverstyring(BeregningAktivitetOverstyringerDto beregningAktivitetOverstyringer) {
         verifiserKanModifisere();
         kladd.setOverstyringer(beregningAktivitetOverstyringer);
+        return this;
+    }
+
+    public BeregningsgrunnlagGrunnlagDtoBuilder medFaktaAggregat(FaktaAggregatDto faktaAggregatDto) {
+        verifiserKanModifisere();
+        kladd.setFaktaAggregat(faktaAggregatDto);
         return this;
     }
 

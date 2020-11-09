@@ -15,6 +15,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
@@ -34,6 +36,12 @@ public class VurderMilitærOppdaterer implements FaktaOmBeregningTilfelleOppdate
             slettMilitærStatusOgAndelHvisFinnes(beregningsgrunnlag);
         }
 
+        // Setter fakta aggregat
+        FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
+        FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
+        faktaAktørBuilder.medErMilitærSiviltjeneste(militærDto.getHarMilitaer());
+        faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }
 
     private void slettMilitærStatusOgAndelHvisFinnes(BeregningsgrunnlagDto nyttBeregningsgrunnlag) {

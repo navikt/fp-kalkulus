@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
-import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapFaktaAggregat;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -217,10 +215,7 @@ public class BeregningStegTjeneste {
                                 return b;
                             })
                     .map(builder -> builder.build(input.getStegUtTilstand()))
-                    .map(gr -> KalkulatorTilEntitetMapper.mapGrunnlag(gr)
-                            .medFaktaAggregat(mapFaktaAggregat(gr.getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER))
-                                        .orElse(null))
-)
+                    .map(KalkulatorTilEntitetMapper::mapGrunnlag)
                     .ifPresent(b -> repository.lagre(behandlingId, b, input.getStegUtTilstand()));
         }
         lagreRegelsporing(koblingId, beregningResultatAggregat.getRegelSporingAggregat());

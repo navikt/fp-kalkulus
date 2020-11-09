@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.mapFraEntitet;
 
+import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsforholdRef;
+import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsgiver;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -13,6 +16,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
@@ -21,6 +27,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -36,8 +45,33 @@ public class BehandlingslagerTilKalkulusMapper {
         oppdatere.medRegisterAktiviteter(mapAktiviteter(beregningsgrunnlagFraFagsystem.getRegisterAktiviteter()));
         beregningsgrunnlagFraFagsystem.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapAktiviteter(beregningAktivitetAggregatDto)));
         beregningsgrunnlagFraFagsystem.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
-
+        beregningsgrunnlagFraFagsystem.getFaktaAggregat().ifPresent(fakta -> oppdatere.medFaktaAggregat(mapFakta(fakta)));
         return oppdatere.build(beregningsgrunnlagFraFagsystem.getBeregningsgrunnlagTilstand());
+    }
+
+    private static FaktaAggregatDto mapFakta(FaktaAggregatEntitet fakta) {
+        FaktaAggregatDto.Builder faktaAggregatBuilder = FaktaAggregatDto.builder();
+        fakta.getFaktaAktør().map(BehandlingslagerTilKalkulusMapper::mapFaktaAktør).ifPresent(faktaAggregatBuilder::medFaktaAktør);
+        fakta.getFaktaArbeidsforhold().stream().map(BehandlingslagerTilKalkulusMapper::mapFaktaArbeidsforhold)
+                .forEach(faktaAggregatBuilder::erstattEksisterendeEllerLeggTil);
+        return faktaAggregatBuilder.build();
+    }
+
+    private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforholdEntitet) {
+        return new FaktaArbeidsforholdDto.Builder(mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()), mapArbeidsforholdRef(faktaArbeidsforholdEntitet.getArbeidsforholdRef()))
+                .medErTidsbegrenset(faktaArbeidsforholdEntitet.getErTidsbegrenset())
+                .medHarMottattYtelse(faktaArbeidsforholdEntitet.getHarMottattYtelse())
+                .build();
+    }
+
+    private static FaktaAktørDto mapFaktaAktør(FaktaAktørEntitet faktaAktørEntitet) {
+        return FaktaAktørDto.builder()
+                .medErNyoppstartetFL(faktaAktørEntitet.getErNyoppstartetFL())
+                .medErNyIArbeidslivetSN(faktaAktørEntitet.getErNyIArbeidslivetSN())
+                .medMottarEtterlønnSluttpakke(faktaAktørEntitet.getMottarEtterlønnSluttpakke())
+                .medHarFLMottattYtelse(faktaAktørEntitet.getHarFLMottattYtelse())
+                .medSkalBesteberegnes(faktaAktørEntitet.getSkalBesteberegnes())
+                .build();
     }
 
 
@@ -65,7 +99,7 @@ public class BehandlingslagerTilKalkulusMapper {
         BeregningRefusjonOverstyringerDto.Builder dtoBuilder = BeregningRefusjonOverstyringerDto.builder();
 
         refusjonOverstyringerFraFpsak.getRefusjonOverstyringer().forEach(beregningRefusjonOverstyring -> {
-            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(IAYMapperTilKalkulus.mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null));
+            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null));
             dtoBuilder.leggTilOverstyring(dto);
         });
         return dtoBuilder.build();
@@ -75,7 +109,7 @@ public class BehandlingslagerTilKalkulusMapper {
         return beregningAktivitet -> {
             BeregningAktivitetDto.Builder builder = BeregningAktivitetDto.builder();
             builder.medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef() == null ? null : IAYMapperTilKalkulus.mapArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef()));
-            builder.medArbeidsgiver(beregningAktivitet.getArbeidsgiver() == null ? null : IAYMapperTilKalkulus.mapArbeidsgiver(beregningAktivitet.getArbeidsgiver()));
+            builder.medArbeidsgiver(beregningAktivitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitet.getArbeidsgiver()));
             builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(beregningAktivitet.getOpptjeningAktivitetType().getKode()));
             builder.medPeriode(mapDatoIntervall(beregningAktivitet.getPeriode()));
             dtoBuilder.leggTilAktivitet(builder.build());
@@ -91,7 +125,7 @@ public class BehandlingslagerTilKalkulusMapper {
         beregningAktivitetOverstyringerFraFpsak.getOverstyringer().forEach(overstyring -> {
             BeregningAktivitetOverstyringDto.Builder builder = BeregningAktivitetOverstyringDto.builder();
             builder.medArbeidsforholdRef(overstyring.getArbeidsforholdRef() == null ? null : IAYMapperTilKalkulus.mapArbeidsforholdRef(overstyring.getArbeidsforholdRef()));
-            overstyring.getArbeidsgiver().ifPresent(arbeidsgiver -> builder.medArbeidsgiver(IAYMapperTilKalkulus.mapArbeidsgiver(arbeidsgiver)));
+            overstyring.getArbeidsgiver().ifPresent(arbeidsgiver -> builder.medArbeidsgiver(mapArbeidsgiver(arbeidsgiver)));
             builder.medHandling(overstyring.getHandling() == null ? null : BeregningAktivitetHandlingType.fraKode(overstyring.getHandling().getKode()));
             builder.medOpptjeningAktivitetType(OpptjeningAktivitetType.fraKode(overstyring.getOpptjeningAktivitetType().getKode()));
             builder.medPeriode(mapDatoIntervall(overstyring.getPeriode()));

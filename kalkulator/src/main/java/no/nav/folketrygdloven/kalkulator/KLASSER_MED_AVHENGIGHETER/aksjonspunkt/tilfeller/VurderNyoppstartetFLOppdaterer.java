@@ -13,6 +13,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 
@@ -32,6 +34,13 @@ public class VurderNyoppstartetFLOppdaterer implements FaktaOmBeregningTilfelleO
                 .medNyoppstartet(nyoppstartetDto.erErNyoppstartetFL(), bgAndel.getAktivitetStatus())
                 .build(bgPeriode);
         }
+
+        // Setter fakta aggregat
+        FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
+        FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
+        faktaAktørBuilder.medErNyoppstartetFL(nyoppstartetDto.erErNyoppstartetFL());
+        faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }
 
 }

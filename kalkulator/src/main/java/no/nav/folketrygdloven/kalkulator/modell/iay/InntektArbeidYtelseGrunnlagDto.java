@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 
 public class InntektArbeidYtelseGrunnlagDto {
 
@@ -144,13 +143,8 @@ public class InntektArbeidYtelseGrunnlagDto {
         } else {
             var overstyringer = arbeidsforholdInformasjon.getOverstyringer();
             return overstyringer.stream()
-                .filter(ov -> ov.kreverIkkeInntektsmelding())
-                .map(ov -> {
-                    // TODO (FC): fiks/fjern eksternRef herfra
-                    EksternArbeidsforholdRef eksternRef = null; // arbeidsforholdInformasjon.finnEkstern(ov.getArbeidsgiver(), ov.getArbeidsforholdRef()); //
-                                                                // NOSONAR
-                    return new InntektsmeldingSomIkkeKommerDto(ov.getArbeidsgiver(), ov.getArbeidsforholdRef(), eksternRef);
-                }) // NOSONAR
+                .filter(ArbeidsforholdOverstyringDto::kreverIkkeInntektsmelding)
+                .map(ov -> new InntektsmeldingSomIkkeKommerDto(ov.getArbeidsgiver(), ov.getArbeidsforholdRef())) // NOSONAR
                 .collect(Collectors.toList());
         }
     }

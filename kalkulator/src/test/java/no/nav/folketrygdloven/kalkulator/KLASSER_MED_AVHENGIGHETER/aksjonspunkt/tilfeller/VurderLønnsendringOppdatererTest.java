@@ -21,9 +21,20 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
@@ -47,25 +58,46 @@ public class VurderLønnsendringOppdatererTest {
         vurderLønnsendringOppdaterer = new VurderLønnsendringOppdaterer();
         Arbeidsgiver virksomheten = Arbeidsgiver.virksomhet(ORGNR);
         beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medGrunnbeløp(GRUNNBELØP)
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilFaktaOmBeregningTilfeller(FAKTA_OM_BEREGNING_TILFELLER)
-            .build();
+
+                .medGrunnbeløp(GRUNNBELØP)
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .leggTilFaktaOmBeregningTilfeller(FAKTA_OM_BEREGNING_TILFELLER)
+                .build();
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
-            .build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
+                .build(beregningsgrunnlag);
         frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(3252L)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medAktivitetStatus(AktivitetStatus.FRILANSER)
             .build(periode1);
         arbeidstakerAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomheten))
-            .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode1);
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusDays(1))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomheten))
+                .medAndelsnr(ANDELSNR_ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .build(periode1);
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medData(InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER)
+                        .leggTilAktørArbeid(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
+                                .medAktørId(koblingReferanse.getAktørId())
+                                .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
+                                        .medArbeidsgiver(virksomheten)
+                                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medErAnsettelsesPeriode(true)
+                                                .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10))))
+                                        .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny().medErAnsettelsesPeriode(false)
+                                                .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10)))
+                                                .medSisteLønnsendringsdato(SKJÆRINGSTIDSPUNKT.minusMonths(1))))))
+                .medInformasjon(ArbeidsforholdInformasjonDtoBuilder
+                        .oppdatere(Optional.empty())
+                        .leggTil(ArbeidsforholdOverstyringDtoBuilder.oppdatere(Optional.empty())
+                                .medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING)
+                                .medArbeidsgiver(virksomheten)).build()).build();
+        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                        .medBeregningsgrunnlag(beregningsgrunnlag),
+                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
     }
 
     @Test

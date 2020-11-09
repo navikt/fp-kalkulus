@@ -19,6 +19,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
 
@@ -28,7 +30,9 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
 
     @Override
     public void oppdater(FaktaBeregningLagreDto dto,
-                         Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
+                         Optional<BeregningsgrunnlagDto> forrigeBg,
+                         BeregningsgrunnlagInput input,
+                         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         BesteberegningFødendeKvinneDto besteberegningDto = dto.getBesteberegningAndeler();
         List<BesteberegningFødendeKvinneAndelDto> andelListe = besteberegningDto.getBesteberegningAndelListe();
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder();
@@ -46,6 +50,14 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
             beregningsgrunnlagBuilder
                     .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER));
         }
+
+        // Setter fakta aggregat
+        FaktaAggregatDto.Builder faktaBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
+        FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
+        boolean skalBesteberegnes = besteberegningDto.getBesteberegningAndelListe().stream().anyMatch(a -> a.getFastsatteVerdier().getSkalHaBesteberegning());
+        faktaAktørBuilder.medSkalBesteberegnes(skalBesteberegnes);
+        faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
     }
 
     private FastsatteVerdierDto mapTilFastsatteVerdier(DagpengeAndelLagtTilBesteberegningDto nyDagpengeAndel) {

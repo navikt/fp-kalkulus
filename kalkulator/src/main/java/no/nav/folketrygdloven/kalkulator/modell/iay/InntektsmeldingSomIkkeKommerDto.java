@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
@@ -13,9 +12,7 @@ public class InntektsmeldingSomIkkeKommerDto {
     private InternArbeidsforholdRefDto internRef;
 
     public InntektsmeldingSomIkkeKommerDto(Arbeidsgiver arbeidsgiver,
-                                           InternArbeidsforholdRefDto internRef,
-                                           @SuppressWarnings("unused") EksternArbeidsforholdRef eksternRef // NOSONAR
-    ) {
+                                           InternArbeidsforholdRefDto internRef) {
         this.arbeidsgiver = arbeidsgiver;
         this.internRef = internRef;
     }

@@ -13,6 +13,7 @@ public class BeregningsgrunnlagGrunnlagDto {
     private BeregningAktivitetAggregatDto registerAktiviteter;
     private BeregningAktivitetAggregatDto saksbehandletAktiviteter;
     private BeregningAktivitetOverstyringerDto overstyringer;
+    private FaktaAggregatDto faktaAggregat;
     private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
     private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;
 
@@ -51,6 +52,10 @@ public class BeregningsgrunnlagGrunnlagDto {
         return Optional.ofNullable(overstyringer);
     }
 
+    public Optional<FaktaAggregatDto> getFaktaAggregat() {
+        return Optional.ofNullable(faktaAggregat);
+    }
+
     public BeregningAktivitetAggregatDto getGjeldendeAktiviteter() {
         return getOverstyrteAktiviteter()
                 .or(this::getSaksbehandletAktiviteter)
@@ -87,6 +92,10 @@ public class BeregningsgrunnlagGrunnlagDto {
 
     void setOverstyringer(BeregningAktivitetOverstyringerDto overstyringer) {
         this.overstyringer = overstyringer;
+    }
+
+    void setFaktaAggregat(FaktaAggregatDto faktaAggregat) {
+        this.faktaAggregat = faktaAggregat;
     }
 
     public Optional<BeregningRefusjonOverstyringerDto> getRefusjonOverstyringer() {

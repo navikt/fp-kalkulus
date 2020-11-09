@@ -14,6 +14,8 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 
 @ApplicationScoped
@@ -26,9 +28,16 @@ public class VurderEtterlønnSluttpakkeOppdaterer implements FaktaOmBeregningTil
         List<BeregningsgrunnlagPrStatusOgAndelDto> etterlønnSluttpakkeAndel = finnEtterlønnSluttpakkeAndeler(grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag());
         if (!vurderDto.erEtterlønnSluttpakke()) {
             etterlønnSluttpakkeAndel.forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)
-                .medFastsattAvSaksbehandler(true)
-                .medBeregnetPrÅr(BigDecimal.ZERO));
+                    .medFastsattAvSaksbehandler(true)
+                    .medBeregnetPrÅr(BigDecimal.ZERO));
         }
+
+        // Setter fakta aggregat
+        FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
+        FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
+        faktaAktørBuilder.medMottarEtterlønnSluttpakke(vurderDto.erEtterlønnSluttpakke());
+        faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
+        grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }
 
     private List<BeregningsgrunnlagPrStatusOgAndelDto> finnEtterlønnSluttpakkeAndeler(BeregningsgrunnlagDto beregningsgrunnlag) {

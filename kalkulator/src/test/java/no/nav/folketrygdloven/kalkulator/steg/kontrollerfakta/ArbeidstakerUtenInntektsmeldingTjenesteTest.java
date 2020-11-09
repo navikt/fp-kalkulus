@@ -51,7 +51,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_andeler_uten_inntektsmelding() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
+        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -72,7 +72,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_andeler_uten_inntektsmelding_privatperson_som_arbeidsgiver() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.person(AKTØR_ID_ARBEIDSGIVER);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
+        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -114,7 +114,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_tom_liste_med_andeler_arbeidstaker_uten_inntektsmelding_status_DP_på_skjæringstidspunktet() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID, ARB_ID_EKSTERN);
+        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
