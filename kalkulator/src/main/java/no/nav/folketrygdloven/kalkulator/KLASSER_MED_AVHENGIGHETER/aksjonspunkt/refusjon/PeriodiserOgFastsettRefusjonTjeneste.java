@@ -65,7 +65,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
                             Optional<LocalDate> startdatoRefusjonOpt = finnStartdatoForRefusjonForAndel(eksisterendeAndel, splittAndeler);
                             if (refusjonSkalFjernes(eksisterendePeriode, startdatoRefusjonOpt)) {
                                 BGAndelArbeidsforholdDto.Builder bgAndelArbforBuilder = BGAndelArbeidsforholdDto.Builder.oppdater(eksisterendeAndel.getBgAndelArbeidsforhold());
-                                bgAndelArbforBuilder.medRefusjonskravPrÅr(BigDecimal.ZERO);
+                                bgAndelArbforBuilder.medSaksbehandletRefusjonPrÅr(BigDecimal.ZERO);
                             }
                         }));
         return nyttGrunnlag;

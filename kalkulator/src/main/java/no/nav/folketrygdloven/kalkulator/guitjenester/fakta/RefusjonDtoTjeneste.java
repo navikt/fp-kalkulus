@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingGraderingTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
@@ -53,7 +53,7 @@ public class RefusjonDtoTjeneste {
         List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andelFraOppdatert, aktivitetGradering, periode.getPeriode());
         boolean andelHarGradering = !graderingForAndelIPeriode.isEmpty();
         BigDecimal refusjon = andelFraOppdatert.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+            .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
             .orElse(BigDecimal.ZERO);
         boolean andelHarRefusjon = refusjon.compareTo(BigDecimal.ZERO) > 0;
         return andelHarGradering && !andelHarRefusjon;
@@ -77,7 +77,7 @@ public class RefusjonDtoTjeneste {
             refusjonsKravPrÅr.ifPresent(endringAndel::setRefusjonskravFraInntektsmeldingPrÅr);
         }
         endringAndel.setRefusjonskravPrAar(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+            .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
             .orElse(BigDecimal.ZERO));
     }
 

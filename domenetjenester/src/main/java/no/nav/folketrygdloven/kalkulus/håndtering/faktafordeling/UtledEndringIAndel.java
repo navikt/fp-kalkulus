@@ -44,12 +44,12 @@ class UtledEndringIAndel {
     }
 
     private static BigDecimal initRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO);
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO);
     }
 
     private static boolean harEndringIRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        Optional<BigDecimal> forrigeRefusjonskrav = forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold).map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr);
-        Optional<BigDecimal> nyttRefusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr);
+        Optional<BigDecimal> forrigeRefusjonskrav = forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold).map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
+        Optional<BigDecimal> nyttRefusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr);
 
         if (forrigeRefusjonskrav.isEmpty() || nyttRefusjonskrav.isEmpty()) {
             // Hvis en mangler må begge mangle, ellers er det endring i refusjon
@@ -111,7 +111,7 @@ class UtledEndringIAndel {
     private static BigDecimal finnRefusjon(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return forrigeAndel
                 .flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-                .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
                 .orElse(null);
     }
 

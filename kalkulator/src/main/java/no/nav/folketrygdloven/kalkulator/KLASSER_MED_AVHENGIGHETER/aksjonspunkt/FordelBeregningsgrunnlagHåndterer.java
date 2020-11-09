@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -136,8 +136,10 @@ public class FordelBeregningsgrunnlagHåndterer {
             var arbeidsforhold = arbeidsforholdOpt.get();
             BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder().medArbeidsgiver(arbeidsgiver)
                     .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
-                    .medRefusjonskravPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
+                    .medFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : BigDecimal.ZERO)
                     .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
+                    .medSaksbehandletRefusjonPrÅr(arbeidsforhold.getSaksbehandletRefusjonPrÅr())
+                    .medRefusjonskravPrÅr(arbeidsforhold.getRefusjonskravPrÅr())
                     .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null))
                     .medHjemmel(arbeidsforhold.getHjemmelForRefusjonskravfrist());
             if (!endretAndel.erLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {

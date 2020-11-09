@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import java.util.List;
 import java.util.Objects;
+
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
@@ -59,9 +60,19 @@ public class MapBeregningsgrunnlagFraRegelTilVLFordel extends MapBeregningsgrunn
             nyAndelBuilder.medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(andelOpt.get().getBgAndelArbeidsforhold().get())
             .medNaturalytelseBortfaltPrÅr(null)
             .medNaturalytelseTilkommetPrÅr(null)
-            .medRefusjonskravPrÅr(regelAndelForArbeidsforhold.getRefusjonskravPrÅr().orElse(null)))
-                    .build(mappetPeriode);
+            .medFordeltRefusjonPrÅr(regelAndelForArbeidsforhold.getFordeltRefusjonPrÅr()))
+            .build(mappetPeriode);
         }
     }
+
+    @Override
+    protected BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
+                                                                      BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
+        return BGAndelArbeidsforholdDto.Builder.oppdater(vlBGPAndel.getBgAndelArbeidsforhold())
+                .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null))
+                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null))
+                .medFordeltRefusjonPrÅr(arbeidsforhold.getFordeltRefusjonPrÅr());
+    }
+
 
 }

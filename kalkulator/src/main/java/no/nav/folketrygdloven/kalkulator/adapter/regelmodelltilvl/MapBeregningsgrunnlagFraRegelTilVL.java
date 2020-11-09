@@ -123,7 +123,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    protected static void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel, BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
+    protected void mapEksisterendeAndelForArbeidsforhold(BeregningsgrunnlagPeriodeDto mappetPeriode, BeregningsgrunnlagPrStatus regelAndel, BeregningsgrunnlagPrArbeidsforhold regelAndelForArbeidsforhold) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelOpt = mappetPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bgpsa -> regelAndelForArbeidsforhold.getAndelNr().equals(bgpsa.getAndelsnr()))
                 .findFirst();
@@ -153,7 +153,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .build(eksisterendeVLGrunnlag);
     }
 
-    private static void mapBeregningsgrunnlagPrStatusForATKombinert(BeregningsgrunnlagPeriodeDto vlBGPeriode,
+    private void mapBeregningsgrunnlagPrStatusForATKombinert(BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                                     BeregningsgrunnlagPrStatus resultatBGPStatus,
                                                                     BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel) {
         for (BeregningsgrunnlagPrArbeidsforhold arbeidsforhold : resultatBGPStatus.getArbeidsforhold()) {
@@ -171,12 +171,11 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    private static BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
+    protected BGAndelArbeidsforholdDto.Builder mapArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel,
                                                                       BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
         return BGAndelArbeidsforholdDto.Builder.oppdater(vlBGPAndel.getBgAndelArbeidsforhold())
                 .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null))
-                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null))
-                .medRefusjonskravPrÅr(arbeidsforhold.getRefusjonskravPrÅr().orElse(null));
+                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null));
     }
 
     protected static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
@@ -203,7 +202,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return vlBGPAndel.getBgAndelArbeidsforhold().isPresent() &&
                 (arbeidsforhold.getNaturalytelseBortfaltPrÅr().isPresent()
                         || arbeidsforhold.getNaturalytelseTilkommetPrÅr().isPresent()
-                        || arbeidsforhold.getRefusjonskravPrÅr().isPresent());
+                        || arbeidsforhold.getGjeldendeRefusjonPrÅr().isPresent());
     }
 
     private static BigDecimal verifisertBeløp(BigDecimal beløp) {

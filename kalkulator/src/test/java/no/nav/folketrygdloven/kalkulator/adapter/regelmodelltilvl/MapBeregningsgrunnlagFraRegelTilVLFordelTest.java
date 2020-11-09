@@ -49,7 +49,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         assertThat(andel1.getAndelsnr()).isEqualTo(1L);
         assertThat(andel1.getBgAndelArbeidsforhold().get().getArbeidsgiver().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(andel1.getBgAndelArbeidsforhold().get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF);
-        assertThat(andel1.getBgAndelArbeidsforhold().get().getRefusjonskravPrÅr()).isEqualTo(BigDecimal.valueOf(75_000));
+        assertThat(andel1.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr()).isEqualTo(BigDecimal.valueOf(75_000));
 
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertThat(andel2.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER);
@@ -59,7 +59,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         assertThat(andel2.getAndelsnr()).isEqualTo(2L);
         assertThat(andel2.getBgAndelArbeidsforhold().get().getArbeidsgiver().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(andel2.getBgAndelArbeidsforhold().get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF);
-        assertThat(andel2.getBgAndelArbeidsforhold().get().getRefusjonskravPrÅr()).isEqualTo(BigDecimal.valueOf(25_000));
+        assertThat(andel2.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr()).isEqualTo(BigDecimal.valueOf(25_000));
     }
 
     private void lagVLAndel(BeregningsgrunnlagPeriodeDto periode) {
@@ -78,7 +78,8 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
                 .erNytt(true)
                 .medArbeidsforhold(arbeidsforhold)
                 .medFordeltPrÅr(BigDecimal.valueOf(25_000))
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(25_000))
+                .medGjeldendeRefusjonPrÅr(BigDecimal.valueOf(25_000))
+                .medFordeltRefusjonPrÅr(BigDecimal.valueOf(25_000))
                 .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .build();
     }
@@ -88,7 +89,8 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
                 .medArbeidsforhold(arbeidsforhold)
                 .medAndelNr(1L)
                 .medBeregnetPrÅr(BigDecimal.valueOf(50_000))
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(75_000))
+                .medGjeldendeRefusjonPrÅr(BigDecimal.valueOf(75_000))
+                .medFordeltRefusjonPrÅr(BigDecimal.valueOf(75_000))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .build();
     }

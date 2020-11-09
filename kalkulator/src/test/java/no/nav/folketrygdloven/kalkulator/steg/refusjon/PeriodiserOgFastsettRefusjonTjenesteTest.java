@@ -230,7 +230,7 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
     }
 
     private BigDecimal hentRefusjon(BeregningsgrunnlagPrStatusOgAndelDto matchetAndel) {
-        return matchetAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(null);
+        return matchetAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null);
     }
 
     private boolean matcher(BeregningsgrunnlagPrStatusOgAndelDto andel, Arbeidsgiver ag, InternArbeidsforholdRefDto ref) {

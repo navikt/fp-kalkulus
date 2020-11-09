@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
@@ -15,6 +13,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrStatus;
@@ -73,7 +72,8 @@ public class KopierBeregningsgrunnlagUtilTest {
         assertThat(af.getRedusertRefusjonPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(4));
         assertThat(af.getAvkortetBrukersAndelPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(5));
         assertThat(af.getRedusertBrukersAndelPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(6));
-        assertThat(af.getRefusjonskravPrÅr()).hasValueSatisfying(refusjonskrav ->
+        assertThat(af.getFordeltRefusjonPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(7));
+        assertThat(af.getGjeldendeRefusjonPrÅr()).hasValueSatisfying(refusjonskrav ->
             assertThat(refusjonskrav).isEqualByComparingTo(BigDecimal.valueOf(7))
         );
         assertThat(af.getTidsbegrensetArbeidsforhold()).isTrue();
@@ -99,7 +99,8 @@ public class KopierBeregningsgrunnlagUtilTest {
             .medBeregnetPrÅr(BigDecimal.valueOf(1))
             .medNaturalytelseBortfaltPrÅr(BigDecimal.ZERO)
             .medNaturalytelseTilkommetPrÅr(BigDecimal.TEN)
-            .medRefusjonskravPrÅr(BigDecimal.valueOf(7))
+            .medGjeldendeRefusjonPrÅr(BigDecimal.valueOf(7))
+            .medFordeltRefusjonPrÅr(BigDecimal.valueOf(7))
             .medMaksimalRefusjonPrÅr(BigDecimal.valueOf(2))
             .medAvkortetRefusjonPrÅr(BigDecimal.valueOf(3))
             .medRedusertRefusjonPrÅr(BigDecimal.valueOf(4), BigDecimal.valueOf(260))

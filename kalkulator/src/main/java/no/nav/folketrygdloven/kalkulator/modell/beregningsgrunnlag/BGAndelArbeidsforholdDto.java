@@ -40,6 +40,8 @@ public class BGAndelArbeidsforholdDto {
         this.lønnsendringIBeregningsperioden = eksisterendeBGAndelArbeidsforhold.lønnsendringIBeregningsperioden;
         this.arbeidsperiodeFom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeFom;
         this.arbeidsperiodeTom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeTom;
+        this.saksbehandletRefusjonPrÅr = eksisterendeBGAndelArbeidsforhold.saksbehandletRefusjonPrÅr;
+        this.fordeltRefusjonPrÅr = eksisterendeBGAndelArbeidsforhold.fordeltRefusjonPrÅr;
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {

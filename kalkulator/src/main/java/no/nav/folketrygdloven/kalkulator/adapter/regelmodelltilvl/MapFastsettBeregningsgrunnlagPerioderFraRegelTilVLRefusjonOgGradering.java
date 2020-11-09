@@ -51,10 +51,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                               List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         andelListe.forEach(eksisterendeAndel -> mapEksisterendeAndel(splittetPeriode, beregningsgrunnlagPeriode, eksisterendeAndel));
         splittetPeriode.getNyeAndeler()
-                .forEach(nyAndel -> mapNyAndelTaHensynTilSNFL(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
+                .forEach(nyAndel -> mapNyAndel(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
     }
 
-    private void mapNyAndelTaHensynTilSNFL(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
+    private void mapNyAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
         Intervall beregningsperiode;
         // Antar at vi ikkje får nye andeler for ytelse FRISINN
         BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();

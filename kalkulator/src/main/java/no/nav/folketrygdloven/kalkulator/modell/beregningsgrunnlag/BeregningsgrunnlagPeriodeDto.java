@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 
-
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FASTSETT;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI;
 import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FORDEL;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -143,17 +141,6 @@ public class BeregningsgrunnlagPeriodeDto {
     void leggTilBeregningsgrunnlagPeriodeRegel(BeregningsgrunnlagPeriodeRegelSporingDto beregningsgrunnlagPeriodeRegelSporing) {
         Objects.requireNonNull(beregningsgrunnlagPeriodeRegelSporing, "beregningsgrunnlagPeriodeRegelSporing");
         regelSporingMap.put(beregningsgrunnlagPeriodeRegelSporing.getRegelType(), beregningsgrunnlagPeriodeRegelSporing);
-    }
-
-    public BigDecimal getTotaltRefusjonkravIPeriode() {
-        return beregningsgrunnlagPrStatusOgAndelList.stream()
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add)
-            .orElse(BigDecimal.ZERO);
     }
 
     @Override

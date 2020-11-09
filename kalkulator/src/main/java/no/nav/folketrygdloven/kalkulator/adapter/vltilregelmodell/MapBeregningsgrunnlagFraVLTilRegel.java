@@ -352,7 +352,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
                         .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null))
                         .medErTidsbegrensetArbeidsforhold(bga.getErTidsbegrensetArbeidsforhold())
-                        .medRefusjonskravPrÅr(bga.getRefusjonskravPrÅr()));
+                        .medGjeldendeRefusjonPrÅr(bga.getGjeldendeRefusjonPrÅr()));
 
         return builder.build();
     }

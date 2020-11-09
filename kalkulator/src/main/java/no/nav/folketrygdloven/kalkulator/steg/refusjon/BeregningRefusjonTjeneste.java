@@ -93,7 +93,7 @@ public final class BeregningRefusjonTjeneste {
     }
 
     private static boolean harRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        BigDecimal refusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(BigDecimal.ZERO);
+        BigDecimal refusjonskrav = andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO);
         return refusjonskrav.compareTo(BigDecimal.ZERO) > 0;
     }
 

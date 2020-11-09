@@ -136,7 +136,7 @@ public class FordelRefusjonTjeneste {
 
     private static void leggTilRefusjonForAndelIGrunnlag(Map<BGAndelArbeidsforholdDto, RefusjonOgFastsattBeløp> arbeidsforholdRefusjonMap, BeregningsgrunnlagPrStatusOgAndelDto korrektAndel) {
         korrektAndel.getBgAndelArbeidsforhold().ifPresent(arbeidsforhold -> {
-            BigDecimal refusjonskravPrÅr = arbeidsforhold.getRefusjonskravPrÅr() == null ? BigDecimal.ZERO : arbeidsforhold.getRefusjonskravPrÅr();
+            BigDecimal refusjonskravPrÅr = arbeidsforhold.getGjeldendeRefusjonPrÅr() == null ? BigDecimal.ZERO : arbeidsforhold.getGjeldendeRefusjonPrÅr();
             settEllerOppdaterTotalRefusjon(arbeidsforholdRefusjonMap, arbeidsforhold, refusjonskravPrÅr);
         });
     }
