@@ -659,6 +659,12 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
+        public Builder medKilde(AndelKilde kilde) {
+            verifiserKanModifisere();
+            kladd.kilde = kilde;
+            return this;
+        }
+
         public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
             verifiserKanModifisere();
             kladd.besteberegningPrÅr = besteberegningPrÅr;

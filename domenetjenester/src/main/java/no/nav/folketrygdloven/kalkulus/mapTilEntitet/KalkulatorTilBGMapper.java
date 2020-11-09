@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
@@ -76,6 +77,7 @@ public class KalkulatorTilBGMapper {
                 .medBeregnetPrÅr(fraKalkulus.getBeregnetPrÅr())
                 .medBesteberegningPrÅr(fraKalkulus.getBesteberegningPrÅr())
                 .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
+                .medKilde(AndelKilde.fraKode(fraKalkulus.getKilde().getKode()))
                 .medOverstyrtPrÅr(fraKalkulus.getOverstyrtPrÅr())
                 .medFordeltPrÅr(fraKalkulus.getFordeltPrÅr())
                 .medRedusertPrÅr(fraKalkulus.getRedusertPrÅr())
