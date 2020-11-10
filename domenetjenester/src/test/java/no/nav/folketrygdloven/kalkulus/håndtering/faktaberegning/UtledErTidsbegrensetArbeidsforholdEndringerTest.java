@@ -1,20 +1,16 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ErTidsbegrensetArbeidsforholdEndring;
 
 class UtledErTidsbegrensetArbeidsforholdEndringerTest {
@@ -25,13 +21,16 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
     @Test
     public void utled_for_arbeid_med_tidsbegrenset_med_avklart_forrige() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagArbeidstakerAndel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder2 = lagArbeidstakerAndel(false);
-        BeregningsgrunnlagDto bg2 = lagBeregningsgrunnlag(andelBuilder2);
+
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medErTidsbegrenset(true).build())
+                .build();
+        FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medErTidsbegrenset(false).build())
+                .build();
 
         // Act
-        List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(bg, Optional.of(bg2));
+        List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
         assertThat(erTidsbegrensetArbeidsforholdEndringer.size()).isEqualTo(1);
@@ -43,53 +42,18 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
     @Test
     public void utled_for_arbeid_med_tidsbegrenset() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagArbeidstakerAndel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medErTidsbegrenset(true).build())
+                .build();
 
         // Act
-        List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(bg, Optional.empty());
+        List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(fakta, Optional.empty());
 
         // Assert
         assertThat(erTidsbegrensetArbeidsforholdEndringer.size()).isEqualTo(1);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getFraVerdi()).isNull();
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getTilVerdi()).isTrue();
-    }
-
-    @Test
-    public void skal_ikkje_utlede_tidsbegrenset_endring_for_frilans() {
-        // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagFrilansAndel();
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
-
-        // Act
-        List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(bg, Optional.empty());
-
-        // Assert
-        assertThat(erTidsbegrensetArbeidsforholdEndringer.size()).isEqualTo(0);
-    }
-
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        BeregningsgrunnlagPeriodeDto.Builder periodeDto = BeregningsgrunnlagPeriodeDto.builder()
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder)
-                .medBeregningsgrunnlagPeriode(LocalDate.now(), TIDENES_ENDE);
-        return BeregningsgrunnlagDto.builder()
-                .medSkjæringstidspunkt(LocalDate.now())
-                .leggTilBeregningsgrunnlagPeriode(periodeDto)
-                .build();
-    }
-
-    private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagArbeidstakerAndel(boolean erTidsbegrensetArbeidsforhold) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medTidsbegrensetArbeidsforhold(erTidsbegrensetArbeidsforhold))
-                .medAndelsnr(1L);
-    }
-
-    private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagFrilansAndel() {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.FRILANSER)
-                .medAndelsnr(1L);
     }
 
 

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +10,9 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
@@ -23,36 +27,36 @@ class UtledErMottattYtelseEndringer {
         // Skjul
     }
 
-    static List<ErMottattYtelseEndring> utled(BeregningsgrunnlagDto beregningsgrunnlag,
-                                              Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlag) {
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = forrigeBeregningsgrunnlag.map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
-                .map(p -> p.get(0));
-        List<BeregningsgrunnlagPrStatusOgAndelDto> mottarYtelseAndeler = finnAndelerMedAvklartMottattYtelse(periode);
-        List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode.map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).orElse(Collections.emptyList());
-        return mottarYtelseAndeler.stream()
-                .map(a -> utledErMottattYtelseEndring(a, forrigeAndeler))
+    static List<ErMottattYtelseEndring> utled(FaktaAggregatDto fakta,
+                                              Optional<FaktaAggregatDto> forrigeFakta) {
+        List<ErMottattYtelseEndring> endringer = new ArrayList<>();
+        utledFLMottarYtelseEndring(fakta, forrigeFakta).ifPresent(endringer::add);
+        List<FaktaArbeidsforholdDto> faktaArbeidsforhold = fakta.getFaktaArbeidsforhold();
+        List<FaktaArbeidsforholdDto> forrigeFaktaArbeidsforhold = forrigeFakta.map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
+        faktaArbeidsforhold.stream()
+                .map(fa -> utledErMottattYtelseEndring(fa, forrigeFaktaArbeidsforhold))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .forEach(endringer::add);
+        return endringer;
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelerMedAvklartMottattYtelse(BeregningsgrunnlagPeriodeDto periode) {
-        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream()
-                .filter(a -> a.mottarYtelse().isPresent())
-                .collect(Collectors.toList());
-    }
-
-    private static ErMottattYtelseEndring utledErMottattYtelseEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel = finnAndel(forrigeAndeler, andel);
-        ToggleEndring toggleEndring = utledErMottattYtelseEndring(andel, forrigeAndel);
-        if (toggleEndring != null) {
-            if (andel.getArbeidsgiver().isPresent()) {
-                Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().get();
-                return ErMottattYtelseEndring.lagErMottattYtelseEndringForArbeid(toggleEndring, mapArbeidsgiver(arbeidsgiver), andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getReferanse).orElse(null));
-            } else if (andel.getAktivitetStatus().erFrilanser()) {
-                return ErMottattYtelseEndring.lagErMottattYtelseEndringForFrilans(toggleEndring);
+    private static Optional<ErMottattYtelseEndring> utledFLMottarYtelseEndring(FaktaAggregatDto fakta, Optional<FaktaAggregatDto> forrigeFakta) {
+        Boolean flMottarYtelse = fakta.getFaktaAktør().map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null);
+        if (flMottarYtelse != null) {
+            var forrigeFlMottarYtelse = forrigeFakta.flatMap(FaktaAggregatDto::getFaktaAktør)
+                    .map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null);
+            if (forrigeFlMottarYtelse == null || !forrigeFlMottarYtelse.equals(flMottarYtelse)) {
+                return Optional.of(ErMottattYtelseEndring.lagErMottattYtelseEndringForFrilans(new ToggleEndring(forrigeFlMottarYtelse, flMottarYtelse)));
             }
+        }
+        return Optional.empty();
+    }
+
+    private static ErMottattYtelseEndring utledErMottattYtelseEndring(FaktaArbeidsforholdDto fakta, List<FaktaArbeidsforholdDto> forrigeFaktaListe) {
+        Optional<FaktaArbeidsforholdDto> forrigeFakta = finnForrigeFakta(forrigeFaktaListe, fakta.getArbeidsgiver(), fakta.getArbeidsforholdRef());
+        ToggleEndring toggleEndring = utledErMottattYtelseEndring(fakta, forrigeFakta);
+        if (toggleEndring != null) {
+            return ErMottattYtelseEndring.lagErMottattYtelseEndringForArbeid(toggleEndring, mapArbeidsgiver(fakta.getArbeidsgiver()), fakta.getArbeidsforholdRef().getReferanse());
         }
         return null;
     }
@@ -61,31 +65,27 @@ class UtledErMottattYtelseEndringer {
         return arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator());
     }
 
-    private static ToggleEndring utledErMottattYtelseEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return andel.mottarYtelse()
-                .filter(mottarYtelse -> harEndringIMottarYtelse(forrigeAndel, mottarYtelse))
-                .map(mottarYtelse -> initMottarYtelseEndring(forrigeAndel, mottarYtelse))
-                .orElse(null);
-    }
-
-    private static ToggleEndring initMottarYtelseEndring(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel, Boolean mottarYtelse) {
-        return new ToggleEndring(finnMottarYtelse(forrigeAndel), mottarYtelse);
-    }
-
-    private static Boolean finnMottarYtelse(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::mottarYtelse).orElse(null);
-    }
-
-    private static Boolean harEndringIMottarYtelse(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel, Boolean mottarYtelse) {
-        return forrigeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::mottarYtelse).map(m -> !m.equals(mottarYtelse)).orElse(true);
-    }
-
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler, BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        if (andel.getAktivitetStatus().erArbeidstaker()) {
-            return forrigeAndeler.stream().filter(a -> a.equals(andel)).findFirst();
+    private static ToggleEndring utledErMottattYtelseEndring(FaktaArbeidsforholdDto fakta, Optional<FaktaArbeidsforholdDto> forrigeFakta) {
+        if (fakta.getHarMottattYtelse() != null && harEndringIMottarYtelse(forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelse), fakta.getHarMottattYtelse())) {
+            return initMottarYtelseEndring(forrigeFakta, fakta.getHarMottattYtelse());
         }
-        return forrigeAndeler.stream()
-                .filter(a -> a.getAktivitetStatus().equals(andel.getAktivitetStatus())).findFirst();
+        return null;
+    }
+
+    private static ToggleEndring initMottarYtelseEndring(Optional<FaktaArbeidsforholdDto> forrigeFakta, Boolean mottarYtelse) {
+        return new ToggleEndring(finnMottarYtelse(forrigeFakta), mottarYtelse);
+    }
+
+    private static Boolean finnMottarYtelse(Optional<FaktaArbeidsforholdDto> forrigeFakta) {
+        return forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelse).orElse(null);
+    }
+
+    private static Boolean harEndringIMottarYtelse(Optional<Boolean> forrigeMottarYtelse, Boolean mottarYtelse) {
+        return forrigeMottarYtelse.map(m -> !m.equals(mottarYtelse)).orElse(true);
+    }
+
+    private static Optional<FaktaArbeidsforholdDto> finnForrigeFakta(List<FaktaArbeidsforholdDto> forrigeFaktaArbeidsforhold, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto) {
+        return forrigeFaktaArbeidsforhold.stream().filter(fa -> fa.gjelderFor(arbeidsgiver, arbeidsforholdRefDto)).findFirst();
     }
 
 

@@ -28,7 +28,7 @@ public class UtledEndring {
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
-        FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = UtledFaktaOmBeregningVurderinger.utled(dto, beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
+        FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = UtledFaktaOmBeregningVurderinger.utled(dto, beregningsgrunnlagGrunnlagDto.getFaktaAggregat(), forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getFaktaAggregat));
         return new OppdateringRespons(beregningsgrunnlagEndring, faktaOmBeregningVurderinger);
     }
 

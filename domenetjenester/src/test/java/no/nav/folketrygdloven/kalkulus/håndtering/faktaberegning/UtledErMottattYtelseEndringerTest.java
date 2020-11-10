@@ -13,6 +13,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ErMottattYtelseEndring;
@@ -24,11 +28,13 @@ class UtledErMottattYtelseEndringerTest {
     @Test
     public void skal_returnere_endring_i_mottatt_ytelse_for_frilans() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagFrilansandel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medHarFLMottattYtelse(true)
+                .build())
+                .build();
 
         // Act
-        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(bg, Optional.empty());
+        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.empty());
 
         // Assert
         assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
@@ -40,13 +46,18 @@ class UtledErMottattYtelseEndringerTest {
     @Test
     public void skal_returnere_endring_i_mottatt_ytelse_for_frilans_med_forrige() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagFrilansandel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder2 = lagFrilansandel(false);
-        BeregningsgrunnlagDto bg2 = lagBeregningsgrunnlag(andelBuilder2);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medHarFLMottattYtelse(true)
+                .build())
+                .build();
+
+        FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medHarFLMottattYtelse(false)
+                .build())
+                .build();
 
         // Act
-        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(bg, Optional.of(bg2));
+        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
         assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
@@ -58,13 +69,17 @@ class UtledErMottattYtelseEndringerTest {
     @Test
     public void skal_ikkje_returnere_endring_i_mottatt_ytelse_for_frilans_uten_endring() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagFrilansandel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder2 = lagFrilansandel(true);
-        BeregningsgrunnlagDto bg2 = lagBeregningsgrunnlag(andelBuilder2);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medHarFLMottattYtelse(true)
+                .build())
+                .build();
+        FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medHarFLMottattYtelse(true)
+                .build())
+                .build();
 
         // Act
-        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(bg, Optional.of(bg2));
+        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
         assertThat(erMottattYtelseEndringList.size()).isEqualTo(0);
@@ -73,11 +88,12 @@ class UtledErMottattYtelseEndringerTest {
     @Test
     public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagArbeidstakerAndel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medHarMottattYtelse(true)
+                .build()).build();
 
         // Act
-        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(bg, Optional.empty());
+        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.empty());
 
         // Assert
         assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
@@ -90,13 +106,16 @@ class UtledErMottattYtelseEndringerTest {
     @Test
     public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker_med_forrige() {
         // Arrange
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagArbeidstakerAndel(true);
-        BeregningsgrunnlagDto bg = lagBeregningsgrunnlag(andelBuilder);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder2 = lagArbeidstakerAndel(false);
-        BeregningsgrunnlagDto bg2 = lagBeregningsgrunnlag(andelBuilder2);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medHarMottattYtelse(true)
+                .build()).build();
+
+        FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
+                .medHarMottattYtelse(false)
+                .build()).build();
 
         // Act
-        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(bg, Optional.of(bg2));
+        List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
         assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
@@ -106,28 +125,4 @@ class UtledErMottattYtelseEndringerTest {
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getTilVerdi()).isTrue();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        BeregningsgrunnlagPeriodeDto.Builder periodeDto = BeregningsgrunnlagPeriodeDto.builder()
-                .leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder)
-                .medBeregningsgrunnlagPeriode(LocalDate.now(), TIDENES_ENDE);
-        return BeregningsgrunnlagDto.builder()
-                .medSkjæringstidspunkt(LocalDate.now())
-                .leggTilBeregningsgrunnlagPeriode(periodeDto)
-                .build();
-    }
-
-    private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagFrilansandel(boolean mottarYtelse) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.FRILANSER)
-                .medAndelsnr(1L)
-                .medMottarYtelse(mottarYtelse, AktivitetStatus.FRILANSER);
-    }
-
-    private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagArbeidstakerAndel(boolean mottarYtelse) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)))
-                .medAndelsnr(1L)
-                .medMottarYtelse(mottarYtelse, AktivitetStatus.ARBEIDSTAKER);
-    }
 }

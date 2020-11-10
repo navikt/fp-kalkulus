@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrganisasjonsNummerValidator;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
@@ -20,7 +21,8 @@ class UtledFaktaOmBeregningVurderinger {
         // Skjul
     }
 
-    public static FaktaOmBeregningVurderinger utled(FaktaOmBeregningHåndteringDto dto, BeregningsgrunnlagDto beregningsgrunnlagDto, Optional<BeregningsgrunnlagDto> forrigeGrunnlag) {
+    public static FaktaOmBeregningVurderinger utled(FaktaOmBeregningHåndteringDto dto, Optional<FaktaAggregatDto> fakta,
+                                                    Optional<FaktaAggregatDto> forrigeFakta) {
         FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = new FaktaOmBeregningVurderinger();
         faktaOmBeregningVurderinger.setHarEtterlønnSluttpakkeEndring(utledVurderEtterlønnSluttpakkeEndring(dto));
         faktaOmBeregningVurderinger.setHarLønnsendringIBeregningsperiodenEndring(utledVurderLønnsendringEndring(dto));
@@ -28,8 +30,8 @@ class UtledFaktaOmBeregningVurderinger {
         faktaOmBeregningVurderinger.setErSelvstendingNyIArbeidslivetEndring(utledErSelvstendigNyIArbeidslivetEndring(dto));
         faktaOmBeregningVurderinger.setErNyoppstartetFLEndring(utledErNyoppstartetFLEndring(dto));
         faktaOmBeregningVurderinger.setVurderRefusjonskravGyldighetEndringer(utledUtvidRefusjonskravGyldighetEndringer(dto));
-        faktaOmBeregningVurderinger.setErMottattYtelseEndringer(UtledErMottattYtelseEndringer.utled(beregningsgrunnlagDto, forrigeGrunnlag));
-        faktaOmBeregningVurderinger.setErTidsbegrensetArbeidsforholdEndringer(UtledErTidsbegrensetArbeidsforholdEndringer.utled(beregningsgrunnlagDto, forrigeGrunnlag));
+        fakta.ifPresent(fa -> faktaOmBeregningVurderinger.setErMottattYtelseEndringer(UtledErMottattYtelseEndringer.utled(fa, forrigeFakta)));
+        fakta.ifPresent(fa -> faktaOmBeregningVurderinger.setErTidsbegrensetArbeidsforholdEndringer(UtledErTidsbegrensetArbeidsforholdEndringer.utled(fa, forrigeFakta)));
         if (harEndringer(faktaOmBeregningVurderinger)) {
             return faktaOmBeregningVurderinger;
         }

@@ -1,12 +1,12 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
@@ -19,42 +19,33 @@ class UtledErTidsbegrensetArbeidsforholdEndringer {
         // Skjul
     }
 
-    public static List<ErTidsbegrensetArbeidsforholdEndring> utled(BeregningsgrunnlagDto beregningsgrunnlag, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlag) {
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = forrigeBeregningsgrunnlag.map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
-                .map(p -> p.get(0));
-        List<BGAndelArbeidsforholdDto> arbeidMedTidsbegrensetAvklaring = finnArbeidMedAvklartTidsbegrensetArbeidsforhold(periode);
-        List<BGAndelArbeidsforholdDto> forrigeAndeler = forrigePeriode.stream()
-                .flatMap(a -> a.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-                .flatMap(a -> a.getBgAndelArbeidsforhold().stream())
+    public static List<ErTidsbegrensetArbeidsforholdEndring> utled(FaktaAggregatDto fakta, Optional<FaktaAggregatDto> forrigeFakta) {
+
+        List<FaktaArbeidsforholdDto> arbeidMedTidsbegrensetAvklaring = fakta.getFaktaArbeidsforhold().stream()
+                .filter(fa -> fa.getErTidsbegrenset() != null)
                 .collect(Collectors.toList());
+        List<FaktaArbeidsforholdDto> forrigeArbeidFakta = forrigeFakta.map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         return arbeidMedTidsbegrensetAvklaring.stream()
-                .map(arbeid -> utledErTidsbegrensetArbeidsforholdEndring(arbeid, forrigeAndeler))
+                .map(fa -> utledErTidsbegrensetArbeidsforholdEndring(fa, forrigeArbeidFakta))
                 .collect(Collectors.toList());
     }
 
-    private static List<BGAndelArbeidsforholdDto> finnArbeidMedAvklartTidsbegrensetArbeidsforhold(BeregningsgrunnlagPeriodeDto periode) {
-        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream()
-                .flatMap(a -> a.getBgAndelArbeidsforhold().stream())
-                .filter(bgAndelArbeidsforholdDto -> bgAndelArbeidsforholdDto.getErTidsbegrensetArbeidsforhold() != null)
-                .collect(Collectors.toList());
-    }
-
-    private static ErTidsbegrensetArbeidsforholdEndring utledErTidsbegrensetArbeidsforholdEndring(BGAndelArbeidsforholdDto arbeidsforhold, List<BGAndelArbeidsforholdDto> forrigeArbeidsforhold) {
-        Optional<BGAndelArbeidsforholdDto> forrigeArbeid = forrigeArbeidsforhold.stream() .filter(a -> a.equals(arbeidsforhold)).findFirst();
-        ToggleEndring toggleEndring = utledErTidsbegrensetEndring(arbeidsforhold, forrigeArbeid);
-        Arbeidsgiver arbeidsgiver = arbeidsforhold.getArbeidsgiver();
+    private static ErTidsbegrensetArbeidsforholdEndring utledErTidsbegrensetArbeidsforholdEndring(FaktaArbeidsforholdDto faktaArbeidsforhold, List<FaktaArbeidsforholdDto> forrigeFaktaListe) {
+        Optional<FaktaArbeidsforholdDto> forrigeFakta = forrigeFaktaListe.stream()
+                .filter(a -> a.gjelderFor(faktaArbeidsforhold.getArbeidsgiver(), faktaArbeidsforhold.getArbeidsforholdRef()))
+                .findFirst();
+        ToggleEndring toggleEndring = utledErTidsbegrensetEndring(faktaArbeidsforhold, forrigeFakta);
+        Arbeidsgiver arbeidsgiver = faktaArbeidsforhold.getArbeidsgiver();
         return new ErTidsbegrensetArbeidsforholdEndring(
                 arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator()),
-                arbeidsforhold.getArbeidsforholdRef().getReferanse(),
+                faktaArbeidsforhold.getArbeidsforholdRef().getReferanse(),
                 toggleEndring
         );
     }
 
-    private static ToggleEndring utledErTidsbegrensetEndring(BGAndelArbeidsforholdDto arbeid, Optional<BGAndelArbeidsforholdDto> forrigeArbeid) {
-        Boolean fraVerdi = forrigeArbeid.map(BGAndelArbeidsforholdDto::getErTidsbegrensetArbeidsforhold).orElse(null);
-        Boolean tilVerdi = arbeid.getErTidsbegrensetArbeidsforhold();
+    private static ToggleEndring utledErTidsbegrensetEndring(FaktaArbeidsforholdDto fakta, Optional<FaktaArbeidsforholdDto> forrigeFakta) {
+        Boolean fraVerdi = forrigeFakta.map(FaktaArbeidsforholdDto::getErTidsbegrenset).orElse(null);
+        Boolean tilVerdi = fakta.getErTidsbegrenset();
         return new ToggleEndring(fraVerdi, tilVerdi);
     }
 

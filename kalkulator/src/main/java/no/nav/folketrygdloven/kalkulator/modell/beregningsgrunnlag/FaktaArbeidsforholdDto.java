@@ -66,6 +66,10 @@ public class FaktaArbeidsforholdDto {
         return new Builder(kopi);
     }
 
+    public static Builder builder(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto) {
+        return new Builder(arbeidsgiver, arbeidsforholdRefDto);
+    }
+
     public static class Builder {
         private FaktaArbeidsforholdDto mal;
 
