@@ -199,9 +199,9 @@ public class BeregningStegTjeneste {
         Long behandlingId = ref.getKoblingId();
         boolean kanKopiereFraBekreftet = KopierBeregningsgrunnlag.kanKopiereFraForrigeBekreftetGrunnlag(
                 beregningResultatAggregat.getBeregningAksjonspunktResultater(),
-                beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().orElseThrow(INGEN_BG_EXCEPTION_SUPPLIER),
-                input.getForrigeGrunnlagFraSteg().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
-                input.getForrigeGrunnlagFraStegUt().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
+                beregningResultatAggregat.getBeregningsgrunnlagGrunnlag(),
+                input.getForrigeGrunnlagFraSteg(),
+                input.getForrigeGrunnlagFraStegUt()
         );
 
         Long koblingId = input.getKoblingReferanse().getKoblingId();

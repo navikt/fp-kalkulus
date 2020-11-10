@@ -38,6 +38,7 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
+
     static boolean harSignifikantDiffIBeregningsgrunnlag(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
         if (!erLike(aktivt.getGrunnbeløp() == null ? null : aktivt.getGrunnbeløp().getVerdi(), forrige.getGrunnbeløp() == null ? null : forrige.getGrunnbeløp().getVerdi())) {
             return true;
@@ -172,15 +173,6 @@ class BeregningsgrunnlagDiffSjekker {
         if (!erLike(aktivAndel.getBruttoPrÅr(), forrigeAndel.getBruttoPrÅr())) {
             return true;
         }
-        if (aktivAndel.getNyIArbeidslivet() != null && !aktivAndel.getNyIArbeidslivet().equals(forrigeAndel.getNyIArbeidslivet())) {
-            return true;
-        }
-        if (aktivAndel.erNyoppstartet().isPresent() && !forrigeAndel.erNyoppstartet().map(nyoppstartet -> aktivAndel.erNyoppstartet().get().equals(nyoppstartet)).orElse(false)) {
-            return true;
-        }
-        if (aktivAndel.mottarYtelse().isPresent() && !forrigeAndel.mottarYtelse().map(mottarYtelse -> aktivAndel.mottarYtelse().get().equals(mottarYtelse)).orElse(false)) {
-            return true;
-        }
         return false;
     }
 
@@ -199,12 +191,6 @@ class BeregningsgrunnlagDiffSjekker {
             return true;
         }
         if (!erLike(aktivArbeidsforhold.getFordeltRefusjonPrÅr(), forrigeArbeidsforhold.getFordeltRefusjonPrÅr())) {
-            return true;
-        }
-        if (aktivArbeidsforhold.erLønnsendringIBeregningsperioden() != null && !aktivArbeidsforhold.erLønnsendringIBeregningsperioden().equals(forrigeArbeidsforhold.erLønnsendringIBeregningsperioden())) {
-            return true;
-        }
-        if (aktivArbeidsforhold.getErTidsbegrensetArbeidsforhold() != null && !aktivArbeidsforhold.getErTidsbegrensetArbeidsforhold().equals(forrigeArbeidsforhold.getErTidsbegrensetArbeidsforhold())) {
             return true;
         }
         return false;
