@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.håndtering;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -42,15 +43,15 @@ public class FaktaOmBeregningVurderinger {
 
     @JsonProperty(value = "erMottattYtelseEndringer")
     @Valid
-    private List<ErMottattYtelseEndring> erMottattYtelseEndringer;
+    private List<ErMottattYtelseEndring> erMottattYtelseEndringer = new ArrayList<>();
 
     @JsonProperty(value = "erTidsbegrensetArbeidsforholdEndringer")
     @Valid
-    private List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer;
+    private List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer  = new ArrayList<>();
 
     @JsonProperty(value = "vurderRefusjonskravGyldighetEndringer")
     @Valid
-    private List<RefusjonskravGyldighetEndring> vurderRefusjonskravGyldighetEndringer;
+    private List<RefusjonskravGyldighetEndring> vurderRefusjonskravGyldighetEndringer = new ArrayList<>();
 
     public ToggleEndring getHarEtterlønnSluttpakkeEndring() {
         return harEtterlønnSluttpakkeEndring;
