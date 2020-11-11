@@ -57,9 +57,15 @@ public class FaktaAggregatEntitet extends BaseEntitet {
         return Optional.ofNullable(faktaAktør);
     }
 
-    private void leggTilFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforhold) {
+    private void leggTilFaktaArbeidsforholdIgnorerOmEksisterer(FaktaArbeidsforholdEntitet faktaArbeidsforhold) {
         faktaArbeidsforhold.setFaktaAggregat(this);
-        this.faktaArbeidsforholdListe.add(faktaArbeidsforhold);
+        var eksisterende = this.faktaArbeidsforholdListe.stream()
+                .filter(fa -> fa.gjelderFor(faktaArbeidsforhold.getArbeidsgiver(), faktaArbeidsforhold.getArbeidsforholdRef()))
+                .findFirst();
+        if (eksisterende.isEmpty()) {
+            faktaArbeidsforhold.setFaktaAggregat(this);
+            this.faktaArbeidsforholdListe.add(faktaArbeidsforhold);
+        }
     }
 
     void setFaktaAktør(FaktaAktørEntitet faktaAktør) {
@@ -86,8 +92,8 @@ public class FaktaAggregatEntitet extends BaseEntitet {
         }
 
 
-        public Builder leggTilFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforhold) { // NOSONAR
-            kladd.leggTilFaktaArbeidsforhold(faktaArbeidsforhold);
+        public Builder leggTilFaktaArbeidsforholdIgnorerOmEksisterer(FaktaArbeidsforholdEntitet faktaArbeidsforhold) { // NOSONAR
+            kladd.leggTilFaktaArbeidsforholdIgnorerOmEksisterer(faktaArbeidsforhold);
             return this;
         }
 

@@ -42,7 +42,7 @@ public class FaktaAktørDto {
                          @Valid Boolean erNyoppstartetFL,
                          @Valid Boolean harFLMottattYtelse,
                          @Valid Boolean skalBeregnesSomMilitær,
-                         @Valid Boolean skalBesteberegnes, 
+                         @Valid Boolean skalBesteberegnes,
                          @Valid Boolean mottarEtterlønnSluttpakke) {
         this.erNyIArbeidslivetSN = erNyIArbeidslivetSN;
         this.erNyoppstartetFL = erNyoppstartetFL;

@@ -139,7 +139,7 @@ public class KalkulatorTilEntitetMapper {
         FaktaAggregatEntitet.Builder faktaAggregatBuilder = FaktaAggregatEntitet.builder();
         fakta.getFaktaAktør().map(KalkulatorTilEntitetMapper::mapFaktaAktør).ifPresent(faktaAggregatBuilder::medFaktaAktør);
         fakta.getFaktaArbeidsforhold().stream().map(KalkulatorTilEntitetMapper::mapFaktaArbeidsforhold)
-                .forEach(faktaAggregatBuilder::leggTilFaktaArbeidsforhold);
+                .forEach(faktaAggregatBuilder::leggTilFaktaArbeidsforholdIgnorerOmEksisterer);
         return faktaAggregatBuilder.build();
     }
 

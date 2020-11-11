@@ -1,7 +1,7 @@
 window.onload = function() {
   // Begin Swagger UI call region
   const ui = SwaggerUIBundle({
-    url: "/ft-kalkulus/api/openapi.yaml",
+    url: "/ftkalkulus/api/openapi.yaml",
     dom_id: '#swagger-ui',
     deepLinking: true,
     presets: [

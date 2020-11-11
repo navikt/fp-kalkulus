@@ -67,6 +67,12 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Column(name = "naturalytelse_tilkommet_pr_aar")
     private BigDecimal naturalytelseTilkommetPrÅr;
 
+    @Column(name = "tidsbegrenset_arbeidsforhold")
+    private Boolean erTidsbegrensetArbeidsforhold;
+
+    @Column(name = "loennsendring_i_perioden")
+    private Boolean lønnsendringIBeregningsperioden;
+
     @Column(name = "arbeidsperiode_fom")
     private LocalDate arbeidsperiodeFom;
 
@@ -103,6 +109,14 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
     public Optional<BigDecimal> getNaturalytelseTilkommetPrÅr() {
         return Optional.ofNullable(naturalytelseTilkommetPrÅr);
+    }
+
+    public Boolean getErTidsbegrensetArbeidsforhold() {
+        return erTidsbegrensetArbeidsforhold;
+    }
+
+    public Boolean erLønnsendringIBeregningsperioden() {
+        return lønnsendringIBeregningsperioden;
     }
 
     public LocalDate getArbeidsperiodeFom() {
@@ -236,6 +250,16 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
         public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
             bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
+            return this;
+        }
+
+        public BGAndelArbeidsforhold.Builder medTidsbegrensetArbeidsforhold(Boolean erTidsbegrensetArbeidsforhold) {
+            bgAndelArbeidsforhold.erTidsbegrensetArbeidsforhold = erTidsbegrensetArbeidsforhold;
+            return this;
+        }
+
+        public Builder medLønnsendringIBeregningsperioden(Boolean lønnsendringIBeregningsperioden) {
+            bgAndelArbeidsforhold.lønnsendringIBeregningsperioden = lønnsendringIBeregningsperioden;
             return this;
         }
 
