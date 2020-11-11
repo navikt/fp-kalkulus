@@ -234,7 +234,7 @@ public class OperereKalkulusRestTjeneste {
         return Response.ok().build();
     }
 
-    private Resultat<StegProsesseringInput> lagStegInputForKoblinger(@Valid @NotNull OperereKalkulusRestTjeneste.@NotNull @Valid FortsettBeregningListeRequestAbacDto spesifikasjon) {
+    private Resultat<StegProsesseringInput> lagStegInputForKoblinger(@Valid @NotNull FortsettBeregningListeRequestAbacDto spesifikasjon) {
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         List<KoblingReferanse> referanser = spesifikasjon.getEksternReferanser().stream().map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);

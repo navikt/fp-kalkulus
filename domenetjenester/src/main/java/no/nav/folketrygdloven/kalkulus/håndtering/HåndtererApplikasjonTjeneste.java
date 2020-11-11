@@ -49,6 +49,9 @@ public class HåndtererApplikasjonTjeneste {
             HåndteringResultat resultat = håndterOgLagre(hånteringInputPrKobling, håndterBeregningDto, håndteringKode, tilstand);
             if (resultat.getEndring() != null) {
                 resultatPrKobling.put(hånteringInputPrKobling.getKey(), resultat.getEndring());
+            } else {
+                resultatPrKobling.put(hånteringInputPrKobling.getKey(), new OppdateringRespons());
+
             }
         }
         return resultatPrKobling;

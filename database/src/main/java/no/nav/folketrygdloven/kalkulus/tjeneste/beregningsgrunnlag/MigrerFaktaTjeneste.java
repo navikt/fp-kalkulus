@@ -20,6 +20,10 @@ public class MigrerFaktaTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
 
+    public MigrerFaktaTjeneste() {
+        // CDI
+    }
+
     @Inject
     public MigrerFaktaTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
