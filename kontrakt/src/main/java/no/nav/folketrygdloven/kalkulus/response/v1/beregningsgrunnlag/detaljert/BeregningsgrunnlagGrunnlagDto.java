@@ -22,6 +22,10 @@ public class BeregningsgrunnlagGrunnlagDto {
     @Valid
     private BeregningsgrunnlagDto beregningsgrunnlag;
 
+    @JsonProperty(value = "faktaAggregat")
+    @Valid
+    private FaktaAggregatDto faktaAggregat;
+
     @JsonProperty(value = "registerAktiviteter")
     @NotNull
     @Valid
@@ -53,6 +57,7 @@ public class BeregningsgrunnlagGrunnlagDto {
     }
 
     public BeregningsgrunnlagGrunnlagDto(@Valid BeregningsgrunnlagDto beregningsgrunnlag,
+                                         @Valid FaktaAggregatDto faktaAggregat,
                                          @NotNull @Valid BeregningAktivitetAggregatDto registerAktiviteter,
                                          @Valid BeregningAktivitetAggregatDto saksbehandletAktiviteter,
                                          @Valid BeregningAktivitetOverstyringerDto overstyringer,
@@ -60,6 +65,7 @@ public class BeregningsgrunnlagGrunnlagDto {
                                          @NotNull Boolean aktiv,
                                          @NotNull @Valid BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         this.beregningsgrunnlag = beregningsgrunnlag;
+        this.faktaAggregat = faktaAggregat;
         this.registerAktiviteter = registerAktiviteter;
         this.saksbehandletAktiviteter = saksbehandletAktiviteter;
         this.overstyringer = overstyringer;
@@ -71,6 +77,10 @@ public class BeregningsgrunnlagGrunnlagDto {
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
         return beregningsgrunnlag;
+    }
+
+    public FaktaAggregatDto getFaktaAggregat() {
+        return faktaAggregat;
     }
 
     public BeregningAktivitetAggregatDto getRegisterAktiviteter() {

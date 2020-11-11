@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -26,6 +27,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
@@ -60,7 +63,7 @@ public class ForeslåBeregningsgrunnlag {
         Beregningsgrunnlag regelmodellBeregningsgrunnlag = mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag her"));
-        splittPerioder(input, regelmodellBeregningsgrunnlag, beregningsgrunnlag);
+        splittPerioder(input, regelmodellBeregningsgrunnlag, beregningsgrunnlag, input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
         String jsonInput = toJson(regelmodellBeregningsgrunnlag);
         List<RegelResultat> regelResultater = kjørRegelForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, jsonInput);
 
@@ -79,10 +82,13 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagVerifiserer.verifiserForeslåttBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
     }
 
-    protected void splittPerioder(BeregningsgrunnlagInput input,  Beregningsgrunnlag regelmodellBeregningsgrunnlag, BeregningsgrunnlagDto beregningsgrunnlag) {
+    protected void splittPerioder(BeregningsgrunnlagInput input,
+                                  Beregningsgrunnlag regelmodellBeregningsgrunnlag,
+                                  BeregningsgrunnlagDto beregningsgrunnlag,
+                                  Optional<FaktaAggregatDto> faktaAggregat) {
         opprettPerioderForKortvarigeArbeidsforhold(input.getAktørId(),
                 regelmodellBeregningsgrunnlag,
-                beregningsgrunnlag, input.getIayGrunnlag());
+                beregningsgrunnlag, input.getIayGrunnlag(), faktaAggregat);
     }
 
     protected List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater) {
@@ -100,20 +106,23 @@ public class ForeslåBeregningsgrunnlag {
     }
 
     private void opprettPerioderForKortvarigeArbeidsforhold(AktørId aktørId,
-                                                            no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag regelBeregningsgrunnlag,
+                                                            Beregningsgrunnlag regelBeregningsgrunnlag,
                                                             BeregningsgrunnlagDto vlBeregningsgrunnlag,
-                                                            InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+                                                            InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                            Optional<FaktaAggregatDto> faktaAggregat) {
         var filter = getYrkesaktivitetFilter(aktørId, iayGrunnlag);
         Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarigeAktiviteter = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(aktørId, vlBeregningsgrunnlag, iayGrunnlag);
         kortvarigeAktiviteter.entrySet().stream()
-            .filter(entry -> entry.getKey().getBgAndelArbeidsforhold()
-                .filter(a -> Boolean.TRUE.equals(a.getErTidsbegrensetArbeidsforhold())).isPresent())
-            .map(Map.Entry::getValue)
-            .forEach(ya -> SplittBGPerioder.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
+                .filter(entry -> entry.getKey().getBgAndelArbeidsforhold()
+                        .filter(a -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(a))
+                                .map(FaktaArbeidsforholdDto::getErTidsbegrenset)
+                                .orElse(false)).isPresent())
+                .map(Map.Entry::getValue)
+                .forEach(ya -> SplittBGPerioder.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
     }
 
     private YrkesaktivitetFilterDto getYrkesaktivitetFilter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return  new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+        return new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
     }
 
     protected String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {

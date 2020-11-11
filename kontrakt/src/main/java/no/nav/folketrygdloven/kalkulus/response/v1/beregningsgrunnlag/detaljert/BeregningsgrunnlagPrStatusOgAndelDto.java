@@ -184,20 +184,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal årsbeløpFraTilstøtendeYtelse;
 
-    @JsonProperty(value = "nyIArbeidslivet")
-    @Valid
-    private Boolean nyIArbeidslivet;
-
     @JsonProperty(value = "fastsattAvSaksbehandler")
     @Valid
     private Boolean fastsattAvSaksbehandler = false;
-
-    @JsonProperty(value = "besteberegningPrÅr")
-    @Valid
-    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
-    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
-    @Digits(integer = 10, fraction = 2)
-    private BigDecimal besteberegningPrÅr;
 
     @JsonProperty(value = "lagtTilAvSaksbehandler")
     @Valid
@@ -208,14 +197,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Min(0)
     @Max(Long.MAX_VALUE)
     private Long orginalDagsatsFraTilstøtendeYtelse;
-
-    @JsonProperty(value = "mottarYtelse")
-    @Valid
-    private Boolean mottarYtelse;
-
-    @JsonProperty(value = "nyoppstartet")
-    @Valid
-    private Boolean nyoppstartet;
 
     public BeregningsgrunnlagPrStatusOgAndelDto() {
     }
@@ -243,13 +224,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                                                 BigDecimal pgi2,
                                                 BigDecimal pgi3,
                                                 BigDecimal årsbeløpFraTilstøtendeYtelse,
-                                                Boolean nyIArbeidslivet,
                                                 Boolean fastsattAvSaksbehandler,
-                                                BigDecimal besteberegningPrÅr,
                                                 Boolean lagtTilAvSaksbehandler,
-                                                Long orginalDagsatsFraTilstøtendeYtelse,
-                                                Boolean mottarYtelse,
-                                                Boolean nyoppstartet) {
+                                                Long orginalDagsatsFraTilstøtendeYtelse) {
         this.andelsnr = andelsnr;
         this.aktivitetStatus = aktivitetStatus;
         this.beregningsperiode = beregningsperiode;
@@ -274,13 +251,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.pgi2 = pgi2;
         this.pgi3 = pgi3;
         this.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse;
-        this.nyIArbeidslivet = nyIArbeidslivet;
         this.fastsattAvSaksbehandler = fastsattAvSaksbehandler;
-        this.besteberegningPrÅr = besteberegningPrÅr;
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
         this.orginalDagsatsFraTilstøtendeYtelse = orginalDagsatsFraTilstøtendeYtelse;
-        this.mottarYtelse = mottarYtelse;
-        this.nyoppstartet = nyoppstartet;
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -406,16 +379,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return årsbeløpFraTilstøtendeYtelse;
     }
 
-    public Boolean getNyIArbeidslivet() {
-        return nyIArbeidslivet;
-    }
-
     public Boolean getFastsattAvSaksbehandler() {
         return fastsattAvSaksbehandler;
-    }
-
-    public BigDecimal getBesteberegningPrÅr() {
-        return besteberegningPrÅr;
     }
 
     public Boolean getLagtTilAvSaksbehandler() {
@@ -424,14 +389,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public Long getOrginalDagsatsFraTilstøtendeYtelse() {
         return orginalDagsatsFraTilstøtendeYtelse;
-    }
-
-    public Boolean getMottarYtelse() {
-        return mottarYtelse;
-    }
-
-    public Boolean getNyoppstartet() {
-        return nyoppstartet;
     }
 
     public Long getAndelsnr() {

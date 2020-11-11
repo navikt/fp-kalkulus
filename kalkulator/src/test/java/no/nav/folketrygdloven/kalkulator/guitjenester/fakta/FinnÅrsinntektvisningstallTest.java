@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -30,7 +31,7 @@ public class FinnÅrsinntektvisningstallTest {
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.empty());
 
         assertThat(visningstall).isEmpty();
     }
@@ -40,7 +41,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal bruttoFørstePeriode = BigDecimal.valueOf(500000);
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagVanlig(bruttoFørstePeriode);
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.empty());
 
         assertThat(visningstall).isPresent();
         assertThat(visningstall).hasValue(bruttoFørstePeriode);
@@ -50,9 +51,10 @@ public class FinnÅrsinntektvisningstallTest {
     public void skal_sette_visningstall_lik_pgisnitt_hvis_selvstendig_næringsdrivende_og_ikke_ny_i_arblivet() {
         BigDecimal pgi= BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
-        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false);
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(false).build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
         assertThat(visningstall).isPresent();
         assertThat(visningstall).hasValue(pgi);
@@ -62,9 +64,10 @@ public class FinnÅrsinntektvisningstallTest {
     public void skal_ikke_returnere_visningstall_hvis_sn_mned_ny_i_arbliv() {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
-        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false);
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(true).medSkalBesteberegnes(false).build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
         assertThat(visningstall).isEmpty();
     }
@@ -74,9 +77,10 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
-        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false, true);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true);
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(true).build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
         assertThat(visningstall).isPresent();
         assertThat(visningstall).hasValue(brutto);
@@ -87,9 +91,10 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
-        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true, true);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true);
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(true).medSkalBesteberegnes(true).build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
         assertThat(visningstall).isPresent();
         assertThat(visningstall).hasValue(brutto);
@@ -97,9 +102,10 @@ public class FinnÅrsinntektvisningstallTest {
 
     @Test
     public void skal_håndtere_nullverdier() {
-        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(null, null, false, false);
+        BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(null, null, false);
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(false).build();
 
-        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag);
+        Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
         assertThat(visningstall).isEmpty();
     }
@@ -126,7 +132,7 @@ public class FinnÅrsinntektvisningstallTest {
 
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagSN(BigDecimal pgiSnitt, BigDecimal bruttoPrÅrAndel, boolean nyIArbliv, boolean medBesteberegning) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagSN(BigDecimal pgiSnitt, BigDecimal bruttoPrÅrAndel, boolean medBesteberegning) {
 
         BeregningsgrunnlagDto grunnlag = BeregningsgrunnlagDto.builder()
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
@@ -143,7 +149,6 @@ public class FinnÅrsinntektvisningstallTest {
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medBeregnetPrÅr(bruttoPrÅrAndel)
             .medPgi(pgiSnitt, Collections.emptyList())
-            .medNyIArbeidslivet(nyIArbliv)
             .build(aktivPeriode);
 
 

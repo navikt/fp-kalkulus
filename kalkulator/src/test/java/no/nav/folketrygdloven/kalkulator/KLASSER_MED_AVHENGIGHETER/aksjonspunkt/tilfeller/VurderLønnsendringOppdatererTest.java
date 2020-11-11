@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
@@ -110,9 +111,12 @@ public class VurderLønnsendringOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(arbeidstakerAndel.getBgAndelArbeidsforhold().get().erLønnsendringIBeregningsperioden()).isTrue();
+        assertThat(faktaAggregat).isPresent();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold().size()).isEqualTo(1);
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperioden()).isTrue();
         assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
     }
 
@@ -126,9 +130,12 @@ public class VurderLønnsendringOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderLønnsendringOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(arbeidstakerAndel.getBgAndelArbeidsforhold().get().erLønnsendringIBeregningsperioden()).isFalse();
+        assertThat(faktaAggregat).isPresent();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold().size()).isEqualTo(1);
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperioden()).isFalse();
         assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
     }
 }

@@ -19,7 +19,9 @@ import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
@@ -68,8 +70,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         var iayGrunnlag = input.getIayGrunnlag();
         var inntektsmeldinger = input.getInntektsmeldinger();
         var ref = input.getKoblingReferanse();
-        var beregningAktivitetAggregat = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
-        BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag);
+        Optional<FaktaAggregatDto> faktaAggregat = input.getFaktaAggregat();
+        BeregningsgrunnlagPrStatusOgAndelDto dto = LagTilpassetDtoTjeneste.opprettTilpassetDTO(ref, andel, iayGrunnlag, faktaAggregat);
         LocalDate skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
         Optional<InntektsmeldingDto> inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmelding, iayGrunnlag).ifPresent(dto::setArbeidsforhold);
@@ -88,11 +90,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
-        dto.setErTidsbegrensetArbeidsforhold(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::getErTidsbegrensetArbeidsforhold).orElse(null));
-        dto.setErNyIArbeidslivet(andel.getNyIArbeidslivet());
-        dto.setLonnsendringIBeregningsperioden(andel.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::erLønnsendringIBeregningsperioden).orElse(null));
+        faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
+                .map(FaktaArbeidsforholdDto::getErTidsbegrenset).ifPresent(dto::setErTidsbegrensetArbeidsforhold);
+        faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør).map(FaktaAktørDto::getErNyIArbeidslivetSN).ifPresent(dto::setErNyIArbeidslivet);
+        faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
+                .map(FaktaArbeidsforholdDto::getHarLønnsendringIBeregningsperioden).ifPresent(dto::setLonnsendringIBeregningsperioden);
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         dto.setErTilkommetAndel(!andel.getKilde().equals(AndelKilde.PROSESS_START));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){

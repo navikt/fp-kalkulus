@@ -43,15 +43,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal pgi2;
     private BigDecimal pgi3;
     private Beløp årsbeløpFraTilstøtendeYtelse;
-    private Boolean nyIArbeidslivet;
     private Boolean fastsattAvSaksbehandler = false;
     private BigDecimal besteberegningPrÅr;
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
-    private BeregningsgrunnlagFrilansAndelDto beregningsgrunnlagFrilansAndel;
-    private BeregningsgrunnlagArbeidstakerAndelDto beregningsgrunnlagArbeidstakerAndel;
 
     public BeregningsgrunnlagPrStatusOgAndelDto() { }
 
@@ -78,7 +75,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.pgi2 = kopiereFra.pgi2;
         this.pgi3 = kopiereFra.pgi3;
         this.årsbeløpFraTilstøtendeYtelse = kopiereFra.årsbeløpFraTilstøtendeYtelse;
-        this.nyIArbeidslivet = kopiereFra.nyIArbeidslivet;
         this.fastsattAvSaksbehandler = kopiereFra.fastsattAvSaksbehandler;
         this.besteberegningPrÅr = kopiereFra.besteberegningPrÅr;
         this.inntektskategori = kopiereFra.inntektskategori;
@@ -86,12 +82,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
         if (kopiereFra.bgAndelArbeidsforhold != null) {
             this.bgAndelArbeidsforhold = BGAndelArbeidsforholdDto.Builder.kopier(kopiereFra.bgAndelArbeidsforhold).build(this);
-        }
-        if (kopiereFra.beregningsgrunnlagFrilansAndel != null) {
-            this.beregningsgrunnlagFrilansAndel = BeregningsgrunnlagFrilansAndelDto.Builder.kopier(kopiereFra.beregningsgrunnlagFrilansAndel).build(this);
-        }
-        if (kopiereFra.beregningsgrunnlagArbeidstakerAndel != null) {
-            this.setBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.Builder.kopier(kopiereFra.beregningsgrunnlagArbeidstakerAndel).build());
         }
     }
 
@@ -110,22 +100,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public LocalDate getBeregningsperiodeTom() {
         return beregningsperiode != null ? beregningsperiode.getTomDato() : null;
-    }
-
-    public Optional<Boolean> mottarYtelse() {
-        if (beregningsgrunnlagFrilansAndel != null) {
-            return Optional.ofNullable(beregningsgrunnlagFrilansAndel.getMottarYtelse());
-        } else if (beregningsgrunnlagArbeidstakerAndel != null) {
-            return Optional.ofNullable(beregningsgrunnlagArbeidstakerAndel.getMottarYtelse());
-        }
-        return Optional.empty();
-    }
-
-    public Optional<Boolean> erNyoppstartet() {
-        if (beregningsgrunnlagFrilansAndel != null) {
-            return Optional.ofNullable(beregningsgrunnlagFrilansAndel.getNyoppstartet());
-        }
-        return Optional.empty();
     }
 
     public boolean gjelderSammeArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto that) {
@@ -174,10 +148,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             && Objects.equals(this.getArbeidsforholdType(), arbeidsforholdType);
     }
 
-    public Optional<BeregningsgrunnlagArbeidstakerAndelDto> getBeregningsgrunnlagArbeidstakerAndel() {
-        return Optional.ofNullable(beregningsgrunnlagArbeidstakerAndel);
-    }
-
     public OpptjeningAktivitetType getArbeidsforholdType() {
         return arbeidsforholdType;
     }
@@ -224,10 +194,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public BigDecimal getRedusertBrukersAndelPrÅr() {
         return redusertBrukersAndelPrÅr;
-    }
-
-    public Boolean getNyIArbeidslivet() {
-        return nyIArbeidslivet;
     }
 
     public Boolean getFastsattAvSaksbehandler() {
@@ -320,16 +286,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     public Optional<InternArbeidsforholdRefDto> getArbeidsforholdRef() {
         Optional<BGAndelArbeidsforholdDto> beregningArbeidsforhold = getBgAndelArbeidsforhold();
         return beregningArbeidsforhold.map(BGAndelArbeidsforholdDto::getArbeidsforholdRef);
-    }
-
-    private void setBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto beregningsgrunnlagArbeidstakerAndel) {
-        beregningsgrunnlagArbeidstakerAndel.setBeregningsgrunnlagPrStatusOgAndel(this);
-        this.beregningsgrunnlagArbeidstakerAndel = beregningsgrunnlagArbeidstakerAndel;
-    }
-
-    private void setBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelDto beregningsgrunnlagFrilansAndel) {
-        beregningsgrunnlagFrilansAndel.setBeregningsgrunnlagPrStatusOgAndel(this);
-        this.beregningsgrunnlagFrilansAndel = beregningsgrunnlagFrilansAndel;
     }
 
     @Override
@@ -567,69 +523,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medNyIArbeidslivet(Boolean nyIArbeidslivet) {
-            verifiserKanModifisere();
-            kladd.nyIArbeidslivet = nyIArbeidslivet;
-            return this;
-        }
-
-        public Builder medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto beregningsgrunnlagArbeidstakerAndelDto) {
-            verifiserKanModifisere();
-            kladd.setBeregningsgrunnlagArbeidstakerAndel(beregningsgrunnlagArbeidstakerAndelDto);
-            return this;
-        }
-
-        public Builder medBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelDto beregningsgrunnlagFrilansAndelDto) {
-            verifiserKanModifisere();
-            kladd.setBeregningsgrunnlagFrilansAndel(beregningsgrunnlagFrilansAndelDto);
-            return this;
-        }
-
-
-
-        public Builder medMottarYtelse(Boolean mottarYtelse, AktivitetStatus aktivitetStatus) {
-            verifiserKanModifisere();
-            kladd.aktivitetStatus = aktivitetStatus;
-            if (kladd.aktivitetStatus.erFrilanser()) {
-                if (kladd.beregningsgrunnlagFrilansAndel == null) {
-                    kladd.beregningsgrunnlagFrilansAndel = BeregningsgrunnlagFrilansAndelDto.builder()
-                            .medMottarYtelse(mottarYtelse)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagFrilansAndelDto.Builder.oppdatere(kladd.beregningsgrunnlagFrilansAndel)
-                    .medMottarYtelse(mottarYtelse);
-                }
-            } else if (kladd.aktivitetStatus.erArbeidstaker()) {
-                if (kladd.beregningsgrunnlagArbeidstakerAndel == null) {
-                    kladd.beregningsgrunnlagArbeidstakerAndel = BeregningsgrunnlagArbeidstakerAndelDto.builder()
-                            .medMottarYtelse(mottarYtelse)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagArbeidstakerAndelDto.Builder.oppdatere(kladd.beregningsgrunnlagArbeidstakerAndel)
-                    .medMottarYtelse(mottarYtelse);
-                }
-            }
-            return this;
-        }
-
-        public Builder medNyoppstartet(Boolean nyoppstartet, AktivitetStatus aktivitetStatus) {
-            verifiserKanModifisere();
-            kladd.aktivitetStatus = aktivitetStatus;
-            if (kladd.aktivitetStatus.erFrilanser()) {
-                if (kladd.beregningsgrunnlagFrilansAndel == null) {
-                    kladd.beregningsgrunnlagFrilansAndel = BeregningsgrunnlagFrilansAndelDto.builder()
-                            .medNyoppstartet(nyoppstartet)
-                            .build(kladd);
-                } else {
-                    BeregningsgrunnlagFrilansAndelDto.builder(kladd.beregningsgrunnlagFrilansAndel)
-                    .medNyoppstartet(nyoppstartet);
-                }
-            } else {
-                throw new IllegalArgumentException("Andel må vere frilans for å sette nyoppstartet");
-            }
-            return this;
-        }
-
         public Builder medInntektskategori(Inntektskategori inntektskategori) {
             verifiserKanModifisere();
             kladd.inntektskategori = inntektskategori;
@@ -670,14 +563,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                 kladd.kilde = kilde;
             }
             return this;
-        }
-
-        public BeregningsgrunnlagArbeidstakerAndelDto.Builder getBeregningsgrunnlagArbeidstakerAndelBuilder() {
-            return BeregningsgrunnlagArbeidstakerAndelDto.builder(kladd.beregningsgrunnlagArbeidstakerAndel);
-        }
-
-        public BeregningsgrunnlagFrilansAndelDto.Builder getBeregningsgrunnlagFrilansAndelBuilder() {
-            return BeregningsgrunnlagFrilansAndelDto.builder(kladd.beregningsgrunnlagFrilansAndel);
         }
 
         public BGAndelArbeidsforholdDto.Builder getBgAndelArbeidsforholdDtoBuilder() {

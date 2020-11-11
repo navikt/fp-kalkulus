@@ -25,6 +25,22 @@ public class FaktaAggregatDto  {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    public Optional<FaktaArbeidsforholdDto> getFaktaArbeidsforhold(BGAndelArbeidsforholdDto bgAndelArbeidsforholdDto) {
+        return faktaArbeidsforholdListe.stream()
+                .filter(fa -> fa.gjelderFor(bgAndelArbeidsforholdDto.getArbeidsgiver(), bgAndelArbeidsforholdDto.getArbeidsforholdRef()))
+                .findFirst();
+    }
+
+    public Optional<FaktaArbeidsforholdDto> getFaktaArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        if (andel.getBgAndelArbeidsforhold().isEmpty()) {
+            return Optional.empty();
+        }
+        return faktaArbeidsforholdListe.stream()
+                .filter(fa -> fa.gjelderFor(andel.getBgAndelArbeidsforhold().get().getArbeidsgiver(), andel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef()))
+                .findFirst();
+    }
+
+
     public Optional<FaktaAktørDto> getFaktaAktør() {
         return Optional.ofNullable(faktaAktør);
     }

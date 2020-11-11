@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.Ytelsespesi
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -162,7 +163,8 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setLedetekstAvkortet("Avkortet beregningsgrunnlag (6G=" + seksG + ")");
 
         // Det skal vises et tall som "oppsumering" av årsinntekt i GUI, innebærer nok logikk til at det bør utledes backend
-        FinnÅrsinntektvisningstall.finn(beregningsgrunnlag).ifPresent(dto::setÅrsinntektVisningstall);
+        FinnÅrsinntektvisningstall.finn(beregningsgrunnlag,
+                input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør)).ifPresent(dto::setÅrsinntektVisningstall);
     }
 
     private void mapAktivitetGradering(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

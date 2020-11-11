@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
@@ -115,12 +116,14 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         faktaOmBeregningTilfellerOppdaterer.oppdater(faktaBeregningLagreDto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         //Assert
+        assertThat(faktaAggregat).isPresent();
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-        assertThat(andeler.get(0).getBgAndelArbeidsforhold().get().getErTidsbegrensetArbeidsforhold()).isTrue();
-        assertThat(andeler.get(1).getBgAndelArbeidsforhold().get().getErTidsbegrensetArbeidsforhold()).isFalse();
-        assertThat(andeler.get(2).getBgAndelArbeidsforhold().get().getErTidsbegrensetArbeidsforhold()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(0)).get().getErTidsbegrenset()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(1)).get().getErTidsbegrenset()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(2)).get().getErTidsbegrenset()).isTrue();
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Virksomhet virksomhet) {

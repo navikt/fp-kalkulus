@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
@@ -124,6 +125,9 @@ public class BeregningsgrunnlagGUIInput {
         return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(getKoblingReferanse(), skjæringstidspunktOpptjening);
     }
 
+    public Optional<FaktaAggregatDto> getFaktaAggregat() {
+        return getBeregningsgrunnlagGrunnlag().getFaktaAggregat();
+    }
 
     public Skjæringstidspunkt getSkjæringstidspunkt() {
         return koblingReferanse.getSkjæringstidspunkt();

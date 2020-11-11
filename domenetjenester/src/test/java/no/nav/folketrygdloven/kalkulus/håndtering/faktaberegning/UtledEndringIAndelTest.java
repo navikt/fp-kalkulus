@@ -71,12 +71,10 @@ public class UtledEndringIAndelTest {
         // Arrange
         BigDecimal inntekt = BigDecimal.TEN;
         Inntektskategori inntektskategori = Inntektskategori.FISKER;
-        boolean mottarYtelse = true;
-        BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagFrilanserAndel(inntekt, inntektskategori, mottarYtelse);
+        BeregningsgrunnlagPrStatusOgAndelDto nyAndel = lagFrilanserAndel(inntekt, inntektskategori);
         Inntektskategori forrigeInntektskategori = Inntektskategori.FRILANSER;
         BigDecimal forrigeInntekt = BigDecimal.ZERO;
-        boolean forrigeMottarYtelse = false;
-        BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagFrilanserAndel(forrigeInntekt, forrigeInntektskategori, forrigeMottarYtelse);
+        BeregningsgrunnlagPrStatusOgAndelDto forrigeAndel = lagFrilanserAndel(forrigeInntekt, forrigeInntektskategori);
 
         // Act
         var endring = UtledEndringIAndel.utled(nyAndel, Optional.of(nyAndel), Optional.of(forrigeAndel));
@@ -104,12 +102,11 @@ public class UtledEndringIAndelTest {
                 .build();
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto lagFrilanserAndel(BigDecimal inntekt, Inntektskategori inntektskategori, Boolean mottarYtelse) {
+    private BeregningsgrunnlagPrStatusOgAndelDto lagFrilanserAndel(BigDecimal inntekt, Inntektskategori inntektskategori) {
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medInntektskategori(inntektskategori)
                 .medBeregnetPrÅr(inntekt)
                 .medAndelsnr(1L)
-                .medMottarYtelse(mottarYtelse, AktivitetStatus.FRILANSER)
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build();
     }

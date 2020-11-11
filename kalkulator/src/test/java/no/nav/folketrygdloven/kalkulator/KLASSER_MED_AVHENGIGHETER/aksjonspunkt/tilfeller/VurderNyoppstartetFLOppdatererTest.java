@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -71,9 +72,10 @@ public class VurderNyoppstartetFLOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderNyoppstartetFLOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(frilansAndel.erNyoppstartet().get()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFL()).isTrue();
     }
 
     @Test
@@ -86,9 +88,10 @@ public class VurderNyoppstartetFLOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderNyoppstartetFLOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(frilansAndel.erNyoppstartet().get()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFL()).isFalse();
     }
 
 }

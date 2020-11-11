@@ -6,6 +6,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
@@ -15,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
  */
 public final class FinnÅrsinntektvisningstall {
 
-    public static Optional<BigDecimal> finn(BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static Optional<BigDecimal> finn(BeregningsgrunnlagDto beregningsgrunnlag, Optional<FaktaAktørDto> faktaAktør) {
 
         if (beregningsgrunnlag.getBeregningsgrunnlagPerioder().isEmpty()) {
             return Optional.empty();
@@ -31,13 +32,13 @@ public final class FinnÅrsinntektvisningstall {
                 return Optional.ofNullable(førstePeriode(beregningsgrunnlag).getBruttoPrÅr());
             }
 
-            return finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(beregningsgrunnlag);
+            return finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(beregningsgrunnlag, faktaAktør);
         }
 
         return Optional.ofNullable(førstePeriode(beregningsgrunnlag).getBeregnetPrÅr());
     }
 
-    private static Optional<BigDecimal> finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static Optional<BigDecimal> finnBeregnetÅrsinntektVisningstallSelvstendigNæringsdrivende(BeregningsgrunnlagDto beregningsgrunnlag, Optional<FaktaAktørDto> faktaAktør) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> snAndelOpt = førstePeriode(beregningsgrunnlag).getBeregningsgrunnlagPrStatusOgAndelList().stream()
             .filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
             .findFirst();
@@ -45,11 +46,15 @@ public final class FinnÅrsinntektvisningstall {
         if (snAndelOpt.isPresent()) {
             BeregningsgrunnlagPrStatusOgAndelDto snAndel = snAndelOpt.get();
 
-            if (snAndel.getNyIArbeidslivet() == null || Boolean.FALSE.equals(snAndel.getNyIArbeidslivet())) {
+            if (Boolean.FALSE.equals(erNyIArbeidslivet(faktaAktør))) {
                 return Optional.ofNullable(snAndel.getPgiSnitt());
             }
         }
         return Optional.empty();
+    }
+
+    private static Boolean erNyIArbeidslivet(Optional<FaktaAktørDto> faktaAktør) {
+        return faktaAktør.map(FaktaAktørDto::getErNyIArbeidslivetSN).orElse(false);
     }
 
     private static boolean harBesteberegningtilfelle(BeregningsgrunnlagDto beregningsgrunnlag) {

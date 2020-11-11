@@ -22,7 +22,6 @@ public class BGAndelArbeidsforholdDto {
     private BigDecimal naturalytelseBortfaltPrÅr;
     private BigDecimal naturalytelseTilkommetPrÅr;
     private Boolean erTidsbegrensetArbeidsforhold;
-    private Boolean lønnsendringIBeregningsperioden;
     private LocalDate arbeidsperiodeFom;
     private LocalDate arbeidsperiodeTom;
     private Hjemmel hjemmelForRefusjonskravfrist;
@@ -37,7 +36,6 @@ public class BGAndelArbeidsforholdDto {
         this.naturalytelseBortfaltPrÅr = eksisterendeBGAndelArbeidsforhold.naturalytelseBortfaltPrÅr;
         this.naturalytelseTilkommetPrÅr = eksisterendeBGAndelArbeidsforhold.naturalytelseTilkommetPrÅr;
         this.erTidsbegrensetArbeidsforhold = eksisterendeBGAndelArbeidsforhold.erTidsbegrensetArbeidsforhold;
-        this.lønnsendringIBeregningsperioden = eksisterendeBGAndelArbeidsforhold.lønnsendringIBeregningsperioden;
         this.arbeidsperiodeFom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeFom;
         this.arbeidsperiodeTom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeTom;
         this.saksbehandletRefusjonPrÅr = eksisterendeBGAndelArbeidsforhold.saksbehandletRefusjonPrÅr;
@@ -65,7 +63,7 @@ public class BGAndelArbeidsforholdDto {
     }
 
     public Boolean erLønnsendringIBeregningsperioden() {
-        return lønnsendringIBeregningsperioden;
+        return null;
     }
 
     public LocalDate getArbeidsperiodeFom() {
@@ -226,16 +224,6 @@ public class BGAndelArbeidsforholdDto {
 
         public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
             bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
-            return this;
-        }
-
-        public BGAndelArbeidsforholdDto.Builder medTidsbegrensetArbeidsforhold(Boolean erTidsbegrensetArbeidsforhold) {
-            bgAndelArbeidsforhold.erTidsbegrensetArbeidsforhold = erTidsbegrensetArbeidsforhold;
-            return this;
-        }
-
-        public Builder medLønnsendringIBeregningsperioden(Boolean lønnsendringIBeregningsperioden) {
-            bgAndelArbeidsforhold.lønnsendringIBeregningsperioden = lønnsendringIBeregningsperioden;
             return this;
         }
 

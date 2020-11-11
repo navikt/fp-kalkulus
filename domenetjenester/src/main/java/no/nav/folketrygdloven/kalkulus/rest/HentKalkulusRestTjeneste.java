@@ -100,7 +100,7 @@ public class HentKalkulusRestTjeneste {
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
             .collect(Collectors.toList());
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType).stream()
-            .map(bg -> MapDetaljertBeregningsgrunnlag.mapGrunnlag(bg))
+            .map(MapDetaljertBeregningsgrunnlag::mapGrunnlag)
             .collect(Collectors.toList());
 
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();

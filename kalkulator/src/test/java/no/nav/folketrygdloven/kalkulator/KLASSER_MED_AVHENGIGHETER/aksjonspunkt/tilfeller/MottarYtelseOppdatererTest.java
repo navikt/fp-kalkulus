@@ -11,11 +11,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.ArbeidstakerandelUtenIMMottarYtelseDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.MottarYtelseDto;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetRepository;
@@ -65,25 +66,25 @@ public class MottarYtelseOppdatererTest {
         // Arrange
         FaktaBeregningLagreDto dto = new FaktaBeregningLagreDto(singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE));
         dto.setMottarYtelse(new MottarYtelseDto(true, emptyList()));
-        BeregningsgrunnlagPrStatusOgAndelDto frilansAndel = byggFrilansAndel(null);
-        BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel(null);
+        byggFrilansAndel();
+        BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel();
 
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         oppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(frilansAndel.mottarYtelse()).isPresent();
-        assertThat(frilansAndel.mottarYtelse().get()).isTrue();
-        assertThat(arbeidsforholdAndel.mottarYtelse()).isNotPresent();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelse()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidsforholdAndel)).isNotPresent();
     }
 
     @Test
     public void skal_sette_mottar_ytelse_kun_for_frilans_og_arbeidstakerandel() {
         // Arrange
         FaktaBeregningLagreDto dto = new FaktaBeregningLagreDto(singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE));
-        BeregningsgrunnlagPrStatusOgAndelDto frilansAndel = byggFrilansAndel(null);
-        BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel(null);
+        byggFrilansAndel();
+        BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel();
         dto.setMottarYtelse(new MottarYtelseDto(false,
             singletonList(new ArbeidstakerandelUtenIMMottarYtelseDto(arbeidsforholdAndel.getAndelsnr(), true))));
 
@@ -91,39 +92,31 @@ public class MottarYtelseOppdatererTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         oppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
 
-        BeregningsgrunnlagPrStatusOgAndelDto oppdatertFrilansAndel = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag()
-            .getBeregningsgrunnlagPerioder().get(0)
-            .getBeregningsgrunnlagPrStatusOgAndelList()
-            .stream()
-            .filter(a -> a.equals(frilansAndel)).findFirst().get();
-
         BeregningsgrunnlagPrStatusOgAndelDto oppdatertArbeidsforholdAndel = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag()
             .getBeregningsgrunnlagPerioder().get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
             .filter(a -> a.equals(arbeidsforholdAndel)).findFirst().get();
 
+        Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
+
         // Assert
-        assertThat(oppdatertFrilansAndel.mottarYtelse()).isPresent();
-        assertThat(oppdatertFrilansAndel.mottarYtelse().get()).isFalse();
-        assertThat(oppdatertArbeidsforholdAndel.mottarYtelse()).isPresent();
-        assertThat(oppdatertArbeidsforholdAndel.mottarYtelse().get()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelse()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(oppdatertArbeidsforholdAndel).get().getHarMottattYtelse()).isTrue();
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto byggFrilansAndel(Boolean mottarYtelse) {
-        return BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medInntektskategori(Inntektskategori.FRILANSER)
-            .medMottarYtelse(mottarYtelse, AktivitetStatus.FRILANSER)
-            .build(periode);
+    private void byggFrilansAndel() {
+        BeregningsgrunnlagPrStatusOgAndelDto.ny()
+                .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                .medInntektskategori(Inntektskategori.FRILANSER)
+                .build(periode);
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelDto byggArbeidsforholdMedBgAndel(Boolean mottarYtelse) {
+    private BeregningsgrunnlagPrStatusOgAndelDto byggArbeidsforholdMedBgAndel() {
         Arbeidsgiver arbeidsgiver = arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR);
         return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medMottarYtelse(mottarYtelse, AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsforholdRef(ARB_ID).medArbeidsgiver(arbeidsgiver))
             .build(periode);
     }

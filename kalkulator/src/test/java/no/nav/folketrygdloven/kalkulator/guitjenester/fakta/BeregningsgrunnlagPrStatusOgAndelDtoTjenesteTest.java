@@ -11,9 +11,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -32,7 +33,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -62,7 +62,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SAMMENLIGNING_TOM = LocalDate.now();
 
     private BeregningsgrunnlagGrunnlagDto grunnlag;
-    private OpptjeningAktiviteterDto opptjeningAktiviteter;
 
     @Test
     public void skalFastsetteGrunnlagForSnNårAvvikOver25ProsentOgGammeltSammenligningsgrunnlag() {
@@ -72,8 +71,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        byggAndelSn(bgPeriode, arbeidsgiver, null, 3L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        byggAndelSn(bgPeriode, arbeidsgiver, 3L);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -95,7 +94,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -116,8 +115,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        byggAndelSn(bgPeriode, arbeidsgiver, true, 3L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        byggAndelSn(bgPeriode, arbeidsgiver, 3L);
+        var fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medErNyIArbeidslivetSN(true)
+                .build()).build();
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -137,8 +139,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25Prosent(SammenligningsgrunnlagType.SAMMENLIGNING_SN);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
-        byggAndelSn(bgPeriode, arbeidsgiver, false, 1L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        byggAndelSn(bgPeriode, arbeidsgiver, 1L);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medErNyIArbeidslivetSN(false)
+                .build()).build();
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -157,7 +162,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikOver25Prosent(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelerAapDpVentelønn(bgPeriode, arbeidsgiver);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -175,7 +180,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -196,7 +201,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -217,8 +222,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelAt(bgPeriode, arbeidsgiver, 1L);
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
-        byggAndelSn(bgPeriode, arbeidsgiver, false, 3L);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        byggAndelSn(bgPeriode, arbeidsgiver, 3L);
+        FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
+                .medErNyIArbeidslivetSN(false)
+                .build()).build();
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -239,7 +247,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagDto Beregningsgrunnlag = lagBeregningsgrunnlagMedAvvikUnder25ProsentMedKunSammenligningsgrunnlag();
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelerAapDpVentelønn(bgPeriode, arbeidsgiver);
-        lagBehandling(Beregningsgrunnlag, arbeidsgiver);
+        lagBehandling(Beregningsgrunnlag, arbeidsgiver, null);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(Collections.emptyList()).build();
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse), iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
@@ -332,7 +340,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .build(beregningsgrunnlagPeriode);
     }
 
-    private void byggAndelSn(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Arbeidsgiver arbeidsgiver, Boolean erNyIArbeidslivet, Long andelsNr) {
+    private void byggAndelSn(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Arbeidsgiver arbeidsgiver, Long andelsNr) {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
@@ -349,7 +357,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .medAvkortetPrÅr(AVKORTET_PR_AAR)
                 .medRedusertPrÅr(REDUSERT_PR_AAR)
                 .medOverstyrtPrÅr(OVERSTYRT_PR_AAR)
-                .medNyIArbeidslivet(erNyIArbeidslivet)
                 .build(beregningsgrunnlagPeriode);
     }
 
@@ -382,14 +389,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
                 .build(beregningsgrunnlagPeriode);
     }
 
-    private BeregningsgrunnlagDto lagBehandling(BeregningsgrunnlagDto beregningsgrunnlag, Arbeidsgiver arbeidsgiver) {
+    private BeregningsgrunnlagDto lagBehandling(BeregningsgrunnlagDto beregningsgrunnlag, Arbeidsgiver arbeidsgiver, FaktaAggregatDto fakta) {
         BeregningAktivitetAggregatDto beregningAktiviteter = lagBeregningAktiviteter(arbeidsgiver);
         BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                .medFaktaAggregat(fakta)
                 .medRegisterAktiviteter(beregningAktiviteter)
                 .medBeregningsgrunnlag(beregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPRETTET);
 
         this.grunnlag = beregningsgrunnlagGrunnlag;
-        this.opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID, Periode.of(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.minusDays(1)), arbeidsgiver.getOrgnr());
 
         return beregningsgrunnlag;
     }

@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
@@ -36,14 +38,15 @@ class LagTilpassetDtoTjeneste  {
 
     static BeregningsgrunnlagPrStatusOgAndelDto opprettTilpassetDTO(KoblingReferanse ref,
                                                                     no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                    InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+                                                                    InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                    Optional<FaktaAggregatDto> faktaAggregat) {
         if (AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
             return opprettSNDto(andel, inntektArbeidYtelseGrunnlag, ref.getSkjæringstidspunktBeregning());
         } else if (AktivitetStatus.ARBEIDSTAKER.equals(andel.getAktivitetStatus())
             && andel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).isPresent()) {
             return opprettATDto(andel);
         } else if (AktivitetStatus.FRILANSER.equals(andel.getAktivitetStatus())) {
-            return opprettFLDto(andel);
+            return opprettFLDto(faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør));
         } else if (AktivitetStatus.DAGPENGER.equals(andel.getAktivitetStatus()) || AktivitetStatus.ARBEIDSAVKLARINGSPENGER.equals(andel.getAktivitetStatus())) {
             return opprettYtelseDto(ref, inntektArbeidYtelseGrunnlag, andel);
         } else {
@@ -97,9 +100,9 @@ class LagTilpassetDtoTjeneste  {
     }
 
 
-    private static BeregningsgrunnlagPrStatusOgAndelFLDto opprettFLDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private static BeregningsgrunnlagPrStatusOgAndelFLDto opprettFLDto(Optional<FaktaAktørDto> faktaAktør) {
         BeregningsgrunnlagPrStatusOgAndelFLDto dtoFL = new BeregningsgrunnlagPrStatusOgAndelFLDto();
-        dtoFL.setErNyoppstartet(andel.erNyoppstartet().orElse(null));
+        dtoFL.setErNyoppstartet(faktaAktør.map(FaktaAktørDto::getErNyoppstartetFL).orElse(null));
         return dtoFL;
     }
 

@@ -20,6 +20,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -70,9 +72,10 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        var faktaAktør = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør);
 
         // Assert
-        assertThat(snAndel.getNyIArbeidslivet()).isTrue();
+        assertThat(faktaAktør.get().getErNyIArbeidslivetSN()).isTrue();
     }
 
     @Test
@@ -85,9 +88,10 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         // Act
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer.oppdater(dto, Optional.empty(), input, oppdatere);
+        FaktaAktørDto faktaAktørDto = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().get().getFaktaAktør().get();
 
         // Assert
-        assertThat(snAndel.getNyIArbeidslivet()).isFalse();
+        assertThat(faktaAktørDto.getErNyIArbeidslivetSN()).isFalse();
     }
 
 }

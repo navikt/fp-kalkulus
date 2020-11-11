@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 
+import static no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlagMedTogglePåTest.NULL_REF;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -26,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgru
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.OmsorgspengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -35,6 +35,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
@@ -105,6 +108,7 @@ public class ForeslåBeregningsgrunnlagTest {
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
     private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
+
     @BeforeEach
     public void setup() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -114,63 +118,62 @@ public class ForeslåBeregningsgrunnlagTest {
     private BeregningsgrunnlagDto lagBeregningsgrunnlagAT(boolean erArbeidsgiverVirksomhet) {
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder();
         beregningsgrunnlagBuilder.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .medGrunnbeløp(GRUNNBELØP);
+                .medGrunnbeløp(GRUNNBELØP);
         beregningsgrunnlagBuilder.leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER));
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER));
         beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM,
-                    erArbeidsgiverVirksomhet ? Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1) : Arbeidsgiver.person(beregningsAkrød1)))
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
-                    SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))));
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                        .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+                        .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM,
+                                erArbeidsgiverVirksomhet ? Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1) : Arbeidsgiver.person(beregningsAkrød1)))
+                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                        .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                        .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))));
         return beregningsgrunnlagBuilder.build();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlagATFL_SN(boolean nyIArbeidslivet) {
+    private BeregningsgrunnlagDto lagBeregningsgrunnlagATFL_SN() {
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder();
         beregningsgrunnlagBuilder.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .medGrunnbeløp(GRUNNBELØP);
+                .medGrunnbeløp(GRUNNBELØP);
         beregningsgrunnlagBuilder.leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder()
-            .medAktivitetStatus(AktivitetStatus.KOMBINERT_AT_SN));
+                .medAktivitetStatus(AktivitetStatus.KOMBINERT_AT_SN));
         beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-                .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1)))
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
-                    SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1)))
-            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medArbforholdType(OpptjeningAktivitetType.UDEFINERT)
-                .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-                .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
-                .medNyIArbeidslivet(nyIArbeidslivet)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                    .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
-                    .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
-                    .medArbeidsperiodeTom(LocalDate.now().plusYears(2)))));
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                        .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+                        .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1)))
+                        .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                        .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                        .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1)))
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                        .medArbforholdType(OpptjeningAktivitetType.UDEFINERT)
+                        .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                        .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
+                        .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                                .medArbeidsgiver(Arbeidsgiver.virksomhet(ORGNR))
+                                .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
+                                .medArbeidsperiodeTom(LocalDate.now().plusYears(2)))));
         return beregningsgrunnlagBuilder.build();
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagFL() {
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder();
         beregningsgrunnlagBuilder.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .medGrunnbeløp(GRUNNBELØP);
+                .medGrunnbeløp(GRUNNBELØP);
         beregningsgrunnlagBuilder.leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER));
+                .medAktivitetStatus(AktivitetStatus.FRILANSER));
         beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-            .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-                .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1)))
-                .medAktivitetStatus(AktivitetStatus.FRILANSER)
-                .medInntektskategori(Inntektskategori.FRILANSER)
-                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
-                    SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))));
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+                .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
+                        .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1)))
+                        .medAktivitetStatus(AktivitetStatus.FRILANSER)
+                        .medInntektskategori(Inntektskategori.FRILANSER)
+                        .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1),
+                                SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))));
         return beregningsgrunnlagBuilder.build();
     }
 
@@ -186,13 +189,13 @@ public class ForeslåBeregningsgrunnlagTest {
         AktørId aktørId = koblingReferanse.getAktørId();
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed, tilOgMed,
-            ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+                ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
-                arbeidsgiver);
+                    arbeidsgiver);
             verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
-                arbeidsgiver);
+                    arbeidsgiver);
         }
         iayGrunnlagBuilder.medData(inntektArbeidYtelseBuilder);
     }
@@ -209,28 +212,28 @@ public class ForeslåBeregningsgrunnlagTest {
     private void lagKortvarigArbeidsforhold(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate fomDato, LocalDate tomDato) {
         BeregningsgrunnlagPrStatusOgAndelDto andel = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         AktivitetsAvtaleDtoBuilder aktivitetsAvtaleBuilder = YrkesaktivitetDtoBuilder.nyAktivitetsAvtaleBuilder()
-            .medPeriode(Intervall.fraOgMedTilOgMed(fomDato, tomDato));
+                .medPeriode(Intervall.fraOgMedTilOgMed(fomDato, tomDato));
         YrkesaktivitetDto yrkesaktivitet = YrkesaktivitetDtoBuilder
-            .oppdatere(Optional.empty()).leggTilAktivitetsAvtale(aktivitetsAvtaleBuilder)
-            .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .medArbeidsforholdId(andel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef())
-            .medArbeidsgiver(andel.getArbeidsgiver().get()).build();
+                .oppdatere(Optional.empty()).leggTilAktivitetsAvtale(aktivitetsAvtaleBuilder)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .medArbeidsforholdId(andel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef())
+                .medArbeidsgiver(andel.getArbeidsgiver().get()).build();
         Optional<InntektArbeidYtelseAggregatDto> registerVersjon = iayGrunnlagBuilder.getKladd().getRegisterVersjon();
         InntektArbeidYtelseAggregatBuilder builder = InntektArbeidYtelseAggregatBuilder.oppdatere(registerVersjon, VersjonTypeDto.REGISTER);
 
         Optional<AktørArbeidDto> aktørArbeid = registerVersjon.stream()
-        .flatMap(iay -> iay.getAktørArbeid().stream())
-        .filter(a -> a.getAktørId().equals(koblingReferanse.getAktørId())).findFirst();
+                .flatMap(iay -> iay.getAktørArbeid().stream())
+                .filter(a -> a.getAktørId().equals(koblingReferanse.getAktørId())).findFirst();
         YrkesaktivitetDto ya = aktørArbeid.get().hentAlleYrkesaktiviteter()
-        .stream()
-        .filter(y -> y.equals(yrkesaktivitet))
-        .findFirst().get();
+                .stream()
+                .filter(y -> y.equals(yrkesaktivitet))
+                .findFirst().get();
 
         Intervall periode = ya.getAlleAktivitetsAvtaler().iterator().next().getPeriode();
         builder.getAktørArbeidBuilder(koblingReferanse.getAktørId())
-            .getYrkesaktivitetBuilderForNøkkelAvType(new OpptjeningsnøkkelDto(yrkesaktivitet), ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .getAktivitetsAvtaleBuilder(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()), true)
-            .medPeriode(Intervall.fraOgMedTilOgMed(fomDato, tomDato));
+                .getYrkesaktivitetBuilderForNøkkelAvType(new OpptjeningsnøkkelDto(yrkesaktivitet), ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .getAktivitetsAvtaleBuilder(Intervall.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato()), true)
+                .medPeriode(Intervall.fraOgMedTilOgMed(fomDato, tomDato));
 
         iayGrunnlagBuilder.medData(builder);
     }
@@ -239,36 +242,36 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalLageEnPeriode() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1 + 1000), null, null);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
         assertThat(resultat.getAksjonspunkter()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlag(), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
-            BigDecimal.valueOf(81.004455200d));
+                SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
+                BigDecimal.valueOf(81.004455200d));
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), (MÅNEDSINNTEKT1 + 1000) * 12,
-            null, null);
+                null, null);
     }
 
     @Test
     public void skalLageEnPeriodeNårNaturalytelseBortfallerPåSkjæringstidspunktet() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_BEREGNING);
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_BEREGNING);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -277,21 +280,22 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
     }
 
-    private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger, boolean skalSplitte) {
+    private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger, FaktaAggregatDto faktaAggregat) {
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagGrunnlagDtoBuilder bgGrunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
+                .medFaktaAggregat(faktaAggregat)
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
-        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, skalSplitte);
+        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, false);
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }
 
-    private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger, boolean skalSplitte, OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
+    private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger, OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
         BeregningsgrunnlagGrunnlagDtoBuilder bgGrunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(beregningsgrunnlag)
@@ -299,7 +303,7 @@ public class ForeslåBeregningsgrunnlagTest {
         ForeslåBeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagForeslåttBeregningsgrunnlagInput(koblingReferanse, bgGrunnlagBuilder,
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, omsorgspengerGrunnlag);
         Map<String, Boolean> toggles = input.getToggles();
-        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, skalSplitte);
+        toggles.put(TOGGLE_SPLITTE_SAMMENLIGNING, false);
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new OmsorgspengerGrunnlagMapper());
         var mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
         var foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
@@ -310,13 +314,13 @@ public class ForeslåBeregningsgrunnlagTest {
     public void skalLageToPerioderNaturalYtelseBortfaller() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -328,21 +332,21 @@ public class ForeslåBeregningsgrunnlagTest {
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
     }
 
     @Test
     public void skalLageToPerioderNaturalYtelseTilkommer() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_TILKOMMER);
         var im1 = opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -354,27 +358,23 @@ public class ForeslåBeregningsgrunnlagTest {
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_TILKOMMER);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null,
-            NATURALYTELSE_I_PERIODE_2 * 12);
+                NATURALYTELSE_I_PERIODE_2 * 12);
     }
 
     @Test
     public void skalLageToPerioderKortvarigArbeidsforhold() {
         // Arrange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(eksisterendeAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(eksisterendeAndel.getBgAndelArbeidsforhold().orElse(null))
-                .medTidsbegrensetArbeidsforhold(true))
-            .build(nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0));
+        FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Før steget er det ingen inntekter på andelen
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, faktaAggregat);
         // Her skulle det vært inntekter på andelen
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -382,32 +382,28 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
     }
 
     @Test
     public void skalLageTrePerioderKortvarigArbeidsforholdOgNaturalYtelse() {
         // Arrange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(eksisterendeAndel))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(eksisterendeAndel
-                .getBgAndelArbeidsforhold().orElse(null)).medTidsbegrensetArbeidsforhold(true))
-            .build(nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0));
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3));
+        FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, BigDecimal.valueOf(MÅNEDSINNTEKT1),
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3));
         splitBeregningsgrunnlagPeriode(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         var inntektsmeldinger = List.of(im1);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, faktaAggregat);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -415,18 +411,18 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(3);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3).minusDays(1), 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1,
-            PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                PeriodeÅrsak.NATURALYTELSE_BORTFALT);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
     }
 
     @Test
@@ -434,12 +430,12 @@ public class ForeslåBeregningsgrunnlagTest {
         // Arrange
         BeregningsgrunnlagDto grunnlagFL = lagBeregningsgrunnlagFL();
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagFL.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .build(grunnlagFL.getBeregningsgrunnlagPerioder().get(0));
+                .build(grunnlagFL.getBeregningsgrunnlagPerioder().get(0));
         lagBehandlingFL(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), ARBEIDSFORHOLD_ORGNR1);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(grunnlagFL, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(grunnlagFL, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -455,13 +451,13 @@ public class ForeslåBeregningsgrunnlagTest {
         Arbeidsgiver privateArbeidsgiver = Arbeidsgiver.person(beregningsAkrød1);
         BeregningsgrunnlagDto grunnlagAT = lagBeregningsgrunnlagAT(false);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagAT.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .build(grunnlagAT.getBeregningsgrunnlagPerioder().get(0));
+                .build(grunnlagAT.getBeregningsgrunnlagPerioder().get(0));
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), privateArbeidsgiver,
-            MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(grunnlagAT, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(grunnlagAT, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -476,37 +472,33 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode = perioder.get(perioder.size() - 1);
         if (beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom().equals(nyPeriodeFom)) {
             BeregningsgrunnlagPeriodeDto.oppdater(beregningsgrunnlagPeriode)
-                .leggTilPeriodeÅrsak(nyPeriodeÅrsak);
+                    .leggTilPeriodeÅrsak(nyPeriodeÅrsak);
             return;
         }
         BeregningsgrunnlagPeriodeDto.oppdater(beregningsgrunnlagPeriode)
-            .medBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), nyPeriodeFom.minusDays(1));
+                .medBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), nyPeriodeFom.minusDays(1));
 
         BeregningsgrunnlagPeriodeDto.Builder.kopier(beregningsgrunnlagPeriode)
-            .medBeregningsgrunnlagPeriode(nyPeriodeFom, null)
-            .leggTilPeriodeÅrsak(nyPeriodeÅrsak).build(beregningsgrunnlag);
+                .medBeregningsgrunnlagPeriode(nyPeriodeFom, null)
+                .leggTilPeriodeÅrsak(nyPeriodeÅrsak).build(beregningsgrunnlag);
     }
 
     @Test
     public void skalLageToPerioderKortvarigArbeidsforholdHvorTomSammenfallerMedBortfallAvNaturalytelse() {
         // Arrange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(eksisterendeAndel)
-            .medBGAndelArbeidsforhold(
-                BGAndelArbeidsforholdDto.builder(eksisterendeAndel.getBgAndelArbeidsforhold().orElse(null)).medTidsbegrensetArbeidsforhold(true))
-            .build(nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0));
-        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+        FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
+        var im1 = opprettInntektsmeldingNaturalytelseBortfaller(arbeidsgiver, BigDecimal.valueOf(MÅNEDSINNTEKT1),
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         splitBeregningsgrunnlagPeriode(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         var inntektsmeldinger = List.of(im1);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(nyttGrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(nyttGrunnlag, inntektsmeldinger, faktaAggregat);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -514,37 +506,37 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET,
-            PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                PeriodeÅrsak.NATURALYTELSE_BORTFALT);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1,
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
     }
 
     @Test
     public void skalLageBeregningsgrunnlagMedTrePerioder() {
         // Arrange
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1 + MÅNEDSINNTEKT2), BigDecimal.valueOf(MÅNEDSINNTEKT1 + MÅNEDSINNTEKT2),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+                Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.empty())
-            .medArbforholdType(OpptjeningAktivitetType.ARBEID)
-            .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2)))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-            .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
+                .medArbforholdType(OpptjeningAktivitetType.ARBEID)
+                .medBGAndelArbeidsforhold(lagBgAndelArbeidsforhold(ARBEIDSPERIODE_FOM, ARBEIDSPERIODE_TOM, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2)))
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
+                .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         var im1 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), BigDecimal.valueOf(MÅNEDSINNTEKT2),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2));
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_2), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2));
         var im2 = opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_3), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
+                BigDecimal.valueOf(NATURALYTELSE_I_PERIODE_3), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4));
         var inntektsmeldinger = List.of(im1, im2);
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, (FaktaAggregatDto) null);
 
         // Assert
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
@@ -559,36 +551,32 @@ public class ForeslåBeregningsgrunnlagTest {
 
         periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 2,
-            PeriodeÅrsak.NATURALYTELSE_BORTFALT);
+                PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), ÅRSINNTEKT2,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
 
         periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4), Intervall.TIDENES_ENDE, 2, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1,
-            NATURALYTELSE_I_PERIODE_3 * 12, null);
+                NATURALYTELSE_I_PERIODE_3 * 12, null);
         verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), ÅRSINNTEKT2,
-            NATURALYTELSE_I_PERIODE_2 * 12, null);
+                NATURALYTELSE_I_PERIODE_2 * 12, null);
     }
 
     @Test
     public void skalLageBeregningsgrunnlagMedTrePerioderKortvarigFørNaturalytelse() {
         // Arrange
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1);
         lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
-            .getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(eksisterendeAndel)
-            .medBGAndelArbeidsforhold(
-                BGAndelArbeidsforholdDto.builder(eksisterendeAndel.getBgAndelArbeidsforhold().orElse(null)).medTidsbegrensetArbeidsforhold(true))
-            .build(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
+                arbeidsgiver, MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
+        FaktaAggregatDto faktaAggregat = lagFakta(arbeidsgiver, true, null);
         splitBeregningsgrunnlagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(3), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         lagKortvarigArbeidsforhold(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(2).minusDays(1));
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, faktaAggregat);
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
@@ -597,39 +585,33 @@ public class ForeslåBeregningsgrunnlagTest {
 
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2).minusDays(1), 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(1);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3).minusDays(1), 1,
-            PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+                PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
 
         periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(2);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3), Intervall.TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1, null, null);
+        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), arbeidsgiver, ÅRSINNTEKT1, null, null);
     }
 
     @Test
     public void skalGiEittAksjonspunktForSNNyIArbeidslivetOgKortvarigArbeidsforhold() {
         // Arrange
-        BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN(true);
+        BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN();
         InntektArbeidYtelseAggregatBuilder register = verdikjedeTestHjelper.initBehandlingFor_AT_SN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1),
-            2014, SKJÆRINGSTIDSPUNKT_BEREGNING, ARBEIDSFORHOLD_ORGNR1,
-            BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), new KoblingReferanseMock(),
-            iayGrunnlagBuilder);
+                2014, SKJÆRINGSTIDSPUNKT_BEREGNING, ARBEIDSFORHOLD_ORGNR1,
+                BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), new KoblingReferanseMock(),
+                iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
-
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(eksisterendeAndel)
-            .medBGAndelArbeidsforhold(
-                BGAndelArbeidsforholdDto.builder(eksisterendeAndel.getBgAndelArbeidsforhold().orElse(null)).medTidsbegrensetArbeidsforhold(true))
-            .build(nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0));
+        FaktaAggregatDto faktaAggregat = lagFakta(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), true, true);
         lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
         List<InntektsmeldingDto> inntektsmeldinger = Collections.emptyList();
 
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(nyttGrunnlag, inntektsmeldinger, false);
+        BeregningsgrunnlagRegelResultat resultat = act(nyttGrunnlag, inntektsmeldinger, faktaAggregat);
 
         // Assert
         BeregningsgrunnlagDto bg = resultat.getBeregningsgrunnlag();
@@ -650,14 +632,14 @@ public class ForeslåBeregningsgrunnlagTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
         var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 inntektBeregnet, null, inntektBeregnet);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
@@ -682,7 +664,7 @@ public class ForeslåBeregningsgrunnlagTest {
                 inntektBeregnet, null, refusjon);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
@@ -707,7 +689,7 @@ public class ForeslåBeregningsgrunnlagTest {
                 inntektBeregnet, null, refusjon);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
@@ -724,7 +706,7 @@ public class ForeslåBeregningsgrunnlagTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
         BigDecimal refusjonskrav = BigDecimal.valueOf(MÅNEDSINNTEKT1).divide(BigDecimal.valueOf(2));
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
                 Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
@@ -738,7 +720,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
@@ -756,7 +738,7 @@ public class ForeslåBeregningsgrunnlagTest {
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforholdDto, List.of(periodeMedUtbetalingsgradDto));
         OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
-        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1*2);
+        BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         AktørId aktørId = koblingReferanse.getAktørId();
@@ -770,7 +752,7 @@ public class ForeslåBeregningsgrunnlagTest {
         }
         iayGrunnlagBuilder.medData(inntektArbeidYtelseBuilder);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
@@ -823,117 +805,11 @@ public class ForeslåBeregningsgrunnlagTest {
                 inntektBeregnetArbeidsgiver1, null, refusjon);
         var inntektsmeldinger = List.of(im1);
         // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, false, omsorgspengerGrunnlag);
+        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
         List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
-    }
-
-    @Test
-    public void skalSetteRiktigSammenligningsgrunnlagNårEnPeriodeMedArbeidstakerUtenNaturalytelserOgMedInntektsmeldingNårToggleErPå() {
-        // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
-        var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1+1000), null, null);
-        var inntektsmeldinger = List.of(im1);
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, true);
-        // Assert
-        assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
-        assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        assertThat(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe()).hasSize(1);
-        verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
-            BigDecimal.valueOf(81.004455200), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
-        BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
-        verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
-        verifiserBGAT(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), (MÅNEDSINNTEKT1 + 1000) * 12,
-            null, null);
-    }
-
-    @Test
-    public void skalReturnereAksjonspunktNårArbeidstakerMedInntektsmeldingOgAvvikMellomBeregnetOgSammenligningsgrunnlagUtenTidsbegrensetArbeidsforholdOgToggleErPå() {
-        // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
-        var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1+(MÅNEDSINNTEKT1/2)), null, null);
-        var inntektsmeldinger = List.of(im1);
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, true);
-        // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
-        verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
-            BigDecimal.valueOf(500L), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
-    }
-
-    @Test
-    public void skalSetteRiktigSammenligningsgrunnlagNårEnPeriodeMedFrilanserOgToggleErPå() {
-        // Arrange
-        BeregningsgrunnlagDto grunnlagFL = lagBeregningsgrunnlagFL();
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagFL.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .build(grunnlagFL.getBeregningsgrunnlagPerioder().get(0));
-        lagBehandlingFL(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1), ARBEIDSFORHOLD_ORGNR1);
-        Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(grunnlagFL, inntektsmeldinger, true);
-        // Assert
-        assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
-        assertThat(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe()).hasSize(1);
-        verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0),ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
-            BigDecimal.ZERO, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
-        verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
-        verifiserBGFL(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0), Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), ÅRSINNTEKT1);
-    }
-
-    @Test
-    public void skalReturnereAksjonspunktNårFrilanserMedAvvikMellomBeregnetOgSammenligningsgrunnlagOgToggleErPå() {
-        // Arrange
-        BeregningsgrunnlagDto grunnlagFL = lagBeregningsgrunnlagFL();
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(grunnlagFL.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0))
-            .build(grunnlagFL.getBeregningsgrunnlagPerioder().get(0));
-        lagBehandlingFL(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(3*MÅNEDSINNTEKT1), ARBEIDSFORHOLD_ORGNR1);
-        Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(grunnlagFL, inntektsmeldinger, true);
-        // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
-        verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0),ÅRSINNTEKT1,
-            SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
-            BigDecimal.valueOf(2000L), SammenligningsgrunnlagType.SAMMENLIGNING_FL);
-    }
-
-    @Test
-    public void skalReturnereAksjonspunktNårAtOgEtterTidsbegrensetArbeidsforholdOgToggleErPå() {
-        // Arrange
-        lagBehandling(BigDecimal.valueOf(MÅNEDSINNTEKT1), BigDecimal.valueOf(MÅNEDSINNTEKT1),
-            Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_1.withDayOfMonth(1), MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), iayGrunnlagBuilder);
-        BeregningsgrunnlagDto nyttGrunnlag = beregningsgrunnlag;
-        BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .get(0);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(eksisterendeAndel)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(eksisterendeAndel.getBgAndelArbeidsforhold().orElse(null))
-                .medTidsbegrensetArbeidsforhold(true))
-            .build(nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0));
-        lagKortvarigArbeidsforhold(nyttGrunnlag, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(4).minusDays(1));
-        var im1 = verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), BigDecimal.valueOf(MÅNEDSINNTEKT1 + 10000), null, null);
-        Collection<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
-        // Act
-        BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, true);
-
-        // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     private void verifiserPeriode(BeregningsgrunnlagPeriodeDto periode, LocalDate fom, LocalDate tom, int antallAndeler,
@@ -966,10 +842,10 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
         assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
-            .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
+                .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
         assertThat(bgpsa.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
-            .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
+                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
@@ -980,13 +856,13 @@ public class ForeslåBeregningsgrunnlagTest {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).as("naturalytelseBortfalt")
-                .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseBortfaltPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseBortfaltPrÅr));
         }
         if (naturalytelseTilkommerPrÅr == null) {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer").isEmpty();
         } else {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr)).as("naturalytelseTilkommer")
-                .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseTilkommerPrÅr));
+                    .hasValueSatisfying(naturalytelse -> assertThat(naturalytelse.doubleValue()).isEqualTo(naturalytelseTilkommerPrÅr));
         }
         assertThat(bgpsa.getRedusertPrÅr()).isNull();
     }
@@ -995,10 +871,10 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
         assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
-            .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
+                .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
         assertThat(bgpsa.getBgAndelArbeidsforhold()
-            .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
-            .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
+                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                 .as("gjelderSpesifiktArbeidsforhold").isFalse();
         assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.FRILANS);
         assertThat(bgpsa.getAvkortetPrÅr()).isNull();
@@ -1009,15 +885,24 @@ public class ForeslåBeregningsgrunnlagTest {
     }
 
     private InntektsmeldingDto opprettInntektsmeldingNaturalytelseBortfaller(Arbeidsgiver arbeidsgiver, BigDecimal inntektInntektsmelding, BigDecimal naturalytelseBortfaller,
-                                                               LocalDate naturalytelseBortfallerDato) {
+                                                                             LocalDate naturalytelseBortfallerDato) {
         return verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(arbeidsgiver, inntektInntektsmelding,
-            new NaturalYtelseDto(Tid.TIDENES_BEGYNNELSE, naturalytelseBortfallerDato.minusDays(1), naturalytelseBortfaller, NaturalYtelseType.ANNET),
-            null);
+                new NaturalYtelseDto(Tid.TIDENES_BEGYNNELSE, naturalytelseBortfallerDato.minusDays(1), naturalytelseBortfaller, NaturalYtelseType.ANNET),
+                null);
     }
 
     private InntektsmeldingDto opprettInntektsmeldingNaturalytelseTilkommer(Arbeidsgiver arbeidsgiver, BigDecimal inntektInntektsmelding, BigDecimal naturalytelseTilkommer,
-                                                              LocalDate naturalytelseTilkommerDato) {
+                                                                            LocalDate naturalytelseTilkommerDato) {
         return verdikjedeTestHjelper.opprettInntektsmeldingMedRefusjonskrav(arbeidsgiver, inntektInntektsmelding,
-            new NaturalYtelseDto(naturalytelseTilkommerDato, Tid.TIDENES_ENDE, naturalytelseTilkommer, NaturalYtelseType.ANNET), null);
+                new NaturalYtelseDto(naturalytelseTilkommerDato, Tid.TIDENES_ENDE, naturalytelseTilkommer, NaturalYtelseType.ANNET), null);
     }
+
+    private FaktaAggregatDto lagFakta(Arbeidsgiver virksomhet, boolean erTidsbegrenset, Boolean erNyIArbeidslivet) {
+        return FaktaAggregatDto.builder()
+                .medFaktaAktør(erNyIArbeidslivet == null ? null : FaktaAktørDto.builder().medErNyIArbeidslivetSN(erNyIArbeidslivet).build())
+                .erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(virksomhet, NULL_REF)
+                .medErTidsbegrenset(erTidsbegrenset)
+                .build()).build();
+    }
+
 }

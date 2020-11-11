@@ -85,7 +85,6 @@ public class KalkulatorTilBGMapper {
                 .medMaksimalRefusjonPrÅr(fraKalkulus.getMaksimalRefusjonPrÅr())
                 .medRedusertRefusjonPrÅr(fraKalkulus.getRedusertRefusjonPrÅr())
                 .medÅrsbeløpFraTilstøtendeYtelse(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
-                .medNyIArbeidslivet(fraKalkulus.getNyIArbeidslivet())
                 .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse());
 
@@ -98,8 +97,6 @@ public class KalkulatorTilBGMapper {
         }
 
         fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(KalkulatorTilBGMapper.mapBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
-        fraKalkulus.erNyoppstartet().ifPresent(aBoolean -> builder.medNyoppstartet(aBoolean, AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode())));
-        fraKalkulus.mottarYtelse().ifPresent(aBoolean -> builder.medMottarYtelse(aBoolean, AktivitetStatus.fraKode(fraKalkulus.getAktivitetStatus().getKode())));
         return builder;
     }
 
@@ -108,8 +105,6 @@ public class KalkulatorTilBGMapper {
         builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraKalkulus.getArbeidsperiodeFom());
-        builder.medLønnsendringIBeregningsperioden(fraKalkulus.erLønnsendringIBeregningsperioden());
-        builder.medTidsbegrensetArbeidsforhold(fraKalkulus.getErTidsbegrensetArbeidsforhold());
         builder.medRefusjonskravPrÅr(fraKalkulus.getRefusjonskravPrÅr());
         builder.medSaksbehandletRefusjonPrÅr(fraKalkulus.getSaksbehandletRefusjonPrÅr());
         builder.medFordeltRefusjonPrÅr(fraKalkulus.getFordeltRefusjonPrÅr());

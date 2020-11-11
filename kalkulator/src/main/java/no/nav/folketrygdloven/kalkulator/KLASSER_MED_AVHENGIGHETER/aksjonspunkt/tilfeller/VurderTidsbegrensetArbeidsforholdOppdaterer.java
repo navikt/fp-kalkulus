@@ -38,11 +38,6 @@ public class VurderTidsbegrensetArbeidsforholdOppdaterer implements FaktaOmBereg
                     .filter(a -> a.getAndelsnr().equals(arbeidsforhold.getAndelsnr()))
                     .findFirst()
                     .orElseThrow(() -> VurderTidsbegrensetArbeidsforholdOppdatererFeil.FACTORY.finnerIkkeAndelFeil().toException());
-            BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(korrektAndel).getBgAndelArbeidsforholdDtoBuilder();
-            BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforhold = bgAndelArbeidsforholdDtoBuilder
-                    .medTidsbegrensetArbeidsforhold(arbeidsforhold.isTidsbegrensetArbeidsforhold());
-            BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(korrektAndel)
-                    .medBGAndelArbeidsforhold(bgAndelArbeidsforhold);
 
             // Setter Fakta-aggregat
             BGAndelArbeidsforholdDto arbeidsforholdDto = korrektAndel.getBgAndelArbeidsforhold()

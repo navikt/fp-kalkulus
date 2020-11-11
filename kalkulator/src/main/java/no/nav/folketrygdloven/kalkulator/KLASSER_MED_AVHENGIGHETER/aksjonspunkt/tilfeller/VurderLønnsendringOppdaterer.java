@@ -13,7 +13,6 @@ import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderLønnsendringDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -33,24 +32,6 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                 .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
                 .collect(Collectors.toList());
-
-        if (lønnsendringDto.erLønnsendringIBeregningsperioden()) {
-            arbeidstakerAndeler.forEach(andel -> {
-                BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).getBgAndelArbeidsforholdDtoBuilder();
-                BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforhold = bgAndelArbeidsforholdDtoBuilder
-                        .medLønnsendringIBeregningsperioden(true);
-                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel)
-                        .medBGAndelArbeidsforhold(bgAndelArbeidsforhold);
-            });
-        } else {
-            arbeidstakerAndeler.forEach(bgAndel -> {
-                BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel).getBgAndelArbeidsforholdDtoBuilder();
-                BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforhold = bgAndelArbeidsforholdDtoBuilder
-                        .medLønnsendringIBeregningsperioden(false);
-                BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(bgAndel)
-                        .medBGAndelArbeidsforhold(bgAndelArbeidsforhold);
-            });
-        }
 
         List<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(input.getAktørId(), input.getBeregningsgrunnlag(), input.getIayGrunnlag());
 

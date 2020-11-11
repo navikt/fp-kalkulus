@@ -273,7 +273,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medRedusertRefusjonPrÅr(gjelderForeslå ? null : BigDecimal.ZERO)
                 .medPgi(resultatBGPStatus.getGjennomsnittligPGI(), resultatBGPStatus.getPgiListe())
                 .medÅrsbeløpFraTilstøtendeYtelse(resultatBGPStatus.getÅrsbeløpFraTilstøtendeYtelse())
-                .medNyIArbeidslivet(resultatBGPStatus.getNyIArbeidslivet())
                 .medInntektskategori(MapInntektskategoriRegelTilVL.map(resultatBGPStatus.getInntektskategori()))
                 .medFastsattAvSaksbehandler(resultatBGPStatus.erFastsattAvSaksbehandler())
                 .medBesteberegningPrÅr(resultatBGPStatus.getBesteberegningPrÅr())

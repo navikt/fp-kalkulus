@@ -1,20 +1,14 @@
 package no.nav.folketrygdloven.kalkulus.mapFraEntitet;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagArbeidstakerAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagFrilansAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -89,24 +83,10 @@ public class BGMapperTilKalkulus {
             .medRedusertBrukersAndelPrÅr(fraFagsystem.getRedusertBrukersAndelPrÅr())
             .medMaksimalRefusjonPrÅr(fraFagsystem.getMaksimalRefusjonPrÅr())
             .medRedusertRefusjonPrÅr(fraFagsystem.getRedusertRefusjonPrÅr())
-            .medNyIArbeidslivet(fraFagsystem.getNyIArbeidslivet())
             .medÅrsbeløpFraTilstøtendeYtelse(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
             .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
             .medKilde(AndelKilde.fraKode(fraFagsystem.getKilde().getKode()))
             .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse());
-
-        if (fraFagsystem.getAktivitetStatus().erArbeidstaker()) {
-            builder.medBeregningsgrunnlagArbeidstakerAndel(BeregningsgrunnlagArbeidstakerAndelDto.builder()
-                .medMottarYtelse(fraFagsystem.mottarYtelse().orElse(null))
-                .build());
-        }
-
-        if (fraFagsystem.getAktivitetStatus().erFrilanser() && (fraFagsystem.mottarYtelse().isPresent() || fraFagsystem.erNyoppstartet().isPresent())) {
-            builder.medBeregningsgrunnlagFrilansAndel(BeregningsgrunnlagFrilansAndelDto.builder()
-                .medMottarYtelse(fraFagsystem.mottarYtelse().orElse(null))
-                .medNyoppstartet(fraFagsystem.erNyoppstartet().orElse(null))
-                .build());
-        }
 
         if (fraFagsystem.getBeregningsperiodeFom() != null) {
             builder.medBeregningsperiode(fraFagsystem.getBeregningsperiodeFom(), fraFagsystem.getBeregningsperiodeTom());
@@ -120,38 +100,11 @@ public class BGMapperTilKalkulus {
         return builder;
     }
 
-
-    private static boolean gjelderInntektsmeldingFor(BeregningsgrunnlagPrStatusOgAndel fraFagsystem, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
-        Optional<BGAndelArbeidsforhold> bgAndelArbeidsforholdOpt = fraFagsystem.getBgAndelArbeidsforhold();
-        if (!Objects.equals(fraFagsystem.getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER) || !bgAndelArbeidsforholdOpt.isPresent()) {
-            return false;
-        }
-        if (!Objects.equals(fraFagsystem.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver).map(IAYMapperTilKalkulus::mapArbeidsgiver), Optional.of(arbeidsgiver))) {
-            return false;
-        }
-        if (fraFagsystem.getArbeidsforholdRef().isEmpty() || !fraFagsystem.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold()) {
-            boolean harPeriodeAndelForSammeArbeidsgiverMedReferanse = fraFagsystem.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream()
-                .filter(a -> a.getAktivitetStatus().erArbeidstaker())
-                .filter(a -> a.getArbeidsgiver().isPresent() && a.getArbeidsgiver().get().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-                .anyMatch(a -> a.getArbeidsforholdRef().isPresent() && a.getArbeidsforholdRef().get().gjelderForSpesifiktArbeidsforhold());
-
-            if (harPeriodeAndelForSammeArbeidsgiverMedReferanse) {
-                return false;
-            }
-        }
-        return  bgAndelArbeidsforholdOpt.map(BGAndelArbeidsforhold::getArbeidsforholdRef)
-            .map(IAYMapperTilKalkulus::mapArbeidsforholdRef).get().equals(arbeidsforholdRef);
-    }
-
-
     private static BGAndelArbeidsforholdDto.Builder magBGAndelArbeidsforhold(BGAndelArbeidsforhold fraFagsystem) {
         BGAndelArbeidsforholdDto.Builder builder = BGAndelArbeidsforholdDto.builder();
         builder.medArbeidsforholdRef(IAYMapperTilKalkulus.mapArbeidsforholdRef(fraFagsystem.getArbeidsforholdRef()));
         builder.medArbeidsgiver(IAYMapperTilKalkulus.mapArbeidsgiver(fraFagsystem.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraFagsystem.getArbeidsperiodeFom());
-        builder.medLønnsendringIBeregningsperioden(fraFagsystem.erLønnsendringIBeregningsperioden());
-        builder.medTidsbegrensetArbeidsforhold(fraFagsystem.getErTidsbegrensetArbeidsforhold());
         builder.medRefusjonskravPrÅr(fraFagsystem.getRefusjonskravPrÅr());
         builder.medSaksbehandletRefusjonPrÅr(fraFagsystem.getSaksbehandletRefusjonPrÅr());
         builder.medFordeltRefusjonPrÅr(fraFagsystem.getFordeltRefusjonPrÅr());
