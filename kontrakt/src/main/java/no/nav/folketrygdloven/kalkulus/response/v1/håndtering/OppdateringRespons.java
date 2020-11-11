@@ -63,4 +63,5 @@ public class OppdateringRespons {
     public RefusjonoverstyringEndring getRefusjonoverstyringEndring() {
         return refusjonoverstyringEndring;
     }
+
 }

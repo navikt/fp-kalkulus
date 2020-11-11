@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,7 +88,7 @@ public class BeregningsgrunnlagRepository {
      * @param koblingIds en liste med koblingId
      * @return Liste med alle aktive grunnlag som matcher koblingider {@link BeregningsgrunnlagGrunnlagEntitet}
      */
-    public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(List<Long> koblingIds) {
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntiteter(Collection<Long> koblingIds) {
         TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
                 "from BeregningsgrunnlagGrunnlagEntitet grunnlag " +
                         "where grunnlag.koblingId in :koblingId " +
@@ -201,7 +202,7 @@ public class BeregningsgrunnlagRepository {
      * @return Liste med grunnlag fra gitt {@link BeregningsgrunnlagTilstand} som ble opprettet sist pr kobling
      */
     @SuppressWarnings("unchecked")
-    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(List<Long> koblingIds,
+    public List<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(Collection<Long> koblingIds,
                                                                                                           BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM GR_BEREGNINGSGRUNNLAG GR " +

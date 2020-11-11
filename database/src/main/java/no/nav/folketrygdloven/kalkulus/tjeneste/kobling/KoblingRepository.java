@@ -73,6 +73,13 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query).orElse(null);
     }
 
+    public List<KoblingEntitet> hentKoblingIdForKoblingReferanser(Collection<KoblingReferanse> referanser) {
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
+                "SELECT k FROM Kobling k WHERE k.koblingReferanse IN(:referanser)", KoblingEntitet.class);
+        query.setParameter("referanser", referanser);
+        return query.getResultList();
+    }
+
     public Optional<Long> hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
         TypedQuery<Long> query = entityManager
             .createQuery("SELECT k.id FROM Kobling k WHERE k.koblingReferanse = :referanse AND k.ytelseTyperKalkulusStøtter = :ytelse", Long.class);

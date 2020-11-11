@@ -7,8 +7,11 @@ import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKal
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,7 +36,6 @@ import no.nav.folketrygdloven.kalkulus.mappers.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.feil.FeilFactory;
 
 @ApplicationScoped
 public class StegProsessInputTjeneste {
@@ -67,16 +69,29 @@ public class StegProsessInputTjeneste {
         return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
 
-
-    public StegProsesseringInput lagFortsettInput(Long koblingId, StegType stegType) {
+    public Resultat<StegProsesseringInput> lagFortsettInput(List<Long> koblingId, StegType stegType) {
         Objects.requireNonNull(koblingId, "koblingId");
-        KoblingEntitet koblingEntitet = koblingRepository.hentForKoblingId(koblingId);
-        Optional<KalkulatorInputDto> inputEntitetOptional = kalkulatorInputTjeneste.hentForKobling(koblingId);
-        BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId)
-                .orElseThrow(() -> new IllegalStateException("Skal ha grunnlag i steg" + stegType.getKode()));
-        return inputEntitetOptional.map(input ->
-                mapStegInput(koblingEntitet, input, grunnlagEntitet, stegType))
-                .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException());
+        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
+        var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
+
+        if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return new Resultat<>(inputRespons.getKode());
+        }
+
+        var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
+                .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
+        List<Long> koblingUtenGrunnlag = koblingId.stream().filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
+                .collect(Collectors.toList());
+        if (!koblingUtenGrunnlag.isEmpty()) {
+            throw new IllegalStateException("Skal ha grunnlag i steg" + stegType.getKode() + ". Fant ikke grunnlag for " + koblingUtenGrunnlag);
+        }
+
+        Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
+                .collect(Collectors.toMap(
+                        KoblingEntitet::getId,
+                        id -> mapStegInput(id, inputRespons.getResultatPrKobling().get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType)
+                        ));
+        return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, koblingStegInputMap);
     }
 
 
@@ -141,7 +156,6 @@ public class StegProsessInputTjeneste {
         }
         return fullføreBeregningsgrunnlagInput;
     }
-
 
 
     private List<Grunnbeløp> finnSatser() {

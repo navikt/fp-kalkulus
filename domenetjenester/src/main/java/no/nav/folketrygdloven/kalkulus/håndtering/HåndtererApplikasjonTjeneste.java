@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import static no.nav.folketrygdloven.kalkulus.håndtering.HåndteringApplikasjonFeil.FACTORY;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,9 +12,8 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
-import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
@@ -26,38 +27,50 @@ public class HåndtererApplikasjonTjeneste {
 
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private HåndteringInputTjeneste håndteringInputTjeneste;
 
     public HåndtererApplikasjonTjeneste() {
         // CDI
     }
 
     @Inject
-    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository, HåndteringInputTjeneste håndteringInputTjeneste) {
+    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
-        this.håndteringInputTjeneste = håndteringInputTjeneste;
     }
 
-    public OppdateringRespons håndter(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        rullTilbakeVedBehov(koblingId, håndterBeregningDto);
-        HåndteringKode håndteringKode = håndterBeregningDto.getKode();
+    public Map<Long, OppdateringRespons> håndter(Map<Long, HåndterBeregningsgrunnlagInput> håndterBeregningInputPrKobling, Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
+
+        Map<Long, OppdateringRespons> resultatPrKobling = new HashMap<>();
+
+        for (Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling : håndterBeregningInputPrKobling.entrySet()) {
+            HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(hånteringInputPrKobling.getKey());
+            HåndteringKode håndteringKode = håndterBeregningDto.getKode();
+            BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndteringKode);
+            HåndteringResultat resultat = håndterOgLagre(hånteringInputPrKobling, håndterBeregningDto, håndteringKode, tilstand);
+            if (resultat.getEndring() != null) {
+                resultatPrKobling.put(hånteringInputPrKobling.getKey(), resultat.getEndring());
+            }
+        }
+        return resultatPrKobling;
+    }
+
+    private HåndteringResultat håndterOgLagre(Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
+        rullTilbakeVedBehov(hånteringInputPrKobling.getKey(), tilstand);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
-        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, håndteringInputTjeneste.lagInput(koblingId, håndteringKode));
+        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, hånteringInputPrKobling.getValue());
         var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
-        beregningsgrunnlagRepository.lagre(koblingId, beregningsgrunnlagGrunnlagBuilder, MapHåndteringskodeTilTilstand.map(håndteringKode));
-        return resultat.getEndring();
+        beregningsgrunnlagRepository.lagre(hånteringInputPrKobling.getKey(), beregningsgrunnlagGrunnlagBuilder, tilstand);
+        return resultat;
     }
 
-    private void rullTilbakeVedBehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        HåndteringKode kode = håndterBeregningDto.getKode();
-        BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(kode);
+
+    private void rullTilbakeVedBehov(Long koblingId, BeregningsgrunnlagTilstand tilstand) {
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, tilstand);
     }
 
     @SuppressWarnings("unchecked")
     private BeregningHåndterer<HåndterBeregningDto> finnBeregningHåndterer(Class<? extends HåndterBeregningDto> dtoClass,
-                                                                                        String hånterKode) {
+                                                                           String hånterKode) {
         Instance<Object> instance = finnAdapter(dtoClass, BeregningHåndterer.class);
         if (instance.isUnsatisfied()) {
             throw FACTORY.kanIkkeFinneHåndterer(hånterKode).toException();

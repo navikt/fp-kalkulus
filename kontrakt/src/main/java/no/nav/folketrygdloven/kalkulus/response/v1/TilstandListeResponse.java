@@ -22,11 +22,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class TilstandListeResponse {
 
-    @JsonProperty(value = "tilstand", required = true)
-    @NotNull
+    @JsonProperty(value = "tilstand")
     @NotEmpty
     @Valid
     private List<TilstandResponse> tilstand;
+
+    @JsonProperty(value = "trengerNyInput")
+    @Valid
+    private Boolean trengerNyInput;
+
 
     public TilstandListeResponse() {
         // default ctor
@@ -36,13 +40,20 @@ public class TilstandListeResponse {
         this.tilstand = List.copyOf(tilstand);
     }
 
+    public TilstandListeResponse(@Valid Boolean trengerNyInput) {
+        this.trengerNyInput = trengerNyInput;
+    }
+
     @AssertTrue(message = "Sjekk tilstandresponer")
     boolean sjekkOmHarAvslagsårsak() {
         return tilstand.stream().allMatch(t -> t.sjekkOmHarAvslagsårsak());
     }
-    
+
     public List<TilstandResponse> getTilstand() {
         return tilstand;
     }
+
+    public boolean trengerNyInput() { return trengerNyInput != null && trengerNyInput; }
+
 
 }

@@ -24,10 +24,18 @@ public class OppdateringListeRespons {
 
     @JsonProperty(value = "oppdateringer")
     @Valid
-    @NotNull
     private List<OppdateringPrRequest> oppdateringer;
 
+    @JsonProperty(value = "trengerNyInput")
+    @Valid
+    private Boolean trengerNyInput;
+
+
     public OppdateringListeRespons() {
+    }
+
+    public OppdateringListeRespons(@Valid Boolean trengerNyInput) {
+        this.trengerNyInput = trengerNyInput;
     }
 
     public OppdateringListeRespons(@Valid @NotNull List<OppdateringPrRequest> oppdateringer) {
@@ -37,4 +45,9 @@ public class OppdateringListeRespons {
     public List<OppdateringPrRequest> getOppdateringer() {
         return oppdateringer;
     }
+
+    public boolean trengerNyInput() {
+        return trengerNyInput != null && trengerNyInput;
+    }
+
 }
