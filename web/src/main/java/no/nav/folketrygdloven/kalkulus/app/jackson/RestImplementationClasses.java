@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulus.rest.ForvaltningKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
 
@@ -14,6 +15,7 @@ public class RestImplementationClasses {
         //kalkulus rest
         classes.add(OperereKalkulusRestTjeneste.class);
         classes.add(HentKalkulusRestTjeneste.class);
+        classes.add(ForvaltningKalkulusRestTjeneste.class);
         return classes;
     }
 }
