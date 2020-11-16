@@ -2,11 +2,15 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refus
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -46,9 +50,14 @@ public class RefusjonAndelTilVurderingDto {
     @JsonProperty("tidligsteMuligeRefusjonsdato")
     private LocalDate tidligsteMuligeRefusjonsdato;
 
+    // TODO Fjern etter rename frontend fra arbeidsgiverId --> arbeidsgiver
     @Valid
     @JsonProperty("arbeidsgiverId")
     private Arbeidsgiver arbeidsgiverId;
+
+    @Valid
+    @JsonProperty("arbeidsgiver")
+    private Arbeidsgiver arbeidsgiver;
 
     @Valid
     @JsonProperty("arbeidsgiverNavn")
@@ -64,6 +73,24 @@ public class RefusjonAndelTilVurderingDto {
     @Valid
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String eksternArbeidsforholdRef;
+
+    @Valid
+    @JsonProperty("skalKunneFastsetteDelvisRefusjon")
+    private boolean skalKunneFastsetteDelvisRefusjon;
+
+    @Valid
+    @JsonProperty("fastsattDelvisRefusjonPrMnd")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
+    private BigDecimal fastsattDelvisRefusjonPrMnd;
+
+    @Valid
+    @JsonProperty("maksTillattDelvisRefusjonPrMnd")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
+    private BigDecimal maksTillattDelvisRefusjonPrMnd;
 
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
@@ -135,6 +162,38 @@ public class RefusjonAndelTilVurderingDto {
 
     public void setTidligsteMuligeRefusjonsdato(LocalDate tidligsteMuligeRefusjonsdato) {
         this.tidligsteMuligeRefusjonsdato = tidligsteMuligeRefusjonsdato;
+    }
+
+    public boolean getSkalKunneFastsetteDelvisRefusjon() {
+        return skalKunneFastsetteDelvisRefusjon;
+    }
+
+    public void setSkalKunneFastsetteDelvisRefusjon(boolean skalKunneFastsetteDelvisRefusjon) {
+        this.skalKunneFastsetteDelvisRefusjon = skalKunneFastsetteDelvisRefusjon;
+    }
+
+    public BigDecimal getFastsattDelvisRefusjonPrMnd() {
+        return fastsattDelvisRefusjonPrMnd;
+    }
+
+    public void setFastsattDelvisRefusjonPrMnd(BigDecimal fastsattDelvisRefusjonPrMnd) {
+        this.fastsattDelvisRefusjonPrMnd = fastsattDelvisRefusjonPrMnd;
+    }
+
+    public BigDecimal getMaksTillattDelvisRefusjonPrMnd() {
+        return maksTillattDelvisRefusjonPrMnd;
+    }
+
+    public void setMaksTillattDelvisRefusjonPrMnd(BigDecimal maksTillattDelvisRefusjonPrMnd) {
+        this.maksTillattDelvisRefusjonPrMnd = maksTillattDelvisRefusjonPrMnd;
+    }
+
+    public Arbeidsgiver getArbeidsgiver() {
+        return arbeidsgiver;
+    }
+
+    public void setArbeidsgiver(Arbeidsgiver arbeidsgiver) {
+        this.arbeidsgiver = arbeidsgiver;
     }
 
     @Override

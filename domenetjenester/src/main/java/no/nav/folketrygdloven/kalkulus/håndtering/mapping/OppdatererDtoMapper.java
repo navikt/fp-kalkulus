@@ -39,8 +39,8 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderSelvstendigNæ
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderTidsbegrensetArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.VurderteArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagAndelDto;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FordelRedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBGTidsbegrensetArbeidsforholdDto;
@@ -92,7 +92,8 @@ public class OppdatererDtoMapper {
                         a.getArbeidsgiverOrgnr(),
                         a.getArbeidsgiverAktørId(),
                         a.getInternArbeidsforholdRef(),
-                        a.getFastsattRefusjonFom()))
+                        a.getFullRefusjonFom(),
+                        a.getDelvisRefusjonBeløpPrMnd()))
                 .collect(Collectors.toList());
     }
 

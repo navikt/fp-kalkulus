@@ -6,6 +6,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import java.time.LocalDate;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -33,9 +36,16 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String internArbeidsforholdRef;
 
-    @JsonProperty("fastsattRefusjonFom")
+    @JsonProperty("fullRefusjonFom")
     @Valid
-    private LocalDate fastsattRefusjonFom;
+    @NotNull
+    private LocalDate fullRefusjonFom;
+
+    @JsonProperty("delvisRefusjonBeløpPrMnd")
+    @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    private Integer delvisRefusjonBeløpPrMnd;
 
     public VurderRefusjonAndelBeregningsgrunnlagDto() {
         // For Json deserialisering
@@ -44,7 +54,8 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
     public VurderRefusjonAndelBeregningsgrunnlagDto(@Valid String arbeidsgiverOrgnr,
                                                     @Valid String arbeidsgiverAktørId,
                                                     @Valid String internArbeidsforholdRef,
-                                                    @Valid LocalDate fastsattRefusjonFom) {
+                                                    @Valid @NotNull LocalDate fullRefusjonFom,
+                                                    @Valid Integer delvisRefusjonBeløpPrMnd) {
         if (arbeidsgiverAktørId == null && arbeidsgiverOrgnr == null) {
             throw new IllegalStateException("Både orgnr og aktørId er null, udyldig tilstand");
         }
@@ -54,7 +65,8 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
         this.arbeidsgiverOrgnr = arbeidsgiverOrgnr;
         this.arbeidsgiverAktørId = arbeidsgiverAktørId;
         this.internArbeidsforholdRef = internArbeidsforholdRef;
-        this.fastsattRefusjonFom = fastsattRefusjonFom;
+        this.fullRefusjonFom = fullRefusjonFom;
+        this.delvisRefusjonBeløpPrMnd = delvisRefusjonBeløpPrMnd;
     }
 
     public String getArbeidsgiverOrgnr() {
@@ -69,7 +81,11 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
         return internArbeidsforholdRef;
     }
 
-    public LocalDate getFastsattRefusjonFom() {
-        return fastsattRefusjonFom;
+    public LocalDate getFullRefusjonFom() {
+        return fullRefusjonFom;
+    }
+
+    public Integer getDelvisRefusjonBeløpPrMnd() {
+        return delvisRefusjonBeløpPrMnd;
     }
 }

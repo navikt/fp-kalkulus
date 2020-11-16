@@ -43,7 +43,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.TidligereUtbetalingDto;
 
-class VurderRefusjonDtoTjenesteTest {
+class LagVurderRefusjonDtoTest {
     private Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(LocalDate.of(2020,1,1))
             .medSkjæringstidspunktOpptjening(LocalDate.of(2020,1,1)).build();
     private Intervall BG_PERIODE = Intervall.fraOgMedTilOgMed(STP.getSkjæringstidspunktBeregning(), Intervall.TIDENES_ENDE);
@@ -188,7 +188,6 @@ class VurderRefusjonDtoTjenesteTest {
         assertThat(resultat.get().getAndeler()).hasSize(1);
         assertAndeler(resultat.get().getAndeler(), orgnr, internRef, refusjonFom, STP.getSkjæringstidspunktBeregning(), tidligereUtb);
     }
-
 
 
     private void byggTidligereRefusjonoverstyring (Arbeidsgiver arbeidsgiver, LocalDate tidligsteRefusjonsstart) {

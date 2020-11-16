@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.refusjon;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -11,13 +12,16 @@ public class RefusjonSplittAndel {
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto internArbeidsforholdRefDto;
     private LocalDate startdatoRefusjon;
+    private BigDecimal delvisRefusjonBeløpPrÅr;
 
     public RefusjonSplittAndel(Arbeidsgiver arbeidsgiver,
                                InternArbeidsforholdRefDto internArbeidsforholdRefDto,
-                               LocalDate startdatoRefusjon) {
+                               LocalDate startdatoRefusjon,
+                               BigDecimal delvisRefusjonBeløpPrÅr) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRefDto = internArbeidsforholdRefDto;
         this.startdatoRefusjon = startdatoRefusjon;
+        this.delvisRefusjonBeløpPrÅr = delvisRefusjonBeløpPrÅr;
     }
 
     public Arbeidsgiver getArbeidsgiver() {
@@ -38,6 +42,10 @@ public class RefusjonSplittAndel {
         return Objects.equals(andelAG, arbeidsgiver) && getInternArbeidsforholdRefDto().gjelderFor(andelRef);
     }
 
+    public BigDecimal getDelvisRefusjonBeløpPrÅr() {
+        return delvisRefusjonBeløpPrÅr;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,11 +53,12 @@ public class RefusjonSplittAndel {
         RefusjonSplittAndel that = (RefusjonSplittAndel) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(internArbeidsforholdRefDto, that.internArbeidsforholdRefDto) &&
+                Objects.equals(delvisRefusjonBeløpPrÅr, that.delvisRefusjonBeløpPrÅr) &&
                 Objects.equals(startdatoRefusjon, that.startdatoRefusjon);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(arbeidsgiver, internArbeidsforholdRefDto, startdatoRefusjon);
+        return Objects.hash(arbeidsgiver, internArbeidsforholdRefDto, delvisRefusjonBeløpPrÅr, startdatoRefusjon);
     }
 }

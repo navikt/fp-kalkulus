@@ -130,7 +130,7 @@ class MapTilRefusjonOverstyringTest {
     private VurderRefusjonAndelBeregningsgrunnlagDto lagDtoForAG(Arbeidsgiver ag, String ref, LocalDate refusjonFra) {
         String aktørId = ag.getAktørId() != null ? ag.getIdentifikator() : null;
         String orgnr = ag.getOrgnr() != null ? ag.getIdentifikator() : null;
-        return new VurderRefusjonAndelBeregningsgrunnlagDto(orgnr, aktørId, ref, refusjonFra);
+        return new VurderRefusjonAndelBeregningsgrunnlagDto(orgnr, aktørId, ref, refusjonFra, null);
     }
 
     private void lagTidligereOverstyringBeregningsgrunnlag(Arbeidsgiver ag) {

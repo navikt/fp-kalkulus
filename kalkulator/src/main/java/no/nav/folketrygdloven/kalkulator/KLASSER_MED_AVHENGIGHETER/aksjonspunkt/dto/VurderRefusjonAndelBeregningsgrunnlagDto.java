@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class VurderRefusjonAndelBeregningsgrunnlagDto {
@@ -8,12 +9,14 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
     private String arbeidsgiverAktørId;
     private String internArbeidsforholdRef;
     private LocalDate fastsattRefusjonFom;
+    private Integer delvisRefusjonBeløpPrMnd;
 
 
     public VurderRefusjonAndelBeregningsgrunnlagDto(String arbeidsgiverOrgnr,
                                                     String arbeidsgiverAktørId,
                                                     String internArbeidsforholdRef,
-                                                    LocalDate fastsattRefusjonFom) {
+                                                    LocalDate fastsattRefusjonFom,
+                                                    Integer delvisRefusjonBeløpPrMnd) {
         if (arbeidsgiverAktørId == null && arbeidsgiverOrgnr == null) {
             throw new IllegalStateException("Både orgnr og aktørId er null, udyldig tilstand");
         }
@@ -24,6 +27,7 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
         this.arbeidsgiverAktørId = arbeidsgiverAktørId;
         this.internArbeidsforholdRef = internArbeidsforholdRef;
         this.fastsattRefusjonFom = fastsattRefusjonFom;
+        this.delvisRefusjonBeløpPrMnd = delvisRefusjonBeløpPrMnd;
     }
 
     public String getArbeidsgiverOrgnr() {
@@ -40,5 +44,9 @@ public class VurderRefusjonAndelBeregningsgrunnlagDto {
 
     public LocalDate getFastsattRefusjonFom() {
         return fastsattRefusjonFom;
+    }
+
+    public Integer getDelvisRefusjonBeløpPrMnd() {
+        return delvisRefusjonBeløpPrMnd;
     }
 }
