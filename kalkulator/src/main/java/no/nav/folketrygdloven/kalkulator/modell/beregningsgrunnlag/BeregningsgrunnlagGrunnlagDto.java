@@ -26,6 +26,7 @@ public class BeregningsgrunnlagGrunnlagDto {
         grunnlag.getSaksbehandletAktiviteter().ifPresent(this::setSaksbehandletAktiviteter);
         grunnlag.getOverstyring().ifPresent(this::setOverstyringer);
         grunnlag.getRefusjonOverstyringer().ifPresent(this::setRefusjonOverstyringer);
+        grunnlag.getFaktaAggregat().ifPresent(this::setFaktaAggregat);
     }
 
     public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlag() {
