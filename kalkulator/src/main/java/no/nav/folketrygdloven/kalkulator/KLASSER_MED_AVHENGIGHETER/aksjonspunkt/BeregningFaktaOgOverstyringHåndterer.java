@@ -46,7 +46,7 @@ public class BeregningFaktaOgOverstyringHåndterer {
         // Overstyring kan kun gjøres på grunnlaget fra 98-steget
         BeregningsgrunnlagGrunnlagDto grunnlagOppdatertMedAndeler = input.getBeregningsgrunnlagGrunnlag();
         if (!grunnlagOppdatertMedAndeler.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)) {
-            throw new IllegalStateException("Kan ikke overstyre uten et OPPDATERT_MED_ANDELER beregningsgrunnlag");
+            throw new IllegalStateException("Kan ikke overstyre uten et OPPDATERT_MED_ANDELER beregningsgrunnlag. Aktivt grunnlag er " + grunnlagOppdatertMedAndeler.getBeregningsgrunnlagTilstand().getKode());
         }
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlagOppdatertMedAndeler);
 
