@@ -18,6 +18,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
@@ -45,6 +47,15 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                 BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = getKorrektAndel(periode, andel, forrigeBg);
                 settInntektskategoriOgFastsattBeløp(andel, korrektAndel, periode, skalBrukeBesteberegning);
             }
+        }
+
+        // Setter fakta aggregat
+        if (skalBrukeBesteberegning != null) {
+            FaktaAggregatDto.Builder faktaBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
+            FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
+            faktaAktørBuilder.medSkalBesteberegnes(skalBrukeBesteberegning);
+            faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
+            grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
         }
     }
 
