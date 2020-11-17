@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
 @ApplicationScoped
 public class BeregningFaktaOgOverstyringHåndterer {
@@ -44,11 +43,8 @@ public class BeregningFaktaOgOverstyringHåndterer {
 
     public BeregningsgrunnlagGrunnlagDto håndterMedOverstyring(HåndterBeregningsgrunnlagInput input, OverstyrBeregningsgrunnlagDto dto) {
         // Overstyring kan kun gjøres på grunnlaget fra 98-steget
-        BeregningsgrunnlagGrunnlagDto grunnlagOppdatertMedAndeler = input.getBeregningsgrunnlagGrunnlag();
-        if (!grunnlagOppdatertMedAndeler.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER)) {
-            throw new IllegalStateException("Kan ikke overstyre uten et OPPDATERT_MED_ANDELER beregningsgrunnlag. Aktivt grunnlag er " + grunnlagOppdatertMedAndeler.getBeregningsgrunnlagTilstand().getKode());
-        }
-        BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlagOppdatertMedAndeler);
+        BeregningsgrunnlagGrunnlagDto aktivtGrunnlag = input.getBeregningsgrunnlagGrunnlag();
+        BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(aktivtGrunnlag);
 
         Optional<BeregningsgrunnlagDto> forrigeBg = input.getForrigeGrunnlagFraHåndteringTilstand().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
 
