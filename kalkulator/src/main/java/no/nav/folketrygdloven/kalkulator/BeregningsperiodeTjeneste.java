@@ -38,18 +38,21 @@ public class BeregningsperiodeTjeneste {
         return Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public static boolean skalVentePåInnrapporteringAvInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere, LocalDate dagensDato) {
+    public static Optional<LocalDate> skalVentePåInnrapporteringAvInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere, LocalDate dagensDato) {
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         if (!harAktivitetStatuserSomKanSettesPåVent(beregningsgrunnlag)) {
-            return false;
+            return Optional.empty();
         }
         LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(beregningsgrunnlag);
         LocalDate originalFrist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         LocalDate fristMedHelligdagerInkl = BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(originalFrist);
         if (dagensDato.isAfter(fristMedHelligdagerInkl)) {
-            return false;
+            return Optional.empty();
         }
-        return !harMottattInntektsmeldingForAlleArbeidsforhold(beregningsgrunnlag, arbeidsgivere);
+
+        return harMottattInntektsmeldingForAlleArbeidsforhold(beregningsgrunnlag, arbeidsgivere)
+                ? Optional.empty()
+                : Optional.of(utledBehandlingPåVentFrist(input, beregningsgrunnlag));
     }
 
     private static boolean harAktivitetStatuserSomKanSettesPåVent(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -59,7 +62,7 @@ public class BeregningsperiodeTjeneste {
             .anyMatch(status -> status.erArbeidstaker() || status.erFrilanser());
     }
 
-    public static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(beregningsgrunnlag);
         LocalDate frist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         return BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(frist).plusDays(1);

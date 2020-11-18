@@ -27,7 +27,7 @@ public class AvklarAktiviteterTjeneste {
         // Skjul meg
     }
 
-    static boolean skalAvklareAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+    public static boolean skalAvklareAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
         return harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat)
                 || harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse, fagsakYtelseType)
                 || harFullDPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse, fagsakYtelseType);

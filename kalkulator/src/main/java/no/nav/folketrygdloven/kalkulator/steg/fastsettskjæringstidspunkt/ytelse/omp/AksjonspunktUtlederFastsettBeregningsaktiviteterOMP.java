@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
+package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.omp;
 
 import static java.util.Collections.emptyList;
 
@@ -23,18 +23,20 @@ import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
-public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements AksjonspunktUtlederFastsettBeregningsaktiviteter {
+@FagsakYtelseTypeRef("OMP")
+public class AksjonspunktUtlederFastsettBeregningsaktiviteterOMP implements AksjonspunktUtlederFastsettBeregningsaktiviteter {
 
-    private static List<BeregningAksjonspunktResultat> utledAksjonspunkterForFelles(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                    BeregningAktivitetAggregatDto beregningAktivitetAggregat,
-                                                                                    BeregningsgrunnlagInput input,
-                                                                                    boolean erOverstyrt,
-                                                                                    FagsakYtelseType fagsakYtelseType) {
+    private static List<BeregningAksjonspunktResultat> utledAksjonspunkterForOMP(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat,
+                                                                                 BeregningsgrunnlagInput input,
+                                                                                 boolean erOverstyrt,
+                                                                                 FagsakYtelseType fagsakYtelseType) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getKoblingReferanse().getAktørId());
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
@@ -42,14 +44,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
             return List.of(autopunkt(BeregningAksjonspunktDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
         }
-        Optional<LocalDate> ventPåMeldekortFrist = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(aktørYtelse, beregningsgrunnlag, LocalDate.now());
-        if (ventPåMeldekortFrist.isPresent()) {
-            return List.of(autopunkt(BeregningAksjonspunktDefinisjon.AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT, BeregningVenteårsak.VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT, ventPåMeldekortFrist.get()));
-        }
         if (erOverstyrt) {
             return emptyList();
         }
-
         if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)) {
             return List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.AVKLAR_AKTIVITETER));
         }
@@ -63,6 +60,6 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
     @Override
     public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
-        return utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
+        return utledAksjonspunkterForOMP(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
     }
 }

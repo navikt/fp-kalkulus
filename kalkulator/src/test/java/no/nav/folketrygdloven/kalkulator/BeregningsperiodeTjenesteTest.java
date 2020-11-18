@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,10 +61,10 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1SNAndel();
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
 
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
@@ -73,10 +74,10 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
 
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
@@ -86,10 +87,10 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
 
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
@@ -99,10 +100,11 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1FrilansAndel();
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
 
         // Assert
-        assertThat(resultat).isTrue();
+        assertThat(resultat).isPresent();
+        assertThat(resultat).hasValue(LocalDate.of(2019,1,8));
     }
 
     @Test
@@ -111,9 +113,9 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(3);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
@@ -122,10 +124,11 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(4);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
 
         // Assert
-        assertThat(resultat).isTrue();
+        assertThat(resultat).isPresent();
+        assertThat(resultat).hasValue(LocalDate.of(2019,1,8));
     }
 
     @Test
@@ -135,10 +138,11 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
 
         // Assert
-        assertThat(resultat).isTrue();
+        assertThat(resultat).isPresent();
+        assertThat(resultat).hasValue(LocalDate.of(2019,1,8));
     }
 
     @Test
@@ -148,10 +152,11 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
 
         // Assert
-        assertThat(resultat).isTrue();
+        assertThat(resultat).isPresent();
+        assertThat(resultat).hasValue(LocalDate.of(2019,1,8));
     }
 
     @Test
@@ -161,10 +166,10 @@ public class BeregningsperiodeTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
 
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato);
 
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
@@ -173,21 +178,23 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(true);
         // Act
-        boolean resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
         // Assert
-        assertThat(resultat).isFalse();
+        assertThat(resultat).isEmpty();
     }
 
     @Test
     public void skalUtledeRiktigFrist() {
         // Arrange
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
+        LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
 
         // Act
-        LocalDate frist = BeregningsperiodeTjeneste.utledBehandlingPåVentFrist(input, beregningsgrunnlag);
+        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
 
         // Assert
-        assertThat(frist).isEqualTo(SKJÆRINGSTIDSPUNKT.plusDays(7));
+        assertThat(frist).isPresent();
+        assertThat(frist).hasValue(SKJÆRINGSTIDSPUNKT.plusDays(7));
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag1FrilansAndel() {
