@@ -51,13 +51,13 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     public static final int MÅNEDER_FØR_STP = 36;
 
     private static Periodeinntekt mapTilRegel(OppgittEgenNæringDto oppgittEgenNæringDto) {
-        BigDecimal inntekt = oppgittEgenNæringDto.getBruttoInntekt();
+        BigDecimal inntekt = oppgittEgenNæringDto.getInntekt();
         Intervall periode = oppgittEgenNæringDto.getPeriode();
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
                 .medPeriode(Periode.of(periode.getFomDato(), periode.getTomDato()))
                 .medAktivitetStatus(AktivitetStatus.SN)
-                .medInntekt(inntekt)
+                .medInntekt(inntekt == null ? BigDecimal.ZERO : inntekt)
                 .build();
     }
 
@@ -249,7 +249,6 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         if (!oppgittOpptjening.getEgenNæring().isEmpty()) {
             Optional<OppgittEgenNæringDto> oppgittInntektFørStp = oppgittOpptjening.getEgenNæring().stream()
                     .filter(en -> skjæringstidspunktBeregning.isAfter(en.getFraOgMed()))
-                    .filter(en -> en.getBruttoInntekt() != null)
                     .findFirst();
             if (oppgittInntektFørStp.isEmpty() && frisinnGrunnlag.getSøkerYtelseForNæring()) {
                 throw new IllegalStateException("Kunne ikke finne oppgitt næringsinntekt før skjæringstidspunkt, ugyldig tilstand for ytelse FRISINN");
