@@ -259,36 +259,6 @@ public class BeregningsgrunnlagRepository {
         return grunnlagEntitet;
     }
 
-    public BeregningsgrunnlagGrunnlagEntitet lagreForFaktaMigrering(Long koblingId, BeregningsgrunnlagGrunnlagBuilder builder,
-                                                                    BeregningsgrunnlagTilstand beregningsgrunnlagTilstand,
-                                                                    boolean erAktiv) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(builder, BUILDER);
-        Objects.requireNonNull(beregningsgrunnlagTilstand, BEREGNINGSGRUNNLAG_TILSTAND);
-        BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet = builder.build(koblingId, beregningsgrunnlagTilstand);
-        lagreOgFlushForFaktamigrering(koblingId, grunnlagEntitet, erAktiv);
-        return grunnlagEntitet;
-    }
-
-    private void lagreOgFlushForFaktamigrering(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag, boolean erAktiv) {
-        Objects.requireNonNull(koblingId, KOBLING_ID);
-        Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
-        if (erAktiv) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
-            if (tidligereAggregat.isPresent()) {
-                tidligereAggregat.get().setAktiv(false);
-                entityManager.persist(tidligereAggregat.get());
-            }
-        }
-        if (nyttGrunnlag.getGrunnlagReferanse() == null) {
-            // lag ny referanse
-            nyttGrunnlag.setGrunnlagReferanse(new GrunnlagReferanse(UUID.randomUUID()));
-        }
-        nyttGrunnlag.setAktiv(erAktiv);
-        lagreGrunnlag(nyttGrunnlag);
-        entityManager.flush();
-    }
-
     private void lagreOgFlush(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
         Objects.requireNonNull(koblingId, KOBLING_ID);
         Objects.requireNonNull(nyttGrunnlag.getBeregningsgrunnlagTilstand(), BEREGNINGSGRUNNLAG_TILSTAND);
@@ -497,32 +467,6 @@ public class BeregningsgrunnlagRepository {
                 .collect(Collectors.toCollection(TreeSet::new));
         return Collections.unmodifiableNavigableSet(resultat);
 
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagMedMottarYtelseUtenFakta() {
-        Query query = entityManager.createNativeQuery(
-                "SELECT * FROM GR_BEREGNINGSGRUNNLAG WHERE ID IN (SELECT DISTINCT GR.ID FROM GR_BEREGNINGSGRUNNLAG GR " +
-                        "INNER JOIN BEREGNINGSGRUNNLAG BG ON BG.ID = GR.BEREGNINGSGRUNNLAG_ID " +
-                        "INNER JOIN BEREGNINGSGRUNNLAG_PERIODE BP ON BG.ID = BP.BEREGNINGSGRUNNLAG_ID " +
-                        "INNER JOIN BG_PR_STATUS_OG_ANDEL BPSOA ON BP.ID = BPSOA.BG_PERIODE_ID " +
-                        "INNER JOIN BG_FRILANS_ANDEL BFA ON BPSOA.ID = BFA.BG_PR_STATUS_ANDEL_ID " +
-                        "WHERE BFA.MOTTAR_YTELSE IS NOT NULL AND GR.FAKTA_AGGREGAT_ID IS NULL)",
-                BeregningsgrunnlagGrunnlagEntitet.class);
-        return query.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagTidsbegrensetArbeidUtenFakta() {
-        Query query = entityManager.createNativeQuery(
-                "SELECT * FROM GR_BEREGNINGSGRUNNLAG WHERE ID IN (SELECT DISTINCT GR.ID FROM GR_BEREGNINGSGRUNNLAG GR " +
-                        "INNER JOIN BEREGNINGSGRUNNLAG BG ON BG.ID = GR.BEREGNINGSGRUNNLAG_ID " +
-                        "INNER JOIN BEREGNINGSGRUNNLAG_PERIODE BP ON BG.ID = BP.BEREGNINGSGRUNNLAG_ID " +
-                        "INNER JOIN BG_PR_STATUS_OG_ANDEL BPSOA ON BP.ID = BPSOA.BG_PERIODE_ID " +
-                        "INNER JOIN BG_ANDEL_ARBEIDSFORHOLD BAA ON BPSOA.ID = BAA.BG_ANDEL_ID " +
-                        "WHERE BAA.TIDSBEGRENSET_ARBEIDSFORHOLD IS NOT NULL)",
-                        BeregningsgrunnlagGrunnlagEntitet.class);
-        return query.getResultList();
     }
 
 }

@@ -111,27 +111,12 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         return Optional.ofNullable(naturalytelseTilkommetPrÅr);
     }
 
-    public Boolean getErTidsbegrensetArbeidsforhold() {
-        return erTidsbegrensetArbeidsforhold;
-    }
-
-    public Boolean erLønnsendringIBeregningsperioden() {
-        return lønnsendringIBeregningsperioden;
-    }
-
     public LocalDate getArbeidsperiodeFom() {
         return arbeidsperiodeFom;
     }
 
     public Optional<LocalDate> getArbeidsperiodeTom() {
         return Optional.ofNullable(arbeidsperiodeTom);
-    }
-
-    public IntervallEntitet getArbeidsperiode() {
-        if (arbeidsperiodeTom == null) {
-            return IntervallEntitet.fraOgMed(arbeidsperiodeFom);
-        }
-        return IntervallEntitet.fraOgMedTilOgMed(arbeidsperiodeFom, arbeidsperiodeTom);
     }
 
     public String getArbeidsforholdOrgnr() {
@@ -250,16 +235,6 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
         public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
             bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
-            return this;
-        }
-
-        public BGAndelArbeidsforhold.Builder medTidsbegrensetArbeidsforhold(Boolean erTidsbegrensetArbeidsforhold) {
-            bgAndelArbeidsforhold.erTidsbegrensetArbeidsforhold = erTidsbegrensetArbeidsforhold;
-            return this;
-        }
-
-        public Builder medLønnsendringIBeregningsperioden(Boolean lønnsendringIBeregningsperioden) {
-            bgAndelArbeidsforhold.lønnsendringIBeregningsperioden = lønnsendringIBeregningsperioden;
             return this;
         }
 
