@@ -32,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsf
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
@@ -42,7 +41,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Beregningsgrunnlag
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef()
 public class ForeslåBeregningsgrunnlag {
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
     private MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
@@ -86,8 +85,7 @@ public class ForeslåBeregningsgrunnlag {
                                   Beregningsgrunnlag regelmodellBeregningsgrunnlag,
                                   BeregningsgrunnlagDto beregningsgrunnlag,
                                   Optional<FaktaAggregatDto> faktaAggregat) {
-        opprettPerioderForKortvarigeArbeidsforhold(input.getAktørId(),
-                regelmodellBeregningsgrunnlag,
+        opprettPerioderForKortvarigeArbeidsforhold(regelmodellBeregningsgrunnlag,
                 beregningsgrunnlag, input.getIayGrunnlag(), faktaAggregat);
     }
 
@@ -105,13 +103,12 @@ public class ForeslåBeregningsgrunnlag {
         return regelResultater;
     }
 
-    private void opprettPerioderForKortvarigeArbeidsforhold(AktørId aktørId,
-                                                            Beregningsgrunnlag regelBeregningsgrunnlag,
+    private void opprettPerioderForKortvarigeArbeidsforhold(Beregningsgrunnlag regelBeregningsgrunnlag,
                                                             BeregningsgrunnlagDto vlBeregningsgrunnlag,
                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                             Optional<FaktaAggregatDto> faktaAggregat) {
-        var filter = getYrkesaktivitetFilter(aktørId, iayGrunnlag);
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarigeAktiviteter = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(aktørId, vlBeregningsgrunnlag, iayGrunnlag);
+        var filter = getYrkesaktivitetFilter(iayGrunnlag);
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarigeAktiviteter = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(vlBeregningsgrunnlag, iayGrunnlag);
         kortvarigeAktiviteter.entrySet().stream()
                 .filter(entry -> entry.getKey().getBgAndelArbeidsforhold()
                         .filter(a -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(a))
@@ -121,8 +118,8 @@ public class ForeslåBeregningsgrunnlag {
                 .forEach(ya -> SplittBGPerioder.splitt(regelBeregningsgrunnlag, filter.getAnsettelsesPerioder(ya)));
     }
 
-    private YrkesaktivitetFilterDto getYrkesaktivitetFilter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+    private YrkesaktivitetFilterDto getYrkesaktivitetFilter(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        return new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
     }
 
     protected String toJson(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag beregningsgrunnlagRegel) {

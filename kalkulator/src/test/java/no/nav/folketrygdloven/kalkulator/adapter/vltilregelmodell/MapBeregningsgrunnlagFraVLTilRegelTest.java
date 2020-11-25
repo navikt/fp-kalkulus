@@ -37,8 +37,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -104,9 +104,9 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(iayGrunnlagBuilder.getKladd().getRegisterVersjon(), VersjonTypeDto.REGISTER);
-        lagAktørArbeid(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), Arbeidsgiver.virksomhet(virksomhetA), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, Optional.empty());
+        lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(virksomhetA), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD, Optional.empty());
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
-            lagInntekt(inntektArbeidYtelseBuilder, koblingReferanse.getAktørId(), virksomhetA, dt, dt.plusMonths(1));
+            lagInntekt(inntektArbeidYtelseBuilder, virksomhetA, dt, dt.plusMonths(1));
         }
         return inntektArbeidYtelseBuilder;
     }
@@ -114,7 +114,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private void lagIAYforTilstøtendeYtelser(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, BeregningsgrunnlagDto beregningsgrunnlag) {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
-        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(koblingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
         YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.DAGPENGER, aktørYtelseBuilder,
             skjæring.minusMonths(1).plusDays(1),
             skjæring.plusMonths(6),
@@ -138,7 +138,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
     private KoblingReferanse lagIAYforTilstøtendeYtelserForMarginalTilfelle(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, BeregningsgrunnlagDto beregningsgrunnlag) {
         LocalDate skjæring = beregningsgrunnlag.getSkjæringstidspunkt();
         InntektArbeidYtelseAggregatBuilder iayBuilder = opprettForBehandling(iayGrunnlagBuilder);
-        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder(koblingReferanse.getAktørId());
+        InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder aktørYtelseBuilder = iayBuilder.getAktørYtelseBuilder();
         YtelseDtoBuilder ytelse = lagYtelse(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, aktørYtelseBuilder,
             skjæring.minusWeeks(2),
             skjæring.plusMonths(6),
@@ -166,10 +166,10 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
                 .build());
     }
 
-    private AktørArbeidDto lagAktørArbeid(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder, AktørId aktørId,
+    private AktørArbeidDto lagAktørArbeid(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                           Arbeidsgiver arbeidsgiver, LocalDate fom, LocalDate tom, ArbeidType arbeidType, Optional<InternArbeidsforholdRefDto> arbeidsforholdRef) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = inntektArbeidYtelseAggregatBuilder
-            .getAktørArbeidBuilder(aktørId);
+            .getAktørArbeidBuilder();
 
         OpptjeningsnøkkelDto opptjeningsnøkkel = arbeidsforholdRef.map(behandlingReferanse -> new OpptjeningsnøkkelDto(behandlingReferanse, arbeidsgiver)).
             orElseGet(() -> OpptjeningsnøkkelDto.forOrgnummer(arbeidsgiver.getIdentifikator()));
@@ -186,11 +186,11 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         return aktørArbeidBuilder.build();
     }
 
-    private void lagInntekt(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder, AktørId aktørId, String virksomhetOrgnr,
+    private void lagInntekt(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder, String virksomhetOrgnr,
                             LocalDate fom, LocalDate tom) {
         OpptjeningsnøkkelDto opptjeningsnøkkel = OpptjeningsnøkkelDto.forOrgnummer(virksomhetOrgnr);
 
-        InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder(aktørId);
+        InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
 
         Stream.of(InntektsKilde.INNTEKT_BEREGNING, InntektsKilde.INNTEKT_SAMMENLIGNING).forEach(kilde -> {
             InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
@@ -214,7 +214,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         buildVLSammenligningsgrunnlag(beregningsgrunnlag);
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_SN);
         buildVLBGAktivitetStatus(beregningsgrunnlag);
-        var aktørInntektBuilder = leggTilInntekterFraSigrun(koblingReferanse.getAktørId());
+        var aktørInntektBuilder = leggTilInntekterFraSigrun();
         Optional<InntektArbeidYtelseAggregatDto> registerVersjon = iayGrunnlagBuilder.getKladd().getRegisterVersjon();
         InntektArbeidYtelseAggregatBuilder.oppdatere(registerVersjon, VersjonTypeDto.REGISTER)
             .leggTilAktørInntekt(aktørInntektBuilder);
@@ -260,9 +260,9 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         return mapBeregningsgrunnlagFraVLTilRegel.map(input, grunnlag);
     }
 
-    private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder leggTilInntekterFraSigrun(AktørId aktørId) {
-        InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder builder = inntektArbeidYtelseBuilder.getAktørInntektBuilder(aktørId);
-        InntektDtoBuilder inntektBuilder = builder.getInntektBuilder(InntektsKilde.SIGRUN, OpptjeningsnøkkelDto.forType(aktørId.toString(), OpptjeningsnøkkelDto.Type.AKTØR_ID));
+    private InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder leggTilInntekterFraSigrun() {
+        InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder builder = inntektArbeidYtelseBuilder.getAktørInntektBuilder();
+        InntektDtoBuilder inntektBuilder = builder.getInntektBuilder(InntektsKilde.SIGRUN, OpptjeningsnøkkelDto.forType(AktørId.dummy().getId(), OpptjeningsnøkkelDto.Type.AKTØR_ID));
         inntektBuilder.leggTilInntektspost(opprettInntektspostForSigrun(2015, SIGRUN_2015));
         inntektBuilder.leggTilInntektspost(opprettInntektspostForSigrun(2016, SIGRUN_2016));
         inntektBuilder.leggTilInntektspost(opprettInntektspostForSigrun(2017, SIGRUN_2017));

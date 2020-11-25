@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 
 public class InntektArbeidYtelseGrunnlagDto {
 
@@ -86,42 +85,27 @@ public class InntektArbeidYtelseGrunnlagDto {
     /**
      * sjekkom bekreftet annen opptjening. Oppgi aktørId for matchende behandling (dvs.normalt søker).
      */
-    public Optional<AktørArbeidDto> getBekreftetAnnenOpptjening(AktørId aktørId) {
-        return getSaksbehandletVersjon()
-            .map(InntektArbeidYtelseAggregatDto::getAktørArbeid)
-            .flatMap(it -> it.stream().filter(aa -> aa.getAktørId().equals(aktørId))
-                .findFirst());
+    public Optional<AktørArbeidDto> getBekreftetAnnenOpptjening() {
+        return getSaksbehandletVersjon().map(InntektArbeidYtelseAggregatDto::getAktørArbeid);
     }
 
-    public Optional<AktørArbeidDto> getAktørArbeidFraRegister(AktørId aktørId) {
+    public Optional<AktørArbeidDto> getAktørArbeidFraRegister() {
         if (register != null) {
-            var aktørArbeid = register.getAktørArbeid().stream().filter(aa -> Objects.equals(aa.getAktørId(), aktørId)).collect(Collectors.toList());
-            if (aktørArbeid.size() > 1) {
-                throw new IllegalStateException("Kan kun ha ett innslag av AktørArbeid for aktørId:" + aktørId + " i  grunnlag " + this.getEksternReferanse());
-            }
-            return aktørArbeid.stream().findFirst();
+            return Optional.ofNullable(register.getAktørArbeid());
         }
         return Optional.empty();
     }
 
-    public Optional<AktørYtelseDto> getAktørYtelseFraRegister(AktørId aktørId) {
+    public Optional<AktørYtelseDto> getAktørYtelseFraRegister() {
         if (register != null) {
-            var aktørYtelse = register.getAktørYtelse().stream().filter(aa -> Objects.equals(aa.getAktørId(), aktørId)).collect(Collectors.toList());
-            if (aktørYtelse.size() > 1) {
-                throw new IllegalStateException("Kan kun ha ett innslag av AktørYtelse for aktørId:" + aktørId + " i  grunnlag " + this.getEksternReferanse());
-            }
-            return aktørYtelse.stream().findFirst();
+            return Optional.ofNullable(register.getAktørYtelse());
         }
         return Optional.empty();
     }
 
-    public Optional<AktørInntektDto> getAktørInntektFraRegister(AktørId aktørId) {
+    public Optional<AktørInntektDto> getAktørInntektFraRegister() {
         if (register != null) {
-            var aktørInntekt = register.getAktørInntekt().stream().filter(aa -> Objects.equals(aa.getAktørId(), aktørId)).collect(Collectors.toList());
-            if (aktørInntekt.size() > 1) {
-                throw new IllegalStateException("Kan kun ha ett innslag av AktørInntekt for aktørId:" + aktørId + " i  grunnlag " + this.getEksternReferanse());
-            }
-            return aktørInntekt.stream().findFirst();
+            return Optional.ofNullable(register.getAktørInntekt());
         }
         return Optional.empty();
     }
@@ -193,7 +177,7 @@ public class InntektArbeidYtelseGrunnlagDto {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || !(o instanceof InntektArbeidYtelseGrunnlagDto))
+        if (!(o instanceof InntektArbeidYtelseGrunnlagDto))
             return false;
         InntektArbeidYtelseGrunnlagDto that = (InntektArbeidYtelseGrunnlagDto) o;
         return aktiv == that.aktiv &&

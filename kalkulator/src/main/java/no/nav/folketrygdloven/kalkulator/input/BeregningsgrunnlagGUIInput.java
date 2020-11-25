@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
@@ -48,7 +46,7 @@ public class BeregningsgrunnlagGUIInput {
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
-    private List<RefusjonskravDatoDto> refusjonskravDatoer = new ArrayList<>();
+    private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
     private BeregningsgrunnlagGrunnlagDto faktaOmBeregningBeregningsgrunnlagGrunnlag;
@@ -91,10 +89,6 @@ public class BeregningsgrunnlagGUIInput {
         return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }
 
-    public AktørId getAktørId() {
-        return koblingReferanse.getAktørId();
-    }
-
     public KoblingReferanse getKoblingReferanse() {
         return koblingReferanse;
     }
@@ -122,7 +116,7 @@ public class BeregningsgrunnlagGUIInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(getKoblingReferanse(), skjæringstidspunktOpptjening);
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
     }
 
     public Optional<FaktaAggregatDto> getFaktaAggregat() {
@@ -190,6 +184,7 @@ public class BeregningsgrunnlagGUIInput {
         return newInput;
     }
 
+    // Brukes i FP-SAK
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraFaktaOmBeregning(BeregningsgrunnlagGrunnlagDto grunnlag) {
         if (!(grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)
                 || grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))) {
@@ -209,6 +204,7 @@ public class BeregningsgrunnlagGUIInput {
         return newInput;
     }
 
+    // Brukes i FP-SAK
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraVurderRefusjon(BeregningsgrunnlagGrunnlagDto grunnlag) {
         if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
             throw new IllegalArgumentException("Grunnlaget er ikke fra vurderRefusjon.");

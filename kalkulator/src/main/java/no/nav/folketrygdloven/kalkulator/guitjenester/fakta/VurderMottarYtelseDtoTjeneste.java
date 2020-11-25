@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ArbeidstakerUtenInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.VurderMottarYtelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -33,34 +32,31 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
         BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         if (beregningsgrunnlag.getFaktaOmBeregningTilfeller().contains(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE)) {
             LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
-            var ref = input.getKoblingReferanse();
             var iayGrunnlag = input.getIayGrunnlag();
-            AktørId aktørId = ref.getAktørId();
-            byggVerdier(aktørId, iayGrunnlag, beregningsgrunnlag, faktaOmBeregningDto, skjæringstidspunkt, input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
+            byggVerdier(iayGrunnlag, beregningsgrunnlag, faktaOmBeregningDto, skjæringstidspunkt, input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
         }
     }
 
-    private void byggVerdier(AktørId aktørId, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, BeregningsgrunnlagDto beregningsgrunnlag,
+    private void byggVerdier(InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, BeregningsgrunnlagDto beregningsgrunnlag,
                              FaktaOmBeregningDto faktaOmBeregningDto, LocalDate skjæringstidspunkt, Optional<FaktaAggregatDto> faktaAggregat) {
         VurderMottarYtelseDto vurderMottarYtelseDto = new VurderMottarYtelseDto();
         if (VurderMottarYtelseTjeneste.erFrilanser(beregningsgrunnlag)) {
-            lagFrilansDel(aktørId, beregningsgrunnlag, inntektArbeidYtelseGrunnlag, vurderMottarYtelseDto, skjæringstidspunkt, faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør));
+            lagFrilansDel(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, vurderMottarYtelseDto, skjæringstidspunkt, faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør));
             if (faktaOmBeregningDto.getFrilansAndel() == null) {
                 FaktaOmBeregningAndelDtoTjeneste.lagFrilansAndelDto(beregningsgrunnlag, inntektArbeidYtelseGrunnlag).ifPresent(faktaOmBeregningDto::setFrilansAndel);
             }
         }
-        lagArbeidstakerUtenInntektsmeldingDel(inntektArbeidYtelseGrunnlag, aktørId, beregningsgrunnlag,
+        lagArbeidstakerUtenInntektsmeldingDel(inntektArbeidYtelseGrunnlag, beregningsgrunnlag,
                 vurderMottarYtelseDto, skjæringstidspunkt,
                 faktaAggregat);
         faktaOmBeregningDto.setVurderMottarYtelse(vurderMottarYtelseDto);
     }
 
     private void lagArbeidstakerUtenInntektsmeldingDel(InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
-                                                       AktørId aktørId,
                                                        BeregningsgrunnlagDto beregningsgrunnlag, VurderMottarYtelseDto vurderMottarYtelseDto,
                                                        LocalDate skjæringstidspunkt, Optional<FaktaAggregatDto> faktaAggregat) {
 
-        var filter = new InntektFilterDto(inntektArbeidYtelseGrunnlag.getAktørInntektFraRegister(aktørId)).før(skjæringstidspunkt);
+        var filter = new InntektFilterDto(inntektArbeidYtelseGrunnlag.getAktørInntektFraRegister()).før(skjæringstidspunkt);
         var andeler = ArbeidstakerUtenInntektsmeldingTjeneste.finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         andeler.forEach(andelUtenIM -> {
             var dto = new ArbeidstakerUtenInntektsmeldingAndelDto();
@@ -88,8 +84,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
         dto.setInntektPrMnd(snittIBeregningsperioden);
     }
 
-    private void lagFrilansDel(AktørId aktørId,
-                               BeregningsgrunnlagDto beregningsgrunnlag,
+    private void lagFrilansDel(BeregningsgrunnlagDto beregningsgrunnlag,
                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                VurderMottarYtelseDto vurderMottarYtelseDto,
                                LocalDate skjæringstidspunkt,
@@ -99,7 +94,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
                 .filter(andel -> andel.getAktivitetStatus().erFrilanser()).findFirst()
                 .ifPresent(frilansAndel -> {
                     vurderMottarYtelseDto.setFrilansMottarYtelse(faktaAktør.map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null));
-                    InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(aktørId, inntektArbeidYtelseGrunnlag, frilansAndel, skjæringstidspunkt)
+                    InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(inntektArbeidYtelseGrunnlag, frilansAndel, skjæringstidspunkt)
                             .ifPresent(vurderMottarYtelseDto::setFrilansInntektPrMnd);
                 });
     }

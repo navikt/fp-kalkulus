@@ -19,10 +19,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
@@ -36,11 +34,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
@@ -62,9 +60,9 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
     }
 
     @Override
-    public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
+    public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunkt) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
-        hentInntektArbeidYtelse(input.getKoblingReferanse(), inntektsgrunnlag, input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(inntektsgrunnlag, input, skjæringstidspunkt);
         return inntektsgrunnlag;
     }
 
@@ -172,12 +170,11 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                         .build()));
     }
 
-    private void hentInntektArbeidYtelse(KoblingReferanse referanse, Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
-        AktørId aktørId = referanse.getAktørId();
+    private void hentInntektArbeidYtelse(Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
 
-        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister(aktørId));
-        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister(aktørId);
+        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
+        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
         var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
 
         YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
@@ -195,9 +192,9 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
             lagInntekterSN(inntektsgrunnlag, filter);
         }
 
-        var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister(aktørId)).før(input.getSkjæringstidspunktOpptjening());
+        var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister()).før(input.getSkjæringstidspunktOpptjening());
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
-            mapAlleYtelser(inntektsgrunnlag, ytelseFilter, referanse.getSkjæringstidspunktOpptjening());
+            mapAlleYtelser(inntektsgrunnlag, ytelseFilter, input.getSkjæringstidspunktOpptjening());
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();

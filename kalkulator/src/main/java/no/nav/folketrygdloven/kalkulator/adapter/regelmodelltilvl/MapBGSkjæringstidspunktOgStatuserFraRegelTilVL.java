@@ -90,7 +90,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
             .medBeregningsgrunnlagPeriode(skjæringstidspunktForBeregning, null)
             .build(beregningsgrunnlag);
 
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(ref.getAktørId()));
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
 
         opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(ref, filter, regelModell, beregningsgrunnlagPeriode);
         return beregningsgrunnlag;

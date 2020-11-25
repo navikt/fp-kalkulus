@@ -8,14 +8,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class AktørYtelseDto {
-
-    private AktørId aktørId;
 
     private Set<YtelseDto> ytelser = new LinkedHashSet<>();
 
@@ -27,27 +23,8 @@ public class AktørYtelseDto {
      * Deep copy ctor
      */
     AktørYtelseDto(AktørYtelseDto aktørYtelse) {
-        this.aktørId = aktørYtelse.getAktørId();
-        this.ytelser = aktørYtelse.getAlleYtelser().stream().map(ytelse -> {
-            var yt = new YtelseDto(ytelse);
-            return yt;
-        }).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(getAktørId());
-    }
-
-    /**
-     * Aktøren tilstøtende ytelser gjelder for
-     * @return aktørId
-     */
-    public AktørId getAktørId() {
-        return aktørId;
-    }
-
-    void setAktørId(AktørId aktørId) {
-        this.aktørId = aktørId;
+        this.ytelser = aktørYtelse.getAlleYtelser().stream().map(YtelseDto::new)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -58,7 +35,7 @@ public class AktørYtelseDto {
     }
 
     boolean hasValues() {
-        return aktørId != null || ytelser != null && !ytelser.isEmpty();
+        return ytelser != null && !ytelser.isEmpty();
     }
 
     YtelseDtoBuilder getYtelseBuilderForType(FagsakYtelseType type, Intervall periode) {
@@ -80,18 +57,17 @@ public class AktørYtelseDto {
             return false;
         }
         AktørYtelseDto other = (AktørYtelseDto) obj;
-        return Objects.equals(this.getAktørId(), other.getAktørId());
+        return Objects.equals(this.ytelser, other.ytelser);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aktørId);
+        return Objects.hash(ytelser);
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "<" +
-            "aktørId=" + aktørId +
             ", ytelser=" + ytelser +
             '>';
     }

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -139,7 +138,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
                 OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(ytelsePeriodeFom));
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
-        when(iayMock.getAktørYtelseFraRegister(any())).thenReturn(Optional.of(ay));
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
@@ -202,7 +201,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
                 OpptjeningAktivitetType.ARBEIDSAVKLARING, Intervall.fraOgMed(ytelsePeriodeFom));
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
-        when(iayMock.getAktørYtelseFraRegister(any())).thenReturn(Optional.of(ay));
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
@@ -238,7 +237,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
 
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
-        when(iayMock.getAktørYtelseFraRegister(any())).thenReturn(Optional.of(ay));
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
@@ -273,7 +272,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
                 OpptjeningAktivitetType.ARBEIDSAVKLARING, periodeIntervallForAktivitet);
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
-        when(iayMock.getAktørYtelseFraRegister(any())).thenReturn(Optional.of(ay));
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
@@ -311,7 +310,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
                 OpptjeningAktivitetType.ARBEIDSAVKLARING, periodeIntervallForAktivitet);
 
         List<YtelseDto> liste = Collections.singletonList(ytelse);
-        when(iayMock.getAktørYtelseFraRegister(any())).thenReturn(Optional.of(ay));
+        when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act

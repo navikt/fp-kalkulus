@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
@@ -105,10 +104,6 @@ public class BeregningsgrunnlagInput {
         return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }
 
-    public AktørId getAktørId() {
-        return koblingReferanse.getAktørId();
-    }
-
     public KoblingReferanse getKoblingReferanse() {
         return koblingReferanse;
     }
@@ -132,7 +127,7 @@ public class BeregningsgrunnlagInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(getKoblingReferanse(), skjæringstidspunktOpptjening);
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
     }
 
     public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
@@ -143,12 +138,11 @@ public class BeregningsgrunnlagInput {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
-        var relevanteAktiviteter = opptjeningAktiviteter.getOpptjeningPerioder()
+        return opptjeningAktiviteter.getOpptjeningPerioder()
             .stream()
             .filter(p -> p.getPeriode().getFom().isBefore(skjæringstidspunktOpptjening))
             .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
             .collect(Collectors.toList());
-        return relevanteAktiviteter;
     }
 
     public Skjæringstidspunkt getSkjæringstidspunkt() {

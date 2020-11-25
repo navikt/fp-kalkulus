@@ -41,7 +41,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
@@ -50,7 +49,6 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 public class MapFraKalkulator {
 
     private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
-    public static final boolean MED_SPORINGSLOGG = true;
 
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
@@ -80,7 +78,7 @@ public class MapFraKalkulator {
         var opptjeningAktiviteter = input.getOpptjeningAktiviteter();
         var refusjonskravDatoer = input.getRefusjonskravDatoer();
 
-        var iayGrunnlagMappet = mapFraDto(iayGrunnlag, new AktørIdPersonident(aktørId.getId()));
+        var iayGrunnlagMappet = mapFraDto(iayGrunnlag);
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
             iayGrunnlagMappet,
             mapFraDto(opptjeningAktiviteter),
@@ -202,9 +200,8 @@ public class MapFraKalkulator {
                 .collect(Collectors.toList()));
     }
 
-    private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                                         AktørIdPersonident aktørId) {
-        return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag, aktørId);
+    private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag);
     }
 
 }

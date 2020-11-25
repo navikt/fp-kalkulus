@@ -21,18 +21,17 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPe
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -46,9 +45,8 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                              BeregningsgrunnlagDto beregningsgrunnlag) {
         precondition(beregningsgrunnlag);
         var ref = input.getKoblingReferanse();
-        AktørId aktørId = ref.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
-        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         var graderinger = input.getAktivitetGradering() == null ? new HashSet<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
 
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
@@ -97,9 +95,8 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     private List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(BeregningsgrunnlagInput input,
                                                                        List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
         var referanse = input.getKoblingReferanse();
-        AktørId aktørId = referanse.getAktørId();
         var iayGrunnlag = input.getIayGrunnlag();
-        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
@@ -145,7 +142,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     private Boolean harMottattInntektsmeldingSomSkalMappesTilAndel(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel, BeregningsgrunnlagInput input) {
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         Collection<YrkesaktivitetDto> yrkesaktiviteter = new YrkesaktivitetFilterDto(input.getIayGrunnlag().getArbeidsforholdInformasjon(),
-                input.getIayGrunnlag().getAktørArbeidFraRegister(input.getAktørId())).getYrkesaktiviteterForBeregning();
+                input.getIayGrunnlag().getAktørArbeidFraRegister()).getYrkesaktiviteterForBeregning();
         Optional<Boolean> harInntektsmelding = matchendeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
                 .map(arb -> InntektsmeldingForAndel.harInntektsmeldingForAndel(arb, inntektsmeldinger, yrkesaktiviteter, input.getSkjæringstidspunktForBeregning()));
         return harInntektsmelding.orElse(false);
@@ -212,7 +209,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(førstedagEtterBekreftetPermisjonOpt.get());
+        return førstedagEtterBekreftetPermisjonOpt;
     }
 
     private List<Gradering> hentGraderingerSomIkkeErLagtTilFraFør(List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger, YrkesaktivitetDto ya, List<Gradering> graderinger) {
@@ -258,11 +255,9 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     private void lagArbeidsforholdOgInntektsmelding(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
                                                     List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger,
                                                     YrkesaktivitetDto ya) {
-        var referanse = input.getKoblingReferanse();
-        AktørId aktørId = referanse.getAktørId();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         var iayGrunnlag = input.getIayGrunnlag();
-        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(input);
         var andelGraderinger = input.getAktivitetGradering() == null ? new ArrayList<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();

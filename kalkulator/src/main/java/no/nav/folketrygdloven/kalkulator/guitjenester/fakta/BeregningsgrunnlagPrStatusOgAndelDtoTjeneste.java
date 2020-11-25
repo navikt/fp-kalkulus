@@ -101,7 +101,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettesForYtelse(input, andel));
         }
         if (andel.getAktivitetStatus().erArbeidstaker()) {
-            iayGrunnlag.getAktørInntektFraRegister(ref.getAktørId())
+            iayGrunnlag.getAktørInntektFraRegister()
                 .ifPresent(aktørInntekt -> {
                     var filter = new InntektFilterDto(aktørInntekt).før(skjæringstidspunktForBeregning);
                     BigDecimal årsbeløp = InntektForAndelTjeneste
@@ -111,7 +111,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
                     dto.setBelopPrAarEtterAOrdningen(årsbeløp);
                 });
         } else if (andel.getAktivitetStatus().erFrilanser()) {
-            InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(ref.getAktørId(),
+            InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(
                     iayGrunnlag, andel, skjæringstidspunktForBeregning)
                 .ifPresent(dto::setBelopPrMndEtterAOrdningen);
         }

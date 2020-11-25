@@ -325,8 +325,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         InntektArbeidYtelseAggregatBuilder register = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         register.leggTilAktørArbeid(InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty())
                 .leggTilYrkesaktivitet(lagYrkesaktivitet(ag1, arbeidsforholdRef1, SKJÆRINGSTIDSPUNKT.minusMonths(10), tilDato1))
-                .leggTilYrkesaktivitet(lagYrkesaktivitet(ag1, arbeidsforholdRef2, skjæringstidspunktOpptjening, tilDato2))
-                .medAktørId(behandlingRef.getAktørId()));
+                .leggTilYrkesaktivitet(lagYrkesaktivitet(ag1, arbeidsforholdRef2, skjæringstidspunktOpptjening, tilDato2)));
         return register;
     }
 }

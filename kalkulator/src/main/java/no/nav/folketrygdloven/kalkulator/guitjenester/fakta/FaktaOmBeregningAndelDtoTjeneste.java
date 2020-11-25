@@ -6,21 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -28,9 +20,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningFrilanserTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ATogFLISammeOrganisasjonDto;
@@ -61,12 +55,11 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     }
 
     /// ATFL I samme organisasjon
-    static List<ATogFLISammeOrganisasjonDto> lagATogFLISAmmeOrganisasjonListe(KoblingReferanse koblingReferanse,
-                                                                              BeregningsgrunnlagDto beregningsgrunnlag,
+    static List<ATogFLISammeOrganisasjonDto> lagATogFLISAmmeOrganisasjonListe(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                               Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                               InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         Set<Arbeidsgiver> arbeidsgivere = KontrollerFaktaBeregningFrilanserTjeneste
-            .brukerErArbeidstakerOgFrilanserISammeOrganisasjon(koblingReferanse.getAktørId(), beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+                .brukerErArbeidstakerOgFrilanserISammeOrganisasjon(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         if (arbeidsgivere.isEmpty()) {
             return Collections.emptyList();
         }
@@ -119,22 +112,21 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     }
 
     /// Arbeidsforhold uten inntektsmelding
-    static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(AktørId aktørId,
-                                                                               BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                               InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(aktørId,
-            beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+    static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                      InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(
+                beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
             .stream()
-            .filter(andel -> andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).filter(Objects::nonNull).isPresent())
+            .filter(andel -> andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).isPresent())
             .collect(Collectors.toList());
         List<FaktaOmBeregningAndelDto> arbeidsforholdMedLønnsendringUtenIMDtoList = new ArrayList<>();
         for (YrkesaktivitetDto yrkesaktivitet : aktiviteterMedLønnsendring) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = finnKorrektAndelFraArbeidsgiver(andeler, yrkesaktivitet.getArbeidsgiver());
-            if(!korrektAndel.isPresent()){
+            if(korrektAndel.isEmpty()){
                 throw new IllegalStateException("Utviklerfeil: Finner ikke korrekt andel for yrkesaktiviteten");
             }
             FaktaOmBeregningAndelDto dto = lagArbeidsforholdUtenInntektsmeldingDto(korrektAndel.get(), inntektArbeidYtelseGrunnlag);

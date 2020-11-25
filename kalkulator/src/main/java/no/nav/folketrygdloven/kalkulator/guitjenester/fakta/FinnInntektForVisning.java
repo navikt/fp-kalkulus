@@ -39,7 +39,7 @@ public class FinnInntektForVisning {
                 return Optional.empty();
             }
             if (andel.getAktivitetStatus().erArbeidstaker()) {
-                if (!inntektsmeldingForAndel.isPresent()) {
+                if (inntektsmeldingForAndel.isEmpty()) {
                     return Optional.empty();
                 }
             }
@@ -71,13 +71,13 @@ public class FinnInntektForVisning {
 
     private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForFrilanser(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                        InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        return InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(ref.getAktørId(),
-            inntektArbeidYtelseGrunnlag, andel, ref.getSkjæringstidspunktBeregning());
+        return InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(
+                inntektArbeidYtelseGrunnlag, andel, ref.getSkjæringstidspunktBeregning());
     }
 
     private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                           InntektArbeidYtelseGrunnlagDto grunnlag) {
-        return grunnlag.getAktørInntektFraRegister(ref.getAktørId())
+        return grunnlag.getAktørInntektFraRegister()
             .map(aktørInntekt -> {
                 var filter = new InntektFilterDto(aktørInntekt).før(ref.getSkjæringstidspunktBeregning());
                 BigDecimal årsbeløp = InntektForAndelTjeneste.finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);

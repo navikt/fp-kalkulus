@@ -13,7 +13,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 
 public class MapTilGUIInputFraKalkulator {
@@ -53,9 +52,7 @@ public class MapTilGUIInputFraKalkulator {
                 skjæringstidspunkt);
         var aktivitetGradering = input.getAktivitetGradering();
         var refusjonskravDatoer = input.getRefusjonskravDatoer();
-        var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(
-                input.getIayGrunnlag(),
-                new AktørIdPersonident(kobling.getAktørId().getId()));
+        var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
         return new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,

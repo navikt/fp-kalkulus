@@ -19,7 +19,7 @@ public class VurderATFLISammeOrgDtoTjeneste implements FaktaOmBeregningTilfelleD
         List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
         if (tilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
             var ref = input.getKoblingReferanse();
-            List<ATogFLISammeOrganisasjonDto> aTogFLISammeOrganisasjonDto = FaktaOmBeregningAndelDtoTjeneste.lagATogFLISAmmeOrganisasjonListe(ref, beregningsgrunnlag, input.getInntektsmeldinger(), input.getIayGrunnlag());
+            List<ATogFLISammeOrganisasjonDto> aTogFLISammeOrganisasjonDto = FaktaOmBeregningAndelDtoTjeneste.lagATogFLISAmmeOrganisasjonListe(beregningsgrunnlag, input.getInntektsmeldinger(), input.getIayGrunnlag());
             if (faktaOmBeregningDto.getFrilansAndel() == null) {
                 FaktaOmBeregningAndelDtoTjeneste.lagFrilansAndelDto(beregningsgrunnlag, input.getIayGrunnlag()).ifPresent(faktaOmBeregningDto::setFrilansAndel);
             }

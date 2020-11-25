@@ -14,10 +14,8 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AutopunktUtlederFastsettBeregningsaktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
@@ -33,8 +31,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = LocalDate.of(2019, 5, 1);
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -53,8 +51,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = skjæringstidspunktOpptjening.minusDays(1);
         LocalDate meldekortFom = LocalDate.of(2018, 10, 1);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -74,8 +72,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
         LocalDate meldekortFom2 = LocalDate.of(2019, 1, 12);
         BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.ARBEIDSTAKER);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -95,8 +93,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
         LocalDate meldekortFom2 = LocalDate.of(2019, 1, 12);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(iayGrunnlagBuilder, ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(iayGrunnlagBuilder, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
         BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.of(iayGrunnlagBuilder.build()), AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
 
         // Act
@@ -117,8 +115,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate tom = LocalDate.of(2019, 5, 1);
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
         LocalDate meldekortFom2 = LocalDate.of(2019, 1, 12);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -136,8 +134,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = LocalDate.of(2019, 5, 1);
         LocalDate meldekortFom = LocalDate.of(2018, 9, 17);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom,
-                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom,
+                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -155,8 +153,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = LocalDate.of(2018, 12, 31);
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom,
-                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom,
+                FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -188,8 +186,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 1);
         LocalDate tom = LocalDate.of(2019, 5, 1);
         LocalDate meldekortFom = LocalDate.of(2018, 5, 1);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.DAGPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.DAGPENGER,
+                lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -209,8 +207,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate meldekortFom = LocalDate.of(2018, 12, 1);
         LocalDate meldekortFom2 = LocalDate.of(2019, 1, 12);
         BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.DAGPENGER);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.DAGPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.DAGPENGER,
+                lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -229,8 +227,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 3);
         LocalDate tom = LocalDate.of(2019, 2, 11);
         LocalDate meldekortFom = LocalDate.of(2019, 1, 21);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
@@ -249,8 +247,8 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         LocalDate fom = LocalDate.of(2018, 9, 3);
         LocalDate tom = LocalDate.of(2019, 2, 11);
         LocalDate meldekortFom = skjæringstidspunktOpptjening.minusDays(5);
-        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), ref, fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                Arbeidskategori.ARBEIDSTAKER, lagMeldekortPeriode(meldekortFom));
+        AktørYtelseDto aktørYtelse = BeregningIAYTestUtil.leggTilAktørytelse(InntektArbeidYtelseGrunnlagDtoBuilder.nytt(), fom, tom, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekortPeriode(meldekortFom));
 
         // Act
         Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);

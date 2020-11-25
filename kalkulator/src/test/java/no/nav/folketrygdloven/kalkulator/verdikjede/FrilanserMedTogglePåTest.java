@@ -40,7 +40,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
@@ -119,7 +118,7 @@ public class FrilanserMedTogglePåTest {
             BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(BigDecimal.valueOf(sammenligning / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene,
@@ -193,8 +192,8 @@ public class FrilanserMedTogglePåTest {
 
         final List<Double> ÅRSINNTEKT = List.of(12 * 13_000d, 12 * 12_000d, 12 * 8_000d);
         final List<Double> refusjonsKrav = List.of(12 * 13_000d, 12 * 9_000d, 12 * 8_000d);
-        final Double sammenligningFrilanser = 12 * 60000d;
-        final Double frilansÅrsinntekt = 12 * 13000d;
+        final double sammenligningFrilanser = 12 * 60000d;
+        final double frilansÅrsinntekt = 12 * 13000d;
 
         double forventetRedusert1 = refusjonsKrav.get(0);
         double forventetRedusert2 = refusjonsKrav.get(1);
@@ -225,7 +224,7 @@ public class FrilanserMedTogglePåTest {
             BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligningFrilanser / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(BigDecimal.valueOf(sammenligningFrilanser / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
@@ -332,7 +331,7 @@ public class FrilanserMedTogglePåTest {
             BigDecimal.valueOf(refusjonsKrav.get(2) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3);
 
-        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(koblingReferanse.getAktørId(), BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayATogFL(BigDecimal.valueOf(sammenligning / 12),
             månedsinntekter,
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
@@ -405,13 +404,13 @@ public class FrilanserMedTogglePåTest {
     public void bareFrilansMedBgUnder6g() {
 
         // Arrange
-        final Double sammenligning = 12 * 14000d;
+        final double sammenligning = 12 * 14000d;
         final Double frilansÅrsinntekt = 12 * 14000d;
 
         double forventetBrukersAndelFL = frilansÅrsinntekt;
 
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
-            BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(
+                BigDecimal.valueOf(sammenligning / 12),
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             ARBEIDSFORHOLD_ORGNR1);
 
@@ -476,8 +475,8 @@ public class FrilanserMedTogglePåTest {
 
         double forventetBrukersAndelFL = Math.min(seksG, frilansÅrsinntekt);
 
-        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(koblingReferanse.getAktørId(),
-            BigDecimal.valueOf(sammenligning / 12),
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagBehandlingFL(
+                BigDecimal.valueOf(sammenligning / 12),
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             ARBEIDSFORHOLD_ORGNR1);
 
@@ -544,8 +543,7 @@ public class FrilanserMedTogglePåTest {
         return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().fordelBeregningsgrunnlag(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
-    private InntektArbeidYtelseGrunnlagDto lagIayATogFL(AktørId aktørId,
-                                                        BigDecimal inntektSammenligningsgrunnlag,
+    private InntektArbeidYtelseGrunnlagDto lagIayATogFL(BigDecimal inntektSammenligningsgrunnlag,
                                                         List<BigDecimal> inntektBeregningsgrunnlag,
                                                         BigDecimal inntektFrilans,
                                                         List<String> virksomhetOrgnr, List<InntektsmeldingDto> inntektsmeldinger) {
@@ -554,25 +552,24 @@ public class FrilanserMedTogglePåTest {
 
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(DUMMY_ORGNR),
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(DUMMY_ORGNR),
             fraOgMed, tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
 
         virksomhetOrgnr
-            .forEach(virksomhetEntitet -> verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(virksomhetEntitet),
+            .forEach(virksomhetEntitet -> verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(virksomhetEntitet),
                 fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             for (int i = 0; i < virksomhetOrgnr.size(); i++) {
                 verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder,
-                    aktørId,
-                    dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
+                        dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
                     Arbeidsgiver.virksomhet(virksomhetOrgnr.get(i)));
             }
-            verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
+            verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                 Arbeidsgiver.virksomhet(DUMMY_ORGNR));
-            verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektFrilans,
+            verdikjedeTestHjelper.lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektFrilans,
                 Arbeidsgiver.virksomhet(DUMMY_ORGNR));
-            verdikjedeTestHjelper.lagInntektForOpptjening(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektFrilans,
+            verdikjedeTestHjelper.lagInntektForOpptjening(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektFrilans,
                 DUMMY_ORGNR);
         }
 
@@ -581,12 +578,11 @@ public class FrilanserMedTogglePåTest {
             .medData(inntektArbeidYtelseBuilder).build();
     }
 
-    private InntektArbeidYtelseGrunnlagDtoBuilder lagBehandlingFL(AktørId aktørId,
-                                                                  BigDecimal inntektSammenligningsgrunnlag,
+    private InntektArbeidYtelseGrunnlagDtoBuilder lagBehandlingFL(BigDecimal inntektSammenligningsgrunnlag,
                                                                   BigDecimal inntektFrilans, String beregningVirksomhet) {
         LocalDate fraOgMed = MINUS_YEARS_1.withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
-        InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, beregningVirksomhet, fraOgMed, tilOgMed, aktørId, InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER));
+        InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = verdikjedeTestHjelper.initBehandlingFL(inntektSammenligningsgrunnlag, inntektFrilans, beregningVirksomhet, fraOgMed, tilOgMed, InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER));
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(iayAggregatBuilder);
     }

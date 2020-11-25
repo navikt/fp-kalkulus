@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
 
 public class OpptjeningsnøkkelDto {
 
@@ -34,10 +33,6 @@ public class OpptjeningsnøkkelDto {
         this.arbeidsforholdId = arbeidsforholdId;
         this.orgNummer = orgNummer;
         this.aktørId = aktørId;
-    }
-
-    public OpptjeningsnøkkelDto(Virksomhet virksomhet) {
-        this(null, virksomhet.getOrgnr(), null);
     }
 
     public static OpptjeningsnøkkelDto forOrgnummer(String orgNummer) {
@@ -82,17 +77,6 @@ public class OpptjeningsnøkkelDto {
         return Optional.ofNullable(arbeidsforholdId);
     }
 
-    public String getForType(Type type) {
-        if (type.equals(Type.ARBEIDSFORHOLD_ID)) {
-            return arbeidsforholdId != null ? arbeidsforholdId.getReferanse() : null;
-        } else if (type.equals(Type.ORG_NUMMER)) {
-            return orgNummer;
-        } else if (type.equals(Type.AKTØR_ID)) {
-            return aktørId;
-        }
-        throw new IllegalArgumentException("Utvikler-feil: Støtter ikke typen");
-    }
-
     public Type getType() {
         if (harArbeidsforholdId())
             return Type.ARBEIDSFORHOLD_ID;
@@ -105,15 +89,6 @@ public class OpptjeningsnøkkelDto {
         }
     }
 
-    public Type getArbeidsgiverType() {
-        if (this.orgNummer != null) {
-            return Type.ORG_NUMMER;
-        } else if (this.aktørId != null) {
-            return Type.AKTØR_ID;
-        } else {
-            return null;
-        }
-    }
 
     public boolean matcher(OpptjeningsnøkkelDto other) {
         if (other == null) {
@@ -171,10 +146,6 @@ public class OpptjeningsnøkkelDto {
             + "type=" + getType()
             + ", key=" + getVerdi()
             + ">";
-    }
-
-    public boolean harType(Type type) {
-        return type.equals(getType());
     }
 
     public enum Type {

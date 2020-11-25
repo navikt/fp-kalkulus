@@ -26,7 +26,7 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
     public static Collection<YrkesaktivitetDto> finnYrkesaktiviteter(KoblingReferanse koblingReferanse,
                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                      BeregningsgrunnlagGrunnlagDto grunnlag) {
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(koblingReferanse.getAktørId()));
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
         LocalDate skjæringstidspunktBeregning = koblingReferanse.getSkjæringstidspunktBeregning();
         BeregningAktivitetAggregatDto overstyrtEllerRegisterAktiviteter = grunnlag.getOverstyrteEllerRegisterAktiviteter();

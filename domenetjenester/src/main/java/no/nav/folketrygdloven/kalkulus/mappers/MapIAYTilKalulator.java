@@ -30,7 +30,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
@@ -44,7 +43,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektTyp
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
@@ -91,9 +89,9 @@ public class MapIAYTilKalulator {
                 .collect(Collectors.toList());
     }
 
-    public static InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag, AktørIdPersonident id) {
+    public static InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        InntektArbeidYtelseAggregatBuilder data = mapAggregat(iayGrunnlag, id);
+        InntektArbeidYtelseAggregatBuilder data = mapAggregat(iayGrunnlag);
         builder.medData(data);
 
         if (iayGrunnlag.getInntektsmeldingDto() != null) {
@@ -233,11 +231,9 @@ public class MapIAYTilKalulator {
         return dtoBuilder.build();
     }
 
-    private static InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder mapInntekt(InntekterDto inntekterDto, AktørIdPersonident id) {
+    private static InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder mapInntekt(InntekterDto inntekterDto) {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder.oppdatere(Optional.empty());
         inntekterDto.getUtbetalinger().forEach(inntekt -> builder.leggTilInntekt(mapInntekt(inntekt)));
-        builder.medAktørId(new AktørId(id.getIdent()));
-
         return builder;
     }
 
@@ -261,31 +257,29 @@ public class MapIAYTilKalulator {
         return builder;
     }
 
-    private static InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder mapArbeid(ArbeidDto arbeid, AktørIdPersonident id) {
+    private static InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder mapArbeid(ArbeidDto arbeid) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
         arbeid.getYrkesaktiviteter().forEach(yrkesaktivitet -> builder.leggTilYrkesaktivitet(mapYrkesaktivitet(yrkesaktivitet)));
-        builder.medAktørId(new AktørId(id.getIdent()));
         return builder;
     }
 
-    private static InntektArbeidYtelseAggregatBuilder mapAggregat(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto grunnlagDto, AktørIdPersonident id) {
+    private static InntektArbeidYtelseAggregatBuilder mapAggregat(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto grunnlagDto) {
         InntektArbeidYtelseAggregatBuilder builder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         if (grunnlagDto.getArbeidDto() != null) {
-            builder.leggTilAktørArbeid(mapArbeid(grunnlagDto.getArbeidDto(), id));
+            builder.leggTilAktørArbeid(mapArbeid(grunnlagDto.getArbeidDto()));
         }
         if (grunnlagDto.getInntekterDto() != null) {
-            builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto(), id));
+            builder.leggTilAktørInntekt(mapInntekt(grunnlagDto.getInntekterDto()));
         }
         if (grunnlagDto.getYtelserDto() != null && grunnlagDto.getYtelserDto().getYtelser() != null) {
-            builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto(), id));
+            builder.leggTilAktørYtelse(mapAktørYtelse(grunnlagDto.getYtelserDto()));
         }
         return builder;
     }
 
-    private static InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder mapAktørYtelse(YtelserDto ytelser, AktørIdPersonident id) {
+    private static InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder mapAktørYtelse(YtelserDto ytelser) {
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty());
         ytelser.getYtelser().forEach(ytelse -> builder.leggTilYtelse(mapYtelse(ytelse)));
-        builder.medAktørId(new AktørId(id.getIdent()));
         return builder;
 
     }

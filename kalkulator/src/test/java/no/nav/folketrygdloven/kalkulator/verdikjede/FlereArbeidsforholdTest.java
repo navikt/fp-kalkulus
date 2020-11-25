@@ -44,7 +44,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -94,16 +93,15 @@ public class FlereArbeidsforholdTest {
         LocalDate fraOgMed = MINUS_YEARS_1;
         LocalDate tilOgMed = fraOgMed.plusYears(4);
 
-        AktørId aktørId = koblingReferanse.getAktørId();
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         beregningVirksomhet
             .forEach(virksomhetOrgnr -> {
-                verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, aktørId, Arbeidsgiver.virksomhet(virksomhetOrgnr),
+                verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(virksomhetOrgnr),
                     fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
             });
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
-            verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, aktørId, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
+            verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                 Arbeidsgiver.virksomhet(beregningVirksomhet.get(0)));
         }
         return new Tuple<>(koblingReferanse, inntektArbeidYtelseBuilder);
@@ -192,7 +190,7 @@ public class FlereArbeidsforholdTest {
         String orgnr1 = ARBEIDSFORHOLD_ORGNR1;
         final List<Double> ÅRSINNTEKT = List.of(180000d);
         final Double bg = ÅRSINNTEKT.get(0);
-        final Double overstyrt = 200000d;
+        final double overstyrt = 200000d;
 
         final double forventetAvkortet1 = ÅRSINNTEKT.get(0);
         final double forventetRedusert1 = forventetAvkortet1;
@@ -276,7 +274,7 @@ public class FlereArbeidsforholdTest {
 
         final List<Double> ÅRSINNTEKT = List.of(480000d);
         final Double bg = ÅRSINNTEKT.get(0);
-        final Double overstyrt = 700000d;
+        final double overstyrt = 700000d;
 
         final double forventetAvkortet1 = ÅRSINNTEKT.get(0);
         final double forventetRedusert1 = forventetAvkortet1;

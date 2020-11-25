@@ -126,7 +126,7 @@ public class NyIArbeidslivetTjenesteTest {
 
     private InntektArbeidYtelseGrunnlagDto lagAktørArbeid() {
         InntektArbeidYtelseAggregatBuilder oppdatere = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder(AKTØR_ID);
+        InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = oppdatere.getAktørArbeidBuilder();
         leggTilAktivitet(InternArbeidsforholdRefDto.nullRef(), ORGNR, Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1)), aktørArbeidBuilder);
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty()).medData(oppdatere).build();
     }

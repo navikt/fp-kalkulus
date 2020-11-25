@@ -22,7 +22,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -68,15 +67,15 @@ public class BeregningsgrunnlagTestUtil {
             .build();
 
         if (statuser.length > 0) {
-            byggBGForSpesifikkeAktivitetstatuser(inntektArbeidYtelseGrunnlag, ref, skjæringstidspunktOpptjening, beregningsgrunnlag, statuser);
+            byggBGForSpesifikkeAktivitetstatuser(inntektArbeidYtelseGrunnlag, skjæringstidspunktOpptjening, beregningsgrunnlag, statuser);
         } else {
-            lagPerioder(ref, andelAvkortet, bruttoPrÅr, lagtTilAvSaksbehandler, Collections.nCopies(perioder.size(), 1000),
+            lagPerioder(andelAvkortet, bruttoPrÅr, lagtTilAvSaksbehandler, Collections.nCopies(perioder.size(), 1000),
                 Collections.nCopies(perioder.size(), 1000), perioder, beregningsgrunnlag, periodePeriodeÅrsaker, inntektskategoriPrAndelIArbeidsforhold, Collections.emptyMap(), inntektArbeidYtelseGrunnlag);
         }
         return beregningsgrunnlag;
     }
 
-    private static void byggBGForSpesifikkeAktivitetstatuser(Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlag, KoblingReferanse ref, LocalDate skjæringstidspunktOpptjening, BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus[] statuser) {
+    private static void byggBGForSpesifikkeAktivitetstatuser(Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlag, LocalDate skjæringstidspunktOpptjening, BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus[] statuser) {
         BeregningsgrunnlagAktivitetStatusDto.Builder bgAktivitetStatusbuilder = BeregningsgrunnlagAktivitetStatusDto.builder();
         for (int i = 1; i < statuser.length; i++) {
             bgAktivitetStatusbuilder.medAktivitetStatus(statuser[i]);
@@ -100,7 +99,7 @@ public class BeregningsgrunnlagTestUtil {
         }
         if (inntektArbeidYtelseGrunnlag.isPresent()) {
             InntektArbeidYtelseGrunnlagDto agg = inntektArbeidYtelseGrunnlag.get();
-            var aktørArbeid = agg.getAktørArbeidFraRegister(ref.getAktørId());
+            var aktørArbeid = agg.getAktørArbeidFraRegister();
 
             var filter = new YrkesaktivitetFilterDto(agg.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktOpptjening);
             Collection<YrkesaktivitetDto> aktiviteterOpt = filter.getYrkesaktiviteterForBeregning();
@@ -157,7 +156,7 @@ public class BeregningsgrunnlagTestUtil {
         return enkeltstatuser;
     }
 
-    private static void lagPerioder(KoblingReferanse ref, Map<String, Integer> avkortetAndel, // NOSONAR - brukes bare til test, men denne bør reskrives // TODO (Safir)
+    private static void lagPerioder(Map<String, Integer> avkortetAndel, // NOSONAR - brukes bare til test, men denne bør reskrives // TODO (Safir)
                                     Map<String, Integer> bruttoPrÅr,
                                     Map<String, List<Boolean>> lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
                                     List<Integer> redusert,
@@ -179,13 +178,12 @@ public class BeregningsgrunnlagTestUtil {
                 periodeBuilder.leggTilPeriodeÅrsaker(periodePeriodeÅrsaker.get(j));
             }
             BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode = periodeBuilder.build(beregningsgrunnlag);
-            inntektArbeidYtelseGrunnlag.ifPresent(iayGrunnlag -> lagAndelerPrArbeidsforhold(ref, beregningsgrunnlag, avkortetAndel, bruttoPrÅr, lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
+            inntektArbeidYtelseGrunnlag.ifPresent(iayGrunnlag -> lagAndelerPrArbeidsforhold(beregningsgrunnlag, avkortetAndel, bruttoPrÅr, lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
                 inntektskategoriPrAndelIArbeidsforhold, refusjonPrÅr, beregningsgrunnlagPeriode, iayGrunnlag));
         }
     }
 
-    private static void lagAndelerPrArbeidsforhold(KoblingReferanse ref,//NOSONAR
-                                                   BeregningsgrunnlagDto beregningsgrunnlag,
+    private static void lagAndelerPrArbeidsforhold(BeregningsgrunnlagDto beregningsgrunnlag, //NOSONAR
                                                    Map<String, Integer> avkortetAndel,
                                                    Map<String, Integer> bruttoPrÅr,
                                                    Map<String, List<Boolean>> lagtTilAvSaksbehandlerPrAndelIArbeidsforhold,
@@ -193,8 +191,7 @@ public class BeregningsgrunnlagTestUtil {
                                                    Map<String, Integer> refusjonPrÅr,
                                                    BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
 
-        AktørId aktørId = ref.getAktørId();
-        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister(aktørId);
+        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
 
         List<YrkesaktivitetDto> aktiviteter = finnAlleYrkesaktiviteter(filter, beregningsgrunnlag);

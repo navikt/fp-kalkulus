@@ -28,7 +28,7 @@ class FinnInntektFraYtelse {
 
     static Optional<BigDecimal> finnÅrbeløpFraMeldekort(KoblingReferanse ref, AktivitetStatus aktivitetStatus, InntektArbeidYtelseGrunnlagDto grunnlag) {
         LocalDate skjæringstidspunkt = ref.getSkjæringstidspunktBeregning();
-        var ytelseFilter = new YtelseFilterDto(grunnlag.getAktørYtelseFraRegister(ref.getAktørId())).før(skjæringstidspunkt);
+        var ytelseFilter = new YtelseFilterDto(grunnlag.getAktørYtelseFraRegister()).før(skjæringstidspunkt);
         if (ytelseFilter.isEmpty()) {
             return Optional.empty();
         }

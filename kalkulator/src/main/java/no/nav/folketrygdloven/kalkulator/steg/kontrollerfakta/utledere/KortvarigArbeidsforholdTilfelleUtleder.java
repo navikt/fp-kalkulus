@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
  *
  */
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef()
 @FaktaOmBeregningTilfelleRef("VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD")
 public class KortvarigArbeidsforholdTilfelleUtleder implements TilfelleUtleder {
 
@@ -36,10 +36,9 @@ public class KortvarigArbeidsforholdTilfelleUtleder implements TilfelleUtleder {
     }
 
     protected Optional<FaktaOmBeregningTilfelle> utledTilfelleForKortvarigeArbeidsforhold(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        var ref = input.getKoblingReferanse();
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return KortvarigArbeidsforholdTjeneste.harKortvarigeArbeidsforholdOgErIkkeSN(ref.getAktørId(), beregningsgrunnlag, input.getIayGrunnlag()) ?
+        return KortvarigArbeidsforholdTjeneste.harKortvarigeArbeidsforholdOgErIkkeSN(beregningsgrunnlag, input.getIayGrunnlag()) ?
             Optional.of(FaktaOmBeregningTilfelle.VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD) : Optional.empty();
     }
 }

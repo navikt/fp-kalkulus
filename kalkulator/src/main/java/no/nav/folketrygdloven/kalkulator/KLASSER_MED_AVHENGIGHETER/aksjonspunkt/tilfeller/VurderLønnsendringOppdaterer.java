@@ -33,7 +33,7 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
                 .collect(Collectors.toList());
 
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(input.getAktørId(), input.getBeregningsgrunnlag(), input.getIayGrunnlag());
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(input.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         arbeidstakerAndeler.stream().filter(a -> a.getBgAndelArbeidsforhold().isPresent())

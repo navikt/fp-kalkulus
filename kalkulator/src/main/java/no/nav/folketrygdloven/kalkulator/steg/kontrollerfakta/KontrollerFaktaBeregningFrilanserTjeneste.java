@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 
@@ -37,15 +36,15 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
             .orElse(false);
     }
 
-    public static boolean erBrukerArbeidstakerOgFrilanserISammeOrganisasjon(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return !brukerErArbeidstakerOgFrilanserISammeOrganisasjon(aktørId, beregningsgrunnlag, iayGrunnlag).isEmpty();
+    public static boolean erBrukerArbeidstakerOgFrilanserISammeOrganisasjon(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        return !brukerErArbeidstakerOgFrilanserISammeOrganisasjon(beregningsgrunnlag, iayGrunnlag).isEmpty();
     }
 
-    public static Set<Arbeidsgiver> brukerErArbeidstakerOgFrilanserISammeOrganisasjon(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return arbeidsgivereSomHarFrilansforholdOgArbeidsforholdMedBruker(iayGrunnlag, beregningsgrunnlag, aktørId);
+    public static Set<Arbeidsgiver> brukerErArbeidstakerOgFrilanserISammeOrganisasjon(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        return arbeidsgivereSomHarFrilansforholdOgArbeidsforholdMedBruker(iayGrunnlag, beregningsgrunnlag);
     }
 
-    private static Set<Arbeidsgiver> arbeidsgivereSomHarFrilansforholdOgArbeidsforholdMedBruker(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagDto beregningsgrunnlag, AktørId aktørId) {
+    private static Set<Arbeidsgiver> arbeidsgivereSomHarFrilansforholdOgArbeidsforholdMedBruker(InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagDto beregningsgrunnlag) {
 
         // Sjekk om statusliste inneholder AT og FL.
 
@@ -60,7 +59,7 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
         if (arbeidsforholdArbeidsgivere.isEmpty()) {
             return Collections.emptySet();
         }
-        final Set<Arbeidsgiver> frilansOppdragsgivere = finnFrilansOppdragsgivere(aktørId, beregningsgrunnlag, iayGrunnlag);
+        final Set<Arbeidsgiver> frilansOppdragsgivere = finnFrilansOppdragsgivere(beregningsgrunnlag, iayGrunnlag);
         if (frilansOppdragsgivere.isEmpty()) {
             return Collections.emptySet();
         }
@@ -80,14 +79,14 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
         return intersection;
     }
 
-    private static Set<Arbeidsgiver> finnFrilansOppdragsgivere(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private static Set<Arbeidsgiver> finnFrilansOppdragsgivere(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         boolean erFrilanser = beregningsgrunnlag.getAktivitetStatuser().stream()
             .map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus)
             .anyMatch(AktivitetStatus::erFrilanser);
         if (!erFrilanser) {
             return Collections.emptySet();
         }
-        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId)).før(beregningsgrunnlag.getSkjæringstidspunkt());
+        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister()).før(beregningsgrunnlag.getSkjæringstidspunkt());
 
         return filter.getFrilansOppdrag()
             .stream()

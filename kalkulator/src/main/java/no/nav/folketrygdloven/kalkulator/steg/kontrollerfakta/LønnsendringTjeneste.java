@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingSomIkkeKommerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 
 public class LønnsendringTjeneste {
@@ -25,23 +24,23 @@ public class LønnsendringTjeneste {
         // Skjul
     }
 
-    public static boolean brukerHarHattLønnsendringOgManglerInntektsmelding(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendringUtenIM = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(aktørId, beregningsgrunnlag, iayGrunnlag);
+    public static boolean brukerHarHattLønnsendringOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendringUtenIM = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag);
         return !aktiviteterMedLønnsendringUtenIM.isEmpty();
     }
 
-    public static List<YrkesaktivitetDto> finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static List<YrkesaktivitetDto> finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var manglendeInntektsmeldinger = iayGrunnlag.getInntektsmeldingerSomIkkeKommer();
         if (manglendeInntektsmeldinger.isEmpty()) {
             return Collections.emptyList();
         }
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
-        Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister(aktørId);
+        Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler = alleArbeidstakerandeler(beregningsgrunnlag);
 
-        if (!aktørArbeid.isPresent() || arbeidstakerAndeler.isEmpty()) {
+        if (aktørArbeid.isEmpty() || arbeidstakerAndeler.isEmpty()) {
             return Collections.emptyList();
         }
         // Alle arbeidstakerandeler har samme beregningsperiode, kan derfor ta fra den første
@@ -93,12 +92,11 @@ public class LønnsendringTjeneste {
     }
 
     private static boolean harAvtalerMedLønnsendringIBeregningsgrunnlagperioden(Collection<AktivitetsAvtaleDto> aktivitetsAvtaler, LocalDate beregningsperiodeFom, LocalDate beregningsperiodeTom) {
-        return !aktivitetsAvtaler
-            .stream()
-            .filter(aa -> aa.getSisteLønnsendringsdato() != null)
-            .filter(aa -> aa.getSisteLønnsendringsdato().equals(beregningsperiodeFom) || aa.getSisteLønnsendringsdato().isAfter(beregningsperiodeFom))
-            .filter(aa -> aa.getSisteLønnsendringsdato().equals(beregningsperiodeTom) || aa.getSisteLønnsendringsdato().isBefore(beregningsperiodeTom))
-            .collect(Collectors.toList())
-            .isEmpty();
+        return aktivitetsAvtaler
+                .stream()
+                .filter(aa -> aa.getSisteLønnsendringsdato() != null)
+                .filter(aa -> aa.getSisteLønnsendringsdato().equals(beregningsperiodeFom) || aa.getSisteLønnsendringsdato().isAfter(beregningsperiodeFom))
+                .filter(aa -> aa.getSisteLønnsendringsdato().equals(beregningsperiodeTom) || aa.getSisteLønnsendringsdato().isBefore(beregningsperiodeTom))
+                .count() > 0;
     }
 }

@@ -37,7 +37,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterOMP implements Aksj
                                                                                  BeregningsgrunnlagInput input,
                                                                                  boolean erOverstyrt,
                                                                                  FagsakYtelseType fagsakYtelseType) {
-        Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister(input.getKoblingReferanse().getAktørId());
+        Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
         Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, LocalDate.now());

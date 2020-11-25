@@ -9,13 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 
 
 public class InntektsmeldingFilter {
@@ -32,18 +30,15 @@ public class InntektsmeldingFilter {
      * inntektsmeldingene som er koblet til inaktive arbeidsforhold.
      * Spesial håndtering i forbindelse med beregning.
      *
-     * @param ref {@link KoblingReferanse}
      * @param skjæringstidspunktForOpptjening datoen arbeidsforhold må inkludere eller starte etter for å bli regnet som aktive
      * @return Liste med inntektsmeldinger {@link InntektsmeldingDto}
      */
-    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(KoblingReferanse ref,
-                                                                   LocalDate skjæringstidspunktForOpptjening) {
-        AktørId aktørId = ref.getAktørId();
+    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(LocalDate skjæringstidspunktForOpptjening) {
         LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktForOpptjening);
         List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
             .orElse(emptyList());
 
-        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister(aktørId));
+        var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         Collection<YrkesaktivitetDto> yrkesaktiviteter = filter.getYrkesaktiviteter();
 
         // kan ikke filtrere når det ikke finnes yrkesaktiviteter

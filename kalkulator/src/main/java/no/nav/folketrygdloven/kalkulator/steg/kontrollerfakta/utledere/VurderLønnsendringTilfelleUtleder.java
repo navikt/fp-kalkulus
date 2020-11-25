@@ -15,17 +15,16 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTi
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("*")
+@FagsakYtelseTypeRef()
 @FaktaOmBeregningTilfelleRef("VURDER_LØNNSENDRING")
 public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
 
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        var ref = input.getKoblingReferanse();
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(ref.getAktørId(), beregningsgrunnlag, input.getIayGrunnlag()) ?
+        return LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
             Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
     }
 

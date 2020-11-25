@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
@@ -58,7 +57,7 @@ class InntektForAndelTjeneste {
         }
         LocalDate fraDato = andel.getBeregningsperiodeFom();
         LocalDate tilDato = andel.getBeregningsperiodeTom();
-        Long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
+        long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
         BigDecimal totalBeløp = finnTotalbeløpIBeregningsperioden(filter, andel, tilDato, beregningsperiodeLengdeIMnd);
         BigDecimal faktor = BigDecimal.valueOf(MND_I_1_ÅR).divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN);
         return totalBeløp.multiply(faktor);
@@ -89,14 +88,14 @@ class InntektForAndelTjeneste {
             .findFirst().map(InntektspostDto::getBeløp).orElse(Beløp.ZERO);
     }
 
-    static Optional<BigDecimal> finnSnittAvFrilansinntektIBeregningsperioden(AktørId aktørId, InntektArbeidYtelseGrunnlagDto grunnlag,
+    static Optional<BigDecimal> finnSnittAvFrilansinntektIBeregningsperioden(InntektArbeidYtelseGrunnlagDto grunnlag,
                                                                              no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto frilansAndel, LocalDate skjæringstidspunkt) {
-        var filter = new InntektFilterDto(grunnlag.getAktørInntektFraRegister(aktørId)).før(skjæringstidspunkt);
+        var filter = new InntektFilterDto(grunnlag.getAktørInntektFraRegister()).før(skjæringstidspunkt);
         if (!filter.isEmpty()) {
             LocalDate fraDato = frilansAndel.getBeregningsperiodeFom();
             LocalDate tilDato = frilansAndel.getBeregningsperiodeTom();
             long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
-            List<YrkesaktivitetDto> yrkesaktiviteter = finnYrkesaktiviteter(aktørId, grunnlag, skjæringstidspunkt);
+            List<YrkesaktivitetDto> yrkesaktiviteter = finnYrkesaktiviteter(grunnlag, skjæringstidspunkt);
             boolean erFrilanser = yrkesaktiviteter.stream().anyMatch(ya -> ArbeidType.FRILANSER.equals(ya.getArbeidType()));
 
             var frilansInntekter = filter.filterBeregningsgrunnlag().filter(inntekt -> {
@@ -116,17 +115,17 @@ class InntektForAndelTjeneste {
         return Optional.empty();
     }
 
-    private static List<YrkesaktivitetDto> finnYrkesaktiviteter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+    private static List<YrkesaktivitetDto> finnYrkesaktiviteter(InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                 LocalDate skjæringstidspunkt) {
         List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
 
-        var aktørArbeid = inntektArbeidYtelseGrunnlag.getAktørArbeidFraRegister(aktørId);
+        var aktørArbeid = inntektArbeidYtelseGrunnlag.getAktørArbeidFraRegister();
 
         var filterRegister = new YrkesaktivitetFilterDto(inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunkt);
         yrkesaktiviteter.addAll(filterRegister.getYrkesaktiviteterForBeregning());
         yrkesaktiviteter.addAll(filterRegister.getFrilansOppdrag());
 
-        var bekreftetAnnenOpptjening = inntektArbeidYtelseGrunnlag.getBekreftetAnnenOpptjening(aktørId);
+        var bekreftetAnnenOpptjening = inntektArbeidYtelseGrunnlag.getBekreftetAnnenOpptjening();
         var filterSaksbehandlet = new YrkesaktivitetFilterDto(inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon(), bekreftetAnnenOpptjening);
         yrkesaktiviteter.addAll(filterSaksbehandlet.getYrkesaktiviteterForBeregning());
 

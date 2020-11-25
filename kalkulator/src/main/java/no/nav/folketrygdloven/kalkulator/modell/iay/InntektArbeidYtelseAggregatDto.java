@@ -1,85 +1,47 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class InntektArbeidYtelseAggregatDto {
 
-    private UUID uuid;
-    private Set<AktørInntektDto> aktørInntekt = new LinkedHashSet<>();
-    private Set<AktørArbeidDto> aktørArbeid = new LinkedHashSet<>();
-    private Set<AktørYtelseDto> aktørYtelse = new LinkedHashSet<>();
+    private AktørInntektDto aktørInntekt;
+    private AktørArbeidDto aktørArbeid;
+    private AktørYtelseDto aktørYtelse;
 
     InntektArbeidYtelseAggregatDto() {
         // hibernate
     }
 
-    InntektArbeidYtelseAggregatDto(UUID angittEksternReferanse, LocalDateTime angittOpprettetTidspunkt) {
-        uuid = angittEksternReferanse;
+    /** copy constructor */
+    InntektArbeidYtelseAggregatDto(InntektArbeidYtelseAggregatDto kopierFra) {
+        this.setAktørInntekt(kopierFra.getAktørInntekt() == null ? null : new AktørInntektDto(kopierFra.getAktørInntekt()));
+        this.setAktørArbeid(kopierFra.getAktørArbeid() == null ? null : new AktørArbeidDto(kopierFra.getAktørArbeid()));
+        this.setAktørYtelse(kopierFra.getAktørYtelse() == null ? null : new AktørYtelseDto(kopierFra.getAktørYtelse()));
     }
 
-    /** copy constructor men med angitt referanse og tidspunkt. Hvis unikt kan denne instansen brukes til lagring. */
-    InntektArbeidYtelseAggregatDto(UUID eksternReferanse, LocalDateTime opprettetTidspunkt, InntektArbeidYtelseAggregatDto kopierFra) {
-        this.setAktørInntekt(kopierFra.getAktørInntekt().stream().map(ai -> {
-            AktørInntektDto aktørInntekt = new AktørInntektDto(ai);
-            return aktørInntekt;
-        }).collect(Collectors.toList()));
-
-        this.setAktørArbeid(kopierFra.getAktørArbeid().stream().map(aktørArbied -> {
-            AktørArbeidDto aktørArbeid = new AktørArbeidDto(aktørArbied);
-            return aktørArbeid;
-        }).collect(Collectors.toList()));
-
-        this.setAktørYtelse(kopierFra.getAktørYtelse().stream().map(ay -> {
-            AktørYtelseDto aktørYtelse = new AktørYtelseDto(ay);
-            return aktørYtelse;
-        }).collect(Collectors.toList()));
-
-        this.uuid = eksternReferanse;
-
+    public AktørInntektDto getAktørInntekt() {
+        return aktørInntekt;
     }
 
-    public Collection<AktørInntektDto> getAktørInntekt() {
-        return Collections.unmodifiableSet(aktørInntekt);
+    void setAktørInntekt(AktørInntektDto aktørInntekt) {
+        this.aktørInntekt = aktørInntekt;
     }
 
-    void setAktørInntekt(Collection<AktørInntektDto> aktørInntekt) {
-        this.aktørInntekt = new LinkedHashSet<>(aktørInntekt);
+    public AktørArbeidDto getAktørArbeid() {
+        return aktørArbeid;
     }
 
-    void leggTilAktørInntekt(AktørInntektDto aktørInntekt) {
-        this.aktørInntekt.add(aktørInntekt);
+    void setAktørArbeid(AktørArbeidDto aktørArbeid) {
+        this.aktørArbeid = aktørArbeid;
     }
 
-    void leggTilAktørArbeid(AktørArbeidDto aktørArbeid) {
-        this.aktørArbeid.add(aktørArbeid);
+    AktørYtelseDto getAktørYtelse() {
+        return aktørYtelse;
     }
 
-    void leggTilAktørYtelse(AktørYtelseDto aktørYtelse) {
-        this.aktørYtelse.add(aktørYtelse);
-    }
-
-    public Collection<AktørArbeidDto> getAktørArbeid() {
-        return Collections.unmodifiableSet(aktørArbeid);
-    }
-
-    void setAktørArbeid(Collection<AktørArbeidDto> aktørArbeid) {
-        this.aktørArbeid = new LinkedHashSet<>(aktørArbeid);
-    }
-
-    public Collection<AktørYtelseDto> getAktørYtelse() {
-        return Collections.unmodifiableSet(aktørYtelse);
-    }
-
-    void setAktørYtelse(Collection<AktørYtelseDto> aktørYtelse) {
-        this.aktørYtelse = new LinkedHashSet<>(aktørYtelse);
+    void setAktørYtelse(AktørYtelseDto aktørYtelse) {
+        this.aktørYtelse = aktørYtelse;
     }
 
     @Override

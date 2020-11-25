@@ -1,13 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
@@ -36,57 +32,51 @@ public class InntektArbeidYtelseAggregatBuilder {
     }
 
     public static InntektArbeidYtelseAggregatBuilder oppdatere(Optional<InntektArbeidYtelseAggregatDto> oppdatere, VersjonTypeDto versjon) {
-        return builderFor(oppdatere, UUID.randomUUID(), LocalDateTime.now(), versjon);
+        return builderFor(oppdatere, versjon);
     }
 
     private static InntektArbeidYtelseAggregatBuilder builderFor(Optional<InntektArbeidYtelseAggregatDto> kopierDataFra,
-                                                                 UUID angittReferanse, LocalDateTime angittTidspunkt, VersjonTypeDto versjon) {
+                                                                 VersjonTypeDto versjon) {
         return kopierDataFra
-            .map(kopier -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(angittReferanse, angittTidspunkt, kopier), versjon))
-            .orElseGet(() -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(angittReferanse, angittTidspunkt), versjon));
+            .map(kopier -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(kopier), versjon))
+            .orElseGet(() -> new InntektArbeidYtelseAggregatBuilder(new InntektArbeidYtelseAggregatDto(), versjon));
     }
 
     /**
-     * Legger til inntekter for en gitt aktør hvis det ikke er en oppdatering av eksisterende.
-     * Ved oppdatering eksisterer koblingen for denne aktøren allerede så en kopi av forrige innslag manipuleres før lagring.
+     * Legger til inntekter hvis det ikke er en oppdatering av eksisterende.
      *
      * @param aktørInntekt {@link AktørInntektBuilder}
      * @return this
      */
     public InntektArbeidYtelseAggregatBuilder leggTilAktørInntekt(AktørInntektBuilder aktørInntekt) {
         if (!aktørInntekt.getErOppdatering()) {
-            // Hvis ny så skal den legges til, hvis ikke ligger den allerede der og blir manipulert.
-            this.kladd.leggTilAktørInntekt(aktørInntekt.build());
+            this.kladd.setAktørInntekt(aktørInntekt.build());
         }
         return this;
     }
 
     /**
-     * Legger til aktiviteter for en gitt aktør hvis det ikke er en oppdatering av eksisterende.
-     * Ved oppdatering eksisterer koblingen for denne aktøren allerede så en kopi av forrige innslag manipuleres før lagring.
+     * Legger til aktiviteter hvis det ikke er en oppdatering av eksisterende.
      *
      * @param aktørArbeid {@link AktørArbeidBuilder}
      * @return this
      */
     public InntektArbeidYtelseAggregatBuilder leggTilAktørArbeid(AktørArbeidBuilder aktørArbeid) {
         if (!aktørArbeid.getErOppdatering()) {
-            // Hvis ny så skal den legges til, hvis ikke ligger den allerede der og blir manipulert.
-            this.kladd.leggTilAktørArbeid(aktørArbeid.build());
+            this.kladd.setAktørArbeid(aktørArbeid.build());
         }
         return this;
     }
 
     /**
-     * Legger til tilstøtende ytelser for en gitt aktør hvis det ikke er en oppdatering av eksisterende.
-     * Ved oppdatering eksisterer koblingen for denne aktøren allerede så en kopi av forrige innslag manipuleres før lagring.
+     * Legger til tilstøtende ytelser hvis det ikke er en oppdatering av eksisterende.
      *
      * @param aktørYtelse {@link AktørYtelseBuilder}
      * @return this
      */
     public InntektArbeidYtelseAggregatBuilder leggTilAktørYtelse(AktørYtelseBuilder aktørYtelse) {
         if (!aktørYtelse.getErOppdatering() && aktørYtelse.harVerdi()) {
-            // Hvis ny så skal den legges til, hvis ikke ligger den allerede der og blir manipulert.
-            this.kladd.leggTilAktørYtelse(aktørYtelse.build());
+            this.kladd.setAktørYtelse(aktørYtelse.build());
         }
         return this;
     }
@@ -94,36 +84,28 @@ public class InntektArbeidYtelseAggregatBuilder {
     /**
      * Oppretter builder for aktiviteter for en gitt aktør. Baserer seg på en kopi av forrige innslag for aktøren hvis det eksisterer.
      *
-     * @param aktørId aktøren
      * @return builder {@link AktørArbeidBuilder}
      */
-    public AktørArbeidBuilder getAktørArbeidBuilder(AktørId aktørId) {
-        Optional<AktørArbeidDto> aktørArbeid = kladd.getAktørArbeid().stream().filter(aa -> aktørId.equals(aa.getAktørId())).findFirst();
-        return AktørArbeidBuilder.oppdatere(aktørArbeid).medAktørId(aktørId);
+    public AktørArbeidBuilder getAktørArbeidBuilder() {
+        return AktørArbeidBuilder.oppdatere(Optional.ofNullable(kladd.getAktørArbeid()));
     }
 
     /**
      * Oppretter builder for inntekter for en gitt aktør. Baserer seg på en kopi av forrige innslag for aktøren hvis det eksisterer.
      *
-     * @param aktørId aktøren
      * @return builder {@link AktørInntektBuilder}
      */
-    public AktørInntektBuilder getAktørInntektBuilder(AktørId aktørId) {
-        Optional<AktørInntektDto> aktørInntekt = kladd.getAktørInntekt().stream().filter(aa -> aktørId.equals(aa.getAktørId())).findFirst();
-        final AktørInntektBuilder oppdatere = AktørInntektBuilder.oppdatere(aktørInntekt);
-        oppdatere.medAktørId(aktørId);
-        return oppdatere;
+    public AktørInntektBuilder getAktørInntektBuilder() {
+        return AktørInntektBuilder.oppdatere(Optional.ofNullable(kladd.getAktørInntekt()));
     }
 
     /**
      * Oppretter builder for tilstøtende ytelser for en gitt aktør. Baserer seg på en kopi av forrige innslag for aktøren hvis det eksisterer.
      *
-     * @param aktørId aktøren
      * @return builder {@link AktørYtelseBuilder}
      */
-    public AktørYtelseBuilder getAktørYtelseBuilder(AktørId aktørId) {
-        Optional<AktørYtelseDto> aktørYtelse = kladd.getAktørYtelse().stream().filter(ay -> aktørId.equals(ay.getAktørId())).findFirst();
-        return AktørYtelseBuilder.oppdatere(aktørYtelse).medAktørId(aktørId);
+    public AktørYtelseBuilder getAktørYtelseBuilder() {
+        return AktørYtelseBuilder.oppdatere(Optional.ofNullable(kladd.getAktørYtelse()));
     }
 
     public InntektArbeidYtelseAggregatDto build() {
@@ -134,31 +116,7 @@ public class InntektArbeidYtelseAggregatBuilder {
         return versjon;
     }
 
-    void oppdaterArbeidsforholdReferanseEtterErstatting(AktørId søker, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto gammelRef,
-                                                        InternArbeidsforholdRefDto nyRef) {
-        final AktørArbeidBuilder builder = getAktørArbeidBuilder(søker);
-        if (builder.getErOppdatering()) {
-            if (eksistererIkkeFraFør(arbeidsgiver, gammelRef, builder)) {
-                final YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = builder.getYrkesaktivitetBuilderForNøkkelAvType(
-                    OpptjeningsnøkkelDto.forArbeidsforholdIdMedArbeidgiver(gammelRef, arbeidsgiver),
-                    ArbeidType.AA_REGISTER_TYPER);
-                if (yrkesaktivitetBuilder.getErOppdatering()) {
-                    yrkesaktivitetBuilder.medArbeidsforholdId(nyRef);
-                    builder.leggTilYrkesaktivitet(yrkesaktivitetBuilder);
-                    leggTilAktørArbeid(builder);
-                }
-            }
-        }
-    }
 
-    private boolean eksistererIkkeFraFør(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto gammelRef, AktørArbeidBuilder builder) {
-        return !builder.getYrkesaktivitetBuilderForNøkkelAvType(OpptjeningsnøkkelDto.forArbeidsforholdIdMedArbeidgiver(gammelRef, arbeidsgiver),
-            ArbeidType.AA_REGISTER_TYPER).getErOppdatering();
-    }
-
-    public void medNyInternArbeidsforholdRef(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto nyRef, EksternArbeidsforholdRef eksternReferanse) {
-        nyeInternArbeidsforholdReferanser.add(new ArbeidsforholdReferanseDto(arbeidsgiver, nyRef, eksternReferanse));
-    }
 
     public InternArbeidsforholdRefDto medNyInternArbeidsforholdRef(Arbeidsgiver arbeidsgiver, EksternArbeidsforholdRef eksternReferanse) {
         if (eksternReferanse == null || eksternReferanse.getReferanse() == null) {
@@ -167,10 +125,6 @@ public class InntektArbeidYtelseAggregatBuilder {
         InternArbeidsforholdRefDto nyRef = InternArbeidsforholdRefDto.nyRef();
         nyeInternArbeidsforholdReferanser.add(new ArbeidsforholdReferanseDto(arbeidsgiver, nyRef, eksternReferanse));
         return nyRef;
-    }
-
-    public List<ArbeidsforholdReferanseDto> getNyeInternArbeidsforholdReferanser() {
-        return nyeInternArbeidsforholdReferanser;
     }
 
     public static class AktørArbeidBuilder {
@@ -194,16 +148,7 @@ public class InntektArbeidYtelseAggregatBuilder {
             return oppdatere.map(AktørArbeidBuilder::oppdatere).orElseGet(AktørArbeidBuilder::ny);
         }
 
-        public AktørArbeidBuilder medAktørId(AktørId aktørId) {
-            this.kladd.setAktørId(aktørId);
-            return this;
-        }
-
         public YrkesaktivitetDtoBuilder getYrkesaktivitetBuilderForNøkkelAvType(OpptjeningsnøkkelDto nøkkel, ArbeidType arbeidType) {
-            return kladd.getYrkesaktivitetBuilderForNøkkel(nøkkel, arbeidType);
-        }
-
-        public YrkesaktivitetDtoBuilder getYrkesaktivitetBuilderForNøkkelAvType(OpptjeningsnøkkelDto nøkkel, Set<ArbeidType> arbeidType) {
             return kladd.getYrkesaktivitetBuilderForNøkkel(nøkkel, arbeidType);
         }
 
@@ -257,16 +202,8 @@ public class InntektArbeidYtelseAggregatBuilder {
             return oppdatere.map(AktørInntektBuilder::oppdatere).orElseGet(AktørInntektBuilder::ny);
         }
 
-        public void medAktørId(AktørId aktørId) {
-            this.kladd.setAktørId(aktørId);
-        }
-
         public InntektDtoBuilder getInntektBuilder(InntektsKilde inntektsKilde, OpptjeningsnøkkelDto opptjeningsnøkkel) {
             return kladd.getInntektBuilder(inntektsKilde, opptjeningsnøkkel);
-        }
-
-        public InntektDtoBuilder getInntektBuilderForYtelser(InntektsKilde inntektsKilde) {
-            return kladd.getInntektBuilderForYtelser(inntektsKilde);
         }
 
         public AktørInntektBuilder leggTilInntekt(InntektDtoBuilder builder) {
@@ -312,11 +249,6 @@ public class InntektArbeidYtelseAggregatBuilder {
 
         boolean getErOppdatering() {
             return oppdatering;
-        }
-
-        public AktørYtelseBuilder medAktørId(AktørId aktørId) {
-            this.kladd.setAktørId(aktørId);
-            return this;
         }
 
         public YtelseDtoBuilder getYtelselseBuilderForType(FagsakYtelseType type, Intervall periode) {

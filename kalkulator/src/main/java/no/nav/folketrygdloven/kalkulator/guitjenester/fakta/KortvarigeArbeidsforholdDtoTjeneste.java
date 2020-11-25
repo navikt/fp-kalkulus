@@ -44,7 +44,7 @@ public class KortvarigeArbeidsforholdDtoTjeneste implements FaktaOmBeregningTilf
     private List<KortvarigeArbeidsforholdDto> lagKortvarigeArbeidsforholdDto(KoblingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag,
                                                                              InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                              Optional<FaktaAggregatDto> faktaAggregat) {
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarige = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(ref.getAktørId(), beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarige = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         return kortvarige.entrySet().stream()
             .map(entry -> mapFraYrkesaktivitet(finnRestDtoForAndel(entry, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()), inntektArbeidYtelseGrunnlag, faktaAggregat))
             .collect(Collectors.toList());

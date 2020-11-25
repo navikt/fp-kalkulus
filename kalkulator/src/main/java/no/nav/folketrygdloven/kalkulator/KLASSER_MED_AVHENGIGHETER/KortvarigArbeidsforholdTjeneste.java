@@ -17,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
@@ -50,9 +49,9 @@ public class KortvarigArbeidsforholdTjeneste {
             .findFirst());
     }
 
-    private static Collection<YrkesaktivitetDto> hentKortvarigeYrkesaktiviteter(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag,
+    private static Collection<YrkesaktivitetDto> hentKortvarigeYrkesaktiviteter(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                 InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        var filter = hentYrkesaktiviteter(aktørId, inntektArbeidYtelseGrunnlag, beregningsgrunnlag.getSkjæringstidspunkt());
+        var filter = hentYrkesaktiviteter(inntektArbeidYtelseGrunnlag, beregningsgrunnlag.getSkjæringstidspunkt());
         Collection<YrkesaktivitetDto> yrkesAktiviteterOrdArb = filter.getYrkesaktiviteterForBeregning().stream()
             .filter(ya -> ya.getArbeidType().equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)).collect(Collectors.toList());
 
@@ -61,9 +60,9 @@ public class KortvarigArbeidsforholdTjeneste {
             .collect(Collectors.toList());
     }
 
-    private static YrkesaktivitetFilterDto hentYrkesaktiviteter(AktørId aktørId, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+    private static YrkesaktivitetFilterDto hentYrkesaktiviteter(InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                 LocalDate skjæringstidspunkt) {
-        var aktørArbeid = inntektArbeidYtelseGrunnlag.getAktørArbeidFraRegister(aktørId);
+        var aktørArbeid = inntektArbeidYtelseGrunnlag.getAktørArbeidFraRegister();
         var filter = new YrkesaktivitetFilterDto(inntektArbeidYtelseGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
         return filter.før(skjæringstidspunkt);
     }
@@ -98,23 +97,21 @@ public class KortvarigArbeidsforholdTjeneste {
         return duration.getYears() < 1 && duration.getMonths() < 6;
     }
 
-    public static boolean harKortvarigeArbeidsforholdOgErIkkeSN(AktørId aktørId, BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    public static boolean harKortvarigeArbeidsforholdOgErIkkeSN(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         if (brukerHarStatusSN(beregningsgrunnlag)) {
             return false;
         }
-        return !hentAndelerForKortvarigeArbeidsforhold(aktørId, beregningsgrunnlag, inntektArbeidYtelseGrunnlag).isEmpty();
+        return !hentAndelerForKortvarigeArbeidsforhold(beregningsgrunnlag, inntektArbeidYtelseGrunnlag).isEmpty();
     }
 
-    public static Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> hentAndelerForKortvarigeArbeidsforhold(AktørId aktørId,
-                                                                                                                      BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                                                      InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    public static Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> hentAndelerForKortvarigeArbeidsforhold(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
 
         List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
         if (!beregningsgrunnlagPerioder.isEmpty()) {
             // beregningsgrunnlagPerioder er sortert, tar utgangspunkt i første
             BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode = beregningsgrunnlagPerioder.get(0);
-            Collection<YrkesaktivitetDto> kortvarigeArbeidsforhold = hentKortvarigeYrkesaktiviteter(aktørId, beregningsgrunnlag,
-                inntektArbeidYtelseGrunnlag);
+            Collection<YrkesaktivitetDto> kortvarigeArbeidsforhold = hentKortvarigeYrkesaktiviteter(beregningsgrunnlag, iayGrunnlag);
 
             return beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(prStatus -> prStatus.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER))

@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -56,33 +55,20 @@ class MapFraKalkulatorTest {
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
     private final Organisasjon organisasjon = new Organisasjon("945748931");
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
-    private final List<BeregningSats> satser = List.of(
-            new BeregningSats(
-                    BeregningSatsType.GRUNNBELØP,
-                    IntervallEntitet.fraOgMedTilOgMed(periode.getFom(), periode.getTom()),
-                    99000L),
-            new BeregningSats(
-                    BeregningSatsType.GSNITT,
-                    IntervallEntitet.fraOgMedTilOgMed(periode.getFom(), periode.getTom()),
-                    99000L));
 
 
     @Test
     void skal_mappe_fra_kalkulator_til_beregningsgrunnlag_input() {
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
-        AktørIdPersonident dummy = AktørIdPersonident.dummy();
-
         YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.DAGPENGER;
-        AktørId aktørId = new AktørId(dummy.getIdent());
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
-        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, aktørId);
+        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy());
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
-
 
         BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
 
-        assertThat(input.getAktørId().getId()).isEqualTo(aktørId.getId());
+        assertThat(input.getKoblingReferanse().getKoblingId()).isEqualTo(koblingEntitet.getId());
     }
 
 

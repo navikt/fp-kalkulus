@@ -1,5 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
@@ -12,27 +20,14 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BekreftetPermisjonStatus;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ErFjernetIOverstyrtTest {
     private static final LocalDate STP = LocalDate.of(2020,1,1);
-    private static final AktørId AKTØR_ID = new AktørId("9999999999999");
     private static InntektArbeidYtelseGrunnlagDtoBuilder IAY_BUILDER;
     private static InntektArbeidYtelseAggregatBuilder BUILDER;
     private static InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder ARBEID_BUILDER;
@@ -46,7 +41,7 @@ class ErFjernetIOverstyrtTest {
         IAY_BUILDER = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BG_AKTIVITET_AGGREGAT_BUILDER = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(STP);
         BUILDER = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        ARBEID_BUILDER = BUILDER.getAktørArbeidBuilder(AKTØR_ID);
+        ARBEID_BUILDER = BUILDER.getAktørArbeidBuilder();
         ARBFOR_INFO_BUILDER = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
     }
 
@@ -61,7 +56,7 @@ class ErFjernetIOverstyrtTest {
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
         BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
         boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
@@ -79,7 +74,7 @@ class ErFjernetIOverstyrtTest {
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
         BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
         boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
@@ -96,7 +91,7 @@ class ErFjernetIOverstyrtTest {
         InntektArbeidYtelseGrunnlagDto grunnlag = ferdigstillIAYGrunnlag();
         BeregningAktivitetAggregatDto bgAggregat = ferdigstillBGAggregat();
 
-        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister(AKTØR_ID));
+        YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
         boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
