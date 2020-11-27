@@ -200,7 +200,7 @@ class LagVurderRefusjonDtoTest {
 
     private void assertAndeler(List<RefusjonAndelTilVurderingDto> andeler, String orgnr, String internRef, LocalDate refusjonFom, LocalDate tidligsteMuligeRefusjon, TidligereUtbetalingDto... tidligereUtbetaling) {
         RefusjonAndelTilVurderingDto matchetAndel = andeler.stream()
-                .filter(a -> a.getArbeidsgiverId().getArbeidsgiverOrgnr().equals(orgnr)
+                .filter(a -> a.getArbeidsgiver().getArbeidsgiverOrgnr().equals(orgnr)
                 && Objects.equals(a.getInternArbeidsforholdRef(), internRef))
                 .findFirst()
                 .orElse(null);

@@ -50,11 +50,6 @@ public class RefusjonAndelTilVurderingDto {
     @JsonProperty("tidligsteMuligeRefusjonsdato")
     private LocalDate tidligsteMuligeRefusjonsdato;
 
-    // TODO Fjern etter rename frontend fra arbeidsgiverId --> arbeidsgiver
-    @Valid
-    @JsonProperty("arbeidsgiverId")
-    private Arbeidsgiver arbeidsgiverId;
-
     @Valid
     @JsonProperty("arbeidsgiver")
     private Arbeidsgiver arbeidsgiver;
@@ -122,14 +117,6 @@ public class RefusjonAndelTilVurderingDto {
 
     public void setFastsattNyttRefusjonskravFom(LocalDate fastsattNyttRefusjonskravFom) {
         this.fastsattNyttRefusjonskravFom = fastsattNyttRefusjonskravFom;
-    }
-
-    public Arbeidsgiver getArbeidsgiverId() {
-        return arbeidsgiverId;
-    }
-
-    public void setArbeidsgiverId(Arbeidsgiver arbeidsgiverId) {
-        this.arbeidsgiverId = arbeidsgiverId;
     }
 
     public String getInternArbeidsforholdRef() {
@@ -206,7 +193,8 @@ public class RefusjonAndelTilVurderingDto {
                 Objects.equals(nyttRefusjonskravFom, that.nyttRefusjonskravFom) &&
                 Objects.equals(arbeidsgiverNavn, that.arbeidsgiverNavn) &&
                 Objects.equals(fastsattNyttRefusjonskravFom, that.fastsattNyttRefusjonskravFom) &&
-                Objects.equals(arbeidsgiverId, that.arbeidsgiverId) &&
+                Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
+                Objects.equals(skalKunneFastsetteDelvisRefusjon, that.skalKunneFastsetteDelvisRefusjon) &&
                 Objects.equals(tidligsteMuligeRefusjonsdato, that.tidligsteMuligeRefusjonsdato) &&
                 Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
                 Objects.equals(eksternArbeidsforholdRef, that.eksternArbeidsforholdRef);
@@ -219,7 +207,8 @@ public class RefusjonAndelTilVurderingDto {
                 nyttRefusjonskravFom,
                 arbeidsgiverNavn,
                 fastsattNyttRefusjonskravFom,
-                arbeidsgiverId,
+                arbeidsgiver,
+                skalKunneFastsetteDelvisRefusjon,
                 internArbeidsforholdRef,
                 eksternArbeidsforholdRef,
                 tidligsteMuligeRefusjonsdato);

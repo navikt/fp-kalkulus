@@ -59,6 +59,10 @@ public class EgenNæringDto {
     private LocalDate oppstartsdato;
 
     @Valid
+    @JsonProperty("opphørsdato")
+    private LocalDate opphørsdato;
+
+    @Valid
     @JsonProperty("regnskapsførerNavn")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String regnskapsførerNavn;
@@ -141,6 +145,14 @@ public class EgenNæringDto {
 
     public void setOppstartsdato(LocalDate oppstartsdato) {
         this.oppstartsdato = oppstartsdato;
+    }
+
+    public LocalDate getOpphørsdato() {
+        return opphørsdato;
+    }
+
+    public void setOpphørsdato(LocalDate opphørsdato) {
+        this.opphørsdato = opphørsdato;
     }
 
     public String getRegnskapsførerNavn() {

@@ -83,7 +83,6 @@ public final class LagVurderRefusjonDto {
 
         // Visningsfelter
         Arbeidsgiver ag = mapArbeidsgiver(andel);
-        dto.setArbeidsgiverId(ag);
         dto.setArbeidsgiver(ag);
         dto.setInternArbeidsforholdRef(andel.getArbeidsforholdRef().getReferanse());
         dto.setAktivitetStatus(AktivitetStatus.ARBEIDSTAKER); // Hardkoder denne til vi ser en grunn til å bruke andre statuser, er uansett kun AT som har inntektsmeldinger.

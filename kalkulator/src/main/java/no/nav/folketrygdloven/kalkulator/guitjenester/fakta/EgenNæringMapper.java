@@ -16,6 +16,8 @@ public final class EgenNæringMapper {
         dto.setVirksomhetType(new VirksomhetType(egenNæring.getVirksomhetType().getKode()));
         dto.setBegrunnelse(egenNæring.getBegrunnelse());
         dto.setEndringsdato(egenNæring.getEndringDato());
+        dto.setOppstartsdato(egenNæring.getPeriode() != null ? egenNæring.getFraOgMed()  : null);
+        dto.setOpphørsdato(egenNæring.getPeriode() != null ? egenNæring.getTilOgMed()  : null);
         dto.setErVarigEndret(egenNæring.getVarigEndring());
         dto.setErNyoppstartet(egenNæring.getNyoppstartet());
         dto.setErNyIArbeidslivet(egenNæring.getNyIArbeidslivet());
