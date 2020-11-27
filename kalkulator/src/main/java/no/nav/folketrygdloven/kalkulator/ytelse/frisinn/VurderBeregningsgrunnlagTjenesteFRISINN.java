@@ -57,9 +57,8 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
             throw new IllegalStateException("Har ikke FRISINN grunnlag når frisinnvilkår skal vurderes");
         }
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
-        return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, aksjonspunkter);
+        return mapTilRegelresultat(input, regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow(), aksjonspunkter);
     }
 
     @Override

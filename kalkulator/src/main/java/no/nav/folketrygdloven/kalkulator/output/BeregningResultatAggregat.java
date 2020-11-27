@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +18,6 @@ public class BeregningResultatAggregat {
 
     private BeregningVilkårResultat beregningVilkårResultat;
 
-    private List<RegelSporingPeriode> regelsporinger = new ArrayList<>();
-
     private RegelSporingAggregat regelSporingAggregat;
 
     public List<BeregningAksjonspunktResultat> getBeregningAksjonspunktResultater() {
@@ -35,14 +32,10 @@ public class BeregningResultatAggregat {
         return beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Forventet å ha beregningsgrunnlag"));
     }
 
-
     public BeregningVilkårResultat getBeregningVilkårResultat() {
         return beregningVilkårResultat;
     }
 
-    public List<RegelSporingPeriode> getRegelsporinger() {
-        return regelsporinger;
-    }
 
     public Optional<RegelSporingAggregat> getRegelSporingAggregat() {
         return Optional.ofNullable(regelSporingAggregat);

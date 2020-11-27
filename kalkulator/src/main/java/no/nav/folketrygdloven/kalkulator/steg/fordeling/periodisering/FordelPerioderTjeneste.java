@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -66,7 +65,7 @@ public class FordelPerioderTjeneste {
         List<SplittetPeriode> splittedePerioder = new ArrayList<>();
         Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
         RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluation, regelInput);
-        var nyttBeregningsgrunnlag = oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, regelResultat, beregningsgrunnlag);
+        var nyttBeregningsgrunnlag = oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, beregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(
                 nyttBeregningsgrunnlag,
                 new RegelSporingAggregat(mapRegelSporingGrunnlag(regelResultat, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON)));

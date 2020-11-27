@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import java.math.BigDecimal;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,28 +44,16 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     public BeregningsgrunnlagDto mapForeslåBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
-                                                              List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FORESLÅ);
+                                                              BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
+        return map(resultatGrunnlag, eksisterendeVLGrunnlag, Steg.FORESLÅ);
     }
 
     public BeregningsgrunnlagDto mapFastsettBeregningsgrunnlag(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag,
-                                                               List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        return map(resultatGrunnlag, regelResultater, eksisterendeVLGrunnlag, Steg.FASTSETT);
+                                                               BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
+        return map(resultatGrunnlag, eksisterendeVLGrunnlag, Steg.FASTSETT);
     }
 
-    public static BeregningsgrunnlagDto mapVurdertBeregningsgrunnlag(List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag).build();
-        Iterator<RegelResultat> regelResultatIterator = regelResultater.iterator();
-        for (var periode : nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-            RegelResultat regelResultat = regelResultatIterator.next();
-            BeregningsgrunnlagPeriodeDto.oppdater(periode)
-                    .medRegelEvalueringVilkårsvurdering(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing())
-                    .build(nyttBeregningsgrunnlag);
-        }
-        return nyttBeregningsgrunnlag;
-    }
-
-    private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
+    private BeregningsgrunnlagDto map(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag resultatGrunnlag, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg) {
         mapSammenligningsgrunnlag(resultatGrunnlag.getSammenligningsGrunnlag(), eksisterendeVLGrunnlag);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(eksisterendeVLGrunnlag).build();
         if (nyttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().isEmpty()) {
@@ -74,31 +61,22 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
 
         Objects.requireNonNull(resultatGrunnlag, "resultatGrunnlag");
-        Objects.requireNonNull(regelResultater, "regelResultater");
-        if (resultatGrunnlag.getBeregningsgrunnlagPerioder().size() != regelResultater.size()) {
-            throw new IllegalArgumentException("Antall beregningsresultatperioder ("
-                    + resultatGrunnlag.getBeregningsgrunnlagPerioder().size()
-                    + ") må være samme som antall regelresultater ("
-                    + regelResultater.size() + ")");
-        }
         MapAktivitetStatusMedHjemmel.mapAktivitetStatusMedHjemmel(resultatGrunnlag.getAktivitetStatuser(), nyttBeregningsgrunnlag, resultatGrunnlag.getBeregningsgrunnlagPerioder().get(0));
 
-        mapPerioder(regelResultater, nyttBeregningsgrunnlag, steg, resultatGrunnlag.getBeregningsgrunnlagPerioder());
+        mapPerioder(nyttBeregningsgrunnlag, steg, resultatGrunnlag.getBeregningsgrunnlagPerioder());
 
         return nyttBeregningsgrunnlag;
     }
 
-    protected void mapPerioder(List<RegelResultat> regelResultater, BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg, List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
-        Iterator<RegelResultat> resultat = regelResultater.iterator();
+    protected void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg, List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
 
         int vlBGnummer = 0;
         for (var resultatBGPeriode : beregningsgrunnlagPerioder) {
 
-            RegelResultat regelResultat = resultat.next();
             BeregningsgrunnlagPeriodeDto eksisterendePeriode = (vlBGnummer < eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().size())
                     ? eksisterendeVLGrunnlag.getBeregningsgrunnlagPerioder().get(vlBGnummer)
                     : null;
-            BeregningsgrunnlagPeriodeDto mappetPeriode = mapBeregningsgrunnlagPeriode(resultatBGPeriode, regelResultat, eksisterendePeriode, eksisterendeVLGrunnlag, steg);
+            BeregningsgrunnlagPeriodeDto mappetPeriode = mapBeregningsgrunnlagPeriode(resultatBGPeriode, eksisterendePeriode, eksisterendeVLGrunnlag);
             for (BeregningsgrunnlagPrStatus regelAndel : resultatBGPeriode.getBeregningsgrunnlagPrStatus()) {
                 if (regelAndel.getAndelNr() == null) {
                     mapAndelMedArbeidsforhold(mappetPeriode, regelAndel);
@@ -281,10 +259,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     }
 
     private static BeregningsgrunnlagPeriodeDto mapBeregningsgrunnlagPeriode(final no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode resultatGrunnlagPeriode,
-                                                                             RegelResultat regelResultat,
                                                                              final BeregningsgrunnlagPeriodeDto vlBGPeriode,
-                                                                             BeregningsgrunnlagDto eksisterendeVLGrunnlag,
-                                                                             Steg steg) {
+                                                                             BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         if (vlBGPeriode == null) {
             BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder()
                     .medBeregningsgrunnlagPeriode(
@@ -292,7 +268,6 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                             resultatGrunnlagPeriode.getBeregningsgrunnlagPeriode().getTomOrNull()
                     )
                     .leggTilPeriodeÅrsaker(mapPeriodeÅrsaker(resultatGrunnlagPeriode.getPeriodeÅrsaker()));
-            leggTilRegelEvaluering(regelResultat, steg, builder);
             BeregningsgrunnlagPeriodeDto periode = builder
                     .build(eksisterendeVLGrunnlag);
             // Vi kopierer alle andeler fra første periode (med tilhørende andelsnr)
@@ -307,23 +282,10 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 )
                 .fjernPeriodeårsaker()
                 .leggTilPeriodeÅrsaker(mapPeriodeÅrsaker(resultatGrunnlagPeriode.getPeriodeÅrsaker()));
-        BeregningsgrunnlagPeriodeDto.Builder periodeBuilderMedRegel = leggTilRegelEvaluering(regelResultat, steg, periodeBuilder);
-        regelResultat.getRegelSporingFinnGrenseverdi()
-                .ifPresent(regelSporing -> periodeBuilderMedRegel.medRegelEvalueringFinnGrenseverdi(regelSporing.getInput(), regelSporing.getSporing()));
         periodeBuilder.build(eksisterendeVLGrunnlag);
         return vlBGPeriode;
     }
 
-    private static BeregningsgrunnlagPeriodeDto.Builder leggTilRegelEvaluering(RegelResultat regelResultat, Steg steg, BeregningsgrunnlagPeriodeDto.Builder periodeBuilder) {
-        if (steg.equals(Steg.FORESLÅ)) {
-            periodeBuilder.medRegelEvalueringForeslå(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing());
-        } else if (steg.equals(Steg.FORDEL)) {
-            periodeBuilder.medRegelEvalueringFordel(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing());
-        } else {
-            periodeBuilder.medRegelEvalueringFastsett(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing());
-        }
-        return periodeBuilder;
-    }
 
     private static void opprettBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto kopierFra, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         kopierFra.getBeregningsgrunnlagPrStatusOgAndelList().forEach(bgpsa -> {

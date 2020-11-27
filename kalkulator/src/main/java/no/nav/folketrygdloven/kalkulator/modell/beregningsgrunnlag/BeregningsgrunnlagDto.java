@@ -1,24 +1,17 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.BRUKERS_STATUS;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.PERIODISERING;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 
@@ -29,7 +22,6 @@ public class BeregningsgrunnlagDto {
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder = new ArrayList<>();
     private SammenligningsgrunnlagDto sammenligningsgrunnlag;
     private List<SammenligningsgrunnlagPrStatusDto> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
-    private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporingDto> regelSporingMap = new HashMap<>();
     private Beløp grunnbeløp;
     private List<BeregningsgrunnlagFaktaOmBeregningTilfelleDto> faktaOmBeregningTilfeller = new ArrayList<>();
     private boolean overstyrt = false;
@@ -68,12 +60,6 @@ public class BeregningsgrunnlagDto {
             BeregningsgrunnlagAktivitetStatusDto.Builder builder = BeregningsgrunnlagAktivitetStatusDto.Builder.kopier(p);
             return builder.build(this);
         }).collect(Collectors.toList());
-
-        this.regelSporingMap = kopiereFra.getRegelSporingMap().entrySet().stream().map(o -> {
-            BeregningsgrunnlagRegelSporingDto.Builder builder = BeregningsgrunnlagRegelSporingDto.Builder.kopier(o.getValue());
-            BeregningsgrunnlagRegelSporingDto build = builder.build(this);
-            return Map.entry(o.getKey(), build);
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         this.grunnbeløp = kopiereFra.getGrunnbeløp();
         this.overstyrt = kopiereFra.overstyrt;
@@ -115,35 +101,6 @@ public class BeregningsgrunnlagDto {
         if (!beregningsgrunnlagPerioder.contains(bgPeriode)) { // NOSONAR
             beregningsgrunnlagPerioder.add(bgPeriode);
         }
-    }
-
-    public BeregningsgrunnlagRegelSporingDto getRegelLogg(BeregningsgrunnlagRegelType regelType) {
-        return regelSporingMap.getOrDefault(regelType, null);
-    }
-
-
-    public String getRegelinputPeriodisering() {
-        return regelSporingMap.containsKey(PERIODISERING) ? regelSporingMap.get(PERIODISERING).getRegelInput() : null;
-    }
-
-    public String getRegelInputSkjæringstidspunkt() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
-    }
-
-    public String getRegelloggSkjæringstidspunkt() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelEvaluering() : null;
-    }
-
-    public String getRegelInputBrukersStatus() {
-        return regelSporingMap.containsKey(SKJÆRINGSTIDSPUNKT) ? regelSporingMap.get(SKJÆRINGSTIDSPUNKT).getRegelInput() : null;
-    }
-
-    public String getRegelloggBrukersStatus() {
-        return regelSporingMap.containsKey(BRUKERS_STATUS) ? regelSporingMap.get(BRUKERS_STATUS).getRegelEvaluering() : null;
-    }
-
-    private Map<BeregningsgrunnlagRegelType, BeregningsgrunnlagRegelSporingDto> getRegelSporingMap() {
-        return regelSporingMap;
     }
 
     public Hjemmel getHjemmel() {
@@ -211,11 +168,6 @@ public class BeregningsgrunnlagDto {
 
     public static Builder builder(BeregningsgrunnlagDto original) {
         return new Builder(original);
-    }
-
-    void leggTilBeregningsgrunnlagRegel(BeregningsgrunnlagRegelSporingDto beregningsgrunnlagRegelSporing) {
-        Objects.requireNonNull(beregningsgrunnlagRegelSporing, "beregningsgrunnlagRegelSporing");
-        regelSporingMap.put(beregningsgrunnlagRegelSporing.getRegelType(), beregningsgrunnlagRegelSporing);
     }
 
     public static class Builder {
@@ -308,40 +260,6 @@ public class BeregningsgrunnlagDto {
             kladd.sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatusBuilder.medBeregningsgrunnlag(kladd).build());
             return this;
         }
-
-        public Builder medRegelloggSkjæringstidspunkt(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagRegelSporingDto.ny()
-                    .medRegelInput(regelInput)
-                    .medRegelEvaluering(regelEvaluering)
-                    .medRegelType(SKJÆRINGSTIDSPUNKT)
-                    .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelloggBrukersStatus(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagRegelSporingDto.ny()
-                    .medRegelInput(regelInput)
-                    .medRegelEvaluering(regelEvaluering)
-                    .medRegelType(BRUKERS_STATUS)
-                    .build(kladd);
-            return this;
-        }
-
-        public Builder medRegellogg(String regelInput, String regelEvaluering, BeregningsgrunnlagRegelType regelType) {
-            verifiserKanModifisere();
-            if (regelInput != null) {
-                BeregningsgrunnlagRegelSporingDto.ny()
-                        .medRegelInput(regelInput)
-                        .medRegelEvaluering(regelEvaluering)
-                        .medRegelType(regelType)
-                        .build(kladd);
-            }
-            return this;
-        }
-
-
 
         public Builder medOverstyring(boolean overstyrt) {
             verifiserKanModifisere();

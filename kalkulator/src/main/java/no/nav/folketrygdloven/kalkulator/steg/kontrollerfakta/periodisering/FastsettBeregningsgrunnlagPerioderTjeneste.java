@@ -41,7 +41,7 @@ public class FastsettBeregningsgrunnlagPerioderTjeneste {
         List<SplittetPeriode> splittedePerioder = new ArrayList<>();
         Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
         RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluation, regelInput);
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, regelResultat, beregningsgrunnlag);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, beregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(nyttBeregningsgrunnlag,
                 new RegelSporingAggregat(MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag(regelResultat, BeregningsgrunnlagRegelType.PERIODISERING_NATURALYTELSE)));
     }

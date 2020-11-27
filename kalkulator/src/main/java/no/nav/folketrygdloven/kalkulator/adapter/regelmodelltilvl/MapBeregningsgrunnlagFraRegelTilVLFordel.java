@@ -27,7 +27,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLFordel extends MapBeregningsgrunn
                 + ") må være samme som antall regelresultater ("
                 + regelResultater.size() + ")");
         }
-        mapPerioder(regelResultater, eksisterendeVLGrunnlag, Steg.FORDEL, resultatPerioder);
+        mapPerioder(eksisterendeVLGrunnlag, Steg.FORDEL, resultatPerioder);
         return eksisterendeVLGrunnlag;
     }
 

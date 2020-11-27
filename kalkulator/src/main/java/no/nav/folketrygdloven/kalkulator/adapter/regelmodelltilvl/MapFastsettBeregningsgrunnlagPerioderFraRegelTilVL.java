@@ -17,18 +17,14 @@ import no.nav.vedtak.konfig.Tid;
 abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     public BeregningsgrunnlagDto mapFraRegel(List<SplittetPeriode> splittedePerioder,
-                                             RegelResultat regelResultat,
                                              BeregningsgrunnlagDto vlBeregningsgrunnlag) {
 
         BeregningsgrunnlagDto nytt = BeregningsgrunnlagDto.builder(vlBeregningsgrunnlag)
-            .medRegellogg(regelResultat.getRegelSporing().getInput(), regelResultat.getRegelSporing().getSporing(), getRegelType())
-            .fjernAllePerioder().build();
+                .fjernAllePerioder().build();
 
         splittedePerioder.forEach(splittetPeriode -> mapSplittetPeriode(nytt, splittetPeriode, vlBeregningsgrunnlag));
         return nytt;
     }
-
-    protected abstract BeregningsgrunnlagRegelType getRegelType();
 
     protected void mapSplittetPeriode(BeregningsgrunnlagDto nyttBeregningsgrunnlag,
                                       SplittetPeriode splittetPeriode,
@@ -36,17 +32,15 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
         LocalDate periodeTom = utledPeriodeTom(splittetPeriode);
 
         var originalPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-            .filter(p -> p.getPeriode().inkluderer(splittetPeriode.getPeriode().getFom()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Ingen matchende perioder"));
+                .filter(p -> p.getPeriode().inkluderer(splittetPeriode.getPeriode().getFom()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Ingen matchende perioder"));
         var andelListe = originalPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
         var bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(splittetPeriode.getPeriode().getFom(), periodeTom)
-            .medRegelEvalueringForeslå(originalPeriode.getRegelInput(), originalPeriode.getRegelEvaluering())
-            .medRegelEvalueringVilkårsvurdering(originalPeriode.getRegelInputVilkårvurdering(), originalPeriode.getRegelEvalueringVilkårvurdering());
+                .medBeregningsgrunnlagPeriode(splittetPeriode.getPeriode().getFom(), periodeTom);
         splittetPeriode.getPeriodeÅrsaker().stream()
-            .map(MapPeriodeÅrsakFraRegelTilVL::map)
-            .forEach(bgPeriodeBuilder::leggTilPeriodeÅrsak);
+                .map(MapPeriodeÅrsakFraRegelTilVL::map)
+                .forEach(bgPeriodeBuilder::leggTilPeriodeÅrsak);
         var beregningsgrunnlagPeriode = bgPeriodeBuilder.build(nyttBeregningsgrunnlag);
         mapAndeler(nyttBeregningsgrunnlag, splittetPeriode, andelListe, beregningsgrunnlagPeriode);
     }
@@ -63,8 +57,8 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     Optional<EksisterendeAndel> finnEksisterendeAndelFraRegel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
         return splittetPeriode.getEksisterendePeriodeAndeler().stream()
-            .filter(andel -> andel.getAndelNr().equals(eksisterendeAndel.getAndelsnr()))
-            .findFirst();
+                .filter(andel -> andel.getAndelNr().equals(eksisterendeAndel.getAndelsnr()))
+                .findFirst();
     }
 
 }

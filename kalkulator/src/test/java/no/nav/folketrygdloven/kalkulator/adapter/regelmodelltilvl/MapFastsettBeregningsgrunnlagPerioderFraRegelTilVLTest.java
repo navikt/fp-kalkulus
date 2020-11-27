@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
@@ -35,13 +34,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     public static final Beløp GRUNNBELØP = new Beløp(BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT)));
     private static final BigDecimal AVVIK_PROMILLE = BigDecimal.valueOf(20L);
     private static final List<FaktaOmBeregningTilfelle> FAKTA_OM_BEREGNING_TILFELLER = List.of(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
-    private static final String REGELINPUT = "Regelinput";
-    private static final String REGELEVALUERING = "Regelevaluering";
     private static final BigDecimal BRUTTO_PR_ÅR = BigDecimal.valueOf(10000);
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.fra(AktørId.dummy());
     private static final BigDecimal NATURALYTELSE_TILKOMMET_PR_ÅR = BigDecimal.valueOf(2000);
     private static final BigDecimal BEREGNET_PR_ÅR = BigDecimal.valueOf(1000);
-    public static final RegelResultat REGEL_RESULTAT = new RegelResultat(null, "input", "sporing");
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
 
@@ -60,7 +56,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
             .build());
 
         // Act
-        BeregningsgrunnlagDto nyttBg = mapTilVlNaturalytelse.mapFraRegel(splittetPerioder, REGEL_RESULTAT, vlBeregningsgrunnlag);
+        BeregningsgrunnlagDto nyttBg = mapTilVlNaturalytelse.mapFraRegel(splittetPerioder, vlBeregningsgrunnlag);
 
         // Assert
         assertThat(nyttBg.getBeregningsgrunnlagPerioder().size()).isEqualTo(vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size());
@@ -80,7 +76,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
             .build());
 
         // Act
-        BeregningsgrunnlagDto nyttBg = mapTilVlRefusjonOgGradering.mapFraRegel(splittetPerioder, REGEL_RESULTAT, vlBeregningsgrunnlag);
+        BeregningsgrunnlagDto nyttBg = mapTilVlRefusjonOgGradering.mapFraRegel(splittetPerioder, vlBeregningsgrunnlag);
 
         // Assert
         assertThat(nyttBg.getBeregningsgrunnlagPerioder().size()).isEqualTo(vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size());
@@ -112,7 +108,6 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         return BeregningsgrunnlagPeriodeDto.builder()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-                .medRegelEvalueringForeslå(REGELINPUT, REGELEVALUERING)
                 .medBruttoPrÅr(BRUTTO_PR_ÅR)
                 .build(vlBeregningsgrunnlag);
     }

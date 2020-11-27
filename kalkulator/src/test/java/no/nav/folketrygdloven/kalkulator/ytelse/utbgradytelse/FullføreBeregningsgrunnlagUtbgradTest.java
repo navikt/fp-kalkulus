@@ -16,23 +16,19 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
-
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.fastsette.RegelFullføreBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
-import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -50,12 +46,19 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.vedtak.util.Tuple;
 
 public class FullføreBeregningsgrunnlagUtbgradTest {
@@ -176,16 +179,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 612_000, 600_000, 2308, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.ZERO, SEKS_G, SEKS_G);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
 
@@ -206,17 +209,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 500_000, 350_000, 1346, 350_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(150_000), BigDecimal.valueOf(150_000));
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -229,16 +232,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 300_000, 1154, 300_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -249,16 +252,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of());
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 0, 0, 0);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -271,16 +274,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 150_000, 577, 150_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(150_000), BigDecimal.ZERO, BigDecimal.valueOf(150_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -293,16 +296,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 800_000, 300_000, 1154, 300_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -322,17 +325,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_000_000, 540_000, 2077, 540_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(240_000), BigDecimal.valueOf(200_000), BigDecimal.valueOf(440_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.valueOf(0), BigDecimal.valueOf(100_000), BigDecimal.valueOf(100_000));
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -357,10 +360,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(2);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_200_000, 300_000, 1154, 300_000);
@@ -372,7 +375,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
         assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -397,10 +400,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(2);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_200_000, 300_000, 1154, 300_000);
@@ -412,7 +415,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
         assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(50_000), BigDecimal.valueOf(50_000));
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -437,10 +440,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(bg, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(2);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 12*GRUNNBELØP.intValue(), (int) (4.5*GRUNNBELØP.intValue()), 1731, (int) (4.5*GRUNNBELØP.intValue()));
@@ -452,7 +455,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(getAndel(resPeriode2, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(6*GRUNNBELØP.intValue()), BigDecimal.valueOf(6.0* GRUNNBELØP));
         assertAndel(getAndel(resPeriode2, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -472,17 +475,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_600_000, 506_250, 1947, 506_250);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(306_250), null);
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(200_000), null);
         assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -503,17 +506,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_600_000, 506_250, 1947, 506_250);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(75_000), BigDecimal.valueOf(150_000), BigDecimal.valueOf(225_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.valueOf(81_250), BigDecimal.valueOf(200_000), BigDecimal.valueOf(281_250));
         assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -534,17 +537,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 450_000, 350_000, 1346, 350_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(50_000), BigDecimal.valueOf(100_000), BigDecimal.valueOf(150_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
         assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -563,16 +566,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_200_000, 450_000, 1731, 450_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(450_000), BigDecimal.valueOf(450_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -591,16 +594,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_200_000, 450_000, 1730, 450_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(225_000), BigDecimal.valueOf(225_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -619,16 +622,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 1_200_000, 450_000, 1730, 450_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.valueOf(50_000), BigDecimal.valueOf(50_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test //PFP-8177
@@ -648,17 +651,17 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of();
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertPeriode(resPeriode, 750000, 432_000, 1661, 432_000);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.valueOf(90_000), BigDecimal.valueOf(150_000), BigDecimal.valueOf(240_000));
         assertAndel(getAndel(resPeriode, ORGNR2), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         assertAndel(getAndel(resPeriode, ORGNR3), BigDecimal.valueOf(192_000), BigDecimal.ZERO, BigDecimal.valueOf(192_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -676,15 +679,15 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(lagUttakResultat(map, arbeidsforhold));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto resPeriode = bgPerioder.get(0);
         assertThat(resPeriode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertAndel(getAndel(resPeriode, ORGNR1), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -699,16 +702,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(uttakResultat);
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, inntektsmeldinger, svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 135_000, 519, 135_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(135_000), BigDecimal.ZERO, BigDecimal.valueOf(135_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -723,16 +726,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
 
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 300_000, 1154, 300_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -746,16 +749,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 150_000, 577, 150_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(150_000), BigDecimal.ZERO, BigDecimal.valueOf(150_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -768,16 +771,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgrad));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 800_000, 300_000, 1154, 300_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.valueOf(300_000), BigDecimal.ZERO, BigDecimal.valueOf(300_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -789,16 +792,16 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of());
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 300_000, 0, 0, 0);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         BeregningsgrunnlagPrStatusOgAndelDto andel = bgAndeler.get(0);
         assertAndel(andel, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -814,10 +817,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 400_000, 400_000, 1538, 400_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -825,7 +828,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(frilans, BigDecimal.valueOf(200_000), BigDecimal.ZERO, BigDecimal.valueOf(200_000));
         BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
         assertAndel(arbeid, BigDecimal.valueOf(200_000), BigDecimal.ZERO, BigDecimal.valueOf(200_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -841,10 +844,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_000_000, 600_000, 2308, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -852,7 +855,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
         assertAndel(arbeid, BigDecimal.valueOf(600_000), BigDecimal.ZERO, BigDecimal.valueOf(600_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -866,10 +869,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_000_000, 0, 0, 0);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -877,7 +880,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(frilans, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
         assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -892,10 +895,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_000_000, 50_000, 192, 50_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -903,7 +906,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(frilans, BigDecimal.valueOf(50_000), BigDecimal.ZERO, BigDecimal.valueOf(50_000));
         BeregningsgrunnlagPrStatusOgAndelDto arbeid = bgAndeler.get(1);
         assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -922,10 +925,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2307, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -935,7 +938,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
         BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
         assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -954,10 +957,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2308, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -967,7 +970,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
         BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
         assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(300_000), BigDecimal.valueOf(300_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     @Test
@@ -984,10 +987,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 700_000, 600_000, 2308, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -1002,7 +1005,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertThat(arbeid2.getArbeidsgiver().get().getOrgnr()).isEqualTo(ORGNR1);
         assertThat(arbeid2.getArbeidsforholdRef().get().getUUIDReferanse()).isEqualTo(ORGNR1_ARB_ID2);
 
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto getAndel(BeregningsgrunnlagPeriodeDto periode, String orgnr) {
@@ -1044,10 +1047,10 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         var svangerskapspengerGrunnlag = lagSvangerskapspengerGrunnlag(List.of(tilretteleggingMedUtbelingsgradFrilans, tilretteleggingMedUtbelingsgradArbeid, tilretteleggingMedUtbelingsgradArbeid2));
 
         // Act
-        BeregningsgrunnlagDto fastsattBeregningsgrunnlag = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
+        var resultat = act(beregningsgrunnlag, List.of(), svangerskapspengerGrunnlag);
 
         // Assert
-        var bgPerioder = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
+        var bgPerioder = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
         assertThat(bgPerioder).hasSize(1);
         assertPeriode(bgPerioder.get(0), 1_500_000, 600_000, 2307, 600_000);
         var bgAndeler = bgPerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList();
@@ -1057,7 +1060,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         assertAndel(arbeid, BigDecimal.ZERO, BigDecimal.valueOf(400_000), BigDecimal.valueOf(400_000));
         BeregningsgrunnlagPrStatusOgAndelDto arbeid2 = bgAndeler.get(2);
         assertAndel(arbeid2, BigDecimal.ZERO, BigDecimal.valueOf(200_000), BigDecimal.valueOf(200_000));
-        assertRegelsporing(bgPerioder.get(0));
+        assertRegelsporing(resultat.getRegelsporinger());
     }
 
 
@@ -1069,22 +1072,31 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
     }
 
 
-    private void assertRegelsporing(BeregningsgrunnlagPeriodeDto periode) {
-        assertThat(periode.getRegelInputFinnGrenseverdi()).isNotEmpty();
-        assertThat(periode.getRegelEvalueringFinnGrenseverdi()).isNotEmpty();
-        assertThat(periode.getRegelInputFastsett()).isNotEmpty();
-        assertThat(periode.getRegelEvalueringFastsett()).isNotEmpty();
-        assertThat(periode.getRegelEvalueringFastsett()).contains(RegelFullføreBeregningsgrunnlag.ID);
+    private void assertRegelsporing(Optional<RegelSporingAggregat> regelSporingAggregat) {
+
+        RegelSporingPeriode finnGrenseverdi = regelSporingAggregat.get().getRegelsporingPerioder().stream()
+                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI))
+                .findFirst().get();
+
+        RegelSporingPeriode fastsett = regelSporingAggregat.get().getRegelsporingPerioder().stream()
+                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.FASTSETT))
+                .findFirst().get();
+
+        assertThat(finnGrenseverdi.getRegelInput()).isNotNull();
+        assertThat(finnGrenseverdi.getRegelEvaluering()).isNotNull();
+        assertThat(fastsett.getRegelInput()).isNotNull();
+        assertThat(fastsett.getRegelEvaluering()).isNotNull();
+        assertThat(fastsett.getRegelEvaluering()).contains(RegelFullføreBeregningsgrunnlag.ID);
     }
 
-    private BeregningsgrunnlagDto act(BeregningsgrunnlagDto beregningsgrunnlag,
-                                      Collection<InntektsmeldingDto> inntektsmeldinger, SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
+    private BeregningsgrunnlagRegelResultat act(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                Collection<InntektsmeldingDto> inntektsmeldinger, SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medBeregningsgrunnlag(beregningsgrunnlag)
             .medRegisterAktiviteter(BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING, OpptjeningAktivitetType.ARBEID));
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlagDtoBuilder, BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengerGrunnlag);
-        return tjeneste.fullføreBeregningsgrunnlag(input).getBeregningsgrunnlag();
+        return tjeneste.fullføreBeregningsgrunnlag(input);
     }
 
     private List<UtbetalingsgradPrAktivitetDto> lagUttakResultat(BigDecimal utbetalingsgrad) {

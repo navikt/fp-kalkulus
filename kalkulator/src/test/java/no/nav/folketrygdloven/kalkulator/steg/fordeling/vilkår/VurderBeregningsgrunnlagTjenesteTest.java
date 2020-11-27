@@ -42,10 +42,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
@@ -95,9 +97,11 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         assertThat(resultat.getAksjonspunkter()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
-        assertThat(periode.getRegelInputVilkårvurdering()).isNotEmpty();
-        assertThat(periode.getRegelEvalueringVilkårvurdering()).isNotEmpty();
+        var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()
+                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
+                .findFirst().get();
+        assertThat(vilkårVurdering.getRegelInput()).isNotNull();
+        assertThat(vilkårVurdering.getRegelEvaluering()).isNotNull();
     }
 
     @Test
@@ -129,9 +133,11 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         assertThat(resultat.getAksjonspunkter()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isFalse();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
-        BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
-        assertThat(periode.getRegelInputVilkårvurdering()).isNotEmpty();
-        assertThat(periode.getRegelEvalueringVilkårvurdering()).isNotEmpty();
+        var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()
+                .filter(rs -> rs.getRegelType().equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING))
+                .findFirst().get();
+        assertThat(vilkårVurdering.getRegelInput()).isNotNull();
+        assertThat(vilkårVurdering.getRegelEvaluering()).isNotNull();
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(int inntekt) {

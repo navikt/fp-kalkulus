@@ -1,12 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FASTSETT;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FINN_GRENSEVERDI;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FORDEL;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.FORESLÅ;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.OPPDATER_GRUNNLAG_SVP;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING;
 import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 
 import java.math.BigDecimal;
@@ -14,14 +8,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
 
 public class BeregningsgrunnlagPeriodeDto {
@@ -33,7 +24,6 @@ public class BeregningsgrunnlagPeriodeDto {
     private BigDecimal avkortetPrÅr;
     private BigDecimal redusertPrÅr;
     private Long dagsats;
-    private Map<BeregningsgrunnlagPeriodeRegelType, BeregningsgrunnlagPeriodeRegelSporingDto> regelSporingMap = new HashMap<>();
     private List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
 
     private BeregningsgrunnlagPeriodeDto() {
@@ -51,12 +41,6 @@ public class BeregningsgrunnlagPeriodeDto {
         this.beregningsgrunnlagPeriodeÅrsaker = kopiereFra.beregningsgrunnlagPeriodeÅrsaker.stream().map(o ->
             BeregningsgrunnlagPeriodeÅrsakDto.Builder.kopier(o).build(this)
         ).collect(Collectors.toList());
-
-        this.regelSporingMap = kopiereFra.regelSporingMap.entrySet().stream().map(o -> {
-            BeregningsgrunnlagPeriodeRegelSporingDto.Builder builder = BeregningsgrunnlagPeriodeRegelSporingDto.Builder.kopier(o.getValue());
-            BeregningsgrunnlagPeriodeRegelSporingDto build = builder.build(this);
-            return Map.entry(o.getKey(), build);
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         this.periode = kopiereFra.periode;
         this.bruttoPrÅr = kopiereFra.bruttoPrÅr;
@@ -138,11 +122,6 @@ public class BeregningsgrunnlagPeriodeDto {
         }
     }
 
-    void leggTilBeregningsgrunnlagPeriodeRegel(BeregningsgrunnlagPeriodeRegelSporingDto beregningsgrunnlagPeriodeRegelSporing) {
-        Objects.requireNonNull(beregningsgrunnlagPeriodeRegelSporing, "beregningsgrunnlagPeriodeRegelSporing");
-        regelSporingMap.put(beregningsgrunnlagPeriodeRegelSporing.getRegelType(), beregningsgrunnlagPeriodeRegelSporing);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -187,50 +166,6 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public static Builder oppdater(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
         return new Builder(eksisterendeBeregningsgrunnlagPeriode, true);
-    }
-
-    public String getRegelEvaluering() {
-        return regelSporingMap.containsKey(FORESLÅ) ?  regelSporingMap.get(FORESLÅ).getRegelEvaluering() : null;
-    }
-
-    public String getRegelEvalueringFastsett() {
-        return regelSporingMap.containsKey(FASTSETT) ?  regelSporingMap.get(FASTSETT).getRegelEvaluering() : null;
-    }
-
-    public String getRegelInput() {
-        return regelSporingMap.containsKey(FORESLÅ)  ? regelSporingMap.get(FORESLÅ).getRegelInput() : null;
-    }
-
-    public String getRegelInputFastsett() {
-        return regelSporingMap.containsKey(FASTSETT) ? regelSporingMap.get(FASTSETT).getRegelInput() : null;
-    }
-
-    public String getRegelInputFordel() {
-        return regelSporingMap.containsKey(FORDEL) ? regelSporingMap.get(FORDEL).getRegelInput() : null;
-    }
-    public String getRegelEvalueringFordel() {
-        return regelSporingMap.containsKey(FORDEL) ? regelSporingMap.get(FORDEL).getRegelEvaluering() : null;
-    }
-
-
-    public String getRegelInputFinnGrenseverdi() {
-        return regelSporingMap.containsKey(FINN_GRENSEVERDI) ? regelSporingMap.get(FINN_GRENSEVERDI).getRegelInput() : null;
-    }
-
-    public String getRegelInputVilkårvurdering() {
-        return regelSporingMap.containsKey(VILKÅR_VURDERING) ?  regelSporingMap.get(VILKÅR_VURDERING).getRegelInput() : null;
-    }
-
-    public String getRegelEvalueringVilkårvurdering() {
-        return regelSporingMap.containsKey(VILKÅR_VURDERING) ?  regelSporingMap.get(VILKÅR_VURDERING).getRegelEvaluering() : null;
-    }
-
-    public String getRegelInputOppdatereGrunnlagSVP() {
-        return regelSporingMap.containsKey(OPPDATER_GRUNNLAG_SVP) ?  regelSporingMap.get(OPPDATER_GRUNNLAG_SVP).getRegelInput() : null;
-    }
-
-    public String getRegelEvalueringFinnGrenseverdi() {
-        return regelSporingMap.containsKey(FINN_GRENSEVERDI) ? regelSporingMap.get(FINN_GRENSEVERDI).getRegelEvaluering() : null;
     }
 
     public static class Builder {
@@ -320,57 +255,6 @@ public class BeregningsgrunnlagPeriodeDto {
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
         }
-
-        public Builder medRegelEvalueringForeslå(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagPeriodeRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(FORESLÅ)
-                .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelEvalueringFordel(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagPeriodeRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(FORDEL)
-                .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelEvalueringFastsett(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagPeriodeRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(FASTSETT)
-                .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelEvalueringVilkårsvurdering(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagPeriodeRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(VILKÅR_VURDERING)
-                .build(kladd);
-            return this;
-        }
-
-        public Builder medRegelEvalueringFinnGrenseverdi(String regelInput, String regelEvaluering) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagPeriodeRegelSporingDto.ny()
-                .medRegelInput(regelInput)
-                .medRegelEvaluering(regelEvaluering)
-                .medRegelType(FINN_GRENSEVERDI)
-                .build(kladd);
-            return this;
-        }
-
 
         public Builder leggTilPeriodeÅrsak(PeriodeÅrsak periodeÅrsak) {
             verifiserKanModifisere();

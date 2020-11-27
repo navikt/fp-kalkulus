@@ -56,10 +56,9 @@ public class VurderBeregningsgrunnlagTjeneste {
     public BeregningsgrunnlagRegelResultat vurderBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto oppdatertGrunnlag) {
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
         var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, oppdatertGrunnlag);
-
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
-        BeregningsgrunnlagDto beregningsgrunnlag = MapBeregningsgrunnlagFraRegelTilVL.mapVurdertBeregningsgrunnlag(regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElse(null));
         List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
+        BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow();
         return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, aksjonspunkter);
     }
 

@@ -78,9 +78,6 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
         var beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(skjæringstidspunktForBeregning)
             .medGrunnbeløp(BigDecimal.valueOf(grunnbeløp.getGVerdi()))
-            // Logging (input -> resultat)
-            .medRegelloggSkjæringstidspunkt(regelResultater.get(0).getRegelSporing().getInput(), regelResultater.get(0).getRegelSporing().getSporing())
-            .medRegelloggBrukersStatus(regelResultater.get(1).getRegelSporing().getInput(), regelResultater.get(1).getRegelSporing().getSporing())
             .build();
         regelModell.getAktivitetStatuser()
             .forEach(as -> BeregningsgrunnlagAktivitetStatusDto.builder()
