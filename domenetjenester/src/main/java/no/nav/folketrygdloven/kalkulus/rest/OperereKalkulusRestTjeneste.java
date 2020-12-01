@@ -35,6 +35,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
@@ -158,9 +159,19 @@ public class OperereKalkulusRestTjeneste {
         String saksnummer = spesifikasjon.getSaksnummer();
         MDC.put("prosess_saksnummer", saksnummer);
         List<TilstandResponse> resultat = new ArrayList<>();
-        Resultat<StegProsesseringInput> inputResultat = lagStegInputForKoblinger(spesifikasjon);
-        if (inputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-            return Response.ok(new TilstandListeResponse(true)).build();
+        Resultat<StegProsesseringInput> inputResultat;
+        // Sjekker om request har oppdatert kalkulatorinput
+        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
+            // kalkulatorinput oppdateres
+            var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+            kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseTyperKalkulusStøtter, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
+            inputResultat = lagStegInputForKoblinger(spesifikasjon);
+        } else {
+            inputResultat = lagStegInputForKoblinger(spesifikasjon);
+            // Sjekker om kalkulatorinput må oppdateres
+            if (inputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+                return Response.ok(new TilstandListeResponse(true)).build();
+            }
         }
 
         for (var inputPrKobling : inputResultat.getResultatPrKobling().entrySet()) {
@@ -184,16 +195,26 @@ public class OperereKalkulusRestTjeneste {
 
         // Mapper informasjon om kobling
         var koblingReferanser = spesifikasjon.getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse)
-            .map(KoblingReferanse::new).collect(Collectors.toList());
+                .map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser);
         Map<Long, HåndterBeregningDto> koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
                 .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
 
-        // Lager Input for oppdatering
+        Resultat<HåndterBeregningsgrunnlagInput> håndterInputResultat;
         var tilstand = finnTilstandFraDto(koblingTilDto);
-        var håndterInputResultat = håndteringInputTjeneste.lagInput(koblingTilDto.keySet(), tilstand);
-        if (håndterInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-            return Response.ok(new OppdateringListeRespons(true)).build();
+        // Sjekker om request har oppdatert kalkulatorinput
+        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
+            // kalkulatorinput oppdateres
+            kalkulatorInputTjeneste.lagreKalkulatorInput(spesifikasjon.getKalkulatorInputPerKoblingReferanse());
+            // Lager Input for oppdatering
+            håndterInputResultat = håndteringInputTjeneste.lagInput(koblingTilDto.keySet(), tilstand);
+        } else {
+            // Lager Input for oppdatering
+            håndterInputResultat = håndteringInputTjeneste.lagInput(koblingTilDto.keySet(), tilstand);
+            // Sjekker om kalkulatorinput må oppdateres
+            if (håndterInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+                return Response.ok(new OppdateringListeRespons(true)).build();
+            }
         }
 
         // Håndterer oppdatering
@@ -240,8 +261,8 @@ public class OperereKalkulusRestTjeneste {
         var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
 
         List<KoblingEntitet> koblingUtenSaksnummer = koblinger.stream().filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
-        if(!koblingUtenSaksnummer.isEmpty()){
-            throw new IllegalArgumentException("Koblinger tilhører ikke saksnummer [" +spesifikasjon.getSaksnummer()+"]: " + koblingUtenSaksnummer);
+        if (!koblingUtenSaksnummer.isEmpty()) {
+            throw new IllegalArgumentException("Koblinger tilhører ikke saksnummer [" + spesifikasjon.getSaksnummer() + "]: " + koblingUtenSaksnummer);
         }
 
         return stegInputTjeneste.lagFortsettInput(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()), spesifikasjon.getStegType());
@@ -286,6 +307,7 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, getAktør().getIdent());
         }
     }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -295,8 +317,11 @@ public class OperereKalkulusRestTjeneste {
         public FortsettBeregningListeRequestAbacDto() {
         }
 
-        public FortsettBeregningListeRequestAbacDto(String saksnummer, List<UUID> eksternReferanser, StegType stegType, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(saksnummer, eksternReferanser, ytelseSomSkalBeregnes, stegType);
+        public FortsettBeregningListeRequestAbacDto(String saksnummer,
+                                                    List<UUID> eksternReferanser,
+                                                    Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                                    StegType stegType, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+            super(saksnummer, eksternReferanser, kalkulatorInputPerKoblingReferanse, ytelseSomSkalBeregnes, stegType);
         }
 
         @Override
@@ -306,6 +331,7 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

@@ -33,6 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -62,7 +63,8 @@ public class HentKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private GUIBeregningsgrunnlagInputTjeneste kalkulatorInputTjeneste;
+    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+    private GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste;
     private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
 
     public HentKalkulusRestTjeneste() {
@@ -72,11 +74,13 @@ public class HentKalkulusRestTjeneste {
     @Inject
     public HentKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                     BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                    GUIBeregningsgrunnlagInputTjeneste kalkulatorInputTjeneste,
+                                    KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                    GUIBeregningsgrunnlagInputTjeneste guiInputTjeneste,
                                     BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.guiInputTjeneste = guiInputTjeneste;
         this.beregningsgrunnlagDtoTjeneste = beregningsgrunnlagDtoTjeneste;
     }
 
@@ -114,6 +118,11 @@ public class HentKalkulusRestTjeneste {
     @Path("/beregningsgrunnlagListe")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
+        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
+            var ytelseTyper = spesifikasjon.getRequestPrReferanse().stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
+            var ytelseType = YtelseTyperKalkulusStøtter.fraKode(ytelseTyper.iterator().next().getKode());
+            kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseType, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
+        }
         List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> dtoPrReferanse = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(
             spesifikasjon.getRequestPrReferanse()).entrySet()
                 .stream()
@@ -141,7 +150,7 @@ public class HentKalkulusRestTjeneste {
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
             .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        BeregningsgrunnlagGUIInput input = kalkulatorInputTjeneste.lagInputForKoblinger(List.of(koblingId.get())).iterator().next();
+        BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get())).iterator().next();
         final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
             .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
             .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
@@ -213,7 +222,7 @@ public class HentKalkulusRestTjeneste {
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
         var koblingIds = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
 
-        List<BeregningsgrunnlagGUIInput> beregningsgrunnlagInput = kalkulatorInputTjeneste.lagInputForKoblinger(koblingIds);
+        List<BeregningsgrunnlagGUIInput> beregningsgrunnlagInput = guiInputTjeneste.lagInputForKoblinger(koblingIds);
         Map<UUID, BeregningsgrunnlagDto> resultater = beregningsgrunnlagInput
             .stream().collect(Collectors.toMap(input -> input.getKoblingReferanse().getKoblingUuid(), input -> mapTilDto(spesifikasjoner, input)));
 

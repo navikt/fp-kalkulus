@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 
 
 /**
@@ -28,6 +31,11 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
     @NotNull
     private List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse;
 
+    /** Kalkulatorinput per ekstern kobling referanse. Brukes i tilfelle der input er utdatert */
+    @JsonProperty(value = "kalkulatorInput")
+    @Valid
+    private Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse;
+
     @JsonProperty(value = "behandlingUuid", required = true)
     @Valid
     @NotNull
@@ -35,6 +43,14 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
 
     protected HentBeregningsgrunnlagDtoListeForGUIRequest() {
         // default ctor
+    }
+
+    public HentBeregningsgrunnlagDtoListeForGUIRequest(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
+                                                       @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                                       @Valid @NotNull UUID behandlingUuid) {
+        this.requestPrReferanse = requestPrReferanse;
+        this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
+        this.behandlingUuid = behandlingUuid;
     }
 
     public HentBeregningsgrunnlagDtoListeForGUIRequest(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
@@ -49,5 +65,9 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
 
     public UUID getBehandlingUuid() {
         return behandlingUuid;
+    }
+
+    public Map<UUID, KalkulatorInputDto> getKalkulatorInputPerKoblingReferanse() {
+        return kalkulatorInputPerKoblingReferanse;
     }
 }

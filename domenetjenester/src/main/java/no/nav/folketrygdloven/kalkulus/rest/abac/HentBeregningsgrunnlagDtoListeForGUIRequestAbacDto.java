@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest.abac;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoListeForGUIRequest;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
@@ -29,8 +31,9 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto extends HentBere
     }
 
     public HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
+                                                              @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
                                                               @Valid @NotNull UUID behandlingUuid) {
-        super(requestPrReferanse, behandlingUuid);
+        super(requestPrReferanse, kalkulatorInputPerKoblingReferanse, behandlingUuid);
     }
 
     @Override

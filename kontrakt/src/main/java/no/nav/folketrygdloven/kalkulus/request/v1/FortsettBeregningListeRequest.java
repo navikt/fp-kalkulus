@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.request.v1;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
@@ -44,6 +46,11 @@ public class FortsettBeregningListeRequest {
     @NotEmpty
     private Collection<UUID> eksternReferanser;
 
+    /** Kalkulatorinput per ekstern kobling referanse. Brukes i tilfelle der input er utdatert */
+    @JsonProperty(value = "kalkulatorInput")
+    @Valid
+    private Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse;
+
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
@@ -57,12 +64,25 @@ public class FortsettBeregningListeRequest {
     protected FortsettBeregningListeRequest() {
     }
 
-    @JsonCreator
+
     public FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                          @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
                                          @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                          @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType) {
         this.eksternReferanser = new LinkedHashSet<>(Objects.requireNonNull(eksternReferanser, "eksterneReferanser"));
+        this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
+        this.stegType = Objects.requireNonNull(stegType, "stegType");
+        this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
+    }
+
+    @JsonCreator
+    public FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                         @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
+                                         @JsonProperty(value = "kalkulatorInput") Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                         @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType) {
+        this.eksternReferanser = new LinkedHashSet<>(Objects.requireNonNull(eksternReferanser, "eksterneReferanser"));
+        this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
         this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
         this.stegType = Objects.requireNonNull(stegType, "stegType");
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
@@ -79,8 +99,13 @@ public class FortsettBeregningListeRequest {
     public StegType getStegType() {
         return stegType;
     }
-    
+
     public String getSaksnummer() {
         return saksnummer;
     }
+
+    public Map<UUID, KalkulatorInputDto> getKalkulatorInputPerKoblingReferanse() {
+        return kalkulatorInputPerKoblingReferanse;
+    }
+
 }
