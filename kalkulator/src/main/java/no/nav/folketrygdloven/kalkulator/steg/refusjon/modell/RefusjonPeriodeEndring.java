@@ -2,7 +2,9 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon.modell;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RefusjonPeriodeEndring {
     private List<RefusjonAndel> originaleAndeler;
@@ -21,6 +23,14 @@ public class RefusjonPeriodeEndring {
 
     public List<RefusjonAndel> getRevurderingAndeler() {
         return revurderingAndeler;
+    }
+
+    public Map<RefusjonAndelNøkkel, List<RefusjonAndel>> getRevurderingAndelerMap() {
+        return revurderingAndeler.stream().collect(Collectors.groupingBy(RefusjonAndel::getNøkkel));
+    }
+
+    public Map<RefusjonAndelNøkkel, List<RefusjonAndel>> getOriginaleAndelerMap() {
+        return originaleAndeler.stream().collect(Collectors.groupingBy(RefusjonAndel::getNøkkel));
     }
 
     public BigDecimal getOriginalBrutto() {

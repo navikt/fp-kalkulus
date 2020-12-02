@@ -37,6 +37,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonAndelTilVurderingDto;
@@ -218,7 +219,7 @@ class LagVurderRefusjonDtoTest {
 
     private void byggRefusjonAndel(Arbeidsgiver arbeidsgiver, String internRef, Intervall periode) {
         List<RefusjonAndel> andeler = andelMap.getOrDefault(periode, new ArrayList<>());
-        andeler.add(new RefusjonAndel(arbeidsgiver, InternArbeidsforholdRefDto.ref(internRef), BigDecimal.ZERO, BigDecimal.ZERO));
+        andeler.add(new RefusjonAndel(arbeidsgiver == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, arbeidsgiver, InternArbeidsforholdRefDto.ref(internRef), BigDecimal.ZERO, BigDecimal.ZERO));
         andelMap.put(periode, andeler);
     }
 

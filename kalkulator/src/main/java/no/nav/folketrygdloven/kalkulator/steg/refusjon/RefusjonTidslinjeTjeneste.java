@@ -32,8 +32,7 @@ public class RefusjonTidslinjeTjeneste {
 
     private static List<RefusjonAndel> lagAndelsliste(List<BeregningsgrunnlagPrStatusOgAndelDto> bgAndeler) {
         return bgAndeler.stream()
-                .filter(andel -> andel.getAktivitetStatus().erArbeidstaker() && andel.getArbeidsgiver().isPresent())
-                .map(a -> new RefusjonAndel(a.getArbeidsgiver().get(), a.getArbeidsforholdRef().orElse(null), getBrutto(a), getRefusjonskravPrÅr(a)))
+                .map(a -> new RefusjonAndel(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null), a.getArbeidsforholdRef().orElse(null), getBrutto(a), getRefusjonskravPrÅr(a)))
                 .collect(Collectors.toList());
     }
 

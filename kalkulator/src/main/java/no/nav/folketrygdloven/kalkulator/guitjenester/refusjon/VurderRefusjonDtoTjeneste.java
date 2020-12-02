@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AndelerMedØktRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 
 public final class VurderRefusjonDtoTjeneste {
@@ -52,7 +53,7 @@ public final class VurderRefusjonDtoTjeneste {
                 .collect(Collectors.toList());
         refusjonOverstyringer.forEach(avkalring -> {
             List<RefusjonAndel> tidligereAvklaringerPåAG = avkalring.getRefusjonPerioder().stream()
-                    .map(refusjonPeriode -> new RefusjonAndel(avkalring.getArbeidsgiver(), refusjonPeriode.getArbeidsforholdRef(),
+                    .map(refusjonPeriode -> new RefusjonAndel(AktivitetStatus.ARBEIDSTAKER, avkalring.getArbeidsgiver(), refusjonPeriode.getArbeidsforholdRef(),
                             BigDecimal.ZERO, BigDecimal.ZERO)) // De to siste parameterne brukes ikke for å lage dto så kan settes til dummy-verdier
                     .collect(Collectors.toList());
             andeler.addAll(tidligereAvklaringerPåAG);
