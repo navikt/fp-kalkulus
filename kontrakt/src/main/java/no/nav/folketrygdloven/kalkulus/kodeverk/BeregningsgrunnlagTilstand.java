@@ -25,6 +25,7 @@ public class BeregningsgrunnlagTilstand extends Kodeverk{
     public static final BeregningsgrunnlagTilstand FASTSATT_BEREGNINGSAKTIVITETER = new BeregningsgrunnlagTilstand("FASTSATT_BEREGNINGSAKTIVITETER");
     public static final BeregningsgrunnlagTilstand OPPDATERT_MED_ANDELER = new BeregningsgrunnlagTilstand("OPPDATERT_MED_ANDELER");
     public static final BeregningsgrunnlagTilstand KOFAKBER_UT = new BeregningsgrunnlagTilstand("KOFAKBER_UT");
+    public static final BeregningsgrunnlagTilstand BESTEBEREGNET = new BeregningsgrunnlagTilstand("BESTEBEREGNET");
     public static final BeregningsgrunnlagTilstand FORESLÅTT = new BeregningsgrunnlagTilstand("FORESLÅTT");
     public static final BeregningsgrunnlagTilstand FORESLÅTT_UT = new BeregningsgrunnlagTilstand("FORESLÅTT_UT");
     public static final BeregningsgrunnlagTilstand OPPDATERT_MED_REFUSJON_OG_GRADERING = new BeregningsgrunnlagTilstand("OPPDATERT_MED_REFUSJON_OG_GRADERING");

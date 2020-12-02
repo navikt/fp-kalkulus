@@ -83,7 +83,7 @@ public class SelvstendigNæringsdrivendeTest {
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(
             List.of(), List.of(), null, årsinntekterSN, 2014, BigDecimal.valueOf(12 * varigEndringMånedsinntekt));
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
@@ -148,7 +148,7 @@ public class SelvstendigNæringsdrivendeTest {
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null);
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
@@ -212,7 +212,7 @@ public class SelvstendigNæringsdrivendeTest {
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null);
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
@@ -276,7 +276,7 @@ public class SelvstendigNæringsdrivendeTest {
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = verdikjedeTestHjelper.lagBehandlingATogFLogSN(List.of(), List.of(), null, årsinntekterSN, 2014, null);
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR1);
 
         var iayGrunnlag = iayGrunnlagBuilder.build();

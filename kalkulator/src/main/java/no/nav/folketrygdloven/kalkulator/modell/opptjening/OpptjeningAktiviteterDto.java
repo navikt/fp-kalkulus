@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class OpptjeningAktiviteterDto {
 
@@ -29,7 +29,7 @@ public class OpptjeningAktiviteterDto {
     public static class OpptjeningPeriodeDto {
 
         private OpptjeningAktivitetType type;
-        private Periode periode;
+        private Intervall periode;
         private String arbeidsgiverOrgNummer;
         private String arbeidsgiverAktørId;
 
@@ -46,7 +46,7 @@ public class OpptjeningAktiviteterDto {
         }
 
         private OpptjeningPeriodeDto(OpptjeningAktivitetType type,
-                                     Periode periode,
+                                     Intervall periode,
                                      String arbeidsgiverOrgNummer,
                                      String arbeidsgiverAktørId,
                                      InternArbeidsforholdRefDto arbeidsforholdId) {
@@ -78,7 +78,7 @@ public class OpptjeningAktiviteterDto {
             return type;
         }
 
-        public Periode getPeriode() {
+        public Intervall getPeriode() {
             return periode;
         }
 
@@ -129,67 +129,45 @@ public class OpptjeningAktiviteterDto {
     }
 
     public static OpptjeningPeriodeDto nyPeriode(OpptjeningAktivitetType type,
-                                                 Periode periode,
+                                                 Intervall periode,
                                                  String arbeidsgiverOrgNummer,
                                                  String aktørId,
                                                  InternArbeidsforholdRefDto arbeidsforholdId) {
         return new OpptjeningPeriodeDto(type, periode, arbeidsgiverOrgNummer, aktørId, arbeidsforholdId);
     }
 
-    public static OpptjeningPeriodeDto nyPeriodeOrgnr(OpptjeningAktivitetType type,
-                                                      Periode periode,
-                                                      String arbeidsgiverOrgNummer,
-                                                      InternArbeidsforholdRefDto arbeidsforholdId) {
-        return new OpptjeningPeriodeDto(type, periode, arbeidsgiverOrgNummer, null, arbeidsforholdId);
-    }
 
     public static OpptjeningPeriodeDto nyPeriodeOrgnr(OpptjeningAktivitetType type,
-                                                      Periode periode,
+                                                      Intervall periode,
                                                       String arbeidsgiverOrgNummer) {
         return new OpptjeningPeriodeDto(type, periode, arbeidsgiverOrgNummer, null, null);
     }
 
     /** Lag ny opptjening periode for angitt aktivitet uten arbeidsgiver (kan ikke vøre type ARBEID). */
-    public static OpptjeningPeriodeDto nyPeriode(OpptjeningAktivitetType type, Periode periode) {
+    public static OpptjeningPeriodeDto nyPeriode(OpptjeningAktivitetType type, Intervall periode) {
         kanIkkeVæreArbeid(type);
         return new OpptjeningPeriodeDto(type, periode, null, null, null);
     }
 
-    /** Lag ny opptjening periode for angitt aktivitet og med privat arbeidsgive (angitt ved aktørId). */
-    public static OpptjeningPeriodeDto nyPeriodeAktør(OpptjeningAktivitetType type, Periode periode, String aktørId) {
-        return nyPeriode(type, periode, null, aktørId, null);
-    }
-
-    /** Lag ny opptjening periode for angitt aktivitet og med privat arbeidsgive (angitt ved aktørId) og arbeidsforhold ref. */
-    public static OpptjeningPeriodeDto nyPeriodeAktør(OpptjeningAktivitetType type, Periode periode, String aktørId, InternArbeidsforholdRefDto arbeidsforholdRef) {
-        return nyPeriode(type, periode, null, aktørId, arbeidsforholdRef);
-    }
 
     /** Med enkel, registrert arbeidsgiver. ArbeidsforholdReferanse optional. */
-    public static OpptjeningAktiviteterDto fraOrgnr(OpptjeningAktivitetType type, Periode periode, String orgnr, InternArbeidsforholdRefDto arbId) {
+    public static OpptjeningAktiviteterDto fraOrgnr(OpptjeningAktivitetType type, Intervall periode, String orgnr, InternArbeidsforholdRefDto arbId) {
         return new OpptjeningAktiviteterDto(nyPeriode(type, periode, orgnr, null, arbId));
     }
 
     /** Med enkel, registrert arbeidsgiver. Ikke arbeidsforholdReferanse. */
-    public static OpptjeningAktiviteterDto fraOrgnr(OpptjeningAktivitetType type, Periode periode, String orgnr) {
+    public static OpptjeningAktiviteterDto fraOrgnr(OpptjeningAktivitetType type, Intervall periode, String orgnr) {
         return new OpptjeningAktiviteterDto(nyPeriode(type, periode, orgnr, null, null));
     }
 
     /** Med enkel, privat arbeidsgiver. Merk - angi arbeidsgivers aktørId, ikke søkers. */
-    public static OpptjeningAktiviteterDto fraAktørId(OpptjeningAktivitetType type, Periode periode, String arbeidsgiverAktørId) {
+    public static OpptjeningAktiviteterDto fraAktørId(OpptjeningAktivitetType type, Intervall periode, String arbeidsgiverAktørId) {
         return new OpptjeningAktiviteterDto(nyPeriode(type, periode, null, arbeidsgiverAktørId, null));
     }
 
-    /**
-     * Med enkel, privat arbeidsgiver. Merk - angi arbeidsgivers aktørId, ikke søkers.
-     */
-    public static OpptjeningAktiviteterDto fraAktørId(OpptjeningAktivitetType type, Periode periode, String arbeidsgiverAktørId,
-                                                      InternArbeidsforholdRefDto arbeidsforholdRef) {
-        return new OpptjeningAktiviteterDto(nyPeriode(type, periode, null, arbeidsgiverAktørId, arbeidsforholdRef));
-    }
 
     /** Med enkel, aktivitet uten arbeidsgiver (kan ikke være {@link OpptjeningAktivitetType#ARBEID}. */
-    public static OpptjeningAktiviteterDto fra(OpptjeningAktivitetType type, Periode periode) {
+    public static OpptjeningAktiviteterDto fra(OpptjeningAktivitetType type, Intervall periode) {
         kanIkkeVæreArbeid(type);
         return new OpptjeningAktiviteterDto(nyPeriode(type, periode, null, null, null));
     }

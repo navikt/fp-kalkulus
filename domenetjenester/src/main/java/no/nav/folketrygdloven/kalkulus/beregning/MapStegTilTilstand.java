@@ -14,6 +14,7 @@ public class MapStegTilTilstand {
 
     static {
         mapStegTilstand.put(StegType.KOFAKBER, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        mapStegTilstand.put(StegType.FORS_BESTEBEREGNING, BeregningsgrunnlagTilstand.BESTEBEREGNET);
         mapStegTilstand.put(StegType.FORS_BERGRUNN, BeregningsgrunnlagTilstand.FORESLÅTT);
         mapStegTilstand.put(StegType.VURDER_REF_BERGRUNN, BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
         mapStegTilstand.put(StegType.FORDEL_BERGRUNN, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);

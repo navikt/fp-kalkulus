@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.threeten.extra.Interval;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
@@ -125,7 +126,7 @@ public class FrilanserMedTogglePåTest {
             inntektsmeldinger
             );
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
@@ -229,7 +230,7 @@ public class FrilanserMedTogglePåTest {
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
@@ -336,7 +337,7 @@ public class FrilanserMedTogglePåTest {
             BigDecimal.valueOf(frilansÅrsinntekt / 12),
             virksomhetene, inntektsmeldinger);
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
 
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ARBEIDSFORHOLD_ORGNR1),
@@ -415,7 +416,7 @@ public class FrilanserMedTogglePåTest {
             ARBEIDSFORHOLD_ORGNR1);
 
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
             );
@@ -481,7 +482,7 @@ public class FrilanserMedTogglePåTest {
             ARBEIDSFORHOLD_ORGNR1);
 
         // Arrange
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, opptjeningPeriode)
             );

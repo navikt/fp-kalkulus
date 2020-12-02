@@ -81,7 +81,7 @@ public class BeregningUtils {
         return sisteMeldekort;
     }
 
-    private static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
+    public static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
         return ytelseFilter.getFiltrertYtelser().stream()
                 .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
                 .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());

@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
@@ -31,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
@@ -56,6 +58,7 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
+    private ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
@@ -210,6 +213,22 @@ public class BeregningsgrunnlagTjeneste {
                     .build();
         }
     }
+
+    /** Foreslår besteberegning
+     *
+     *
+     * @param input Input til foreslå besteberegning
+     * @return resultat av foreslått besteberegning
+     */
+    public BeregningResultatAggregat foreslåBesteberegning(ForeslåBesteberegningInput input) {
+        BeregningsgrunnlagRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
+        return BeregningResultatAggregat.Builder.fra(input)
+                .medAksjonspunkter(resultat.getAksjonspunkter())
+                .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
+                .build();
+    }
+
 
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)

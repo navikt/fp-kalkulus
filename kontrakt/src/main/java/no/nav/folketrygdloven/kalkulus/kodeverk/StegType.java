@@ -22,6 +22,7 @@ public class StegType extends Kodeverk{
     static final String KODEVERK = "STEG_TYPE";
 
     public static final StegType KOFAKBER = new StegType("KOFAKBER");
+    public static final StegType FORS_BESTEBEREGNING = new StegType("FORS_BESTEBEREGNING");
     public static final StegType FORS_BERGRUNN = new StegType("FORS_BERGRUNN");
     public static final StegType VURDER_REF_BERGRUNN = new StegType("VURDER_REF_BERGRUNN");
     public static final StegType FORDEL_BERGRUNN = new StegType("FORDEL_BERGRUNN");

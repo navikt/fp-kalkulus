@@ -69,7 +69,7 @@ public class MilitærTest {
     @Test
     public void militærSettesTil3G() {
         // Arrange
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fra(OpptjeningAktivitetType.MILITÆR_ELLER_SIVILTJENESTE, opptjeningPeriode);
 
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = byggMilitærForBehandling(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));

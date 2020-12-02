@@ -70,7 +70,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
         List<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> arbeidstakeraktiviteter = relevanteAktiviteter.stream()
                 .filter(a -> a.getType().equals(OpptjeningAktivitetType.ARBEID))
                 .collect(Collectors.toList());
-        return arbeidstakeraktiviteter.stream().anyMatch(akt -> akt.getPeriode().inneholder(opptjeningSkjæringstidspunkt));
+        return arbeidstakeraktiviteter.stream().anyMatch(akt -> akt.getPeriode().inkluderer(opptjeningSkjæringstidspunkt));
     }
 
     private boolean harOppgittArbeidsinntektEtterSTP(LocalDate opptjeningSkjæringstidspunkt, Optional<OppgittOpptjeningDto> oppgittOpptjening) {
@@ -100,21 +100,22 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN extends MapBeregningAkt
                                          LocalDate opptjeningSkjæringstidspunkt,
                                          Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
-        Periode gjeldendePeriode = opptjeningsperiode.getPeriode();
+        var gjeldendePeriode = opptjeningsperiode.getPeriode();
+        var regelPeriode = Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato());
         Periode utvidetPeriode = Periode.of(opptjeningSkjæringstidspunkt.minusMonths(36), opptjeningSkjæringstidspunkt.plusMonths(12));
 
         if (Aktivitet.FRILANSINNTEKT.equals(aktivitetType)) {
-            return AktivPeriode.forFrilanser(harFLEtterStp ? utvidetPeriode : gjeldendePeriode);
+            return AktivPeriode.forFrilanser(harFLEtterStp ? utvidetPeriode : regelPeriode);
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             var opptjeningArbeidsgiverAktørId = opptjeningsperiode.getArbeidsgiverAktørId();
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
-            return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverAktørId,
+            return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
                     opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, alleAktiviteter);
         } if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {
-            return AktivPeriode.forAndre(aktivitetType, harSNEtterStp ? utvidetPeriode : gjeldendePeriode);
+            return AktivPeriode.forAndre(aktivitetType, harSNEtterStp ? utvidetPeriode : regelPeriode);
         } else {
-            return AktivPeriode.forAndre(aktivitetType, gjeldendePeriode);
+            return AktivPeriode.forAndre(aktivitetType, regelPeriode);
         }
     }
 

@@ -9,11 +9,13 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -96,6 +98,34 @@ public class BeregningStegTjeneste {
         lagreOgKopierFaktaOmBeregning(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
     }
+
+    /**
+     * ForeslåBesteberegning
+     * Steg 2.5. FORS_BESTEBEREGNING
+     *
+     * Dette steget vil aldri bli brukt av noe annet enn foreldrepenger, men legges inn her for å kunne testes via verdikjedetest
+     *
+     * @param input {@link ForeslåBeregningsgrunnlagInput}
+     * @return {@link BeregningAksjonspunktResultat}
+     */
+    public TilstandResponse foreslåBesteberegning(ForeslåBesteberegningInput input) {
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
+            ForeldrepengerGrunnlag foreldrepengerGrunnlag = input.getYtelsespesifiktGrunnlag();
+            if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
+                BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
+                Long koblingId = input.getKoblingReferanse().getKoblingId();
+                Optional<BeregningsgrunnlagDto> beregningsgrunnlag = beregningResultatAggregat.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag();
+                if (beregningsgrunnlag.isPresent()) {
+                    BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = KalkulatorTilEntitetMapper.mapBeregningsgrunnlag(beregningsgrunnlag.get());
+                    repository.lagre(koblingId, beregningsgrunnlagEntitet, input.getStegTilstand());
+                    lagreRegelsporing(koblingId, beregningResultatAggregat.getRegelSporingAggregat());
+                }
+                return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat.getBeregningAksjonspunktResultater());
+            }
+        }
+        return mapTilstandResponse(input.getKoblingReferanse(), List.of());
+    }
+
 
     /**
      * ForeslåBeregningsgrunnlag
@@ -293,6 +323,8 @@ public class BeregningStegTjeneste {
         rullTilbakeTjeneste.rullTilbakeTilTilstandFørVedBehov(koblingId, input.getStegTilstand());
         if (stegType.equals(StegType.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
+        } else if (stegType.equals(StegType.FORS_BESTEBEREGNING)) {
+            return foreslåBesteberegning((ForeslåBesteberegningInput) input);
         } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
         } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {

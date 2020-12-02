@@ -133,7 +133,7 @@ public class FlereArbeidsforholdTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
 
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID,
-            Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
+            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
 
         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlagDto = verdikjedeTestHjelper.opprettIAYforOrg(orgnr1, SKJÆRINGSTIDSPUNKT_OPPTJENING);
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(inntektArbeidYtelseGrunnlagDto)
@@ -211,7 +211,7 @@ public class FlereArbeidsforholdTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
 
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID,
-            Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
+            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
 
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(tuple.getElement2())
@@ -294,7 +294,7 @@ public class FlereArbeidsforholdTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
 
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID,
-            Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
+            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
 
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(tuple.getElement2())
@@ -379,7 +379,7 @@ public class FlereArbeidsforholdTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1);
 
         var opptjeningAktiviteter = OpptjeningAktiviteterDto.fraOrgnr(OpptjeningAktivitetType.ARBEID,
-            Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
+            Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1)), orgnr1);
 
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(tuple.getElement2())
@@ -466,7 +466,7 @@ public class FlereArbeidsforholdTest {
             månedsinntekter.get(1), månedsinntekter.get(1));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr1),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr2));
@@ -550,7 +550,7 @@ public class FlereArbeidsforholdTest {
             månedsinntekter.get(1), månedsinntekter.get(1));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr1),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr2));
@@ -644,7 +644,7 @@ public class FlereArbeidsforholdTest {
             månedsinntekter.get(3), BigDecimal.valueOf(refusjonsKrav.get(3) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3, im4);
 
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr1),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr2),
@@ -749,7 +749,7 @@ public class FlereArbeidsforholdTest {
             månedsinntekter.get(3), BigDecimal.valueOf(refusjonsKrav.get(3) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2, im3, im4);
 
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr1),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr2),
@@ -833,7 +833,7 @@ public class FlereArbeidsforholdTest {
             månedsinntekter.get(1), BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im1, im2);
 
-        Periode opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr1),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, orgnr2));

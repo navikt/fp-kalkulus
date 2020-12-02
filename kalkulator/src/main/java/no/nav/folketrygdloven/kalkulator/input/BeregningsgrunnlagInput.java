@@ -140,7 +140,7 @@ public class BeregningsgrunnlagInput {
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
         return opptjeningAktiviteter.getOpptjeningPerioder()
             .stream()
-            .filter(p -> p.getPeriode().getFom().isBefore(skjæringstidspunktOpptjening))
+            .filter(p -> p.getPeriode().getFomDato().isBefore(skjæringstidspunktOpptjening))
             .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
             .collect(Collectors.toList());
     }

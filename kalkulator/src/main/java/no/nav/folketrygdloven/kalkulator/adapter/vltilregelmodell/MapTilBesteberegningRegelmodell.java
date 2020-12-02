@@ -1,0 +1,217 @@
+package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
+import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
+import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
+
+public class MapTilBesteberegningRegelmodell {
+
+
+    public static BesteberegningRegelmodell map(ForeslåBesteberegningInput input) {
+        BesteberegningInput besteberegningInput = lagInput(input);
+        return new BesteberegningRegelmodell(besteberegningInput);
+    }
+
+    private static BesteberegningInput lagInput(ForeslåBesteberegningInput input) {
+        List<Periodeinntekt> inntekter = mapInntekterForBesteberegning(input);
+        Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
+        inntekter.forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
+        List<Periode> perioderMedNæringsvirksomhet = finnPerioderMedOppgittNæring(input);
+        return new BesteberegningInput(inntektsgrunnlag,
+                input.getGrunnbeløpsatser(),
+                finnGrunnbeløp(input),
+                input.getSkjæringstidspunktOpptjening(),
+                perioderMedNæringsvirksomhet);
+    }
+
+    private static List<Periode> finnPerioderMedOppgittNæring(ForeslåBesteberegningInput input) {
+        return input.getIayGrunnlag().getOppgittOpptjening().stream()
+                    .flatMap(oo -> oo.getEgenNæring().stream())
+                    .map(OppgittEgenNæringDto::getPeriode)
+                    .map(p -> Periode.of(p.getFomDato(), p.getTomDato()))
+                    .collect(Collectors.toList());
+    }
+
+    private static BigDecimal finnGrunnbeløp(ForeslåBesteberegningInput input) {
+        return input.getBeregningsgrunnlagGrunnlag()
+                .getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getGrunnbeløp).map(Beløp::getVerdi).orElseThrow(() -> new IllegalStateException("Forventer grunnbeløp"));
+    }
+
+    private static List<Periodeinntekt> mapInntekterForBesteberegning(BeregningsgrunnlagInput input) {
+        var iayGrunnlag = input.getIayGrunnlag();
+        var inntektFilterDto = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
+        var ytelseFilterDto = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister());
+        YrkesaktivitetFilterDto yrkesaktivitetFilterDto = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
+        List<Periodeinntekt> inntekterATFLSN = finnInntekterATFLSN(input.getSkjæringstidspunktForBeregning(), inntektFilterDto, yrkesaktivitetFilterDto);
+        List<Periodeinntekt> ytelserFraSammenligningsgrunnlaget = lagInntektForYtelseFraSammenligningsgrunnlag(inntektFilterDto);
+        List<Periodeinntekt> ytelserDPOgAAP = lagYtelseDagpengerArbeidsavklaringspenger(ytelseFilterDto);
+        List<Periodeinntekt> alleInntekter = new ArrayList<>();
+        alleInntekter.addAll(inntekterATFLSN);
+        alleInntekter.addAll(ytelserFraSammenligningsgrunnlaget);
+        alleInntekter.addAll(ytelserDPOgAAP);
+        return alleInntekter;
+    }
+
+
+    private static List<Periodeinntekt> lagYtelseDagpengerArbeidsavklaringspenger(YtelseFilterDto ytelseFilter) {
+        Set<FagsakYtelseType> ytelseTyper = Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        List<YtelseAnvistDto> alleMeldekort = BeregningUtils.finnAlleMeldekort(ytelseFilter, ytelseTyper);
+        // Mapper alle meldekort til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
+        return alleMeldekort.stream().map(meldekort -> Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntekt(meldekort.getDagsats().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
+                .medPeriode(Periode.of(meldekort.getAnvistFOM(), meldekort.getAnvistTOM()))
+                .medUtbetalingsgrad(meldekort.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElse(BigDecimal.ZERO))
+                .build()).collect(Collectors.toList());
+    }
+
+
+
+    /** Henter ut ytelser fra sammenlignigsgrunnlaget:
+     * - FORELDREPENGER
+     * - SVANGERSKAPSPENGER
+     * - SYKEPENGER
+     * - SYKEPENGER_FISKER
+     *
+     * @param filter Inntektsfilter
+     * @return periodeinntekter for ytelser
+     */
+    private static List<Periodeinntekt> lagInntektForYtelseFraSammenligningsgrunnlag(InntektFilterDto filter) {
+        Map<LocalDate, BigDecimal> månedsinntekter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
+                .filter(ip -> !ip.getYtelseType().equals(OffentligYtelseType.UDEFINERT))
+                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
+                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+
+        return månedsinntekter.entrySet().stream().map(e -> Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
+                .medMåned(e.getKey())
+                .medInntekt(e.getValue())
+                .medAktivitetStatus(AktivitetStatus.KUN_YTELSE)
+                .build()).collect(Collectors.toList());
+    }
+
+
+    private static List<Periodeinntekt> finnInntekterATFLSN(LocalDate skjæringstidspunktBeregning, InntektFilterDto filter, YrkesaktivitetFilterDto yrkesaktivitetFilterDto) {
+        var filterYaRegister = yrkesaktivitetFilterDto.før(skjæringstidspunktBeregning);
+        List<Periodeinntekt> samletInntekterATFLSN = new ArrayList<>();
+        if (!filter.isEmpty()) {
+            List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
+            yrkesaktiviteter.addAll(filterYaRegister.getYrkesaktiviteterForBeregning());
+            yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
+
+            List<Periodeinntekt> inntekterATFL = lagInntektBeregning(filter, yrkesaktiviteter);
+            List<Periodeinntekt> inntektNæring = lagInntekterSN(filter);
+
+            samletInntekterATFLSN = Stream.concat(inntekterATFL.stream(), inntektNæring.stream()).collect(Collectors.toList());
+
+        }
+        return samletInntekterATFLSN;
+    }
+
+    private static List<Periodeinntekt> lagInntektBeregning(InntektFilterDto filter,
+                                                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        List<Periodeinntekt> inntekter = new ArrayList<>();
+        filter.filterBeregningsgrunnlag()
+                .filter(i -> i.getArbeidsgiver() != null)
+                .forFilter((inntekt, inntektsposter) -> inntekter.addAll(mapInntekt(inntekt, inntektsposter, yrkesaktiviteter)));
+        return inntekter;
+    }
+
+    private static List<Periodeinntekt> mapInntekt(InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
+                                                   Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        return inntektsposter.stream().map(inntektspost -> {
+
+            Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
+            if (Objects.isNull(arbeidsgiver)) {
+                throw new IllegalStateException("Arbeidsgiver må være satt.");
+            } else if (Objects.isNull(inntektspost.getPeriode()) || Objects.isNull(inntektspost.getPeriode().getFomDato())) {
+                throw new IllegalStateException("Inntektsperiode må være satt.");
+            } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
+                throw new IllegalStateException("Inntektsbeløp må være satt.");
+            }
+            return Periodeinntekt.builder()
+                    .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
+                    .medArbeidsgiver(arbeidsgiver)
+                    .medMåned(inntektspost.getPeriode().getFomDato())
+                    .medInntekt(inntektspost.getBeløp().getVerdi())
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+    private static Arbeidsforhold mapYrkesaktivitet(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        return erFrilanser(arbeidsgiver, yrkesaktiviteter)
+                ? Arbeidsforhold.frilansArbeidsforhold()
+                : lagNyttArbeidsforholdHosArbeidsgiver(arbeidsgiver);
+    }
+
+    private static boolean erFrilanser(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        final List<ArbeidType> arbeidType = yrkesaktiviteter
+                .stream()
+                .filter(it -> it.getArbeidsgiver() != null)
+                .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .map(YrkesaktivitetDto::getArbeidType)
+                .distinct()
+                .collect(Collectors.toList());
+        boolean erFrilanser = yrkesaktiviteter.stream()
+                .map(YrkesaktivitetDto::getArbeidType)
+                .anyMatch(ArbeidType.FRILANSER::equals);
+        return (arbeidType.isEmpty() && erFrilanser) || arbeidType.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+    }
+
+    private static Arbeidsforhold lagNyttArbeidsforholdHosArbeidsgiver(Arbeidsgiver arbeidsgiver) {
+        if (arbeidsgiver.getErVirksomhet()) {
+            return Arbeidsforhold.nyttArbeidsforholdHosVirksomhet(arbeidsgiver.getIdentifikator());
+        } else if (arbeidsgiver.erAktørId()) {
+            return Arbeidsforhold.nyttArbeidsforholdHosPrivatperson(arbeidsgiver.getIdentifikator());
+        }
+        throw new IllegalStateException("Arbeidsgiver må være enten aktør eller virksomhet, men var: " + arbeidsgiver);
+    }
+
+    private static List<Periodeinntekt> lagInntekterSN(InntektFilterDto filter) {
+        return filter.filterBeregnetSkatt().getFiltrertInntektsposter()
+                .stream()
+                .map(inntektspost -> Periodeinntekt.builder()
+                        .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
+                        .medAktivitetStatus(AktivitetStatus.SN)
+                        .medInntekt(inntektspost.getBeløp().getVerdi())
+                        .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
+                        .build()).collect(Collectors.toList());
+    }
+
+
+}

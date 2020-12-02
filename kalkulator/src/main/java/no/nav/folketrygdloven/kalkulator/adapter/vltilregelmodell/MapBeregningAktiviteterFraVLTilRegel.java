@@ -45,18 +45,18 @@ public class MapBeregningAktiviteterFraVLTilRegel {
                                          OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                          Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
-        Periode gjeldendePeriode = opptjeningsperiode.getPeriode();
-
+        var gjeldendePeriode = opptjeningsperiode.getPeriode();
+        var regelPeriode = Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato());
         if (Aktivitet.FRILANSINNTEKT.equals(aktivitetType)) {
-            return AktivPeriode.forFrilanser(gjeldendePeriode);
+            return AktivPeriode.forFrilanser(regelPeriode);
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             var opptjeningArbeidsgiverAktørId = opptjeningsperiode.getArbeidsgiverAktørId();
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
-            return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverAktørId,
+            return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
                 opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, relevanteAktiviteter);
         } else {
-            return AktivPeriode.forAndre(aktivitetType, gjeldendePeriode);
+            return AktivPeriode.forAndre(aktivitetType, regelPeriode);
         }
     }
 

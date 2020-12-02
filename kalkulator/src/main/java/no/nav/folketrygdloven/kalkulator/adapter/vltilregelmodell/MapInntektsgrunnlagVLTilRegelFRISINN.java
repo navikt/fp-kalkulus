@@ -3,12 +3,14 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -66,17 +68,18 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         return inntektsgrunnlag;
     }
 
-    private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag,
-                                     InntektFilterDto filter,
-                                     Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+    private List<Periodeinntekt> lagInntektBeregning(InntektFilterDto filter,
+                                                     Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        List<Periodeinntekt> inntekter = new ArrayList<>();
         filter.filterBeregningsgrunnlag()
                 .filter(i -> i.getArbeidsgiver() != null)
-                .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
+                .forFilter((inntekt, inntektsposter) -> inntekter.addAll(mapInntekt(inntekt, inntektsposter, yrkesaktiviteter)));
+        return inntekter;
     }
 
-    private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag, InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
-                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
-        inntektsposter.forEach(inntektspost -> {
+    private List<Periodeinntekt> mapInntekt(InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
+                                            Collection<YrkesaktivitetDto> yrkesaktiviteter) {
+        return inntektsposter.stream().map(inntektspost -> {
 
             Arbeidsforhold arbeidsgiver = mapYrkesaktivitet(inntekt.getArbeidsgiver(), yrkesaktiviteter);
             if (Objects.isNull(arbeidsgiver)) {
@@ -86,13 +89,13 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
             } else if (Objects.isNull(inntektspost.getBeløp().getVerdi())) {
                 throw new IllegalStateException("Inntektsbeløp må være satt.");
             }
-            inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+            return Periodeinntekt.builder()
                     .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
                     .medArbeidsgiver(arbeidsgiver)
                     .medMåned(inntektspost.getPeriode().getFomDato())
                     .medInntekt(inntektspost.getBeløp().getVerdi())
-                    .build());
-        });
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     private Arbeidsforhold mapYrkesaktivitet(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
@@ -160,37 +163,28 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         return vedtaksDagsats.map(Beløp::getVerdi).orElse(beløpFraYtelseAnvist);
     }
 
-    private void lagInntekterSN(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
-        filter.filterBeregnetSkatt().getFiltrertInntektsposter()
-                .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+    private List<Periodeinntekt> lagInntekterSN(InntektFilterDto filter) {
+        return filter.filterBeregnetSkatt().getFiltrertInntektsposter()
+                .stream()
+                .map(inntektspost -> Periodeinntekt.builder()
                         .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
                         .medAktivitetStatus(AktivitetStatus.SN)
                         .medInntekt(inntektspost.getBeløp().getVerdi())
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
-                        .build()));
+                        .build()).collect(Collectors.toList());
     }
 
     private void hentInntektArbeidYtelse(Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
 
-        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
-        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
-        var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
 
         YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag = input.getYtelsespesifiktGrunnlag();
         if (!(ytelsespesifiktGrunnlag instanceof FrisinnGrunnlag)) {
             throw new IllegalStateException("Ytelsesgrunnlag må være FRISINNgrunnlag for å beregne FRISINN ytelse");
         }
         FrisinnGrunnlag frisinnGrunnlag = (FrisinnGrunnlag) ytelsespesifiktGrunnlag;
-
-        if (!filter.isEmpty()) {
-            List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
-            yrkesaktiviteter.addAll(filterYaRegister.getYrkesaktiviteterForBeregning());
-            yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
-
-            lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter);
-            lagInntekterSN(inntektsgrunnlag, filter);
-        }
+        List<Periodeinntekt> samletInntekterATFLSN = finnInntekterATFLSN(skjæringstidspunktBeregning, iayGrunnlag);
+        samletInntekterATFLSN.forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister()).før(input.getSkjæringstidspunktOpptjening());
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
@@ -201,6 +195,25 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         oppgittOpptjeningOpt.ifPresent(oppgittOpptjening ->
                 mapOppgittOpptjening(inntektsgrunnlag, frisinnGrunnlag, oppgittOpptjening, input.getSkjæringstidspunktOpptjening()));
 
+    }
+
+    private List<Periodeinntekt> finnInntekterATFLSN(LocalDate skjæringstidspunktBeregning, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
+        var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
+        var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
+        List<Periodeinntekt> samletInntekterATFLSN = new ArrayList<>();
+        if (!filter.isEmpty()) {
+            List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
+            yrkesaktiviteter.addAll(filterYaRegister.getYrkesaktiviteterForBeregning());
+            yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
+
+            List<Periodeinntekt> inntekterATFL = lagInntektBeregning(filter, yrkesaktiviteter);
+            List<Periodeinntekt> inntektNæring = lagInntekterSN(filter);
+
+            samletInntekterATFLSN = Stream.concat(inntekterATFL.stream(), inntektNæring.stream()).collect(Collectors.toList());
+
+        }
+        return samletInntekterATFLSN;
     }
 
     private void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, FrisinnGrunnlag frisinnGrunnlag,

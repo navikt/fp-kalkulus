@@ -133,7 +133,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             BigDecimal.valueOf(refusjonsKrav.get(1) / 12));
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1, im2).build();
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.FRILANS, opptjeningPeriode, ORGNR3),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, opptjeningPeriode, ORGNR1),
@@ -228,7 +228,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             null);
 
 
-        var opptjeningPeriode = Periode.of(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
+        var opptjeningPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1), SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1));
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.FRILANS, opptjeningPeriode, ORGNR3),
             OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.NÆRING, opptjeningPeriode, ORGNR3)
