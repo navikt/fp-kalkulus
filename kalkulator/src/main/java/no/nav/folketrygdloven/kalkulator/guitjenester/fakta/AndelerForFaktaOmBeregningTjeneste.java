@@ -1,21 +1,25 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import static no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel;
+import static no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste.lagVisningsnavn;
+import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForKunLese;
+import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForPreutfylling;
+import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.SkalKunneEndreAktivitet.skalKunneEndreAktivitet;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde.PROSESS_START;
+import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde.SAKSBEHANDLER_KOFAKBER;
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
-import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelForFaktaOmBeregningDto;
@@ -27,49 +31,47 @@ public class AndelerForFaktaOmBeregningTjeneste {
     }
 
     public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagGUIInput input) {
-        BeregningsgrunnlagGrunnlagDto gjeldendeGrunnlag;
-        if (input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag().isPresent()) {
-            gjeldendeGrunnlag = input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag().get();
-        } else {
-            gjeldendeGrunnlag = input.getBeregningsgrunnlagGrunnlag();
-        }
-        BeregningsgrunnlagDto beregningsgrunnlag = gjeldendeGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Må ha beregningsgrunnlag her"));
-        List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIFørstePeriode = beregningsgrunnlag
-            .getBeregningsgrunnlagPerioder()
-            .get(0)
-            .getBeregningsgrunnlagPrStatusOgAndelList()
-            .stream()
-            .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START) || a.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER))
-            .collect(Collectors.toList());
-        return andelerIFørstePeriode.stream()
-            .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))
-            .collect(Collectors.toList());
-
+        return input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag()
+                .orElse(input.getBeregningsgrunnlagGrunnlag())
+                .getBeregningsgrunnlag()
+                .map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
+                .filter(Objects::nonNull)
+                .filter(c -> !c.isEmpty())
+                .map(b -> b.get(0))
+                .map(g -> g.getBeregningsgrunnlagPrStatusOgAndelList())
+                .orElseThrow()
+                .stream()
+                .filter(a -> a.getKilde().equals(PROSESS_START) || a.getKilde().equals(SAKSBEHANDLER_KOFAKBER))
+                .map(andel -> mapTilAndelIFaktaOmBeregning(input, andel))
+                .collect(Collectors.toList());
     }
 
-    private static AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    private static AndelForFaktaOmBeregningDto mapTilAndelIFaktaOmBeregning(BeregningsgrunnlagGUIInput input,
+            BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var ref = input.getKoblingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
-        Optional<InntektsmeldingDto> inntektsmeldingForAndel = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
-        AndelForFaktaOmBeregningDto andelDto = new AndelForFaktaOmBeregningDto();
-        andelDto.setFastsattBelop(FinnInntektForVisning.finnInntektForPreutfylling(andel));
-        andelDto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
-        andelDto.setAndelsnr(andel.getAndelsnr());
-        andelDto.setAktivitetStatus(new AktivitetStatus(andel.getAktivitetStatus().getKode()));
-        InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
-        andelDto.setVisningsnavn(VisningsnavnForAktivitetTjeneste.lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
-        andelDto.setSkalKunneEndreAktivitet(SkalKunneEndreAktivitet.skalKunneEndreAktivitet(andel));
-        andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
-        BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag).ifPresent(andelDto::setArbeidsforhold);
-        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(andelDto::setRefusjonskrav);
-        FinnInntektForVisning.finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
-            input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller()).ifPresent(andelDto::setBelopReadOnly);
-        return andelDto;
+        var inntektsmeldingForAndel = finnInntektsmeldingForAndel(andel, inntektsmeldinger);
+        var dto = new AndelForFaktaOmBeregningDto();
+        dto.setFastsattBelop(finnInntektForPreutfylling(andel));
+        dto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
+        dto.setAndelsnr(andel.getAndelsnr());
+        dto.setAktivitetStatus(new AktivitetStatus(andel.getAktivitetStatus().getKode()));
+        var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
+        dto.setVisningsnavn(lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
+        dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel));
+        dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
+        BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)
+                .ifPresent(dto::setArbeidsforhold);
+        finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(dto::setRefusjonskrav);
+        finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
+                input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller())
+                        .ifPresent(dto::setBelopReadOnly);
+        return dto;
     }
 
     private static Optional<BigDecimal> finnRefusjonskravFraInntektsmelding(Optional<InntektsmeldingDto> inntektsmeldingForAndel) {
         return inntektsmeldingForAndel
-            .map(InntektsmeldingDto::getRefusjonBeløpPerMnd)
-            .map(Beløp::getVerdi);
+                .map(InntektsmeldingDto::getRefusjonBeløpPerMnd)
+                .map(Beløp::getVerdi);
     }
 }
