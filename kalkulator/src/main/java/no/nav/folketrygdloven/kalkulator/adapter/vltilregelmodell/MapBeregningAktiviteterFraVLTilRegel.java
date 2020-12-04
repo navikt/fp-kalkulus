@@ -23,8 +23,6 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 @FagsakYtelseTypeRef("*")
 public class MapBeregningAktiviteterFraVLTilRegel {
 
-    public static final String INGEN_AKTIVITET_MELDING = "Må ha aktiviteter for å sette status.";
-
     public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
         LocalDate opptjeningSkjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
 
@@ -33,11 +31,10 @@ public class MapBeregningAktiviteterFraVLTilRegel {
 
         var relevanteAktiviteter = input.getOpptjeningAktiviteterForBeregning();
 
-        if (relevanteAktiviteter.isEmpty()) { // For enklere feilsøking når det mangler aktiviteter
-            throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
-        } else {
+        if (!relevanteAktiviteter.isEmpty()) {
             relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(input.getInntektsmeldinger(), opptjeningsperiode, relevanteAktiviteter)));
         }
+
         return modell;
     }
 

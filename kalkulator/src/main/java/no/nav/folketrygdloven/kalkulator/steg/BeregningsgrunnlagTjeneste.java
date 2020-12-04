@@ -44,7 +44,9 @@ import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnla
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
@@ -94,6 +96,12 @@ public class BeregningsgrunnlagTjeneste {
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
+        if (beregningAktivitetAggregat.getBeregningAktiviteter().isEmpty()) {
+            // Avslår vilkår
+            return BeregningResultatAggregat.Builder.fra(input)
+                    .medAvslåttVilkårIHelePerioden(Vilkårsavslagsårsak.FOR_LAVT_BG)
+                    .build();
+        }
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
         Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
         BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())

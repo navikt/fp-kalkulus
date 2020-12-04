@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,9 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsårsak;
 
 
 public class BeregningResultatAggregat {
@@ -50,8 +53,14 @@ public class BeregningResultatAggregat {
         private BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder;
         private BeregningsgrunnlagTilstand tilstand;
         private BeregningResultatAggregat kladd;
+        private LocalDate skjæringstidspunkt;
 
-        public Builder(BeregningsgrunnlagInput input) {
+        private Builder(BeregningsgrunnlagInput input) {
+            if (input.getSkjæringstidspunktForBeregning() != null) {
+                this.skjæringstidspunkt = input.getSkjæringstidspunktForBeregning();
+            } else {
+                this.skjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
+            }
             this.grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
             this.kladd = new BeregningResultatAggregat();
         }
@@ -72,6 +81,11 @@ public class BeregningResultatAggregat {
 
         public Builder medAksjonspunkter(List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater) {
             this.kladd.beregningAksjonspunktResultater = beregningAksjonspunktResultater;
+            return this;
+        }
+
+        public Builder medAvslåttVilkårIHelePerioden(Vilkårsavslagsårsak vilkårsavslagsårsak) {
+            this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(false, vilkårsavslagsårsak, Intervall.fraOgMed(skjæringstidspunkt));
             return this;
         }
 
