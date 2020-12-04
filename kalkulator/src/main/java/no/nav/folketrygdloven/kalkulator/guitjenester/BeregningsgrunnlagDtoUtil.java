@@ -109,6 +109,7 @@ public class BeregningsgrunnlagDtoUtil {
                 .findFirst();
         if (opplysningerDto.isPresent()) {
             if (arbeidsgiver.getErVirksomhet()) {
+                arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
                 arbeidsforhold.setArbeidsgiverId(opplysningerDto.get().getIdentifikator());
                 arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
@@ -116,6 +117,7 @@ public class BeregningsgrunnlagDtoUtil {
                     arbeidsforhold.setOrganisasjonstype(new no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype(Organisasjonstype.KUNSTIG.getKode()));
                 }
             } else if (arbeidsgiver.erAktørId()) {
+                arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
                 arbeidsforhold.setAktørId(new AktørId(arbeidsgiver.getAktørId().getId()));
                 arbeidsforhold.setAktørIdPersonIdent(new AktørIdPersonident(arbeidsgiver.getAktørId().getId()));
                 LocalDate fødselsdato = opplysningerDto.get().getFødselsdato();
