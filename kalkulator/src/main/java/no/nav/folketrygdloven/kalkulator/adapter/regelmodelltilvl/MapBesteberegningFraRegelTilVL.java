@@ -43,11 +43,21 @@ public class MapBesteberegningFraRegelTilVL {
     private static void loggDiff(BeregningsgrunnlagDto gammeltGrunnlag, BeregningsgrunnlagDto nyttGrunnlag) {
         var gammelAndelerFørstePeriode = gammeltGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
         var andelerFørstePeriode = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-
-        if (!andelerFørstePeriode.equals(gammelAndelerFørstePeriode)) {
+        if (harDiffIBesteberegning(gammelAndelerFørstePeriode, andelerFørstePeriode)) {
             LOGGER.info("Oppdaget diff i besteberegning. AUTOMATISK BESTEBEREGNING: " + andelerFørstePeriode
                     + " SAKSBEHANDLERS BESTEBEREGNING: " + gammelAndelerFørstePeriode);
         }
+    }
+
+    private static boolean harDiffIBesteberegning(List<BeregningsgrunnlagPrStatusOgAndelDto> gammelAndelerFørstePeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFørstePeriode) {
+        for (int i = 0; i < gammelAndelerFørstePeriode.size(); i++) {
+            var gammelAndel = gammelAndelerFørstePeriode.get(i);
+            var nyAndel = andelerFørstePeriode.get(i);
+            if (gammelAndel.getBesteberegningPrÅr().compareTo(nyAndel.getBesteberegningPrÅr()) != 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void fjernSaksbehandlersBesteberegning(BeregningsgrunnlagDto nyttGrunnlag) {
@@ -64,7 +74,7 @@ public class MapBesteberegningFraRegelTilVL {
         List<BesteberegnetAndel> andelListe = output.getBesteberegnetGrunnlag().getBesteberegnetAndelList();
         nyttGrunnlag.getBeregningsgrunnlagPerioder()
                 .forEach(p -> andelListe
-                        .forEach(a -> oppdaterAndelerMedBestebergnetInntekt(p, a)));
+                        .forEach(a -> oppdaterAndelerMedBesteberegnetInntekt(p, a)));
     }
 
     private static void settBesteberegningTilNullForAndreAndeler(BeregningsgrunnlagDto nyttGrunnlag) {
@@ -75,7 +85,7 @@ public class MapBesteberegningFraRegelTilVL {
         });
     }
 
-    private static void oppdaterAndelerMedBestebergnetInntekt(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
+    private static void oppdaterAndelerMedBesteberegnetInntekt(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
         AktivitetNøkkel aktivitetNøkkel = a.getAktivitetNøkkel();
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndelIPeriode(periode, aktivitetNøkkel);
         if (matchendeAndel.isPresent()) {
@@ -91,6 +101,8 @@ public class MapBesteberegningFraRegelTilVL {
             matchendeAndel = finnArbeidstakerAndel(periode, aktivitetNøkkel);
         } else if (aktivitetNøkkel.getType().equals(Aktivitet.FRILANSINNTEKT)) {
             matchendeAndel = finnFrilansAndel(periode);
+        } else if (aktivitetNøkkel.getType().equals(Aktivitet.NÆRINGSINNTEKT)) {
+            matchendeAndel = finnNæringAndel(periode);
         }
         return matchendeAndel;
     }
@@ -113,10 +125,18 @@ public class MapBesteberegningFraRegelTilVL {
                 .findFirst();
     }
 
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnNæringAndel(BeregningsgrunnlagPeriodeDto periode) {
+        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream().filter(bgAndel -> bgAndel.getAktivitetStatus().erSelvstendigNæringsdrivende())
+                .findFirst();
+    }
+
     private static void oppdaterBesteberegningForAndel(BesteberegnetAndel besteberegnetAndel, BeregningsgrunnlagPrStatusOgAndelDto matchendeAndel) {
         BigDecimal besteberegnet = matchendeAndel.getBesteberegningPrÅr();
+        BigDecimal beregnet = besteberegnet == null ? besteberegnetAndel.getBesteberegnetPrÅr() : besteberegnet.add(besteberegnetAndel.getBesteberegnetPrÅr());
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(matchendeAndel)
-                .medBesteberegningPrÅr(besteberegnet == null ? besteberegnetAndel.getBesteberegnetPrÅr() : besteberegnet.add(besteberegnetAndel.getBesteberegnetPrÅr()));
+                .medBesteberegningPrÅr(beregnet)
+                .medBeregnetPrÅr(beregnet);
     }
 
     private static void leggPåDagpenger(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
@@ -128,6 +148,7 @@ public class MapBesteberegningFraRegelTilVL {
         } else {
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medKilde(AndelKilde.PROSESS_BESTEBEREGNING)
                     .medBesteberegningPrÅr(a.getBesteberegnetPrÅr())
+                    .medBeregnetPrÅr(a.getBesteberegnetPrÅr())
                     .medAktivitetStatus(AktivitetStatus.DAGPENGER).build(periode);
         }
     }

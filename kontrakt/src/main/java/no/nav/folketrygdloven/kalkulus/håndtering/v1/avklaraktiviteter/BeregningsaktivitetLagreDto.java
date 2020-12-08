@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -57,10 +58,15 @@ public class BeregningsaktivitetLagreDto {
     private boolean skalBrukes;
 
     public BeregningsaktivitetLagreDto() {
-        // Json deserialisering
     }
 
-    public BeregningsaktivitetLagreDto(@Valid @NotNull OpptjeningAktivitetType opptjeningAktivitetType, @Valid @NotNull LocalDate fom, @Valid @NotNull LocalDate tom, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String oppdragsgiverOrg, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsgiverIdentifikator, @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsforholdRef, @Valid @NotNull boolean skalBrukes) {
+    public BeregningsaktivitetLagreDto(@Valid @NotNull OpptjeningAktivitetType opptjeningAktivitetType,
+                                       @Valid @NotNull LocalDate fom,
+                                       @Valid @NotNull LocalDate tom,
+                                       @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String oppdragsgiverOrg,
+                                       @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsgiverIdentifikator,
+                                       @Valid @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'") String arbeidsforholdRef,
+                                       @Valid @NotNull boolean skalBrukes) {
         this.opptjeningAktivitetType = opptjeningAktivitetType;
         this.fom = fom;
         this.tom = tom;

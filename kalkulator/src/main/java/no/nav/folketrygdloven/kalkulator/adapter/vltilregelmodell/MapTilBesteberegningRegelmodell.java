@@ -93,10 +93,9 @@ public class MapTilBesteberegningRegelmodell {
         List<YtelseAnvistDto> alleMeldekort = BeregningUtils.finnAlleMeldekort(ytelseFilter, ytelseTyper);
         // Mapper alle meldekort til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
         return alleMeldekort.stream().map(meldekort -> Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
-                .medInntekt(meldekort.getDagsats().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig
+                .medInntekt(meldekort.getBeløp().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
                 .medPeriode(Periode.of(meldekort.getAnvistFOM(), meldekort.getAnvistTOM()))
-                .medUtbetalingsgrad(meldekort.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi).orElse(BigDecimal.ZERO))
                 .build()).collect(Collectors.toList());
     }
 
