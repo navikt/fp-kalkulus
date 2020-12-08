@@ -98,7 +98,10 @@ public class BeregningsgrunnlagTjeneste {
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
         if (beregningAktivitetAggregat.getBeregningAktiviteter().isEmpty()) {
             // Avslår vilkår
-            return BeregningResultatAggregat.Builder.fra(input)
+            var grUtenAktiviteter = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
+                    .medRegisterAktiviteter(beregningAktivitetAggregat)
+                    .build(input.getStegTilstand());
+            return BeregningResultatAggregat.Builder.fra(input.medBeregningsgrunnlagGrunnlag(grUtenAktiviteter))
                     .medAvslåttVilkårIHelePerioden(Vilkårsavslagsårsak.FOR_LAVT_BG)
                     .build();
         }

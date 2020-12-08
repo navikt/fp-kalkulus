@@ -61,7 +61,7 @@ public class BeregningResultatAggregat {
             } else {
                 this.skjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
             }
-            this.grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
+            this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? null : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
             this.kladd = new BeregningResultatAggregat();
         }
 
