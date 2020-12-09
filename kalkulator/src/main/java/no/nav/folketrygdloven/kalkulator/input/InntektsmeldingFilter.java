@@ -59,7 +59,7 @@ public class InntektsmeldingFilter {
         inntektsmeldinger.forEach(im -> {
             boolean skalLeggeTil = yrkesaktiviteter.stream()
                 .anyMatch(y -> {
-                    boolean gjelderFor = y.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
+                    boolean gjelderFor = y.gjelderFor(im);
                     var ansettelsesPerioder = filter.getAnsettelsesPerioder(y);
                     return gjelderFor && ansettelsesPerioder.stream()
                         .anyMatch(ap -> ap.getPeriode().inkluderer(skjæringstidspunktet) || ap.getPeriode().getFomDato().isAfter(skjæringstidspunktet));

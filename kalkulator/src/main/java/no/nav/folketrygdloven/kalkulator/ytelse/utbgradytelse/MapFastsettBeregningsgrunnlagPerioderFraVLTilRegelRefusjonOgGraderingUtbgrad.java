@@ -5,7 +5,6 @@ import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FinnAndelsn
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +32,6 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -52,8 +49,11 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering {
 
     @Override
-    protected Optional<LocalDate> utledStartdatoPermisjon(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning, Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya, Periode ansettelsesPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        Optional<LocalDate> førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(input, ya, ansettelsesPeriode);
+    protected Optional<LocalDate> utledStartdatoPermisjon(Input input, 
+                                                          LocalDate skjæringstidspunktBeregning, 
+                                                          YrkesaktivitetDto ya, 
+                                                          Periode ansettelsesPeriode) {
+        Optional<LocalDate> førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, ansettelsesPeriode);
         return førsteSøktePermisjonsdag.map(dato -> skjæringstidspunktBeregning.isAfter(dato) ? skjæringstidspunktBeregning : dato);
     }
 
@@ -138,7 +138,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .medAktivitetStatus(tilretteleggingAktivitetStatus)
                 .medAndelsnr(finnAndelsnrIFørstePeriode(vlBeregningsgrunnlag, tilretteleggingArbeidsforhold).orElse(null));
 
-        mapArbeidsforholdMedPeriode(ref, filter, tilretteleggingArbeidsforhold, builder)
+        mapArbeidsforholdMedPeriode(ref, filter, tilretteleggingArbeidsforhold)
                 .ifPresent(builder::medArbeidsforhold);
         List<Gradering> graderinger = tilrettelegging.getPeriodeMedUtbetalingsgrad().stream()
                 .filter(p -> !p.getPeriode().getTomDato().isBefore(vlBeregningsgrunnlag.getSkjæringstidspunkt()))
@@ -148,7 +148,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return builder.build();
     }
 
-    private Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold, AndelGraderingImpl.Builder builder) {
+    private Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold) {
         return tilretteleggingArbeidsforhold.getArbeidsgiver().map(arbeidsgiver -> {
             InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
             // Finner yrkesaktiviteter inkludert fjernet i overstyring siden vi kun er interessert i å lage nye arbeidsforhold for nye aktiviteter (Disse kan ikke fjernes)

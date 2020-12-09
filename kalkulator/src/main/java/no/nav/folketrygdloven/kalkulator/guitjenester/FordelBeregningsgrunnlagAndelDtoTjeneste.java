@@ -5,7 +5,6 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodiseri
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +34,8 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                                                                         BeregningsgrunnlagPeriodeDto periode) {
         List<FordelBeregningsgrunnlagAndelDto> endringAndeler = new ArrayList<>();
         for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
-            FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, periode);
+            var inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, input.getInntektsmeldinger());
+            FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, inntektsmelding, periode);
             RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
             endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erAktivitetLagtTilIPeriodisering(andel));
             endringAndel.setArbeidsforholdType(new OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
@@ -45,7 +45,9 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
     }
 
     private static FordelBeregningsgrunnlagAndelDto lagEndretBGAndel(BeregningsgrunnlagGUIInput input,
-                                                                     BeregningsgrunnlagPrStatusOgAndelDto andel, BeregningsgrunnlagPeriodeDto periode) {
+                                                                     BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                                     Optional<InntektsmeldingDto> inntektsmelding,
+                                                                     BeregningsgrunnlagPeriodeDto periode) {
         FordelBeregningsgrunnlagAndelDto endringAndel = new FordelBeregningsgrunnlagAndelDto(BeregningsgrunnlagDtoUtil.lagFaktaOmBeregningAndel(
             andel,
             input.getAktivitetGradering(),
@@ -54,15 +56,8 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
         endringAndel.setFordeltPrAar(andel.getFordeltPrÅr());
-        settBeløpFraInntektsmelding(andel, input.getInntektsmeldinger(), endringAndel);
+        inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
         return endringAndel;
-    }
-
-    private static void settBeløpFraInntektsmelding(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                    Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                    FordelBeregningsgrunnlagAndelDto endringAndel) {
-        Optional<InntektsmeldingDto> inntektsmeldingOpt = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, inntektsmeldinger);
-        inntektsmeldingOpt.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
     }
 
     private static void settFordelingForrigeBehandling(BeregningsgrunnlagGUIInput input,

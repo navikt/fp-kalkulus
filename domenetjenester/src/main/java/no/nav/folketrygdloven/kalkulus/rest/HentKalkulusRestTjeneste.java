@@ -37,10 +37,8 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
@@ -158,26 +156,6 @@ public class HentKalkulusRestTjeneste {
             .findFirst()
             .orElse(Response.noContent().build());
         return response;
-    }
-
-    private Optional<no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.fastsatt.BeregningsgrunnlagDto> hentFastsattBeregningsgrunnlagForSpesifikasjon(KoblingReferanse koblingReferanse,
-                                                                                                                                                                   YtelseTyperKalkulusStøtter ytelseType) {
-        return hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanse, ytelseType).stream()
-            .filter(grunnlag -> grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.FASTSATT))
-            .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-            .map(MapBeregningsgrunnlag::map)
-            .findFirst();
-    }
-
-    private Optional<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(KoblingReferanse koblingReferanse,
-                                                                                                              YtelseTyperKalkulusStøtter ytelseType) {
-        koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
-            .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
-        Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseType);
-        if (!harKalkulatorInput(koblingId)) {
-            return Optional.empty();
-        }
-        return beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
     }
 
     private List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection<KoblingReferanse> koblingReferanser,

@@ -17,8 +17,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Re
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.SvangerskapspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel.Input;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -164,7 +165,8 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
                 BeregningsgrunnlagTilstand.FORESLÅTT, iayGrunnlag, svangerskapspengeGrunnlag);
 
         // Act
-        Optional<LocalDate> førsteSøktePermisjonsdag = mapper.utledStartdatoPermisjon(input, STP, List.of(), yrkesaktivitet, ansettelsesperiode, iayGrunnlag);
+        var newInput = new Input(input, List.of());
+        Optional<LocalDate> førsteSøktePermisjonsdag = mapper.utledStartdatoPermisjon(newInput , STP, yrkesaktivitet, ansettelsesperiode);
 
         // Assert
         assertThat(førsteSøktePermisjonsdag).isPresent();

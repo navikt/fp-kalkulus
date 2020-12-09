@@ -45,8 +45,7 @@ public class InntektsmeldingForAndel {
     }
 
     private static boolean matcherInntektsmeldingYrkesaktivitet(YrkesaktivitetDto ya, InntektsmeldingDto im) {
-        return im.getArbeidsgiver().getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator()) &&
-                im.getArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef());
+        return ya.gjelderFor(im);
     }
 
     private static List<YrkesaktivitetDto> finnYrkesaktiviteterForAndelSomStarterFørOgSlutterPåEllerEtterStp(BGAndelArbeidsforholdDto arbeidsforhold, Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunkt) {

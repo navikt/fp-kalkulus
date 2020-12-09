@@ -77,7 +77,7 @@ public class LønnsendringTjeneste {
 
     private static boolean matchYrkesaktivitetMedInntektsmeldingSomIkkeKommer(List<InntektsmeldingSomIkkeKommerDto> manglendeInntektsmeldinger, YrkesaktivitetDto yrkesaktivitet) {
         return manglendeInntektsmeldinger.stream()
-            .anyMatch(im -> yrkesaktivitet.gjelderFor(im.getArbeidsgiver(), im.getRef()));
+            .anyMatch(im -> yrkesaktivitet.gjelderFor(im));
     }
 
     private static Collection<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIBeregningsperioden(YrkesaktivitetFilterDto filter, LocalDate beregningsperiodeFom, LocalDate beregningsperiodeTom, LocalDate skjæringstidspunkt) {

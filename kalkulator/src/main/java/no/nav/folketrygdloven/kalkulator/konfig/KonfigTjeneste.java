@@ -6,18 +6,18 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
 
 public class KonfigTjeneste {
-    private static final List<FagsakYtelseType> STØTTDEDE_YTELSER = new ArrayList<>();
+    private static final List<FagsakYtelseType> STØTTEDE_YTELSER = new ArrayList<>();
 
     private KonfigTjeneste() {
         // Skjuler default
     }
 
     static {
-        STØTTDEDE_YTELSER.add(FagsakYtelseType.FORELDREPENGER);
-        STØTTDEDE_YTELSER.add(FagsakYtelseType.SVANGERSKAPSPENGER);
-        STØTTDEDE_YTELSER.add(FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
-        STØTTDEDE_YTELSER.add(FagsakYtelseType.OMSORGSPENGER);
-        STØTTDEDE_YTELSER.add(FagsakYtelseType.FRISINN);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.FORELDREPENGER);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.SVANGERSKAPSPENGER);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.OMSORGSPENGER);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.FRISINN);
     }
 
     public static Konfigverdier forYtelse(FagsakYtelseType ytelse) {
@@ -36,7 +36,7 @@ public class KonfigTjeneste {
     }
 
     private static void verfisierYtelsetype(FagsakYtelseType ytelse) {
-        if (ytelse == null || !STØTTDEDE_YTELSER.contains(ytelse)) {
+        if (ytelse == null || !STØTTEDE_YTELSER.contains(ytelse)) {
             throw new IllegalStateException("Ytelsetype " + ytelse + " har ingen definerte konfigverdier");
         }
     }

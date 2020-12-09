@@ -36,7 +36,6 @@ public class VurderNyoppstartetFLOppdatererTest {
 
     private VurderNyoppstartetFLOppdaterer vurderNyoppstartetFLOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
-    private BeregningsgrunnlagPrStatusOgAndelDto frilansAndel;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
@@ -52,7 +51,8 @@ public class VurderNyoppstartetFLOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+        @SuppressWarnings("unused")
+        var frilansAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
             .medInntektskategori(Inntektskategori.FRILANSER)
             .medAktivitetStatus(AktivitetStatus.FRILANSER)

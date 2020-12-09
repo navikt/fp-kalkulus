@@ -47,7 +47,7 @@ public class SelftestRestTjenesteTest {
 
     @Test
     public void test_doSelftest_med_html_type() {
-        when(selftestServiceMock.doSelftest(any(), anyBoolean())).thenReturn(lagHtmlTypeResponse(false));
+        when(selftestServiceMock.doSelftest(any(), anyBoolean())).thenReturn(lagHtmlTypeResponse());
 
         Response response = restTjeneste.doSelftest(TEXT_HTML, false);
 
@@ -58,7 +58,7 @@ public class SelftestRestTjenesteTest {
 
     @Test
     public void test_doSelftest_med_html_type_json_format() {
-        when(selftestServiceMock.doSelftest(any(), anyBoolean())).thenReturn(lagHtmlTypeResponse(true));
+        when(selftestServiceMock.doSelftest(any(), anyBoolean())).thenReturn(lagHtmlTypeResponse());
 
         Response response = restTjeneste.doSelftest(TEXT_HTML, true);
 
@@ -77,7 +77,7 @@ public class SelftestRestTjenesteTest {
                 .build();
     }
 
-    private Response lagHtmlTypeResponse(boolean jsonFormat) {
+    private Response lagHtmlTypeResponse() {
         byte[] s = {'a', 'b'};
         return Response.ok()
                 .encoding(RESPONSE_ENCODING)

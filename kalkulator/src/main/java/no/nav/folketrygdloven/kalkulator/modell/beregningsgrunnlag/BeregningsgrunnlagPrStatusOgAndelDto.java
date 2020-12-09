@@ -603,19 +603,19 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         }
 
 
-        public BeregningsgrunnlagPrStatusOgAndelDto build(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+        public BeregningsgrunnlagPrStatusOgAndelDto build(BeregningsgrunnlagPeriodeDto periode) {
             if(built) {
                 return kladd;
             }
-            kladd.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
+            kladd.beregningsgrunnlagPeriode = periode;
             verifyStateForBuild();
             if (kladd.andelsnr == null) {
                 // TODO (OleSandbu): Ikke mod input!
-                finnOgSettAndelsnr(beregningsgrunnlagPeriode);
+                finnOgSettAndelsnr(periode);
             }
             // TODO (OleSandbu): Ikke mod input!
-            beregningsgrunnlagPeriode.addBeregningsgrunnlagPrStatusOgAndel(kladd);
-            beregningsgrunnlagPeriode.updateBruttoPrÅr();
+            periode.addBeregningsgrunnlagPrStatusOgAndel(kladd);
+            periode.updateBruttoPrÅr();
             verifiserAndelsnr();
             built = true;
             return kladd;

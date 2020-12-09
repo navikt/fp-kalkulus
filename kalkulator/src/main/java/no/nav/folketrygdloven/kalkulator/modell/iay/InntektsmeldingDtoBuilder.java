@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
 import no.nav.vedtak.konfig.Tid;
 
 public class InntektsmeldingDtoBuilder {
@@ -98,6 +99,19 @@ public class InntektsmeldingDtoBuilder {
         kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
         kladd.setRefusjonOpphører(Tid.TIDENES_ENDE);
         return this;
+    }
+
+    public InntektsmeldingDtoBuilder medJournalpostId(JournalpostId journalpostId) {
+        precondition();
+        kladd.setJournalpostId(journalpostId);
+        return this;
+    }
+
+    public InntektsmeldingDtoBuilder medKanalreferanse(String kanalreferanse) {
+        precondition();
+        kladd.setKanalreferanse(kanalreferanse);
+        return this;
+    
     }
 
     public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi, LocalDate opphører) {

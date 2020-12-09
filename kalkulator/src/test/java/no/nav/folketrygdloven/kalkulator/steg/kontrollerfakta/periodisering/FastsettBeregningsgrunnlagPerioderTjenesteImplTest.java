@@ -29,9 +29,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.BekreftetPermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
@@ -44,7 +41,6 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingT
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BekreftetPermisjonStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NaturalYtelseType;
@@ -255,14 +251,6 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         assertBeregningsgrunnlagPeriode(perioder.get(0), SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusDays(30));
         assertBeregningsgrunnlagPeriode(perioder.get(1), SKJÆRINGSTIDSPUNKT.plusDays(31), SKJÆRINGSTIDSPUNKT.plusDays(89), PeriodeÅrsak.NATURALYTELSE_BORTFALT);
         assertBeregningsgrunnlagPeriode(perioder.get(2), SKJÆRINGSTIDSPUNKT.plusDays(90), TIDENES_ENDE, PeriodeÅrsak.NATURALYTELSE_TILKOMMER);
-    }
-
-    private ArbeidsforholdInformasjonDtoBuilder bekreftetPermisjon(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto ref, LocalDate fom, LocalDate tom) {
-        ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonBuilder = ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = arbeidsforholdInformasjonBuilder.getOverstyringBuilderFor(arbeidsgiver, ref);
-        overstyringBuilder.medBekreftetPermisjon(new BekreftetPermisjonDto(fom, tom, BekreftetPermisjonStatus.BRUK_PERMISJON));
-        return arbeidsforholdInformasjonBuilder
-                .leggTil(overstyringBuilder);
     }
 
     @Test

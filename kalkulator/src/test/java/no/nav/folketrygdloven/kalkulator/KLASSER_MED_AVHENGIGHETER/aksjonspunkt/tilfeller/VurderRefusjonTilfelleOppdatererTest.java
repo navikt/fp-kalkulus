@@ -39,7 +39,6 @@ public class VurderRefusjonTilfelleOppdatererTest {
 
     private VurderRefusjonTilfelleOppdaterer vurderRefusjonTilfelleOppdaterer;
     private KoblingReferanse referanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-    private BeregningsgrunnlagInput input;
 
     @BeforeEach
     public void setUp() {

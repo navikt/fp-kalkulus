@@ -9,8 +9,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -36,7 +34,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BekreftetPermisjon
 public class UtledBekreftetPermisjonerTilDtoTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 
     @Test
     public void skal_returne_empty_hvis_bekreftet_permisjon_ikke_er_present(){

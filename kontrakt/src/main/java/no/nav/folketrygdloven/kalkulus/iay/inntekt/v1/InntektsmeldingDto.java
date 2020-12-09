@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
@@ -58,11 +60,31 @@ public class InntektsmeldingDto {
     @Valid
     private BeløpDto refusjonBeløpPerMnd;
 
+    /** JournalpostId - for sporing. */
+    @JsonProperty(value = "journalpostId")
+    @Valid
+    private JournalpostId journalpostId;
+
+    /** Opprinnelig kanalreferanse (fra Altinn). for sporing. */
+    @JsonProperty(value = "kanalreferanse")
+    @Pattern(regexp = "^[\\p{Graph}\\s\\t\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "Inntektsmelding kanalreferanse [${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String kanalreferanse;
+
     protected InntektsmeldingDto() {
         // default ctor
     }
 
-    public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver, @Valid @NotNull BeløpDto inntektBeløp, @Valid List<NaturalYtelseDto> naturalYtelser, @Valid List<RefusjonDto> endringerRefusjon, @Valid InternArbeidsforholdRefDto arbeidsforholdRef, @Valid LocalDate startDatoPermisjon, @Valid LocalDate refusjonOpphører, @Valid BeløpDto refusjonBeløpPerMnd) {
+    public InntektsmeldingDto(@Valid @NotNull Aktør arbeidsgiver, 
+                              @Valid @NotNull BeløpDto inntektBeløp, 
+                              @Valid List<NaturalYtelseDto> naturalYtelser,
+                              @Valid List<RefusjonDto> endringerRefusjon, 
+                              @Valid InternArbeidsforholdRefDto arbeidsforholdRef,
+                              @Valid LocalDate startDatoPermisjon, 
+                              @Valid LocalDate refusjonOpphører, 
+                              @Valid BeløpDto refusjonBeløpPerMnd,
+                              @Valid JournalpostId journalpostId,
+                              @Valid String kanalreferanse
+                              ) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektBeløp = inntektBeløp;
         this.naturalYtelser = naturalYtelser;
@@ -71,6 +93,8 @@ public class InntektsmeldingDto {
         this.startDatoPermisjon = startDatoPermisjon;
         this.refusjonOpphører = refusjonOpphører;
         this.refusjonBeløpPerMnd = refusjonBeløpPerMnd;
+        this.journalpostId = journalpostId;
+        this.kanalreferanse = kanalreferanse;
     }
 
     public Aktør getArbeidsgiver() {
@@ -103,5 +127,13 @@ public class InntektsmeldingDto {
 
     public BeløpDto getRefusjonBeløpPerMnd() {
         return refusjonBeløpPerMnd;
+    }
+
+    public JournalpostId getJournalpostId() {
+        return journalpostId;
+    }
+
+    public String getKanalreferanse() {
+        return kanalreferanse;
     }
 }

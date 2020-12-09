@@ -22,12 +22,13 @@ public abstract class AbstractIntervall implements Comparable<AbstractIntervall>
 
     public abstract LocalDate getTomDato();
 
-
     public Interval tilIntervall() {
         return getIntervall(getFomDato(), getTomDato());
     }
 
     private static Interval getIntervall(LocalDate fomDato, LocalDate tomDato) {
+        Objects.requireNonNull(fomDato, "fom=null, tom=" + tomDato);
+        Objects.requireNonNull(fomDato, "fom=" + fomDato + ", tom=null");
         LocalDateTime døgnstart = TIDENES_ENDE.equals(tomDato) ? tomDato.atStartOfDay() : tomDato.atStartOfDay().plusDays(1);
         return Interval.of(
             fomDato.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(),
@@ -35,19 +36,23 @@ public abstract class AbstractIntervall implements Comparable<AbstractIntervall>
     }
 
     public boolean overlapper(AbstractIntervall periode) {
+        Objects.requireNonNull(periode, "null periode angitt vs periode=" + this);
         return tilIntervall().overlaps(getIntervall(periode.getFomDato(), periode.getTomDato()));
     }
 
     public boolean inkluderer(LocalDate dato) {
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
         return erEtterEllerLikPeriodestart(dato) && erFørEllerLikPeriodeslutt(dato);
     }
 
     private boolean erEtterEllerLikPeriodestart(LocalDate dato) {
-        return getFomDato().isBefore(dato) || getFomDato().isEqual(dato);
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
+        return (getFomDato().isBefore(dato) || getFomDato().isEqual(dato));
     }
 
     private boolean erFørEllerLikPeriodeslutt(LocalDate dato) {
-        return getTomDato() == null || getTomDato().isAfter(dato) || getTomDato().isEqual(dato);
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
+        return (getTomDato() == null || getTomDato().isAfter(dato) || getTomDato().isEqual(dato));
     }
 
     @Override
@@ -59,7 +64,8 @@ public abstract class AbstractIntervall implements Comparable<AbstractIntervall>
             return false;
         }
         AbstractIntervall annen = (AbstractIntervall) object;
-        return this.getFomDato().equals(annen.getFomDato()) && this.getTomDato().equals(annen.getTomDato());
+        return Objects.equals(this.getFomDato(), annen.getFomDato())
+            && Objects.equals(this.getTomDato(), annen.getTomDato());
     }
 
     @Override

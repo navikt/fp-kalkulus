@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.refusjon.PeriodiserOgFastsettRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -37,7 +36,6 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
     private static final LocalDate UENDELIG = Intervall.TIDENES_ENDE;
 
     private BeregningsgrunnlagDto.Builder grunnlagBuilder = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(STP);
-    private BeregningRefusjonOverstyringerDto.Builder overstyringAggregatBuilder =  BeregningRefusjonOverstyringerDto.builder();
     private List<VurderRefusjonAndelBeregningsgrunnlagDto> saksbehandlerAvklaringer = new ArrayList<>();
     @Test
     public void skal_ikke_splitte_noe_hvis_refusjon_aggregat_er_tomt() {

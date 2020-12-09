@@ -54,23 +54,22 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var beregningsgrunnlagPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         var andeler = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
         var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-                .map(MapSplittetPeriodeFraVLTilRegel::map).collect(Collectors.toList());
+            .map(MapSplittetPeriodeFraVLTilRegel::map).collect(Collectors.toList());
 
-        var regelInntektsmeldinger = mapInntektsmeldinger(input, andeler);
+        var regelInntektsmeldinger = mapInntektsmeldinger(new Input(input, andeler));
         var regelAndelGraderinger = graderinger.stream()
-                .filter(ag -> !AktivitetStatus.ARBEIDSTAKER.equals(ag.getAktivitetStatus()))
-                .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGraderingForFLSN(beregningsgrunnlag, ref, andelGradering, filter))
-                .collect(Collectors.toList());
+            .filter(ag -> !AktivitetStatus.ARBEIDSTAKER.equals(ag.getAktivitetStatus()))
+            .map(andelGradering -> MapAndelGradering.mapTilRegelAndelGraderingForFLSN(beregningsgrunnlag, ref, andelGradering, filter))
+            .collect(Collectors.toList());
 
         return mapPeriodeModell(input,
-                beregningsgrunnlag,
-                filter,
-                skjæringstidspunkt,
-                eksisterendePerioder,
-                regelInntektsmeldinger,
-                List.copyOf(regelAndelGraderinger));
+            beregningsgrunnlag,
+            filter,
+            skjæringstidspunkt,
+            eksisterendePerioder,
+            regelInntektsmeldinger,
+            List.copyOf(regelAndelGraderinger));
     }
-
 
     protected abstract PeriodeModell mapPeriodeModell(BeregningsgrunnlagInput input,
                                                       BeregningsgrunnlagDto beregningsgrunnlag,
@@ -92,32 +91,30 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         // template method
     }
 
-    private List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(BeregningsgrunnlagInput input,
-                                                                       List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
-        var referanse = input.getKoblingReferanse();
-        var iayGrunnlag = input.getIayGrunnlag();
+    private List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(Input inputAndeler) {
+        var referanse = inputAndeler.getBeregningsgrunnlagInput().getKoblingReferanse();
+        var iayGrunnlag = inputAndeler.getBeregningsgrunnlagInput().getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
-        var grunnlag = input.getBeregningsgrunnlagGrunnlag();
+        var grunnlag = inputAndeler.getBeregningsgrunnlagInput().getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-                .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
-                .getSkjæringstidspunkt();
-
+            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .getSkjæringstidspunkt();
 
         Collection<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger()
-                .map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
-                .orElse(Collections.emptyList());
-        List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger = new ArrayList<>();
+            .map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
+            .orElse(Collections.emptyList());
+
+        var resultat = new Resultat();
         FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(referanse, iayGrunnlag, grunnlag)
-                .stream()
-                .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya))
-                .sorted(refusjonFørstComparator(inntektsmeldinger))
-                .forEach(ya -> lagArbeidsforholdOgInntektsmelding(
-                        input,
-                        andeler,
-                        arbeidGraderingOgInntektsmeldinger,
-                        ya));
-        return arbeidGraderingOgInntektsmeldinger;
+            .stream()
+            .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya))
+            .sorted(refusjonFørstComparator(inntektsmeldinger))
+            .forEach(ya -> lagArbeidsforholdOgInntektsmelding(
+                inputAndeler,
+                resultat,
+                ya));
+        return resultat.getArbeidGraderingOgInntektsmeldinger();
     }
 
     private boolean slutterEtterSkjæringstidspunktet(YrkesaktivitetFilterDto filter, LocalDate skjæringstidspunktBeregning, YrkesaktivitetDto ya) {
@@ -139,42 +136,45 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         return false;
     }
 
-    private Boolean harMottattInntektsmeldingSomSkalMappesTilAndel(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel, BeregningsgrunnlagInput input) {
+    private Boolean harMottattInntektsmeldingSomSkalMappesTilAndel(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel,
+                                                                   BeregningsgrunnlagInput input) {
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         Collection<YrkesaktivitetDto> yrkesaktiviteter = new YrkesaktivitetFilterDto(input.getIayGrunnlag().getArbeidsforholdInformasjon(),
-                input.getIayGrunnlag().getAktørArbeidFraRegister()).getYrkesaktiviteterForBeregning();
+            input.getIayGrunnlag().getAktørArbeidFraRegister()).getYrkesaktiviteterForBeregning();
         Optional<Boolean> harInntektsmelding = matchendeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-                .map(arb -> InntektsmeldingForAndel.harInntektsmeldingForAndel(arb, inntektsmeldinger, yrkesaktiviteter, input.getSkjæringstidspunktForBeregning()));
+            .map(
+                arb -> InntektsmeldingForAndel.harInntektsmeldingForAndel(arb, inntektsmeldinger, yrkesaktiviteter, input.getSkjæringstidspunktForBeregning()));
         return harInntektsmelding.orElse(false);
     }
 
     private boolean erAggregertAndel(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel) {
         Optional<Boolean> gjelderSpesifikt = matchendeAndel.flatMap(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
-                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold);
+            .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+            .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold);
         return !gjelderSpesifikt.orElse(false);
     }
 
-    private boolean tilkommerPåEllerEtterStp(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning, Periode ansettelsesPeriode, YrkesaktivitetDto ya) {
+    private boolean tilkommerPåEllerEtterStp(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunktBeregning, Periode ansettelsesPeriode,
+                                             YrkesaktivitetDto ya) {
         return ansettelsesPeriode != null &&
-                FinnFørsteDagEtterBekreftetPermisjon.finn(iayGrunnlag, ya, ansettelsesPeriode, skjæringstidspunktBeregning)
-                        .map(d -> !d.isBefore(skjæringstidspunktBeregning)).orElse(false);
+            FinnFørsteDagEtterBekreftetPermisjon.finn(iayGrunnlag, ya, ansettelsesPeriode, skjæringstidspunktBeregning)
+                .map(d -> !d.isBefore(skjæringstidspunktBeregning)).orElse(false);
     }
 
     private Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnMatchendeAndel(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler, YrkesaktivitetDto ya) {
         return andeler.stream()
-                .filter(andel -> andel.gjelderSammeArbeidsforhold(ya.getArbeidsgiver(), ya.getArbeidsforholdRef()))
-                .findFirst();
+            .filter(andel -> andel.gjelderSammeArbeidsforhold(ya.getArbeidsgiver(), ya.getArbeidsforholdRef()))
+            .findFirst();
     }
 
     private Comparator<YrkesaktivitetDto> refusjonFørstComparator(Collection<InntektsmeldingDto> inntektsmeldinger) {
         return (y1, y2) -> {
             boolean y1HarRefusjon = inntektsmeldinger.stream()
-                    .filter(im -> gjelderInntektsmeldingFor(y1, im))
-                    .anyMatch(this::harRefusjon);
+                .filter(im -> gjelderInntektsmeldingFor(y1, im))
+                .anyMatch(this::harRefusjon);
             boolean y2HarRefusjon = inntektsmeldinger.stream()
-                    .filter(im -> gjelderInntektsmeldingFor(y2, im))
-                    .anyMatch(this::harRefusjon);
+                .filter(im -> gjelderInntektsmeldingFor(y2, im))
+                .anyMatch(this::harRefusjon);
             if (y1HarRefusjon && !y2HarRefusjon) {
                 return -1;
             } else if (y2HarRefusjon && !y1HarRefusjon) {
@@ -189,32 +189,39 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     }
 
     private boolean gjelderInntektsmeldingFor(YrkesaktivitetDto yrkesaktivitet, InntektsmeldingDto im) {
-        return yrkesaktivitet.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
+        return yrkesaktivitet.gjelderFor(im);
     }
 
-    protected Optional<LocalDate> utledStartdatoPermisjon(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning, Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya, Periode ansettelsesPeriode, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = finnFørsteSøktePermisjonsdag(input, ya, ansettelsesPeriode);
+    protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
+                                                          LocalDate skjæringstidspunktBeregning,
+                                                          YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, ansettelsesPeriode);
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, skjæringstidspunktBeregning, førstedagEtterBekreftetPermisjonOpt.get(), inntektsmeldinger));
+        return Optional
+            .of(FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, skjæringstidspunktBeregning, førstedagEtterBekreftetPermisjonOpt.get(),
+                input.getInntektsmeldinger()));
     }
 
     protected Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-                .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
-                .getSkjæringstidspunkt();
-        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterBekreftetPermisjon.finn(input.getIayGrunnlag(), ya, ansettelsesPeriode, skjæringstidspunktBeregning);
+            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .getSkjæringstidspunkt();
+        Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterBekreftetPermisjon.finn(input.getIayGrunnlag(), ya, ansettelsesPeriode,
+            skjæringstidspunktBeregning);
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }
         return førstedagEtterBekreftetPermisjonOpt;
     }
 
-    private List<Gradering> hentGraderingerSomIkkeErLagtTilFraFør(List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger, YrkesaktivitetDto ya, List<Gradering> graderinger) {
-        List<Gradering> graderingerSomErLagtTil = arbeidGraderingOgInntektsmeldinger.stream().filter(arbeidsforholdOgInntektsmelding -> matchArbeidsforhold(ya, arbeidsforholdOgInntektsmelding))
-                .flatMap(a -> a.getGraderinger().stream()).collect(Collectors.toList());
+    private List<Gradering> hentGraderingerSomIkkeErLagtTilFraFør(Resultat resultat,
+                                                                  YrkesaktivitetDto ya, List<Gradering> graderinger) {
+        List<Gradering> graderingerSomErLagtTil = resultat.getArbeidGraderingOgInntektsmeldinger().stream()
+            .filter(arbeidsforholdOgInntektsmelding -> matchArbeidsforhold(ya, arbeidsforholdOgInntektsmelding))
+            .flatMap(a -> a.getGraderinger().stream()).collect(Collectors.toList());
         return graderinger.stream().filter(g1 -> graderingerSomErLagtTil.stream().noneMatch(g2 -> erLike(g1, g2))).collect(Collectors.toList());
     }
 
@@ -244,62 +251,102 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     private Arbeidsforhold lagArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-                .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                .filter(im -> im.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold())
-                .findFirst();
+            .filter(im -> ya.gjelderFor(im))
+            .filter(im -> im.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold())
+            .findFirst();
         return MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(
-                ya.getArbeidsgiver(),
-                matchendeInntektsmelding.isPresent() ? matchendeInntektsmelding.get().getArbeidsforholdRef() : InternArbeidsforholdRefDto.nullRef());
+            ya.getArbeidsgiver(),
+            matchendeInntektsmelding.isPresent() ? matchendeInntektsmelding.get().getArbeidsforholdRef() : InternArbeidsforholdRefDto.nullRef());
     }
 
-    private void lagArbeidsforholdOgInntektsmelding(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
-                                                    List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger,
+    private void lagArbeidsforholdOgInntektsmelding(Input inputAndeler,
+                                                    Resultat resultat,
                                                     YrkesaktivitetDto ya) {
-        Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
-        var iayGrunnlag = input.getIayGrunnlag();
+        BeregningsgrunnlagInput beregningsgrunnlagInput = inputAndeler.getBeregningsgrunnlagInput();
+        Collection<InntektsmeldingDto> inntektsmeldinger = inputAndeler.getInntektsmeldinger();
+        var iayGrunnlag = beregningsgrunnlagInput.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
-        var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(input);
-        var andelGraderinger = input.getAktivitetGradering() == null ? new ArrayList<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
-        var grunnlag = input.getBeregningsgrunnlagGrunnlag();
+        var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(beregningsgrunnlagInput);
+        var andelGraderinger = beregningsgrunnlagInput.getAktivitetGradering() == null
+            ? new ArrayList<AndelGradering>()
+            : beregningsgrunnlagInput.getAktivitetGradering().getAndelGradering();
+        var grunnlag = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-                .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
-                .getSkjæringstidspunkt();
+            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .getSkjæringstidspunkt();
 
         Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
-        Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(input, skjæringstidspunktBeregning, inntektsmeldinger, ya, ansettelsesPeriode, iayGrunnlag);
+        Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(inputAndeler, skjæringstidspunktBeregning, ya, ansettelsesPeriode);
+
         if (startdatoPermisjonOpt.isPresent()) {
             LocalDate startdatoPermisjon = startdatoPermisjonOpt.get();
             ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
-            Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(andeler, ya);
-            if (!harAggregertAndelOgAktivitetTilkommerEtterStp(input, iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel, ansettelsesPeriode, ya)) {
+            Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(inputAndeler.getAndeler(), ya);
+
+            if (!harAggregertAndelOgAktivitetTilkommerEtterStp(beregningsgrunnlagInput, iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel,
+                ansettelsesPeriode, ya)) {
                 Optional<InntektsmeldingDto> inntektsmelding = finnMatchendeInntektsmelding(ya, inntektsmeldinger);
-                if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya) || harAggregertAndelOgMottattInntektsmeldingUtenId(matchendeAndel, inntektsmelding)) {
+                if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)
+                    || harAggregertAndelOgMottattInntektsmeldingUtenId(matchendeAndel, inntektsmelding)) {
                     matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
                 }
-                mapInntektsmelding(input, inntektsmeldinger, førsteIMMap, ya, startdatoPermisjon, builder, grunnlag.getRefusjonOverstyringer());
+                mapInntektsmelding(beregningsgrunnlagInput, inntektsmeldinger, førsteIMMap, ya, startdatoPermisjon, builder,
+                    grunnlag.getRefusjonOverstyringer());
                 List<Gradering> graderinger = mapGradering(andelGraderinger, ya);
-                List<Gradering> graderingerSomSkalLeggesTil = hentGraderingerSomIkkeErLagtTilFraFør(arbeidGraderingOgInntektsmeldinger, ya, graderinger);
+                List<Gradering> graderingerSomSkalLeggesTil = hentGraderingerSomIkkeErLagtTilFraFør(resultat, ya, graderinger);
                 builder.medGraderinger(graderingerSomSkalLeggesTil);
 
                 Arbeidsforhold arbeidsforhold = lagArbeidsforhold(inntektsmeldinger, ya);
                 ArbeidsforholdOgInntektsmelding arbeidsforholdOgInntektsmelding = builder
-                        .medAnsettelsesperiode(ansettelsesPeriode)
-                        .medArbeidsforhold(arbeidsforhold)
-                        .medStartdatoPermisjon(startdatoPermisjon)
-                        .build();
-                arbeidGraderingOgInntektsmeldinger.add(arbeidsforholdOgInntektsmelding);
+                    .medAnsettelsesperiode(ansettelsesPeriode)
+                    .medArbeidsforhold(arbeidsforhold)
+                    .medStartdatoPermisjon(startdatoPermisjon)
+                    .build();
+                resultat.getArbeidGraderingOgInntektsmeldinger().add(arbeidsforholdOgInntektsmelding);
             }
         }
     }
 
     private Optional<InntektsmeldingDto> finnMatchendeInntektsmelding(YrkesaktivitetDto ya, Collection<InntektsmeldingDto> inntektsmeldinger) {
         return inntektsmeldinger.stream()
-                .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                .findFirst();
+            .filter(im -> ya.gjelderFor(im))
+            .findFirst();
     }
 
-    private boolean harAggregertAndelOgMottattInntektsmeldingUtenId(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel, Optional<InntektsmeldingDto> inntektsmelding) {
+    private boolean harAggregertAndelOgMottattInntektsmeldingUtenId(Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel,
+                                                                    Optional<InntektsmeldingDto> inntektsmelding) {
         return erAggregertAndel(matchendeAndel) && inntektsmelding.stream().noneMatch(InntektsmeldingDto::gjelderForEtSpesifiktArbeidsforhold);
+    }
+
+    public static class Input {
+        private final BeregningsgrunnlagInput beregningsgrunnlagInput;
+        private final List<BeregningsgrunnlagPrStatusOgAndelDto> andeler;
+
+        public Input(BeregningsgrunnlagInput input, List<BeregningsgrunnlagPrStatusOgAndelDto> andeler) {
+            this.beregningsgrunnlagInput = input;
+            this.andeler = Collections.unmodifiableList(andeler);
+        }
+
+        public Collection<InntektsmeldingDto> getInntektsmeldinger() {
+            return beregningsgrunnlagInput.getInntektsmeldinger();
+        }
+
+        public BeregningsgrunnlagInput getBeregningsgrunnlagInput() {
+            return beregningsgrunnlagInput;
+        }
+
+        public List<BeregningsgrunnlagPrStatusOgAndelDto> getAndeler() {
+            return andeler;
+        }
+    }
+
+    static class Resultat {
+        final List<ArbeidsforholdOgInntektsmelding> arbeidGraderingOgInntektsmeldinger = new ArrayList<>();
+
+        List<ArbeidsforholdOgInntektsmelding> getArbeidGraderingOgInntektsmeldinger() {
+            return arbeidGraderingOgInntektsmeldinger;
+        }
+
     }
 }

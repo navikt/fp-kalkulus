@@ -57,15 +57,15 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     public Inntektsgrunnlag map(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         inntektsgrunnlag.setInntektRapporteringFristDag((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
-        hentInntektArbeidYtelse(inntektsgrunnlag,  input, skjæringstidspunktBeregning);
+        hentInntektArbeidYtelse(inntektsgrunnlag, input, skjæringstidspunktBeregning);
 
         return inntektsgrunnlag;
     }
 
     private void lagInntektBeregning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         filter.filterBeregningsgrunnlag()
-                .filter(i -> i.getArbeidsgiver() != null)
-                .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
+            .filter(i -> i.getArbeidsgiver() != null)
+            .forFilter((inntekt, inntektsposter) -> mapInntekt(inntektsgrunnlag, inntekt, inntektsposter, yrkesaktiviteter));
     }
 
     private void mapInntekt(Inntektsgrunnlag inntektsgrunnlag, InntektDto inntekt, Collection<InntektspostDto> inntektsposter,
@@ -82,31 +82,31 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             }
 
             inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                    .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
-                    .medArbeidsgiver(arbeidsgiver)
-                    .medMåned(inntektspost.getPeriode().getFomDato())
-                    .medInntekt(inntektspost.getBeløp().getVerdi())
-                    .build());
+                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_BEREGNING)
+                .medArbeidsgiver(arbeidsgiver)
+                .medMåned(inntektspost.getPeriode().getFomDato())
+                .medInntekt(inntektspost.getBeløp().getVerdi())
+                .build());
         });
     }
 
     private Arbeidsforhold mapYrkesaktivitet(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         return erFrilanser(arbeidsgiver, yrkesaktiviteter)
-                ? Arbeidsforhold.frilansArbeidsforhold()
-                : lagNyttArbeidsforholdHosArbeidsgiver(arbeidsgiver);
+            ? Arbeidsforhold.frilansArbeidsforhold()
+            : lagNyttArbeidsforholdHosArbeidsgiver(arbeidsgiver);
     }
 
     private boolean erFrilanser(Arbeidsgiver arbeidsgiver, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         final List<ArbeidType> arbeidType = yrkesaktiviteter
-                .stream()
-                .filter(it -> it.getArbeidsgiver() != null)
-                .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-                .map(YrkesaktivitetDto::getArbeidType)
-                .distinct()
-                .collect(Collectors.toList());
+            .stream()
+            .filter(it -> it.getArbeidsgiver() != null)
+            .filter(it -> it.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+            .map(YrkesaktivitetDto::getArbeidType)
+            .distinct()
+            .collect(Collectors.toList());
         boolean erFrilanser = yrkesaktiviteter.stream()
-                .map(YrkesaktivitetDto::getArbeidType)
-                .anyMatch(ArbeidType.FRILANSER::equals);
+            .map(YrkesaktivitetDto::getArbeidType)
+            .anyMatch(ArbeidType.FRILANSER::equals);
         return (arbeidType.isEmpty() && erFrilanser) || arbeidType.contains(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
     }
 
@@ -124,31 +124,39 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                     YrkesaktivitetFilterDto filterYaRegister,
                                     LocalDate skjæringstidspunktBeregning) {
         inntektsmeldinger.stream()
-                .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
-                .forEach(im -> {
-                    Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
-                    BigDecimal inntekt = im.getInntektBeløp().getVerdi();
-                    List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
-                            .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(), ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
-                            .collect(Collectors.toList());
-                    Periodeinntekt.Builder naturalYtelserBuilder = Periodeinntekt.builder()
-                            .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSMELDING)
-                            .medArbeidsgiver(arbeidsforhold)
-                            .medInntekt(inntekt)
-                            .medNaturalYtelser(naturalytelser);
-                    im.getStartDatoPermisjon().ifPresent(dato -> naturalYtelserBuilder.medMåned(dato.minusMonths(1).withDayOfMonth(1)));
+            .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
+            .map(this::mapNaturalYtelse)
+            .forEach(naturalytelse -> inntektsgrunnlag.leggTilPeriodeinntekt(naturalytelse));
+    }
 
-                    inntektsgrunnlag.leggTilPeriodeinntekt(naturalYtelserBuilder.build());
-                });
+    private Periodeinntekt mapNaturalYtelse(InntektsmeldingDto im) {
+
+        try {
+            Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapForInntektsmelding(im);
+            BigDecimal inntekt = im.getInntektBeløp().getVerdi();
+            List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse> naturalytelser = im.getNaturalYtelser().stream()
+                .map(ny -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse(ny.getBeloepPerMnd().getVerdi(),
+                    ny.getPeriode().getFomDato(), ny.getPeriode().getTomDato()))
+                .collect(Collectors.toList());
+            Periodeinntekt.Builder naturalYtelserBuilder = Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSMELDING)
+                .medArbeidsgiver(arbeidsforhold)
+                .medInntekt(inntekt)
+                .medNaturalYtelser(naturalytelser);
+            im.getStartDatoPermisjon().ifPresent(dato -> naturalYtelserBuilder.medMåned(dato.minusMonths(1).withDayOfMonth(1)));
+            return naturalYtelserBuilder.build();
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException(String.format("Kunne ikke mappe inntektsmelding [journalpostId=%s, kanalreferanse=%s]: %s",
+                im.getJournalpostId(), im.getKanalreferanse(), e.getMessage()), e);
+        }
     }
 
     private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
         return filterYaRegister.getYrkesaktiviteter().stream()
-                .filter(ya -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
-                .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
-                        .map(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false));
+            .filter(ya -> ya.gjelderFor(im))
+            .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
+                .map(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false));
     }
-
 
     private void mapTilstøtendeYtelserDagpengerOgAAP(Inntektsgrunnlag inntektsgrunnlag,
                                                      YtelseFilterDto ytelseFilter,
@@ -156,75 +164,76 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                                      FagsakYtelseType fagsakYtelseType) {
 
         Optional<YtelseDto> nyesteVedtakForDagsats = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt,
-                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+            Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
         if (nyesteVedtakForDagsats.isEmpty()) {
             return;
         }
 
-        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats.get(), skjæringstidspunkt,
-                Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), fagsakYtelseType);
+        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats.get(),
+            skjæringstidspunkt,
+            Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), fagsakYtelseType);
         BigDecimal dagsats = nyesteVedtakForDagsats.get().getVedtaksDagsats().map(Beløp::getVerdi)
-                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+            .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
         BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
-                .map(Stillingsprosent::getVerdi).orElse(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
+            .map(Stillingsprosent::getVerdi).orElse(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
 
         inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
-                .medInntekt(dagsats)
-                .medMåned(skjæringstidspunkt)
-                .medUtbetalingsgrad(utbetalingsgradProsent)
-                .build());
+            .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+            .medInntekt(dagsats)
+            .medMåned(skjæringstidspunkt)
+            .medUtbetalingsgrad(utbetalingsgradProsent)
+            .build());
     }
 
     private void lagInntektSammenligning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
         Map<LocalDate, BigDecimal> månedsinntekter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+            .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
+                ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
 
         månedsinntekter.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(måned)
-                .medInntekt(inntekt)
-                .build()));
+            .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
+            .medMåned(måned)
+            .medInntekt(inntekt)
+            .build()));
     }
 
     private void lagInntektSammenligningPrStatus(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter, Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         Map<LocalDate, BigDecimal> månedsinntekterFrilans = filter.filterSammenligningsgrunnlag().getAlleInntektSammenligningsgrunnlag().stream()
-                .filter(inntekt -> inntekt.getArbeidsgiver() != null)
-                .filter(inntekt -> erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
-                .flatMap(i -> i.getAlleInntektsposter().stream())
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+            .filter(inntekt -> inntekt.getArbeidsgiver() != null)
+            .filter(inntekt -> erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
+            .flatMap(i -> i.getAlleInntektsposter().stream())
+            .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
+                ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
 
         månedsinntekterFrilans.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(måned)
-                .medInntekt(inntekt)
-                .medAktivitetStatus(AktivitetStatus.FL)
-                .build()));
+            .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
+            .medMåned(måned)
+            .medInntekt(inntekt)
+            .medAktivitetStatus(AktivitetStatus.FL)
+            .build()));
 
         Map<LocalDate, BigDecimal> månedsinntekterArbeidstaker = filter.filterSammenligningsgrunnlag().getAlleInntektSammenligningsgrunnlag().stream()
-                .filter(inntekt -> inntekt.getArbeidsgiver() != null)
-                .filter(inntekt -> !erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
-                .flatMap(i -> i.getAlleInntektsposter().stream())
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+            .filter(inntekt -> inntekt.getArbeidsgiver() != null)
+            .filter(inntekt -> !erFrilanser(inntekt.getArbeidsgiver(), yrkesaktiviteter))
+            .flatMap(i -> i.getAlleInntektsposter().stream())
+            .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
+                ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
 
         månedsinntekterArbeidstaker.forEach((måned, inntekt) -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(måned)
-                .medInntekt(inntekt)
-                .medAktivitetStatus(AktivitetStatus.AT)
-                .build()));
+            .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
+            .medMåned(måned)
+            .medInntekt(inntekt)
+            .medAktivitetStatus(AktivitetStatus.AT)
+            .build()));
     }
 
     private void lagInntekterSN(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
         filter.filterBeregnetSkatt().getFiltrertInntektsposter()
-                .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-                        .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
-                        .medInntekt(inntektspost.getBeløp().getVerdi())
-                        .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
-                        .build()));
+            .forEach(inntektspost -> inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.SIGRUN)
+                .medInntekt(inntektspost.getBeløp().getVerdi())
+                .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
+                .build()));
     }
 
     private void hentInntektArbeidYtelse(Inntektsgrunnlag inntektsgrunnlag, BeregningsgrunnlagInput input, LocalDate skjæringstidspunktBeregning) {
@@ -241,7 +250,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             yrkesaktiviteter.addAll(filterYaRegister.getFrilansOppdrag());
 
             var bekreftetAnnenOpptjening = iayGrunnlag.getBekreftetAnnenOpptjening();
-            var filterYaBekreftetAnnenOpptjening = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), bekreftetAnnenOpptjening).før(skjæringstidspunktBeregning);
+            var filterYaBekreftetAnnenOpptjening = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), bekreftetAnnenOpptjening)
+                .før(skjæringstidspunktBeregning);
             yrkesaktiviteter.addAll(filterYaBekreftetAnnenOpptjening.getYrkesaktiviteterForBeregning());
 
             lagInntektBeregning(inntektsgrunnlag, filter, yrkesaktiviteter);
@@ -267,10 +277,11 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
 
     void mapOppgittOpptjening(Inntektsgrunnlag inntektsgrunnlag, OppgittOpptjeningDto oppgittOpptjening) {
         oppgittOpptjening.getEgenNæring().stream()
-                .filter(en -> en.getNyoppstartet() || en.getVarigEndring())
-                .filter(en -> en.getBruttoInntekt() != null)
-                .forEach(en -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektEgenNæring(en)));
+            .filter(en -> en.getNyoppstartet() || en.getVarigEndring())
+            .filter(en -> en.getBruttoInntekt() != null)
+            .forEach(en -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektEgenNæring(en)));
     }
+
     private Periodeinntekt byggPeriodeinntektEgenNæring(OppgittEgenNæringDto en) {
         LocalDate datoForInntekt;
         if (en.getVarigEndring()) {
@@ -282,10 +293,10 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             throw new IllegalStateException("Søker har oppgitt varig endret eller nyoppstartet næring men har ikke oppgitt endringsdato eller oppstartsdato");
         }
         return Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
-                .medMåned(datoForInntekt)
-                .medInntekt(en.getBruttoInntekt())
-                .build();
+            .medInntektskildeOgPeriodeType(Inntektskilde.SØKNAD)
+            .medMåned(datoForInntekt)
+            .medInntekt(en.getBruttoInntekt())
+            .build();
     }
 
 }

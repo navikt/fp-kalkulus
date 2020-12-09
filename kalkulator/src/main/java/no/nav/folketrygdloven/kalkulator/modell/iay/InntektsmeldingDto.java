@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
 
 public class InntektsmeldingDto {
 
@@ -24,6 +25,8 @@ public class InntektsmeldingDto {
     private Beløp refusjonBeløpPerMnd;
     private LocalDate refusjonOpphører;
     private List<RefusjonDto> endringerRefusjon = new ArrayList<>();
+    private String kanalreferanse;
+    private JournalpostId journalpostId;
 
     InntektsmeldingDto() {
     }
@@ -69,6 +72,14 @@ public class InntektsmeldingDto {
      */
     public List<NaturalYtelseDto> getNaturalYtelser() {
         return Collections.unmodifiableList(naturalYtelser);
+    }
+
+    public String getKanalreferanse() {
+        return kanalreferanse;
+    }
+
+    public JournalpostId getJournalpostId() {
+        return journalpostId;
     }
 
     /**
@@ -130,6 +141,14 @@ public class InntektsmeldingDto {
 
     void setInntektBeløp(Beløp inntektBeløp) {
         this.inntektBeløp = inntektBeløp;
+    }
+
+    void setKanalreferanse(String kanalreferanse) {
+        this.kanalreferanse = kanalreferanse;
+    }
+
+    void setJournalpostId(JournalpostId journalpostId) {
+        this.journalpostId = journalpostId;
     }
 
     /**
@@ -195,14 +214,15 @@ public class InntektsmeldingDto {
     @Override
     public String toString() {
         return "InntektsmeldingDto{" +
-                "naturalYtelser=" + naturalYtelser +
-                ", arbeidsgiver=" + arbeidsgiver +
-                ", arbeidsforholdRef=" + arbeidsforholdRef +
-                ", startDatoPermisjon=" + startDatoPermisjon +
-                ", inntektBeløp=" + inntektBeløp +
-                ", refusjonBeløpPerMnd=" + refusjonBeløpPerMnd +
-                ", refusjonOpphører=" + refusjonOpphører +
-                ", endringerRefusjon=" + endringerRefusjon +
-                '}';
+            "naturalYtelser=" + naturalYtelser +
+            ", arbeidsgiver=" + arbeidsgiver +
+            ", arbeidsforholdRef=" + arbeidsforholdRef +
+            ", startDatoPermisjon=" + startDatoPermisjon +
+            ", inntektBeløp=" + inntektBeløp +
+            ", refusjonBeløpPerMnd=" + refusjonBeløpPerMnd +
+            ", refusjonOpphører=" + refusjonOpphører +
+            ", endringerRefusjon=" + endringerRefusjon +
+            '}';
     }
+
 }

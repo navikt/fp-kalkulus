@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
@@ -37,7 +35,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse ext
                                       ArbeidsforholdOgInntektsmelding.Builder builder,
                                       Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-            .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
+            .filter(im -> ya.gjelderFor(im))
             .findFirst();
         matchendeInntektsmelding.ifPresent(im -> builder.medNaturalytelser(MapNaturalytelser.mapNaturalytelser(im)));
     }

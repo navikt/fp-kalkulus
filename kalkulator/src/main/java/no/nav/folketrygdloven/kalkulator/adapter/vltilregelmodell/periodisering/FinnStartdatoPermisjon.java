@@ -27,7 +27,7 @@ public class FinnStartdatoPermisjon {
 
     private static LocalDate utledStartdato(YrkesaktivitetDto ya, LocalDate startdato, Collection<InntektsmeldingDto>inntektsmeldinger) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-            .filter(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
+            .filter(im -> ya.gjelderFor(im))
             .findFirst();
         Optional<LocalDate> startDatoFraIM = matchendeInntektsmelding.flatMap(InntektsmeldingDto::getStartDatoPermisjon);
         return startDatoFraIM.filter(dato -> dato.isAfter(startdato)).orElse(startdato);

@@ -89,11 +89,18 @@ public class YrkesaktivitetDto {
      * @param arbeidsforholdRef et {@link InternArbeidsforholdRefDto}
      * @return true hvis arbeidsgiver og arbeidsforholdRef macther
      */
-
     public boolean gjelderFor(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
         boolean gjelderForArbeidsgiver = Objects.equals(getArbeidsgiver(), arbeidsgiver);
         boolean gjelderFor = gjelderForArbeidsgiver && getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
         return gjelderFor;
+    }
+
+    public boolean gjelderFor(InntektsmeldingDto im) {
+        return gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
+    }
+    
+    public boolean gjelderFor(InntektsmeldingSomIkkeKommerDto im) {
+        return gjelderFor(im.getArbeidsgiver(), im.getRef());
     }
 
     public Collection<AktivitetsAvtaleDto> getAlleAktivitetsAvtaler() {
@@ -150,4 +157,5 @@ public class YrkesaktivitetDto {
             ", arbeidType=" + arbeidType +
             '}';
     }
+
 }

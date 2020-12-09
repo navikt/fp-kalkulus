@@ -38,7 +38,6 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
 
     private VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer vurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer;
     private BeregningsgrunnlagDto beregningsgrunnlag;
-    private BeregningsgrunnlagPrStatusOgAndelDto snAndel;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
@@ -53,7 +52,9 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
             .build(beregningsgrunnlag);
-        snAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
+        
+        @SuppressWarnings("unused")
+        var snAndel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(1L)
             .medInntektskategori(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE)
             .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
