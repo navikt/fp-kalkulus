@@ -528,7 +528,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
             verifiserKanModifisere();
             kladd.besteberegningPrÅr = besteberegningPrÅr;
-            if (kladd.fordeltPrÅr == null) {
+            if (kladd.besteberegningPrÅr != null && kladd.fordeltPrÅr == null) {
                 kladd.bruttoPrÅr = besteberegningPrÅr;
                 if (kladd.getBeregningsgrunnlagPeriode() != null) {
                     kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
