@@ -169,7 +169,6 @@ public class MapIAYTilKalulator {
                 .medEndringDato(oppgittEgenNæring.getEndringDato())
                 .medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
                 .medVarigEndring(oppgittEgenNæring.getVarigEndring())
-                .medNærRelasjon(oppgittEgenNæring.getNærRelasjon())
                 .medNyoppstartet(oppgittEgenNæring.getNyoppstartet());
         if (oppgittEgenNæring.getAktør() != null && oppgittEgenNæring.getAktør().getErOrganisasjon()) {
             egenNæringBuilder.medVirksomhet(oppgittEgenNæring.getAktør().getIdent());

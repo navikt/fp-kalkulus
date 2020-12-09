@@ -88,16 +88,6 @@ public class OppgittOpptjeningDtoBuilder {
             return this;
         }
 
-        public EgenNæringBuilder medRegnskapsførerNavn(String navn) {
-            this.entitet.setRegnskapsførerNavn(navn);
-            return this;
-        }
-
-        public EgenNæringBuilder medRegnskapsførerTlf(String tlf) {
-            this.entitet.setRegnskapsførerTlf(tlf);
-            return this;
-        }
-
         public EgenNæringBuilder medEndringDato(LocalDate dato) {
             this.entitet.setEndringDato(dato);
             return this;
@@ -115,11 +105,6 @@ public class OppgittOpptjeningDtoBuilder {
 
         public EgenNæringBuilder medVarigEndring(boolean varigEndring) {
             this.entitet.setVarigEndring(varigEndring);
-            return this;
-        }
-
-        public EgenNæringBuilder medNærRelasjon(boolean nærRelasjon) {
-            this.entitet.setNærRelasjon(nærRelasjon);
             return this;
         }
 

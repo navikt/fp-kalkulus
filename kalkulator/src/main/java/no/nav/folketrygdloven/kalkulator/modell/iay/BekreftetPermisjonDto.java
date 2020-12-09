@@ -16,18 +16,9 @@ public class BekreftetPermisjonDto {
     BekreftetPermisjonDto() {
     }
 
-    public BekreftetPermisjonDto(BekreftetPermisjonStatus status){
-        this.status = status;
-    }
-
     public BekreftetPermisjonDto(LocalDate permisjonFom, LocalDate permisjonTom, BekreftetPermisjonStatus status){
         this.periode = Intervall.fraOgMedTilOgMed(permisjonFom, permisjonTom);
         this.status = status;
-    }
-
-    public BekreftetPermisjonDto(BekreftetPermisjonDto bekreftetPermisjon) {
-        this.periode = bekreftetPermisjon.getPeriode();
-        this.status = bekreftetPermisjon.getStatus();
     }
 
     public BekreftetPermisjonStatus getStatus() {

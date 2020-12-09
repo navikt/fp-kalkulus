@@ -1,19 +1,16 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 
 public class InntektArbeidYtelseGrunnlagDto {
 
-    private UUID uuid;
     private InntektArbeidYtelseAggregatDto register;
     private InntektArbeidYtelseAggregatDto saksbehandlet;
     private OppgittOpptjeningDto oppgittOpptjening;
@@ -27,7 +24,6 @@ public class InntektArbeidYtelseGrunnlagDto {
     }
 
     public InntektArbeidYtelseGrunnlagDto(InntektArbeidYtelseGrunnlagDto grunnlag) {
-        this(UUID.randomUUID(), LocalDateTime.now());
 
         // NB! skal ikke lage ny versjon av oppgitt opptjening eller andre underlag! Lenker bare inn på ferskt grunnlag
         grunnlag.getOppgittOpptjening().ifPresent(this::setOppgittOpptjening);
@@ -35,20 +31,6 @@ public class InntektArbeidYtelseGrunnlagDto {
         grunnlag.getSaksbehandletVersjon().ifPresent(this::setSaksbehandlet);
         grunnlag.getInntektsmeldinger().ifPresent(this::setInntektsmeldinger);
         grunnlag.getArbeidsforholdInformasjon().ifPresent(this::setInformasjon);
-    }
-
-    public InntektArbeidYtelseGrunnlagDto(UUID grunnlagReferanse, LocalDateTime opprettetTidspunkt) {
-        this.uuid = Objects.requireNonNull(grunnlagReferanse, "grunnlagReferanse");
-    }
-
-    public InntektArbeidYtelseGrunnlagDto(UUID grunnlagReferanse, LocalDateTime opprettetTidspunkt, InntektArbeidYtelseGrunnlagDto grunnlag) {
-        this(grunnlag);
-        this.uuid = Objects.requireNonNull(grunnlagReferanse, "grunnlagReferanse");
-    }
-
-    /** Identifisere en immutable instans av grunnlaget unikt og er egnet for utveksling (eks. til abakus eller andre systemer) */
-    private UUID getEksternReferanse() {
-        return uuid;
     }
 
     /**

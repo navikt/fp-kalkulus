@@ -7,7 +7,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class AktivitetsAvtaleDtoBuilder {
     private final AktivitetsAvtaleDto aktivitetsAvtale;
-    private boolean oppdatering = false;
+    private boolean oppdatering;
 
     AktivitetsAvtaleDtoBuilder(AktivitetsAvtaleDto aktivitetsAvtaleEntitet, boolean oppdatering) {
         this.aktivitetsAvtale = aktivitetsAvtaleEntitet; // NOSONAR

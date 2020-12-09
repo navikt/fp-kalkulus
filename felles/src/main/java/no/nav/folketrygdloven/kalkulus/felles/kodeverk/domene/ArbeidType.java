@@ -17,14 +17,9 @@ package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
  */
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -41,36 +36,22 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum ArbeidType implements Kodeverdi {
 
-    ETTERLØNN_SLUTTPAKKE("ETTERLØNN_SLUTTPAKKE", "Etterlønn eller sluttpakke", null, true),
-    FORENKLET_OPPGJØRSORDNING("FORENKLET_OPPGJØRSORDNING", "Forenklet oppgjørsordning ", "forenkletOppgjoersordning", false),
-    FRILANSER("FRILANSER", "Frilanser, samlet aktivitet", null, true),
-    FRILANSER_OPPDRAGSTAKER_MED_MER("FRILANSER_OPPDRAGSTAKER", "Frilansere/oppdragstakere, med mer", "frilanserOppdragstakerHonorarPersonerMm", false),
-    LØNN_UNDER_UTDANNING("LØNN_UNDER_UTDANNING", "Lønn under utdanning", null, true),
-    MARITIMT_ARBEIDSFORHOLD("MARITIMT_ARBEIDSFORHOLD", "Maritimt arbeidsforhold", "maritimtArbeidsforhold", false),
-    MILITÆR_ELLER_SIVILTJENESTE("MILITÆR_ELLER_SIVILTJENESTE", "Militær eller siviltjeneste", null, true),
-    ORDINÆRT_ARBEIDSFORHOLD("ORDINÆRT_ARBEIDSFORHOLD", "Ordinært arbeidsforhold", "ordinaertArbeidsforhold", false),
+    ETTERLØNN_SLUTTPAKKE("ETTERLØNN_SLUTTPAKKE", "Etterlønn eller sluttpakke", null),
+    FORENKLET_OPPGJØRSORDNING("FORENKLET_OPPGJØRSORDNING", "Forenklet oppgjørsordning ", "forenkletOppgjoersordning"),
+    FRILANSER("FRILANSER", "Frilanser, samlet aktivitet", null),
+    FRILANSER_OPPDRAGSTAKER_MED_MER("FRILANSER_OPPDRAGSTAKER", "Frilansere/oppdragstakere, med mer", "frilanserOppdragstakerHonorarPersonerMm"),
+    LØNN_UNDER_UTDANNING("LØNN_UNDER_UTDANNING", "Lønn under utdanning", null),
+    MARITIMT_ARBEIDSFORHOLD("MARITIMT_ARBEIDSFORHOLD", "Maritimt arbeidsforhold", "maritimtArbeidsforhold"),
+    MILITÆR_ELLER_SIVILTJENESTE("MILITÆR_ELLER_SIVILTJENESTE", "Militær eller siviltjeneste", null),
+    ORDINÆRT_ARBEIDSFORHOLD("ORDINÆRT_ARBEIDSFORHOLD", "Ordinært arbeidsforhold", "ordinaertArbeidsforhold"),
     PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD("PENSJON_OG_ANDRE_TYPER_YTELSER_UTEN_ANSETTELSESFORHOLD", "Pensjoner og andre typer ytelser",
-            "pensjonOgAndreTyperYtelserUtenAnsettelsesforhold", false),
-    SELVSTENDIG_NÆRINGSDRIVENDE("NÆRING", "Selvstendig næringsdrivende", null, false),
-    UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD", "Arbeid i utlandet", null, true),
-    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger", null, true),
-    VANLIG("VANLIG", "Vanlig", "VANLIG", false),
-    UDEFINERT("-", "Ikke definert", null, false),
+            "pensjonOgAndreTyperYtelserUtenAnsettelsesforhold"),
+    SELVSTENDIG_NÆRINGSDRIVENDE("NÆRING", "Selvstendig næringsdrivende", null),
+    UTENLANDSK_ARBEIDSFORHOLD("UTENLANDSK_ARBEIDSFORHOLD", "Arbeid i utlandet", null),
+    VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger", null),
+    VANLIG("VANLIG", "Vanlig", "VANLIG"),
+    UDEFINERT("-", "Ikke definert", null),
     ;
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<ArbeidType, String> {
-        @Override
-        public String convertToDatabaseColumn(ArbeidType attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public ArbeidType convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
-
-    }
 
     public static final Set<ArbeidType> AA_REGISTER_TYPER = Set.of(
         ArbeidType.ORDINÆRT_ARBEIDSFORHOLD,
@@ -97,22 +78,12 @@ public enum ArbeidType implements Kodeverdi {
     @JsonIgnore
     private String offisiellKode;
 
-    private boolean visGui;
-
-    private ArbeidType(String kode) {
-        this.kode = kode;
-    }
-
-    private ArbeidType(String kode, String navn, String offisiellKode, boolean visGui) {
+    ArbeidType(String kode, String navn, String offisiellKode) {
         this.kode = kode;
         this.navn = navn;
-        this.visGui = visGui;
         this.offisiellKode = offisiellKode;
     }
 
-    public static ArbeidType finnForKodeverkEiersKode(String offisiellDokumentType) {
-        return List.of(values()).stream().filter(k -> Objects.equals(k.offisiellKode, offisiellDokumentType)).findFirst().orElse(UDEFINERT);
-    }
 
     @JsonCreator
     public static ArbeidType fraKode(@JsonProperty("kode") String kode) {
@@ -132,10 +103,6 @@ public enum ArbeidType implements Kodeverdi {
 
     public static void main(String[] args) {
         System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
-    }
-
-    public boolean erAnnenOpptjening() {
-        return visGui;
     }
 
     @JsonProperty

@@ -26,8 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetRepository;
-import no.nav.folketrygdloven.kalkulator.testutilities.BeregningArbeidsgiverTestUtil;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -42,7 +40,6 @@ public class MottarYtelseOppdatererTest {
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningsgrunnlagPeriodeDto periode;
-    private BeregningArbeidsgiverTestUtil arbeidsgiverTestUtil;
     private MottarYtelseOppdaterer oppdaterer;
     private BeregningsgrunnlagInput input;
 
@@ -56,7 +53,6 @@ public class MottarYtelseOppdatererTest {
         periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
-        arbeidsgiverTestUtil = new BeregningArbeidsgiverTestUtil(new VirksomhetRepository());
         input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
         this.oppdaterer = new MottarYtelseOppdaterer();
     }
@@ -113,7 +109,7 @@ public class MottarYtelseOppdatererTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto byggArbeidsforholdMedBgAndel() {
-        Arbeidsgiver arbeidsgiver = arbeidsgiverTestUtil.forArbeidsgiverVirksomhet(ORGNR);
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         return BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)

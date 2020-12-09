@@ -24,8 +24,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 
@@ -47,24 +45,16 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
     private final Integer FØRSTE_PERIODE_ANDRE_ANDEL_INNTEKT = 200000;
     private final Integer ANDRE_PERIODE_FØRSTE_ANDEL_INNTEKT = 300000;
     private final Integer ANDRE_PERIODE_ANDRE_ANDEL_INNTEKT = 400000;
-    private VirksomhetEntitet virksomhet1;
-    private VirksomhetEntitet virksomhet2;
+    private Arbeidsgiver arbeidsgiver1;
+    private Arbeidsgiver arbeidsgiver2;
     private BeregningsgrunnlagInput input;
 
 
     @BeforeEach
     public void setup() {
         fastsatteInnteker = lagFastsatteAndelerListe();
-        virksomhet1 = new VirksomhetEntitet.Builder()
-                .medOrgnr("123")
-                .medNavn("VirksomhetNavn1")
-                .oppdatertOpplysningerNå()
-                .build();
-        virksomhet2 = new VirksomhetEntitet.Builder()
-                .medOrgnr("456")
-                .medNavn("VirksomhetNavn2")
-                .oppdatertOpplysningerNå()
-                .build();
+        arbeidsgiver1 = Arbeidsgiver.virksomhet("123");
+        arbeidsgiver2 = Arbeidsgiver.virksomhet("456");
     }
 
     private List<FastsattePerioderTidsbegrensetDto> lagFastsatteAndelerListe() {
@@ -112,12 +102,13 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
         assertThat(andrePeriode.getBeregningsgrunnlagPrStatusOgAndelList().get(1).getOverstyrtPrÅr()).isEqualTo(BigDecimal.valueOf(ANDRE_PERIODE_ANDRE_ANDEL_INNTEKT));
     }
 
-    private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Virksomhet virksomhet) {
+    private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
+                                        Arbeidsgiver arbeidsgiver) {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
             .builder()
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
-            .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhet.getOrgnr()));
+            .medArbeidsgiver(arbeidsgiver);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(bga)
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -141,13 +132,13 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndtererTest {
 
         BeregningsgrunnlagPeriodeDto førstePeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag,
             FØRSTE_PERIODE_FOM, FØRSTE_PERIODE_TOM);
-        buildBgPrStatusOgAndel(førstePeriode, virksomhet1);
-        buildBgPrStatusOgAndel(førstePeriode, virksomhet2);
+        buildBgPrStatusOgAndel(førstePeriode, arbeidsgiver1);
+        buildBgPrStatusOgAndel(førstePeriode, arbeidsgiver2);
 
         BeregningsgrunnlagPeriodeDto andrePeriode = buildBeregningsgrunnlagPeriode(beregningsgrunnlag,
             ANDRE_PERIODE_FOM, ANDRE_PERIODE_TOM);
-        buildBgPrStatusOgAndel(andrePeriode, virksomhet1);
-        buildBgPrStatusOgAndel(andrePeriode, virksomhet2);
+        buildBgPrStatusOgAndel(andrePeriode, arbeidsgiver1);
+        buildBgPrStatusOgAndel(andrePeriode, arbeidsgiver2);
 
 
         input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT);

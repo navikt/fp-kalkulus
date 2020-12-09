@@ -14,9 +14,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagATFLDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.InntektPrAndelDto;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -26,8 +26,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
@@ -38,7 +36,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
-    private final List<VirksomhetEntitet> virksomheter = new ArrayList<>();
+    private final List<Arbeidsgiver> virksomheter = new ArrayList<>();
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
     private static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.namedRef("TEST-REF");
     private static final int BRUTTO_PR_AR = 150000;
@@ -47,16 +45,8 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
 
     @BeforeEach
     public void setup() {
-        virksomheter.add(new VirksomhetEntitet.Builder()
-                .medOrgnr("991825827")
-                .medNavn("AF0")
-                .oppdatertOpplysningerNå()
-                .build());
-        virksomheter.add(new VirksomhetEntitet.Builder()
-                .medOrgnr("974760673")
-                .medNavn("AF1")
-                .oppdatertOpplysningerNå()
-                .build());
+        virksomheter.add(Arbeidsgiver.virksomhet("991825827"));
+        virksomheter.add(Arbeidsgiver.virksomhet("974760673"));
     }
 
     @Test
@@ -257,18 +247,18 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     }
 
     private void leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder, AktivitetStatus aktivitetStatus,
-                                                          Virksomhet virksomheten, InternArbeidsforholdRefDto arbforholdId, Long andelsnr, Inntektskategori inntektskategori) {
+                                                          Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbforholdId, Long andelsnr, Inntektskategori inntektskategori) {
 
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medInntektskategori(inntektskategori)
             .medAktivitetStatus(aktivitetStatus)
             .medBeregnetPrÅr(BigDecimal.valueOf(BRUTTO_PR_AR));
-        if (virksomheten != null) {
+        if (arbeidsgiver != null) {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsforholdRef(arbforholdId)
-                .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomheten.getOrgnr()))
+                .medArbeidsgiver(arbeidsgiver)
                 .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2));
             builder.medBGAndelArbeidsforhold(bga);

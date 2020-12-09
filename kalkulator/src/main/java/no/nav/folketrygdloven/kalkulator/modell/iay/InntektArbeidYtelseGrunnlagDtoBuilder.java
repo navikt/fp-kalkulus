@@ -1,12 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 
@@ -19,12 +17,7 @@ public class InntektArbeidYtelseGrunnlagDtoBuilder {
     }
 
     public static InntektArbeidYtelseGrunnlagDtoBuilder nytt() {
-        return ny(UUID.randomUUID(), LocalDateTime.now());
-    }
-
-    /** Opprett ny versjon av grunnlag med angitt assignet grunnlagReferanse og opprettetTidspunkt. */
-    public static InntektArbeidYtelseGrunnlagDtoBuilder ny(UUID grunnlagReferanse, LocalDateTime opprettetTidspunkt) {
-        return new InntektArbeidYtelseGrunnlagDtoBuilder(new InntektArbeidYtelseGrunnlagDto(grunnlagReferanse, opprettetTidspunkt));
+        return new InntektArbeidYtelseGrunnlagDtoBuilder(new InntektArbeidYtelseGrunnlagDto());
     }
 
     public static InntektArbeidYtelseGrunnlagDtoBuilder oppdatere(InntektArbeidYtelseGrunnlagDto kladd) {
@@ -116,10 +109,6 @@ public class InntektArbeidYtelseGrunnlagDtoBuilder {
 
     public Optional<ArbeidsforholdInformasjonDto> getArbeidsforholdInformasjon() {
         return kladd.getArbeidsforholdInformasjon();
-    }
-
-    protected void fjernSaksbehandlet() {
-        kladd.fjernSaksbehandlet();
     }
 
     public InntektArbeidYtelseGrunnlagDtoBuilder medErAktivtGrunnlag(boolean erAktivt) {

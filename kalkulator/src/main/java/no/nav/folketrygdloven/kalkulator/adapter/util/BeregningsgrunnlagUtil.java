@@ -19,13 +19,6 @@ public final class BeregningsgrunnlagUtil {
     private BeregningsgrunnlagUtil() {
     }
 
-    public static Long nullSafeLong(Long input) {
-        if (input != null) {
-            return input;
-        }
-        return 0L;
-    }
-
     public static boolean erATFL(AktivitetStatus aktivitetStatus) {
         return ATFL_STATUSER.contains(aktivitetStatus);
     }

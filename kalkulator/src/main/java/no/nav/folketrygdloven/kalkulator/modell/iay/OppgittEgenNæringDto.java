@@ -22,7 +22,6 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
 
     private boolean nyoppstartet;
     private boolean varigEndring;
-    private boolean nærRelasjon;
     private boolean nyIArbeidslivet;
 
     OppgittEgenNæringDto() {
@@ -134,15 +133,6 @@ public class OppgittEgenNæringDto implements OppgittPeriodeInntekt {
     void setVarigEndring(boolean varigEndring) {
         this.varigEndring = varigEndring;
     }
-
-    public boolean getNærRelasjon() {
-        return nærRelasjon;
-    }
-
-    void setNærRelasjon(boolean nærRelasjon) {
-        this.nærRelasjon = nærRelasjon;
-    }
-
 
     void setPeriode(Intervall periode) {
         this.periode = periode;

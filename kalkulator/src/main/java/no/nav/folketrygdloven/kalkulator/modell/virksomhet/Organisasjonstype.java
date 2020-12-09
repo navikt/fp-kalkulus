@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -44,11 +41,7 @@ public enum Organisasjonstype implements Kodeverdi {
 
     private String kode;
 
-    private Organisasjonstype(String kode) {
-        this.kode = kode;
-    }
-
-    private Organisasjonstype(String kode, String navn) {
+    Organisasjonstype(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
     }
@@ -99,16 +92,4 @@ public enum Organisasjonstype implements Kodeverdi {
         System.out.println(KODER.keySet());
     }
 
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<Organisasjonstype, String> {
-        @Override
-        public String convertToDatabaseColumn(Organisasjonstype attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public Organisasjonstype convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
-    }
 }

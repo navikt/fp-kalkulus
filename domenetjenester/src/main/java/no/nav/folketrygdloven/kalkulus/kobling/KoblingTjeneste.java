@@ -42,18 +42,6 @@ public class KoblingTjeneste {
         return repository.hentForKoblingReferanse(referanse);
     }
 
-    public KoblingEntitet hentFor(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
-        return repository.hentKoblingReferanseFor(referanse, ytelseTyperKalkulusStøtter);
-    }
-
-    public Long hentKoblingId(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
-        Optional<Long> koblingId = repository.hentFor(referanse, ytelseType);
-        if (koblingId.isPresent()) {
-            return koblingId.get();
-        }
-        throw new IllegalStateException("Kalkulus kjenner ikke til kombinasjonen av eksternRef:" + referanse.getReferanse() + " og ytelseType:" + ytelseType.getNavn());
-    }
-
     public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
         return repository.hentFor(referanse, ytelseType);
     }
@@ -67,29 +55,13 @@ public class KoblingTjeneste {
     }
 
 
-    public void lagre(KoblingEntitet kobling) {
-        repository.lagre(kobling);
-    }
-
-    public KoblingEntitet hent(Long koblingId) {
-        return repository.hentForKoblingId(koblingId);
-    }
-
-    public Long hentKoblingId(KoblingReferanse koblingReferanse) {
-        return repository.hentKoblingIdForKoblingReferanse(koblingReferanse);
-    }
-
-
+    // Burde ta i bruk skrivelås?
     public KoblingLås taSkrivesLås(KoblingReferanse referanse) {
         return taSkrivesLås(repository.hentKoblingIdForKoblingReferanse(referanse));
     }
 
     public KoblingLås taSkrivesLås(Long koblingId) {
         return låsRepository.taLås(koblingId);
-    }
-
-    public void oppdaterLåsVersjon(KoblingLås lås) {
-        låsRepository.oppdaterLåsVersjon(lås);
     }
 
 

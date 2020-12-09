@@ -60,8 +60,6 @@ public class InntektForAndelTjenesteTest {
     private BeregningsgrunnlagPrStatusOgAndelDto arbeidstakerAndel;
     private BeregningsgrunnlagPrStatusOgAndelDto frilansAndel;
     private BeregningsgrunnlagPeriodeDto periode;
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
-
 
     @BeforeEach
     public void setUp() {

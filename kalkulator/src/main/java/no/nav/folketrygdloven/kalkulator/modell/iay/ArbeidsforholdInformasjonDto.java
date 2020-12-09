@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHand
 
 public class ArbeidsforholdInformasjonDto {
 
-    @OrderBy("opprettetTidspunkt ASC")
     private Set<ArbeidsforholdReferanseDto> referanser = new LinkedHashSet<>();
     private List<ArbeidsforholdOverstyringDto> overstyringer = new ArrayList<>();
 

@@ -17,11 +17,11 @@ import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderTidsbegrensetArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderteArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -31,8 +31,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Virksomhet;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
@@ -55,28 +53,16 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
     private final long TREDJE_ANDELSNR = 3L;
     private final LocalDate FOM = LocalDate.now().minusDays(100);
     private final LocalDate TOM = LocalDate.now();
-    private final List<VirksomhetEntitet> virksomheter = new ArrayList<>();
+    private final List<Arbeidsgiver> virksomheter = new ArrayList<>();
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private BeregningsgrunnlagInput input;
 
     @BeforeEach
     public void setup() {
-        virksomheter.add(new VirksomhetEntitet.Builder()
-                .medOrgnr("123")
-                .medNavn("VirksomhetNavn1")
-                .oppdatertOpplysningerNå()
-                .build());
-        virksomheter.add(new VirksomhetEntitet.Builder()
-                .medOrgnr("456")
-                .medNavn("VirksomhetNavn2")
-                .oppdatertOpplysningerNå()
-                .build());
-        virksomheter.add(new VirksomhetEntitet.Builder()
-                .medOrgnr("789")
-                .medNavn("VirksomhetNavn3")
-                .oppdatertOpplysningerNå()
-                .build());
+        virksomheter.add(Arbeidsgiver.virksomhet("123"));
+        virksomheter.add(Arbeidsgiver.virksomhet("456"));
+        virksomheter.add(Arbeidsgiver.virksomhet("789"));
         tidsbestemteArbeidsforhold = lagFastsatteAndelerListe();
 
 
@@ -126,10 +112,10 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
         assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(2)).get().getErTidsbegrenset()).isTrue();
     }
 
-    private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Virksomhet virksomhet) {
+    private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Arbeidsgiver virksomhet) {
         BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
             .builder()
-            .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhet.getOrgnr()))
+            .medArbeidsgiver(virksomhet)
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()

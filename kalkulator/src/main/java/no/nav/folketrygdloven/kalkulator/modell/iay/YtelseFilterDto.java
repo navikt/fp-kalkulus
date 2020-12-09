@@ -1,13 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -18,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
  * at en ikke trenger å implementere selv navigering av modellen.
  */
 public class YtelseFilterDto {
-    public static final YtelseFilterDto EMPTY = new YtelseFilterDto(Collections.emptyList());
 
     private final Collection<YtelseDto> ytelser;
     private final LocalDate skjæringstidspunkt;
@@ -95,13 +91,6 @@ public class YtelseFilterDto {
         return true;
     }
 
-    /**
-     * Appliserer angitt funksjon til hver ytelse som matcher dette filteret.
-     */
-    public void forFilter(Consumer<YtelseDto> consumer) {
-        getAlleYtelser().forEach(consumer);
-    }
-
     public YtelseFilterDto filter(Predicate<YtelseDto> filterFunc) {
         var copy = copyWith(getFiltrertYtelser().stream().filter(filterFunc).collect(Collectors.toList()), skjæringstidspunkt, venstreSideASkjæringstidspunkt);
         if (copy.ytelseFilter == null) {
@@ -116,16 +105,6 @@ public class YtelseFilterDto {
         var copy = new YtelseFilterDto(ytelser, skjæringstidspunkt, venstreSideASkjæringstidspunkt);
         copy.ytelseFilter = this.ytelseFilter;
         return copy;
-    }
-
-    public boolean anyMatchFilter(Predicate<YtelseDto> matcher) {
-        return getAlleYtelser().stream().anyMatch(matcher);
-    }
-
-    public <R> Collection<R> mapYtelse(Function<YtelseDto, R> mapper) {
-        List<R> result = new ArrayList<>();
-        forFilter(ytelse -> mapper.apply(ytelse));
-        return Collections.unmodifiableList(result);
     }
 
 }

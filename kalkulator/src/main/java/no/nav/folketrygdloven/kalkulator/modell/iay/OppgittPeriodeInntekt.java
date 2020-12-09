@@ -6,8 +6,8 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public interface OppgittPeriodeInntekt {
 
-    public Intervall getPeriode();
+    Intervall getPeriode();
 
-    public BigDecimal getInntekt();
+    BigDecimal getInntekt();
 
 }

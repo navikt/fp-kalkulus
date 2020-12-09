@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class VurderRefusjonAndelBeregningsgrunnlagDto {

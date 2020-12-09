@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -31,9 +32,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.VirksomhetEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste;
 
 public class VisningsnavnForAktivitetTjenesteTest {
 
@@ -41,9 +40,6 @@ public class VisningsnavnForAktivitetTjenesteTest {
     public static final String ORGNR = "49382490";
     private static final String VIRKSOMHET_NAVN = "Virksomheten";
     private static final String KUNSTIG_VIRKSOMHET_NAVN = "Kunstig virksomhet";
-    private static final VirksomhetEntitet VIRKSOMHETEN = new VirksomhetEntitet.Builder().medOrgnr(ORGNR).medNavn(VIRKSOMHET_NAVN).build();
-    private static final VirksomhetEntitet KUNSTIG_VIRKSOMHET = new VirksomhetEntitet.Builder().medOrgnr(OrgNummer.KUNSTIG_ORG)
-        .medNavn(KUNSTIG_VIRKSOMHET_NAVN).build();
 
     private static final String EKSTERN_ARBEIDSFORHOLD_ID = "EKSTERNREF";
     public static final String AKTØR_ID = "1234567890987";
@@ -82,7 +78,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
     @Test
     public void skal_lage_navn_for_arbeid_i_virksomhet_uten_referanse() {
         // Arrange
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(VIRKSOMHETEN);
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         arbeidsgiver.setNavn(VIRKSOMHET_NAVN);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
@@ -104,7 +100,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
     @Test
     public void skal_lage_navn_for_arbeid_i_virksomhet_med_ekstern_referanse() {
         // Arrange
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(VIRKSOMHETEN);
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         arbeidsgiver.setNavn(VIRKSOMHET_NAVN);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver)
@@ -150,7 +146,7 @@ public class VisningsnavnForAktivitetTjenesteTest {
     @Test
     public void skal_lage_navn_for_kunstig_virksomhet() {
         // Arrange
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.fra(KUNSTIG_VIRKSOMHET);
+        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(OrgNummer.KUNSTIG_ORG);
         arbeidsgiver.setNavn(KUNSTIG_VIRKSOMHET_NAVN);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver))
@@ -169,10 +165,10 @@ public class VisningsnavnForAktivitetTjenesteTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = mock(InntektArbeidYtelseGrunnlagDto.class);
         ArbeidsforholdOverstyringDto overstyring = mock(ArbeidsforholdOverstyringDto.class);
         when(overstyring.getArbeidsgiverNavn()).thenReturn(KUNSTIG_VIRKSOMHET_NAVN);
-        when(overstyring.getArbeidsgiver()).thenReturn(Arbeidsgiver.fra(KUNSTIG_VIRKSOMHET));
+        when(overstyring.getArbeidsgiver()).thenReturn(Arbeidsgiver.virksomhet(OrgNummer.KUNSTIG_ORG));
         when(iayGrunnlag.getArbeidsforholdOverstyringer()).thenReturn(List.of(overstyring));
         List<ArbeidsgiverOpplysningerDto> list = new ArrayList<>();
-        list.add(new ArbeidsgiverOpplysningerDto(KUNSTIG_VIRKSOMHET.getOrgnr(), KUNSTIG_VIRKSOMHET_NAVN));
+        list.add(new ArbeidsgiverOpplysningerDto(OrgNummer.KUNSTIG_ORG, KUNSTIG_VIRKSOMHET_NAVN));
         when(iayGrunnlag.getArbeidsgiverOpplysninger()).thenReturn(list);
         return iayGrunnlag;
     }

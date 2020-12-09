@@ -34,7 +34,6 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
 public class KortvarigArbeidsforholdTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
-    private static final KoblingReferanse KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
 
     @Test
     public void skalIkkjeGiKortvarigForArbeidsforholdPå6Mnd() {

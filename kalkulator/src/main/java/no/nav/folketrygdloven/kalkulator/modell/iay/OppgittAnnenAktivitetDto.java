@@ -12,7 +12,6 @@ public class OppgittAnnenAktivitetDto {
 
     Intervall periode;
 
-    @Convert(converter = ArbeidType.KodeverdiConverter.class)
     private ArbeidType arbeidType;
 
     public OppgittAnnenAktivitetDto(Intervall periode, ArbeidType arbeidType) {

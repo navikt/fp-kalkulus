@@ -85,7 +85,7 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey {
     }
 
     /**
-     * Return true hvis arbeidsgiver er en {@link Virksomhet}, false hvis en Person.
+     * Return true hvis arbeidsgiver er en virksomhet, false hvis en Person.
      */
     public boolean getErVirksomhet() {
         return getOrgnr() != null;
@@ -125,10 +125,6 @@ public class Arbeidsgiver implements Serializable, TraverseValue, IndexKey {
     public static Arbeidsgiver fra(Arbeidsgiver arbeidsgiver) {
         if (arbeidsgiver == null) return null;
         return new Arbeidsgiver(arbeidsgiver.getOrgnr(), arbeidsgiver.getAktørId());
-    }
-
-    public static Arbeidsgiver fra(Virksomhet virksomhet) {
-        return fra(virksomhet(virksomhet.getOrgnr()));
     }
 
     public static Arbeidsgiver fra(AktørId aktørId) {

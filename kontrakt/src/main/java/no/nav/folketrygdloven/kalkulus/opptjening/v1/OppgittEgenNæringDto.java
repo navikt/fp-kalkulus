@@ -49,11 +49,6 @@ public class OppgittEgenNæringDto {
     @Valid
     private LocalDate endringDato;
 
-    @JsonProperty(value = "nærRelasjon")
-    @Valid
-    @NotNull
-    private Boolean nærRelasjon;
-
     @JsonProperty(value = "nyIArbeidslivet")
     @Valid
     @NotNull
@@ -76,7 +71,6 @@ public class OppgittEgenNæringDto {
                                 @Valid @NotNull Boolean nyoppstartet,
                                 @Valid @NotNull Boolean varigEndring,
                                 @Valid LocalDate endringDato,
-                                @Valid @NotNull Boolean nærRelasjon,
                                 @Valid @NotNull Boolean nyIArbeidslivet,
                                 @Valid @NotNull BigDecimal bruttoInntekt) {
 
@@ -86,7 +80,6 @@ public class OppgittEgenNæringDto {
         this.nyoppstartet = nyoppstartet;
         this.varigEndring = varigEndring;
         this.endringDato = endringDato;
-        this.nærRelasjon = nærRelasjon;
         this.nyIArbeidslivet = nyIArbeidslivet;
         this.bruttoInntekt = bruttoInntekt;
     }
@@ -109,10 +102,6 @@ public class OppgittEgenNæringDto {
 
     public Boolean getVarigEndring() {
         return varigEndring;
-    }
-
-    public Boolean getNærRelasjon() {
-        return nærRelasjon;
     }
 
     public Boolean getNyIArbeidslivet() {
