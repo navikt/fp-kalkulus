@@ -196,14 +196,7 @@
                 <artifactId>hibernate-types-52</artifactId>
                 <version>2.10.1</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-common</artifactId>
-                <version>2.32</version>
-                <scope>test</scope>
-            </dependency>
-
+            
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
