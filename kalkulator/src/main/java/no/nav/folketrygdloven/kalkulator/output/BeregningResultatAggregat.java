@@ -1,10 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -15,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Vilkårsavslagsår
 
 public class BeregningResultatAggregat {
 
-    private List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater;
+    private List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater = new ArrayList<>();
 
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
@@ -44,15 +47,11 @@ public class BeregningResultatAggregat {
         return Optional.ofNullable(regelSporingAggregat);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static class Builder {
 
         private BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder;
         private BeregningsgrunnlagTilstand tilstand;
-        private BeregningResultatAggregat kladd;
+        private final BeregningResultatAggregat kladd  = new BeregningResultatAggregat();
         private LocalDate skjæringstidspunkt;
 
         private Builder(BeregningsgrunnlagInput input) {
@@ -61,16 +60,16 @@ public class BeregningResultatAggregat {
             } else {
                 this.skjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
             }
-            this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? null : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
-            this.kladd = new BeregningResultatAggregat();
-        }
-
-        private Builder() {
-            this.kladd = new BeregningResultatAggregat();
+            this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()) : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         }
 
         public static Builder fra(BeregningsgrunnlagInput input) {
             return new Builder(input);
+        }
+        public Builder medRegisterAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+            grunnlagBuilder.medRegisterAktiviteter(beregningAktivitetAggregat);
+            this.tilstand = BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
+            return this;
         }
 
         public Builder medBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand tilstand) {

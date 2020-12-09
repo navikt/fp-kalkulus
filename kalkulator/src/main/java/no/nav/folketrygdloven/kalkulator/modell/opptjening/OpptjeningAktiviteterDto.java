@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class OpptjeningAktiviteterDto {
 
-    private List<OpptjeningPeriodeDto> opptjeningPerioder = new ArrayList<>();
+    private final List<OpptjeningPeriodeDto> opptjeningPerioder = new ArrayList<>();
 
     public OpptjeningAktiviteterDto(Collection<OpptjeningPeriodeDto> perioder) {
         this.opptjeningPerioder.addAll(perioder);
