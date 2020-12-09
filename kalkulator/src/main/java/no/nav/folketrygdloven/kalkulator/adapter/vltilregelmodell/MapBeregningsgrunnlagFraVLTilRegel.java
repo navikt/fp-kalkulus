@@ -294,6 +294,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr())
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
                 .medFordeltPrÅr(vlBGPStatus.getFordeltPrÅr())
+                .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medGjennomsnittligPGI(vlBGPStatus.getPgiSnitt())
                 .medPGI(pgi)
                 .medÅrsbeløpFraTilstøtendeYtelse(vlBGPStatus.getÅrsbeløpFraTilstøtendeYtelseVerdi())
@@ -349,6 +350,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
                 .medFordeltPrÅr(vlBGPStatus.getFordeltPrÅr())
+                .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()));
         Optional<Boolean> erTidsbegrenset = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(fa -> fa.getFaktaArbeidsforhold(vlBGPStatus))

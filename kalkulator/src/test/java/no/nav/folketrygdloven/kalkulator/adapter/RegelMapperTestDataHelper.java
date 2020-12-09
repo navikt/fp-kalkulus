@@ -162,7 +162,6 @@ public class RegelMapperTestDataHelper {
             final BeregningsgrunnlagPrStatus regelBGPStatus = BeregningsgrunnlagPrStatus.builder(regelBGP.getBeregningsgrunnlagPrStatus(status))
                 .medFordeltPrÅr(BigDecimal.valueOf(400000.42))
                 .medBeregnetPrÅr(BigDecimal.valueOf(400000.42))
-                .medBruttoPrÅr(BigDecimal.valueOf(111.11))
                 .medAvkortetPrÅr(BigDecimal.valueOf(789.789))
                 .medRedusertPrÅr(BigDecimal.valueOf(901.901))
                 .medBeregningsperiode(periode)

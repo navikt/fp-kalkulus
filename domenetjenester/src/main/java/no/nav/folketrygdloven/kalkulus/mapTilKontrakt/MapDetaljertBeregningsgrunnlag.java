@@ -228,6 +228,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr(),
+                beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr(),
                 beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr(),

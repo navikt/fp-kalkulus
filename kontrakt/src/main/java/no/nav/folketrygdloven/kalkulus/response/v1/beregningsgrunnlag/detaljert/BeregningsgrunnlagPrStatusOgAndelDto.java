@@ -121,6 +121,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal beregnetPrÅr;
 
+    @JsonProperty(value = "besteberegningPrÅr")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal besteberegningPrÅr;
+
     @JsonProperty(value = "fordeltPrÅr")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -215,6 +222,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                                                 BigDecimal avkortetPrÅr,
                                                 BigDecimal redusertPrÅr,
                                                 BigDecimal beregnetPrÅr,
+                                                BigDecimal besteberegningPrÅr,
                                                 BigDecimal fordeltPrÅr,
                                                 BigDecimal maksimalRefusjonPrÅr,
                                                 BigDecimal avkortetRefusjonPrÅr,
@@ -242,6 +250,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.avkortetPrÅr = avkortetPrÅr;
         this.redusertPrÅr = redusertPrÅr;
         this.beregnetPrÅr = beregnetPrÅr;
+        this.besteberegningPrÅr = besteberegningPrÅr;
         this.fordeltPrÅr = fordeltPrÅr;
         this.maksimalRefusjonPrÅr = maksimalRefusjonPrÅr;
         this.avkortetRefusjonPrÅr = avkortetRefusjonPrÅr;
@@ -278,17 +287,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public Inntektskategori getInntektskategori() {
         return inntektskategori;
-    }
-
-    public BigDecimal getBruttoInkludertNaturalYtelser() {
-        BGAndelArbeidsforhold bgAndelArbeidsforhold = getBgAndelArbeidsforhold();
-        if (bgAndelArbeidsforhold == null) {
-            return bruttoPrÅr;
-        }
-        BigDecimal naturalytelseBortfalt = bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr() == null ? BigDecimal.ZERO : bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr();
-        BigDecimal naturalYtelseTilkommet = bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr() == null ? BigDecimal.ZERO : bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr();
-        BigDecimal brutto = bruttoPrÅr != null ? bruttoPrÅr : BigDecimal.ZERO;
-        return brutto.add(naturalytelseBortfalt).subtract(naturalYtelseTilkommet);
     }
 
     public Long getDagsatsBruker() {
@@ -394,4 +392,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     public Long getAndelsnr() {
         return andelsnr;
     }
+
+    public BigDecimal getBesteberegningPrÅr() {
+        return besteberegningPrÅr;
+    }
+
 }

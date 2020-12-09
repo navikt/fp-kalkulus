@@ -412,7 +412,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
             verifiserKanModifisere();
             kladd.overstyrtPrÅr = overstyrtPrÅr;
-            if (overstyrtPrÅr != null && kladd.fordeltPrÅr == null) {
+            if (overstyrtPrÅr != null && kladd.fordeltPrÅr == null && kladd.besteberegningPrÅr == null) {
                 kladd.bruttoPrÅr = overstyrtPrÅr;
                 if (kladd.getBeregningsgrunnlagPeriode() != null) {
                     kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
@@ -483,7 +483,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medBeregnetPrÅr(BigDecimal beregnetPrÅr) {
             verifiserKanModifisere();
             kladd.beregnetPrÅr = beregnetPrÅr;
-            if (kladd.fordeltPrÅr == null && kladd.overstyrtPrÅr == null) {
+            if (kladd.fordeltPrÅr == null && kladd.overstyrtPrÅr == null && kladd.besteberegningPrÅr == null) {
                 kladd.bruttoPrÅr = beregnetPrÅr;
                 if (kladd.getBeregningsgrunnlagPeriode() != null) {
                     kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
@@ -528,6 +528,12 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
             verifiserKanModifisere();
             kladd.besteberegningPrÅr = besteberegningPrÅr;
+            if (kladd.fordeltPrÅr == null) {
+                kladd.bruttoPrÅr = besteberegningPrÅr;
+                if (kladd.getBeregningsgrunnlagPeriode() != null) {
+                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
+                }
+            }
             return this;
         }
 

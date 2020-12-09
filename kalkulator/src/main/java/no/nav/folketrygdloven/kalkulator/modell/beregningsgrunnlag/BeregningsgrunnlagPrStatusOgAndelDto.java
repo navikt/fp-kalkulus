@@ -539,7 +539,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             verifiserKanModifisere();
             kladd.besteberegningPrÅr = besteberegningPrÅr;
             if (kladd.fordeltPrÅr == null) {
-                kladd.bruttoPrÅr = kladd.overstyrtPrÅr == null ? kladd.beregnetPrÅr : kladd.overstyrtPrÅr;
+                if (besteberegningPrÅr == null) {
+                    kladd.bruttoPrÅr = kladd.overstyrtPrÅr == null ? kladd.beregnetPrÅr : kladd.overstyrtPrÅr;
+                } else {
+                    kladd.bruttoPrÅr = kladd.besteberegningPrÅr;
+                }
                 if (kladd.getBeregningsgrunnlagPeriode() != null) {
                     kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
                 }
