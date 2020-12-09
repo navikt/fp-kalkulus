@@ -21,9 +21,9 @@ import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
@@ -56,7 +56,24 @@ public class MapTilBesteberegningRegelmodell {
                 input.getGrunnbeløpsatser(),
                 finnGrunnbeløp(input),
                 input.getSkjæringstidspunktOpptjening(),
-                perioderMedNæringsvirksomhet);
+                perioderMedNæringsvirksomhet,
+                finnTotalBruttoUtenNaturalytelseFørstePeriode(input));
+    }
+
+    /** Finner total brutto beregningsgrunnlag i første periode.
+     * Tar ikke med naturalytelse ettersom filteret som brukes til å beregne de seks beste månedene heller ikke
+     * tar med naturalytelse.
+     *
+     * @param input Input til foreslå besteberegning
+     * @return Total brutto beregningsgrunnlag uten naturalytelse
+     */
+    private static BigDecimal finnTotalBruttoUtenNaturalytelseFørstePeriode(ForeslåBesteberegningInput input) {
+        List<BeregningsgrunnlagPeriodeDto> perioder = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
+        if (perioder.isEmpty()) {
+            throw new IllegalStateException("Liste med perioder skal ikke vere tom");
+        }
+        BeregningsgrunnlagPeriodeDto førstePeriode = perioder.get(0);
+        return førstePeriode.getBruttoPrÅr();
     }
 
     private static List<Periode> finnPerioderMedOppgittNæring(ForeslåBesteberegningInput input) {

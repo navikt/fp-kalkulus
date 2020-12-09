@@ -24,6 +24,11 @@ public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
+        boolean harKunArbeidEllerDagpenger = input.getOpptjeningAktiviteterForBeregning().stream()
+                .allMatch(a -> a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.ARBEID) || a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.DAGPENGER));
+        if (harKunArbeidEllerDagpenger) {
+            return Optional.empty();
+        }
         boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))
                 .getAktivitetStatuser()
                 .stream()

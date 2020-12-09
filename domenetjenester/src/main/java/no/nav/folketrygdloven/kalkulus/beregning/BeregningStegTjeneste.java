@@ -101,7 +101,7 @@ public class BeregningStegTjeneste {
 
     /**
      * ForeslåBesteberegning
-     * Steg 2.5. FORS_BESTEBEREGNING
+     * Steg 3.5. FORS_BESTEBEREGNING
      *
      * Dette steget vil aldri bli brukt av noe annet enn foreldrepenger, men legges inn her for å kunne testes via verdikjedetest
      *

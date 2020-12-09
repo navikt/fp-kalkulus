@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.besteberegning.modell.output.AktivitetNøkkel;
 import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegnetAndel;
-import no.nav.folketrygdloven.besteberegning.modell.output.ForeslåttBesteberegning;
+import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegningOutput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -25,19 +25,19 @@ public class MapBesteberegningFraRegelTilVL {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBesteberegningFraRegelTilVL.class);
 
     public static BeregningsgrunnlagDto mapTilBeregningsgrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                           ForeslåttBesteberegning output) {
+                                                           BesteberegningOutput output) {
         BeregningsgrunnlagDto gammeltGrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
         var nyttGrunnlag = new BeregningsgrunnlagDto(gammeltGrunnlag);
-        fjernSaksbehandlersBesteberegning(nyttGrunnlag);
-        oppdaterBeregningForAndelerIBesteberegnetGrunnlag(nyttGrunnlag, output);
-        settBesteberegningTilNullForAndreAndeler(nyttGrunnlag);
-        if (harAlleredeBesteberegnet(gammeltGrunnlag)) {
-            loggDiff(gammeltGrunnlag, nyttGrunnlag);
-            // Foreløpig returnerer vi gammelt grunnlag til vi får verifisert resultat av automatisk besteberegning
-            return gammeltGrunnlag;
+        if  (output.getSkalBeregnesEtterSeksBesteMåneder()) {
+            fjernSaksbehandlersBesteberegning(nyttGrunnlag);
+            oppdaterBeregningForAndelerIBesteberegnetGrunnlag(nyttGrunnlag, output);
+            settBesteberegningTilNullForAndreAndeler(nyttGrunnlag);
+            if (harAlleredeBesteberegnet(gammeltGrunnlag)) {
+                loggDiff(gammeltGrunnlag, nyttGrunnlag);
+                return new BeregningsgrunnlagDto(gammeltGrunnlag);
+            }
         }
-        // Foreløpig returnerer vi gammelt grunnlag til vi får verifisert resultat av automatisk besteberegning
-        return gammeltGrunnlag;
+        return nyttGrunnlag;
     }
 
     private static void loggDiff(BeregningsgrunnlagDto gammeltGrunnlag, BeregningsgrunnlagDto nyttGrunnlag) {
@@ -70,7 +70,7 @@ public class MapBesteberegningFraRegelTilVL {
         return gammeltGrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream()).anyMatch(a -> a.getBesteberegningPrÅr() != null);
     }
 
-    private static void oppdaterBeregningForAndelerIBesteberegnetGrunnlag(BeregningsgrunnlagDto nyttGrunnlag, ForeslåttBesteberegning output) {
+    private static void oppdaterBeregningForAndelerIBesteberegnetGrunnlag(BeregningsgrunnlagDto nyttGrunnlag, BesteberegningOutput output) {
         List<BesteberegnetAndel> andelListe = output.getBesteberegnetGrunnlag().getBesteberegnetAndelList();
         nyttGrunnlag.getBeregningsgrunnlagPerioder()
                 .forEach(p -> andelListe
@@ -135,8 +135,7 @@ public class MapBesteberegningFraRegelTilVL {
         BigDecimal besteberegnet = matchendeAndel.getBesteberegningPrÅr();
         BigDecimal beregnet = besteberegnet == null ? besteberegnetAndel.getBesteberegnetPrÅr() : besteberegnet.add(besteberegnetAndel.getBesteberegnetPrÅr());
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(matchendeAndel)
-                .medBesteberegningPrÅr(beregnet)
-                .medBeregnetPrÅr(beregnet);
+                .medBesteberegningPrÅr(beregnet);
     }
 
     private static void leggPåDagpenger(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
@@ -148,7 +147,6 @@ public class MapBesteberegningFraRegelTilVL {
         } else {
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medKilde(AndelKilde.PROSESS_BESTEBEREGNING)
                     .medBesteberegningPrÅr(a.getBesteberegnetPrÅr())
-                    .medBeregnetPrÅr(a.getBesteberegnetPrÅr())
                     .medAktivitetStatus(AktivitetStatus.DAGPENGER).build(periode);
         }
     }
