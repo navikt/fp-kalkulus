@@ -188,7 +188,7 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
-        repository.lagre(input.getKoblingId(), mapGrunnlag(input.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -219,7 +219,8 @@ public class BeregningStegTjeneste {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
                     aksjonspunkter,
                     resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    new Vilkårsavslagsårsak(resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null :
+                            new Vilkårsavslagsårsak(resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
         } else {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(), aksjonspunkter);
         }
