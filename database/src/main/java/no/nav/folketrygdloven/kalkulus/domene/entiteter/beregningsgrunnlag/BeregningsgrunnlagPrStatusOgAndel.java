@@ -159,6 +159,42 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "dagsats_tilstoetende_ytelse")
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
+    public BeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
+        this.beregnetPrÅr = beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr();
+        this.aktivitetStatus = beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus();
+        this.andelsnr = beregningsgrunnlagPrStatusOgAndel.getAndelsnr();
+        this.arbeidsforholdType = beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType();
+        this.avkortetBrukersAndelPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr();
+        this.avkortetPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr();
+        this.avkortetRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr();
+        this.beregningsperiode = beregningsgrunnlagPrStatusOgAndel.beregningsperiode;
+        this.besteberegningPrÅr = beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr();
+        this.bruttoPrÅr = beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr();
+        this.dagsatsArbeidsgiver = beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver();
+        this.dagsatsBruker = beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker();
+        this.fastsattAvSaksbehandler = beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler();
+        this.fordeltPrÅr = beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr();
+        this.inntektskategori = beregningsgrunnlagPrStatusOgAndel.getInntektskategori();
+        this.kilde = beregningsgrunnlagPrStatusOgAndel.getKilde();
+        this.maksimalRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr();
+        this.orginalDagsatsFraTilstøtendeYtelse = beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse();
+        this.overstyrtPrÅr = beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr();
+        this.pgi1 = beregningsgrunnlagPrStatusOgAndel.getPgi1();
+        this.pgi2 = beregningsgrunnlagPrStatusOgAndel.getPgi2();
+        this.pgi3 = beregningsgrunnlagPrStatusOgAndel.getPgi3();
+        this.pgiSnitt = beregningsgrunnlagPrStatusOgAndel.getPgiSnitt();
+        this.redusertBrukersAndelPrÅr = beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr();
+        this.redusertPrÅr = beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr();
+        this.redusertRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr();
+        this.årsbeløpFraTilstøtendeYtelse = beregningsgrunnlagPrStatusOgAndel.getÅrsbeløpFraTilstøtendeYtelse();
+        beregningsgrunnlagPrStatusOgAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::new)
+                .ifPresent(this::setBgAndelArbeidsforhold);
+    }
+
+    public BeregningsgrunnlagPrStatusOgAndel() {
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -301,6 +337,15 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     public Optional<InternArbeidsforholdRef> getArbeidsforholdRef() {
         Optional<BGAndelArbeidsforhold> beregningArbeidsforhold = getBgAndelArbeidsforhold();
         return beregningArbeidsforhold.map(BGAndelArbeidsforhold::getArbeidsforholdRef);
+    }
+
+    void setBgAndelArbeidsforhold(BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+        bgAndelArbeidsforhold.setBeregningsgrunnlagPrStatusOgAndel(this);
+        this.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
+    }
+
+    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+        this.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
     }
 
     @Override
@@ -563,13 +608,10 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             if(built) {
                 return kladd;
             }
-            kladd.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
             verifyStateForBuild();
             if (kladd.andelsnr == null) {
-                // TODO (OleSandbu): Ikke mod input!
                 finnOgSettAndelsnr(beregningsgrunnlagPeriode);
             }
-            // TODO (OleSandbu): Ikke mod input!
             beregningsgrunnlagPeriode.addBeregningsgrunnlagPrStatusOgAndel(kladd);
             beregningsgrunnlagPeriode.updateBruttoPrÅr();
             verifiserAndelsnr();
@@ -605,7 +647,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         }
 
         public void verifyStateForBuild() {
-            Objects.requireNonNull(kladd.beregningsgrunnlagPeriode, "beregningsgrunnlagPeriode");
             Objects.requireNonNull(kladd.aktivitetStatus, "aktivitetStatus");
             if (kladd.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER)
                 && kladd.getArbeidsforholdType().equals(OpptjeningAktivitetType.ARBEID)) {

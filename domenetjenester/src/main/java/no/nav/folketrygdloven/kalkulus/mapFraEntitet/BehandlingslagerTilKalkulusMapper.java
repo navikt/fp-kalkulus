@@ -77,16 +77,17 @@ public class BehandlingslagerTilKalkulusMapper {
     }
 
 
-    public static BeregningsgrunnlagDto mapBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem ) {
+    public static BeregningsgrunnlagDto mapBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagFraFagsystem) {
         BeregningsgrunnlagDto.Builder builder = BeregningsgrunnlagDto.builder();
 
         builder.medGrunnbeløp(beregningsgrunnlagFraFagsystem.getGrunnbeløp().getVerdi());
         builder.medOverstyring(beregningsgrunnlagFraFagsystem.isOverstyrt());
 
         builder.medSkjæringstidspunkt(beregningsgrunnlagFraFagsystem.getSkjæringstidspunkt());
-        if (beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlag() != null) {
-            builder.medSammenligningsgrunnlag(BGMapperTilKalkulus.mapSammenligningsgrunnlag(beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlag()));
-        }
+
+        beregningsgrunnlagFraFagsystem.getSammenligningsgrunnlag()
+                .map(BGMapperTilKalkulus::mapSammenligningsgrunnlag)
+                .ifPresent(builder::medSammenligningsgrunnlag);
 
         //lister
         beregningsgrunnlagFraFagsystem.getAktivitetStatuser().forEach(beregningsgrunnlagAktivitetStatus -> builder.leggTilAktivitetStatus(BGMapperTilKalkulus.mapAktivitetStatus(beregningsgrunnlagAktivitetStatus)));

@@ -47,6 +47,16 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     @Column(name="hjemmel", nullable = false)
     private Hjemmel hjemmel;
 
+
+    public BeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatus beregningsgrunnlagAktivitetStatus) {
+        this.aktivitetStatus = beregningsgrunnlagAktivitetStatus.getAktivitetStatus();
+        this.hjemmel = beregningsgrunnlagAktivitetStatus.getHjemmel();
+    }
+
+    protected BeregningsgrunnlagAktivitetStatus() {
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -61,6 +71,10 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
 
     public Hjemmel getHjemmel() {
         return hjemmel;
+    }
+
+    void setBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        this.beregningsgrunnlag = beregningsgrunnlag;
     }
 
     @Override
@@ -113,7 +127,6 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
         }
 
         public BeregningsgrunnlagAktivitetStatus build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
-            beregningsgrunnlagAktivitetStatusMal.beregningsgrunnlag = beregningsgrunnlag;
             verifyStateForBuild();
             beregningsgrunnlag.leggTilBeregningsgrunnlagAktivitetStatus(beregningsgrunnlagAktivitetStatusMal);
             return beregningsgrunnlagAktivitetStatusMal;

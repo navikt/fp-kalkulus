@@ -34,6 +34,13 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
     @BatchSize(size=20)
     private List<BeregningAktivitetOverstyringEntitet> overstyringer = new ArrayList<>();
 
+    public BeregningAktivitetOverstyringerEntitet(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringerEntitet) {
+        beregningAktivitetOverstyringerEntitet.getOverstyringer().stream().map(BeregningAktivitetOverstyringEntitet::new).forEach(this::leggTilOverstyring);
+    }
+
+    public BeregningAktivitetOverstyringerEntitet() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,6 +49,13 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
         return overstyringer.stream()
                 .sorted(Comparator.comparing(BeregningAktivitetOverstyringEntitet::getNøkkel))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    void leggTilOverstyring(BeregningAktivitetOverstyringEntitet beregningAktivitetOverstyringEntitet) {
+        if (!overstyringer.contains(beregningAktivitetOverstyringEntitet)) {
+            beregningAktivitetOverstyringEntitet.setBeregningAktivitetOverstyringer(this);
+            overstyringer.add(beregningAktivitetOverstyringEntitet);
+        }
     }
 
     @Override
@@ -64,9 +78,7 @@ public class BeregningAktivitetOverstyringerEntitet extends BaseEntitet {
         }
 
         public Builder leggTilOverstyring(BeregningAktivitetOverstyringEntitet beregningAktivitetOverstyring) {
-            BeregningAktivitetOverstyringEntitet entitet = beregningAktivitetOverstyring;
-            kladd.overstyringer.add(entitet);
-            entitet.setBeregningAktivitetOverstyringer(kladd);
+            kladd.leggTilOverstyring(beregningAktivitetOverstyring);
             return this;
         }
 

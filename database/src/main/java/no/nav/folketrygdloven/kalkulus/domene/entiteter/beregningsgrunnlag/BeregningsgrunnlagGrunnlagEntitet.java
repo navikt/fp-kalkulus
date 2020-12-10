@@ -85,11 +85,15 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     }
 
     public BeregningsgrunnlagGrunnlagEntitet(BeregningsgrunnlagGrunnlagEntitet grunnlag) {
-        grunnlag.getBeregningsgrunnlag().ifPresent(this::setBeregningsgrunnlag);
-        this.setRegisterAktiviteter(grunnlag.getRegisterAktiviteter());
-        grunnlag.getSaksbehandletAktiviteter().ifPresent(this::setSaksbehandletAktiviteter);
-        grunnlag.getOverstyring().ifPresent(this::setOverstyringer);
-        grunnlag.getRefusjonOverstyringer().ifPresent(this::setRefusjonOverstyringer);
+        this.beregningsgrunnlagTilstand = grunnlag.getBeregningsgrunnlagTilstand();
+        this.koblingId = grunnlag.getKoblingId();
+        grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagEntitet::new).ifPresent(this::setBeregningsgrunnlag);
+        this.setRegisterAktiviteter(grunnlag.getRegisterAktiviteter() == null ? null : new BeregningAktivitetAggregatEntitet(grunnlag.getRegisterAktiviteter()));
+        grunnlag.getSaksbehandletAktiviteter().map(BeregningAktivitetAggregatEntitet::new).ifPresent(this::setSaksbehandletAktiviteter);
+        grunnlag.getOverstyring().map(BeregningAktivitetOverstyringerEntitet::new).ifPresent(this::setOverstyringer);
+        grunnlag.getRefusjonOverstyringer().map(BeregningRefusjonOverstyringerEntitet::new).ifPresent(this::setRefusjonOverstyringer);
+
+        // Fakta blir kopiert direkte
         grunnlag.getFaktaAggregat().ifPresent(this::setFaktaAggregat);
     }
 
@@ -110,14 +114,6 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     }
 
     public Optional<BeregningAktivitetAggregatEntitet> getSaksbehandletAktiviteter() {
-        return Optional.ofNullable(saksbehandletAktiviteter);
-    }
-
-    public Optional<BeregningAktivitetAggregatEntitet> getOverstyrteEllerSaksbehandletAktiviteter() {
-        Optional<BeregningAktivitetAggregatEntitet> overstyrteAktiviteter = getOverstyrteAktiviteter();
-        if (overstyrteAktiviteter.isPresent()) {
-            return overstyrteAktiviteter;
-        }
         return Optional.ofNullable(saksbehandletAktiviteter);
     }
 
@@ -145,14 +141,6 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
         return getOverstyrteAktiviteter()
                 .or(this::getSaksbehandletAktiviteter)
                 .orElse(registerAktiviteter);
-    }
-
-    public BeregningAktivitetAggregatEntitet getOverstyrteEllerRegisterAktiviteter() {
-        Optional<BeregningAktivitetAggregatEntitet> overstyrteAktiviteter = getOverstyrteAktiviteter();
-        if (overstyrteAktiviteter.isPresent()) {
-            return overstyrteAktiviteter.get();
-        }
-        return registerAktiviteter;
     }
 
     public Optional<FaktaAggregatEntitet> getFaktaAggregat() {

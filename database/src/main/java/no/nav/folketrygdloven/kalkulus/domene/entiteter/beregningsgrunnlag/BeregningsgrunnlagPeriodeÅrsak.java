@@ -41,6 +41,13 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     @Column(name="periode_aarsak", nullable = false)
     private PeriodeÅrsak periodeÅrsak = PeriodeÅrsak.UDEFINERT;
 
+    public BeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsak beregningsgrunnlagPeriodeÅrsak) {
+        this.periodeÅrsak = beregningsgrunnlagPeriodeÅrsak.periodeÅrsak;
+    }
+
+    public BeregningsgrunnlagPeriodeÅrsak() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,7 +61,7 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
     }
 
 
-    public void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+    void setBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
         this.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
     }
 
@@ -88,7 +95,6 @@ public class BeregningsgrunnlagPeriodeÅrsak extends BaseEntitet {
         }
 
         public BeregningsgrunnlagPeriodeÅrsak build(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
-            beregningsgrunnlagPeriodeÅrsakMal.beregningsgrunnlagPeriode = beregningsgrunnlagPeriode;
             beregningsgrunnlagPeriode.addBeregningsgrunnlagPeriodeÅrsak(beregningsgrunnlagPeriodeÅrsakMal);
             return beregningsgrunnlagPeriodeÅrsakMal;
         }

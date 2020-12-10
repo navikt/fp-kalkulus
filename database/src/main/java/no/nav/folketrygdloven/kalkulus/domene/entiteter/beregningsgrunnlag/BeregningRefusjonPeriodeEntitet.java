@@ -47,6 +47,11 @@ public class BeregningRefusjonPeriodeEntitet extends BaseEntitet {
         // Hibernate
     }
 
+    public BeregningRefusjonPeriodeEntitet(BeregningRefusjonPeriodeEntitet beregningRefusjonPeriodeEntitet) {
+        this.arbeidsforholdRef = beregningRefusjonPeriodeEntitet.getArbeidsforholdRef();
+        this.startdatoRefusjon = beregningRefusjonPeriodeEntitet.getStartdatoRefusjon();
+    }
+
     public BeregningRefusjonPeriodeEntitet(InternArbeidsforholdRef ref, LocalDate startdatoRefusjon) {
         Objects.requireNonNull(startdatoRefusjon, "startdatoRefusjon");
         this.arbeidsforholdRef = ref;

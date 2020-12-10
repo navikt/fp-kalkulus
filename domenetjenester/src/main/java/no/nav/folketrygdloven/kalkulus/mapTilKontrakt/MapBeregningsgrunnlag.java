@@ -35,7 +35,7 @@ public class MapBeregningsgrunnlag {
                 mapSammenligningsgrunnlagPrStatusListe(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getFaktaOmBeregningTilfeller().stream().map(MapBeregningsgrunnlag::mapTilfelle).collect(Collectors.toList()),
                 beregningsgrunnlagEntitet.isOverstyrt()
-                );
+        );
     }
 
     private static no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle mapTilfelle(FaktaOmBeregningTilfelle faktaOmBeregningTilfelle) {
@@ -59,15 +59,12 @@ public class MapBeregningsgrunnlag {
     }
 
     private static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag() == null) {
-            return null;
-        }
-        no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag sammenligningsgrunnlag = beregningsgrunnlagEntitet.getSammenligningsgrunnlag();
-        return new Sammenligningsgrunnlag(
-                new Periode(sammenligningsgrunnlag.getSammenligningsperiodeFom(), sammenligningsgrunnlag.getSammenligningsperiodeTom()),
-                sammenligningsgrunnlag.getRapportertPrÅr(),
-                sammenligningsgrunnlag.getAvvikPromilleNy()
-        );
+        return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
+                new Sammenligningsgrunnlag(
+                        new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
+                        sg.getRapportertPrÅr(),
+                        sg.getAvvikPromilleNy()
+                )).orElse(null);
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
@@ -105,7 +102,7 @@ public class MapBeregningsgrunnlag {
                 beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver(),
                 new Inntektskategori(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel)
-                );
+        );
     }
 
     private static Periode mapBeregningsperiode(LocalDate fom, LocalDate tom) {
@@ -133,7 +130,7 @@ public class MapBeregningsgrunnlag {
 
     private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> new AktivitetStatus(a.getAktivitetStatus().getKode()))
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
 }

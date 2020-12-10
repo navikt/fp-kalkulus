@@ -34,6 +34,11 @@ public class BeregningRefusjonOverstyringerEntitet extends BaseEntitet {
     @BatchSize(size=20)
     private List<BeregningRefusjonOverstyringEntitet> overstyringer = new ArrayList<>();
 
+    public BeregningRefusjonOverstyringerEntitet(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {
+        beregningRefusjonOverstyringerEntitet.getRefusjonOverstyringer().stream().map(BeregningRefusjonOverstyringEntitet::new)
+                .forEach(this::leggTilRefusjonOverstyring);
+    }
+
     public BeregningRefusjonOverstyringerEntitet() {
         // Hibernate
     }
@@ -42,6 +47,13 @@ public class BeregningRefusjonOverstyringerEntitet extends BaseEntitet {
         return overstyringer.stream()
                 .sorted(Comparator.comparing(BeregningRefusjonOverstyringEntitet::getArbeidsgiver))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    void leggTilRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
+        if (!overstyringer.contains(beregningRefusjonOverstyringEntitet)) {
+            beregningRefusjonOverstyringEntitet.setRefusjonOverstyringerEntitet(this);
+            overstyringer.add(beregningRefusjonOverstyringEntitet);
+        }
     }
 
     @Override
@@ -63,9 +75,7 @@ public class BeregningRefusjonOverstyringerEntitet extends BaseEntitet {
         }
 
         public Builder leggTilOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyring) {
-            BeregningRefusjonOverstyringEntitet entitet = beregningRefusjonOverstyring;
-            entitet.setRefusjonOverstyringerEntitet(kladd);
-            kladd.overstyringer.add(entitet);
+            kladd.leggTilRefusjonOverstyring(beregningRefusjonOverstyring);
             return this;
         }
 

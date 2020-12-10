@@ -177,15 +177,11 @@ public class MapDetaljertBeregningsgrunnlag {
     }
 
     private static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
-        if (beregningsgrunnlagEntitet.getSammenligningsgrunnlag() == null) {
-            return null;
-        }
-        no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag sammenligningsgrunnlag = beregningsgrunnlagEntitet
-                .getSammenligningsgrunnlag();
-        return new Sammenligningsgrunnlag(
-                new Periode(sammenligningsgrunnlag.getSammenligningsperiodeFom(), sammenligningsgrunnlag.getSammenligningsperiodeTom()),
-                sammenligningsgrunnlag.getRapportertPrÅr(),
-                sammenligningsgrunnlag.getAvvikPromilleNy());
+        return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
+                new Sammenligningsgrunnlag(
+                        new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
+                        sg.getRapportertPrÅr(),
+                        sg.getAvvikPromilleNy())).orElse(null);
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {

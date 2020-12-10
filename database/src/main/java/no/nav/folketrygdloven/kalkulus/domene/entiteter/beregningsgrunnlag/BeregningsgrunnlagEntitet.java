@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
@@ -47,18 +48,18 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size=20)
-    private List<BeregningsgrunnlagAktivitetStatus> aktivitetStatuser = new ArrayList<>();
+    private final List<BeregningsgrunnlagAktivitetStatus> aktivitetStatuser = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size=20)
-    private List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder = new ArrayList<>();
+    private final List<BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder = new ArrayList<>();
 
     @OneToOne(mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     private Sammenligningsgrunnlag sammenligningsgrunnlag;
 
     @OneToMany(mappedBy = "beregningsgrunnlag")
     @BatchSize(size=20)
-    private List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
+    private final List<SammenligningsgrunnlagPrStatus> sammenligningsgrunnlagPrStatusListe = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "grunnbeloep")))
@@ -67,10 +68,25 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlag", cascade = CascadeType.PERSIST)
     @BatchSize(size=20)
-    private List<BeregningsgrunnlagFaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = new ArrayList<>();
+    private final List<BeregningsgrunnlagFaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = new ArrayList<>();
 
     @Column(name = "overstyrt", nullable = false)
     private boolean overstyrt = false;
+
+    public BeregningsgrunnlagEntitet(BeregningsgrunnlagEntitet kopi) {
+        this.grunnbeløp = kopi.getGrunnbeløp();
+        this.overstyrt = kopi.isOverstyrt();
+        this.skjæringstidspunkt = kopi.getSkjæringstidspunkt();
+        kopi.getSammenligningsgrunnlag().map(Sammenligningsgrunnlag::new).ifPresent(this::setSammenligningsgrunnlag);
+        kopi.getSammenligningsgrunnlagPrStatusListe().stream().map(SammenligningsgrunnlagPrStatus::new).forEach(this::leggTilSammenligningsgrunnlagPrStatus);
+        kopi.faktaOmBeregningTilfeller.stream().map(BeregningsgrunnlagFaktaOmBeregningTilfelle::new).forEach(this::leggTilFaktaOmBeregningTilfelle);
+        kopi.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatus::new).forEach(this::leggTilBeregningsgrunnlagAktivitetStatus);
+        kopi.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriode::new)
+                .forEach(this::leggTilBeregningsgrunnlagPeriode);
+    }
+
+    public BeregningsgrunnlagEntitet() {
+    }
 
     public Long getId() {
         return id;
@@ -93,23 +109,32 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Sammenligningsgrunnlag getSammenligningsgrunnlag() {
-        return sammenligningsgrunnlag;
+    public Optional<Sammenligningsgrunnlag> getSammenligningsgrunnlag() {
+        return Optional.ofNullable(sammenligningsgrunnlag);
+    }
+
+    void setSammenligningsgrunnlag(Sammenligningsgrunnlag sammenligningsgrunnlag) {
+        sammenligningsgrunnlag.setBeregningsgrunnlag(this);
+        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
     }
 
     public Beløp getGrunnbeløp() {
         return grunnbeløp;
     }
 
-    public void leggTilBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatus bgAktivitetStatus) {
+    void leggTilBeregningsgrunnlagAktivitetStatus(BeregningsgrunnlagAktivitetStatus bgAktivitetStatus) {
         Objects.requireNonNull(bgAktivitetStatus, "beregningsgrunnlagAktivitetStatus");
-        aktivitetStatuser.remove(bgAktivitetStatus); // NOSONAR
-        aktivitetStatuser.add(bgAktivitetStatus);
+        bgAktivitetStatus.setBeregningsgrunnlag(this);
+        // Aktivitetstatuser burde implementeres som eit Set
+        if (!aktivitetStatuser.contains(bgAktivitetStatus)) {
+            aktivitetStatuser.add(bgAktivitetStatus);
+        }
     }
 
-    public void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode bgPeriode) {
+    void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode bgPeriode) {
         Objects.requireNonNull(bgPeriode, "beregningsgrunnlagPeriode");
         if (!beregningsgrunnlagPerioder.contains(bgPeriode)) { // NOSONAR
+            bgPeriode.setBeregningsgrunnlag(this);
             beregningsgrunnlagPerioder.add(bgPeriode);
         }
     }
@@ -122,10 +147,32 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+
+    void leggTilFaktaOmBeregningTilfelle(BeregningsgrunnlagFaktaOmBeregningTilfelle beregningsgrunnlagFaktaOmBeregningTilfelle) {
+        Objects.requireNonNull(beregningsgrunnlagFaktaOmBeregningTilfelle, "beregningsgrunnlagFaktaOmBeregningTilfelle");
+        // Aktivitetstatuser burde implementeres som eit Set
+        if (!faktaOmBeregningTilfeller.contains(beregningsgrunnlagFaktaOmBeregningTilfelle)) {
+            beregningsgrunnlagFaktaOmBeregningTilfelle.setBeregningsgrunnlag(this);
+            faktaOmBeregningTilfeller.add(beregningsgrunnlagFaktaOmBeregningTilfelle);
+        }
+    }
+
     public List<SammenligningsgrunnlagPrStatus> getSammenligningsgrunnlagPrStatusListe() {
         return sammenligningsgrunnlagPrStatusListe.stream()
                 .sorted(Comparator.comparing(SammenligningsgrunnlagPrStatus::getSammenligningsgrunnlagType))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    void leggTilSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
+        Objects.requireNonNull(sammenligningsgrunnlagPrStatus, "sammenligningsgrunnlagPrStatus");
+        // Aktivitetstatuser burde implementeres som eit Set
+        if (!sammenligningsgrunnlagPrStatusListe.contains(sammenligningsgrunnlagPrStatus)) {
+            sammenligningsgrunnlagPrStatus.setBeregningsgrunnlag(this);
+            sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatus);
+        } else {
+            throw new IllegalArgumentException("Kan ikke legge til sammenligningsgrunnlag for " + sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType() +
+                    " fordi det allerede er lagt til.");
+        }
     }
 
     public boolean isOverstyrt() {
@@ -161,20 +208,12 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         return new Builder();
     }
 
-    public static Builder builder(BeregningsgrunnlagEntitet original) {
-        return new Builder(original);
-    }
-
     public static class Builder {
         private boolean built;
         private BeregningsgrunnlagEntitet kladd;
 
         private Builder() {
             kladd = new BeregningsgrunnlagEntitet();
-        }
-
-        private Builder(BeregningsgrunnlagEntitet original) {
-            kladd = original;
         }
 
         public Builder medSkjæringstidspunkt(LocalDate skjæringstidspunkt) {
@@ -209,14 +248,8 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
 
         public Builder leggTilFaktaOmBeregningTilfeller(List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
             verifiserKanModifisere();
-            faktaOmBeregningTilfeller.forEach(this::leggTilFaktaOmBeregningTilfeller);
+            faktaOmBeregningTilfeller.forEach(tilfelle -> BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build(kladd));
             return this;
-        }
-
-        private void leggTilFaktaOmBeregningTilfeller(FaktaOmBeregningTilfelle tilfelle) {
-            verifiserKanModifisere();
-            BeregningsgrunnlagFaktaOmBeregningTilfelle b = BeregningsgrunnlagFaktaOmBeregningTilfelle.builder().medFaktaOmBeregningTilfelle(tilfelle).build(kladd);
-            this.kladd.faktaOmBeregningTilfeller.add(b);
         }
 
         /**
@@ -231,7 +264,7 @@ public class BeregningsgrunnlagEntitet extends BaseEntitet {
         }
 
         public Builder leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatus.Builder sammenligningsgrunnlagPrStatusBuilder) { // NOSONAR
-            kladd.sammenligningsgrunnlagPrStatusListe.add(sammenligningsgrunnlagPrStatusBuilder.medBeregningsgrunnlag(kladd).build());
+            sammenligningsgrunnlagPrStatusBuilder.build(kladd);
             return this;
         }
 

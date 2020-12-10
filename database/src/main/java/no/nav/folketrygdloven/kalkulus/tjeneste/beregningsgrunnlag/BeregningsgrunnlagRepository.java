@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.naming.OperationNotSupportedException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -285,6 +286,10 @@ public class BeregningsgrunnlagRepository {
     }
 
     private void lagreGrunnlag(BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag) {
+        if (nyttGrunnlag.getId() != null) {
+            throw new IllegalArgumentException("Kan ikke lagre et allerede lagret grunnlag");
+        }
+
         BeregningAktivitetAggregatEntitet registerAktiviteter = nyttGrunnlag.getRegisterAktiviteter();
         if (registerAktiviteter != null) {
             lagreBeregningAktivitetAggregat(registerAktiviteter);
@@ -313,10 +318,11 @@ public class BeregningsgrunnlagRepository {
     }
 
     private void lagreOverstyring(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringer) {
-        if (beregningAktivitetOverstyringer.getId() == null) {
-            entityManager.persist(beregningAktivitetOverstyringer);
-            beregningAktivitetOverstyringer.getOverstyringer().forEach(entityManager::persist);
+        if (beregningAktivitetOverstyringer.getId() != null) {
+            throw new IllegalArgumentException("Kan ikke lagre et allerede lagret grunnlag");
         }
+        entityManager.persist(beregningAktivitetOverstyringer);
+        beregningAktivitetOverstyringer.getOverstyringer().forEach(entityManager::persist);
     }
 
     private void lagreRefusjonOverstyring(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {
@@ -332,16 +338,18 @@ public class BeregningsgrunnlagRepository {
 
     private void lagreBeregningAktivitetAggregat(BeregningAktivitetAggregatEntitet aggregat) {
         BeregningAktivitetAggregatEntitet entitet = aggregat;
-        if (entitet.getId() == null) {
-            entityManager.persist(entitet);
-            entitet.getBeregningAktiviteter().forEach(entityManager::persist);
+        if (entitet.getId() != null) {
+            throw new IllegalArgumentException("Kan ikke lagre et allerede lagret grunnlag");
         }
+        entityManager.persist(entitet);
+        entitet.getBeregningAktiviteter().forEach(entityManager::persist);
     }
 
     private void lagreSammenligningsgrunnlagPrStatus(SammenligningsgrunnlagPrStatus sammenligningsgrunnlagPrStatus) {
-        if (sammenligningsgrunnlagPrStatus.getId() == null) {
-            entityManager.persist(sammenligningsgrunnlagPrStatus);
+        if (sammenligningsgrunnlagPrStatus.getId() != null) {
+            throw new IllegalArgumentException("Kan ikke lagre et allerede lagret grunnlag");
         }
+        entityManager.persist(sammenligningsgrunnlagPrStatus);
     }
 
     private BeregningsgrunnlagGrunnlagBuilder opprettGrunnlagBuilderFor(Long koblingId) {

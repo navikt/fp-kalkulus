@@ -50,6 +50,13 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     @OneToMany(mappedBy = "refusjonOverstyring")
     private List<BeregningRefusjonPeriodeEntitet> refusjonPerioder = new ArrayList<>();
 
+    public BeregningRefusjonOverstyringEntitet(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
+        this.arbeidsgiver = beregningRefusjonOverstyringEntitet.getArbeidsgiver();
+        this.førsteMuligeRefusjonFom = beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null);
+        beregningRefusjonOverstyringEntitet.getRefusjonPerioder().stream().map(BeregningRefusjonPeriodeEntitet::new)
+                .forEach(this::leggTilBeregningRefusjonPeriode);
+    }
+
     private BeregningRefusjonOverstyringEntitet() {
         // Hibernate
     }
@@ -70,6 +77,13 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
         return refusjonPerioder;
     }
 
+    void leggTilBeregningRefusjonPeriode(BeregningRefusjonPeriodeEntitet beregningRefusjonPeriodeEntitet) {
+        if (!refusjonPerioder.contains(beregningRefusjonPeriodeEntitet)) {
+            beregningRefusjonPeriodeEntitet.setRefusjonOverstyringEntitet(this);
+            refusjonPerioder.add(beregningRefusjonPeriodeEntitet);
+        }
+    }
+
     public static BeregningRefusjonOverstyringEntitet.Builder builder() {
         return new BeregningRefusjonOverstyringEntitet.Builder();
     }
@@ -82,8 +96,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
         }
 
         public BeregningRefusjonOverstyringEntitet.Builder leggTilRefusjonPeriode(BeregningRefusjonPeriodeEntitet beregningRefusjonStart) {
-            beregningRefusjonStart.setRefusjonOverstyringEntitet(kladd);
-            kladd.refusjonPerioder.add(beregningRefusjonStart);
+            kladd.leggTilBeregningRefusjonPeriode(beregningRefusjonStart);
             return this;
         }
 

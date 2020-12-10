@@ -56,7 +56,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size=20)
-    private List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
+    private final List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList = new ArrayList<>();
 
     @Embedded
     @AttributeOverrides({
@@ -79,7 +79,21 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "beregningsgrunnlagPeriode", cascade = CascadeType.PERSIST, orphanRemoval = true)
     @BatchSize(size=20)
-    private List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
+    private final List<BeregningsgrunnlagPeriodeÅrsak> beregningsgrunnlagPeriodeÅrsaker = new ArrayList<>();
+
+    public BeregningsgrunnlagPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
+        this.avkortetPrÅr = beregningsgrunnlagPeriode.getAvkortetPrÅr();
+        this.bruttoPrÅr = beregningsgrunnlagPeriode.getBruttoPrÅr();
+        this.dagsats = beregningsgrunnlagPeriode.getDagsats();
+        this.periode = beregningsgrunnlagPeriode.getPeriode();
+        this.redusertPrÅr = beregningsgrunnlagPeriode.getRedusertPrÅr();
+        beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeÅrsaker().stream().map(BeregningsgrunnlagPeriodeÅrsak::new)
+                .forEach(this::addBeregningsgrunnlagPeriodeÅrsak);
+        beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream().map(BeregningsgrunnlagPrStatusOgAndel::new)
+                .forEach(this::addBeregningsgrunnlagPrStatusOgAndel);
+    }
+
+    private BeregningsgrunnlagPeriode() { }
 
     public Long getId() {
         return id;
@@ -108,14 +122,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
     public LocalDate getBeregningsgrunnlagPeriodeTom() {
         return periode.getTomDato();
-    }
-
-    public BigDecimal getBeregnetPrÅr() {
-        return beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getBeregnetPrÅr() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndel::getBeregnetPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
     }
 
     void updateBruttoPrÅr() {
@@ -157,6 +163,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     void addBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel bgPrStatusOgAndel) {
         Objects.requireNonNull(bgPrStatusOgAndel, "beregningsgrunnlagPrStatusOgAndel");
         if (!beregningsgrunnlagPrStatusOgAndelList.contains(bgPrStatusOgAndel)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
+            bgPrStatusOgAndel.setBeregningsgrunnlagPeriode(this);
             beregningsgrunnlagPrStatusOgAndelList.add(bgPrStatusOgAndel);
         }
     }
@@ -164,19 +171,13 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     void addBeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsak bgPeriodeÅrsak) {
         Objects.requireNonNull(bgPeriodeÅrsak, "beregningsgrunnlagPeriodeÅrsak");
         if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
+            bgPeriodeÅrsak.setBeregningsgrunnlagPeriode(this);
             beregningsgrunnlagPeriodeÅrsaker.add(bgPeriodeÅrsak);
         }
     }
 
-    public Beløp getTotaltRefusjonkravIPeriode() {
-        return new Beløp(beregningsgrunnlagPrStatusOgAndelList.stream()
-            .map(BeregningsgrunnlagPrStatusOgAndel::getBgAndelArbeidsforhold)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(BGAndelArbeidsforhold::getGjeldendeRefusjonPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add)
-            .orElse(BigDecimal.ZERO));
+    void setBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlag) {
+        this.beregningsgrunnlag = beregningsgrunnlag;
     }
 
     @Override
@@ -222,7 +223,7 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
 
 
     public static class Builder {
-        private BeregningsgrunnlagPeriode kladd;
+        private final BeregningsgrunnlagPeriode kladd;
         private boolean built;
 
         public Builder() {
@@ -283,16 +284,14 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         }
 
         public BeregningsgrunnlagPeriode build(BeregningsgrunnlagEntitet beregningsgrunnlag) {
-            kladd.beregningsgrunnlag = beregningsgrunnlag;
             verifyStateForBuild();
-
-            kladd.beregningsgrunnlag.leggTilBeregningsgrunnlagPeriode(kladd);
+            beregningsgrunnlag.leggTilBeregningsgrunnlagPeriode(kladd);
 
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getDagsats() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndel::getDagsats)
-                .reduce(Long::sum)
-                .orElse(null);
+                    .map(BeregningsgrunnlagPrStatusOgAndel::getDagsats)
+                    .filter(Objects::nonNull)
+                    .reduce(Long::sum)
+                    .orElse(null);
             kladd.dagsats = dagsatsSum;
             built = true;
             return kladd;
@@ -305,7 +304,6 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         }
 
         private void verifyStateForBuild() {
-            Objects.requireNonNull(kladd.beregningsgrunnlag, "beregningsgrunnlag");
             Objects.requireNonNull(kladd.beregningsgrunnlagPrStatusOgAndelList, "beregningsgrunnlagPrStatusOgAndelList");
             Objects.requireNonNull(kladd.periode, "beregningsgrunnlagPeriodeFom");
         }
