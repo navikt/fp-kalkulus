@@ -22,12 +22,10 @@ class KopierBeregningsgrunnlag {
      * @param aksjonspunkter Utledede aksjonspunkter for nytt beregningsgrunnlag
      * @param nyttGrunnlag Nytt beregningsgrunnlagGrunnlag
      * @param forrigeGrunnlag Forrige grunnlag som lagres i beregningsteget
-     * @param forrigeBekreftetGrunnlag Forrige grunnlag som ble lagret etter saksbehandlers vurdering i steget
      */
-    static boolean kanKopiereFraForrigeBekreftetGrunnlag(List<BeregningAksjonspunktResultat> aksjonspunkter,
-                                                         BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
-                                                         Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag,
-                                                         Optional<BeregningsgrunnlagGrunnlagDto> forrigeBekreftetGrunnlag) {
+    static boolean kanKopiereForrigeGrunnlagAvklartIStegUt(List<BeregningAksjonspunktResultat> aksjonspunkter,
+                                                           BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                           Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
         if (aksjonspunkter.isEmpty()) {
             return false;
         }
@@ -35,11 +33,7 @@ class KopierBeregningsgrunnlag {
         boolean kanKopiereBeregningsgrunnlag = kanKopiereBeregningsgrunnlag(
                 nyttGrunnlag.getBeregningsgrunnlag(),
                 forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag));
-        if (kanKopiereAktiviteter && kanKopiereBeregningsgrunnlag) {
-            return forrigeBekreftetGrunnlag.isPresent();
-        } else {
-            return false;
-        }
+        return kanKopiereAktiviteter && kanKopiereBeregningsgrunnlag;
     }
 
 

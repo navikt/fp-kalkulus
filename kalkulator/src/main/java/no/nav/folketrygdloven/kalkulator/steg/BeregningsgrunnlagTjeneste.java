@@ -59,7 +59,7 @@ public class BeregningsgrunnlagTjeneste {
     private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
-    private ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
+    private final ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;

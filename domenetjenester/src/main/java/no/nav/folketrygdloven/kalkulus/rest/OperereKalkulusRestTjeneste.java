@@ -176,7 +176,7 @@ public class OperereKalkulusRestTjeneste {
 
         for (var inputPrKobling : inputResultat.getResultatPrKobling().entrySet()) {
             MDC.put("prosess_koblingreferanse", inputPrKobling.getKey().toString());
-            var tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), inputPrKobling.getValue(), inputPrKobling.getKey());
+            var tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), inputPrKobling.getValue());
             resultat.add(tilstandResponse);
         }
 

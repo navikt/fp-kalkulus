@@ -108,6 +108,10 @@ public class BeregningsgrunnlagInput {
         return koblingReferanse;
     }
 
+    public Long getKoblingId() {
+        return koblingReferanse.getKoblingId();
+    }
+
     public BeregningsgrunnlagGrunnlagDto getBeregningsgrunnlagGrunnlag() {
         return beregningsgrunnlagGrunnlag;
     }

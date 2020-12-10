@@ -49,6 +49,14 @@ public class TilstandResponse {
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
     }
 
+    public TilstandResponse(@Valid UUID eksternReferanse, @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto,
+                            @Valid Boolean vilkarOppfylt, @Valid Vilkårsavslagsårsak vilkårsavslagsårsak) {
+        this.eksternReferanse = eksternReferanse;
+        this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
+        this.vilkarOppfylt = vilkarOppfylt;
+        this.vilkårsavslagsårsak = vilkårsavslagsårsak;
+    }
+
     public TilstandResponse medVilkårResultat(boolean resultat) {
         vilkarOppfylt = resultat;
         return this;
@@ -78,7 +86,7 @@ public class TilstandResponse {
     public Vilkårsavslagsårsak getVilkårsavslagsårsak() {
         return vilkårsavslagsårsak;
     }
-    
+
     public UUID getEksternReferanse() {
         return eksternReferanse;
     }
