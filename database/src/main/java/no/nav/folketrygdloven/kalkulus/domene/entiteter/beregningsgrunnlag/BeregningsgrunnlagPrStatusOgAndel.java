@@ -33,6 +33,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AndelKildeKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.InntektskategoriKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -64,7 +68,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @JoinColumn(name = "bg_periode_id", nullable = false, updatable = false)
     private BeregningsgrunnlagPeriode beregningsgrunnlagPeriode;
 
-    @Convert(converter= AktivitetStatus.KodeverdiConverter.class)
+    @Convert(converter= AktivitetStatusKodeverdiConverter.class)
     @Column(name="aktivitet_status", nullable = false)
     private AktivitetStatus aktivitetStatus;
 
@@ -75,7 +79,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     })
     private IntervallEntitet beregningsperiode;
 
-    @Convert(converter = OpptjeningAktivitetType.KodeverdiConverter.class)
+    @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name="arbeidsforhold_type", nullable = false)
     private OpptjeningAktivitetType arbeidsforholdType;
 
@@ -141,11 +145,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "besteberegning_pr_aar")
     private BigDecimal besteberegningPrÅr;
 
-    @Convert(converter= Inntektskategori.KodeverdiConverter.class)
+    @Convert(converter= InntektskategoriKodeverdiConverter.class)
     @Column(name="inntektskategori", nullable = false)
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
 
-    @Convert(converter= AndelKilde.KodeverdiConverter.class)
+    @Convert(converter= AndelKildeKodeverdiConverter.class)
     @Column(name = "kilde", nullable = false)
     private AndelKilde kilde = AndelKilde.PROSESS_START;
 

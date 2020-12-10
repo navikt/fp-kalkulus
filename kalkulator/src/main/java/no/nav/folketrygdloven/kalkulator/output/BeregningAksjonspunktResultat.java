@@ -60,7 +60,7 @@ public class BeregningAksjonspunktResultat {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<" + beregningAksjonspunktDefinisjon.getKode() + ":" + beregningAksjonspunktDefinisjon.getNavn()
+        return getClass().getSimpleName() + "<" + beregningAksjonspunktDefinisjon.getKode() 
             + ", venteårsak=" + getVenteårsak() + ", ventefrist=" + getVentefrist() + ">";
     }
 

@@ -20,6 +20,7 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.SammenligningsgrunnlagTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
@@ -43,7 +44,7 @@ public class SammenligningsgrunnlagPrStatus extends BaseEntitet {
     })
     private IntervallEntitet sammenligningsperiode;
 
-    @Convert(converter = SammenligningsgrunnlagType.KodeverdiConverter.class)
+    @Convert(converter = SammenligningsgrunnlagTypeKodeverdiConverter.class)
     @Column(name="sammenligningsgrunnlag_type", nullable = false)
     private SammenligningsgrunnlagType sammenligningsgrunnlagType;
 

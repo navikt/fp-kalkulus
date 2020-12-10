@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.OrderBy;
-
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;

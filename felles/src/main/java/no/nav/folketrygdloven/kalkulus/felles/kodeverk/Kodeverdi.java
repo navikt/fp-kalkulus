@@ -6,7 +6,4 @@ public interface Kodeverdi extends BasisKodeverdi {
     @Override
     String getKode();
 
-    @Override
-    String getKodeverk();
-
 }

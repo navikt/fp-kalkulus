@@ -16,6 +16,7 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.Type;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
@@ -43,7 +44,7 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "regel_input_json")
     private String regelInput;
 
-    @Convert(converter= BeregningsgrunnlagPeriodeRegelType.KodeverdiConverter.class)
+    @Convert(converter= BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter.class)
     @Column(name="regel_type", nullable = false)
     private BeregningsgrunnlagPeriodeRegelType regelType;
 

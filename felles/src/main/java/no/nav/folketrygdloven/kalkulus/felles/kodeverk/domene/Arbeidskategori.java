@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 @JsonFormat(shape = Shape.OBJECT)
@@ -64,11 +66,12 @@ public enum Arbeidskategori implements Kodeverdi {
         this.navn = navn;
     }
 
-    @JsonCreator
-    public static Arbeidskategori fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static Arbeidskategori fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(Arbeidskategori.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent Arbeidskategori: " + kode);
@@ -80,26 +83,10 @@ public enum Arbeidskategori implements Kodeverdi {
         return Collections.unmodifiableMap(KODER);
     }
 
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
     @JsonProperty
     @Override
     public String getKode() {
         return kode;
-    }
-
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
     }
 
 }

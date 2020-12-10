@@ -5,11 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -17,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 /**
@@ -89,51 +88,24 @@ enum BeregningAksjonspunktDefinisjon implements Kodeverdi {
     }
 
     @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @Override
     public String toString() {
         return super.toString() + "('" + getKode() + "')";
     }
 
-    @JsonCreator
-    public static BeregningAksjonspunktDefinisjon fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static BeregningAksjonspunktDefinisjon fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(BeregningAksjonspunktDefinisjon.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent BeregningAksjonspunktDefinisjon: " + kode);
         }
         return ad;
     }
-
+    
     public static Map<String, BeregningAksjonspunktDefinisjon> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<BeregningAksjonspunktDefinisjon, String> {
-        @Override
-        public String convertToDatabaseColumn(BeregningAksjonspunktDefinisjon attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public BeregningAksjonspunktDefinisjon convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : BeregningAksjonspunktDefinisjon.fraKode(dbData);
-        }
     }
 }

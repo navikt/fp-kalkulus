@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningSatsTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
@@ -33,7 +34,7 @@ public class BeregningSats extends BaseEntitet {
     @Embedded
     IntervallEntitet periode;
 
-    @Convert(converter= BeregningSatsType.KodeverdiConverter.class)
+    @Convert(converter= BeregningSatsTypeKodeverdiConverter.class)
     @Column(name="sats_type", nullable = false)
     private BeregningSatsType satsType = BeregningSatsType.UDEFINERT;
 

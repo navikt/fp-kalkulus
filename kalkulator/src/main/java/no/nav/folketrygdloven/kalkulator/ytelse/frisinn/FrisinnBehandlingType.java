@@ -38,23 +38,6 @@ public enum FrisinnBehandlingType implements Kodeverdi {
         return kode;
     }
 
-    @Override
-    public String getOffisiellKode() {
-        return null;
-    }
-
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-
-
     @JsonCreator
     public static FrisinnBehandlingType fraKode(@JsonProperty("kode") String kode) {
         if (kode == null) {

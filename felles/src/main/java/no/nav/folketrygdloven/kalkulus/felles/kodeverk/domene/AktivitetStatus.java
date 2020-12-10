@@ -6,19 +6,16 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -67,11 +64,12 @@ public enum AktivitetStatus implements Kodeverdi {
         this.inntektskategori = inntektskategori;
     }
 
-    @JsonCreator
-    public static AktivitetStatus fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static AktivitetStatus fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(AktivitetStatus.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent AktivitetStatus: " + kode);
@@ -81,10 +79,6 @@ public enum AktivitetStatus implements Kodeverdi {
 
     public static Map<String, AktivitetStatus> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
     }
 
     private static final Set<AktivitetStatus> AT_STATUSER = new HashSet<>(Arrays.asList(ARBEIDSTAKER,
@@ -108,15 +102,8 @@ public enum AktivitetStatus implements Kodeverdi {
         return FL_STATUSER.contains(this);
     }
 
-    @Override
     public String getNavn() {
         return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonProperty
@@ -125,26 +112,7 @@ public enum AktivitetStatus implements Kodeverdi {
         return kode;
     }
 
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
-    }
-
     public Inntektskategori getInntektskategori() {
         return inntektskategori;
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<AktivitetStatus, String> {
-
-        @Override
-        public String convertToDatabaseColumn(AktivitetStatus attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public AktivitetStatus convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
     }
 }

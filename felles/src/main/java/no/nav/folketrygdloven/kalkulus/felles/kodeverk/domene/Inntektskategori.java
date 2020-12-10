@@ -3,19 +3,16 @@ package no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 
@@ -57,30 +54,21 @@ public enum Inntektskategori implements Kodeverdi {
         this.navn = navn;
     }
 
-    @JsonCreator
-    public static Inntektskategori fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static Inntektskategori fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(Inntektskategori.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent Inntektskategori: " + kode);
         }
         return ad;
     }
+    
     public static Map<String, Inntektskategori> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonProperty
@@ -89,26 +77,4 @@ public enum Inntektskategori implements Kodeverdi {
         return kode;
     }
 
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<Inntektskategori, String> {
-        @Override
-        public String convertToDatabaseColumn(Inntektskategori attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public Inntektskategori convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
-
-    }
 }

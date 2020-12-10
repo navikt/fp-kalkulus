@@ -19,10 +19,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -30,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 @JsonFormat(shape = Shape.OBJECT)
@@ -84,47 +84,27 @@ public enum ArbeidType implements Kodeverdi {
         this.offisiellKode = offisiellKode;
     }
 
-
-    @JsonCreator
-    public static ArbeidType fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static ArbeidType fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(ArbeidType.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent ArbeidType: " + kode);
         }
         return ad;
     }
-
+    
     public static Map<String, ArbeidType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
     }
 
     @JsonProperty
     @Override
     public String getKode() {
         return kode;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @Override
-    public String getOffisiellKode() {
-        return offisiellKode;
     }
 
 }

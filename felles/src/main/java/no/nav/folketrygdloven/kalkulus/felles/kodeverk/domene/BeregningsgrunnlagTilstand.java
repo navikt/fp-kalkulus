@@ -5,19 +5,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -86,11 +83,12 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         return Collections.unmodifiableList(tilstandRekkefølge);
     }
 
-    @JsonCreator
-    public static BeregningsgrunnlagTilstand fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static BeregningsgrunnlagTilstand fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(BeregningsgrunnlagTilstand.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent BeregningsgrunnlagTilstand: " + kode);
@@ -100,10 +98,6 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
 
     public static Map<String, BeregningsgrunnlagTilstand> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet().stream().map(k -> "'" + k + "'").collect(Collectors.toList()));
     }
 
     public static BeregningsgrunnlagTilstand finnFørste() {
@@ -141,43 +135,13 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         return thisIndex < thatIndex;
     }
 
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
-
     @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
-    }
-
     public boolean erObligatoriskTilstand() {
         return this.obligatoriskTilstand;
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<BeregningsgrunnlagTilstand, String> {
-
-        @Override
-        public String convertToDatabaseColumn(BeregningsgrunnlagTilstand attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public BeregningsgrunnlagTilstand convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
     }
 }

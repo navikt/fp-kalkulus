@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -119,7 +120,8 @@
 
         <!-- NAV -->
 
-        <!-- Server Provided Libraries. Transitive avhengigheter som ikke burde vært her da de trekkes inn av server. -->
+        <!-- Server Provided Libraries. Transitive avhengigheter som ikke 
+            burde vært her da de trekkes inn av server. -->
         <dependency>
             <groupId>no.nav.foreldrepenger.felles.sikkerhet</groupId>
             <artifactId>felles-sikkerhet</artifactId>
@@ -355,21 +357,10 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-jaxrs2</artifactId>
         </dependency>
-        <!-- Må gjenta her for å få riktig scope (kolliderer ellers med dependencyManagement -->
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -377,7 +368,7 @@
     <build>
         <!-- setter til app da det er default for jar som kjøres i nais baseimages -->
         <finalName>app</finalName>
-        
+
         <resources>
             <!-- filtrerer for å sette opp swagger versjon korrekt -->
             <resource>
@@ -395,7 +386,7 @@
                 </excludes>
             </resource>
         </resources>
-        
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -441,7 +432,7 @@
                     </execution>
                 </executions>
             </plugin>
-      
+
         </plugins>
     </build>
 </project>

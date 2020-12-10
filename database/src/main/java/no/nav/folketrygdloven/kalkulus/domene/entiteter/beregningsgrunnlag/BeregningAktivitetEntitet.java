@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -56,7 +57,7 @@ public class BeregningAktivitetEntitet extends BaseEntitet implements IndexKey, 
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
-    @Convert(converter = OpptjeningAktivitetType.KodeverdiConverter.class)
+    @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name="opptjening_aktivitet_type", nullable = false)
     private OpptjeningAktivitetType opptjeningAktivitetType = OpptjeningAktivitetType.UDEFINERT;
 

@@ -19,6 +19,7 @@ import org.hibernate.annotations.NaturalId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.YtelseTyperKalkulusStøtterKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
@@ -52,7 +53,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     })
     private KoblingReferanse koblingReferanse;
 
-    @Convert(converter = YtelseTyperKalkulusStøtter.KodeverdiConverter.class)
+    @Convert(converter = YtelseTyperKalkulusStøtterKodeverdiConverter.class)
     @Column(name = "ytelse_type", nullable = false)
     private YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter;
 

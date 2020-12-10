@@ -6,12 +6,14 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -44,30 +46,21 @@ public enum BeregningsgrunnlagAndeltype implements Kodeverdi {
         this.navn = navn;
     }
 
-    @JsonCreator
-    public static BeregningsgrunnlagAndeltype fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static BeregningsgrunnlagAndeltype fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(BeregningsgrunnlagAndeltype.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent BeregningsgrunnlagAndeltype: " + kode);
         }
         return ad;
     }
+    
     public static Map<String, BeregningsgrunnlagAndeltype> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonProperty
@@ -75,15 +68,5 @@ public enum BeregningsgrunnlagAndeltype implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-
-    @Override
-    public String getOffisiellKode() {
-        return getKode();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet());
-    }
-
 
 }

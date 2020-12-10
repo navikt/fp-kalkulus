@@ -16,6 +16,7 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.FaktaOmBeregningTilfelleKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 
@@ -36,7 +37,7 @@ public class BeregningsgrunnlagFaktaOmBeregningTilfelle extends BaseEntitet {
     @JoinColumn(name = "BEREGNINGSGRUNNLAG_ID", nullable = false, updatable = false, unique = true)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
-    @Convert(converter= FaktaOmBeregningTilfelle.KodeverdiConverter.class)
+    @Convert(converter= FaktaOmBeregningTilfelleKodeverdiConverter.class)
     @Column(name="fakta_beregning_tilfelle", nullable = false)
     private FaktaOmBeregningTilfelle faktaOmBeregningTilfelle = FaktaOmBeregningTilfelle.UDEFINERT;
 

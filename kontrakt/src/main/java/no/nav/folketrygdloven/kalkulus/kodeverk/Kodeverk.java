@@ -66,7 +66,7 @@ public abstract class Kodeverk {
 
     @Override
     public String toString() {
-        return getKodeverk() +"<"+ getKode() + ">";
+        return getClass().getSimpleName() +"<"+ getKode() + ">";
     }
 
     @Override
@@ -74,12 +74,11 @@ public abstract class Kodeverk {
         if(obj==this)return true;
         if(obj==null || obj.getClass() != this.getClass()) return false;
         var other = getClass().cast(obj);
-        return Objects.equals(this.getKode(), other.getKode())
-                && Objects.equals(this.getKodeverk(), other.getKodeverk());
+        return Objects.equals(this.getKode(), other.getKode());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKode(), getKodeverk());
+        return Objects.hash(getKode());
     }
 }

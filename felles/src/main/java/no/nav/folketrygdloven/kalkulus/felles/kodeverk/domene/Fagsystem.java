@@ -4,11 +4,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -16,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.Kodeverdi;
+import no.nav.folketrygdloven.kalkulus.kodeverk.TempAvledeKode;
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
@@ -64,11 +63,12 @@ public enum Fagsystem implements Kodeverdi {
         this.offisiellKode = offisiellKode;
     }
 
-    @JsonCreator
-    public static Fagsystem fraKode(@JsonProperty("kode") String kode) {
-        if (kode == null) {
+    @JsonCreator(mode = Mode.DELEGATING)
+    public static Fagsystem fraKode(Object node) {
+        if (node == null) {
             return null;
         }
+        String kode = TempAvledeKode.getVerdi(Fagsystem.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent Fagsystem: " + kode);
@@ -78,26 +78,6 @@ public enum Fagsystem implements Kodeverdi {
 
     public static Map<String, Fagsystem> kodeMap() {
         return Collections.unmodifiableMap(KODER);
-    }
-
-    @Override
-    public String getNavn() {
-        return navn;
-    }
-
-    @Override
-    public String getOffisiellKode() {
-        return offisiellKode;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(KODER.keySet());
-    }
-
-    @JsonProperty
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
     }
 
     @JsonProperty
@@ -111,19 +91,6 @@ public enum Fagsystem implements Kodeverdi {
             if (KODER.putIfAbsent(v.kode, v) != null) {
                 throw new IllegalArgumentException("Duplikat : " + v.kode);
             }
-        }
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<Fagsystem, String> {
-        @Override
-        public String convertToDatabaseColumn(Fagsystem attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public Fagsystem convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
         }
     }
 

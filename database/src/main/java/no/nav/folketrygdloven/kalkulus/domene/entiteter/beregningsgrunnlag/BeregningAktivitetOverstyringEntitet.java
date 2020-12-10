@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregingAktivitetHandlingTypeKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAktivitetHandlingType;
@@ -47,11 +49,11 @@ public class BeregningAktivitetOverstyringEntitet extends BaseEntitet {
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
-    @Convert(converter= BeregningAktivitetHandlingType.KodeverdiConverter.class)
+    @Convert(converter= BeregingAktivitetHandlingTypeKodeverdiConverter.class)
     @Column(name="handling_type", nullable = false)
     private BeregningAktivitetHandlingType handlingType;
 
-    @Convert(converter = OpptjeningAktivitetType.KodeverdiConverter.class)
+    @Convert(converter = OpptjeningAktivitetTypeKodeverdiConverter.class)
     @Column(name="opptjening_aktivitet_type", nullable = false)
     private OpptjeningAktivitetType opptjeningAktivitetType;
 

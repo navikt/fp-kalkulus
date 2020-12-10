@@ -13,6 +13,7 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.Type;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
 
@@ -39,7 +40,7 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "regel_input_json")
     private String regelInput;
 
-    @Convert(converter= BeregningsgrunnlagRegelType.KodeverdiConverter.class)
+    @Convert(converter= BeregningsgrunnlagRegelTypeKodeverdiConverter.class)
     @Column(name="regel_type", nullable = false)
     private BeregningsgrunnlagRegelType regelType;
 

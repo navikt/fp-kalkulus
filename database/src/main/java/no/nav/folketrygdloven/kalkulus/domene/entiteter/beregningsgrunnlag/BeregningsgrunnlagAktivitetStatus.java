@@ -16,6 +16,8 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.HjemmelKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
@@ -37,11 +39,11 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
     @JoinColumn(name = "beregningsgrunnlag_id", nullable = false, updatable = false)
     private BeregningsgrunnlagEntitet beregningsgrunnlag;
 
-    @Convert(converter= AktivitetStatus.KodeverdiConverter.class)
+    @Convert(converter= AktivitetStatusKodeverdiConverter.class)
     @Column(name="aktivitet_status", nullable = false)
     private AktivitetStatus aktivitetStatus;
 
-    @Convert(converter= Hjemmel.KodeverdiConverter.class)
+    @Convert(converter= HjemmelKodeverdiConverter.class)
     @Column(name="hjemmel", nullable = false)
     private Hjemmel hjemmel;
 

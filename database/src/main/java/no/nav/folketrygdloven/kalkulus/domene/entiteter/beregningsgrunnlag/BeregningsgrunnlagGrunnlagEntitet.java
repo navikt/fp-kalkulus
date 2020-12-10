@@ -22,6 +22,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.NaturalId;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagTilstandKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
@@ -76,7 +77,7 @@ public class BeregningsgrunnlagGrunnlagEntitet extends BaseEntitet {
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 
-    @Convert(converter= BeregningsgrunnlagTilstand.KodeverdiConverter.class)
+    @Convert(converter= BeregningsgrunnlagTilstandKodeverdiConverter.class)
     @Column(name="steg_opprettet", nullable = false)
     private BeregningsgrunnlagTilstand beregningsgrunnlagTilstand;
 
