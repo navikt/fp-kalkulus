@@ -141,7 +141,7 @@ public class BeregningStegTjeneste {
             ForeldrepengerGrunnlag foreldrepengerGrunnlag = input.getYtelsespesifiktGrunnlag();
             if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
                 BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
-                repository.lagre(input.getKoblingId(), mapGrunnlag(input.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+                repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
                 lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
             }
