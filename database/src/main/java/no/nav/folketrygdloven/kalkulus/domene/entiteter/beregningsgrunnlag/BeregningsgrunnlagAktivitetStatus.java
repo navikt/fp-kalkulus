@@ -133,7 +133,6 @@ public class BeregningsgrunnlagAktivitetStatus extends BaseEntitet {
         }
 
         public void verifyStateForBuild() {
-            Objects.requireNonNull(beregningsgrunnlagAktivitetStatusMal.beregningsgrunnlag, "beregningsgrunnlag");
             Objects.requireNonNull(beregningsgrunnlagAktivitetStatusMal.aktivitetStatus, "aktivitetStatus");
             Objects.requireNonNull(beregningsgrunnlagAktivitetStatusMal.getHjemmel(), "hjemmel");
         }
