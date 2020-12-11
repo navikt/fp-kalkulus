@@ -95,7 +95,7 @@ public class UtbetalingsPostDto {
     }
 
     public UtbetalingsPostDto medSkattAvgiftType(String kode) {
-        setSkattAvgiftType(new SkatteOgAvgiftsregelType(kode));
+        setSkattAvgiftType(SkatteOgAvgiftsregelType.fraKode(kode));
         return this;
     }
 

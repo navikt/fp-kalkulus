@@ -2,10 +2,10 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 
 public class ArbeidsforholdReferanseDto {
 

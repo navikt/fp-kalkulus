@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon.modell;
 
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class RefusjonAndelNøkkel {
     private final AktivitetStatus aktivitetStatus;

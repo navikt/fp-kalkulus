@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class AktivitetKodeverkMappingTest {
 

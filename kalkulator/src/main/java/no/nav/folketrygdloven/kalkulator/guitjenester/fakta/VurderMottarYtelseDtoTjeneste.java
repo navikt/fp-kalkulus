@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ArbeidstakerUtenInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.VurderMottarYtelseTjeneste;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.ArbeidstakerUtenInntektsmeldingAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
@@ -63,7 +63,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
             BeregningsgrunnlagPrStatusOgAndelDto andel = finnRestAndel(andelUtenIM, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
             beregnOgSettInntektPrMnd(filter, andel, dto);
             dto.setAndelsnr(andelUtenIM.getAndelsnr());
-            dto.setInntektskategori(new Inntektskategori(andelUtenIM.getInntektskategori().getKode()));
+            dto.setInntektskategori(Inntektskategori.fraKode(andelUtenIM.getInntektskategori().getKode()));
             BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag).ifPresent(dto::setArbeidsforhold);
             Optional<FaktaArbeidsforholdDto> faktaArbeidsforholdDto = andelUtenIM.getBgAndelArbeidsforhold()
                     .flatMap(arb -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(arb)));

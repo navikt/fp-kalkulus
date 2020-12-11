@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.modell.svp;
 import java.util.Objects;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
 public final class UtbetalingsgradArbeidsforholdDto {
 

@@ -32,17 +32,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.ytelse.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NaturalYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PensjonTrygdType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
@@ -53,10 +43,19 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittFrilansInntekt;
@@ -242,7 +241,7 @@ public class MapIAYTilKalulator {
         InntektDtoBuilder builder = InntektDtoBuilder.oppdatere(Optional.empty());
         inntekt.getPoster().forEach(inntektspost -> builder.leggTilInntektspost(mapInntektspost(inntektspost)));
         builder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(inntekt.getUtbetaler()));
-        builder.medInntektsKilde(InntektsKilde.fraKode(inntekt.getKilde().getKode()));
+        builder.medInntektsKilde(InntektskildeType.fraKode(inntekt.getKilde().getKode()));
         return builder;
     }
 
@@ -293,7 +292,7 @@ public class MapIAYTilKalulator {
         if (ytelse.getVedtaksDagsats() != null) {
             builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getVerdi());
         }
-        builder.medBehandlingsTema(ytelse.getTemaUnderkategori() == null ? TemaUnderkategori.UDEFINERT : TemaUnderkategori.fraKode(ytelse.getTemaUnderkategori().getKode()));
+        builder.medBehandlingsTema(ytelse.getTemaUnderkategori());
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(FagsakYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
         return builder;
@@ -314,7 +313,7 @@ public class MapIAYTilKalulator {
         return builder.build();
     }
 
-    static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType mapUtbetaltYtelseTypeTilGrunnlag(UtbetaltYtelseType type) {
+    static no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType mapUtbetaltYtelseTypeTilGrunnlag(UtbetaltYtelseType type) {
 
         if (type == null)
             return OffentligYtelseType.UDEFINERT;

@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.ReferanseType;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 class MapArbeidsforholdFraRegelTilVL {
     private MapArbeidsforholdFraRegelTilVL() {

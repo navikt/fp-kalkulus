@@ -15,7 +15,7 @@ import org.hibernate.annotations.Type;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 
 @Entity(name = "RegelSporingGrunnlagEntitet")
 @Table(name = "REGEL_SPORING_GRUNNLAG")

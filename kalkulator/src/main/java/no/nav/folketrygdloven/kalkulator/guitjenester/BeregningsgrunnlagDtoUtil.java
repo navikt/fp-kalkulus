@@ -18,16 +18,17 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørId;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class BeregningsgrunnlagDtoUtil {
 
@@ -45,11 +46,11 @@ public class BeregningsgrunnlagDtoUtil {
 
     private static FaktaOmBeregningAndelDto settVerdierForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag, BeregningsgrunnlagPeriodeDto periode) {
         FaktaOmBeregningAndelDto andelDto = new FaktaOmBeregningAndelDto();
-        andelDto.setAktivitetStatus(new no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus(andel.getAktivitetStatus().getKode()));
-        andelDto.setInntektskategori(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(andel.getInntektskategori().getKode()));
+        andelDto.setAktivitetStatus(andel.getAktivitetStatus());
+        andelDto.setInntektskategori(andel.getInntektskategori());
         andelDto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
-        andelDto.setKilde(new no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde(andel.getKilde().getKode()));
+        andelDto.setKilde(andel.getKilde());
         List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).stream()
             .sorted().collect(Collectors.toList());
         finnArbeidsprosenterIPeriode(graderingForAndelIPeriode, andel.getBeregningsgrunnlagPeriode().getPeriode()).forEach(andelDto::leggTilAndelIArbeid);
@@ -76,7 +77,7 @@ public class BeregningsgrunnlagDtoUtil {
             return Optional.empty();
         }
         mapBgAndelArbeidsforhold(andel, arbeidsforhold, inntektsmeldingOptional, inntektArbeidYtelseGrunnlag);
-        arbeidsforhold.setArbeidsforholdType(new no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
+        arbeidsforhold.setArbeidsforholdType(andel.getArbeidsforholdType());
         return Optional.of(arbeidsforhold);
     }
 
@@ -113,8 +114,8 @@ public class BeregningsgrunnlagDtoUtil {
                 arbeidsforhold.setArbeidsgiverId(opplysningerDto.get().getIdentifikator());
                 arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
-                if (Organisasjonstype.erKunstig(arbeidsgiver.getOrgnr())) {
-                    arbeidsforhold.setOrganisasjonstype(new no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype(Organisasjonstype.KUNSTIG.getKode()));
+                if (OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) {
+                    arbeidsforhold.setOrganisasjonstype(Organisasjonstype.KUNSTIG);
                 }
             } else if (arbeidsgiver.erAktørId()) {
                 arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());

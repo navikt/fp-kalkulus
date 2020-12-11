@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrganisasjonsNummerValidator;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
@@ -13,6 +12,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.RefusjonskravPrArbei
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonskravGyldighetEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
+import no.nav.folketrygdloven.kalkulus.typer.OrganisasjonsNummerValidator;
 
 class UtledFaktaOmBeregningVurderinger {
 

@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 
 public class AksjonspunktUtlederForeslåBeregning {
 
@@ -31,7 +31,7 @@ public class AksjonspunktUtlederForeslåBeregning {
             .collect(Collectors.toList());
     }
 
-    private static BeregningAksjonspunktDefinisjon mapRegelMerknad(RegelMerknad regelMerknad) {
-        return BeregningAksjonspunktDefinisjon.fraKode(regelMerknad.getMerknadKode());
+    private static BeregningAksjonspunkt mapRegelMerknad(RegelMerknad regelMerknad) {
+        return BeregningAksjonspunkt.fraKode(regelMerknad.getMerknadKode());
     }
 }

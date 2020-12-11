@@ -16,13 +16,13 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.NaturalId;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.YtelseTyperKalkulusStøtterKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 @Entity(name = "Kobling")
 @Table(name = "KOBLING")
@@ -55,7 +55,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     @Convert(converter = YtelseTyperKalkulusStøtterKodeverdiConverter.class)
     @Column(name = "ytelse_type", nullable = false)
-    private YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter;
+    private YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter;
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "aktørId", column = @Column(name = "bruker_aktoer_id", nullable = false, updatable = false)))
@@ -68,12 +68,12 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     public KoblingEntitet() {
     }
 
-    public KoblingEntitet(KoblingReferanse koblingReferanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter, Saksnummer saksnummer, AktørId aktørId) {
+    public KoblingEntitet(KoblingReferanse koblingReferanse, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, Saksnummer saksnummer, AktørId aktørId) {
         Objects.requireNonNull(saksnummer, "saksnummer");
         Objects.requireNonNull(koblingReferanse, "koblingReferanse");
         Objects.requireNonNull(aktørId, "aktørId");
         Objects.requireNonNull(ytelseTyperKalkulusStøtter, "ytelseTyperKalkulusStøtter");
-        this.ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(ytelseTyperKalkulusStøtter.getKode());
+        this.ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyperKalkulusStøtter.getKode());
         this.saksnummer = saksnummer;
         this.koblingReferanse = koblingReferanse;
         this.aktørId = aktørId;
@@ -96,7 +96,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
         return aktørId;
     }
 
-    public YtelseTyperKalkulusStøtter getYtelseTyperKalkulusStøtter() {
+    public YtelseTyperKalkulusStøtterKontrakt getYtelseTyperKalkulusStøtter() {
         return ytelseTyperKalkulusStøtter;
     }
 
@@ -104,7 +104,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
         return saksnummer;
     }
 
-    public void setYtelseTyperKalkulusStøtter(YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter) {
+    public void setYtelseTyperKalkulusStøtter(YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter) {
         this.ytelseTyperKalkulusStøtter = ytelseTyperKalkulusStøtter;
     }
 

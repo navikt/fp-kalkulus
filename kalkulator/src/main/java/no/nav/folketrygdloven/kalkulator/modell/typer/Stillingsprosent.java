@@ -8,9 +8,9 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /**
  * Stillingsprosent slik det er oppgitt i arbeidsavtalen

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
 public class MapInntektskategoriRegelTilVL {

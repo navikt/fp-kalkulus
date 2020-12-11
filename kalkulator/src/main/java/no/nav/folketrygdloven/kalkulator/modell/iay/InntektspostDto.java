@@ -6,15 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.NæringsinntektType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OffentligYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PensjonTrygdType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class InntektspostDto {
 

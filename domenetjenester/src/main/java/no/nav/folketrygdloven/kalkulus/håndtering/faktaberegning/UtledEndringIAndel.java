@@ -4,14 +4,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPrStatusOgAndelEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.InntektskategoriEndring;
@@ -41,10 +39,10 @@ class UtledEndringIAndel {
                 Aktør aktør = arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator());
                 andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(aktør, andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getReferanse).orElse(null));
             } else {
-                andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(new OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
+                andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(andel.getArbeidsforholdType());
             }
         } else {
-            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(new AktivitetStatus(andel.getAktivitetStatus().getKode()));
+            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         }
         return andelEndring;
     }
@@ -63,11 +61,7 @@ class UtledEndringIAndel {
     }
 
     private static InntektskategoriEndring initInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return new InntektskategoriEndring(finnInntektskategori(forrigeAndel), initInntektskategori(andel));
-    }
-
-    private static no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori initInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(andel.getInntektskategori().getKode());
+        return new InntektskategoriEndring(finnInntektskategori(forrigeAndel), andel.getInntektskategori());
     }
 
     private static Boolean harEndringIInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
@@ -80,8 +74,6 @@ class UtledEndringIAndel {
     private static no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori finnInntektskategori(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return forrigeAndel
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getInntektskategori)
-                .map(Inntektskategori::getKode)
-                .map(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori::new)
                 .orElse(null);
     }
 

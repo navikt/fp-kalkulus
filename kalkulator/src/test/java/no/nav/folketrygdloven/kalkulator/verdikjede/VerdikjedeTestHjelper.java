@@ -40,21 +40,21 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OpptjeningsnøkkelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriFraSøknadTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 
 
@@ -372,7 +372,7 @@ public class VerdikjedeTestHjelper {
     private void lagInntektForSN(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                  LocalDate år, BigDecimal årsinntekt) {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
-        InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(InntektsKilde.SIGRUN, null);
+        InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(InntektskildeType.SIGRUN, null);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
             .medBeløp(årsinntekt)
             .medPeriode(år.withMonth(1).withDayOfMonth(1), år.withMonth(12).withDayOfMonth(31))
@@ -429,7 +429,7 @@ public class VerdikjedeTestHjelper {
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
 
-        InntektsKilde kilde = InntektsKilde.INNTEKT_SAMMENLIGNING;
+        InntektskildeType kilde = InntektskildeType.INNTEKT_SAMMENLIGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
             .medBeløp(månedsbeløp)
@@ -447,7 +447,7 @@ public class VerdikjedeTestHjelper {
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
 
-        InntektsKilde kilde = InntektsKilde.INNTEKT_BEREGNING;
+        InntektskildeType kilde = InntektskildeType.INNTEKT_BEREGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
             .medBeløp(månedsbeløp)
@@ -490,7 +490,7 @@ public class VerdikjedeTestHjelper {
 
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
 
-        InntektsKilde kilde = InntektsKilde.INNTEKT_OPPTJENING;
+        InntektskildeType kilde = InntektskildeType.INNTEKT_OPPTJENING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
             .medBeløp(månedsbeløp)

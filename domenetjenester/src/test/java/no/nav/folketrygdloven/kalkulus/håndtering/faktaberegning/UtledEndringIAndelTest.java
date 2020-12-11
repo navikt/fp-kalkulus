@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 public class UtledEndringIAndelTest {
 
@@ -39,7 +39,7 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isNull();
         assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
         assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isNull();
-        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(inntektskategori.getKode()));
+        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getArbeidsforholdRef()).isEqualTo(ARBEIDSFORHOLD_REF.getReferanse());
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
         assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
-        assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(forrigeInntektskategori.getKode()));
-        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(inntektskategori.getKode()));
+        assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
+        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
 
     @Test
@@ -86,8 +86,8 @@ public class UtledEndringIAndelTest {
         assertThat(endring.get().getArbeidsforholdRef()).isNull();
         assertThat(endring.get().getInntektEndring().getFraInntekt()).isEqualTo(forrigeInntekt);
         assertThat(endring.get().getInntektEndring().getTilInntekt()).isEqualTo(inntekt);
-        assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(forrigeInntektskategori.getKode()));
-        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(new no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori(inntektskategori.getKode()));
+        assertThat(endring.get().getInntektskategoriEndring().getFraVerdi()).isEqualTo(forrigeInntektskategori);
+        assertThat(endring.get().getInntektskategoriEndring().getTilVerdi()).isEqualTo(inntektskategori);
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto lagArbeidstakerAndel(BigDecimal inntekt, Inntektskategori inntektskategori) {

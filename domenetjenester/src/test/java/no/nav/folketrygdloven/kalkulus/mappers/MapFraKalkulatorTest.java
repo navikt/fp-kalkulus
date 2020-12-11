@@ -16,11 +16,9 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AndelGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.GraderingDto;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -44,8 +42,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 class MapFraKalkulatorTest {
 
@@ -58,7 +58,7 @@ class MapFraKalkulatorTest {
     void skal_mappe_fra_kalkulator_til_beregningsgrunnlag_input() {
         String saksnummer = "1234";
         UUID randomUUID = UUID.randomUUID();
-        YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.DAGPENGER;
+        YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.DAGPENGER;
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
         KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy());
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();

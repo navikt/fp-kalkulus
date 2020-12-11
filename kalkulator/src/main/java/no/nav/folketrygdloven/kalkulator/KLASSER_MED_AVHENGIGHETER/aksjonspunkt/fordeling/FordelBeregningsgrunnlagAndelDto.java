@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.fordeling;
 
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 public class FordelBeregningsgrunnlagAndelDto extends RedigerbarAndelDto {
 

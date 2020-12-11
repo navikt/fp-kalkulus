@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 public class InntektDtoBuilder {
     private final boolean oppdaterer;
@@ -26,7 +26,7 @@ public class InntektDtoBuilder {
         return oppdatere.map(InntektDtoBuilder::oppdatere).orElseGet(InntektDtoBuilder::ny);
     }
 
-    public InntektDtoBuilder medInntektsKilde(InntektsKilde inntektsKilde) {
+    public InntektDtoBuilder medInntektsKilde(InntektskildeType inntektsKilde) {
         this.inntekt.setInntektsKilde(inntektsKilde);
         return this;
     }

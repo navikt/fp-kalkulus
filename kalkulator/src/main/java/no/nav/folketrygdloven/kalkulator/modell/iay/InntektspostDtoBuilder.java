@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SkatteOgAvgiftsregelType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class InntektspostDtoBuilder {
     private InntektspostDto inntektspost;

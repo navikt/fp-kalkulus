@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 @Entity(name = "BGAndelArbeidsforhold")
 @Table(name = "BG_ANDEL_ARBEIDSFORHOLD")

@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 
 @ApplicationScoped
@@ -47,8 +47,7 @@ public class FaktaOmBeregningDtoTjeneste {
             BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
             if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
                 List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();
-                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller.stream()
-                        .map(t -> new no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle(t.getKode())).collect(Collectors.toList()));
+                faktaOmBeregningDto.setFaktaOmBeregningTilfeller(tilfeller.stream().collect(Collectors.toList()));
                 utledDtoerForTilfeller(input, faktaOmBeregningDto);
             }
         }

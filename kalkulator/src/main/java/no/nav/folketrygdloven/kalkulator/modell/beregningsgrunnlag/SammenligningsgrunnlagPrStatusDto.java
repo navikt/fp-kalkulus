@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 
 public class SammenligningsgrunnlagPrStatusDto {

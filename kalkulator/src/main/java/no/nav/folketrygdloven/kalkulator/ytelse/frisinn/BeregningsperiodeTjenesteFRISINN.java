@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
+
 import javax.enterprise.context.ApplicationScoped;
+
 import no.nav.folketrygdloven.kalkulator.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;

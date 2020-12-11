@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.PeriodeÅrsakKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 @Entity(name = "BeregningsgrunnlagPeriodeÅrsak")
 @Table(name = "BG_PERIODE_AARSAK")

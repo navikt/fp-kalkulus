@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
 public class BeregningAktivitetNøkkel implements Comparable<BeregningAktivitetNøkkel> {

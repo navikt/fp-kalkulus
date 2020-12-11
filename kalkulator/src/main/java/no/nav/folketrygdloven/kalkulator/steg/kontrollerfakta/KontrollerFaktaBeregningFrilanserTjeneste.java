@@ -16,8 +16,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class KontrollerFaktaBeregningFrilanserTjeneste {
 
@@ -97,7 +97,7 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
 
     private static Set<Arbeidsgiver> finnArbeidsgivere(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(bpsa -> no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER.equals(bpsa.getAktivitetStatus()))
+            .filter(bpsa -> no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER.equals(bpsa.getAktivitetStatus()))
             .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
             .filter(Optional::isPresent)
             .map(Optional::get)

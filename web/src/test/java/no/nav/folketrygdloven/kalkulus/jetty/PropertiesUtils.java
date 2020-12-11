@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,7 +13,6 @@ import org.slf4j.LoggerFactory;
 class PropertiesUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesUtils.class);
 
-    private static String TEMPLATE_FILNAVN = "app-dev.properties";
     private static String JETTY_SCHEMAS_LOCAL = "jetty_web_server.json";
     private static String DEV_FILNAVN = "app.properties";
     private static String DEV_FILNAVN_LOCAL = "app-local.properties";
@@ -31,42 +28,20 @@ class PropertiesUtils {
     }
 
     static void lagPropertiesFilFraTemplate() throws IOException {
-        File devFil = new File(DEV_FILNAVN);
-
-        ClassLoader classLoader = PropertiesUtils.class.getClassLoader();
-        File templateFil = new File(classLoader.getResource(TEMPLATE_FILNAVN).getFile());
-
-        copyTemplateFile(templateFil, devFil, true);
-
-        // create local file
+        // create local file for passwords etc
         File localProps = new File(DEV_FILNAVN_LOCAL);
         if (!localProps.exists()) {
-            boolean fileCreated = localProps.createNewFile();
-            if (!fileCreated) {
-                LOGGER.error("Kunne ikke opprette properties-fil");
+            if (!localProps.createNewFile()) {
+                LOGGER.error("Kunne ikke opprette properties-fil {}", localProps.getAbsolutePath());
             }
         }
     }
 
-    private static void copyTemplateFile(File templateFil, File targetFil, boolean backup) throws IOException {
-        if (!targetFil.exists()) {
-            Files.copy(templateFil.toPath(), targetFil.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } else if ((targetFil.lastModified() < templateFil.lastModified())) {
-            if (backup) {
-                File backupDev = new File(targetFil.getAbsolutePath() + ".backup");
-                Files.copy(targetFil.toPath(), backupDev.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-            Files.copy(templateFil.toPath(), targetFil.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-
-    static void initProperties(boolean vtp) {
+    static void initProperties() {
         File devFil = new File(DEV_FILNAVN);
         loadPropertyFile(devFil);
         loadPropertyFile(new File(DEV_FILNAVN_LOCAL));
-        if (vtp) {
-            loadPropertyFile(new File(VTP_FILNAVN_LOCAL));
-        }
+        loadPropertyFile(new File(VTP_FILNAVN_LOCAL));
     }
 
     private static void loadPropertyFile(File devFil) {
@@ -79,17 +54,5 @@ class PropertiesUtils {
             }
             System.getProperties().putAll(prop);
         }
-    }
-
-    static File lagLogbackConfig() throws IOException {
-        File logbackConfig = new File("logback.xml");
-
-        ClassLoader classLoader = PropertiesUtils.class.getClassLoader();
-        File templateFil = new File(classLoader.getResource("logback-dev.xml").getFile());
-
-        copyTemplateFile(templateFil, logbackConfig, false);
-
-        return logbackConfig;
-
     }
 }

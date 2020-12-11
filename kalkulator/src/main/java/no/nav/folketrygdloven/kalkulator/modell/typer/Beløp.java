@@ -8,9 +8,9 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /**
  * Beløp representerer kombinasjon av kroner og øre på standardisert format

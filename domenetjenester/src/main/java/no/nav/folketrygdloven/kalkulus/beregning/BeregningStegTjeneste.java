@@ -7,7 +7,6 @@ import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitet
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,13 +31,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Vilkårsavslagsårsak;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -56,7 +52,8 @@ public class BeregningStegTjeneste {
     }
 
     @Inject
-    public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository, RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste) {
+    public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository,
+                                 RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
@@ -201,26 +198,27 @@ public class BeregningStegTjeneste {
 
         // Kopiering av forrige grunnlag i steg ut
         boolean kanKopiereAvklartIStegUt = kanKopiereForrigeGrunnlagAvklartIStegUt(
-                resultat.getBeregningAksjonspunktResultater(),
-                resultat.getBeregningsgrunnlagGrunnlag(),
-                input.getForrigeGrunnlagFraSteg());
+            resultat.getBeregningAksjonspunktResultater(),
+            resultat.getBeregningsgrunnlagGrunnlag(),
+            input.getForrigeGrunnlagFraSteg());
         if (kanKopiereAvklartIStegUt) {
-            input.getForrigeGrunnlagFraStegUt().map(KalkulatorTilEntitetMapper::mapGrunnlag).ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
+            input.getForrigeGrunnlagFraStegUt().map(KalkulatorTilEntitetMapper::mapGrunnlag)
+                .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
         }
     }
 
     private TilstandResponse mapTilstandResponse(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
         var aksjonspunkter = resultat.getBeregningAksjonspunktResultater().stream()
-                .map(res -> new AksjonspunktMedTilstandDto(
-                        new BeregningAksjonspunkt(res.getBeregningAksjonspunktDefinisjon().getKode()),
-                        res.getVenteårsak() != null ? new BeregningVenteårsak(res.getVenteårsak().getKode()) : null,
-                        res.getVentefrist())).collect(Collectors.toList());
+            .map(res -> new AksjonspunktMedTilstandDto(
+                res.getBeregningAksjonspunktDefinisjon(),
+                res.getVenteårsak(),
+                res.getVentefrist()))
+            .collect(Collectors.toList());
         if (resultat.getBeregningVilkårResultat() != null) {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(),
-                    aksjonspunkter,
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null :
-                            new Vilkårsavslagsårsak(resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak().getKode()));
+                aksjonspunkter,
+                resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
+                resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
         } else {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(), aksjonspunkter);
         }
@@ -237,31 +235,30 @@ public class BeregningStegTjeneste {
         var regelsporingGrunnlag = regelsporinger.getRegelsporingerGrunnlag();
         if (regelsporingGrunnlag != null) {
             regelsporingGrunnlag.forEach(sporing -> {
-                        RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
-                                .medRegelEvaluering(sporing.getRegelEvaluering())
-                                .medRegelInput(sporing.getRegelInput());
-                        regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.getRegelType());
-                    }
-            );
+                RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
+                    .medRegelEvaluering(sporing.getRegelEvaluering())
+                    .medRegelInput(sporing.getRegelInput());
+                regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.getRegelType());
+            });
         }
     }
 
     private void lagreRegelSporingPerioder(Long koblingId, RegelSporingAggregat regelsporinger) {
         if (regelsporinger.getRegelsporingPerioder() != null) {
             Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.getRegelsporingPerioder()
-                    .stream()
-                    .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
-            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
+                .stream()
+                .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
+            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
             regelsporingRepository.lagre(koblingId, builderMap);
         }
     }
 
     private List<RegelSporingPeriodeEntitet.Builder> lagRegelSporingPeriodeBuilders(Map.Entry<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> e) {
-        return e.getValue().stream().map(sporing ->
-                RegelSporingPeriodeEntitet.ny()
-                        .medRegelEvaluering(sporing.getRegelEvaluering())
-                        .medRegelInput(sporing.getRegelInput())
-                        .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
-                .collect(Collectors.toList());
+        return e.getValue().stream().map(sporing -> RegelSporingPeriodeEntitet.ny()
+            .medRegelEvaluering(sporing.getRegelEvaluering())
+            .medRegelInput(sporing.getRegelInput())
+            .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
+            .collect(Collectors.toList());
     }
 }

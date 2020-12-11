@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 /**
  * Builder for å håndtere en gitt versjon {@link VersjonTypeDto} av grunnlaget.
@@ -202,7 +202,7 @@ public class InntektArbeidYtelseAggregatBuilder {
             return oppdatere.map(AktørInntektBuilder::oppdatere).orElseGet(AktørInntektBuilder::ny);
         }
 
-        public InntektDtoBuilder getInntektBuilder(InntektsKilde inntektsKilde, OpptjeningsnøkkelDto opptjeningsnøkkel) {
+        public InntektDtoBuilder getInntektBuilder(InntektskildeType inntektsKilde, OpptjeningsnøkkelDto opptjeningsnøkkel) {
             return kladd.getInntektBuilder(inntektsKilde, opptjeningsnøkkel);
         }
 

@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 public class MapHjemmelFraRegelTilVL {
 

@@ -38,7 +38,7 @@ public class OverstyrBeregningsgrunnlagHåndteringDto extends HåndterBeregningD
 
     @JsonCreator
     public OverstyrBeregningsgrunnlagHåndteringDto(@JsonProperty("fakta") @Valid FaktaBeregningLagreDto fakta, @JsonProperty("overstyrteAndeler") @Valid @NotNull List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fakta = fakta;
         this.overstyrteAndeler = overstyrteAndeler;
     }

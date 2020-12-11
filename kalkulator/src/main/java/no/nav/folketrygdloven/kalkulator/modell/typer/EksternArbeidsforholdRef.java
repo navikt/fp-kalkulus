@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulator.modell.typer;
 import java.io.Serializable;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /**
  * Ekstern arbeidsforhold referanse.

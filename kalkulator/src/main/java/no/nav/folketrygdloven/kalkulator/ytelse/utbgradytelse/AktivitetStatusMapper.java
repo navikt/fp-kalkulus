@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class AktivitetStatusMapper {
 

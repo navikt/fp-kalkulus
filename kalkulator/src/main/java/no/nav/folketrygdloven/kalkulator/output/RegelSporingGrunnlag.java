@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 
 public class RegelSporingGrunnlag {
 

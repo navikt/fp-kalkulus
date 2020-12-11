@@ -20,22 +20,11 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
 import no.nav.vedtak.util.env.Environment;
 
 public class JettyDevServer extends JettyServer {
-    private static final String VTP_ARGUMENT = "--vtp";
-    private static final String TRUSTSTORE_PASSW_PROP = "javax.net.ssl.trustStorePassword";
-    private static final String TRUSTSTORE_PATH_PROP = "javax.net.ssl.trustStore";
-    private static final String KEYSTORE_PASSW_PROP = "no.nav.modig.security.appcert.password";
-    private static final String KEYSTORE_PATH_PROP = "no.nav.modig.security.appcert.keystore";
-    private static boolean vtp;
-
     private static final Environment ENV = Environment.current();
 
     private static final Logger log = LoggerFactory.getLogger(JettyDevServer.class);
@@ -45,13 +34,6 @@ public class JettyDevServer extends JettyServer {
     }
 
     public static void main(String[] args) throws Exception {
-        for (String arg : args) {
-            if (arg.equals(VTP_ARGUMENT)) {
-                vtp = true;
-                break;
-            }
-        }
-
         JettyDevServer devServer = new JettyDevServer();
         devServer.bootStrap();
     }
@@ -88,12 +70,6 @@ public class JettyDevServer extends JettyServer {
     }
 
     @Override
-    protected void konfigurer() throws Exception {
-        konfigurerLogback();
-        super.konfigurer();
-    }
-
-    @Override
     protected void migrerDatabaser() {
         DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
                 1);
@@ -105,31 +81,11 @@ public class JettyDevServer extends JettyServer {
         }
     }
 
-    protected void konfigurerLogback() throws IOException {
-        new File("./target/logs").mkdirs();
-        System.setProperty("APP_LOG_HOME", "./target/logs");
-        File logbackConfig = PropertiesUtils.lagLogbackConfig();
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        try {
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
-            // Call context.reset() to clear any previous configuration, e.g. default
-            // configuration. For multi-step configuration, omit calling context.reset().
-            context.reset();
-            configurator.doConfigure(logbackConfig.getAbsolutePath());
-        } catch (JoranException je) {
-            // StatusPrinter will handle this
-        }
-        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
-    }
-
     @Override
     protected void konfigurerMiljø() throws Exception {
         System.setProperty("develop-local", "true");
         PropertiesUtils.lagPropertiesFilFraTemplate();
-        PropertiesUtils.initProperties(JettyDevServer.vtp);
+        PropertiesUtils.initProperties();
 
         List<JettyDevDbKonfigurasjon> konfigs = PropertiesUtils.getDBConnectionProperties()
                 .stream()
@@ -150,36 +106,27 @@ public class JettyDevServer extends JettyServer {
         System.setProperty("conf", "src/main/resources/jetty/");
         super.konfigurerSikkerhet();
 
-        // truststore avgjør hva vi stoler på av sertifikater når vi gjør utadgående TLS
-        // kall
-        initCryptoStoreConfig("truststore", TRUSTSTORE_PATH_PROP, TRUSTSTORE_PASSW_PROP, "changeit");
-
-        // keystore genererer sertifikat og TLS for innkommende kall. Bruker standard
-        // prop hvis definert, ellers faller tilbake på modig props
-        var keystoreProp = System.getProperty("javax.net.ssl.keyStore") != null ? "javax.net.ssl.keyStore"
-                : KEYSTORE_PATH_PROP;
-        var keystorePasswProp = System.getProperty("javax.net.ssl.keyStorePassword") != null
-                ? "javax.net.ssl.keyStorePassword"
-                : KEYSTORE_PASSW_PROP;
-        initCryptoStoreConfig("keystore", keystoreProp, keystorePasswProp, "changeit");
+        // truststore avgjør hva vi stoler på av sertifikater når vi gjør utadgående TLS kall
+        initCryptoStoreConfig("truststore", "javax.net.ssl.trustStore", "javax.net.ssl.trustStorePassword", "changeit");
+        initCryptoStoreConfig("keystore", "javax.net.ssl.keyStore", "javax.net.ssl.keyStorePassword", "changeit");
     }
 
     @SuppressWarnings("resource")
     @Override
     protected List<Connector> createConnectors(AppKonfigurasjon appKonfigurasjon, Server server) {
         List<Connector> connectors = super.createConnectors(appKonfigurasjon, server);
+
         SslContextFactory sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setCertAlias("localhost-ssl");
-        sslContextFactory.setKeyStorePath(System.getProperty("no.nav.modig.security.appcert.keystore"));
-        sslContextFactory.setKeyStorePassword(System.getProperty("no.nav.modig.security.appcert.password"));
-        sslContextFactory.setKeyManagerPassword(System.getProperty("no.nav.modig.security.appcert.password"));
+        sslContextFactory.setKeyStorePath(System.getProperty("javax.net.ssl.keyStore"));
+        sslContextFactory.setKeyStorePassword(System.getProperty("javax.net.ssl.keyStorePassword"));
+        sslContextFactory.setKeyManagerPassword(System.getProperty("javax.net.ssl.keyStorePassword"));
 
         HttpConfiguration https = createHttpConfiguration();
         https.addCustomizer(new SecureRequestCustomizer());
 
         ServerConnector sslConnector = new ServerConnector(server,
-                new SslConnectionFactory(sslContextFactory, "http/1.1"),
-                new HttpConnectionFactory(https));
+            new SslConnectionFactory(sslContextFactory, "http/1.1"),
+            new HttpConnectionFactory(https));
         sslConnector.setPort(appKonfigurasjon.getSslPort());
         connectors.add(sslConnector);
 

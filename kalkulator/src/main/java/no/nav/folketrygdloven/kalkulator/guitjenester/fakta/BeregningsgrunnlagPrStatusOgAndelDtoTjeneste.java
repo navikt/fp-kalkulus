@@ -24,8 +24,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
 
@@ -78,7 +78,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setDagsats(andel.getDagsats());
         dto.setOriginalDagsatsFraTilstøtendeYtelse(andel.getOrginalDagsatsFraTilstøtendeYtelse());
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setAktivitetStatus(new no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus(andel.getAktivitetStatus().getKode()));
+        dto.setAktivitetStatus(andel.getAktivitetStatus());
         dto.setBeregningsperiodeFom(andel.getBeregningsperiodeFom());
         dto.setBeregningsperiodeTom(andel.getBeregningsperiodeTom());
         dto.setBruttoPrAar(andel.getBruttoPrÅr());
@@ -87,7 +87,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setRedusertPrAar(andel.getRedusertPrÅr());
         dto.setOverstyrtPrAar(andel.getOverstyrtPrÅr());
         dto.setBeregnetPrAar(andel.getBeregnetPrÅr());
-        dto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))

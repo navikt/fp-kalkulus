@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class ForeslåBeregningsgrunnlagInput extends StegProsesseringInput {

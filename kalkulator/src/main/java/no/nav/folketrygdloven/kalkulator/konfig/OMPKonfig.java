@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 /** @deprecated skal ikke vurdere frist for refusjon i kalkulus for omsorgspenger/pleiepenger?*/
 @Deprecated(forRemoval = true)

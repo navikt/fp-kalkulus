@@ -6,47 +6,48 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
 public class BeregningAksjonspunktResultat {
 
-    private BeregningAksjonspunktDefinisjon beregningAksjonspunktDefinisjon;
+    private BeregningAksjonspunkt beregningAksjonspunktDefinisjon;
     private BeregningVenteårsak venteårsak;
     private LocalDateTime ventefrist;
 
 
-    private BeregningAksjonspunktResultat(BeregningAksjonspunktDefinisjon aksjonspunktDefinisjon) {
+    private BeregningAksjonspunktResultat(BeregningAksjonspunkt aksjonspunktDefinisjon) {
         this.beregningAksjonspunktDefinisjon = aksjonspunktDefinisjon;
     }
 
-    private BeregningAksjonspunktResultat(BeregningAksjonspunktDefinisjon aksjonspunktDefinisjon, BeregningVenteårsak venteårsak, LocalDateTime ventefrist) {
+    private BeregningAksjonspunktResultat(BeregningAksjonspunkt aksjonspunktDefinisjon, BeregningVenteårsak venteårsak, LocalDateTime ventefrist) {
         this.beregningAksjonspunktDefinisjon = aksjonspunktDefinisjon;
         this.venteårsak = venteårsak;
         this.ventefrist = ventefrist;
     }
 
     /**
-     * Factory-metode direkte basert på {@link BeregningAksjonspunktDefinisjon}. Ingen callback for consumer.
+     * Factory-metode direkte basert på {@link BeregningAksjonspunkt}. Ingen callback for consumer.
      */
-    public static BeregningAksjonspunktResultat opprettFor(BeregningAksjonspunktDefinisjon aksjonspunktDefinisjon) {
+    public static BeregningAksjonspunktResultat opprettFor(BeregningAksjonspunkt aksjonspunktDefinisjon) {
         return new BeregningAksjonspunktResultat(aksjonspunktDefinisjon);
     }
 
     /**
-     * Factory-metode direkte basert på {@link BeregningAksjonspunktDefinisjon}, returnerer liste. Ingen callback for consumer.
+     * Factory-metode direkte basert på {@link BeregningAksjonspunkt}, returnerer liste. Ingen callback for consumer.
      */
-    public static List<BeregningAksjonspunktResultat> opprettListeFor(BeregningAksjonspunktDefinisjon aksjonspunktDefinisjon) {
+    public static List<BeregningAksjonspunktResultat> opprettListeFor(BeregningAksjonspunkt aksjonspunktDefinisjon) {
         return singletonList(new BeregningAksjonspunktResultat(aksjonspunktDefinisjon));
     }
 
     /**
-     * Factory-metode som linker {@link BeregningAksjonspunktDefinisjon} sammen med callback for consumer-operasjon.
+     * Factory-metode som linker {@link BeregningAksjonspunkt} sammen med callback for consumer-operasjon.
      */
-    public static BeregningAksjonspunktResultat opprettMedFristFor(BeregningAksjonspunktDefinisjon aksjonspunktDefinisjon, BeregningVenteårsak venteårsak, LocalDateTime ventefrist) {
+    public static BeregningAksjonspunktResultat opprettMedFristFor(BeregningAksjonspunkt aksjonspunktDefinisjon, BeregningVenteårsak venteårsak, LocalDateTime ventefrist) {
         return new BeregningAksjonspunktResultat(aksjonspunktDefinisjon, venteårsak, ventefrist);
     }
 
-    public BeregningAksjonspunktDefinisjon getBeregningAksjonspunktDefinisjon() {
+    public BeregningAksjonspunkt getBeregningAksjonspunktDefinisjon() {
         return beregningAksjonspunktDefinisjon;
     }
 

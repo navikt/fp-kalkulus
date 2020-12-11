@@ -10,7 +10,6 @@ import java.util.List;
 import javax.enterprise.inject.Instance;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ytelse.fp.VurderBesteberegningTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.ArbeidstakerOgFrilanserISammeOrganisasjonTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.EtterlønnSluttpakkeTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.KortvarigArbeidsforholdTilfelleUtleder;
@@ -20,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.Nyoppstar
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.TilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderLønnsendringTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderMottarYtelseTilfelleUtleder;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ytelse.fp.VurderBesteberegningTilfelleUtleder;
 
 public class TilfelleUtlederMockTjeneste {
 

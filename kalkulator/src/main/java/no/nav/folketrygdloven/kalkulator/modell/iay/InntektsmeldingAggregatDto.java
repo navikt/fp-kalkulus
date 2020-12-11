@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType.IKKE_BRUK;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidsforholdHandlingType.SLÅTT_SAMMEN_MED_ANNET;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType.IKKE_BRUK;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType.SLÅTT_SAMMEN_MED_ANNET;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.ChangeTracked;
+import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 
 
 public class InntektsmeldingAggregatDto {

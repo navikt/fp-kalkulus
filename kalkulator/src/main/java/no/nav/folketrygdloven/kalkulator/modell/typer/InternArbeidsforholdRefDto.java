@@ -7,8 +7,8 @@ import java.util.UUID;
 
 import javax.persistence.Embeddable;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.diff.TraverseValue;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /**
  * Intern arbeidsforhold referanse.

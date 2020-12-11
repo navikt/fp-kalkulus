@@ -36,12 +36,12 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 @ApplicationScoped
 public class BeregningsgrunnlagRepository {
@@ -147,7 +147,7 @@ public class BeregningsgrunnlagRepository {
     @SuppressWarnings("unchecked")
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteFastsatteGrunnlagForSkjæringstidspunkt(Saksnummer saksnummer,
                                                                                                        AktørId aktørId,
-                                                                                                       YtelseTyperKalkulusStøtter ytelsetype,
+                                                                                                       YtelseTyperKalkulusStøtterKontrakt ytelsetype,
                                                                                                        LocalDate skjæringstidspunkt) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +

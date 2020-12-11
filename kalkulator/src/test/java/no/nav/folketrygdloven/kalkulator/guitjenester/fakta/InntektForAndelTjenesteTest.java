@@ -26,14 +26,14 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SkatteOgAvgiftsregelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
 
 
 public class InntektForAndelTjenesteTest {
@@ -152,7 +152,7 @@ public class InntektForAndelTjenesteTest {
         .leggTilInntektspost(lagInntektspost(INNTEKT1, 2))
         .leggTilInntektspost(lagInntektspost(INNTEKT1, 3))
         .medArbeidsgiver(arbeidsgiver)
-        .medInntektsKilde(InntektsKilde.INNTEKT_BEREGNING);
+        .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
     }
 
     private InntektDtoBuilder lagUlikInntektSiste3Mnd(Arbeidsgiver arbeidsgiver) {
@@ -161,7 +161,7 @@ public class InntektForAndelTjenesteTest {
             .leggTilInntektspost(lagInntektspost(INNTEKT2, 2))
             .leggTilInntektspost(lagInntektspost(INNTEKT3, 3))
             .medArbeidsgiver(arbeidsgiver)
-            .medInntektsKilde(InntektsKilde.INNTEKT_BEREGNING);
+            .medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING);
     }
 
 

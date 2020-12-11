@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Vilkårsavslagsårsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 
 /**
  * Beskriver hvilke aksjonspunkter som må løses av K9 eller FPSAK for at beregningen kan fortsette
@@ -49,8 +50,10 @@ public class TilstandResponse {
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
     }
 
-    public TilstandResponse(@Valid UUID eksternReferanse, @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto,
-                            @Valid Boolean vilkarOppfylt, @Valid Vilkårsavslagsårsak vilkårsavslagsårsak) {
+    public TilstandResponse(@Valid UUID eksternReferanse,
+                            @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto,
+                            @Valid Boolean vilkarOppfylt, 
+                            @Valid Vilkårsavslagsårsak vilkårsavslagsårsak) {
         this.eksternReferanse = eksternReferanse;
         this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
         this.vilkarOppfylt = vilkarOppfylt;

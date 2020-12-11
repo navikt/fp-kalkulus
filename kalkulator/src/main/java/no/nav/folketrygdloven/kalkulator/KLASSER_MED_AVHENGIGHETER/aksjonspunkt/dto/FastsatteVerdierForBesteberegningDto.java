@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt
 
 import java.math.BigDecimal;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 
 public class FastsatteVerdierForBesteberegningDto {

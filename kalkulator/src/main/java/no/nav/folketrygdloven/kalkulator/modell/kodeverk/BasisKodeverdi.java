@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.kodeverk;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 
 public interface BasisKodeverdi extends IndexKey {
     String getKode();

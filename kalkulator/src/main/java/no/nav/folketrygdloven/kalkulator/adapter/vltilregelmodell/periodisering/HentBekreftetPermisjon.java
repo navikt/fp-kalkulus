@@ -8,8 +8,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto
 import no.nav.folketrygdloven.kalkulator.modell.iay.BekreftetPermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
 public class HentBekreftetPermisjon {
 

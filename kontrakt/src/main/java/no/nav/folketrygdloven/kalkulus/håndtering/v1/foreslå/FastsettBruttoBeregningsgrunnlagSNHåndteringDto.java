@@ -29,7 +29,7 @@ public class FastsettBruttoBeregningsgrunnlagSNHåndteringDto extends HåndterBe
 
     @JsonCreator
     public FastsettBruttoBeregningsgrunnlagSNHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNDto fastsettBruttoBeregningsgrunnlagSNDto) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fastsettBruttoBeregningsgrunnlagSNDto = fastsettBruttoBeregningsgrunnlagSNDto;
     }
 

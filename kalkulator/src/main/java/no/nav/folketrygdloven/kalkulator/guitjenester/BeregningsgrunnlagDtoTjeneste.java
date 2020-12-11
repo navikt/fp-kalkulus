@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
@@ -24,16 +23,13 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisni
 import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
@@ -127,7 +123,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag);
         if(sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null){
-            dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(new no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN.getKode()));
+            dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, dto.getSammenligningsgrunnlag().getRapportertPrAar()));
             dto.setSammenligningsgrunnlagPrStatus(List.of(dto.getSammenligningsgrunnlag()));
         } else {
@@ -159,7 +155,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         double halvG = grunnbeløp.getVerdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).doubleValue();
         dto.setHalvG(halvG);
         dto.setGrunnbeløp(grunnbeløp.getVerdi());
-        dto.setHjemmel(beregningsgrunnlag.getHjemmel() == null ? null : new Hjemmel(beregningsgrunnlag.getHjemmel().getKode()));
+        dto.setHjemmel(beregningsgrunnlag.getHjemmel());
         dto.setLedetekstAvkortet("Avkortet beregningsgrunnlag (6G=" + seksG + ")");
 
         // Det skal vises et tall som "oppsumering" av årsinntekt i GUI, innebærer nok logikk til at det bør utledes backend
@@ -213,7 +209,7 @@ public class BeregningsgrunnlagDtoTjeneste {
             dto.setAvvikPromille(s.getAvvikPromilleNy());
             BigDecimal avvikProsent = s.getAvvikPromilleNy() == null ? null : s.getAvvikPromilleNy().scaleByPowerOfTen(-1);
             dto.setAvvikProsent(avvikProsent);
-            dto.setSammenligningsgrunnlagType(new no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType(s.getSammenligningsgrunnlagType().getKode()));
+            dto.setSammenligningsgrunnlagType(s.getSammenligningsgrunnlagType());
             dto.setDifferanseBeregnet(finnDifferanseBeregnet(beregningsgrunnlag, s));
             sammenligningsgrunnlagDtos.add(dto);
         });
@@ -310,7 +306,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setAvkortetPrAar(periode.getAvkortetPrÅr() == null ? null : finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp()));
         dto.setRedusertPrAar(periode.getRedusertPrÅr());
         dto.setDagsats(periode.getDagsats());
-        dto.leggTilPeriodeAarsaker(periode.getPeriodeÅrsaker().stream().map(årsak -> new PeriodeÅrsak(årsak.getKode())).collect(Collectors.toList()));
+        dto.leggTilPeriodeAarsaker(periode.getPeriodeÅrsaker());
         dto.setAndeler(
                 beregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, periode.getBeregningsgrunnlagPrStatusOgAndelList()));
         return dto;
@@ -326,8 +322,8 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     private List<no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus> lagAktivitetStatusListe(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         ArrayList<no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus> statusListe = new ArrayList<>();
-        for (BeregningsgrunnlagAktivitetStatusDto status : beregningsgrunnlag.getAktivitetStatuser()) {
-            statusListe.add(new no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus(status.getAktivitetStatus().getKode()));
+        for (var status : beregningsgrunnlag.getAktivitetStatuser()) {
+            statusListe.add(status.getAktivitetStatus());
         }
         return statusListe;
     }

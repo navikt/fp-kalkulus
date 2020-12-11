@@ -27,11 +27,11 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndteringDto extends Håndte
     private FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto;
 
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto() {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
     }
 
     public FastsettBGTidsbegrensetArbeidsforholdHåndteringDto(@Valid @NotNull FastsettBGTidsbegrensetArbeidsforholdDto fastsettBGTidsbegrensetArbeidsforholdDto) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fastsettBGTidsbegrensetArbeidsforholdDto = fastsettBGTidsbegrensetArbeidsforholdDto;
     }
 

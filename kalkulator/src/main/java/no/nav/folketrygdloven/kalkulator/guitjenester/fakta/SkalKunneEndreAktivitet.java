@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 
 public class SkalKunneEndreAktivitet {

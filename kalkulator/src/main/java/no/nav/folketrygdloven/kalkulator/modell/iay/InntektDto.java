@@ -7,15 +7,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 public class InntektDto {
 
     private AktørInntektDto aktørInntekt;
     private Arbeidsgiver arbeidsgiver;
-    private InntektsKilde inntektsKilde;
+    private InntektskildeType inntektsKilde;
     private Set<InntektspostDto> inntektspost = new LinkedHashSet<>();
 
     InntektDto() {
@@ -59,13 +59,13 @@ public class InntektDto {
     /**
      * System (+ filter) som inntektene er hentet inn fra / med
      *
-     * @return {@link InntektsKilde}
+     * @return {@link InntektskildeType}
      */
-    public InntektsKilde getInntektsKilde() {
+    public InntektskildeType getInntektsKilde() {
         return inntektsKilde;
     }
 
-    void setInntektsKilde(InntektsKilde inntektsKilde) {
+    void setInntektsKilde(InntektskildeType inntektsKilde) {
         this.inntektsKilde = inntektsKilde;
     }
 

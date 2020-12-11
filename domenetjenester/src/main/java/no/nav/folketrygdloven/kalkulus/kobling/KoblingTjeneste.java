@@ -6,12 +6,12 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.LåsRepository;
 
@@ -30,7 +30,7 @@ public class KoblingTjeneste {
         this.låsRepository = låsRepository;
     }
 
-    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
+    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
         KoblingEntitet kobling = hentFor(referanse).orElse(new KoblingEntitet(referanse, ytelseTyperKalkulusStøtter, saksnummer, aktørId));
         repository.lagre(kobling);
         return kobling;
@@ -40,11 +40,11 @@ public class KoblingTjeneste {
         return repository.hentForKoblingReferanse(referanse);
     }
 
-    public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, YtelseTyperKalkulusStøtter ytelseType) {
+    public Optional<Long> hentKoblingHvisFinnes(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
         return repository.hentFor(referanse, ytelseType);
     }
 
-    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, YtelseTyperKalkulusStøtter ytelseType) {
+    public List<KoblingEntitet> hentKoblinger(Collection<KoblingReferanse> koblingReferanser, YtelseTyperKalkulusStøtterKontrakt ytelseType) {
         return repository.hentKoblingerFor(koblingReferanser, ytelseType);
     }
 

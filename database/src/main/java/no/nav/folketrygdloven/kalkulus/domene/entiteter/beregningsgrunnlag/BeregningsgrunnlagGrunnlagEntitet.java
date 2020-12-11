@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagRe
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagTilstandKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 @Entity(name = "BeregningsgrunnlagGrunnlagEntitet")
 @Table(name = "GR_BEREGNINGSGRUNNLAG")

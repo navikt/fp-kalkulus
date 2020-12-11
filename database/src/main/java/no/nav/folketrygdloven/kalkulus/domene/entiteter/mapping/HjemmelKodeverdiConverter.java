@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
 @Converter(autoApply = true)
 public class HjemmelKodeverdiConverter implements AttributeConverter<Hjemmel, String> {

@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
 import no.nav.folketrygdloven.kalkulator.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapAktivitetStatusV2FraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 
@@ -72,12 +72,12 @@ public final class MapAndelGradering {
 
     private static void settAndelsnrForStatus(BeregningsgrunnlagDto beregningsgrunnlag,
                                               AndelGraderingImpl.Builder builder,
-                                              no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus status) {
+                                              no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchetAndel = finnAndelIGrunnlag(status, beregningsgrunnlag);
         matchetAndel.ifPresent(beregningsgrunnlagPrStatusOgAndel -> builder.medAndelsnr(beregningsgrunnlagPrStatusOgAndel.getAndelsnr()));
     }
 
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIGrunnlag(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus aktivitetstatus, BeregningsgrunnlagDto beregningsgrunnlag) {
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIGrunnlag(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus aktivitetstatus, BeregningsgrunnlagDto beregningsgrunnlag) {
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         return andeler.stream().filter(andel -> andel.getAktivitetStatus().equals(aktivitetstatus)).findFirst();

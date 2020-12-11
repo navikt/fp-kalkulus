@@ -15,9 +15,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FP")
@@ -85,6 +85,6 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements
         }
         BGAndelArbeidsforholdDto bgAndelArbeidsforhold = a.getBgAndelArbeidsforhold().get();
         Arbeidsgiver arbeidsgiver = bgAndelArbeidsforhold.getArbeidsgiver();
-        return arbeidsgiver.getErVirksomhet() && Organisasjonstype.erKunstig(arbeidsgiver.getOrgnr());
+        return arbeidsgiver.getErVirksomhet() && OrgNummer.erKunstig(arbeidsgiver.getOrgnr());
     }
 }

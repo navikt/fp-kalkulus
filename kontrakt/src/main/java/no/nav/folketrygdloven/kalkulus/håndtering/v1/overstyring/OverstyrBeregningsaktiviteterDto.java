@@ -33,12 +33,12 @@ public class OverstyrBeregningsaktiviteterDto extends HåndterBeregningDto {
 
 
     public OverstyrBeregningsaktiviteterDto() {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         // Json deserialisering
     }
 
     public OverstyrBeregningsaktiviteterDto(@Valid @NotNull @Size(max = 1000) List<BeregningsaktivitetLagreDto> beregningsaktivitetLagreDtoList) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.beregningsaktivitetLagreDtoList = beregningsaktivitetLagreDtoList;
     }
 

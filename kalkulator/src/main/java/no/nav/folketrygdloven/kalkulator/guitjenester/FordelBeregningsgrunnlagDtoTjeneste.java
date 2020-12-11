@@ -5,6 +5,10 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 
 import java.util.Comparator;
 import java.util.List;
+
+import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.ManuellBehandlingRefusjonGraderingDtoTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
+import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonEllerGraderingArbeidsforholdDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -13,9 +17,6 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Fordel
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelingDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.ManuellBehandlingRefusjonGraderingDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
-import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonEllerGraderingArbeidsforholdDtoTjeneste;
 
 public class FordelBeregningsgrunnlagDtoTjeneste {
 

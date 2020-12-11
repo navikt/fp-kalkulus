@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
 
 class FordelBeregningsgrunnlagAndelDtoTjeneste {
@@ -33,12 +32,12 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
     static List<FordelBeregningsgrunnlagAndelDto> lagEndretBgAndelListe(BeregningsgrunnlagGUIInput input,
                                                                         BeregningsgrunnlagPeriodeDto periode) {
         List<FordelBeregningsgrunnlagAndelDto> endringAndeler = new ArrayList<>();
-        for (BeregningsgrunnlagPrStatusOgAndelDto andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
+        for (var andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             var inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, input.getInntektsmeldinger());
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, inntektsmelding, periode);
             RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
             endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erAktivitetLagtTilIPeriodisering(andel));
-            endringAndel.setArbeidsforholdType(new OpptjeningAktivitetType(andel.getArbeidsforholdType().getKode()));
+            endringAndel.setArbeidsforholdType(andel.getArbeidsforholdType());
             endringAndeler.add(endringAndel);
         }
         return endringAndeler;

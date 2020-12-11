@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 @Converter(autoApply = true)
 public class SammenligningsgrunnlagTypeKodeverdiConverter implements AttributeConverter<SammenligningsgrunnlagType, String> {

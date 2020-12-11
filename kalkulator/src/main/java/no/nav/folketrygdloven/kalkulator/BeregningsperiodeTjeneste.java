@@ -15,10 +15,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Organisasjonstype;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("*")
@@ -88,7 +88,7 @@ public class BeregningsperiodeTjeneste {
 
     private static boolean alleArbeidsforholdHarInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere) {
         return hentAlleArbeidsgiverePåGrunnlaget(beregningsgrunnlag)
-            .filter(arbeidsgiver -> !Organisasjonstype.erKunstig(arbeidsgiver.getOrgnr())) //Arbeidsforhold er ikke lagt til av saksbehandler
+            .filter(arbeidsgiver -> !OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) //Arbeidsforhold er ikke lagt til av saksbehandler
             .allMatch(arbeidsgiver -> arbeidsgivere
                 .stream()
                 .anyMatch(v -> v.equals(arbeidsgiver)));

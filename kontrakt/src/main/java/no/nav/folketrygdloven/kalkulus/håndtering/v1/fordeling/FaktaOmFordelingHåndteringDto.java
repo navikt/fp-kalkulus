@@ -31,7 +31,7 @@ public class FaktaOmFordelingHåndteringDto extends HåndterBeregningDto {
     }
 
     public FaktaOmFordelingHåndteringDto(@Valid @NotNull FordelBeregningsgrunnlagDto fordelBeregningsgrunnlagDto) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fordelBeregningsgrunnlagDto = fordelBeregningsgrunnlagDto;
     }
 

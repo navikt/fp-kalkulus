@@ -10,8 +10,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 
 class MapBeregningAktivitetDto {
 
@@ -20,10 +19,10 @@ class MapBeregningAktivitetDto {
     }
 
     static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto mapBeregningAktivitet(BeregningAktivitetDto beregningAktivitet,
-                                                                                                  List<BeregningAktivitetDto> saksbehandletAktiviteter,
-                                                                                                  Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
+                                                                                                                          List<BeregningAktivitetDto> saksbehandletAktiviteter,
+                                                                                                                          Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
                                                                                                                           List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto dto = new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto();
+        var dto = new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto();
         if (beregningAktivitet.getArbeidsgiver() != null) {
             mapArbeidsgiver(dto, beregningAktivitet.getArbeidsgiver(), arbeidsgiverOpplysninger);
             dto.setArbeidsforholdId(beregningAktivitet.getArbeidsforholdRef().getReferanse());
@@ -34,11 +33,12 @@ class MapBeregningAktivitetDto {
                 }
             });
         }
-        dto.setArbeidsforholdType(new OpptjeningAktivitetType(beregningAktivitet.getOpptjeningAktivitetType().getKode()));
+        dto.setArbeidsforholdType(beregningAktivitet.getOpptjeningAktivitetType());
         dto.setFom(beregningAktivitet.getPeriode().getFomDato());
         dto.setTom(beregningAktivitet.getPeriode().getTomDato());
         if (!saksbehandletAktiviteter.isEmpty()) {
-            Optional<BeregningAktivitetDto> matchetAktivitet = saksbehandletAktiviteter.stream().filter(a -> a.getNøkkel().equals(beregningAktivitet.getNøkkel())).findFirst();
+            Optional<BeregningAktivitetDto> matchetAktivitet = saksbehandletAktiviteter.stream()
+                .filter(a -> a.getNøkkel().equals(beregningAktivitet.getNøkkel())).findFirst();
             matchetAktivitet.ifPresentOrElse(aktivitet -> {
                 dto.setSkalBrukes(true);
                 dto.setTom(aktivitet.getPeriode().getTomDato());
@@ -64,9 +64,11 @@ class MapBeregningAktivitetDto {
         finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).ifPresent(beregningAktivitetDto::setArbeidsgiverNavn);
     }
 
-    private static void setArbeidsgiverIdForVisning(no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto beregningAktivitetDto, Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = arbeidsgiverOpplysninger.stream().filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-                .findFirst();
+    private static void setArbeidsgiverIdForVisning(no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto beregningAktivitetDto,
+                                                    Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = arbeidsgiverOpplysninger.stream()
+            .filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+            .findFirst();
         Optional<LocalDate> fødselsdato = opplysningerDto.map(ArbeidsgiverOpplysningerDto::getFødselsdato);
         if (fødselsdato.isPresent()) {
             String formatertDato = fødselsdato.get().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));

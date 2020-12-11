@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -35,21 +35,21 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
 @EnableWeld
 public class AksjonspunktUtlederFaktaOmBeregningTest {
@@ -151,7 +151,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
     }
@@ -192,7 +192,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(
             FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON,
@@ -257,7 +257,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
 
         // Assert
         assertThat(resultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(resultat.getBeregningAksjonspunktResultatList().get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN);
         List<FaktaOmBeregningTilfelle> tilfeller = resultat.getFaktaOmBeregningTilfeller();
         assertThat(tilfeller).containsExactlyInAnyOrder(
             FaktaOmBeregningTilfelle.VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD);
@@ -311,7 +311,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         // Assert
         assertThat(resultater.getBeregningAksjonspunktResultatList()).hasSize(1);
         assertThat(resultater.getBeregningAksjonspunktResultatList())
-            .anySatisfy(resultat -> assertThat(resultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN));
+            .anySatisfy(resultat -> assertThat(resultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
         // Assert
         assertThat(resultater.getBeregningAksjonspunktResultatList()).hasSize(1);
         assertThat(resultater.getBeregningAksjonspunktResultatList())
-            .anySatisfy(resultat -> assertThat(resultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunktDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG));
+            .anySatisfy(resultat -> assertThat(resultat.getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.OVERSTYRING_AV_BEREGNINGSGRUNNLAG));
         assertThat(resultater.getFaktaOmBeregningTilfeller()).containsExactly(FaktaOmBeregningTilfelle.VURDER_SN_NY_I_ARBEIDSLIVET);
 
     }

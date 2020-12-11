@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.konfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class KonfigTjeneste {
     private static final List<FagsakYtelseType> STØTTEDE_YTELSER = new ArrayList<>();

@@ -32,11 +32,11 @@ public class VurderVarigEndringEllerNyoppstartetSNHåndteringDto extends Håndte
     }
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto() {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
     }
 
     public VurderVarigEndringEllerNyoppstartetSNHåndteringDto(@Valid @NotNull VurderVarigEndringEllerNyoppstartetSNDto vurderVarigEndringEllerNyoppstartetSNDto) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.vurderVarigEndringEllerNyoppstartetSNDto = vurderVarigEndringEllerNyoppstartetSNDto;
     }
 

@@ -11,8 +11,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
@@ -33,17 +33,17 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulator.modell.typer.AktørId;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
 
 
@@ -357,11 +357,11 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN)
+                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN)
                         .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medHjemmel(Hjemmel.F_14_7_8_30)
                 .build(beregningsgrunnlag);
 
@@ -383,21 +383,21 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType.SAMMENLIGNING_AT)
+                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_AT)
                         .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_UNDER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType.SAMMENLIGNING_FL)
+                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_FL)
                         .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
                 .leggTilSammenligningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto.builder()
                         .medAvvikPromilleNy(AVVIK_OVER_25_PROSENT)
                         .medRapportertPrÅr(RAPPORTERT_PR_AAR)
-                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.SammenligningsgrunnlagType.SAMMENLIGNING_SN)
+                        .medSammenligningsgrunnlagType(no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType.SAMMENLIGNING_SN)
                         .medSammenligningsperiode(SAMMENLIGNING_FOM, SAMMENLIGNING_TOM))
                 .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medHjemmel(Hjemmel.F_14_7_8_30)
                 .build(beregningsgrunnlag);
 
@@ -416,9 +416,9 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
                 .medBeregnetPrÅr(BRUTTO_PR_AAR)
                 .medAvkortetPrÅr(AVKORTET_PR_AAR)
@@ -442,9 +442,9 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
                 .medBeregnetPrÅr(BRUTTO_PR_AAR)
                 .medAvkortetPrÅr(AVKORTET_PR_AAR)
@@ -454,18 +454,18 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR + 1)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.FRILANSER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER)
                 .medBeregningsperiode(ANDEL_FOM, ANDEL_TOM)
                 .medBeregnetPrÅr(BRUTTO_PR_AAR)
                 .build(beregningsgrunnlagPeriode);
 
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(bga)
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER)
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER)
                 .medAndelsnr(ANDELSNR + 3)
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .medPgi(PGI_SNITT, List.of())
                 .build(beregningsgrunnlagPeriode);
     }

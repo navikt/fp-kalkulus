@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 public class MapHåndteringskodeTilTilstand {

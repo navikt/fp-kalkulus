@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAktivitetHandlingType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 
 @Converter(autoApply = true)
 public class BeregingAktivitetHandlingTypeKodeverdiConverter implements AttributeConverter<BeregningAktivitetHandlingType, String> {

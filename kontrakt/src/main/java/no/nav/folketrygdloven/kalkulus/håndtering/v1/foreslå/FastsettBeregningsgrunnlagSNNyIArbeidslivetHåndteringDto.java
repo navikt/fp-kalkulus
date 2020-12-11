@@ -29,7 +29,7 @@ public class FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto extends H
 
     @JsonCreator
     public FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto(@JsonProperty("fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto") @Valid @NotNull FastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto = fastsettBruttoBeregningsgrunnlagSNforNyIArbeidslivetDto;
     }
 

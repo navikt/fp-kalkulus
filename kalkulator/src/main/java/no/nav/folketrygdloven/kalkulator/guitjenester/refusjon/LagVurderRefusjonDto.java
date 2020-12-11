@@ -157,7 +157,7 @@ public final class LagVurderRefusjonDto {
         List<BeregningsgrunnlagPrStatusOgAndelDto> matchedeAndeler = andelerIOrginalPeriode.stream()
                 .filter(bga -> {
                     InternArbeidsforholdRefDto bgAndelReferanse = bga.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef());
-                    no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver bgAndelAG = bga.getArbeidsgiver().orElse(null);
+                    no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver bgAndelAG = bga.getArbeidsgiver().orElse(null);
                     return Objects.equals(bgAndelAG, refusjonAndel.getArbeidsgiver()) && bgAndelReferanse.gjelderFor(refusjonAndel.getArbeidsforholdRef());
                 })
                 .collect(Collectors.toList());
@@ -197,7 +197,7 @@ public final class LagVurderRefusjonDto {
                 : new Arbeidsgiver(andel.getArbeidsgiver().getOrgnr(), null);
     }
 
-    private static List<TidligereUtbetalingDto> finnTidligereUtbetalinger(no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver ag, BeregningsgrunnlagDto orginaltBG) {
+    private static List<TidligereUtbetalingDto> finnTidligereUtbetalinger(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver ag, BeregningsgrunnlagDto orginaltBG) {
         List<TidligereUtbetalingDto> tidligereUtbetalinger = new ArrayList<>();
         List<BeregningsgrunnlagPeriodeDto> alleOrginalePerioder = orginaltBG.getBeregningsgrunnlagPerioder();
         alleOrginalePerioder.forEach(p -> {

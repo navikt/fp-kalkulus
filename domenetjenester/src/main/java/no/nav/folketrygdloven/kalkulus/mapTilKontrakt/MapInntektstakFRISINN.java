@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class MapInntektstakFRISINN {
     private final static BigDecimal ANTALL_G_GRENSEVERDI;
@@ -27,7 +27,7 @@ public class MapInntektstakFRISINN {
     }
 
     static BigDecimal map(List<BeregningsgrunnlagPrStatusOgAndel> andeler,
-                                                       no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus status,
+                                                       no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status,
                                                        FrisinnGrunnlag frisinnGrunnlag,
                                                        Optional<OppgittOpptjeningDto> oppgittOpptjeningDto,
                                                        BigDecimal gbeløp) {

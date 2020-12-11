@@ -8,15 +8,15 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
-import no.nav.folketrygdloven.kalkulator.output.BeregningVenteårsak;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -29,15 +29,15 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
                                                                    boolean erOverstyrt,
                                                                    FagsakYtelseType fagsakYtelseType) {
         if (regelResultat.getBeregningsgrunnlag() == null) {
-            if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN))) {
+            if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunkt.AUTO_VENT_FRISINN))) {
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
-                        BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                        BeregningAksjonspunkt.AUTO_VENT_FRISINN,
                         BeregningVenteårsak.INGEN_PERIODE_UTEN_YTELSE,
                         LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)));
             }
-            if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunktDefinisjon.INGEN_AKTIVITETER))) {
+            if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunkt.INGEN_AKTIVITETER))) {
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
-                        BeregningAksjonspunktDefinisjon.AUTO_VENT_FRISINN,
+                        BeregningAksjonspunkt.AUTO_VENT_FRISINN,
                         BeregningVenteårsak.INGEN_AKTIVITETER,
                         LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)));
             }

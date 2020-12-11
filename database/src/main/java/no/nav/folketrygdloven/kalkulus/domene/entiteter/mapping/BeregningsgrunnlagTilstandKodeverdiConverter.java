@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 @Converter(autoApply = true)
 public class BeregningsgrunnlagTilstandKodeverdiConverter implements AttributeConverter<BeregningsgrunnlagTilstand, String> {

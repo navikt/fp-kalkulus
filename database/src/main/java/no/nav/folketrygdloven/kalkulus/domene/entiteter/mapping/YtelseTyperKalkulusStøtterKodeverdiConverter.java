@@ -3,17 +3,17 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 @Converter(autoApply = true)
-public class YtelseTyperKalkulusStøtterKodeverdiConverter implements AttributeConverter<YtelseTyperKalkulusStøtter, String> {
+public class YtelseTyperKalkulusStøtterKodeverdiConverter implements AttributeConverter<YtelseTyperKalkulusStøtterKontrakt, String> {
     @Override
-    public String convertToDatabaseColumn(YtelseTyperKalkulusStøtter attribute) {
+    public String convertToDatabaseColumn(YtelseTyperKalkulusStøtterKontrakt attribute) {
         return attribute == null ? null : attribute.getKode();
     }
 
     @Override
-    public YtelseTyperKalkulusStøtter convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : YtelseTyperKalkulusStøtter.fraKode(dbData);
+    public YtelseTyperKalkulusStøtterKontrakt convertToEntityAttribute(String dbData) {
+        return dbData == null ? null : YtelseTyperKalkulusStøtterKontrakt.fraKode(dbData);
     }
 }

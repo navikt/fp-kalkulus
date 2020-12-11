@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+    xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm
+    http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+    version="2.0">
+
+    <embeddable
+        class="no.nav.folketrygdloven.kalkulus.typer.AktørId"
+        access="FIELD">
+        <attributes>
+            <basic name="aktørId" access="FIELD">
+                <column name="aktoer_id"  updatable="false" />
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable
+        class="no.nav.folketrygdloven.kalkulus.typer.OrgNummer"
+        access="FIELD">
+        <attributes>
+            <basic name="orgNummer" access="FIELD">
+                <column name="org_nummer" updatable="false"
+                    length="50" />
+            </basic>
+        </attributes>
+    </embeddable>
+
+
+</entity-mappings>

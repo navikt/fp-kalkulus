@@ -30,7 +30,7 @@ public class FaktaOmBeregningHåndteringDto extends HåndterBeregningDto {
     }
 
     public FaktaOmBeregningHåndteringDto(@Valid @NotNull FaktaBeregningLagreDto fakta) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fakta = fakta;
     }
 

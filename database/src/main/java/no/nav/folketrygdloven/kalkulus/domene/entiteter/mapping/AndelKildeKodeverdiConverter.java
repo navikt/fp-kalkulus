@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 
 @Converter(autoApply = true)
 public class AndelKildeKodeverdiConverter implements AttributeConverter<AndelKilde, String> {

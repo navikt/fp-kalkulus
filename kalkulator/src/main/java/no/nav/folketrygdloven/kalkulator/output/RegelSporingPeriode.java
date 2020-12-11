@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagPeriodeRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 
 public class RegelSporingPeriode {
 

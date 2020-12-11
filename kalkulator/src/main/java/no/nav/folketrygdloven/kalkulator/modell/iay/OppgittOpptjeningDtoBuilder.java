@@ -8,9 +8,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.OrgNummer;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
+import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class OppgittOpptjeningDtoBuilder {
 

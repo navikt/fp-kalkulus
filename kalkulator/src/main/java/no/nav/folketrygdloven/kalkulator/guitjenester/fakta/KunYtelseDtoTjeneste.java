@@ -7,20 +7,19 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AndelMedBeløpDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.KunYtelseDto;
-import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 
 @ApplicationScoped
 public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
@@ -78,10 +77,10 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(andelDto::setArbeidsforhold);
         andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
-        andelDto.setKilde(new AndelKilde(andel.getKilde().getKode()));
+        andelDto.setKilde(andel.getKilde());
         andelDto.setFastsattAvSaksbehandler(Boolean.TRUE.equals(andel.getFastsattAvSaksbehandler()));
-        andelDto.setAktivitetStatus(new AktivitetStatus(andel.getAktivitetStatus().getKode()));
-        andelDto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
+        andelDto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
+        andelDto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
         return andelDto;
     }
 

@@ -5,8 +5,8 @@ import static no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAkti
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForKunLese;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForPreutfylling;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.SkalKunneEndreAktivitet.skalKunneEndreAktivitet;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde.PROSESS_START;
-import static no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AndelKilde.SAKSBEHANDLER_KOFAKBER;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde.PROSESS_START;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde.SAKSBEHANDLER_KOFAKBER;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -53,9 +53,9 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldingForAndel = finnInntektsmeldingForAndel(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
         dto.setFastsattBelop(finnInntektForPreutfylling(andel));
-        dto.setInntektskategori(new Inntektskategori(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setAktivitetStatus(new AktivitetStatus(andel.getAktivitetStatus().getKode()));
+        dto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
         dto.setVisningsnavn(lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
         dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel));

@@ -13,7 +13,7 @@ public final class EgenNæringMapper {
     public static EgenNæringDto map(OppgittEgenNæringDto egenNæring) {
         EgenNæringDto dto = new EgenNæringDto();
         dto.setOrgnr(egenNæring.getOrgnr());
-        dto.setVirksomhetType(new VirksomhetType(egenNæring.getVirksomhetType().getKode()));
+        dto.setVirksomhetType(VirksomhetType.fraKode(egenNæring.getVirksomhetType().getKode()));
         dto.setBegrunnelse(egenNæring.getBegrunnelse());
         dto.setEndringsdato(egenNæring.getEndringDato());
         dto.setOppstartsdato(egenNæring.getPeriode() != null ? egenNæring.getFraOgMed()  : null);

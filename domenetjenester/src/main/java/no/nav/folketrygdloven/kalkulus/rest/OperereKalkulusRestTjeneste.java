@@ -44,17 +44,16 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.AktørId;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
@@ -121,7 +120,7 @@ public class OperereKalkulusRestTjeneste {
     public Response beregn(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
         var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
 
         List<TilstandResponse> resultat = new ArrayList<>();
@@ -163,7 +162,7 @@ public class OperereKalkulusRestTjeneste {
         // Sjekker om request har oppdatert kalkulatorinput
         if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
             // kalkulatorinput oppdateres
-            var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+            var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
             kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseTyperKalkulusStøtter, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
             inputResultat = lagStegInputForKoblinger(spesifikasjon);
         } else {
@@ -256,7 +255,7 @@ public class OperereKalkulusRestTjeneste {
     }
 
     private Resultat<StegProsesseringInput> lagStegInputForKoblinger(@Valid @NotNull FortsettBeregningListeRequestAbacDto spesifikasjon) {
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtter.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
+        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         List<KoblingReferanse> referanser = spesifikasjon.getEksternReferanser().stream().map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
 

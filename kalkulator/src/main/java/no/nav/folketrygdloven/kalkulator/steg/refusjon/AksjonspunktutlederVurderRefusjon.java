@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 
 /**
  * Tjeneste for å utlede aksjonspunkter i steg for å vurdere refusjonskrav
@@ -31,7 +31,7 @@ public final class AksjonspunktutlederVurderRefusjon {
         List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
 
         if (skalHaAksjonspunktVurderRefusjonskrav(input, periodisertMedRefusjonOgGradering)) {
-            aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.VURDER_REFUSJONSKRAV));
+            aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.VURDER_REFUSJONSKRAV));
         }
 
         return aksjonspunkter;

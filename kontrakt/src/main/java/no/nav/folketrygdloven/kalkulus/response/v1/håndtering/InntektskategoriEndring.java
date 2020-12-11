@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
-public class InntektskategoriEndring extends KodeverdiEndring {
+public class InntektskategoriEndring {
 
     public static final String KODEVERK = "INNTEKTSKATEGORI";
 
@@ -37,18 +37,12 @@ public class InntektskategoriEndring extends KodeverdiEndring {
         this.tilVerdi = tilVerdi;
     }
 
-    @Override
     public Inntektskategori getFraVerdi() {
         return fraVerdi;
     }
 
-    @Override
     public Inntektskategori getTilVerdi() {
         return tilVerdi;
     }
 
-    @Override
-    public String getKodeverk() {
-        return KODEVERK;
-    }
 }

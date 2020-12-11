@@ -1,12 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 class FinnSøknadsperioderTest {
 

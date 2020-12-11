@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseTyperKalkulusStøtter;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.feil.FeilFactory;
@@ -96,7 +96,7 @@ public class KalkulatorInputTjeneste {
         return beregningsgrunnlagRepository.lagreOgSjekkStatus(new KalkulatorInputEntitet(koblingId, input));
     }
 
-    public void lagreKalkulatorInput(YtelseTyperKalkulusStøtter ytelseTyperKalkulusStøtter,
+    public void lagreKalkulatorInput(YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter,
                                      Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
         List<KoblingEntitet> koblinger = koblingTjeneste.hentKoblinger(kalkulatorInputPerKoblingReferanse.keySet()
                 .stream()

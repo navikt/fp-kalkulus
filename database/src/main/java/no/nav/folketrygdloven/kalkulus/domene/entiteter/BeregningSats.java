@@ -15,7 +15,7 @@ import javax.persistence.Version;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningSatsTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 
 @Entity(name = "BeregningSats")
 @Table(name = "BR_SATS")

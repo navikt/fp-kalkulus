@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningSatsType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 
 public class GrunnbeløpMapper {
 

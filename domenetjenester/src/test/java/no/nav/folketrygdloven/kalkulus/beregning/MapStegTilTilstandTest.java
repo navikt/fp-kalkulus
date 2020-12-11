@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 
 public class MapStegTilTilstandTest {

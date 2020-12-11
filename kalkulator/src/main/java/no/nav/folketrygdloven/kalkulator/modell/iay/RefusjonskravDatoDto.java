@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 
 public class RefusjonskravDatoDto {
 

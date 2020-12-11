@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 
 public class AktørInntektDto {
 
@@ -41,12 +41,12 @@ public class AktørInntektDto {
         return inntekt != null;
     }
 
-    InntektDtoBuilder getInntektBuilder(InntektsKilde inntektsKilde, OpptjeningsnøkkelDto nøkkel) {
+    InntektDtoBuilder getInntektBuilder(InntektskildeType inntektsKilde, OpptjeningsnøkkelDto nøkkel) {
         Optional<InntektDto> inntektOptional = getInntekt()
             .stream()
             .filter(i -> inntektsKilde.equals(i.getInntektsKilde()))
             .filter(i -> i.getArbeidsgiver() != null && new OpptjeningsnøkkelDto(i.getArbeidsgiver()).matcher(nøkkel)
-                || inntektsKilde.equals(InntektsKilde.SIGRUN)).findFirst();
+                || inntektsKilde.equals(InntektskildeType.SIGRUN)).findFirst();
         InntektDtoBuilder oppdatere = InntektDtoBuilder.oppdatere(inntektOptional);
         if (!oppdatere.getErOppdatering()) {
             oppdatere.medInntektsKilde(inntektsKilde);

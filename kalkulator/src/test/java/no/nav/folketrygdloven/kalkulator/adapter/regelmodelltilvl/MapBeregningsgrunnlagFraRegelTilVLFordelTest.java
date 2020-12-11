@@ -16,8 +16,8 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
 
 class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
 
@@ -42,8 +42,8 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         // Assert
         assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList().size()).isEqualTo(2);
         BeregningsgrunnlagPrStatusOgAndelDto andel1 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
-        assertThat(andel1.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER);
-        assertThat(andel1.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER);
+        assertThat(andel1.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
+        assertThat(andel1.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER);
         assertThat(andel1.getBeregnetPrÅr()).isEqualTo(BigDecimal.valueOf(50_000));
         assertThat(andel1.getFordeltPrÅr()).isNull();
         assertThat(andel1.getAndelsnr()).isEqualTo(1L);
@@ -52,8 +52,8 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         assertThat(andel1.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr()).isEqualTo(BigDecimal.valueOf(75_000));
 
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
-        assertThat(andel2.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER);
-        assertThat(andel2.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(andel2.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
+        assertThat(andel2.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertThat(andel2.getFordeltPrÅr()).isEqualTo(BigDecimal.valueOf(25_000));
         assertThat(andel2.getBeregnetPrÅr()).isNull();
         assertThat(andel2.getAndelsnr()).isEqualTo(2L);
@@ -64,13 +64,13 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
 
     private void lagVLAndel(BeregningsgrunnlagPeriodeDto periode) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.AktivitetStatus.ARBEIDSTAKER)
+                .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medAndelsnr(1L)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medRefusjonskravPrÅr(BigDecimal.valueOf(100_000))
                         .medArbeidsforholdRef(ARBEIDSFORHOLD_REF)
                         .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)))
                 .medBeregnetPrÅr(BigDecimal.valueOf(50_000))
-                .medInntektskategori(no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.Inntektskategori.ARBEIDSTAKER).build(periode);
+                .medInntektskategori(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER).build(periode);
     }
 
     private BeregningsgrunnlagPrArbeidsforhold lagNyRegelArbeidsforholdAndel(Arbeidsforhold arbeidsforhold) {

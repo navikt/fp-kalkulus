@@ -49,7 +49,7 @@ public class FastsettBeregningsgrunnlagATFLHåndteringDto extends HåndterBeregn
     public FastsettBeregningsgrunnlagATFLHåndteringDto(@Valid @Size(max = 100) List<InntektPrAndelDto> inntektPrAndelList,
                                                        @JsonProperty(value = "inntektFrilanser") @Valid @Min(0) @Max(100 * 1000 * 1000) Integer inntektFrilanser,
                                                        @JsonProperty(value = "fastsatteTidsbegrensedePerioder") @Valid @Size(max = 100) List<FastsattePerioderTidsbegrensetDto> fastsatteTidsbegrensedePerioder) {
-        super(new HåndteringKode(IDENT_TYPE));
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.inntektPrAndelList = inntektPrAndelList;
         this.inntektFrilanser = inntektFrilanser;
         this.fastsatteTidsbegrensedePerioder = fastsatteTidsbegrensedePerioder;

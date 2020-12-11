@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.output;
 import java.util.ArrayList;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
 public class FaktaOmBeregningAksjonspunktResultat {

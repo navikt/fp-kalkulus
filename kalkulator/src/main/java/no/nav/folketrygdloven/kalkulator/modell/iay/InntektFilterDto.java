@@ -12,11 +12,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.virksomhet.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektsKilde;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.InntektspostType;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.YtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 
 /**
@@ -63,7 +63,7 @@ public class InntektFilterDto {
         return copyWith(innt, skjæringstidspunkt, venstreSideASkjæringstidspunkt);
     }
 
-    public InntektFilterDto filter(InntektsKilde kilde) {
+    public InntektFilterDto filter(InntektskildeType kilde) {
         return copyWith(getAlleInntekter(kilde), skjæringstidspunkt, venstreSideASkjæringstidspunkt);
     }
 
@@ -100,14 +100,14 @@ public class InntektFilterDto {
     }
 
     private List<InntektDto> getAlleInntektBeregnetSkatt() {
-        return getAlleInntekter(InntektsKilde.SIGRUN);
+        return getAlleInntekter(InntektskildeType.SIGRUN);
     }
 
     private List<InntektDto> getAlleInntektBeregningsgrunnlag() {
-        return getAlleInntekter(InntektsKilde.INNTEKT_BEREGNING);
+        return getAlleInntekter(InntektskildeType.INNTEKT_BEREGNING);
     }
 
-    private List<InntektDto> getAlleInntekter(InntektsKilde kilde) {
+    private List<InntektDto> getAlleInntekter(InntektskildeType kilde) {
         return inntekter.stream()
             .filter(it -> kilde == null || kilde.equals(it.getInntektsKilde()))
             .collect(Collectors.toUnmodifiableList());
@@ -118,20 +118,20 @@ public class InntektFilterDto {
     }
 
     public List<InntektDto> getAlleInntektSammenligningsgrunnlag() {
-        return getAlleInntekter(InntektsKilde.INNTEKT_SAMMENLIGNING);
+        return getAlleInntekter(InntektskildeType.INNTEKT_SAMMENLIGNING);
     }
 
     /**
      * Get inntektsposter - filtrert for skjæringstidspunkt hvis satt på filter.
      */
     public Collection<InntektspostDto> getFiltrertInntektsposter() {
-        return getInntektsposter((InntektsKilde) null);
+        return getInntektsposter((InntektskildeType) null);
     }
 
     /**
      * Get inntektsposter - filtrert for skjæringstidspunkt, inntektsposttype, etc hvis satt på filter.
      */
-    private Collection<InntektspostDto> getInntektsposter(InntektsKilde kilde) {
+    private Collection<InntektspostDto> getInntektsposter(InntektskildeType kilde) {
         Collection<InntektspostDto> inntektsposter = getAlleInntekter(null).stream().filter(i -> kilde == null || kilde.equals(i.getInntektsKilde()))
             .flatMap(i -> i.getAlleInntektsposter().stream().filter(ip -> filtrerInntektspost(i, ip)))
             .collect(Collectors.toList());

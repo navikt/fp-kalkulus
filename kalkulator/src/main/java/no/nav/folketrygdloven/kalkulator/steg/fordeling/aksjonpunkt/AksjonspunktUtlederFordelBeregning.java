@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.felles.kodeverk.domene.BeregningAksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 
 public class AksjonspunktUtlederFordelBeregning {
 
@@ -24,7 +24,7 @@ public class AksjonspunktUtlederFordelBeregning {
                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultater = new ArrayList<>();
         if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, aktivitetGradering, inntektsmeldinger)) {
-            BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
+            BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.FORDEL_BEREGNINGSGRUNNLAG);
             aksjonspunktResultater.add(aksjonspunktResultat);
         }
         return aksjonspunktResultater;
