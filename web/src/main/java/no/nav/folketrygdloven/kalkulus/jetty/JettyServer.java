@@ -18,8 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.geronimo.components.jaspi.AuthConfigFactoryImpl;
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.SecurityHandler;
@@ -33,8 +36,11 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
+import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.MetaData;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -47,6 +53,17 @@ import no.nav.vedtak.isso.IssoApplication;
 import no.nav.vedtak.util.env.Environment;
 
 public class JettyServer {
+
+    /**
+     * nedstrippet sett med Jetty configurations for raskere startup.
+     */
+    protected static final Configuration[] CONFIGURATIONS = new Configuration[] {
+            new WebInfConfiguration(),
+            new WebXmlConfiguration(),
+            new AnnotationConfiguration(),
+            new EnvConfiguration(),
+            new PlusConfiguration(),
+    };
 
     /**
      * Legges først slik at alltid resetter context før prosesserer nye requests. Kjøres først så ikke risikerer andre har satt
@@ -93,7 +110,7 @@ public class JettyServer {
     protected void start(AppKonfigurasjon appKonfigurasjon) throws Exception {
         Server server = new Server(appKonfigurasjon.getServerPort());
         server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[] {}));
-        
+
         var handlers = new HandlerList(new ResetLogContextHandler(), createContext(appKonfigurasjon));
         server.setHandler(handlers);
         server.start();
@@ -163,6 +180,7 @@ public class JettyServer {
         webAppContext.setDescriptor(descriptor);
         webAppContext.setBaseResource(createResourceCollection());
         webAppContext.setContextPath(appKonfigurasjon.getContextPath());
+        webAppContext.setConfigurations(CONFIGURATIONS);
         webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", "^.*resteasy-.*.jar$|^.*felles-.*.jar$");
         webAppContext.setSecurityHandler(createSecurityHandler());
         updateMetaData(webAppContext.getMetaData());
