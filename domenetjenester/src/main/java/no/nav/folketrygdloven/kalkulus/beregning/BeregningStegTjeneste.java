@@ -198,10 +198,17 @@ public class BeregningStegTjeneste {
             resultat.getBeregningAksjonspunktResultater(),
             resultat.getBeregningsgrunnlagGrunnlag(),
             input.getForrigeGrunnlagFraSteg());
-        if (kanKopiereAvklartIStegUt) {
+        if (kanKopiereAvklartIStegUt && forrigeAvklartHarPerioder(input)) {
             input.getForrigeGrunnlagFraStegUt().map(KalkulatorTilEntitetMapper::mapGrunnlag)
                 .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
         }
+    }
+
+    // TODO (TSF-1514) Fjernes når sak uten perioder er kjørt igjennom
+    private boolean forrigeAvklartHarPerioder(StegProsesseringInput input) {
+        return input.getForrigeGrunnlagFraStegUt().stream().anyMatch(bg ->
+                bg.getBeregningsgrunnlag().isPresent() &&
+                        !bg.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().isEmpty());
     }
 
     private TilstandResponse mapTilstandResponse(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
