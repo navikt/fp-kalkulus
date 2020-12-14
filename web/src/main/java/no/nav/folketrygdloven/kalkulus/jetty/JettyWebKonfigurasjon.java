@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.jetty;
 
+import no.nav.vedtak.sikkerhet.ContextPathHolder;
+
 public class JettyWebKonfigurasjon implements AppKonfigurasjon {
     private static final String CONTEXT_PATH = "/ftkalkulus";
     private static final String SWAGGER_HASH = "sha256-/k28/Xs33wXyOXYCOpKXui8gJ/Y6nxd5AnKA9iP63/s=";
@@ -7,9 +9,11 @@ public class JettyWebKonfigurasjon implements AppKonfigurasjon {
     private Integer serverPort;
 
     public JettyWebKonfigurasjon() {
+        ContextPathHolder.instance(CONTEXT_PATH);
     }
 
     public JettyWebKonfigurasjon(int serverPort) {
+        this();
         this.serverPort = serverPort;
     }
 
