@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -24,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public class HentBeregningsgrunnlagDtoListeForGUIRequest {
+public class HentBeregningsgrunnlagDtoListeForGUIRequest implements KalkulusRequest {
 
     @JsonProperty(value = "requestPrReferanse", required = true)
     @Valid
@@ -40,6 +41,12 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
     @Valid
     @NotNull
     private UUID behandlingUuid;
+    
+    //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
+    @JsonProperty(value = "saksnummer", required = false)
+    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
+    @Valid
+    private String saksnummer;
 
     protected HentBeregningsgrunnlagDtoListeForGUIRequest() {
         // default ctor
@@ -47,9 +54,11 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
 
     public HentBeregningsgrunnlagDtoListeForGUIRequest(@Valid @NotNull List<HentBeregningsgrunnlagDtoForGUIRequest> requestPrReferanse,
                                                        @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                                       @Valid String saksnummer,
                                                        @Valid @NotNull UUID behandlingUuid) {
         this.requestPrReferanse = requestPrReferanse;
         this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
+        this.saksnummer = saksnummer;
         this.behandlingUuid = behandlingUuid;
     }
 
@@ -69,5 +78,10 @@ public class HentBeregningsgrunnlagDtoListeForGUIRequest {
 
     public Map<UUID, KalkulatorInputDto> getKalkulatorInputPerKoblingReferanse() {
         return kalkulatorInputPerKoblingReferanse;
+    }
+    
+    @Override
+    public String getSaksnummer() {
+        return saksnummer;
     }
 }

@@ -25,10 +25,10 @@ public class ApplicationContextListener implements ServletContextListener {
     }
 
     private void startServices() {
-        // Henter dependent instance og destroyer etterpå.
         ApplicationServiceStarter serviceStarter = null;
         try {
-            Thread.sleep(2000); // La verden gå litt videre får vi dumper ut
+            Thread.sleep(2000); // La verden gå litt videre får vi setter i gang
+            // Henter dependent instance og destroyer etterpå.
             serviceStarter = CDI.current().select(ApplicationServiceStarter.class).get();
             serviceStarter.startServices();
         } catch (InterruptedException e) {

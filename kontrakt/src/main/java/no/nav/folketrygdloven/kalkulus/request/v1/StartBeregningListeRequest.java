@@ -31,7 +31,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public class StartBeregningListeRequest {
+public class StartBeregningListeRequest implements KalkulusRequest {
 
     private static final Comparator<KalkulatorInputDto> STP_COMP = Comparator.comparing(KalkulatorInputDto::getSkjæringstidspunkt,
         Comparator.nullsLast(Comparator.naturalOrder()));
@@ -74,6 +74,7 @@ public class StartBeregningListeRequest {
         this.kalkulatorInputPerKoblingReferanse = Map.copyOf(Objects.requireNonNull(kalkulatorInput, "kalkulatorInput"));
     }
 
+    @Override
     public String getSaksnummer() {
         return saksnummer;
     }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -39,20 +38,20 @@ public class JettyDevServer extends JettyServer {
     }
 
     private static String initCryptoStoreConfig(String storeName, String storeProperty, String storePasswordProperty,
-            String defaultPassword) {
+                                                String defaultPassword) {
         String defaultLocation = getProperty("user.home", ".") + "/.modig/" + storeName + ".jks";
 
         String storePath = getProperty(storeProperty, defaultLocation);
         File storeFile = new File(storePath);
         if (!storeFile.exists()) {
             throw new IllegalStateException("Finner ikke " + storeName + " i " + storePath
-                    + "\n\tKonfigurer enten som System property '" + storeProperty + "' eller environment variabel '"
-                    + storeProperty.toUpperCase().replace('.', '_') + "'");
+                + "\n\tKonfigurer enten som System property '" + storeProperty + "' eller environment variabel '"
+                + storeProperty.toUpperCase().replace('.', '_') + "'");
         }
         String password = getProperty(storePasswordProperty, defaultPassword);
         if (password == null) {
             throw new IllegalStateException(
-                    "Passord for å aksessere store " + storeName + " i " + storePath + " er null");
+                "Passord for å aksessere store " + storeName + " i " + storePath + " er null");
         }
 
         System.setProperty(storeProperty, storeFile.getAbsolutePath());
@@ -70,41 +69,42 @@ public class JettyDevServer extends JettyServer {
     }
 
     @Override
-    protected void migrerDatabaser() {
-        DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
-                1);
+    protected void migrerDatabaser() throws IOException {
         try {
-            JettyDevDbKonfigurasjon.kjørMigreringForDev(migreringDs);
-            migreringDs.getConnection().close();
-        } catch (SQLException e) {
-            log.warn("Klarte ikke stenge connection etter migrering", e);
+            super.migrerDatabaser();
+        } catch (IllegalStateException e) {
+            log.info("Migreringer feilet, cleaner og prøver på nytt for lokal db.");
+            DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(), 1);
+            try {
+                DevDbKonfigurasjon.clean(migreringDs);
+            } finally {
+                try {
+                    migreringDs.getConnection().close();
+                } catch (SQLException sqlException) {
+                    log.warn("Klarte ikke stenge connection etter migrering", sqlException);
+                }
+            }
+            super.migrerDatabaser();
         }
     }
 
     @Override
+
     protected void konfigurerMiljø() throws Exception {
         System.setProperty("develop-local", "true");
-        PropertiesUtils.lagPropertiesFilFraTemplate();
         PropertiesUtils.initProperties();
 
-        List<JettyDevDbKonfigurasjon> konfigs = PropertiesUtils.getDBConnectionProperties()
-                .stream()
-                .filter(jettyDevDbKonfigurasjon -> jettyDevDbKonfigurasjon.getDatasource().equals("defaultDS"))
-                .collect(Collectors.toList());
-        if (konfigs.size() == 1) {
-            final JettyDevDbKonfigurasjon konfig = konfigs.get(0);
-            System.setProperty("defaultDS.url", konfig.getUrl());
-            System.setProperty("defaultDS.username", konfig.getUser()); // benyttes kun hvis vault.enable=false
-            System.setProperty("defaultDS.password", konfig.getPassword()); // benyttes kun hvis vault.enable=false
-        } else {
-            throw new RuntimeException("forventet én datasourc-konfiger med defaultDS, men fant " + konfigs.size());
-        }
+        var konfig = new DevDbKonfigurasjon();
+        System.setProperty("defaultDS.url", konfig.getUrl());
+        System.setProperty("defaultDS.username", konfig.getUser()); // benyttes kun hvis vault.enable=false
+        System.setProperty("defaultDS.password", konfig.getPassword()); // benyttes kun hvis vault.enable=false
     }
 
     @Override
-    protected void konfigurerSikkerhet() {
-        System.setProperty("conf", "src/main/resources/jetty/");
-        super.konfigurerSikkerhet();
+    protected void konfigurerSikkerhet(File jaspiConf) {
+        // overstyrer angitt dir for lokal testing
+        File alternativeJaspiConf = new File("src/main/resources/jetty/jaspi-conf.xml");
+        super.konfigurerSikkerhet(alternativeJaspiConf);
 
         // truststore avgjør hva vi stoler på av sertifikater når vi gjør utadgående TLS kall
         initCryptoStoreConfig("truststore", "javax.net.ssl.trustStore", "javax.net.ssl.trustStorePassword", "changeit");

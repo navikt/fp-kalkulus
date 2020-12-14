@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
@@ -32,7 +31,6 @@ import org.hibernate.annotations.BatchSize;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;

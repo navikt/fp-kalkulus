@@ -32,7 +32,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public class FortsettBeregningListeRequest {
+public class FortsettBeregningListeRequest implements KalkulusRequest {
 
     @JsonProperty(value = "saksnummer", required = true)
     @NotNull
@@ -100,6 +100,7 @@ public class FortsettBeregningListeRequest {
         return stegType;
     }
 
+    @Override
     public String getSaksnummer() {
         return saksnummer;
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
+import no.nav.vedtak.exception.FunksjonellException;
 import no.nav.vedtak.feil.Feil;
 import no.nav.vedtak.feil.FeilFactory;
 import no.nav.vedtak.feil.LogLevel;
@@ -15,17 +16,12 @@ interface FeltValideringFeil extends DeklarerteFeil {
 
     FeltValideringFeil FACTORY = FeilFactory.create(FeltValideringFeil.class);
 
-    @FunksjonellFeil(feilkode = "FT-328673",
-            feilmelding = "Det oppstod en valideringsfeil på felt %s. Vennligst kontroller at alle feltverdier er korrekte.",
-            løsningsforslag = "Kontroller at alle feltverdier er korrekte", logLevel = LogLevel.WARN)
+    @FunksjonellFeil(feilkode = "FT-328673", feilmelding = "Det oppstod en valideringsfeil på felt %s. Vennligst kontroller at alle feltverdier er korrekte.", løsningsforslag = "Kontroller at alle feltverdier er korrekte", logLevel = LogLevel.WARN, exceptionClass = FunksjonellException.class)
     Feil feltverdiKanIkkeValideres(List<String> feltnavn);
 
-    @TekniskFeil(feilkode = "FT-232342",
-            feilmelding = "Det oppsto en teknisk feil under validering av contraints.", logLevel = LogLevel.WARN)
+    @TekniskFeil(feilkode = "FT-232342", feilmelding = "Det oppsto en teknisk feil under validering av contraints.", logLevel = LogLevel.WARN)
     Feil feilUnderValideringAvContraints(ConstraintViolationException feltnavn);
 
-
-    @TekniskFeil(feilkode = "FT-322345",
-            feilmelding = "Det oppstod en serverfeil: Validering er feilkonfigurert.", logLevel = LogLevel.ERROR)
+    @TekniskFeil(feilkode = "FT-322345", feilmelding = "Det oppstod en serverfeil: Validering er feilkonfigurert.", logLevel = LogLevel.ERROR)
     Feil feilIOppsettAvFeltvalidering();
 }

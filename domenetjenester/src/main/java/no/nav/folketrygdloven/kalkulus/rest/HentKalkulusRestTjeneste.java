@@ -27,6 +27,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.jboss.logging.MDC;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,14 +49,16 @@ import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISI
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoListeForGUIRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.BeregningsgrunnlagPrReferanse;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagListe;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagListeRequestAbacDto;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HentBeregningsgrunnlagRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.vedtak.sikkerhet.abac.StandardAbacAttributtType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "beregningsgrunnlag"))
@@ -231,6 +239,59 @@ public class HentKalkulusRestTjeneste {
             .filter(k -> koblingIderMedKalkulatorInput.contains(k.getId()))
             .collect(Collectors.toList());
 
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HentBeregningsgrunnlagListeRequestAbacDto extends HentBeregningsgrunnlagListeRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+
+
+        public HentBeregningsgrunnlagListeRequestAbacDto() {
+            // For Json deserialisering
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            return abacDataAttributter;
+        }
+    }
+    
+    @Deprecated(forRemoval=true, since="1.0")
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HentBeregningsgrunnlagRequestAbacDto extends HentBeregningsgrunnlagRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKoblingReferanse());
+            return abacDataAttributter;
+        }
+    }
+    
+    /**
+     * Json bean med Abac.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto extends HentBeregningsgrunnlagDtoListeForGUIRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+
+
+        public HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto() {
+            // For Json deserialisering
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            return abacDataAttributter;
+        }
     }
 
 }

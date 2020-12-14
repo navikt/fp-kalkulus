@@ -7,7 +7,6 @@ import javax.ws.rs.core.Application;
 
 import no.nav.folketrygdloven.kalkulus.app.metrics.PrometheusRestService;
 import no.nav.folketrygdloven.kalkulus.app.selftest.NaisRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.app.selftest.SelftestRestTjeneste;
 
 @ApplicationPath(InternalApplication.API_URL)
 public class InternalApplication extends Application {
@@ -21,8 +20,7 @@ public class InternalApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         return Set.of(PrometheusRestService.class,
-            NaisRestTjeneste.class,
-            SelftestRestTjeneste.class);
+            NaisRestTjeneste.class);
     }
 
 }

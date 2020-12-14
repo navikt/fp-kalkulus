@@ -9,12 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.swagger.v3.oas.annotations.Operation;
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationServiceStarter;
-import no.nav.folketrygdloven.kalkulus.app.konfig.InternalApplication;
 
 @Path("/")
 @Produces(TEXT_PLAIN)
@@ -25,19 +21,15 @@ public class NaisRestTjeneste {
     private static final String RESPONSE_CACHE_VAL = "must-revalidate,no-cache,no-store";
     private static final String RESPONSE_OK = "OK";
 
-    private static Logger logger = LoggerFactory.getLogger(InternalApplication.class);
-
     private ApplicationServiceStarter starterService;
-    private SelftestService selftestService;
 
     public NaisRestTjeneste() {
         // CDI
     }
 
     @Inject
-    public NaisRestTjeneste(ApplicationServiceStarter starterService, SelftestService selftestService) {
+    public NaisRestTjeneste(ApplicationServiceStarter starterService) {
         this.starterService = starterService;
-        this.selftestService = selftestService;
     }
 
     @GET
@@ -45,26 +37,16 @@ public class NaisRestTjeneste {
     @Operation(description = "sjekker om poden lever", tags = "nais", hidden = true)
     public Response isAlive() {
         return Response
-                .ok(RESPONSE_OK)
-                .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
-                .build();
+            .ok(RESPONSE_OK)
+            .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
+            .build();
     }
 
     @GET
     @Path("isReady")
     @Operation(description = "sjekker om poden er klar", tags = "nais", hidden = true)
     public Response isReady() {
-        if (!selftestService.kritiskTjenesteFeilet()) {
-            return Response
-                .ok(RESPONSE_OK)
-                .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
-                .build();
-        } else {
-            return Response
-                .status(Response.Status.SERVICE_UNAVAILABLE)
-                .header(RESPONSE_CACHE_KEY, RESPONSE_CACHE_VAL)
-                .build();
-        }
+        return isAlive();
     }
 
     @GET

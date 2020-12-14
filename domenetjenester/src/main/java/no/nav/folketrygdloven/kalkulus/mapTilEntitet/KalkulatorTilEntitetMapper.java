@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsgiver;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 

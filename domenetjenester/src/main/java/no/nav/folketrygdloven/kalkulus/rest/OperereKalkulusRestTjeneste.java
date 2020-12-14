@@ -44,7 +44,6 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -59,6 +58,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandListeResponse;
@@ -66,8 +66,8 @@ import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
-import no.nav.folketrygdloven.kalkulus.rest.abac.HåndterBeregningListeRequestAbacDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.AbacDto;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -194,10 +194,10 @@ public class OperereKalkulusRestTjeneste {
 
         // Mapper informasjon om kobling
         var koblingReferanser = spesifikasjon.getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse)
-                .map(KoblingReferanse::new).collect(Collectors.toList());
+            .map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser);
         Map<Long, HåndterBeregningDto> koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
-                .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
+            .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
 
         Resultat<HåndterBeregningsgrunnlagInput> håndterInputResultat;
         var tilstand = finnTilstandFraDto(koblingTilDto);
@@ -221,7 +221,7 @@ public class OperereKalkulusRestTjeneste {
 
         // Lager responsobjekt
         List<OppdateringPrRequest> oppdateringer = håndterResultat.entrySet().stream()
-                .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res))).collect(Collectors.toList());
+            .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res))).collect(Collectors.toList());
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
@@ -241,7 +241,8 @@ public class OperereKalkulusRestTjeneste {
 
             // Vi kaster ikkje feil om vi ikkje finner kobling
             // Grunnen til dette er fordi i nokon FRISINN-saker hopper man over beregning ved avslag og dermed vil ikkje beregning vere kjørt
-            // Vurderingen er at dette er noko som kan håndteres utan feil sidan målet er å deaktivere (vi vil deaktivere ein beregning som blei avslått før den nådde beregning)
+            // Vurderingen er at dette er noko som kan håndteres utan feil sidan målet er å deaktivere (vi vil deaktivere ein beregning som blei avslått
+            // før den nådde beregning)
             if (kopt.isPresent()) {
                 KoblingEntitet kobling = kopt.get();
                 if (!Objects.equals(kobling.getSaksnummer().getVerdi(), saksnummer)) {
@@ -259,7 +260,8 @@ public class OperereKalkulusRestTjeneste {
         List<KoblingReferanse> referanser = spesifikasjon.getEksternReferanser().stream().map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
 
-        List<KoblingEntitet> koblingUtenSaksnummer = koblinger.stream().filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
+        List<KoblingEntitet> koblingUtenSaksnummer = koblinger.stream()
+            .filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
         if (!koblingUtenSaksnummer.isEmpty()) {
             throw new IllegalArgumentException("Koblinger tilhører ikke saksnummer [" + spesifikasjon.getSaksnummer() + "]: " + koblingUtenSaksnummer);
         }
@@ -268,7 +270,8 @@ public class OperereKalkulusRestTjeneste {
     }
 
     private BeregningsgrunnlagTilstand finnTilstandFraDto(Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
-        List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getKode).map(MapHåndteringskodeTilTilstand::map).collect(Collectors.toList());
+        List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getKode)
+            .map(MapHåndteringskodeTilTilstand::map).collect(Collectors.toList());
         if (tilstander.size() > 1) {
             throw new IllegalStateException("Kan ikke løse aksjonspunkt for flere tilstander samtidig");
         }
@@ -277,11 +280,12 @@ public class OperereKalkulusRestTjeneste {
 
     private Long finnKoblingId(List<KoblingEntitet> koblinger, HåndterBeregningRequest s) {
         return koblinger.stream().filter(kobling -> kobling.getKoblingReferanse().getReferanse().equals(s.getEksternReferanse()))
-                .findFirst().map(KoblingEntitet::getId).orElse(null);
+            .findFirst().map(KoblingEntitet::getId).orElse(null);
     }
 
     private UUID finnKoblingUUIDForKoblingId(List<KoblingEntitet> koblinger, Map.Entry<Long, OppdateringRespons> res) {
-        return koblinger.stream().filter(k -> k.getId().equals(res.getKey())).findFirst().map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse).orElse(null);
+        return koblinger.stream().filter(k -> k.getId().equals(res.getKey())).findFirst().map(KoblingEntitet::getKoblingReferanse)
+            .map(KoblingReferanse::getReferanse).orElse(null);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -289,11 +293,11 @@ public class OperereKalkulusRestTjeneste {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
     public static class StartBeregningListeRequestAbacDto extends StartBeregningListeRequest implements AbacDto {
 
-
         public StartBeregningListeRequestAbacDto() {
         }
 
-        public StartBeregningListeRequestAbacDto(Map<UUID, KalkulatorInputDto> kalkulatorInput, String saksnummer, PersonIdent aktør, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+        public StartBeregningListeRequestAbacDto(Map<UUID, KalkulatorInputDto> kalkulatorInput, String saksnummer, PersonIdent aktør,
+                                                 YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
             super(kalkulatorInput, saksnummer, aktør, ytelseSomSkalBeregnes);
         }
 
@@ -311,7 +315,6 @@ public class OperereKalkulusRestTjeneste {
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
     public static class FortsettBeregningListeRequestAbacDto extends FortsettBeregningListeRequest implements AbacDto {
-
 
         public FortsettBeregningListeRequestAbacDto() {
         }
@@ -336,7 +339,6 @@ public class OperereKalkulusRestTjeneste {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
     public static class DeaktiverBeregningsgrunnlagRequestAbacDto extends BeregningsgrunnlagListeRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
 
-
         public DeaktiverBeregningsgrunnlagRequestAbacDto() {
         }
 
@@ -352,4 +354,23 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class HåndterBeregningListeRequestAbacDto extends HåndterBeregningListeRequest implements AbacDto {
+
+        public HåndterBeregningListeRequestAbacDto() {
+            // Jackson
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            return abacDataAttributter;
+        }
+    }
+
 }

@@ -1,10 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.app.exceptions;
 
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -15,30 +11,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import no.nav.vedtak.exception.FunksjonellException;
 import no.nav.vedtak.exception.ManglerTilgangException;
 import no.nav.vedtak.exception.VLException;
 import no.nav.vedtak.feil.Feil;
 import no.nav.vedtak.feil.FunksjonellFeil;
 import no.nav.vedtak.felles.jpa.TomtResultatException;
 import no.nav.vedtak.log.mdc.MDCOperations;
-import no.nav.vedtak.log.util.LoggerUtils;
 
 @Provider
 public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationException> {
 
-    //FIXME Humle, ikke bruk feilkoder her, håndter som valideringsfeil, eller legg til egen samtidig-oppdatering-feil Feil-rammeverket
-    static final String BEHANDLING_ENDRET_FEIL = "FT-837578";
-    //FIXME Humle, dette er Valideringsfeil, bruk valideringsfeil.
-    static final String FRITEKST_TOM_FEIL = "FT-290952";
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralRestExceptionMapper.class);
 
     @Override
     public Response toResponse(ApplicationException exception) {
         Throwable cause = exception.getCause();
 
-        if (cause instanceof Valideringsfeil) {
-            return handleValideringsfeil((Valideringsfeil) cause);
-        } else if (cause instanceof TomtResultatException) {
+        if (cause instanceof TomtResultatException) {
             return handleTomtResultatFeil((TomtResultatException) cause);
         }
 
@@ -47,6 +37,11 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationEx
 
         if (cause instanceof VLException) {
             return handleVLException((VLException) cause, callId);
+        } else if (cause instanceof ConstraintViolationException) {
+            return new ConstraintViolationMapper().toResponse((ConstraintViolationException) cause);
+        }
+        if (cause instanceof UnsupportedOperationException) {
+            return handleUnsupportedException(callId, cause);
         }
 
         return handleGenerellFeil(cause, callId);
@@ -60,29 +55,24 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationEx
             .build();
     }
 
-    private Response handleValideringsfeil(Valideringsfeil valideringsfeil) {
-        List<String> feltNavn = valideringsfeil.getFeltFeil().stream().map(FeltFeilDto::getNavn).collect(Collectors.toList());
-        return Response
-            .status(Response.Status.BAD_REQUEST)
-            .entity(new FeilDto(
-                FeltValideringFeil.FACTORY.feltverdiKanIkkeValideres(feltNavn).getFeilmelding(),
-                valideringsfeil.getFeltFeil()))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
-    }
-
     private Response handleVLException(VLException vlException, String callId) {
         Feil feil = vlException.getFeil();
         if (vlException instanceof ManglerTilgangException) {
             return ikkeTilgang(feil);
-        } else if (FRITEKST_TOM_FEIL.equals(feil.getKode())) {
-            return handleValideringsfeil(new Valideringsfeil(Collections.singleton(new FeltFeilDto("fritekst",
-                feil.getKode() + " " + feil.getFeilmelding()))));
-        } else if (BEHANDLING_ENDRET_FEIL.equals(feil.getKode())) {
-            return behandlingEndret(feil);
+        } else if (vlException instanceof FunksjonellException) {
+            return handleValideringsfeil(callId, vlException);
         } else {
             return serverError(callId, feil);
         }
+    }
+
+    private Response handleValideringsfeil(String callId, VLException vlException) {
+        String feilmelding = getVLExceptionFeilmelding(callId, vlException.getFeil());
+        FeilType feilType = FeilType.GENERELL_FEIL;
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(new FeilDto(feilType, feilmelding))
+            .type(MediaType.APPLICATION_JSON)
+            .build();
     }
 
     private Response serverError(String callId, Feil feil) {
@@ -103,10 +93,10 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationEx
             .build();
     }
 
-    private Response behandlingEndret(Feil feil) {
-        String feilmelding = feil.getFeilmelding();
-        FeilType feilType = FeilType.BEHANDLING_ENDRET_FEIL;
-        return Response.status(Response.Status.CONFLICT)
+    private Response handleUnsupportedException(String callId, Throwable cause) {
+        String feilmelding = "Funksjonalitet er ikke støttet: " + cause.getMessage() + ". Meld til support med referanse-id: " + callId; //$NON-NLS-1$ //$NON-NLS-2$
+        FeilType feilType = FeilType.GENERELL_FEIL;
+        return Response.status(Response.Status.NOT_IMPLEMENTED)
             .entity(new FeilDto(feilType, feilmelding))
             .type(MediaType.APPLICATION_JSON)
             .build();
@@ -140,15 +130,18 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationEx
     }
 
     private void loggTilApplikasjonslogg(Throwable cause) {
-        if (cause instanceof VLException) {
+        if (cause instanceof ManglerTilgangException) {
+            // Do not logg
+        } else if (cause instanceof VLException) {
             ((VLException) cause).log(LOGGER);
+        } else if (cause instanceof UnsupportedOperationException) {
+            LOGGER.info("Fikk ikke-implementert-feil:", cause); // NOSONAR //$NON-NLS-1$
         } else {
-            String message = cause.getMessage() != null ? LoggerUtils.removeLineBreaks(cause.getMessage()) : "";
-            LOGGER.error("Fikk uventet feil:" + message, cause); //NOSONAR //$NON-NLS-1$
+            LOGGER.error("Fikk uventet feil:", cause); // NOSONAR //$NON-NLS-1$
         }
 
         // key for å tracke prosess -- nullstill denne
-        MDC.remove("prosess");  //$NON-NLS-1$
+        MDC.remove("prosess"); //$NON-NLS-1$
     }
 
 }

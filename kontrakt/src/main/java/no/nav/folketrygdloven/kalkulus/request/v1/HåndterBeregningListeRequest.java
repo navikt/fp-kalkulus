@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,7 +27,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
-public class HåndterBeregningListeRequest {
+public class HåndterBeregningListeRequest implements KalkulusRequest {
 
     @JsonProperty(value = "håndterBeregningListe")
     @NotNull
@@ -42,12 +43,20 @@ public class HåndterBeregningListeRequest {
     @Valid
     @NotNull
     private UUID behandlingUuid;
+    
+    //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
+    @JsonProperty(value = "saksnummer", required = false)
+    @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
+    @Valid
+    private String saksnummer;
 
     public HåndterBeregningListeRequest(@NotNull @Valid List<HåndterBeregningRequest> håndterBeregningListe,
                                         @Valid Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                        @Valid String saksnummer,
                                         @Valid @NotNull UUID behandlingUuid) {
         this.håndterBeregningListe = håndterBeregningListe;
         this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
+        this.saksnummer = saksnummer;
         this.behandlingUuid = behandlingUuid;
     }
 
@@ -72,4 +81,8 @@ public class HåndterBeregningListeRequest {
         return kalkulatorInputPerKoblingReferanse;
     }
 
+    @Override
+    public String getSaksnummer() {
+        return saksnummer;
+    }
 }

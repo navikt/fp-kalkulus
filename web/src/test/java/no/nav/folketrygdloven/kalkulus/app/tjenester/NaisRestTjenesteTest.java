@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulus.app.tjenester;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationServiceStarter;
 import no.nav.folketrygdloven.kalkulus.app.selftest.NaisRestTjeneste;
-import no.nav.folketrygdloven.kalkulus.app.selftest.SelftestService;
 
 @SuppressWarnings("resource")
 public class NaisRestTjenesteTest {
@@ -20,11 +18,10 @@ public class NaisRestTjenesteTest {
     private NaisRestTjeneste restTjeneste;
 
     private ApplicationServiceStarter serviceStarterMock = mock(ApplicationServiceStarter.class);
-    private SelftestService selftestServiceMock = mock(SelftestService.class);
 
     @BeforeEach
     public void setup() {
-        restTjeneste = new NaisRestTjeneste(serviceStarterMock, selftestServiceMock);
+        restTjeneste = new NaisRestTjeneste(serviceStarterMock);
     }
 
     @Test
@@ -36,20 +33,10 @@ public class NaisRestTjenesteTest {
 
     @Test
     public void test_isReady_skal_returnere_status_ok_når_selftester_er_ok() {
-        when(selftestServiceMock.kritiskTjenesteFeilet()).thenReturn(false);
 
         Response response = restTjeneste.isReady();
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
-    }
-
-    @Test
-    public void test_isReady_skal_returnere_status_service_unavailable_når_kritiske_selftester_feiler() {
-        when(selftestServiceMock.kritiskTjenesteFeilet()).thenReturn(true);
-
-        Response response = restTjeneste.isReady();
-
-        assertThat(response.getStatus()).isEqualTo(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
     }
 
     @Test
