@@ -10,13 +10,11 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
@@ -24,10 +22,8 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
 
     @Override
     public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat regelResultat,
-                                                                   BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                    BeregningsgrunnlagInput input,
-                                                                   boolean erOverstyrt,
-                                                                   FagsakYtelseType fagsakYtelseType) {
+                                                                   boolean erOverstyrt) {
         if (regelResultat.getBeregningsgrunnlag() == null) {
             if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunkt.AUTO_VENT_FRISINN))) {
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(

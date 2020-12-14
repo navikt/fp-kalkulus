@@ -13,14 +13,12 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -34,7 +32,7 @@ import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResu
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.AksjonspunktUtlederFordelBeregning;
@@ -45,7 +43,6 @@ import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunn
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 
 /**
  * Fasade tjeneste for å delegere alle kall fra steg
@@ -53,7 +50,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 @ApplicationScoped
 public class BeregningsgrunnlagTjeneste {
 
-    protected FastsettBeregningAktiviteter fastsettBeregningAktiviteter;
+    private ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste;
     protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
     private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
     private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
@@ -71,7 +68,8 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     @Inject
-    public BeregningsgrunnlagTjeneste(@Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
+    public BeregningsgrunnlagTjeneste(ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste,
+                                      @Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
                                       @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
                                       @Any Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
@@ -79,8 +77,8 @@ public class BeregningsgrunnlagTjeneste {
                                       VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
-                                      FastsettBeregningAktiviteter fastsettBeregningAktiviteter,
                                       @Any Instance<VilkårTjeneste> vilkårTjeneste) {
+        this.foreslåSkjæringstidspunktTjeneste = foreslåSkjæringstidspunktTjeneste;
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
         this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
         this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
@@ -89,39 +87,23 @@ public class BeregningsgrunnlagTjeneste {
         this.vurderRefusjonBeregningsgrunnlag = vurderRefusjonBeregningsgrunnlag;
         this.foreslåBeregningsgrunnlag = foreslåBeregningsgrunnlag;
         this.vurderBeregningsgrunnlagTjeneste = vurderBeregningsgrunnlagTjeneste;
-        this.fastsettBeregningAktiviteter = fastsettBeregningAktiviteter;
         this.vilkårTjeneste = vilkårTjeneste;
     }
 
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
-        BeregningAktivitetAggregatDto beregningAktivitetAggregat = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
-        if (beregningAktivitetAggregat.getBeregningAktiviteter().isEmpty()) {
-            // Avslår vilkår
-
-            return BeregningResultatAggregat.Builder.fra(input)
-                    .medRegisterAktiviteter(beregningAktivitetAggregat)
-                    .medAvslåttVilkårIHelePerioden(Vilkårsavslagsårsak.FOR_LAVT_BG)
-                    .build();
-        }
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
-        Optional<BeregningAktivitetOverstyringerDto> overstyrt = hentTidligereOverstyringer(input);
-        BeregningsgrunnlagGrunnlagDtoBuilder builder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-                .medRegisterAktiviteter(beregningAktivitetAggregat)
-                .medOverstyring(overstyrt.orElse(null));
-        builder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag());
-
-        var beregningsgrunnlagGrunnlag = builder.build(input.getStegTilstand());
-        boolean erOverstyrt = overstyrt.isPresent();
-        BeregningsgrunnlagInput inputOppdatertMedBg = input.medBeregningsgrunnlagGrunnlag(beregningsgrunnlagGrunnlag);
-        var aksjonspunkter = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter).utledAksjonspunkter(
-                beregningsgrunnlagRegelResultat,
-                beregningAktivitetAggregat,
-                inputOppdatertMedBg,
-                erOverstyrt,
-                input.getFagsakYtelseType());
-        BeregningResultatAggregat.Builder resultatBuilder = BeregningResultatAggregat.Builder.fra(inputOppdatertMedBg).medAksjonspunkter(aksjonspunkter);
-        resultatBuilder.medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), input.getStegTilstand());
-        return resultatBuilder.build();
+        var beregningsgrunnlagRegelResultat = foreslåSkjæringstidspunktTjeneste.foreslåSkjæringstidspunkt(input);
+        var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
+        var aksjonspunkter = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter)
+                .utledAksjonspunkter(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
+        var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
+                .lagVilkårResultatFastsettAktiviteter(input, beregningsgrunnlagRegelResultat.getVilkårsresultat());
+        return BeregningResultatAggregat.Builder.fra(input)
+                .medRegisterAktiviteter(beregningsgrunnlagRegelResultat.getRegisterAktiviteter())
+                .medOverstyrteAktiviteter(vilkårResultat.isPresent() ? null : tidligereAktivitetOverstyring.orElse(null))
+                .medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                .medVilkårResultat(vilkårResultat.orElse(null))
+                .medAksjonspunkter(aksjonspunkter)
+                .build();
     }
 
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(StegProsesseringInput input) {
@@ -223,8 +205,8 @@ public class BeregningsgrunnlagTjeneste {
         }
     }
 
-    /** Foreslår besteberegning
-     *
+    /**
+     * Foreslår besteberegning
      *
      * @param input Input til foreslå besteberegning
      * @return resultat av foreslått besteberegning
@@ -280,10 +262,9 @@ public class BeregningsgrunnlagTjeneste {
                 .anyMatch(BeregningsgrunnlagDto::isOverstyrt);
     }
 
-    Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(FastsettBeregningsaktiviteterInput input) {
+    private Optional<BeregningAktivitetOverstyringerDto> hentTidligereOverstyringer(FastsettBeregningsaktiviteterInput input) {
         Optional<BeregningsgrunnlagGrunnlagDto> overstyrtGrunnlag = input.getForrigeGrunnlagFraStegUt();
-        return overstyrtGrunnlag
-                .flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
+        return overstyrtGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getOverstyring);
     }
 
     private <T> T finnImplementasjonForYtelseType(FagsakYtelseType fagsakYtelseType, Instance<T> instanser) {

@@ -95,7 +95,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         LocalDateTime frist = tom.plusDays(rapporteringsfrist).plusDays(1).atStartOfDay();
 
         //Act
-        List<BeregningAksjonspunktResultat> resultater = new AksjonspunktUtlederFastsettBeregningsaktiviteterFelles().utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList()), beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = new AksjonspunktUtlederFastsettBeregningsaktiviteterFelles().utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -142,7 +144,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList()), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -161,7 +165,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         int rapporteringsfrist = 1000;
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList()), beregningAktivitetAggregat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -205,7 +211,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList()), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(0);
@@ -239,9 +247,11 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         List<YtelseDto> liste = Collections.singletonList(ytelse);
         when(iayMock.getAktørYtelseFraRegister()).thenReturn(Optional.of(ay));
         when(ay.getAlleYtelser()).thenReturn(liste);
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList()), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(0);
@@ -276,7 +286,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList()), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(1);
@@ -314,7 +326,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         when(ay.getAlleYtelser()).thenReturn(liste);
 
         // Act
-        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList()), beregningAktivitetAggregat, lagMockBeregningsgrunnlagInput(), erOverstyrt, input.getFagsakYtelseType());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(bgMedDagpenger, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        List<BeregningAksjonspunktResultat> resultater = apUtleder.utledAksjonspunkter(beregningsgrunnlagRegelResultat, lagMockBeregningsgrunnlagInput(), erOverstyrt);
 
         // Assert
         assertThat(resultater).hasSize(0);

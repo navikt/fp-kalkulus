@@ -1,15 +1,22 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 
 public class BeregningsgrunnlagRegelResultat {
     private BeregningsgrunnlagDto beregningsgrunnlag;
-    private List<BeregningAksjonspunktResultat> aksjonspunkter;
-    private List<BeregningVilkårResultat> vilkårsresultat;
+    private BeregningAktivitetAggregatDto registerAktiviteter;
+    private List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
+    private List<BeregningVilkårResultat> vilkårsresultat = new ArrayList<>();
     private RegelSporingAggregat regelsporinger;
+
+    public BeregningsgrunnlagRegelResultat(BeregningAktivitetAggregatDto registerAktiviteter) {
+        this.registerAktiviteter = registerAktiviteter;
+    }
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
                                            List<BeregningAksjonspunktResultat> aksjonspunktResultatListe) {
@@ -34,6 +41,10 @@ public class BeregningsgrunnlagRegelResultat {
         return beregningsgrunnlag;
     }
 
+    public BeregningAktivitetAggregatDto getRegisterAktiviteter() {
+        return registerAktiviteter;
+    }
+
     public List<BeregningAksjonspunktResultat> getAksjonspunkter() {
         return aksjonspunkter;
     }
@@ -50,6 +61,10 @@ public class BeregningsgrunnlagRegelResultat {
 
     public void setVilkårsresultat(List<BeregningVilkårResultat> vilkårsresultat) {
         this.vilkårsresultat = vilkårsresultat;
+    }
+
+    public void setRegisterAktiviteter(BeregningAktivitetAggregatDto registerAktiviteter) {
+        this.registerAktiviteter = registerAktiviteter;
     }
 
     public List<BeregningVilkårResultat> getVilkårsresultat() {

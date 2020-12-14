@@ -16,6 +16,17 @@ import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 @FagsakYtelseTypeRef("*")
 public class VilkårTjeneste {
 
+    public Optional<BeregningVilkårResultat> lagVilkårResultatFastsettAktiviteter(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
+        boolean erAvslått = beregningVilkårResultatListe.stream().anyMatch(vp -> !vp.getErVilkårOppfylt());
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktOpptjening(), AbstractIntervall.TIDENES_ENDE);
+        if (erAvslått) {
+            Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
+            return Optional.of(avslåttVilkår.map(beregningVilkårResultat -> lagAvslag(vilkårsperiode, beregningVilkårResultat))
+                    .orElseThrow(() -> new IllegalStateException("Forventer å finne vilkår med avslag.")));
+        }
+        return Optional.empty();
+    }
+
     public BeregningVilkårResultat lagVilkårResultatFordel(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
         boolean erAvslått = beregningVilkårResultatListe.stream().anyMatch(vp -> !vp.getErVilkårOppfylt());
         Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);

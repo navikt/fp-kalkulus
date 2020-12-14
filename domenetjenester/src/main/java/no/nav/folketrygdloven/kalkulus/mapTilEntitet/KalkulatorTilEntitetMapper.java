@@ -45,7 +45,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
  */
 public class KalkulatorTilEntitetMapper {
 
-    public static BeregningsgrunnlagEntitet mapBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus) {
+    public static BeregningsgrunnlagGrunnlagBuilder mapGrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagFraKalkulus) {
+        BeregningsgrunnlagGrunnlagBuilder oppdatere = BeregningsgrunnlagGrunnlagBuilder.nytt();
+
+        beregningsgrunnlagFraKalkulus.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto)));
+        beregningsgrunnlagFraKalkulus.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
+        oppdatere.medRegisterAktiviteter(mapRegisterAktiviteter(beregningsgrunnlagFraKalkulus.getRegisterAktiviteter()));
+        beregningsgrunnlagFraKalkulus.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
+        beregningsgrunnlagFraKalkulus.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
+
+        if (beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
+            beregningsgrunnlagFraKalkulus.getFaktaAggregat().ifPresent(fakta -> oppdatere.medFaktaAggregat(mapFakta(fakta)));
+        }
+
+        return oppdatere;
+    }
+
+    private static BeregningsgrunnlagEntitet mapBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlagFraKalkulus) {
         BeregningsgrunnlagEntitet.Builder builder = BeregningsgrunnlagEntitet.builder();
 
         //med
@@ -65,7 +81,7 @@ public class KalkulatorTilEntitetMapper {
         return builder.build();
     }
 
-    public static BeregningRefusjonOverstyringerEntitet mapRefusjonOverstyring(BeregningRefusjonOverstyringerDto refusjonOverstyringerFraKalkulus) {
+    private static BeregningRefusjonOverstyringerEntitet mapRefusjonOverstyring(BeregningRefusjonOverstyringerDto refusjonOverstyringerFraKalkulus) {
         BeregningRefusjonOverstyringerEntitet.Builder entitetBuilder = BeregningRefusjonOverstyringerEntitet.builder();
 
         refusjonOverstyringerFraKalkulus.getRefusjonOverstyringer().forEach(beregningRefusjonOverstyring -> {
@@ -83,7 +99,7 @@ public class KalkulatorTilEntitetMapper {
         return new BeregningRefusjonPeriodeEntitet(ref, periode.getStartdatoRefusjon());
     }
 
-    public static BeregningAktivitetAggregatEntitet mapSaksbehandletAktivitet(BeregningAktivitetAggregatDto saksbehandletAktiviteterFraKalkulus) {
+    private static BeregningAktivitetAggregatEntitet mapSaksbehandletAktivitet(BeregningAktivitetAggregatDto saksbehandletAktiviteterFraKalkulus) {
         BeregningAktivitetAggregatEntitet.Builder entitetBuilder = BeregningAktivitetAggregatEntitet.builder();
         entitetBuilder.medSkjæringstidspunktOpptjening(saksbehandletAktiviteterFraKalkulus.getSkjæringstidspunktOpptjening());
         saksbehandletAktiviteterFraKalkulus.getBeregningAktiviteter().forEach(mapBeregningAktivitet(entitetBuilder));
@@ -101,7 +117,7 @@ public class KalkulatorTilEntitetMapper {
         };
     }
 
-    public static BeregningAktivitetOverstyringerEntitet mapAktivitetOverstyring(BeregningAktivitetOverstyringerDto beregningAktivitetOverstyringerFraKalkulus) {
+    private static BeregningAktivitetOverstyringerEntitet mapAktivitetOverstyring(BeregningAktivitetOverstyringerDto beregningAktivitetOverstyringerFraKalkulus) {
         BeregningAktivitetOverstyringerEntitet.Builder entitetBuilder = BeregningAktivitetOverstyringerEntitet.builder();
         beregningAktivitetOverstyringerFraKalkulus.getOverstyringer().forEach(overstyring -> {
             BeregningAktivitetOverstyringEntitet.Builder builder = BeregningAktivitetOverstyringEntitet.builder();
@@ -117,22 +133,6 @@ public class KalkulatorTilEntitetMapper {
 
     private static IntervallEntitet mapDatoIntervall(Intervall periode) {
         return IntervallEntitet.fraOgMedTilOgMed(periode.getFomDato(), periode.getTomDato());
-    }
-
-    public static BeregningsgrunnlagGrunnlagBuilder mapGrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagFraKalkulus) {
-        BeregningsgrunnlagGrunnlagBuilder oppdatere = BeregningsgrunnlagGrunnlagBuilder.nytt();
-
-        beregningsgrunnlagFraKalkulus.getBeregningsgrunnlag().ifPresent(beregningsgrunnlagDto -> oppdatere.medBeregningsgrunnlag(mapBeregningsgrunnlag(beregningsgrunnlagDto)));
-        beregningsgrunnlagFraKalkulus.getOverstyring().ifPresent(beregningAktivitetOverstyringerDto -> oppdatere.medOverstyring(mapAktivitetOverstyring(beregningAktivitetOverstyringerDto)));
-        oppdatere.medRegisterAktiviteter(mapRegisterAktiviteter(beregningsgrunnlagFraKalkulus.getRegisterAktiviteter()));
-        beregningsgrunnlagFraKalkulus.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
-        beregningsgrunnlagFraKalkulus.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
-
-        if (beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
-            beregningsgrunnlagFraKalkulus.getFaktaAggregat().ifPresent(fakta -> oppdatere.medFaktaAggregat(mapFakta(fakta)));
-        }
-
-        return oppdatere;
     }
 
     private static FaktaAggregatEntitet mapFakta(FaktaAggregatDto fakta) {

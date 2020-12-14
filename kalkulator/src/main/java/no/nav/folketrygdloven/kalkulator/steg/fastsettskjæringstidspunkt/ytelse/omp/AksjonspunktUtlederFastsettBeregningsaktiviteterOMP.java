@@ -26,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.Aksjon
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("OMP")
@@ -35,8 +34,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterOMP implements Aksj
     private static List<BeregningAksjonspunktResultat> utledAksjonspunkterForOMP(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                  BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                  BeregningsgrunnlagInput input,
-                                                                                 boolean erOverstyrt,
-                                                                                 FagsakYtelseType fagsakYtelseType) {
+                                                                                 boolean erOverstyrt) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
@@ -47,7 +45,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterOMP implements Aksj
         if (erOverstyrt) {
             return emptyList();
         }
-        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)) {
+        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
             return List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.AVKLAR_AKTIVITETER));
         }
         return emptyList();
@@ -58,8 +56,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterOMP implements Aksj
     }
 
     @Override
-    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
+    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
-        return utledAksjonspunkterForOMP(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
+        BeregningAktivitetAggregatDto registerAktiviteter = beregningsgrunnlagRegelResultat.getRegisterAktiviteter();
+        return utledAksjonspunkterForOMP(beregningsgrunnlag, registerAktiviteter, input, erOverstyrt);
     }
 }

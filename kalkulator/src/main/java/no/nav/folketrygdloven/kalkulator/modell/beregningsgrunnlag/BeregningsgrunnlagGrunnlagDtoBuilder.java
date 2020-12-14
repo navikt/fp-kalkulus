@@ -14,7 +14,7 @@ public class BeregningsgrunnlagGrunnlagDtoBuilder {
         this.kladd = kladd;
     }
 
-    static BeregningsgrunnlagGrunnlagDtoBuilder nytt() {
+    public static BeregningsgrunnlagGrunnlagDtoBuilder nytt() {
         return new BeregningsgrunnlagGrunnlagDtoBuilder(new BeregningsgrunnlagGrunnlagDto());
     }
 

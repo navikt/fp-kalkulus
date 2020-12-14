@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -59,14 +60,21 @@ public class BeregningResultatAggregat {
             } else {
                 this.skjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
             }
-            this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()) : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
+            this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? BeregningsgrunnlagGrunnlagDtoBuilder.nytt() : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         }
 
         public static Builder fra(BeregningsgrunnlagInput input) {
             return new Builder(input);
         }
+
         public Builder medRegisterAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
             grunnlagBuilder.medRegisterAktiviteter(beregningAktivitetAggregat);
+            this.tilstand = BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
+            return this;
+        }
+
+        public Builder medOverstyrteAktiviteter(BeregningAktivitetOverstyringerDto beregningAktivitetOverstyringerDto) {
+            grunnlagBuilder.medOverstyring(beregningAktivitetOverstyringerDto);
             this.tilstand = BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
             return this;
         }
@@ -79,11 +87,6 @@ public class BeregningResultatAggregat {
 
         public Builder medAksjonspunkter(List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater) {
             this.kladd.beregningAksjonspunktResultater = beregningAksjonspunktResultater;
-            return this;
-        }
-
-        public Builder medAvslåttVilkårIHelePerioden(Vilkårsavslagsårsak vilkårsavslagsårsak) {
-            this.kladd.beregningVilkårResultat = new BeregningVilkårResultat(false, vilkårsavslagsårsak, Intervall.fraOgMed(skjæringstidspunkt));
             return this;
         }
 

@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef()
@@ -33,8 +32,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
     private static List<BeregningAksjonspunktResultat> utledAksjonspunkterForFelles(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                     BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                     BeregningsgrunnlagInput input,
-                                                                                    boolean erOverstyrt,
-                                                                                    FagsakYtelseType fagsakYtelseType) {
+                                                                                    boolean erOverstyrt) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
@@ -50,7 +48,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
             return emptyList();
         }
 
-        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)) {
+        if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
             return List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.AVKLAR_AKTIVITETER));
         }
         return emptyList();
@@ -61,8 +59,9 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
     }
 
     @Override
-    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningsgrunnlagInput input, boolean erOverstyrt, FagsakYtelseType fagsakYtelseType) {
+    public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
-        return utledAksjonspunkterForFelles(beregningsgrunnlag, beregningAktivitetAggregat, input, erOverstyrt, fagsakYtelseType);
+        BeregningAktivitetAggregatDto registerAktiviteter = beregningsgrunnlagRegelResultat.getRegisterAktiviteter();
+        return utledAksjonspunkterForFelles(beregningsgrunnlag, registerAktiviteter, input, erOverstyrt);
     }
 }

@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.beregning.KopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
-import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapBeregningsgrunnlag;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
 import java.util.List;
@@ -27,7 +26,6 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -93,7 +91,7 @@ public class BeregningStegTjeneste {
      * @return {@link TilstandResponse}
      */
     public TilstandResponse fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
-        BeregningResultatAggregat resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
+        var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -106,7 +104,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -119,7 +117,7 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -137,7 +135,7 @@ public class BeregningStegTjeneste {
         if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
             ForeldrepengerGrunnlag foreldrepengerGrunnlag = input.getYtelsespesifiktGrunnlag();
             if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
-                BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
+                var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
                 repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
                 lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
@@ -154,10 +152,9 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(StegProsesseringInput input) {
-        BeregningResultatAggregat beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
-        BeregningsgrunnlagEntitet beregningsgrunnlagEntitet = mapBeregningsgrunnlag(beregningResultatAggregat.getBeregningsgrunnlag());
-        Long koblingId = input.getKoblingReferanse().getKoblingId();
-        repository.lagre(koblingId, beregningsgrunnlagEntitet, input.getStegTilstand());
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
+        var koblingId = input.getKoblingReferanse().getKoblingId();
+        repository.lagre(koblingId, mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
