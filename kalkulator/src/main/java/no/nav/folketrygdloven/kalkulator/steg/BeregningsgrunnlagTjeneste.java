@@ -48,7 +48,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
  * Fasade tjeneste for å delegere alle kall fra steg
  */
 @ApplicationScoped
-public class BeregningsgrunnlagTjeneste {
+public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     private ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste;
     protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
@@ -90,6 +90,7 @@ public class BeregningsgrunnlagTjeneste {
         this.vilkårTjeneste = vilkårTjeneste;
     }
 
+    @Override
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         var beregningsgrunnlagRegelResultat = foreslåSkjæringstidspunktTjeneste.foreslåSkjæringstidspunkt(input);
         var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
@@ -106,6 +107,7 @@ public class BeregningsgrunnlagTjeneste {
                 .build();
     }
 
+    @Override
     public BeregningResultatAggregat fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         FullføreBeregningsgrunnlag fullføre = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fullføreBeregningsgrunnlag);
         var resultat = fullføre.fullføreBeregningsgrunnlag(input);
@@ -118,6 +120,7 @@ public class BeregningsgrunnlagTjeneste {
         return resultatBuilder.build();
     }
 
+    @Override
     public BeregningResultatAggregat fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
@@ -156,6 +159,7 @@ public class BeregningsgrunnlagTjeneste {
     }
 
     // TODO TSF-1315 rename denne metoden til #fordelBeregningsgrunnlag og slett den eksisterende #fordelBeregningsgrunnlag metoden
+    @Override
     public BeregningResultatAggregat fordelBeregningsgrunnlagUtenPeriodisering(StegProsesseringInput input) {
         var fordelResultat = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input);
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
@@ -176,6 +180,7 @@ public class BeregningsgrunnlagTjeneste {
                 .build();
     }
 
+    @Override
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(StegProsesseringInput input) {
         BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
@@ -211,6 +216,7 @@ public class BeregningsgrunnlagTjeneste {
      * @param input Input til foreslå besteberegning
      * @return resultat av foreslått besteberegning
      */
+    @Override
     public BeregningResultatAggregat foreslåBesteberegning(ForeslåBesteberegningInput input) {
         BeregningsgrunnlagRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
         return BeregningResultatAggregat.Builder.fra(input)
@@ -221,6 +227,7 @@ public class BeregningsgrunnlagTjeneste {
     }
 
 
+    @Override
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)
                 .foreslåBeregningsgrunnlag(input);
@@ -231,6 +238,7 @@ public class BeregningsgrunnlagTjeneste {
                 .build();
     }
 
+    @Override
     public BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var resultat = opprettBeregningsgrunnlagTjeneste.opprettOgLagreBeregningsgrunnlag(input);
 
