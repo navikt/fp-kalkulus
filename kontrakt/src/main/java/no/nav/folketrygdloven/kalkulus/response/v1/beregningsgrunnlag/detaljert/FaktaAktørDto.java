@@ -37,6 +37,9 @@ public class FaktaAktørDto {
     @JsonProperty(value = "mottarEtterlønnSluttpakke")
     @Valid
     private Boolean mottarEtterlønnSluttpakke;
+    
+    protected FaktaAktørDto() {
+    }
 
     public FaktaAktørDto(@Valid Boolean erNyIArbeidslivetSN,
                          @Valid Boolean erNyoppstartetFL,
