@@ -39,6 +39,9 @@ public class FaktaArbeidsforholdDto {
     @Valid
     private Boolean harLønnsendringIBeregningsperioden;
 
+    protected FaktaArbeidsforholdDto() {
+    }
+    
     public FaktaArbeidsforholdDto(@NotNull @Valid Arbeidsgiver arbeidsgiver,
                                   @Valid InternArbeidsforholdRefDto arbeidsforholdRef,
                                   @Valid Boolean erTidsbegrenset,
