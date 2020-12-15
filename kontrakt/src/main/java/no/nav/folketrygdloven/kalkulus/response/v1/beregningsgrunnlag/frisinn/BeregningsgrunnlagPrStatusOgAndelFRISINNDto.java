@@ -88,9 +88,6 @@ public class BeregningsgrunnlagPrStatusOgAndelFRISINNDto {
     @Valid
     private Avslagsårsak avslagsårsak;
 
-    protected BeregningsgrunnlagPrStatusOgAndelFRISINNDto() {
-    }
-    
     public BeregningsgrunnlagPrStatusOgAndelFRISINNDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bruttoPrÅr,
                                                        @NotNull @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal redusertPrÅr,
