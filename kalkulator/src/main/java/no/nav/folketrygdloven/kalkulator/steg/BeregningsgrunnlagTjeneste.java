@@ -30,6 +30,8 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningRegelResultat;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
@@ -217,15 +219,14 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      * @return resultat av foreslått besteberegning
      */
     @Override
-    public BeregningResultatAggregat foreslåBesteberegning(ForeslåBesteberegningInput input) {
-        BeregningsgrunnlagRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
-        return BeregningResultatAggregat.Builder.fra(input)
-                .medAksjonspunkter(resultat.getAksjonspunkter())
-                .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand())
+    public BesteberegningResultat foreslåBesteberegning(ForeslåBesteberegningInput input) {
+        BesteberegningRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
+        return BesteberegningResultat.Builder.fra(input)
+                .medVurderingsgrunnlag(resultat.getBesteberegningVurderingGrunnlag())
+                .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag())
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .build();
     }
-
 
     @Override
     public BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {

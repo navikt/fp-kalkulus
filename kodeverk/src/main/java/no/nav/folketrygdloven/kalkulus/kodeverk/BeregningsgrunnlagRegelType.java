@@ -25,6 +25,7 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
 
     PERIODISERING_NATURALYTELSE("PERIODISERING_NATURALYTELSE", "Periodiser beregningsgrunnlag pga naturalytelse"),
     PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad"),
+    BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning."),
 
     UDEFINERT("-", "Ikke definert"),
     ;
@@ -72,7 +73,7 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

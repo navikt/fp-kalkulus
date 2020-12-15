@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
+package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -18,13 +18,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 
 public class BeregningResultatAggregat {
 
-    private List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater = new ArrayList<>();
+    protected List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater = new ArrayList<>();
 
-    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
+    protected BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
-    private BeregningVilkårResultat beregningVilkårResultat;
+    protected BeregningVilkårResultat beregningVilkårResultat;
 
-    private RegelSporingAggregat regelSporingAggregat;
+    protected RegelSporingAggregat regelSporingAggregat;
 
     public List<BeregningAksjonspunktResultat> getBeregningAksjonspunktResultater() {
         return beregningAksjonspunktResultater;
@@ -52,14 +52,11 @@ public class BeregningResultatAggregat {
         private BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder;
         private BeregningsgrunnlagTilstand tilstand;
         private final BeregningResultatAggregat kladd  = new BeregningResultatAggregat();
-        private LocalDate skjæringstidspunkt;
 
-        private Builder(BeregningsgrunnlagInput input) {
-            if (input.getSkjæringstidspunktForBeregning() != null) {
-                this.skjæringstidspunkt = input.getSkjæringstidspunktForBeregning();
-            } else {
-                this.skjæringstidspunkt = input.getSkjæringstidspunktOpptjening();
-            }
+        public Builder() {
+        }
+
+        protected Builder(BeregningsgrunnlagInput input) {
             this.grunnlagBuilder = input.getBeregningsgrunnlagGrunnlag() == null ? BeregningsgrunnlagGrunnlagDtoBuilder.nytt() : BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         }
 

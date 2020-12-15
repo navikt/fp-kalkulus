@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
+package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,13 +12,18 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.besteberegning.modell.output.AktivitetNøkkel;
 import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegnetAndel;
 import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegningOutput;
+import no.nav.folketrygdloven.besteberegning.modell.output.Inntekt;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapBesteberegningFraRegelTilVL {
 
@@ -151,5 +156,39 @@ public class MapBesteberegningFraRegelTilVL {
         }
     }
 
+    public static BesteberegningVurderingGrunnlag mapSeksBesteMåneder(BesteberegningOutput output) {
+        return new BesteberegningVurderingGrunnlag(output.getBesteMåneder().stream()
+                .map(beregnetMånedsgrunnlag -> new BesteberegningMånedGrunnlag(
+                        beregnetMånedsgrunnlag.getInntekter().stream().map(MapBesteberegningFraRegelTilVL::mapInntekt).collect(Collectors.toList()),
+                        beregnetMånedsgrunnlag.getMåned()
+                )).collect(Collectors.toList()));
 
+    }
+
+    private static no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt mapInntekt(Inntekt inntekt) {
+        if (inntekt.getAktivitetNøkkel().getType().equals(Aktivitet.ARBEIDSTAKERINNTEKT)) {
+            return new no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt(
+                    mapArbeidsgiver(inntekt.getAktivitetNøkkel()),
+                    mapArbeidsforholdRef(inntekt.getAktivitetNøkkel()),
+                    inntekt.getInntektPrMåned());
+        }
+        return new no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt(mapAktivitetStatus(inntekt.getAktivitetNøkkel().getType()), inntekt.getInntektPrMåned());
+    }
+
+    private static OpptjeningAktivitetType mapAktivitetStatus(Aktivitet type) {
+        return MapOpptjeningAktivitetFraRegelTilVL.map(type);
+    }
+
+    private static InternArbeidsforholdRefDto mapArbeidsforholdRef(AktivitetNøkkel aktivitetNøkkel) {
+        return aktivitetNøkkel.getArbeidsforholdId() != null ? InternArbeidsforholdRefDto.ref(aktivitetNøkkel.getArbeidsforholdId()) : InternArbeidsforholdRefDto.nullRef();
+    }
+
+    private static Arbeidsgiver mapArbeidsgiver(AktivitetNøkkel aktivitetNøkkel) {
+        if (aktivitetNøkkel.getOrgnr() != null) {
+            return Arbeidsgiver.virksomhet(aktivitetNøkkel.getOrgnr());
+        } else if (aktivitetNøkkel.getAktørId() != null) {
+            return Arbeidsgiver.person(new AktørId(aktivitetNøkkel.getAktørId()));
+        }
+        throw new IllegalArgumentException("Kan ikke mappe arbeidsgiver uten orgnr eller aktørid");
+    }
 }
