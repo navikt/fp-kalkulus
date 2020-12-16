@@ -220,6 +220,11 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BesteberegningResultat foreslåBesteberegning(ForeslåBesteberegningInput input) {
+        if (input.isEnabled("automatisk-besteberegning", false)) {
+            return BesteberegningResultat.Builder.fra(input)
+                    .medBeregningsgrunnlag(new BeregningsgrunnlagDto(input.getBeregningsgrunnlag()))
+                    .build();
+        }
         BesteberegningRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
         return BesteberegningResultat.Builder.fra(input)
                 .medVurderingsgrunnlag(resultat.getBesteberegningVurderingGrunnlag())

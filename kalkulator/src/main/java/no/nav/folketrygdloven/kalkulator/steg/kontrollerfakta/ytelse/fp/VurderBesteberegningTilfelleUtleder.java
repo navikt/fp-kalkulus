@@ -21,12 +21,14 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 @FaktaOmBeregningTilfelleRef("VURDER_BESTEBEREGNING")
 public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
 
+    public static final String TOGGLE_BESTEBEREGNING = "automatisk-besteberegning";
+
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         boolean harKunArbeidEllerDagpenger = input.getOpptjeningAktiviteterForBeregning().stream()
                 .allMatch(a -> a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.ARBEID) || a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.DAGPENGER));
-        if (harKunArbeidEllerDagpenger) {
+        if (input.isEnabled(TOGGLE_BESTEBEREGNING, false) && harKunArbeidEllerDagpenger) {
             return Optional.empty();
         }
         boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))

@@ -48,6 +48,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 public class MapFraKalkulator {
 
     private static final String TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG = "fpsak.splitteSammenligningATFL";
+    private static final String TOGGLE_AUTOMATISK_BESTEBEREGNING = "automatisk-besteberegning";
 
 
     public static Arbeidsgiver mapArbeidsgiver(Aktør arbeidsgiver) {
@@ -91,6 +92,7 @@ public class MapFraKalkulator {
 
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
+        utenGrunnbeløp.leggTilToggle(TOGGLE_AUTOMATISK_BESTEBEREGNING, true); // Legger til toggle for å kunne teste verdikjede
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
