@@ -9,7 +9,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 public class Inntekt {
 
     private Arbeidsgiver arbeidsgiver;
-    private InternArbeidsforholdRefDto arbeidsforholdRefDto;
+    private InternArbeidsforholdRefDto arbeidsforholdRef;
     private OpptjeningAktivitetType opptjeningAktivitetType;
     private final BigDecimal inntekt;
 
@@ -18,14 +18,18 @@ public class Inntekt {
         this.inntekt = inntekt;
     }
 
-    public Inntekt(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto, BigDecimal inntekt) {
+    public Inntekt(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef, BigDecimal inntekt) {
         this.arbeidsgiver = arbeidsgiver;
-        this.arbeidsforholdRefDto = arbeidsforholdRefDto;
+        this.arbeidsforholdRef = arbeidsforholdRef;
         this.inntekt = inntekt;
     }
 
     public Arbeidsgiver getArbeidsgiver() {
         return arbeidsgiver;
+    }
+
+    public InternArbeidsforholdRefDto getArbeidsforholdRef() {
+        return arbeidsforholdRef;
     }
 
     public OpptjeningAktivitetType getOpptjeningAktivitetType() {
