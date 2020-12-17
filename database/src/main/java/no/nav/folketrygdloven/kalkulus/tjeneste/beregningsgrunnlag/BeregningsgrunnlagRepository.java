@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -188,6 +189,33 @@ public class BeregningsgrunnlagRepository {
                 BeregningsgrunnlagGrunnlagEntitet.class);
         query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
         query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
+        query.setMaxResults(1);
+        return query.getResultStream().findFirst();
+    }
+
+
+    /**
+     * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
+     *
+     * @param koblingId                  en koblingId
+     * @param opprettetTidspunktMin minste opprettet tidspunkt
+     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
+     * som ble opprettet sist
+     */
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetEtter(Long koblingId,
+                                                                                                                LocalDateTime opprettetTidspunktMin,
+                                                                                                                BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        TypedQuery<BeregningsgrunnlagGrunnlagEntitet> query = entityManager.createQuery(
+                "from BeregningsgrunnlagGrunnlagEntitet " +
+                        "where koblingId=:koblingId " +
+                        "and beregningsgrunnlagTilstand = :beregningsgrunnlagTilstand " +
+                        "and opprettetTidspunkt > :opprettetTidspunktMin " +
+                        "order by opprettetTidspunkt desc, id desc", //$NON-NLS-1$
+                BeregningsgrunnlagGrunnlagEntitet.class);
+        query.setParameter(KOBLING_ID, koblingId); // $NON-NLS-1$
+        query.setParameter(BEREGNINGSGRUNNLAG_TILSTAND, beregningsgrunnlagTilstand); // $NON-NLS-1$
+        query.setParameter("opprettetTidspunktMin", opprettetTidspunktMin); // $NON-NLS-1$
         query.setMaxResults(1);
         return query.getResultStream().findFirst();
     }

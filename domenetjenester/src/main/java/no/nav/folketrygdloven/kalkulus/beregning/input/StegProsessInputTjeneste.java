@@ -5,6 +5,7 @@ import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTi
 import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.MonthDay;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +62,8 @@ public class StegProsessInputTjeneste {
     public FastsettBeregningsaktiviteterInput lagStartInput(KoblingEntitet koblingEntitet, KalkulatorInputDto input) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, input, Optional.empty());
         // Vurder om vi skal begynne å ta inn koblingId for originalbehandling ved revurdering
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(koblingEntitet.getId(), Optional.empty(), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(koblingEntitet.getId(), Optional.empty(), BeregningsgrunnlagTilstand.OPPRETTET);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = finnForrigeAvklarteGrunnlagForTilstand(koblingEntitet, grunnlagFraSteg, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.OPPRETTET)
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
@@ -122,9 +123,8 @@ public class StegProsessInputTjeneste {
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, StegType stegType) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(grunnlagEntitet));
         // Vurder om vi skal begynne å ta inn koblingId for originalbehandling ved revurdering
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = mapTilStegUtTilstand(stegType)
-                .flatMap(tilstand -> beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), tilstand));
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), mapTilStegTilstand(stegType));
+        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(kobling, grunnlagFraSteg, stegType);
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
@@ -181,6 +181,23 @@ public class StegProsessInputTjeneste {
                 koblingEntitet.getAktørId(),
                 koblingEntitet.getYtelseTyperKalkulusStøtter(),
                 skjæringstidspunktOpptjening);
+    }
+
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(KoblingEntitet kobling,
+                                                                                             Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,
+                                                                                             StegType stegType) {
+        Optional<BeregningsgrunnlagTilstand> tilstandUt = mapTilStegUtTilstand(stegType);
+        if (tilstandUt.isEmpty()) {
+            return Optional.empty();
+        }
+        return finnForrigeAvklarteGrunnlagForTilstand(kobling, forrigeGrunnlagFraSteg, tilstandUt.get());
+    }
+
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklarteGrunnlagForTilstand(KoblingEntitet kobling, Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        if (forrigeGrunnlagFraSteg.isEmpty()) {
+            return Optional.empty();
+        }
+        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetEtter(kobling.getId(), forrigeGrunnlagFraSteg.get().getOpprettetTidspunkt(), beregningsgrunnlagTilstand);
     }
 
 }
