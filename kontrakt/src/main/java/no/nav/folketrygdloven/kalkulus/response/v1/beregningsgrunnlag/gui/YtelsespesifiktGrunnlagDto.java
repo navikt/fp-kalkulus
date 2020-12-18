@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp.ForeldrepengerGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisinn.FrisinnGrunnlagDto;
 
 @JsonAutoDetect(getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -15,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.frisin
         @JsonSubTypes.Type(value= FrisinnGrunnlagDto.class, name= FrisinnGrunnlagDto.YTELSETYPE),
         @JsonSubTypes.Type(value= OmsorgspengeGrunnlagDto.class, name= OmsorgspengeGrunnlagDto.YTELSETYPE),
         @JsonSubTypes.Type(value= SvangerskapspengerGrunnlagDto.class, name= SvangerskapspengerGrunnlagDto.YTELSETYPE),
-
+        @JsonSubTypes.Type(value= ForeldrepengerGrunnlagDto.class, name= ForeldrepengerGrunnlagDto.YTELSETYPE),
 })
 public abstract class YtelsespesifiktGrunnlagDto {
 

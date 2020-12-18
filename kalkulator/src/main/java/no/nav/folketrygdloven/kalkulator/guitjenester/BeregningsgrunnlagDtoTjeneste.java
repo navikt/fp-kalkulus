@@ -42,10 +42,6 @@ public class BeregningsgrunnlagDtoTjeneste {
     private FaktaOmBeregningDtoTjeneste faktaOmBeregningDtoTjeneste;
     private Instance<YtelsespesifiktGrunnlagTjeneste> ytelsetjenester;
 
-
-    private final Map<FagsakYtelseType, BiConsumer<BeregningsgrunnlagGUIInput, BeregningsgrunnlagDto>> ytelsespesifikkMapper = Map
-        .of(FagsakYtelseType.FORELDREPENGER, this::mapDtoForeldrepenger);
-
     BeregningsgrunnlagDtoTjeneste() {
         // Hibernate
     }
@@ -79,7 +75,6 @@ public class BeregningsgrunnlagDtoTjeneste {
             mapBeregningsgrunnlagPerioder(input, dto);
             mapBeløp(input, dto);
             mapAktivitetGradering(input, dto);
-            mapDtoYtelsespesifikk(input, dto);
             mapDekningsgrad(input, dto);
             mapYtelsesspesifiktGrunnlag(input, dto);
         }
@@ -145,18 +140,15 @@ public class BeregningsgrunnlagDtoTjeneste {
         var skjæringstidspunktForBeregning = input.getSkjæringstidspunktForBeregning();
         dto.setSkjaeringstidspunktBeregning(skjæringstidspunktForBeregning);
         dto.setSkjæringstidspunkt(skjæringstidspunktForBeregning);
-        dto.setLedetekstBrutto("Brutto beregningsgrunnlag");
     }
 
     private void mapBeløp(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         Beløp grunnbeløp = Optional.ofNullable(beregningsgrunnlag.getGrunnbeløp()).orElse(Beløp.ZERO);
-        long seksG = Math.round(grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6)).doubleValue());
         double halvG = grunnbeløp.getVerdi().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).doubleValue();
         dto.setHalvG(halvG);
         dto.setGrunnbeløp(grunnbeløp.getVerdi());
         dto.setHjemmel(beregningsgrunnlag.getHjemmel());
-        dto.setLedetekstAvkortet("Avkortet beregningsgrunnlag (6G=" + seksG + ")");
 
         // Det skal vises et tall som "oppsumering" av årsinntekt i GUI, innebærer nok logikk til at det bør utledes backend
         FinnÅrsinntektvisningstall.finn(beregningsgrunnlag,
@@ -172,16 +164,6 @@ public class BeregningsgrunnlagDtoTjeneste {
         if (!andelerMedGraderingUtenBG.isEmpty()) {
             dto.setAndelerMedGraderingUtenBG(beregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, andelerMedGraderingUtenBG));
         }
-    }
-
-    private void mapDtoYtelsespesifikk(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        this.ytelsespesifikkMapper.getOrDefault(input.getFagsakYtelseType(), (in, dt) -> {
-        }).accept(input, dto);
-    }
-
-    private void mapDtoForeldrepenger(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad();
-        dto.setLedetekstRedusert("Redusert beregningsgrunnlag (" + dekningsgrad + "%)");
     }
 
     private Optional<SammenligningsgrunnlagDto> lagSammenligningsgrunnlagDto(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {

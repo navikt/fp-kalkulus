@@ -4,7 +4,6 @@ import java.time.YearMonth;
 import java.util.List;
 
 
-
 public class BesteberegningMånedGrunnlag {
 
     private final List<Inntekt> inntekter;

@@ -11,8 +11,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilfelleDtoTjenesteProviderMock;
@@ -139,9 +139,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         // Assert
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getLedetekstAvkortet()).isNotNull();
-        assertThat(grunnlagDto.getLedetekstBrutto()).isNotNull();
-        assertThat(grunnlagDto.getLedetekstRedusert()).isNotNull();
         assertThat(grunnlagDto.getHalvG().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
     }
 
@@ -332,9 +329,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private void assertBeregningsgrunnlag(BigDecimal beregnet, BeregningsgrunnlagDto grunnlagDto) {
         assertThat(grunnlagDto).isNotNull();
         assertThat(grunnlagDto.getSkjaeringstidspunktBeregning()).as("skjæringstidspunkt").isEqualTo(SKJÆRINGSTIDSPUNKT);
-        assertThat(grunnlagDto.getLedetekstAvkortet()).isNotNull();
-        assertThat(grunnlagDto.getLedetekstBrutto()).isNotNull();
-        assertThat(grunnlagDto.getLedetekstRedusert()).isNotNull();
         assertThat(grunnlagDto.getHalvG().intValue()).isEqualTo(GRUNNBELØP.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP).intValue());
         var periodeDto = grunnlagDto.getBeregningsgrunnlagPeriode().get(0);
         assertThat(periodeDto.getBeregningsgrunnlagPeriodeFom()).as("BeregningsgrunnlagPeriodeFom").isEqualTo(ANDEL_FOM);

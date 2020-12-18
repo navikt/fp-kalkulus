@@ -36,7 +36,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
 
 
-public class InntektForAndelTjenesteTest {
+public class BesteberegningInntektDtoForAndelTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
     private static final BigDecimal INNTEKT1 = BigDecimal.valueOf(25000);

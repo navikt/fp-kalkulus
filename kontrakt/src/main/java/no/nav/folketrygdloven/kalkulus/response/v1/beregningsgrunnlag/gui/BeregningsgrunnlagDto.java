@@ -60,22 +60,6 @@ public class BeregningsgrunnlagDto {
     @Size
     private List<SammenligningsgrunnlagDto> sammenligningsgrunnlagPrStatus;
 
-    @JsonProperty(value = "ledetekstBrutto")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String ledetekstBrutto;
-
-    @JsonProperty(value = "ledetekstAvkortet")
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String ledetekstAvkortet;
-
-    @JsonProperty(value = "ledetekstRedusert")
-    @NotNull
-    @Valid
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String ledetekstRedusert;
-
     @JsonProperty(value = "halvG")
     @Valid
     @Digits(integer = 8, fraction = 2)
@@ -141,6 +125,28 @@ public class BeregningsgrunnlagDto {
         // trengs for deserialisering av JSON
     }
 
+    public BeregningsgrunnlagDto(BeregningsgrunnlagDto beregningsgrunnlagDto) {
+        this.aktivitetStatus = beregningsgrunnlagDto.aktivitetStatus;
+        this.beregningsgrunnlagPeriode = beregningsgrunnlagDto.beregningsgrunnlagPeriode;
+        this.andelerMedGraderingUtenBG = beregningsgrunnlagDto.andelerMedGraderingUtenBG;
+        this.faktaOmBeregning = beregningsgrunnlagDto.faktaOmBeregning;
+        this.dekningsgrad = beregningsgrunnlagDto.dekningsgrad;
+        this.erOverstyrtInntekt = beregningsgrunnlagDto.erOverstyrtInntekt;
+        this.faktaOmFordeling = beregningsgrunnlagDto.faktaOmFordeling;
+        this.grunnbeløp = beregningsgrunnlagDto.grunnbeløp;
+        this.halvG = beregningsgrunnlagDto.halvG;
+        this.hjemmel = beregningsgrunnlagDto.hjemmel;
+        this.refusjonTilVurdering = beregningsgrunnlagDto.refusjonTilVurdering;
+        this.sammenligningsgrunnlag = beregningsgrunnlagDto.sammenligningsgrunnlag;
+        this.sammenligningsgrunnlagPrStatus = beregningsgrunnlagDto.sammenligningsgrunnlagPrStatus;
+        this.skjaeringstidspunktBeregning = beregningsgrunnlagDto.skjaeringstidspunktBeregning;
+        this.skjæringstidspunkt = beregningsgrunnlagDto.skjæringstidspunkt;
+        this.vilkårsperiodeFom = beregningsgrunnlagDto.vilkårsperiodeFom;
+        this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
+        this.årsinntektVisningstall = beregningsgrunnlagDto.årsinntektVisningstall;
+    }
+
+
     public LocalDate getSkjaeringstidspunktBeregning() {
         return skjaeringstidspunktBeregning;
     }
@@ -151,18 +157,6 @@ public class BeregningsgrunnlagDto {
 
     public List<BeregningsgrunnlagPeriodeDto> getBeregningsgrunnlagPeriode() {
         return beregningsgrunnlagPeriode;
-    }
-
-    public String getLedetekstBrutto() {
-        return ledetekstBrutto;
-    }
-
-    public String getLedetekstAvkortet() {
-        return ledetekstAvkortet;
-    }
-
-    public String getLedetekstRedusert() {
-        return ledetekstRedusert;
     }
 
     public SammenligningsgrunnlagDto getSammenligningsgrunnlag() {
@@ -205,17 +199,6 @@ public class BeregningsgrunnlagDto {
         this.sammenligningsgrunnlag = sammenligningsgrunnlag;
     }
 
-    public void setLedetekstBrutto(String ledetekstBrutto) {
-        this.ledetekstBrutto = ledetekstBrutto;
-    }
-
-    public void setLedetekstAvkortet(String ledetekstAvkortet) {
-        this.ledetekstAvkortet = ledetekstAvkortet;
-    }
-
-    public void setLedetekstRedusert(String ledetekstRedusert) {
-        this.ledetekstRedusert = ledetekstRedusert;
-    }
 
     public void setHalvG(Double halvG) {
         this.halvG = halvG;

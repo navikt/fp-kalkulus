@@ -1,12 +1,15 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 
 public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     private int dekningsgrad = 100;
 
     private boolean kvalifisererTilBesteberegning = false;
+
+    private BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag;
 
     private Integer grunnbeløpMilitærHarKravPå;
 
@@ -17,6 +20,12 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     public ForeldrepengerGrunnlag(int dekningsgrad, boolean kvalifisererTilBesteberegning) {
         this.dekningsgrad = dekningsgrad;
         this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
+    }
+
+    public ForeldrepengerGrunnlag(int dekningsgrad, BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
+        this.dekningsgrad = dekningsgrad;
+        this.kvalifisererTilBesteberegning = besteberegningVurderingGrunnlag != null;
+        this.besteberegningVurderingGrunnlag = besteberegningVurderingGrunnlag;
     }
 
     @Override
@@ -37,4 +46,9 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     public boolean isKvalifisererTilBesteberegning() {
         return kvalifisererTilBesteberegning;
     }
+
+    public BesteberegningVurderingGrunnlag getBesteberegningVurderingGrunnlag() {
+        return besteberegningVurderingGrunnlag;
+    }
+
 }
