@@ -194,10 +194,10 @@ public class OperereKalkulusRestTjeneste {
 
         // Mapper informasjon om kobling
         var koblingReferanser = spesifikasjon.getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse)
-            .map(KoblingReferanse::new).collect(Collectors.toList());
+                .map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser);
         Map<Long, HåndterBeregningDto> koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
-            .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
+                .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
 
         Resultat<HåndterBeregningsgrunnlagInput> håndterInputResultat;
         var tilstand = finnTilstandFraDto(koblingTilDto);
@@ -221,7 +221,7 @@ public class OperereKalkulusRestTjeneste {
 
         // Lager responsobjekt
         List<OppdateringPrRequest> oppdateringer = håndterResultat.entrySet().stream()
-            .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res))).collect(Collectors.toList());
+                .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res))).collect(Collectors.toList());
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
@@ -261,7 +261,7 @@ public class OperereKalkulusRestTjeneste {
         var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
 
         List<KoblingEntitet> koblingUtenSaksnummer = koblinger.stream()
-            .filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
+                .filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
         if (!koblingUtenSaksnummer.isEmpty()) {
             throw new IllegalArgumentException("Koblinger tilhører ikke saksnummer [" + spesifikasjon.getSaksnummer() + "]: " + koblingUtenSaksnummer);
         }
@@ -271,7 +271,9 @@ public class OperereKalkulusRestTjeneste {
 
     private BeregningsgrunnlagTilstand finnTilstandFraDto(Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
         List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getKode)
-            .map(MapHåndteringskodeTilTilstand::map).collect(Collectors.toList());
+                .map(MapHåndteringskodeTilTilstand::map)
+                .distinct()
+                .collect(Collectors.toList());
         if (tilstander.size() > 1) {
             throw new IllegalStateException("Kan ikke løse aksjonspunkt for flere tilstander samtidig");
         }
@@ -280,12 +282,12 @@ public class OperereKalkulusRestTjeneste {
 
     private Long finnKoblingId(List<KoblingEntitet> koblinger, HåndterBeregningRequest s) {
         return koblinger.stream().filter(kobling -> kobling.getKoblingReferanse().getReferanse().equals(s.getEksternReferanse()))
-            .findFirst().map(KoblingEntitet::getId).orElse(null);
+                .findFirst().map(KoblingEntitet::getId).orElse(null);
     }
 
     private UUID finnKoblingUUIDForKoblingId(List<KoblingEntitet> koblinger, Map.Entry<Long, OppdateringRespons> res) {
         return koblinger.stream().filter(k -> k.getId().equals(res.getKey())).findFirst().map(KoblingEntitet::getKoblingReferanse)
-            .map(KoblingReferanse::getReferanse).orElse(null);
+                .map(KoblingReferanse::getReferanse).orElse(null);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
