@@ -124,6 +124,9 @@ public class HentKalkulusRestTjeneste {
     @Path("/beregningsgrunnlagListe")
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response hentBeregningsgrunnlagDtoListe(@NotNull @Valid HentBeregningsgrunnlagDtoListeForGUIRequestAbacDto spesifikasjon) {
+        if (spesifikasjon.getSaksnummer() != null) {
+            MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+        }
         if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
             var ytelseTyper = spesifikasjon.getRequestPrReferanse().stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
             var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
@@ -258,7 +261,7 @@ public class HentKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
-    
+
     @Deprecated(forRemoval=true, since="1.0")
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -272,7 +275,7 @@ public class HentKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
-    
+
     /**
      * Json bean med Abac.
      */
