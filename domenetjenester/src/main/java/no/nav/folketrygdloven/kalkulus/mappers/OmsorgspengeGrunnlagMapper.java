@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusj
 import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraDto;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,9 @@ class OmsorgspengeGrunnlagMapper {
             var arbeidsforholdMedUtbetalingsgrad = omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                     .map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
                     .collect(Collectors.toList());
-            var datoer = mapFraDto(input.getRefusjonskravDatoer(), input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(), input.getSkjæringstidspunkt());
+            var datoer = mapFraDto(input.getRefusjonskravDatoer(),
+                    input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
+                    input.getSkjæringstidspunkt());
             return arbeidsforholdMedUtbetalingsgrad.stream()
                     .filter(a -> a.getArbeidsgiver() != null)
                     .filter(a -> mapUgyldigPeriodeHvisFinnes(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, datoer, a).isPresent())
