@@ -37,7 +37,7 @@ public class SkalKunneEndreAktivitetTest {
                 .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
                 .build(periode);
 
-        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(dagpengeAndel);
+        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(dagpengeAndel, false);
 
         assertThat(skalKunneEndreAktivitet).isFalse();
     }
@@ -48,7 +48,7 @@ public class SkalKunneEndreAktivitetTest {
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)
                 .build(periode);
 
-        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans);
+        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans, false);
 
         assertThat(skalKunneEndreAktivitet).isFalse();
     }
@@ -60,7 +60,7 @@ public class SkalKunneEndreAktivitetTest {
                 .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
                 .build(periode);
 
-        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans);
+        Boolean skalKunneEndreAktivitet = SkalKunneEndreAktivitet.skalKunneEndreAktivitet(frilans, false);
 
         assertThat(skalKunneEndreAktivitet).isTrue();
     }

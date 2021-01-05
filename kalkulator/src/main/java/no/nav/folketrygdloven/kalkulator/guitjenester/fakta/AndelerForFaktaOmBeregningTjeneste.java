@@ -58,7 +58,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         dto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
         dto.setVisningsnavn(lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
-        dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel));
+        dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel, input.getBeregningsgrunnlag().isOverstyrt()));
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);

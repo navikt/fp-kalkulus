@@ -1,7 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,12 +13,16 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.MatchBeregnin
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.OverstyrBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.RedigerbarAndelFaktaOmBeregningDto;
 import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 @ApplicationScoped
 public class BeregningFaktaOgOverstyringHåndterer {
@@ -54,7 +61,15 @@ public class BeregningFaktaOgOverstyringHåndterer {
         }
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = grunnlagBuilder.getBeregningsgrunnlagBuilder().medOverstyring(true);
         overstyrInntekterPrPeriode(beregningsgrunnlagBuilder.getBeregningsgrunnlag(), forrigeBg, dto.getOverstyrteAndeler());
+        finnManglendeAktivitetstatuser(beregningsgrunnlagBuilder.getBeregningsgrunnlag(), dto.getOverstyrteAndeler())
+                .forEach(as -> BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(as).build(beregningsgrunnlagBuilder.getBeregningsgrunnlag()));
         return grunnlagBuilder.build(input.getHåndteringTilstand());
+    }
+
+    private List<AktivitetStatus> finnManglendeAktivitetstatuser(BeregningsgrunnlagDto bg, List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
+        return overstyrteAndeler.stream().flatMap(a -> a.getAktivitetStatus().stream())
+                .filter(as -> bg.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).noneMatch(as::equals))
+                .collect(Collectors.toList());
     }
 
     private void overstyrInntekterPrPeriode(BeregningsgrunnlagDto nyttGrunnlag,
