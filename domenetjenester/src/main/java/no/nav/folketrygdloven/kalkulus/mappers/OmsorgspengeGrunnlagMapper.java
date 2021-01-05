@@ -58,6 +58,7 @@ class OmsorgspengeGrunnlagMapper {
             var datoer = mapFraDto(input.getRefusjonskravDatoer(),
                     input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
                     input.getSkjæringstidspunkt());
+            
             return arbeidsforholdMedUtbetalingsgrad.stream()
                     .filter(a -> a.getArbeidsgiver() != null)
                     .filter(a -> mapUgyldigPeriodeHvisFinnes(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, datoer, a).isPresent())
