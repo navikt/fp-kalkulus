@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,7 +58,9 @@ public class MapTilGUIInputFraKalkulator {
                 ref,
                 iayGrunnlagMappet,
                 aktivitetGradering != null ? MapFraKalkulator.mapFraDto(aktivitetGradering) : null,
-                MapFraKalkulator.mapFraDto(refusjonskravDatoer, input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(), input.getSkjæringstidspunkt()),
+                MapFraKalkulator.mapFraDto(refusjonskravDatoer,
+                        input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
+                        input.getSkjæringstidspunkt()),
                 MapFraKalkulator.mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
     }
 
