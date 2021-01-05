@@ -1,9 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class RefusjonskravDatoDto {
 
@@ -13,9 +15,28 @@ public class RefusjonskravDatoDto {
 
     private LocalDate førsteInnsendingAvRefusjonskrav;
 
+    private List<Intervall> perioderMedRefusjonskrav;
+
     private boolean harRefusjonFraStart = false;
 
     RefusjonskravDatoDto() {
+    }
+
+    /**
+     * @param arbeidsgiver arbeidsgiver med refusjon
+     * @param førsteDagMedRefusjonskrav første dag med refusjon som oppgitt i inntektsmelding
+     * @param førsteInnsendingAvRefusjonskrav første innsendelse av refusjonskrav
+     * @param harRefusjonFraStart Angir om første dag med refusjon er lik første dag med ytelse
+     */
+    public RefusjonskravDatoDto(Arbeidsgiver arbeidsgiver, LocalDate førsteDagMedRefusjonskrav,
+                                LocalDate førsteInnsendingAvRefusjonskrav,
+                                boolean harRefusjonFraStart,
+                                List<Intervall> perioderMedRefusjonskrav) {
+        this.arbeidsgiver = arbeidsgiver;
+        this.førsteDagMedRefusjonskrav = førsteDagMedRefusjonskrav;
+        this.førsteInnsendingAvRefusjonskrav = førsteInnsendingAvRefusjonskrav;
+        this.harRefusjonFraStart = harRefusjonFraStart;
+        this.perioderMedRefusjonskrav = perioderMedRefusjonskrav;
     }
 
     /**

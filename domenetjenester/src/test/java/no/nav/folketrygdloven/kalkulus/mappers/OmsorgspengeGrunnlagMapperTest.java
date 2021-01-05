@@ -22,9 +22,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -41,7 +46,12 @@ class OmsorgspengeGrunnlagMapperTest {
     void skal_lage_omsorgspengegrunnlag_med_utbetalingsgrad_og_ta_hensyn_til_refusjonskravfrist() {
         // Arrange
         OmsorgspengerGrunnlag omsorgspengegrunnlag = lagOmsorgspengegrunnlag();
-        KalkulatorInputDto input = new KalkulatorInputDto(new InntektArbeidYtelseGrunnlagDto(), new OpptjeningAktiviteterDto(List.of()), STP);
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = new InntektArbeidYtelseGrunnlagDto();
+        iayGrunnlag.medInntektsmeldingerDto(new InntektsmeldingerDto(List.of(new InntektsmeldingDto(new Organisasjon(ARBEIDSGIVER_ORGNR),
+                new BeløpDto(BigDecimal.valueOf(100)), List.of(), List.of(),
+                null, null, null, new BeløpDto(BigDecimal.valueOf(100)),
+                null, null))));
+        KalkulatorInputDto input = new KalkulatorInputDto(iayGrunnlag, new OpptjeningAktiviteterDto(List.of()), STP);
         leggTilRefdato(input);
         BeregningsgrunnlagGrunnlagEntitet bg = lagBG();
 
@@ -56,10 +66,10 @@ class OmsorgspengeGrunnlagMapperTest {
         var perioder = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad();
 
         assertThat(perioder.get(0).getPeriode().getFomDato()).isEqualTo(STP);
-        assertThat(perioder.get(0).getPeriode().getTomDato()).isEqualTo(STP.plusMonths(9).minusDays(1));
+        assertThat(perioder.get(0).getPeriode().getTomDato()).isEqualTo(STP.plusMonths(3).minusDays(1));
         assertThat(perioder.get(0).getUtbetalingsgrad()).isEqualByComparingTo(BigDecimal.ZERO);
 
-        assertThat(perioder.get(1).getPeriode().getFomDato()).isEqualTo(STP.plusMonths(9));
+        assertThat(perioder.get(1).getPeriode().getFomDato()).isEqualTo(STP.plusMonths(3));
         assertThat(perioder.get(1).getPeriode().getTomDato()).isEqualTo(STP.plusMonths(12));
         assertThat(perioder.get(1).getUtbetalingsgrad()).isEqualByComparingTo(BigDecimal.valueOf(100));
 

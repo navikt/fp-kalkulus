@@ -126,7 +126,8 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
     @Test
     void skal_returnere_false_for_refusjonskrav_som_har_kommet_inn_for_sent_men_har_utvidet_frist() {
         // Arrange
-        RefusjonskravDatoDto refusjonskravdato = new RefusjonskravDatoDto(VIRKSOMHET, LocalDate.of(2019, 10, 1), LocalDate.of(2020, 3, 16), true);
+        RefusjonskravDatoDto refusjonskravdato = new RefusjonskravDatoDto(VIRKSOMHET, LocalDate.of(2020, 3, 16),
+                LocalDate.of(2020, 3, 16), true);
         LocalDate stp = LocalDate.of(2019, 10, 1);
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagAktivitetPåStp(stp);
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(stp).build());

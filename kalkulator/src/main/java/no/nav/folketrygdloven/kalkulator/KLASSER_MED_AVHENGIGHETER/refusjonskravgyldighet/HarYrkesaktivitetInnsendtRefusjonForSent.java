@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusjonskravgyldighet;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+
 import java.time.LocalDate;
 
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -67,7 +69,7 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
      * @return Første lovlige dato med refusjon på grunnlag av opplysninger tilgjengelig i register
      */
     public static LocalDate finnFørsteGyldigeDatoMedRefusjon(RefusjonskravDatoDto refusjonsdato, FagsakYtelseType fagsakYtelseType) {
-        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(fagsakYtelseType).getFristMånederEtterRefusjon(refusjonsdato.getFørsteInnsendingAvRefusjonskrav()) + 1;
+        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(fagsakYtelseType).getFristMånederEtterRefusjon(refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(TIDENES_ENDE)) + 1;
         return refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
     }
 

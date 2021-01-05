@@ -54,7 +54,7 @@ class OmsorgspengeGrunnlagMapper {
             var arbeidsforholdMedUtbetalingsgrad = omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet().stream()
                     .map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
                     .collect(Collectors.toList());
-            var datoer = mapFraDto(input.getRefusjonskravDatoer());
+            var datoer = mapFraDto(input.getRefusjonskravDatoer(), input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(), input.getSkjæringstidspunkt());
             return arbeidsforholdMedUtbetalingsgrad.stream()
                     .filter(a -> a.getArbeidsgiver() != null)
                     .filter(a -> mapUgyldigPeriodeHvisFinnes(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, datoer, a).isPresent())

@@ -19,13 +19,13 @@ public class OMPKonfig extends Konfigverdier {
 
     /**
      *
-     * @param datoForInnsendtRefKrav
+     * @param førsteDatoMedRefusjon Første dato med refusjon
      * @return antall måneder + 1 som er fristen for innsending av rekrav.
      *         For OMP er det utvidet frist i en viss periode som følge av korona
      */
     @Override
-    public int getFristMånederEtterRefusjon(LocalDate datoForInnsendtRefKrav) {
-        if (erPeriodeMedUtvidetFrist(datoForInnsendtRefKrav)) {
+    public int getFristMånederEtterRefusjon(LocalDate førsteDatoMedRefusjon) {
+        if (erPeriodeMedUtvidetFrist(førsteDatoMedRefusjon)) {
             return UTVIDET_FRIST;
         }
         return fristMånederEtterRefusjon;

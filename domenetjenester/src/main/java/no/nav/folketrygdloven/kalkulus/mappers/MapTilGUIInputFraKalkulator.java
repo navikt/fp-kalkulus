@@ -57,7 +57,7 @@ public class MapTilGUIInputFraKalkulator {
                 ref,
                 iayGrunnlagMappet,
                 aktivitetGradering != null ? MapFraKalkulator.mapFraDto(aktivitetGradering) : null,
-                MapFraKalkulator.mapFraDto(refusjonskravDatoer),
+                MapFraKalkulator.mapFraDto(refusjonskravDatoer, input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(), input.getSkjæringstidspunkt()),
                 MapFraKalkulator.mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
     }
 
