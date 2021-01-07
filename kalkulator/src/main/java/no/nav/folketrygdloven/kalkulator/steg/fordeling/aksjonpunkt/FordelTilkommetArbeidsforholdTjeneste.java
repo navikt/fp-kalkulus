@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -26,14 +27,14 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
                                                LocalDate skjæringstidspunkt) {
         var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
         return beregningAktiviteter.stream()
-                .filter(beregningAktivitet -> erIkkeAktivDagenFørSkjæringstidspunktet(skjæringstidspunkt, beregningAktivitet))
+                .filter(beregningAktivitet -> erIkkeAktivPåSisteAktivitetsdato(skjæringstidspunkt, beregningAktivitet))
                 .noneMatch(
                         beregningAktivitet -> arbeidsforholdRef.gjelderFor(beregningAktivitet.getArbeidsforholdRef()) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
     }
 
-    private static boolean erIkkeAktivDagenFørSkjæringstidspunktet(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
-        return !beregningAktivitet.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)) &&
-                !beregningAktivitet.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1));
+    private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
+        return !beregningAktivitet.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt)) &&
+                !beregningAktivitet.getPeriode().getFomDato().isAfter(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt));
     }
 
     private static boolean matcherArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningAktivitetDto beregningAktivitet) {
