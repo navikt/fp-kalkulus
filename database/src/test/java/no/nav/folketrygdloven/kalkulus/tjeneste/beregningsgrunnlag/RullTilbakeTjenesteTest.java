@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +16,12 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
@@ -28,6 +36,7 @@ import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
 public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
     private BeregningsgrunnlagRepository repository;
+    private RegelsporingRepository regelsporingRepository;
     private KoblingRepository koblingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private Long koblingId;
@@ -35,8 +44,9 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     @BeforeEach
     public void setUp() {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
+        regelsporingRepository = new RegelsporingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
-        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository);
+        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository);
     }
 
     @Test
@@ -51,14 +61,18 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
+        regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        var aktiveRegelsporinger = regelsporingRepository.hentRegelSporingPeriodeMedGittType(koblingId, List.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ));
 
         // Assert
         assertThat(aktivtGrunnlag).isPresent();
         assertThat(aktivtGrunnlag.get().getBeregningsgrunnlagTilstand()).isEqualTo(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
+
     }
 
     @Test
@@ -73,14 +87,18 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
+        regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        var aktiveRegelsporinger = regelsporingRepository.hentRegelSporingPeriodeMedGittType(koblingId, List.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ));
 
         // Assert
         assertThat(aktivtGrunnlag).isPresent();
         assertThat(aktivtGrunnlag.get().getBeregningsgrunnlagTilstand()).isEqualTo(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
+
     }
 
 
@@ -117,15 +135,20 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        regelsporingRepository.lagre(koblingId, RegelSporingGrunnlagEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()), BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT);
+        var aktiveRegelsporingerFørDeaktivering = regelsporingRepository.hentRegelSporingGrunnlagMedGittType(koblingId, List.of(BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT));
+        assertThat(aktiveRegelsporingerFørDeaktivering.isEmpty()).isFalse();
         rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         Optional<KalkulatorInputEntitet> kalkulatorInputEntitet = repository.hentHvisEksitererKalkulatorInput(koblingId);
+        var aktiveRegelsporinger = regelsporingRepository.hentRegelSporingGrunnlagMedGittType(koblingId, List.of(BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT));
 
         // Assert
         assertThat(aktivtGrunnlag).isEmpty();
         assertThat(kalkulatorInputEntitet).isEmpty();
+        assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
     }
 
     private String getTestJSON() {

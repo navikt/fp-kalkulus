@@ -69,7 +69,7 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     @JsonIgnore
     private String navn;
     private String kode;
-    
+
     @JsonIgnore
     private boolean obligatoriskTilstand;
 
@@ -128,7 +128,6 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     }
 
 
-
     public boolean erFør(BeregningsgrunnlagTilstand that) {
         int thisIndex = tilstandRekkefølge.indexOf(this);
         int thatIndex = tilstandRekkefølge.indexOf(that);
@@ -140,7 +139,7 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

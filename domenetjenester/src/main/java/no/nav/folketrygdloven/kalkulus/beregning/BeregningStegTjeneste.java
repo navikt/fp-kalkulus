@@ -30,6 +30,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrun
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -137,7 +139,7 @@ public class BeregningStegTjeneste {
             if (foreldrepengerGrunnlag.isKvalifisererTilBesteberegning()) {
                 var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBesteberegning(input);
                 repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-                lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
+                lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
                 return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
             }
         }
@@ -183,7 +185,7 @@ public class BeregningStegTjeneste {
     public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
         repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-        lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat());
+        lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -191,7 +193,7 @@ public class BeregningStegTjeneste {
                                BeregningResultatAggregat resultat) {
         // Lagring av grunnlag fra steg
         repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-        lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat());
+        lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
 
         // Kopiering av forrige grunnlag i steg ut
         boolean kanKopiereAvklartIStegUt = kanKopiereForrigeGrunnlagAvklartIStegUt(
@@ -221,17 +223,18 @@ public class BeregningStegTjeneste {
         }
     }
 
-    private void lagreRegelsporing(Long koblingId, Optional<RegelSporingAggregat> regelsporinger) {
+    private void lagreRegelsporing(Long koblingId, Optional<RegelSporingAggregat> regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
         if (regelsporinger.isPresent()) {
-            lagreRegelSporingPerioder(koblingId, regelsporinger.get());
-            lagreRegelSporingGrunnlag(koblingId, regelsporinger.get());
+            lagreRegelSporingPerioder(koblingId, regelsporinger.get(), stegTilstand);
+            lagreRegelSporingGrunnlag(koblingId, regelsporinger.get(), stegTilstand);
         }
     }
 
-    private void lagreRegelSporingGrunnlag(Long koblingId, RegelSporingAggregat regelsporinger) {
+    private void lagreRegelSporingGrunnlag(Long koblingId, RegelSporingAggregat regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
         var regelsporingGrunnlag = regelsporinger.getRegelsporingerGrunnlag();
         if (regelsporingGrunnlag != null) {
             regelsporingGrunnlag.forEach(sporing -> {
+                validerRiktigTilstandForGrunnlagSporing(stegTilstand, sporing.getRegelType());
                 RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
                     .medRegelEvaluering(sporing.getRegelEvaluering())
                     .medRegelInput(sporing.getRegelInput());
@@ -240,14 +243,28 @@ public class BeregningStegTjeneste {
         }
     }
 
-    private void lagreRegelSporingPerioder(Long koblingId, RegelSporingAggregat regelsporinger) {
+    private void lagreRegelSporingPerioder(Long koblingId, RegelSporingAggregat regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
         if (regelsporinger.getRegelsporingPerioder() != null) {
             Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.getRegelsporingPerioder()
                 .stream()
                 .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
+            validerRiktigTilstandForPeriodeSporing(stegTilstand, sporingPerioderPrType);
             Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
             regelsporingRepository.lagre(koblingId, builderMap);
+        }
+    }
+
+    private void validerRiktigTilstandForPeriodeSporing(BeregningsgrunnlagTilstand stegTilstand, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType) {
+        Optional<BeregningsgrunnlagPeriodeRegelType> typeMedFeilTilstand = sporingPerioderPrType.keySet().stream().filter(type -> !type.getLagretTilstand().equals(stegTilstand)).findFirst();
+        if (typeMedFeilTilstand.isPresent()) {
+            throw new IllegalStateException("Kan ikke lagre regelsporing for " + typeMedFeilTilstand.get().getKode() + " i tilstand " + stegTilstand.getKode());
+        }
+    }
+
+    private void validerRiktigTilstandForGrunnlagSporing(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagRegelType regelType) {
+        if (!regelType.getLagretTilstand().equals(stegTilstand)) {
+            throw new IllegalStateException("Kan ikke lagre regelsporing for " + regelType.getKode() + " i tilstand " + stegTilstand.getKode());
         }
     }
 

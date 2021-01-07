@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.*;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,17 +19,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagRegelType implements Kodeverdi {
 
-    SKJÆRINGSTIDSPUNKT("SKJÆRINGSTIDSPUNKT", "Fastsette skjæringstidspunkt"),
-    BRUKERS_STATUS("BRUKERS_STATUS", "Fastsette brukers status/aktivitetstatus"),
+    SKJÆRINGSTIDSPUNKT("SKJÆRINGSTIDSPUNKT", "Fastsette skjæringstidspunkt", OPPDATERT_MED_ANDELER),
+    BRUKERS_STATUS("BRUKERS_STATUS", "Fastsette brukers status/aktivitetstatus", OPPDATERT_MED_ANDELER),
     // Skal ikke lagres til men eksisterer fordi det finnes entries med denne i databasen (før ble det kun lagret 1 sporing for periodisering)
     @Deprecated
-    PERIODISERING("PERIODISERING", "Periodiser beregningsgrunnlag"),
+    PERIODISERING("PERIODISERING", "Periodiser beregningsgrunnlag", OPPDATERT_MED_REFUSJON_OG_GRADERING),
 
-    PERIODISERING_NATURALYTELSE("PERIODISERING_NATURALYTELSE", "Periodiser beregningsgrunnlag pga naturalytelse"),
-    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad"),
-    BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning."),
+    PERIODISERING_NATURALYTELSE("PERIODISERING_NATURALYTELSE", "Periodiser beregningsgrunnlag pga naturalytelse", OPPDATERT_MED_ANDELER),
+    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad", OPPDATERT_MED_REFUSJON_OG_GRADERING),
+    BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning.", BESTEBEREGNET),
 
-    UDEFINERT("-", "Ikke definert"),
+    UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),
     ;
     public static final String KODEVERK = "BG_REGEL_TYPE";
 
@@ -46,9 +48,12 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
 
     private String kode;
 
-    BeregningsgrunnlagRegelType(String kode, String navn) {
+    private BeregningsgrunnlagTilstand lagretTilstand;
+
+    BeregningsgrunnlagRegelType(String kode, String navn, BeregningsgrunnlagTilstand lagretTilstand) {
         this.kode = kode;
         this.navn = navn;
+        this.lagretTilstand = lagretTilstand;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -79,4 +84,9 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
     public String getKodeverk() {
         return KODEVERK;
     }
+
+    public BeregningsgrunnlagTilstand getLagretTilstand() {
+        return lagretTilstand;
+    }
+
 }
