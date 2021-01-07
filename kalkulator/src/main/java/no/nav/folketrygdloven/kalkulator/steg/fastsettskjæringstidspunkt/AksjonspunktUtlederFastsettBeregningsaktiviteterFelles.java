@@ -60,8 +60,11 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFelles implements A
 
     @Override
     public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
-        BeregningAktivitetAggregatDto registerAktiviteter = beregningsgrunnlagRegelResultat.getRegisterAktiviteter();
-        return utledAksjonspunkterForFelles(beregningsgrunnlag, registerAktiviteter, input, erOverstyrt);
+        var beregningsgrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlagHvisFinnes();
+        if (beregningsgrunnlag.isPresent()) {
+            BeregningAktivitetAggregatDto registerAktiviteter = beregningsgrunnlagRegelResultat.getRegisterAktiviteter();
+            return utledAksjonspunkterForFelles(beregningsgrunnlag.get(), registerAktiviteter, input, erOverstyrt);
+        }
+        return emptyList();
     }
 }

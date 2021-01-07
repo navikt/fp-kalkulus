@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.output;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -39,6 +40,10 @@ public class BeregningsgrunnlagRegelResultat {
 
     public BeregningsgrunnlagDto getBeregningsgrunnlag() {
         return beregningsgrunnlag;
+    }
+
+    public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlagHvisFinnes() {
+        return Optional.of(beregningsgrunnlag);
     }
 
     public BeregningAktivitetAggregatDto getRegisterAktiviteter() {

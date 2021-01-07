@@ -24,7 +24,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterFRISINN implements 
     public List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagRegelResultat regelResultat,
                                                                    BeregningsgrunnlagInput input,
                                                                    boolean erOverstyrt) {
-        if (regelResultat.getBeregningsgrunnlag() == null) {
+        if (regelResultat.getBeregningsgrunnlagHvisFinnes().isEmpty()) {
             if (regelResultat.getAksjonspunkter().stream().anyMatch(bar -> bar.getBeregningAksjonspunktDefinisjon().equals(BeregningAksjonspunkt.AUTO_VENT_FRISINN))) {
                 return List.of(BeregningAksjonspunktResultat.opprettMedFristFor(
                         BeregningAksjonspunkt.AUTO_VENT_FRISINN,
