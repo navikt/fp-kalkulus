@@ -229,6 +229,28 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
         assertPeriode(dagerEtterSTP(15), UENDELIG, AG2, REF2, 100000, resultat, 2, PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
     }
 
+    @Test
+    public void skal_splitte_periode_når_det_finnes_andeler_med_og_uten_referanse() {
+        lagBGPeriode(STP, null, lagBGAndel(AG1, InternArbeidsforholdRefDto.nullRef(), 500000), lagBGAndel(AG1, REF1, 100000));
+        lagSaksbehandlerDto(AG1, InternArbeidsforholdRefDto.nullRef(), dagerEtterSTP(15));
+        lagSaksbehandlerDto(AG1, REF1, dagerEtterSTP(30));
+
+        BeregningsgrunnlagDto resultat = oppdater();
+
+        assertThat(resultat).isEqualTo(grunnlagBuilder.build());
+        assertThat(resultat.getBeregningsgrunnlagPerioder()).hasSize(3);
+
+        assertPeriode(STP, dagerEtterSTP(14), AG1, InternArbeidsforholdRefDto.nullRef(), 0, resultat, 2);
+        assertPeriode(STP, dagerEtterSTP(14), AG1, REF1, 0, resultat, 2);
+
+        assertPeriode(dagerEtterSTP(15), dagerEtterSTP(29), AG1, InternArbeidsforholdRefDto.nullRef(), 500000, resultat, 2, PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
+        assertPeriode(dagerEtterSTP(15), dagerEtterSTP(29), AG1, REF1, 0, resultat, 2, PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
+
+        assertPeriode(dagerEtterSTP(30), UENDELIG, AG1, InternArbeidsforholdRefDto.nullRef(), 500000, resultat, 2, PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
+        assertPeriode(dagerEtterSTP(30), UENDELIG, AG1, REF1, 100000, resultat, 2, PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV);
+    }
+
+
 
     private BeregningsgrunnlagDto oppdater() {
         return PeriodiserOgFastsettRefusjonTjeneste.periodiserOgFastsett(grunnlagBuilder.build(), saksbehandlerAvklaringer);
@@ -263,7 +285,7 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
         lagSaksbehandlerDto(arbeidsgiver, arbeidsforholdReferanse, refusjonFom, null);
     }
 
-    private void lagSaksbehandlerDto(Arbeidsgiver arbeidsgiver  , InternArbeidsforholdRefDto arbeidsforholdReferanse, LocalDate refusjonFom, Integer delvisRefusjonBeløp) {
+    private void lagSaksbehandlerDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdReferanse, LocalDate refusjonFom, Integer delvisRefusjonBeløp) {
         saksbehandlerAvklaringer.add(new VurderRefusjonAndelBeregningsgrunnlagDto(arbeidsgiver.getOrgnr(),
                 arbeidsgiver.getAktørId() == null ? null : arbeidsgiver.getAktørId().getId(),
                 arbeidsforholdReferanse.getReferanse(),

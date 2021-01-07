@@ -26,7 +26,6 @@ public class RefusjonAndel {
         this.refusjon = refusjon;
     }
 
-
     public BigDecimal getBrutto() {
         return brutto;
     }
@@ -41,12 +40,6 @@ public class RefusjonAndel {
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {
         return arbeidsforholdRef == null ? InternArbeidsforholdRefDto.nullRef() : arbeidsforholdRef;
-    }
-
-    public boolean matcherEksakt(RefusjonAndel other) {
-        return Objects.equals(other.getAktivitetStatus(), this.aktivitetStatus)
-                && Objects.equals(other.getArbeidsgiver(), this.arbeidsgiver)
-                && other.getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
     }
 
     public AktivitetStatus getAktivitetStatus() {
@@ -82,6 +75,5 @@ public class RefusjonAndel {
     public int hashCode() {
         return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef);
     }
-
 
 }

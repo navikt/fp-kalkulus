@@ -52,7 +52,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         BeregningsgrunnlagDto periodisertBeregningsgrunnlag = periodiserBeregningsgrunnlag(beregningsgrunnlagDto, splittAndeler);
 
         // Fjern refusjon for gitt arbeidsforhold i perioder før fastsatt dato
-        BeregningsgrunnlagDto periodisertBeregningsgrunnlagMedFastsattRefusjon = fjernRefusjonIRelevantePerioder(periodisertBeregningsgrunnlag, splittAndeler);
+        BeregningsgrunnlagDto periodisertBeregningsgrunnlagMedFastsattRefusjon = oppdaterRefusjonIRelevantePerioder(periodisertBeregningsgrunnlag, splittAndeler);
 
         // Valider resultatet
         validerGrunnlag(beregningsgrunnlagDto, periodisertBeregningsgrunnlagMedFastsattRefusjon);
@@ -60,7 +60,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         return periodisertBeregningsgrunnlagMedFastsattRefusjon;
     }
 
-    private static BeregningsgrunnlagDto fjernRefusjonIRelevantePerioder(BeregningsgrunnlagDto periodisertBeregningsgrunnlag, List<RefusjonSplittAndel> splittAndeler) {
+    private static BeregningsgrunnlagDto oppdaterRefusjonIRelevantePerioder(BeregningsgrunnlagDto periodisertBeregningsgrunnlag, List<RefusjonSplittAndel> splittAndeler) {
         BeregningsgrunnlagDto nyttGrunnlag = BeregningsgrunnlagDto.builder(periodisertBeregningsgrunnlag).build();
         nyttGrunnlag.getBeregningsgrunnlagPerioder()
                 .forEach(eksisterendePeriode -> eksisterendePeriode.getBeregningsgrunnlagPrStatusOgAndelList()

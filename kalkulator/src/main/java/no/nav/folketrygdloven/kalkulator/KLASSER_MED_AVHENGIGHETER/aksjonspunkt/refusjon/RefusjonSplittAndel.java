@@ -39,7 +39,8 @@ public class RefusjonSplittAndel {
     public boolean gjelderFor(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         Arbeidsgiver andelAG = andel.getArbeidsgiver().orElse(null);
         InternArbeidsforholdRefDto andelRef = andel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef());
-        return Objects.equals(andelAG, arbeidsgiver) && getInternArbeidsforholdRefDto().gjelderFor(andelRef);
+        // Av og til fastsettes andeler med og uten referanse, må derfor sjekke eksakt match på referanse
+        return Objects.equals(andelAG, arbeidsgiver) && Objects.equals(getInternArbeidsforholdRefDto().getReferanse(), andelRef.getReferanse());
     }
 
     public BigDecimal getDelvisRefusjonBeløpPrÅr() {

@@ -48,9 +48,9 @@ public class InntektsmeldingForAndel {
         return ya.gjelderFor(im);
     }
 
-    private static List<YrkesaktivitetDto> finnYrkesaktiviteterForAndelSomStarterFørOgSlutterPåEllerEtterStp(BGAndelArbeidsforholdDto arbeidsforhold, Collection<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunkt) {
-
-
+    private static List<YrkesaktivitetDto> finnYrkesaktiviteterForAndelSomStarterFørOgSlutterPåEllerEtterStp(BGAndelArbeidsforholdDto arbeidsforhold,
+                                                                                                             Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                                             LocalDate skjæringstidspunkt) {
         return yrkesaktiviteter.stream()
                 .filter(ya -> ya.getArbeidsgiver() != null &&
                         arbeidsforhold.getArbeidsgiver().getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator()) &&
