@@ -9,9 +9,9 @@ import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 
 public final class UtbetalingsgradArbeidsforholdDto {
 
-    private Arbeidsgiver arbeidsgiver;
-    private InternArbeidsforholdRefDto internArbeidsforholdRef;
-    private UttakArbeidType uttakArbeidType;
+    private final Arbeidsgiver arbeidsgiver;
+    private final InternArbeidsforholdRefDto internArbeidsforholdRef;
+    private final UttakArbeidType uttakArbeidType;
 
     public UtbetalingsgradArbeidsforholdDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto internArbeidsforholdRef, UttakArbeidType uttakArbeidType) {
         this.arbeidsgiver = arbeidsgiver;

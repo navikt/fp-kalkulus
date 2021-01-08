@@ -28,7 +28,7 @@ class UtbetalingsgradMapper {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad());
     }
 
-    private static UtbetalingsgradArbeidsforholdDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
+    public static UtbetalingsgradArbeidsforholdDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
         return new UtbetalingsgradArbeidsforholdDto(MapFraKalkulator.mapArbeidsgiver(utbetalingsgradArbeidsforholdDto.getArbeidsgiver()), mapReferanse(utbetalingsgradArbeidsforholdDto), mapUttakArbeidType(utbetalingsgradArbeidsforholdDto.getUttakArbeidType()));
     }
 

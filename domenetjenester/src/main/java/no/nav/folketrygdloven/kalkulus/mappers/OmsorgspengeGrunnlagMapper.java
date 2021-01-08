@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag;
@@ -48,7 +47,7 @@ class OmsorgspengeGrunnlagMapper {
         return kalkulatorGrunnlag;
     }
 
-    private static Map<Arbeidsgiver, Intervall> finnPeriodeUtenGyldigRefusjonPrArbeidsgiver(KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
+    private static Map<no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto, Intervall> finnPeriodeUtenGyldigRefusjonPrArbeidsgiver(KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
         if (beregningsgrunnlagGrunnlagEntitet.isPresent() && beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlag().isPresent()) {
             var gjeldendeAktiviteter = BehandlingslagerTilKalkulusMapper.mapAktiviteter(beregningsgrunnlagGrunnlagEntitet
                     .get().getGjeldendeAktiviteter());
@@ -58,12 +57,11 @@ class OmsorgspengeGrunnlagMapper {
             var datoer = mapFraDto(input.getRefusjonskravDatoer(),
                     input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
                     input.getSkjæringstidspunkt());
-            
+
             return arbeidsforholdMedUtbetalingsgrad.stream()
                     .filter(a -> a.getArbeidsgiver() != null)
                     .filter(a -> mapUgyldigPeriodeHvisFinnes(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, datoer, a).isPresent())
-                    .collect(Collectors.toMap(
-                            a -> MapFraKalkulator.mapArbeidsgiver(a.getArbeidsgiver()),
+                    .collect(Collectors.toMap(UtbetalingsgradMapper::mapArbeidsforhold,
                             a -> mapUgyldigPeriodeHvisFinnes(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, datoer, a).get()));
         }
         return new HashMap<>();
@@ -74,7 +72,7 @@ class OmsorgspengeGrunnlagMapper {
         return dtoForArbeidsgiver.flatMap(dto -> finnIntervallMedUgyligRefusjon(beregningsgrunnlagGrunnlagEntitet, gjeldendeAktiviteter, a, dto));
     }
 
-    private static Optional<? extends Intervall> finnIntervallMedUgyligRefusjon(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+    private static Optional<Intervall> finnIntervallMedUgyligRefusjon(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
                                                                                 BeregningAktivitetAggregatDto gjeldendeAktiviteter,
                                                                                 UtbetalingsgradArbeidsforholdDto arbeidsforhold, RefusjonskravDatoDto dto) {
         LocalDate førsteDatoMedGyldigRefusjon = finnFørsteGyldigeDatoMedRefusjon(dto, FagsakYtelseType.OMSORGSPENGER);

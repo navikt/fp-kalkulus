@@ -13,14 +13,13 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
     private int dekningsgrad = 100;
     private Integer grunnbeløpMilitærHarKravPå;
-    private Map<Arbeidsgiver, Intervall> periodeUtenGyldigRefusjonPrArbeidsgiver = new HashMap<>();
+    private Map<UtbetalingsgradArbeidsforholdDto, Intervall> periodeUtenGyldigRefusjonPrArbeidsgiver = new HashMap<>();
 
     public OmsorgspengerGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         super(tilretteleggingMedUtbelingsgrad);
@@ -47,7 +46,7 @@ public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements Yt
         return utbetalingsgradPrAktivitet.stream()
                 .map(utbGradAktivitet -> {
                     var arbeidsforhold = utbGradAktivitet.getUtbetalingsgradArbeidsforhold();
-                    if (arbeidsforhold.getArbeidsgiver().map(periodeUtenGyldigRefusjonPrArbeidsgiver::containsKey).orElse(false)) {
+                    if (periodeUtenGyldigRefusjonPrArbeidsgiver.containsKey(arbeidsforhold)) {
                         return mapTilAktivitetMedGyldigePerioder(utbGradAktivitet, arbeidsforhold);
                     }
                     return utbGradAktivitet;
@@ -55,7 +54,7 @@ public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements Yt
     }
 
     private UtbetalingsgradPrAktivitetDto mapTilAktivitetMedGyldigePerioder(UtbetalingsgradPrAktivitetDto utbGradAktivitet, UtbetalingsgradArbeidsforholdDto arbeidsforhold) {
-        var ugyldigPeriode = arbeidsforhold.getArbeidsgiver().map(periodeUtenGyldigRefusjonPrArbeidsgiver::get).orElseThrow();
+        var ugyldigPeriode = periodeUtenGyldigRefusjonPrArbeidsgiver.get(arbeidsforhold);
         var perioder = utbGradAktivitet.getPeriodeMedUtbetalingsgrad();
         List<PeriodeMedUtbetalingsgradDto> gyldigePerioder = utbGradAktivitet.getPeriodeMedUtbetalingsgrad()
                 .stream()
@@ -83,7 +82,7 @@ public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements Yt
         return Optional.empty();
     }
 
-    public void setPeriodeUtenGyldigRefusjonPrArbeidsgiver(Map<Arbeidsgiver, Intervall> periodeUtenGyldigRefusjonPrArbeidsgiver) {
+    public void setPeriodeUtenGyldigRefusjonPrArbeidsgiver(Map<UtbetalingsgradArbeidsforholdDto, Intervall> periodeUtenGyldigRefusjonPrArbeidsgiver) {
         this.periodeUtenGyldigRefusjonPrArbeidsgiver = periodeUtenGyldigRefusjonPrArbeidsgiver;
     }
 }
