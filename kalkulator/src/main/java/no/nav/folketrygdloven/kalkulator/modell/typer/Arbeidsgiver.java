@@ -117,9 +117,20 @@ public class Arbeidsgiver implements Serializable, IndexKey {
     @Override
     public String toString() {
         return "Arbeidsgiver{" +
-            "virksomhet=" + getOrgnr() +
+            "virksomhet=" + getOrgnrString() +
             ", arbeidsgiverAktørId='" + getAktørId() + '\'' +
             '}';
+    }
+
+    private String getOrgnrString() {
+        if (arbeidsgiverOrgnr == null) {
+            return null;
+        }
+        int length = arbeidsgiverOrgnr.length();
+        if (length <= 4) {
+            return "*".repeat(length);
+        }
+        return "*".repeat(length - 4) + arbeidsgiverOrgnr.substring(length - 4);
     }
 
     public static Arbeidsgiver fra(Arbeidsgiver arbeidsgiver) {
