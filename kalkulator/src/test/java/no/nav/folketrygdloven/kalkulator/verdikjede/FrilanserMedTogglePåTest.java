@@ -24,9 +24,9 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.Ytelsesspesifi
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
-import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -164,12 +164,15 @@ public class FrilanserMedTogglePåTest {
                 sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 659.25, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
 
@@ -268,12 +271,15 @@ public class FrilanserMedTogglePåTest {
                 sammenligningFrilanser, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 783.33, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -377,12 +383,16 @@ public class FrilanserMedTogglePåTest {
                 sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
                 SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 770.4, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
         var fordeltGrunnlag = nyttGrunnlag(grunnlag, fordeltBeregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
@@ -447,12 +457,15 @@ public class FrilanserMedTogglePåTest {
             sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -513,12 +526,15 @@ public class FrilanserMedTogglePåTest {
             sammenligning, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), 0, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input,
-            resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -539,7 +555,7 @@ public class FrilanserMedTogglePåTest {
     private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input,
                                                            BeregningsgrunnlagDto beregningsgrunnlag,
                                                            BeregningsgrunnlagGrunnlagDto grunnlag) {
-        return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().fordelBeregningsgrunnlag(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag).getBeregningsgrunnlag();
+        return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().omfordelBeregningsgrunnlag(input).getBeregningsgrunnlag();
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIayATogFL(BigDecimal inntektSammenligningsgrunnlag,
@@ -610,8 +626,14 @@ public class FrilanserMedTogglePåTest {
                 .medGrunnbeløpsatser(GrunnbeløpMock.GRUNNBELØPSATSER);
     }
 
-    private FordelBeregningsgrunnlagInput lagFordelBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
-        return new FordelBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+    private BeregningsgrunnlagDto vurderRefusjonBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto grunnlag,
+                                                                   BeregningsgrunnlagRegelResultat resultat) {
+        return beregningTjenesteWrapper.getVurderRefusjonBeregningsgrunnlagtjeneste().vurderRefusjon(lagVurderRefusjonBeregningsgrunnlagInput(input.medBeregningsgrunnlagGrunnlag(grunnlag)),
+                resultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
+    }
+
+    private VurderRefusjonBeregningsgrunnlagInput lagVurderRefusjonBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new VurderRefusjonBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.VURDERT_REFUSJON, input))
                 .medUregulertGrunnbeløp(BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING)));
     }
 

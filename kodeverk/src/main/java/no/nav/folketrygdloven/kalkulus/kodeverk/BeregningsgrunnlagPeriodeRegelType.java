@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FORESLÅTT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum BeregningsgrunnlagPeriodeRegelType implements Kodeverdi {
     FORESLÅ("FORESLÅ", "Foreslå beregningsgrunnlag", FORESLÅTT),
-    VILKÅR_VURDERING("VILKÅR_VURDERING", "Vurder beregningsvilkår", OPPDATERT_MED_REFUSJON_OG_GRADERING),
+    VILKÅR_VURDERING("VILKÅR_VURDERING", "Vurder beregningsvilkår", VURDERT_REFUSJON),
     FORDEL("FORDEL", "Fordel beregningsgrunnlag", OPPDATERT_MED_REFUSJON_OG_GRADERING),
     FASTSETT("FASTSETT", "Fastsett/fullføre beregningsgrunnlag", FASTSATT),
     @Deprecated

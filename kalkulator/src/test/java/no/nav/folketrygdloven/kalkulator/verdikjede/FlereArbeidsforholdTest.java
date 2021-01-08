@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInpu
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -163,11 +164,15 @@ public class FlereArbeidsforholdTest {
             bg, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -246,11 +251,15 @@ public class FlereArbeidsforholdTest {
             .medOverstyrtPrÅr(BigDecimal.valueOf(overstyrt))
             .build(periode);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -330,11 +339,15 @@ public class FlereArbeidsforholdTest {
             .medOverstyrtPrÅr(BigDecimal.valueOf(overstyrt))
             .build(periode);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -413,11 +426,15 @@ public class FlereArbeidsforholdTest {
             .medOverstyrtPrÅr(BigDecimal.valueOf(overstyrt))
             .build(periode);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
                 nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -497,11 +514,15 @@ public class FlereArbeidsforholdTest {
             totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -581,11 +602,15 @@ public class FlereArbeidsforholdTest {
             totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -677,11 +702,15 @@ public class FlereArbeidsforholdTest {
             totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -782,11 +811,15 @@ public class FlereArbeidsforholdTest {
             totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
             SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1), BigDecimal.ZERO);
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        // Act 3.5 Fordel beregningsgrunnlag
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -872,11 +905,16 @@ public class FlereArbeidsforholdTest {
             .medOverstyrtPrÅr(BigDecimal.valueOf(overstyrt))
             .build(periode1));
 
-        // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, beregningsgrunnlagEtter1, BeregningsgrunnlagTilstand.FORESLÅTT));
+        // Act 3: Vurder vilkår og fastsett refusjon
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, beregningsgrunnlagEtter1, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        beregningsgrunnlagEtter1 = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+
+        // Act 3.5 fordel beregningsgrunnlag
+        beregningsgrunnlagEtter1 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(beregningsgrunnlagEtter1).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -892,10 +930,14 @@ public class FlereArbeidsforholdTest {
             .build(periodeEtter2));
 
         // Act 3: fordel beregningsgrunnlag
-        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input),
-            nyttGrunnlag(grunnlag, beregningsgrunnlagEtter2, BeregningsgrunnlagTilstand.FORESLÅTT));
+        resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
+                nyttGrunnlag(grunnlag, beregningsgrunnlagEtter2, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        beregningsgrunnlagEtter2 = fordelBeregningsgrunnlag(input, grunnlag, resultat);
+
+        BeregningsgrunnlagDto vurderRefusjonGrunnlag2 = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
+        input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag2).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
+
+        beregningsgrunnlagEtter2 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(beregningsgrunnlagEtter2).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -976,7 +1018,13 @@ public class FlereArbeidsforholdTest {
 
     private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto grunnlag,
                                                            BeregningsgrunnlagRegelResultat resultat) {
-        return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().fordelBeregningsgrunnlag(input.medBeregningsgrunnlagGrunnlag(grunnlag),
+        return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste()
+                .omfordelBeregningsgrunnlag(input).getBeregningsgrunnlag();
+    }
+
+    private BeregningsgrunnlagDto vurderRefusjonBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto grunnlag,
+                                                           BeregningsgrunnlagRegelResultat resultat) {
+        return beregningTjenesteWrapper.getVurderRefusjonBeregningsgrunnlagtjeneste().vurderRefusjon(lagVurderRefusjonBeregningsgrunnlagInput(input.medBeregningsgrunnlagGrunnlag(grunnlag)),
                 resultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
     }
 
@@ -1005,6 +1053,11 @@ public class FlereArbeidsforholdTest {
 
     private FordelBeregningsgrunnlagInput lagFordelBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
         return new FordelBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING, input))
+                .medUregulertGrunnbeløp(GRUNNBELØP);
+    }
+
+    private VurderRefusjonBeregningsgrunnlagInput lagVurderRefusjonBeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
+        return new VurderRefusjonBeregningsgrunnlagInput(lagStegInput(BeregningsgrunnlagTilstand.VURDERT_REFUSJON, input))
                 .medUregulertGrunnbeløp(GRUNNBELØP);
     }
 

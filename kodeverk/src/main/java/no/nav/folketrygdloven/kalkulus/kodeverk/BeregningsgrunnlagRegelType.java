@@ -1,6 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.*;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.BESTEBEREGNET;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -26,7 +29,7 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
     PERIODISERING("PERIODISERING", "Periodiser beregningsgrunnlag", OPPDATERT_MED_REFUSJON_OG_GRADERING),
 
     PERIODISERING_NATURALYTELSE("PERIODISERING_NATURALYTELSE", "Periodiser beregningsgrunnlag pga naturalytelse", OPPDATERT_MED_ANDELER),
-    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad", OPPDATERT_MED_REFUSJON_OG_GRADERING),
+    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad", VURDERT_REFUSJON),
     BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning.", BESTEBEREGNET),
 
     UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),

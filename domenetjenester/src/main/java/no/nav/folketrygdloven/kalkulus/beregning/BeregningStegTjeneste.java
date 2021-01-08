@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 import static no.nav.folketrygdloven.kalkulus.beregning.KopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
@@ -76,7 +78,7 @@ public class BeregningStegTjeneste {
         } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
         } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
-            return vurderRefusjonForBeregningsgrunnlaget(input);
+            return vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
         } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
             return fordelBeregningsgrunnlag((FordelBeregningsgrunnlagInput) input);
         } else if (stegType.equals(StegType.FAST_BERGRUNN)) {
@@ -153,11 +155,14 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAksjonspunktResultat}
      */
-    private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(StegProsesseringInput input) {
+    private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
-        var koblingId = input.getKoblingReferanse().getKoblingId();
-        repository.lagre(koblingId, mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        lagreOgKopier(input, beregningResultatAggregat);
+        if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
+            throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
+        }
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
+
     }
 
     /**
@@ -168,12 +173,20 @@ public class BeregningStegTjeneste {
      * @return {@link BeregningAksjonspunktResultat}
      */
     private TilstandResponse fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
-        lagreOgKopier(input, beregningResultatAggregat);
-        if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
-            throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
+        // K9sak vurderer vilkår i fordelBeregningsgrunnlag men skal over til å vurdere et steg tidligere, i vurderRefusjonForBeregningsgrunnlaget.
+        // Må derfor sjekke om det er vurdert før, og isåfall ikke gjøre det igjen
+        if (erVilkårVudert(input.getKoblingReferanse())) {
+            var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlagUtenPeriodisering(input);
+            lagreOgKopier(input, beregningResultatAggregat);
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
+        } else {
+            var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
+            lagreOgKopier(input, beregningResultatAggregat);
+            if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
+                throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
+            }
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
         }
-        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
     /**
@@ -187,6 +200,11 @@ public class BeregningStegTjeneste {
         repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
+    }
+
+    private boolean erVilkårVudert(KoblingReferanse koblingReferanse) {
+        List<RegelSporingPeriodeEntitet> vilkårRegelSporing = regelsporingRepository.hentRegelSporingPeriodeMedGittType(koblingReferanse.getKoblingId(), Collections.singletonList(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING));
+        return !vilkårRegelSporing.isEmpty();
     }
 
     private void lagreOgKopier(StegProsesseringInput input,
@@ -256,15 +274,34 @@ public class BeregningStegTjeneste {
     }
 
     private void validerRiktigTilstandForPeriodeSporing(BeregningsgrunnlagTilstand stegTilstand, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType) {
-        Optional<BeregningsgrunnlagPeriodeRegelType> typeMedFeilTilstand = sporingPerioderPrType.keySet().stream().filter(type -> !type.getLagretTilstand().equals(stegTilstand)).findFirst();
+        Optional<BeregningsgrunnlagPeriodeRegelType> typeMedFeilTilstand = sporingPerioderPrType.keySet().stream().filter(type -> !erPeriodeRegelLagretIGyldigTilstand(stegTilstand, type)).findFirst();
+
         if (typeMedFeilTilstand.isPresent()) {
             throw new IllegalStateException("Kan ikke lagre regelsporing for " + typeMedFeilTilstand.get().getKode() + " i tilstand " + stegTilstand.getKode());
         }
     }
 
     private void validerRiktigTilstandForGrunnlagSporing(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagRegelType regelType) {
-        if (!regelType.getLagretTilstand().equals(stegTilstand)) {
+        if (!erGrunnlagRegelLagretIGyldigTilstand(stegTilstand, regelType)) {
             throw new IllegalStateException("Kan ikke lagre regelsporing for " + regelType.getKode() + " i tilstand " + stegTilstand.getKode());
+        }
+    }
+
+    private boolean erPeriodeRegelLagretIGyldigTilstand(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagPeriodeRegelType regelType) {
+        // Midlertidig workaround mens k9-sak tar ibruk nytt steg, etter det kan innhold i if-fjernes
+        if (regelType.equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING)) {
+            return stegTilstand.equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON) || stegTilstand.equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        } else {
+            return regelType.getLagretTilstand().equals(stegTilstand);
+        }
+    }
+
+    private boolean erGrunnlagRegelLagretIGyldigTilstand(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagRegelType regelType) {
+        // Midlertidig workaround mens k9-sak tar ibruk nytt steg, etter det kan innhold i if-fjernes
+        if (regelType.equals(BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON)) {
+            return stegTilstand.equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON) || stegTilstand.equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        } else {
+            return regelType.getLagretTilstand().equals(stegTilstand);
         }
     }
 

@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
@@ -109,7 +110,8 @@ public class StegProsessInputTjeneste {
         } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
-            return stegProsesseringInput;
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
+            return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
             return lagInputFordel(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
@@ -118,6 +120,19 @@ public class StegProsessInputTjeneste {
             return lagInputFullføre(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         }
         return stegProsesseringInput;
+    }
+
+    private StegProsesseringInput lagInputVurderRefusjon(StegProsesseringInput stegProsesseringInput,
+                                                         Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {
+        var vurderVilkårOgRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlagInput(stegProsesseringInput);
+        if (førsteFastsatteGrunnlagEntitet.isPresent()) {
+            vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
+                    .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
+                    .map(Beløp::getVerdi)
+                    .map(vurderVilkårOgRefusjonBeregningsgrunnlag::medUregulertGrunnbeløp)
+                    .orElse(vurderVilkårOgRefusjonBeregningsgrunnlag);
+        }
+        return vurderVilkårOgRefusjonBeregningsgrunnlag;
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, StegType stegType) {

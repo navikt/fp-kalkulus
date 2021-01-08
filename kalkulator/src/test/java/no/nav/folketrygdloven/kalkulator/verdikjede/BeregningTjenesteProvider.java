@@ -15,6 +15,8 @@ import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlede
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.TilfelleUtlederMockTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.AksjonspunktutledertjenesteVurderRefusjonFP;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 class BeregningTjenesteProvider {
@@ -34,8 +36,9 @@ class BeregningTjenesteProvider {
         MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
         var fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(fordelPerioderTjeneste, new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
         var fullføreBeregningsgrunnlagTjeneste = new FullføreBeregningsgrunnlagFPImpl(mapBeregningsgrunnlagFraVLTilRegel);
-
-        return new BeregningTjenesteWrapper(fullføreBeregningsgrunnlagTjeneste, fordelBeregningsgrunnlagTjeneste, aksjonspunktUtlederFaktaOmBeregning, fastsettBeregningsgrunnlagPerioderTjeneste);
+        var vurderRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlag(fordelPerioderTjeneste,
+                new UnitTestLookupInstanceImpl<>(new AksjonspunktutledertjenesteVurderRefusjonFP()));
+        return new BeregningTjenesteWrapper(fullføreBeregningsgrunnlagTjeneste, fordelBeregningsgrunnlagTjeneste, aksjonspunktUtlederFaktaOmBeregning, fastsettBeregningsgrunnlagPerioderTjeneste, vurderRefusjonBeregningsgrunnlag);
     }
 
 }
