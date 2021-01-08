@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 
 /**
@@ -13,11 +14,20 @@ public final class FinnAlleredeUtbetaltTom {
     }
     static LocalDate finn() {
         LocalDate idag = LocalDate.now();
-        if (idag.getDayOfMonth() > 18) {
+        int utbetalingsdagIMåned = finnUtbetalingsdagForMåned(idag.getMonth());
+        if (idag.getDayOfMonth() > utbetalingsdagIMåned) {
             return idag.with(TemporalAdjusters.lastDayOfMonth());
         } else {
             return idag.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         }
+    }
+
+    private static int finnUtbetalingsdagForMåned(Month month) {
+        // Desember utbetaling er alltid tidligere enn andre måneder, spesialbehandles.
+        if (month == Month.DECEMBER) {
+            return 7;
+        }
+        return 18;
     }
 
 }
