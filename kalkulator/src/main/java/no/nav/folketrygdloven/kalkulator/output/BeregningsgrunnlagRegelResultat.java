@@ -43,7 +43,7 @@ public class BeregningsgrunnlagRegelResultat {
     }
 
     public Optional<BeregningsgrunnlagDto> getBeregningsgrunnlagHvisFinnes() {
-        return Optional.of(beregningsgrunnlag);
+        return Optional.ofNullable(beregningsgrunnlag);
     }
 
     public BeregningAktivitetAggregatDto getRegisterAktiviteter() {
