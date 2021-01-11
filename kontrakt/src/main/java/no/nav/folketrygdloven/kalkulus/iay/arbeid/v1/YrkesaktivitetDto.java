@@ -40,6 +40,11 @@ public class YrkesaktivitetDto {
     @Size
     private List<AktivitetsAvtaleDto> aktivitetsAvtaler;
 
+    @JsonProperty("permisjoner")
+    @Valid
+    @Size
+    private List<PermisjonDto> permisjoner;
+
     protected YrkesaktivitetDto() {
         // default ctor
     }
@@ -53,6 +58,18 @@ public class YrkesaktivitetDto {
         this.abakusReferanse = abakusReferanse;
         this.arbeidType = arbeidType;
         this.aktivitetsAvtaler = aktivitetsAvtaler;
+    }
+
+    public YrkesaktivitetDto(@Valid Aktør arbeidsgiver,
+                             @Valid InternArbeidsforholdRefDto abakusReferanse,
+                             @Valid @NotNull ArbeidType arbeidType,
+                             @Valid @Size List<AktivitetsAvtaleDto> aktivitetsAvtaler,
+                             @Valid @Size List<PermisjonDto> permisjoner) {
+        this.arbeidsgiver = arbeidsgiver;
+        this.abakusReferanse = abakusReferanse;
+        this.arbeidType = arbeidType;
+        this.aktivitetsAvtaler = aktivitetsAvtaler;
+        this.permisjoner = permisjoner;
     }
 
     public Aktør getArbeidsgiver() {
@@ -71,6 +88,10 @@ public class YrkesaktivitetDto {
         return aktivitetsAvtaler;
     }
 
+
+    public List<PermisjonDto> getPermisjoner() {
+        return permisjoner;
+    }
 
     @AssertTrue(message = "Må ha arbeidsgiver for arbeidtype FRILANSER_OPPDRAGSTAKER eller ORDINÆRT_ARBEIDSFORHOLD.")
     private boolean okArbeidsgiver() {
