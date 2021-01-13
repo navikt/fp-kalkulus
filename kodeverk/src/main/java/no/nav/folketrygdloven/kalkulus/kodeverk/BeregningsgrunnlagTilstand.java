@@ -39,24 +39,24 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
 
     /**
      * Rekkefølge tilstandene opptrer i løsningen.
-     *
+     * <p>
      * IKKE ENDRE REKKEFØLGE AV TILSTANDER UTEN Å ENDRE REKKEFØLGE AV LAGRING.
      */
     private static final List<BeregningsgrunnlagTilstand> tilstandRekkefølge = Collections.unmodifiableList(
-    List.of(
-        OPPRETTET,
-        FASTSATT_BEREGNINGSAKTIVITETER,
-        OPPDATERT_MED_ANDELER,
-        KOFAKBER_UT,
-        BESTEBEREGNET,
-        FORESLÅTT,
-        FORESLÅTT_UT,
-        VURDERT_REFUSJON,
-        VURDERT_REFUSJON_UT,
-        OPPDATERT_MED_REFUSJON_OG_GRADERING,
-        FASTSATT_INN,
-        FASTSATT
-    ));
+            List.of(
+                    OPPRETTET,
+                    FASTSATT_BEREGNINGSAKTIVITETER,
+                    OPPDATERT_MED_ANDELER,
+                    KOFAKBER_UT,
+                    FORESLÅTT,
+                    FORESLÅTT_UT,
+                    BESTEBEREGNET,
+                    VURDERT_REFUSJON,
+                    VURDERT_REFUSJON_UT,
+                    OPPDATERT_MED_REFUSJON_OG_GRADERING,
+                    FASTSATT_INN,
+                    FASTSATT
+            ));
 
     static {
         for (var v : values()) {
@@ -123,7 +123,7 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
         if (tilstandIndex == 0) {
             return Optional.empty();
         }
-        BeregningsgrunnlagTilstand forrigeTilstand = tilstandRekkefølge.get(tilstandIndex-1);
+        BeregningsgrunnlagTilstand forrigeTilstand = tilstandRekkefølge.get(tilstandIndex - 1);
         return Optional.of(forrigeTilstand);
     }
 
@@ -145,6 +145,7 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
     public String getKodeverk() {
         return KODEVERK;
     }
+
     public boolean erObligatoriskTilstand() {
         return this.obligatoriskTilstand;
     }
