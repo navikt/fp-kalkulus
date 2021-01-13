@@ -34,7 +34,7 @@ class BeregningTjenesteProvider {
         MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
         MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
-        var fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(fordelPerioderTjeneste, new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
+        var fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
         var fullføreBeregningsgrunnlagTjeneste = new FullføreBeregningsgrunnlagFPImpl(mapBeregningsgrunnlagFraVLTilRegel);
         var vurderRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlag(fordelPerioderTjeneste,
                 new UnitTestLookupInstanceImpl<>(new AksjonspunktutledertjenesteVurderRefusjonFP()));

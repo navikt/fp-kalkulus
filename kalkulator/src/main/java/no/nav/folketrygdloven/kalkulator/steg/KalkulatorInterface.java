@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg;
 
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
-import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -60,16 +59,7 @@ public interface KalkulatorInterface {
      * @param input Input til steget
      * @return Nytt beregningsgrunnlag og aksjonspunkter
      */
-    BeregningResultatAggregat fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input);
-
-    /** Steg 5: Fordel beregningsgrunnlag
-     *
-     * @param input Input til steget
-     * @return Nytt beregningsgrunnlag og aksjonspunkter
-     */
-    // TODO TSF-1315 rename denne metoden til #fordelBeregningsgrunnlag og slett den eksisterende #fordelBeregningsgrunnlag metoden
-    @SuppressWarnings("unused")
-    BeregningResultatAggregat fordelBeregningsgrunnlagUtenPeriodisering(StegProsesseringInput input);
+    BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input);
 
     /** Steg 6: Fastsett beregningsgrunnlag
      *

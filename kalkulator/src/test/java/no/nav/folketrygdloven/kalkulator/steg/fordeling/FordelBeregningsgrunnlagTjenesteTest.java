@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
@@ -71,11 +72,12 @@ public class FordelBeregningsgrunnlagTjenesteTest {
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
-
+    private FordelPerioderTjeneste fordelPerioderTjeneste;
 
     @BeforeEach
     public void oppsett() {
-        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(lagTjeneste(), new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
+        fordelPerioderTjeneste = lagTjeneste();
+        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjeneste(new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(iayGrunnlagBuilder, List.of(ORGNR1, ORGNR2, ORGNR3));
         BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);
@@ -114,7 +116,11 @@ public class FordelBeregningsgrunnlagTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
+        BeregningsgrunnlagGrunnlagDto periodisertGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
+                .medBeregningsgrunnlag(periodisertBG.getBeregningsgrunnlag())
+                .build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input.medBeregningsgrunnlagGrunnlag(periodisertGrunnlag)).getBeregningsgrunnlag();
 
         // Assert
         assertThat(nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size()).isEqualTo(1);

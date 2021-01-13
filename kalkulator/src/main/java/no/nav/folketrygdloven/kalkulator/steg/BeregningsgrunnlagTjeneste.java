@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
-import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -123,46 +122,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     }
 
     @Override
-    public BeregningResultatAggregat fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
-                .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
-        BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
-        BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
-                .lagVilkårResultatFordel(input, vilkårVurderingResultat.getVilkårsresultat());
-        if (!vilkårResultat.getErVilkårOppfylt()) {
-            // Om vilkåret ikke er oppfylt kan vi returnere uten å kjøre fordeling
-            return BeregningResultatAggregat.Builder.fra(input)
-                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
-                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
-                    .medVilkårResultat(vilkårResultat)
-                    .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
-                    .build();
-        } else {
-            var fordelResultat = fordelBeregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input, vurdertBeregningsgrunnlag);
-            BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
-                    .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
-                    .build(input.getStegTilstand());
-            List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
-                    input.getKoblingReferanse(),
-                    nyttGrunnlag,
-                    input.getAktivitetGradering(),
-                    input.getInntektsmeldinger());
-            return Builder.fra(input)
-                    .medAksjonspunkter(aksjonspunkter)
-                    .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
-                    .medVilkårResultat(vilkårResultat)
-                    .medRegelSporingAggregat(new RegelSporingAggregat(
-                            fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
-                            Stream.concat(fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream),
-                                    vilkårVurderingResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream))
-                                    .collect(Collectors.toList())))
-                    .build();
-        }
-    }
-
-    // TODO TSF-1315 rename denne metoden til #fordelBeregningsgrunnlag og slett den eksisterende #fordelBeregningsgrunnlag metoden
-    @Override
-    public BeregningResultatAggregat fordelBeregningsgrunnlagUtenPeriodisering(StegProsesseringInput input) {
+    public BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input) {
         var fordelResultat = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input);
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
