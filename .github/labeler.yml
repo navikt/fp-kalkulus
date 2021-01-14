@@ -1,6 +1,10 @@
 domene/kontrakt:
   - kontrakt/src/main/java/**/*
   - kodeverk/src/main/java/**/*
+  
+domene/kalkulator:
+  - felles/src/main/java/**/*
+  - kalkulator/src/main/java/**/*
 
 migreringer:
   - migreringer/src/main/**/*
