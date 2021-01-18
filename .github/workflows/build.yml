@@ -18,7 +18,7 @@ on:
 
 env:
   IMAGE_BASE: docker.pkg.github.com/${{ github.repository }}/ftkalkulus
-
+  IMAGE_BASE_CR: ghcr.io/${{ github.repository }}
 jobs:
   build:
 
@@ -45,6 +45,7 @@ jobs:
       - name: Set cache key
         run: |
           echo "CACHE_KEY=$(expr $(date +%V) - 1 + 1)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(expr $(date +%Y%m%d%H%M%S))" >> $GITHUB_ENV
       - uses: actions/cache@v2
         with:
           path: ~/.m2
@@ -57,8 +58,7 @@ jobs:
           mvn jacoco:prepare-agent deploy --quiet -e --batch-mode --settings ./.m2/settings.xml -DtrimStackTrace=false -Dmaven.wagon.http.pool=false --file pom.xml -Dchangelist= -Dsha1=-$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7) -Dfile.encoding=UTF-8 -DinstallAtEnd=true -DdeployAtEnd=true -Djacoco.destFile=$(pwd)/target/jacoco.exec
           ## mvn jacoco:report sonar:sonar --quiet -e --batch-mode --settings ./.m2/settings.xml --file pom.xml -Djacoco.dataFile=$(pwd)/target/jacoco.exec -Dsonar.projectKey="navikt_ft-kalkulus" -Dsonar.host.url='https://sonarcloud.io' -Dsonar.organization=navit -Dsonar.login=${SONAR_TOKEN}
           echo "Deployed artifacts"
-          echo "TAG=$(mvn help:evaluate --batch-mode --settings ./.m2/settings.xml --file .flattened -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-          echo "IMAGE=$IMAGE_BASE:$(mvn help:evaluate --batch-mode --settings ./.m2/settings.xml --file .flattened -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+          echo "TAG=$TIMESTAMP-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         env:
           TZ: "Europe/Oslo"
           GITHUB_USERNAME: x-access-token
@@ -69,13 +69,14 @@ jobs:
           DATASOURCE_PORT: ${{ job.services.postgres.ports[5433] }} # get randomly assigned published port
 
       - name: Bygg og push docker-image
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
         run: |
-          docker build --pull --tag ${IMAGE} --tag ${IMAGE_BASE}:latest .
-          echo "$GITHUB_ACCESS_TOKEN" | docker login --username "x-access-token" --password-stdin https://docker.pkg.github.com
+          docker build --pull --tag ${IMAGE_BASE}:${TAG} --tag ${IMAGE_BASE}:latest --tag ${IMAGE_BASE_CR}:${TAG} --tag ${IMAGE_BASE_CR}:latest .
+          echo "${{ secrets.GITHUB_ACCESS_TOKEN }}" | docker login --username "x-access-token" --password-stdin https://docker.pkg.github.com
+          echo "${{ secrets.GITHUB_ACCESS_TOKEN }}" | docker login --username "x-access-token" --password-stdin ghcr.io
+          docker push ${IMAGE_BASE}:${TAG}
           docker push ${IMAGE_BASE}:latest
-          docker push $IMAGE
+          docker push ${IMAGE_BASE_CR}:${TAG}
+          docker push ${IMAGE_BASE_CR}:latest
 
       - name: Create Release
         id: create_release
