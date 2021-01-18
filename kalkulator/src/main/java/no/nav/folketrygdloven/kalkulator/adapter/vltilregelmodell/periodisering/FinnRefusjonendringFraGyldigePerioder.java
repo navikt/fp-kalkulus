@@ -48,6 +48,7 @@ class FinnRefusjonendringFraGyldigePerioder {
         return gyldigePerioder.stream().filter(this::erStartAvGyldigPeriode)
                 .map(Intervall::getFomDato)
                 .filter(d -> refusjonerFraInntektsmelding.stream().anyMatch(harOpphørtRefusjonSomOverlapperMedDato(d, opphørDatoer)))
+                .distinct()
                 .collect(Collectors.toMap(Function.identity(),
                         (d) -> refusjonerFraInntektsmelding.stream()
                                 .filter(harOpphørtRefusjonSomOverlapperMedDato(d, opphørDatoer))
@@ -57,6 +58,7 @@ class FinnRefusjonendringFraGyldigePerioder {
     private Map<LocalDate, Beløp> finnOpphørAvRefusjonVedOpphørtPeriode() {
         return gyldigePerioder.stream().filter(this::erOpphørAvGyldigPeriode)
                 .map(Intervall::getTomDato)
+                .distinct()
                 .collect(Collectors.toMap(d -> d.plusDays(1), (d) -> Beløp.ZERO));
     }
 

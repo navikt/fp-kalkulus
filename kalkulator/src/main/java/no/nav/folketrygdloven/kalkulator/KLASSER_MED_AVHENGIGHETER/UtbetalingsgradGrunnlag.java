@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 
 public abstract class UtbetalingsgradGrunnlag {
 
-    private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
+    private final List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
     public UtbetalingsgradGrunnlag(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
@@ -24,9 +24,8 @@ public abstract class UtbetalingsgradGrunnlag {
         return getUtbetalingsgradPrAktivitet()
                 .stream()
                 .filter(akt -> matchArbeidsgiver(arbeidsgiver, akt) && matcherArbeidsforholdReferanse(arbeidsforholdRefDto, akt))
-                .findFirst()
-                .map(UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad)
-                .orElse(Collections.emptyList());
+                .flatMap(akt -> akt.getPeriodeMedUtbetalingsgrad().stream())
+                .collect(Collectors.toList());
     }
 
     private static Boolean matchArbeidsgiver(Arbeidsgiver arbeidsgiver, UtbetalingsgradPrAktivitetDto akt) {
