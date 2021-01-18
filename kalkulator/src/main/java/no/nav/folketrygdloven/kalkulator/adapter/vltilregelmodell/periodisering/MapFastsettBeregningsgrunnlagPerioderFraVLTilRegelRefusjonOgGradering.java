@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
@@ -85,19 +83,22 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                         im,
                         startdatoPermisjon,
                         refusjonOverstyringer,
-                        finnGyldigeRefusjonPerioder(ytelsespesifiktGrunnlag, ya)))
+                        finnGyldigeRefusjonPerioder(startdatoPermisjon, ytelsespesifiktGrunnlag, ya)))
                 .orElse(Collections.emptyList());
     }
 
 
-    /** Finner gyldige perioder med refusjon basert på ansettelsesperioder
+    /** Finner gyldige perioder for refusjon
      *
+     * For foreldrepenger er alle perioder gyldige
+     *
+     * @param startdatoPermisjon Startdato permisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya Yrkesaktivitet
      * @return Gyldige perioder for refusjon
      */
-    protected List<Intervall> finnGyldigeRefusjonPerioder(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
-        return ya.getAlleAktivitetsAvtaler().stream().filter(AktivitetsAvtaleDto::erAnsettelsesPeriode).map(AktivitetsAvtaleDto::getPeriode).collect(Collectors.toList());
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
+        return List.of(Intervall.fraOgMed(startdatoPermisjon));
     }
 
     private RefusjonskravFrist lagRefusjonskravFrist(BeregningsgrunnlagInput input, LocalDate førsteDatoMedRefusjon) {

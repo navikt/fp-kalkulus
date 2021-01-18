@@ -52,12 +52,14 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
     /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad
      *
+     *
+     * @param startdatoPermisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya                      Yrkesaktivitet
      * @return Gyldige perioder for refusjon
      */
     @Override
-    protected List<Intervall> finnGyldigeRefusjonPerioder(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             var utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag;
             var perioderMedUtbetaling = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(ya.getArbeidsgiver(), ya.getArbeidsforholdRef())
