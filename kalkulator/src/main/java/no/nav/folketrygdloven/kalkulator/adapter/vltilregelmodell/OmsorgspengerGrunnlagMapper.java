@@ -20,8 +20,7 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
 
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
-        Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer();
-        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag(), refusjonOverstyringer);
+        BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag());
         return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt);
     }
 

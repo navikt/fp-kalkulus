@@ -349,7 +349,7 @@ public class VerdikjedeTestHjelper {
         LocalDate fraOgMed = skjæringstidspunkt.minusYears(1).withDayOfMonth(1);
         LocalDate tilOgMed = fraOgMed.plusYears(1);
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(virksomhetOrgnr);
-        lagAktørArbeid(register, arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+        lagAktørArbeid(register, arbeidsgiver, fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             lagInntektForSammenligning(register, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
@@ -387,7 +387,7 @@ public class VerdikjedeTestHjelper {
                                                                String virksomhetOrgnr, LocalDate fraOgMed, LocalDate tilOgMed, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
 
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(virksomhetOrgnr);
-        lagAktørArbeid(inntektArbeidYtelseAggregatBuilder, arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        lagAktørArbeid(inntektArbeidYtelseAggregatBuilder, arbeidsgiver, fraOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             lagInntektForArbeidsforhold(inntektArbeidYtelseAggregatBuilder, dt, dt.plusMonths(1), inntektFrilans,
                 arbeidsgiver);
@@ -401,7 +401,7 @@ public class VerdikjedeTestHjelper {
 
     public YrkesaktivitetDtoBuilder lagAktørArbeid(InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder,
                                                    Arbeidsgiver arbeidsgiver,
-                                                   LocalDate fom, LocalDate tom, ArbeidType arbeidType) {
+                                                   LocalDate fom, ArbeidType arbeidType) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = inntektArbeidYtelseAggregatBuilder
             .getAktørArbeidBuilder();
 
@@ -411,7 +411,7 @@ public class VerdikjedeTestHjelper {
             .getYrkesaktivitetBuilderForNøkkelAvType(opptjeningsnøkkel, arbeidType);
         AktivitetsAvtaleDtoBuilder aktivitetsAvtaleBuilder = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder();
 
-        AktivitetsAvtaleDtoBuilder aktivitetsAvtale = aktivitetsAvtaleBuilder.medPeriode(Intervall.fraOgMedTilOgMed(fom, tom));
+        AktivitetsAvtaleDtoBuilder aktivitetsAvtale = aktivitetsAvtaleBuilder.medPeriode(Intervall.fraOgMed(fom));
         yrkesaktivitetBuilder.leggTilAktivitetsAvtale(aktivitetsAvtale)
             .medArbeidType(arbeidType)
             .medArbeidsgiver(arbeidsgiver);
@@ -552,13 +552,13 @@ public class VerdikjedeTestHjelper {
 
         beregningVirksomhetOrgnr
             .forEach(orgnr -> lagAktørArbeid(inntektArbeidYtelseBuilder,
-                    Arbeidsgiver.virksomhet(orgnr), fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
+                    Arbeidsgiver.virksomhet(orgnr), fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         String dummyVirksomhetOrgnr = "999";
         Arbeidsgiver dummyVirksomhet = Arbeidsgiver.virksomhet(dummyVirksomhetOrgnr);
         if (inntektFrilans != null) {
             lagAktørArbeid(inntektArbeidYtelseBuilder, dummyVirksomhet, fraOgMed,
-                tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+                    ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         }
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {

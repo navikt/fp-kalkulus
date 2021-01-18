@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
 import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
+import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -80,14 +81,14 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                                 .medArbeidsgiver(arbeidsgiver)
                                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny()
-                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusMonths(10)))
+                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), TIDENES_ENDE))
                                         .medErAnsettelsesPeriode(true))
                                 .medArbeidsforholdId(arbeidsforholdId))
                         .leggTilYrkesaktivitet(YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
                                 .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
                                 .medArbeidsgiver(arbeidsgiver)
                                 .leggTilAktivitetsAvtale(AktivitetsAvtaleDtoBuilder.ny()
-                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), SKJÆRINGSTIDSPUNKT.plusMonths(10)))
+                                        .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10), TIDENES_ENDE))
                                         .medErAnsettelsesPeriode(true))
                                 .medArbeidsforholdId(arbeidsforholdId2)));
         iayGrunnlagBuilder.medData(register);

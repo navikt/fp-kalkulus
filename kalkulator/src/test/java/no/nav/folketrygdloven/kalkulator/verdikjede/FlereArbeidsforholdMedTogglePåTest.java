@@ -108,7 +108,6 @@ public class FlereArbeidsforholdMedTogglePåTest {
                         inntektArbeidYtelseBuilder,
                         Arbeidsgiver.virksomhet(virksomhetOrgnr),
                         fraOgMed,
-                        tilOgMed,
                         ArbeidType.ORDINÆRT_ARBEIDSFORHOLD
                 ));
 

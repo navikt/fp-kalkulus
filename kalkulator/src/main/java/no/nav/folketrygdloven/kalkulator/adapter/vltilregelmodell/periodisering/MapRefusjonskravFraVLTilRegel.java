@@ -35,29 +35,60 @@ public class MapRefusjonskravFraVLTilRegel {
         // skjul public constructor
     }
 
-    static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
+    static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
+                                                        LocalDate startdatoPermisjon,
+                                                        Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                        List<Intervall> gyldigeRefusjonPerioder) {
         Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
-        List<BeregningRefusjonOverstyringDto> listeMedOverstyringer = refusjonOverstyringer.map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer).orElse(Collections.emptyList());
-        Beløp refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
+        finnRefusjonendringFraInntektsmelding(inntektsmelding, startdatoPermisjon, refusjonOverstyringer, gyldigeRefusjonPerioder)
+                .forEach(refusjoner::put);
+        new FinnRefusjonendringFraGyldigePerioder(gyldigeRefusjonPerioder, lagForenkletRefusjonListe(refusjoner), startdatoPermisjon)
+                .finnEndringerIRefusjon()
+                .forEach(refusjoner::put);
+        return lagForenkletRefusjonListe(refusjoner);
+    }
 
-        Optional<BeregningRefusjonPeriodeDto> refusjonoverstyringForIM = finnOverstyringForInntektsmelding(inntektsmelding, listeMedOverstyringer);
-        Optional<LocalDate> overstyrtStartdato = refusjonoverstyringForIM.map(BeregningRefusjonPeriodeDto::getStartdatoRefusjon);
-        LocalDate gjeldendeStartdato = overstyrtStartdato.orElse(startdatoPermisjon);
+    private static Map<LocalDate, Beløp> finnRefusjonendringFraInntektsmelding(InntektsmeldingDto inntektsmelding,
+                                                                               LocalDate startdatoPermisjon,
+                                                                               Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                                               List<Intervall> gyldigeRefusjonPerioder) {
+        Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
+        var listeMedOverstyringer = refusjonOverstyringer.map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer).orElse(Collections.emptyList());
+        var refusjonBeløpPerMnd = Optional.ofNullable(inntektsmelding.getRefusjonBeløpPerMnd()).orElse(Beløp.ZERO);
+
+        var refusjonoverstyringForIM = finnOverstyringForInntektsmelding(inntektsmelding, listeMedOverstyringer);
+        var overstyrtStartdato = refusjonoverstyringForIM.map(BeregningRefusjonPeriodeDto::getStartdatoRefusjon);
+        var gjeldendeStartdato = overstyrtStartdato.orElse(startdatoPermisjon);
         refusjoner.put(gjeldendeStartdato, refusjonBeløpPerMnd);
         inntektsmelding.getEndringerRefusjon()
                 .stream()
                 .sorted(Comparator.comparing(RefusjonDto::getFom))
                 .forEach(endring -> {
-                    if (endring.getFom().isBefore(gjeldendeStartdato)) {
+                    LocalDate fom = finnRefusjonFomDato(gyldigeRefusjonPerioder, endring);
+                    if (fom.isBefore(gjeldendeStartdato)) {
                         refusjoner.put(gjeldendeStartdato, endring.getRefusjonsbeløp());
-                    } else {
-                        refusjoner.put(endring.getFom(), endring.getRefusjonsbeløp());
+                    } else if (fom.isBefore(TIDENES_ENDE)) {
+                        refusjoner.put(fom, endring.getRefusjonsbeløp());
                     }
                 });
         if (inntektsmelding.getRefusjonOpphører() != null && !TIDENES_ENDE.equals(inntektsmelding.getRefusjonOpphører())) {
             refusjoner.put(inntektsmelding.getRefusjonOpphører().plusDays(1), Beløp.ZERO);
         }
-        return lagForenkletRefusjonListe(refusjoner);
+        return refusjoner;
+    }
+
+    private static LocalDate finnRefusjonFomDato(List<Intervall> gyldigeRefusjonPerioder, RefusjonDto endring) {
+        LocalDate fom;
+        if (gyldigeRefusjonPerioder.stream().anyMatch(p -> p.inkluderer(endring.getFom()))) {
+            fom = endring.getFom();
+        } else {
+            fom = gyldigeRefusjonPerioder.stream()
+                    .filter(p -> p.getFomDato().isAfter(endring.getFom()))
+                    .min(Comparator.comparing(Intervall::getFomDato))
+                    .map(Intervall::getFomDato)
+                    .orElse(TIDENES_ENDE);
+        }
+        return fom;
     }
 
     private static Optional<BeregningRefusjonPeriodeDto> finnOverstyringForInntektsmelding(InntektsmeldingDto inntektsmelding, List<BeregningRefusjonOverstyringDto> refusjonOverstyringer) {
@@ -151,8 +182,7 @@ public class MapRefusjonskravFraVLTilRegel {
 
     public static BigDecimal finnGradertRefusjonskravPåSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldingerSomSkalBrukes,
                                                                             LocalDate stp,
-                                                                            YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                                            Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
+                                                                            YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         List<Refusjonskrav> refusjonskravs = new ArrayList<>();
         for (InntektsmeldingDto inntektsmeldingerSomSkalBruke : inntektsmeldingerSomSkalBrukes) {
             if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
@@ -160,8 +190,7 @@ public class MapRefusjonskravFraVLTilRegel {
                 var utbetalingsgrader = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(inntektsmeldingerSomSkalBruke.getArbeidsgiver(), inntektsmeldingerSomSkalBruke.getArbeidsforholdRef());
                 refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserGradertRefusjonsbeløp(inntektsmeldingerSomSkalBruke, utbetalingsgrader, stp));
             } else {
-                // Usikker på om vi trenger dette ettersom det kun brukes for omsorgspenger som alltid vil vere eit utbetalingsgradgrunnlag
-                refusjonskravs.addAll(MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingerSomSkalBruke, stp, refusjonOverstyringer));
+                throw new IllegalStateException("Må ha utbetalingsgradgrunnlag for å beregne gradert refusjonskrav");
             }
         }
         List<Refusjonskrav> relevanteRefusjonskrav = refusjonskravs.stream()

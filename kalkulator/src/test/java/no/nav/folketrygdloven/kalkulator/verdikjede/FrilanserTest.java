@@ -559,11 +559,11 @@ public class FrilanserTest {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
         verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(DUMMY_ORGNR),
-                fraOgMed, tilOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+                fraOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
 
         virksomhetOrgnr
                 .forEach(virksomhetEntitet -> verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(virksomhetEntitet),
-                        fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
+                        fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             for (int i = 0; i < virksomhetOrgnr.size(); i++) {

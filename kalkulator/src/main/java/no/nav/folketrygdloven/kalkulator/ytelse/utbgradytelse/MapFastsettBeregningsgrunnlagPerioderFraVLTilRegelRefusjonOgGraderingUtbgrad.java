@@ -30,8 +30,10 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -48,10 +50,30 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad
         extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering {
 
+    /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad
+     *
+     * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
+     * @param ya                      Yrkesaktivitet
+     * @return Gyldige perioder for refusjon
+     */
     @Override
-    protected Optional<LocalDate> utledStartdatoPermisjon(Input input, 
-                                                          LocalDate skjæringstidspunktBeregning, 
-                                                          YrkesaktivitetDto ya, 
+    protected List<Intervall> finnGyldigeRefusjonPerioder(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
+        if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
+            var utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag;
+            var perioderMedUtbetaling = utbetalingsgradGrunnlag.finnUtbetalingsgraderForArbeid(ya.getArbeidsgiver(), ya.getArbeidsforholdRef())
+                    .stream()
+                    .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
+                    .map(PeriodeMedUtbetalingsgradDto::getPeriode)
+                    .collect(Collectors.toList());
+            return perioderMedUtbetaling;
+        }
+        return ya.getAlleAktivitetsAvtaler().stream().filter(AktivitetsAvtaleDto::erAnsettelsesPeriode).map(AktivitetsAvtaleDto::getPeriode).collect(Collectors.toList());
+    }
+
+    @Override
+    protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
+                                                          LocalDate skjæringstidspunktBeregning,
+                                                          YrkesaktivitetDto ya,
                                                           Periode ansettelsesPeriode) {
         Optional<LocalDate> førsteSøktePermisjonsdag = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, ansettelsesPeriode);
         return førsteSøktePermisjonsdag.map(dato -> skjæringstidspunktBeregning.isAfter(dato) ? skjæringstidspunktBeregning : dato);

@@ -185,8 +185,8 @@ public class ForeslåBeregningsgrunnlagTest {
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, arbeidsgiver, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed, tilOgMed,
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, arbeidsgiver, fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed,
                 ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
@@ -737,8 +737,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1),
-                MINUS_YEARS_1.withDayOfMonth(1).plusYears(2), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1), MINUS_YEARS_2.withDayOfMonth(1), ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         for (LocalDate dt = MINUS_YEARS_2.withDayOfMonth(1); dt.isBefore(MINUS_YEARS_1.withDayOfMonth(1).plusYears(2)); dt = dt.plusMonths(1)) {
             verdikjedeTestHjelper.lagInntektForSammenligning(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
                     Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1));
@@ -777,8 +776,8 @@ public class ForeslåBeregningsgrunnlagTest {
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver1, fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
-        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed, tilOgMed,
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver1, fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+        verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR2), fraOgMed,
                 ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {

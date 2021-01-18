@@ -135,9 +135,13 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
         // Assert
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
         ArbeidsforholdOgInntektsmelding arbeidsforholdOgInntektsmelding = map.getArbeidsforholdOgInntektsmeldinger().get(0);
-        assertThat(arbeidsforholdOgInntektsmelding.getRefusjoner().size()).isEqualTo(1);
+        assertThat(arbeidsforholdOgInntektsmelding.getRefusjoner().size()).isEqualTo(2);
         Refusjonskrav refusjonskrav = arbeidsforholdOgInntektsmelding.getRefusjoner().get(0);
         assertThat(refusjonskrav.getPeriode().getFom()).isEqualTo(stp);
+
+        Refusjonskrav opphør = arbeidsforholdOgInntektsmelding.getRefusjoner().get(1);
+        assertThat(opphør.getMånedsbeløp()).isEqualTo(BigDecimal.ZERO);
+        assertThat(opphør.getPeriode().getFom()).isEqualTo(LocalDate.of(2020, 1, 19).plusDays(1));
     }
 
     @Test

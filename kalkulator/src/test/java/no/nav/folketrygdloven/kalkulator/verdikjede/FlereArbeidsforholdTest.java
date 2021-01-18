@@ -97,7 +97,7 @@ public class FlereArbeidsforholdTest {
         beregningVirksomhet
             .forEach(virksomhetOrgnr -> {
                 verdikjedeTestHjelper.lagAktørArbeid(inntektArbeidYtelseBuilder, Arbeidsgiver.virksomhet(virksomhetOrgnr),
-                    fraOgMed, tilOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
+                    fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD);
             });
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {

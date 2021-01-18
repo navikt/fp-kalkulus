@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,11 +17,13 @@ import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.Omsorgspenger
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
@@ -41,12 +44,15 @@ public class MapRefusjonskravFraVLTilRegelTest {
         LocalDate skjæringstidspunkt = LocalDate.now();
         LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
         InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(BigDecimal.ZERO)
-            .leggTil(new RefusjonDto(BigDecimal.TEN, endringFom))
-            .build();
+                .medRefusjon(BigDecimal.ZERO)
+                .leggTil(new RefusjonDto(BigDecimal.TEN, endringFom))
+                .build();
 
         // Act
-        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet, skjæringstidspunkt, Optional.empty());
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt,
+                Optional.empty(),
+                List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
 
         // Assert
         assertThat(resultat).hasSize(2);
@@ -89,7 +95,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
 
         // Act
-        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag, Optional.empty());
+        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
         assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(0));
@@ -125,7 +131,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMed(idag), BigDecimal.valueOf(50))))));
 
         // Act
-        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag, Optional.empty());
+        BigDecimal refusjonPåStp = MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet(inntektsmeldingAggregatDto.getInntektsmeldingerSomSkalBrukes(), idag, omsorgspengerGrunnlag);
 
         // Assert
         assertThat(refusjonPåStp).isEqualByComparingTo(BigDecimal.valueOf(216_000));
@@ -145,7 +151,10 @@ public class MapRefusjonskravFraVLTilRegelTest {
         lagRefusjonoverstyring(ARBEIDSGIVER1, ref, overstyrtDato);
 
         // Act
-        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet, skjæringstidspunkt,Optional.of(refusjonOverstyringer.build()));
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt,
+                Optional.of(refusjonOverstyringer.build()),
+                List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
 
         // Assert
         assertThat(resultat).hasSize(1);
@@ -170,13 +179,51 @@ public class MapRefusjonskravFraVLTilRegelTest {
         lagRefusjonoverstyring(ARBEIDSGIVER1, refOverstyring, overstyrtDato);
 
         // Act
-        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet, skjæringstidspunkt,Optional.of(refusjonOverstyringer.build()));
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt, Optional.of(refusjonOverstyringer.build()),
+                List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
 
         // Assert
         assertThat(resultat).hasSize(1);
         assertThat(resultat).anySatisfy(start -> {
             assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, Intervall.TIDENES_ENDE));
             assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
+        });
+    }
+
+
+    @Test
+    public void skal_finne_refusjonskrav_for_perioder_med_opphør_og_restart() {
+        // Arrange
+        LocalDate skjæringstidspunkt = LocalDate.now();
+        LocalDate endringFom = skjæringstidspunkt.plusMonths(1);
+        InntektsmeldingDto inntektsmeldingEntitet = InntektsmeldingDtoBuilder.builder()
+                .medRefusjon(BigDecimal.ONE)
+                .leggTil(new RefusjonDto(BigDecimal.TEN, endringFom))
+                .build();
+
+        // Act
+        List<Refusjonskrav> resultat = MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(inntektsmeldingEntitet,
+                skjæringstidspunkt,
+                Optional.empty(),
+                List.of(
+                        Intervall.fraOgMedTilOgMed(skjæringstidspunkt.minusMonths(12), skjæringstidspunkt.plusWeeks(2)),
+                        Intervall.fraOgMed(skjæringstidspunkt.plusMonths(2))
+                ));
+
+        // Assert
+        assertThat(resultat).hasSize(3);
+        assertThat(resultat).anySatisfy(start -> {
+            assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, skjæringstidspunkt.plusWeeks(2)));
+            assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.ONE);
+        });
+        assertThat(resultat).anySatisfy(endring -> {
+            assertThat(endring.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt.plusWeeks(2).plusDays(1), skjæringstidspunkt.plusMonths(2).minusDays(1)));
+            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.ZERO);
+        });
+        assertThat(resultat).anySatisfy(endring -> {
+            assertThat(endring.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt.plusMonths(2), null));
+            assertThat(endring.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
         });
     }
 

@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +24,19 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Perio
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.RefusjonskravFrist;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
@@ -51,10 +55,9 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                                       ArbeidsforholdOgInntektsmelding.Builder builder,
                                       Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-            .filter(im -> ya.gjelderFor(im))
-            .findFirst();
-        List<Refusjonskrav> refusjoner = matchendeInntektsmelding.map(im -> MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(im, startdatoPermisjon, refusjonOverstyringer))
-        .orElse(Collections.emptyList());
+                .filter(ya::gjelderFor)
+                .findFirst();
+        List<Refusjonskrav> refusjoner = mapRefusjonskrav(input.getYtelsespesifiktGrunnlag(), ya, startdatoPermisjon, refusjonOverstyringer, matchendeInntektsmelding);
         builder.medRefusjonskrav(refusjoner);
         Optional<LocalDate> førsteMuligeRefusjonsdato = mapFørsteGyldigeDatoForRefusjon(ya, refusjonOverstyringer);
         førsteMuligeRefusjonsdato.ifPresent(builder::medOverstyrtRefusjonsFrist);
@@ -62,21 +65,46 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         LocalDate innsendingsdatoFørsteInntektsmeldingMedRefusjon = førsteIMMap.get(ya.getArbeidsgiver());
         if (innsendingsdatoFørsteInntektsmeldingMedRefusjon == null) {
             log.info(
-                "Mottatt inntektsmelding [journalpostId={}, kanalreferanse={}]. Arbeidsgiver har ingen inntektsmeldinger der de krever refusjon, kan ikke avgjøre frist for refusjon",
-                matchendeInntektsmelding.map(InntektsmeldingDto::getJournalpostId).orElse(null),
-                matchendeInntektsmelding.map(InntektsmeldingDto::getKanalreferanse).orElse(null));
+                    "Mottatt inntektsmelding [journalpostId={}, kanalreferanse={}]. Arbeidsgiver har ingen inntektsmeldinger der de krever refusjon, kan ikke avgjøre frist for refusjon",
+                    matchendeInntektsmelding.map(InntektsmeldingDto::getJournalpostId).orElse(null),
+                    matchendeInntektsmelding.map(InntektsmeldingDto::getKanalreferanse).orElse(null));
         } else {
             LocalDate førsteDatoMedRefusjon = refusjoner.stream().map(Refusjonskrav::getFom).min(Comparator.naturalOrder()).orElse(TIDENES_ENDE);
             builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon)
-                .medRefusjonskravFrist(lagRefusjonskravFrist(input, førsteDatoMedRefusjon));
+                    .medRefusjonskravFrist(lagRefusjonskravFrist(input, førsteDatoMedRefusjon));
         }
+    }
+
+    protected List<Refusjonskrav> mapRefusjonskrav(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                   YrkesaktivitetDto ya,
+                                                   LocalDate startdatoPermisjon,
+                                                   Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                   Optional<InntektsmeldingDto> matchendeInntektsmelding) {
+        return matchendeInntektsmelding
+                .map(im -> MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(
+                        im,
+                        startdatoPermisjon,
+                        refusjonOverstyringer,
+                        finnGyldigeRefusjonPerioder(ytelsespesifiktGrunnlag, ya)))
+                .orElse(Collections.emptyList());
+    }
+
+
+    /** Finner gyldige perioder med refusjon basert på ansettelsesperioder
+     *
+     * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
+     * @param ya Yrkesaktivitet
+     * @return Gyldige perioder for refusjon
+     */
+    protected List<Intervall> finnGyldigeRefusjonPerioder(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
+        return ya.getAlleAktivitetsAvtaler().stream().filter(AktivitetsAvtaleDto::erAnsettelsesPeriode).map(AktivitetsAvtaleDto::getPeriode).collect(Collectors.toList());
     }
 
     private RefusjonskravFrist lagRefusjonskravFrist(BeregningsgrunnlagInput input, LocalDate førsteDatoMedRefusjon) {
         Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(input.getFagsakYtelseType());
         int fristMånederEtterRefusjonskravStarter = konfigverdier.getFristMånederEtterRefusjon(førsteDatoMedRefusjon);
         return new RefusjonskravFrist(fristMånederEtterRefusjonskravStarter,
-            BeregningsgrunnlagHjemmel.valueOf(konfigverdier.getHjemmelForRefusjonfrist(førsteDatoMedRefusjon).getKode()));
+                BeregningsgrunnlagHjemmel.valueOf(konfigverdier.getHjemmelForRefusjonfrist(førsteDatoMedRefusjon).getKode()));
     }
 
     @Override
@@ -87,11 +115,11 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
     private Optional<LocalDate> mapFørsteGyldigeDatoForRefusjon(YrkesaktivitetDto ya, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
         return refusjonOverstyringer.stream().flatMap(s -> s.getRefusjonOverstyringer().stream())
-            .filter(o -> o.getArbeidsgiver().equals(ya.getArbeidsgiver()))
-            .map(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .findFirst();
+                .filter(o -> o.getArbeidsgiver().equals(ya.getArbeidsgiver()))
+                .map(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 
     @Override
@@ -105,13 +133,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         List<PeriodisertBruttoBeregningsgrunnlag> periodiseringBruttoBg = MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag);
 
         return PeriodeModell.builder()
-            .medSkjæringstidspunkt(skjæringstidspunkt)
-            .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
-            .medInntektsmeldinger(regelInntektsmeldinger)
-            .medAndelGraderinger(regelAndelGraderinger)
-            .medEndringISøktYtelse(Collections.emptyList())
-            .medEksisterendePerioder(eksisterendePerioder)
-            .medPeriodisertBruttoBeregningsgrunnlag(periodiseringBruttoBg)
-            .build();
+                .medSkjæringstidspunkt(skjæringstidspunkt)
+                .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
+                .medInntektsmeldinger(regelInntektsmeldinger)
+                .medAndelGraderinger(regelAndelGraderinger)
+                .medEndringISøktYtelse(Collections.emptyList())
+                .medEksisterendePerioder(eksisterendePerioder)
+                .medPeriodisertBruttoBeregningsgrunnlag(periodiseringBruttoBg)
+                .build();
     }
 }
