@@ -103,4 +103,5 @@ public class KalkulatorInputDto {
     public LocalDate getSkjæringstidspunkt() {
         return skjæringstidspunkt;
     }
+
 }

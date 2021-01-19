@@ -5,6 +5,7 @@ import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.CREAT
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -221,7 +222,9 @@ public class OperereKalkulusRestTjeneste {
 
         // Lager responsobjekt
         List<OppdateringPrRequest> oppdateringer = håndterResultat.entrySet().stream()
-                .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res))).collect(Collectors.toList());
+                .sorted(Comparator.comparing(e -> håndterInputResultat.getResultatPrKobling().get(e.getKey()).getSkjæringstidspunktOpptjening()))
+                .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res)))
+                .collect(Collectors.toList());
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
