@@ -44,22 +44,10 @@
             <artifactId>felles-feil</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>no.nav.foreldrepenger.felles</groupId>
-            <artifactId>felles-db</artifactId>
-        </dependency>
-
         <!-- Eksterne avhengigheter til andre prosjekter-->
         <dependency>
             <groupId>org.threeten</groupId>
             <artifactId>threeten-extra</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>migreringer</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         
         <dependency>
