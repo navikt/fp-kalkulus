@@ -24,8 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 public class InntektsmeldingMedRefusjonTjeneste {
 
     public static Map<Arbeidsgiver, LocalDate> finnFørsteInntektsmeldingMedRefusjon(BeregningsgrunnlagInput input) {
-        return input.getRefusjonskravDatoer().stream()
-            .collect(Collectors.toMap(RefusjonskravDatoDto::getArbeidsgiver, RefusjonskravDatoDto::getFørsteInnsendingAvRefusjonskrav));
+        return input.getRefusjonskravDatoer().stream().collect(Collectors.toMap(RefusjonskravDatoDto::getArbeidsgiver, RefusjonskravDatoDto::getFørsteInnsendingAvRefusjonskrav));
     }
 
     public static Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
