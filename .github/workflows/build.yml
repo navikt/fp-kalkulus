@@ -56,7 +56,7 @@ jobs:
         run: |
           echo "Building artifacts $(echo $GITHUB_SHA | cut -c1-7)"
           echo "TAG=$TIMESTAMP-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
-          mvn verify --quiet -e --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TAG -Dfile.encoding=UTF-8
+          mvn verify --quiet -e --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TIMESTAMP-$(echo $GITHUB_SHA | cut -c1-7) -Dfile.encoding=UTF-8
          
         env:
           TZ: "Europe/Oslo"
