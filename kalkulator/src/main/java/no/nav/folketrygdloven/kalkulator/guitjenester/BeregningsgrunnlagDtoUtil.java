@@ -19,6 +19,8 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Graderi
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingGraderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
@@ -101,7 +103,18 @@ public class BeregningsgrunnlagDtoUtil {
             arbeidsforhold.setNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null));
             inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(im.getInntektBeløp().getVerdi()));
             mapArbeidsgiver(arbeidsforhold, arbeidsgiver, inntektArbeidYtelseGrunnlag);
+            finnEksternArbeidsforholdId(andel, inntektArbeidYtelseGrunnlag).ifPresent(ref -> arbeidsforhold.setEksternArbeidsforholdId(ref.getReferanse()));
         });
+    }
+
+    private static Optional<EksternArbeidsforholdRef> finnEksternArbeidsforholdId(BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        Optional<Arbeidsgiver> agOpt = andel.getArbeidsgiver();
+        Optional<InternArbeidsforholdRefDto> refOpt = andel.getArbeidsforholdRef();
+        if (agOpt.isEmpty() || refOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        return iayGrunnlag.getArbeidsforholdInformasjon()
+                .map(d -> d.finnEkstern(agOpt.get(), refOpt.get()));
     }
 
     private static void mapArbeidsgiver(BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, Arbeidsgiver arbeidsgiver, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
