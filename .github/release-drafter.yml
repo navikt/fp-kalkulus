@@ -22,8 +22,8 @@ categories:
       - 'bump'
       - 'dependencies'
 include-labels:
-  - 'kontrakt'
-  - 'kalkulator'
+  - 'domene/kontrakt'
+  - 'domene/kalkulator'
 template: |
   ## What's Changed
   $CHANGES
