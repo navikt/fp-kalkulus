@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -64,4 +65,16 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     public int hashCode() {
         return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet);
     }
+
+
+    @AssertTrue(message = "Liste med utbetalingsgrader skal ikke ha duplikate arbeidsforhold")
+    private boolean isIngenDuplikateArbeidsforhold() {
+        long antallUnike = utbetalingsgradPrAktivitet.stream().map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
+                .distinct()
+                .count();
+        long antall = utbetalingsgradPrAktivitet.stream().map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
+                .count();
+        return antall == antallUnike;
+    }
+
 }
