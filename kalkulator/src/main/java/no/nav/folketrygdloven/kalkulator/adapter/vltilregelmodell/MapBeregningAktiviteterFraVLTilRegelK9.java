@@ -29,7 +29,8 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusMod
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("OMP")
-public class MapBeregningAktiviteterFraVLTilRegelOMP implements MapBeregningAktiviteterFraVLTilRegel {
+@FagsakYtelseTypeRef("PSB")
+public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiviteterFraVLTilRegel {
 
     @Override
     public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
