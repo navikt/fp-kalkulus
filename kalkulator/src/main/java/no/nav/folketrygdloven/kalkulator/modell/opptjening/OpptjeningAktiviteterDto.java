@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class OpptjeningAktiviteterDto {
 
@@ -93,6 +96,14 @@ public class OpptjeningAktiviteterDto {
 
         public InternArbeidsforholdRefDto getArbeidsforholdId() {
             return arbeidsforholdId;
+        }
+
+        public Optional<Arbeidsgiver> getArbeidsgiver() {
+            if (arbeidsgiverAktørId == null && arbeidsgiverOrgNummer == null) {
+                return Optional.empty();
+            }
+            return arbeidsgiverAktørId != null ? Optional.of(Arbeidsgiver.person(new AktørId(arbeidsgiverAktørId))) :
+                    Optional.of(Arbeidsgiver.virksomhet(arbeidsgiverOrgNummer));
         }
 
         @Override

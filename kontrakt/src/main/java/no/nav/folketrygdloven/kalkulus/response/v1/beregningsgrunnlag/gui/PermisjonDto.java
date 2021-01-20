@@ -25,13 +25,21 @@ public class PermisjonDto {
     @JsonProperty(value = "permisjonTom")
     private LocalDate permisjonTom;
 
+
     PermisjonDto(){
         // Skjul default constructor
     }
 
+
+
     public PermisjonDto(LocalDate permisjonFom, LocalDate permisjonTom) {
         this.permisjonFom = permisjonFom;
         this.permisjonTom = permisjonTom;
+    }
+
+    public PermisjonDto(PermisjonDto p) {
+        this.permisjonFom = p.permisjonFom;
+        this.permisjonTom = p.permisjonTom;
     }
 
     public LocalDate getPermisjonFom() {
@@ -49,6 +57,8 @@ public class PermisjonDto {
     public void setPermisjonTom(LocalDate permisjonTom) {
         this.permisjonTom = permisjonTom;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

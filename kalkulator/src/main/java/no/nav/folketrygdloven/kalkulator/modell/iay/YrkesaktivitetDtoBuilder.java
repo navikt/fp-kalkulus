@@ -55,6 +55,12 @@ public class YrkesaktivitetDtoBuilder {
         return this;
     }
 
+    public YrkesaktivitetDtoBuilder leggTilPermisjon(PermisjonDtoBuilder builder) {
+        PermisjonDto permisjonDto = builder.build();
+        kladd.leggTilPermisjon(permisjonDto);
+        return this;
+    }
+
     boolean getErOppdatering() {
         return this.oppdaterer;
     }

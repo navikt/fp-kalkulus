@@ -28,7 +28,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
-public class MapBeregningAktiviteterFraVLTilRegelTest {
+public class MapBeregningAktiviteterFraVLTilRegelKap14Test {
 
     private static final String ORGNR = "915933149";
     private static final AktørId aktørId = AktørId.dummy();
@@ -67,14 +67,14 @@ public class MapBeregningAktiviteterFraVLTilRegelTest {
                                                            InntektsmeldingDto inntektsmelding) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegelKap14().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, AktivitetGradering.INGEN_GRADERING, List.of(), null);
-        return new MapBeregningAktiviteterFraVLTilRegel().mapForSkjæringstidspunkt(input);
+        return new MapBeregningAktiviteterFraVLTilRegelKap14().mapForSkjæringstidspunkt(input);
     }
 
     @Test

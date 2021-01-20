@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.PermisjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -37,6 +38,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidDto;
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdInformasjonDto;
+import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.PermisjonDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntekterDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
@@ -51,6 +53,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PensjonTrygdType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltNæringsYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltPensjonTrygdType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.UtbetaltYtelseFraOffentligeType;
@@ -221,10 +224,21 @@ public class MapIAYTilKalulator {
                 .medErAnsettelsesPeriode(aktivitetsAvtale.getStillingsprosent() == null);
     }
 
+    private static PermisjonDtoBuilder mapPermisjon(PermisjonDto permisjon) {
+        return PermisjonDtoBuilder.ny()
+                .medPeriode(Intervall.fraOgMedTilOgMed(permisjon.getPeriode().getFom(), permisjon.getPeriode().getTom()))
+                .medProsentsats(permisjon.getProsentsats())
+                .medPermisjonsbeskrivelseType(PermisjonsbeskrivelseType.fraKode(permisjon.getPermisjonsbeskrivelseType().getKode()));
+    }
+
+
 
     private static YrkesaktivitetDto mapYrkesaktivitet(no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.YrkesaktivitetDto yrkesaktivitet) {
         YrkesaktivitetDtoBuilder dtoBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
         yrkesaktivitet.getAktivitetsAvtaler().forEach(aktivitetsAvtale -> dtoBuilder.leggTilAktivitetsAvtale(mapAktivitetsAvtale(aktivitetsAvtale)));
+        if (yrkesaktivitet.getPermisjoner() != null) {
+            yrkesaktivitet.getPermisjoner().forEach(permisjon -> dtoBuilder.leggTilPermisjon(mapPermisjon(permisjon)));
+        }
         dtoBuilder.medArbeidsforholdId(mapArbeidsforholdRef(yrkesaktivitet.getAbakusReferanse()));
         dtoBuilder.medArbeidsgiver(MapFraKalkulator.mapArbeidsgiver(yrkesaktivitet.getArbeidsgiver()));
         dtoBuilder.medArbeidType(ArbeidType.fraKode(yrkesaktivitet.getArbeidType().getKode()));

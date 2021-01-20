@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 public class BeregningsgrunnlagInput {
 
     /** Aktiviteter for graderign av uttak. */
-    private final AktivitetGradering aktivitetGradering;
+    private AktivitetGradering aktivitetGradering = AktivitetGradering.INGEN_GRADERING;
 
     /** Data som referer behandlingen beregningsgrunnlag inngår i. */
     private KoblingReferanse koblingReferanse;
@@ -58,6 +58,18 @@ public class BeregningsgrunnlagInput {
         this.iayGrunnlag = iayGrunnlag;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.aktivitetGradering = aktivitetGradering;
+        this.refusjonskravDatoer = refusjonskravDatoer;
+        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
+    }
+
+    public BeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
+                                   InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                   OpptjeningAktiviteterDto opptjeningAktiviteter,
+                                   List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
+        this.iayGrunnlag = iayGrunnlag;
+        this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.refusjonskravDatoer = refusjonskravDatoer;
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }

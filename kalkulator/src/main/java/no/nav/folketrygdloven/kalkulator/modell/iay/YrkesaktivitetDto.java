@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 public class YrkesaktivitetDto {
 
     private Set<AktivitetsAvtaleDto> aktivitetsAvtale = new LinkedHashSet<>();
+    private Set<PermisjonDto> permisjoner = new LinkedHashSet<>();
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
     private ArbeidType arbeidType;
@@ -33,6 +34,11 @@ public class YrkesaktivitetDto {
         this.aktivitetsAvtale = kopierFra.aktivitetsAvtale.stream().map(aa -> {
             var aktivitetsAvtaleEntitet = new AktivitetsAvtaleDto(aa);
             return aktivitetsAvtaleEntitet;
+        }).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        this.permisjoner = kopierFra.permisjoner.stream().map(p -> {
+            var permisjon = new PermisjonDto(p);
+            return permisjon;
         }).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -98,7 +104,7 @@ public class YrkesaktivitetDto {
     public boolean gjelderFor(InntektsmeldingDto im) {
         return gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef());
     }
-    
+
     public boolean gjelderFor(InntektsmeldingSomIkkeKommerDto im) {
         return gjelderFor(im.getArbeidsgiver(), im.getRef());
     }
@@ -107,10 +113,18 @@ public class YrkesaktivitetDto {
         return Collections.unmodifiableSet(aktivitetsAvtale);
     }
 
-
     void leggTilAktivitetsAvtale(AktivitetsAvtaleDto aktivitetsAvtale) {
         this.aktivitetsAvtale.add(aktivitetsAvtale);
     }
+
+    public Set<PermisjonDto> getPermisjoner() {
+        return permisjoner;
+    }
+
+    void leggTilPermisjon(PermisjonDto permisjon) {
+        this.permisjoner.add(permisjon);
+    }
+
 
     /**
      * Arbeidsgiver
@@ -130,6 +144,8 @@ public class YrkesaktivitetDto {
     boolean erArbeidsforhold() {
         return ArbeidType.AA_REGISTER_TYPER.contains(arbeidType);
     }
+
+
 
     @Override
     public boolean equals(Object obj) {

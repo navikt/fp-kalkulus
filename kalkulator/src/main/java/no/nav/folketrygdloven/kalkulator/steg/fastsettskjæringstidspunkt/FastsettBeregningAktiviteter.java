@@ -28,9 +28,9 @@ public class FastsettBeregningAktiviteter {
 
     public BeregningAktivitetAggregatDto fastsettAktiviteter(FastsettBeregningsaktiviteterInput input) {
         // Oversetter Opptjening -> regelmodell, hvor også skjæringstidspunkt for Opptjening er lagret
-        AktivitetStatusModell regelmodell = FagsakYtelseTypeRef.Lookup.find(mapperTilRegel, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Forventer å finne implementasjon for ytelse " + input.getFagsakYtelseType().getKode()))
-                .mapForSkjæringstidspunkt(input);
+        MapBeregningAktiviteterFraVLTilRegel mapper = FagsakYtelseTypeRef.Lookup.find(mapperTilRegel, input.getFagsakYtelseType())
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne implementasjon for ytelse " + input.getFagsakYtelseType().getKode()));
+        AktivitetStatusModell regelmodell = mapper.mapForSkjæringstidspunkt(input);
         return MapBeregningAktiviteterFraRegelTilVL.map(regelmodell);
     }
 
