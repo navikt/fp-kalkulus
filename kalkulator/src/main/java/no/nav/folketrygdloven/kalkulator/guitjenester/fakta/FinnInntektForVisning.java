@@ -51,7 +51,7 @@ public class FinnInntektForVisning {
             return finnMånedsbeløpIBeregningsperiodenForFrilanser(ref, andel, inntektArbeidYtelseGrunnlag);
         }
         if (andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER) || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
-            return FinnInntektFraYtelse.finnÅrbeløpFraMeldekort(ref, andel.getAktivitetStatus(), inntektArbeidYtelseGrunnlag)
+            return FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, inntektArbeidYtelseGrunnlag)
                 .map(årsbeløp -> årsbeløp.divide(MND_I_1_ÅR, 10, RoundingMode.HALF_EVEN));
         }
         return Optional.empty();

@@ -110,7 +110,7 @@ class LagTilpassetDtoTjeneste  {
                                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelYtelseDto dtoYtelse = new BeregningsgrunnlagPrStatusOgAndelYtelseDto();
-        Optional<BigDecimal> årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekort(ref, andel.getAktivitetStatus(), inntektArbeidYtelseGrunnlag);
+        Optional<BigDecimal> årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, inntektArbeidYtelseGrunnlag);
         if (!årsbeløpFraMeldekort.isPresent()) {
             return dtoYtelse;
         }
