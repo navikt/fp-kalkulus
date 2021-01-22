@@ -95,7 +95,8 @@ public class OpptjeningAktiviteterDto {
         }
 
         public InternArbeidsforholdRefDto getArbeidsforholdId() {
-            return arbeidsforholdId == null ? InternArbeidsforholdRefDto.nullRef() : arbeidsforholdId;
+            return arbeidsforholdId == null ?
+                    InternArbeidsforholdRefDto.nullRef() : arbeidsforholdId;
         }
 
         public Optional<Arbeidsgiver> getArbeidsgiver() {
