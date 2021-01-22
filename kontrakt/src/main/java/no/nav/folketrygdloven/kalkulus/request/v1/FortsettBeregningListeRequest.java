@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -61,6 +62,17 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
     @Valid
     private StegType stegType;
 
+    /**
+     * Relasjonsmap mellom nye koblingId'er og gamle. F.eks hvis en behandling hadde to beregningsgrunnlag med referanse a og b,
+     * mens revurderingen nå har samlet begge i en referanse c vil mappet se slik ut:
+     * c: [a,b]
+     * Ikke obligatorisk
+     */
+    @JsonProperty(value = "koblingRelasjon")
+    @Valid
+    private Map<UUID, List<UUID>> koblingRelasjon;
+
+
     protected FortsettBeregningListeRequest() {
     }
 
@@ -74,6 +86,19 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
         this.stegType = Objects.requireNonNull(stegType, "stegType");
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
     }
+
+    public FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                         @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
+                                         @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType,
+                                         @Valid Map<UUID, List<UUID>> koblingRelasjon) {
+        this.eksternReferanser = new LinkedHashSet<>(Objects.requireNonNull(eksternReferanser, "eksterneReferanser"));
+        this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
+        this.stegType = Objects.requireNonNull(stegType, "stegType");
+        this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
+        this.koblingRelasjon = koblingRelasjon;
+    }
+
 
     @JsonCreator
     public FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
@@ -98,6 +123,10 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
 
     public StegType getStegType() {
         return stegType;
+    }
+
+    public Optional<Map<UUID, List<UUID>>> getKoblingRelasjon() {
+        return Optional.ofNullable(koblingRelasjon);
     }
 
     @Override

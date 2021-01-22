@@ -23,6 +23,7 @@ public enum HåndteringKode implements Kodeverdi {
     FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS_KODE("5038"),
     FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE_KODE("5042"),
     VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE_KODE("5039"),
+    VURDER_REFUSJON_BEREGNINGSGRUNNLAG("5059"),
     OVERSTYRING_AV_BEREGNINGSAKTIVITETER_KODE("6014"),
     OVERSTYRING_AV_BEREGNINGSGRUNNLAG_KODE("6015"),;
 
@@ -62,7 +63,7 @@ public enum HåndteringKode implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

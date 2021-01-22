@@ -13,10 +13,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class VurderRefusjonBeregningsgrunnlagDto {
+public class VurderRefusjonBeregningsgrunnlagDto extends HåndterBeregningDto {
+    public static final String IDENT_TYPE = "5059";
 
     @JsonProperty("fastsatteAndeler")
     @Valid
@@ -27,7 +31,13 @@ public class VurderRefusjonBeregningsgrunnlagDto {
         // For Json deserialisering
     }
 
+    @Override
+    public String getIdentType() {
+        return IDENT_TYPE;
+    }
+
     public VurderRefusjonBeregningsgrunnlagDto(@Valid @Size(min = 1) List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
+        super(HåndteringKode.fraKode(IDENT_TYPE));
         this.fastsatteAndeler = fastsatteAndeler;
     }
 

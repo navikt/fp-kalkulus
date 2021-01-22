@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBruttoBer
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.VurderVarigEndringEllerNyoppstartetSNHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsgrunnlagHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.refusjon.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 
 
@@ -38,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
         @JsonSubTypes.Type(value = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.class, name = FastsettBeregningsgrunnlagSNNyIArbeidslivetHåndteringDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.class, name = FastsettBGTidsbegrensetArbeidsforholdHåndteringDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.class, name = FastsettBruttoBeregningsgrunnlagSNHåndteringDto.IDENT_TYPE),
+        @JsonSubTypes.Type(value = VurderRefusjonBeregningsgrunnlagDto.class, name = VurderRefusjonBeregningsgrunnlagDto.IDENT_TYPE),
         @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.IDENT_TYPE),
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)

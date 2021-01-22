@@ -5,17 +5,21 @@ import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTi
 import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.MonthDay;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -27,9 +31,11 @@ import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -42,6 +48,7 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
 public class StegProsessInputTjeneste {
+    private static final Logger log = LoggerFactory.getLogger(StegProsessInputTjeneste.class);
 
     public static final MonthDay ENDRING_AV_GRUNNBELØP = MonthDay.of(5, 1);
 
@@ -72,7 +79,9 @@ public class StegProsessInputTjeneste {
         return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
 
-    public Resultat<StegProsesseringInput> lagFortsettInput(List<Long> koblingId, StegType stegType) {
+    public Resultat<StegProsesseringInput> lagFortsettInput(List<Long> koblingId,
+                                                            StegType stegType,
+                                                            Map<UUID, List<UUID>> koblingRelasjon) {
         Objects.requireNonNull(koblingId, "koblingId");
         var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
@@ -92,16 +101,21 @@ public class StegProsessInputTjeneste {
         Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
                 .collect(Collectors.toMap(
                         KoblingEntitet::getId,
-                        id -> mapStegInput(id, inputRespons.getResultatPrKobling().get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType)
+                        id -> mapStegInput(id, inputRespons.getResultatPrKobling().get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjon))
                         ));
         return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, koblingStegInputMap);
+    }
+
+    private List<UUID> finnOriginalKobling(KoblingEntitet kobling, Map<UUID, List<UUID>> koblingRelasjon) {
+        return koblingRelasjon.getOrDefault(kobling.getKoblingReferanse().getReferanse(), Collections.emptyList());
     }
 
 
     public StegProsesseringInput mapStegInput(KoblingEntitet kobling,
                                               KalkulatorInputDto input,
                                               BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet,
-                                              StegType stegType) {
+                                              StegType stegType,
+                                              List<UUID> originaleKoblinger) {
         StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
         if (stegType.equals(StegType.KOFAKBER)) {
             return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
@@ -111,7 +125,7 @@ public class StegProsessInputTjeneste {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
-            return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
+            return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
         } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
             return lagInputFordel(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
@@ -123,8 +137,13 @@ public class StegProsessInputTjeneste {
     }
 
     private StegProsesseringInput lagInputVurderRefusjon(StegProsesseringInput stegProsesseringInput,
-                                                         Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {
+                                                         Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
+                                                         List<UUID> originaleKoblinger) {
         var vurderVilkårOgRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlagInput(stegProsesseringInput);
+        Optional<BeregningsgrunnlagGrunnlagDto> originaltGrunnlag = finnOriginaltGrunnlag(originaleKoblinger);
+        if (originaltGrunnlag.isPresent()) {
+            vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag.get());
+        }
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
@@ -133,6 +152,20 @@ public class StegProsessInputTjeneste {
                     .orElse(vurderVilkårOgRefusjonBeregningsgrunnlag);
         }
         return vurderVilkårOgRefusjonBeregningsgrunnlag;
+    }
+
+    private Optional<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<UUID> originaleKoblinger) {
+        if (originaleKoblinger.isEmpty()) {
+            return Optional.empty();
+        }
+        if (originaleKoblinger.size() > 1) {
+            log.info("Fikk inn flere originale kobliner, støtter ikke mapping om til et enkelt grunnlag av disse, returnerer empty");
+            return Optional.empty();
+        }
+        Long koblingId = koblingRepository.hentKoblingIdForKoblingReferanse(new KoblingReferanse(originaleKoblinger.get(0)));
+        Optional<BeregningsgrunnlagGrunnlagEntitet> entitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
+        return entitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
+
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, StegType stegType) {
