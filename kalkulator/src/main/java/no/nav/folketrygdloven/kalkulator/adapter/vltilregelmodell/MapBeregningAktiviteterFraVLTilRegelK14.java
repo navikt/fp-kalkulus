@@ -49,7 +49,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             var opptjeningArbeidsgiverAktørId = opptjeningsperiode.getArbeidsgiverAktørId();
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
-            var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
+            var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return LagAktivPeriodeForArbeidstakerFelles.lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
                 opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, relevanteAktiviteter);
         } else {

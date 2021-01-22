@@ -109,7 +109,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             var opptjeningArbeidsgiverAktørId = opptjeningsperiode.getArbeidsgiverAktørId();
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
-            var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
+            var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return LagAktivPeriodeForArbeidstakerFelles.lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
                     opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, alleAktiviteter);
         } if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {

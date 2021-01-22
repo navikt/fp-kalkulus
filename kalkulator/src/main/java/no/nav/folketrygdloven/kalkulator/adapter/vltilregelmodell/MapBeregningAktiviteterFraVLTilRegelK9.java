@@ -75,7 +75,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                     ).findFirst()
                     .orElseThrow(() -> new IllegalStateException("Forventer å finne yrkesaktivitet for arbeidstakerinntekt"));
             Optional<LocalDate> sisteDagFørPermisjonStart = finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, relevantYrkesaktivitet);
-            var opptjeningArbeidsforhold = Optional.ofNullable(opptjeningsperiode.getArbeidsforholdId()).orElse(InternArbeidsforholdRefDto.nullRef());
+            var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
                     Periode.of(gjeldendePeriode.getFomDato(), sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato())),
                     arbeidsgiver,
