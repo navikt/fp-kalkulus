@@ -43,13 +43,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.1-20200824163700-b4aa077</fpsak.nare.version>
+        <fpsak.nare.version>2.1.2</fpsak.nare.version>
 
-        <fpsak.tidsserie.version>2.3-20200821080538-aa1ee12</fpsak.tidsserie.version>
+        <fpsak.tidsserie.version>2.5.5</fpsak.tidsserie.version>
 
         <beregningsgrunnlag.regelmodell.version>2.1.4</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>2.5.3</felles.version>
+        <felles.version>3.0.60</felles.version>
 
         <prometheus.version>0.9.0</prometheus.version>
         <junit.version>5.7.0</junit.version>
@@ -188,12 +188,6 @@
                 <version>3.0.0</version>
                 <scope>compile</scope>
             </dependency>
-            <dependency>
-                <groupId>jakarta.inject</groupId>
-                <artifactId>jakarta.inject-api</artifactId>
-                <version>2.0.0</version>
-                <scope>compile</scope>
-            </dependency>
 
             <dependency>
                 <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -315,19 +309,14 @@
                 <!-- for Bean validation -->
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>6.1.7.Final</version>
+                <version>6.2.0.Final</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.web</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>2.2.6</version>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>3.0.3</version>
             </dependency>
-            <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>javax.el-api</artifactId>
-                <version>3.0.0</version>
-            </dependency>
-
+            
             <!-- Følgende kan fjernes når fpfelles får jaxws-rt istd håndkodede 
                 versjoner av disse bibliotekene. Men må overstyres nå pga kompatibilitet. -->
             <dependency>
@@ -350,11 +339,6 @@
                 <artifactId>weld-junit5</artifactId>
                 <version>2.0.2.Final</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>3.0.1-b12</version>
             </dependency>
 
             <!--Swagger -->
