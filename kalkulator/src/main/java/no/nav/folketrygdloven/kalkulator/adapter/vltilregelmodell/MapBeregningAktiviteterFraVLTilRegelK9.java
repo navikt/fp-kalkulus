@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -45,57 +47,49 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
             var relevantYrkesaktivitet = input.getIayGrunnlag().getAktørArbeidFraRegister()
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());
-            relevanteAktiviteter.forEach(opptjeningsperiode -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPeriode(
-                    input.getInntektsmeldinger(),
-                    relevantYrkesaktivitet,
-                    opptjeningsperiode,
-                    relevanteAktiviteter,
-                    input.getSkjæringstidspunktOpptjening())));
+            List<AktivPeriode> aktivePerioder = relevanteAktiviteter.stream()
+                    .flatMap(opptjeningsperiode ->
+                            lagAktivPeriode(
+                                    input.getInntektsmeldinger(),
+                                    relevantYrkesaktivitet,
+                                    opptjeningsperiode,
+                                    relevanteAktiviteter,
+                                    input.getSkjæringstidspunktOpptjening())
+                            .stream()
+                    ).collect(Collectors.toList());
+            aktivePerioder.forEach(modell::leggTilEllerOppdaterAktivPeriode);
         }
 
         return modell;
     }
 
-    private AktivPeriode lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                         Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                         OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
-                                         Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter,
-                                         LocalDate skjæringstidspunktOpptjening) {
+    private Optional<AktivPeriode> lagAktivPeriode(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                   Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                   OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
+                                                   Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter,
+                                                   LocalDate skjæringstidspunktOpptjening) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(opptjeningsperiode.getOpptjeningAktivitetType());
         var gjeldendePeriode = opptjeningsperiode.getPeriode();
         if (Aktivitet.FRILANSINNTEKT.equals(aktivitetType)) {
-            return AktivPeriode.forFrilanser(Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato()));
+            return Optional.of(AktivPeriode.forFrilanser(
+                    Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
-            var relevantYrkesaktivitet = yrkesaktiviteter
-                    .stream()
-                    .filter(ya -> ya.gjelderFor(
-                            arbeidsgiver,
-                            opptjeningsperiode.getArbeidsforholdId())
-                    ).findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Forventer å finne yrkesaktivitet for arbeidstakerinntekt"));
-            Optional<LocalDate> sisteDagFørPermisjonStart = finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, relevantYrkesaktivitet);
-            var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
-            return lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
-                    Periode.of(gjeldendePeriode.getFomDato(), sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato())),
-                    arbeidsgiver,
-                    opptjeningArbeidsforhold,
-                    relevanteAktiviteter);
+            LocalDate tomDato = finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
+            if (!tomDato.isBefore(gjeldendePeriode.getFomDato())) {
+                return Optional.of(lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
+                        Periode.of(gjeldendePeriode.getFomDato(), tomDato),
+                        arbeidsgiver,
+                        opptjeningsperiode.getArbeidsforholdId(),
+                        relevanteAktiviteter));
+            } else {
+                return Optional.empty();
+            }
         } else {
-            return AktivPeriode.forAndre(aktivitetType, Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato()));
+            return Optional.of(AktivPeriode.forAndre(
+                    aktivitetType,
+                    Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         }
-    }
-
-    private Optional<LocalDate> finnSisteDagFørPermisjonsstart(LocalDate skjæringstidspunktOpptjening, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, YrkesaktivitetDto relevantYrkesaktivitet) {
-        return relevantYrkesaktivitet.getPermisjoner()
-                .stream()
-                .filter(p -> p.getProsentsats() != null && p.getProsentsats().compareTo(BigDecimal.valueOf(100)) == 0 &&
-                        p.getPeriode().inkluderer(skjæringstidspunktOpptjening)
-                && p.getPeriode().overlapper(opptjeningsperiode.getPeriode()))
-                .map(PermisjonDto::getPeriode)
-                .map(Intervall::getFomDato)
-                .min(Comparator.naturalOrder())
-                .map(d -> d.minusDays(1));
     }
 
     protected static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
@@ -110,6 +104,30 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
         } else {
             throw new IllegalStateException("Må ha en arbeidsgiver som enten er aktør eller virksomhet når aktivitet er " + Aktivitet.ARBEIDSTAKERINNTEKT);
         }
+    }
+
+    private LocalDate finnTomdatoTaHensynTilPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, LocalDate skjæringstidspunktOpptjening, Intervall gjeldendePeriode, Arbeidsgiver arbeidsgiver) {
+        var relevantYrkesaktivitet = yrkesaktiviteter
+                .stream()
+                .filter(ya -> ya.gjelderFor(
+                        arbeidsgiver,
+                        opptjeningsperiode.getArbeidsforholdId())
+                ).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne yrkesaktivitet for arbeidstakerinntekt"));
+        Optional<LocalDate> sisteDagFørPermisjonStart = finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, relevantYrkesaktivitet);
+        return sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato());
+    }
+
+    private Optional<LocalDate> finnSisteDagFørPermisjonsstart(LocalDate skjæringstidspunktOpptjening, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, YrkesaktivitetDto relevantYrkesaktivitet) {
+        return relevantYrkesaktivitet.getPermisjoner()
+                .stream()
+                .filter(p -> p.getProsentsats() != null && p.getProsentsats().compareTo(BigDecimal.valueOf(100)) == 0 &&
+                        p.getPeriode().inkluderer(skjæringstidspunktOpptjening)
+                        && p.getPeriode().overlapper(opptjeningsperiode.getPeriode()))
+                .map(PermisjonDto::getPeriode)
+                .map(Intervall::getFomDato)
+                .min(Comparator.naturalOrder())
+                .map(d -> d.minusDays(1));
     }
 
     private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(String aktørId, Periode gjeldendePeriode) {
@@ -135,23 +153,23 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
     /**
      * Sjekker om det er mottatt inntektsmelding for et spesifikt arbeidsforhold og et gitt orgnummer
      * og om dette spesifikke arbeidsforholdet er aktivt på skjæringstidspunktet for opptjening.
-     *
+     * <p>
      * Tilpassningen er gjort for å støtte caset der omsorgspenger kun mottar inntektsmeldinger for arbeidsforhold der man har fravær (https://jira.adeo.no/browse/TSF-1153)
      *
-     * @param inntektsmeldinger Innteksmeldinger
-     * @param alleAktiviteter Alle aktiviteter
+     * @param inntektsmeldinger               Innteksmeldinger
+     * @param alleAktiviteter                 Alle aktiviteter
      * @param opptjeningArbeidsgiverOrgnummer Orgnnummer for arbeidsaktivitet
      * @return Boolean som sier om det er motttatt inntektsmelding for et spesifikt arbeidsforhold som er aktivt på skjæringstidspunktet
      */
     private static boolean harInntektsmeldingForSpesifiktArbeidVedSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                                Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter,
-                                                                                String opptjeningArbeidsgiverOrgnummer) {
+                                                                                       Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter,
+                                                                                       String opptjeningArbeidsgiverOrgnummer) {
         return alleAktiviteter.stream()
                 .filter(a -> a.getArbeidsgiverOrgNummer() != null && a.getArbeidsgiverOrgNummer().equals(opptjeningArbeidsgiverOrgnummer))
                 .anyMatch(a -> OpptjeningAktivitetType.ARBEID.equals(a.getType()) && inntektsmeldinger.stream()
                         .anyMatch(im -> im.getArbeidsgiver().getIdentifikator().equals(a.getArbeidsgiverOrgNummer())
                                 && im.gjelderForEtSpesifiktArbeidsforhold()
-                        && im.getArbeidsforholdRef().gjelderFor(a.getArbeidsforholdId())));
+                                && im.getArbeidsforholdRef().gjelderFor(a.getArbeidsforholdId())));
     }
 
     private static boolean harInntektsmeldingForArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,
@@ -161,9 +179,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
             return false;
         } else {
             return inntektsmeldinger.stream()
-                .anyMatch(im -> im.gjelderForEtSpesifiktArbeidsforhold()
-                    && Objects.equals(im.getArbeidsgiver().getOrgnr(), orgnummer)
-                    && Objects.equals(im.getArbeidsforholdRef().getReferanse(), arbeidsforholdRef.getReferanse()));
+                    .anyMatch(im -> im.gjelderForEtSpesifiktArbeidsforhold()
+                            && Objects.equals(im.getArbeidsgiver().getOrgnr(), orgnummer)
+                            && Objects.equals(im.getArbeidsforholdRef().getReferanse(), arbeidsforholdRef.getReferanse()));
         }
     }
 }

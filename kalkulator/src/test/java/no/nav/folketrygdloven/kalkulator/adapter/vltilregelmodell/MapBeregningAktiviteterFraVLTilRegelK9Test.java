@@ -126,6 +126,23 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
         assertThat(aktivitet.getPeriode().getTom()).isEqualTo(TIDENES_ENDE);
     }
 
+    @Test
+    void skal_ikke_mappe_et_arbeidsforhold_med_full_permisjon_hele_perioden() {
+        // Arrange
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
+        var opptjeningAktiviteterDto = lagOpptjeningsAktivitet(ansettelsesDato, NULL_REF);
+
+        // Act
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, opptjeningAktiviteterDto);
+
+        // Assert
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell.size()).isEqualTo(0);
+    }
+
     private AktivitetStatusModell mapForSkjæringstidspunkt(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
         var beregningsgrunnlaginput = new BeregningsgrunnlagInput(KOBLING_REFERANSE, iayGrunnlagBuilder.build(), opptjeningAktiviteterDto, null, null);
         var stegInput = new StegProsesseringInput(beregningsgrunnlaginput, BeregningsgrunnlagTilstand.OPPRETTET);
