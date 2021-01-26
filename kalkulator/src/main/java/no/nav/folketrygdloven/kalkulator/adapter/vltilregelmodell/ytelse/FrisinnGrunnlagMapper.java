@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
+package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesi
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;

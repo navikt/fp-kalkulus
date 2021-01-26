@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SammenligningsGrunnlag;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;

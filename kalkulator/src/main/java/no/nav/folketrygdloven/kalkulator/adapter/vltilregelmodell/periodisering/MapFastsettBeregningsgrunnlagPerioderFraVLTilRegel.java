@@ -39,6 +39,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
+    private static final String SKAL_HA_BEREGNINGSGRUNNLAG = "Skal ha beregningsgrunnlag";
+
     protected MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel() {
     }
 
@@ -99,7 +101,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var grunnlag = inputAndeler.getBeregningsgrunnlagInput().getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .orElseThrow(() -> new IllegalStateException(SKAL_HA_BEREGNINGSGRUNNLAG))
             .getSkjæringstidspunkt();
 
         Collection<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger()
@@ -186,7 +188,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     }
 
     private boolean harRefusjon(InntektsmeldingDto im) {
-        return (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || im.getEndringerRefusjon().size() > 0;
+        return (im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall()) || !im.getEndringerRefusjon().isEmpty();
     }
 
     private boolean gjelderInntektsmeldingFor(YrkesaktivitetDto yrkesaktivitet, InntektsmeldingDto im) {
@@ -208,7 +210,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
     protected Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .orElseThrow(() -> new IllegalStateException(SKAL_HA_BEREGNINGSGRUNNLAG))
             .getSkjæringstidspunkt();
         Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = FinnFørsteDagEtterBekreftetPermisjon.finn(input.getIayGrunnlag(), ya, ansettelsesPeriode,
             skjæringstidspunktBeregning);
@@ -252,7 +254,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     private Arbeidsforhold lagArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
-            .filter(im -> ya.gjelderFor(im))
+            .filter(ya::gjelderFor)
             .filter(im -> im.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold())
             .findFirst();
         return MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(
@@ -274,7 +276,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var grunnlag = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()
-            .orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag"))
+            .orElseThrow(() -> new IllegalStateException(SKAL_HA_BEREGNINGSGRUNNLAG))
             .getSkjæringstidspunkt();
 
         Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning, beregningsgrunnlagInput.getFagsakYtelseType());
@@ -285,8 +287,14 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             ArbeidsforholdOgInntektsmelding.Builder builder = ArbeidsforholdOgInntektsmelding.builder();
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndel(inputAndeler.getAndeler(), ya);
 
-            if (!harAggregertAndelOgAktivitetTilkommerEtterStp(beregningsgrunnlagInput, iayGrunnlag, skjæringstidspunktBeregning, matchendeAndel,
-                ansettelsesPeriode, ya)) {
+            boolean harKunSpesifikkeAndelerIkkeTilkommet = !harAggregertAndelOgAktivitetTilkommerEtterStp(
+                    beregningsgrunnlagInput,
+                    iayGrunnlag,
+                    skjæringstidspunktBeregning,
+                    matchendeAndel,
+                    ansettelsesPeriode,
+                    ya);
+            if (harKunSpesifikkeAndelerIkkeTilkommet) {
                 Optional<InntektsmeldingDto> inntektsmelding = finnMatchendeInntektsmelding(ya, inntektsmeldinger);
                 if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)
                     || harAggregertAndelOgMottattInntektsmeldingUtenId(matchendeAndel, inntektsmelding)) {

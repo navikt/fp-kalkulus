@@ -165,7 +165,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         assertThat(bruttoBeregningsgrunnlagList).hasSize(1);
         BruttoBeregningsgrunnlag bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlagList.get(0);
         assertThat(bruttoBeregningsgrunnlag.getAktivitetStatus()).isEqualTo(AktivitetStatusV2.AT);
-        assertThat(bruttoBeregningsgrunnlag.getBruttoBeregningsgrunnlag()).isEqualByComparingTo(BigDecimal.TEN);
+        assertThat(bruttoBeregningsgrunnlag.getBruttoPrÅr()).isEqualByComparingTo(BigDecimal.TEN);
         assertThat(bruttoBeregningsgrunnlag.getArbeidsforhold().get().getOrgnr()).isEqualTo(ORGNR);
         assertThat(bruttoBeregningsgrunnlag.getArbeidsforhold().get().getArbeidsforholdId()).isNull();
     }

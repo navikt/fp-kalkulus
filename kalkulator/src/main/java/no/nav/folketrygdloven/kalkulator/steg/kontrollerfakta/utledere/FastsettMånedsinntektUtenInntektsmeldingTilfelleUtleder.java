@@ -22,7 +22,6 @@ import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 @ApplicationScoped
 @FagsakYtelseTypeRef("FP")
 @FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("PSB")
 @FaktaOmBeregningTilfelleRef("FASTSETT_MÅNEDSLØNN_ARBEIDSTAKER_UTEN_INNTEKTSMELDING")
 public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtleder implements TilfelleUtleder {
 

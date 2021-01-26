@@ -325,17 +325,17 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         }
     }
 
-    private static void mapSammenligningsgrunnlagPrStatus(final EnumMap<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlag,
+    private static void mapSammenligningsgrunnlagPrStatus(Map<AktivitetStatus, SammenligningsGrunnlag> sammenligningsgrunnlag,
                                                           BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
-        sammenligningsgrunnlag.entrySet().forEach(s -> {
-            if (!AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.containsKey(s.getKey())) {
-                throw new IllegalArgumentException("Finner ingen mapping mellom AktivitetStatus " + s.getKey() + " og SammenligningsgrunnlagType");
+        sammenligningsgrunnlag.forEach((key, value) -> {
+            if (!AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.containsKey(key)) {
+                throw new IllegalArgumentException("Finner ingen mapping mellom AktivitetStatus " + key + " og SammenligningsgrunnlagType");
             }
             BeregningsgrunnlagDto.Builder.oppdater(Optional.of(eksisterendeVLGrunnlag)).leggTilSammenligningsgrunnlag(SammenligningsgrunnlagPrStatusDto.builder()
-                    .medSammenligningsperiode(s.getValue().getSammenligningsperiode().getFom(), s.getValue().getSammenligningsperiode().getTom())
-                    .medRapportertPrÅr(s.getValue().getRapportertPrÅr())
-                    .medAvvikPromilleNy(s.getValue().getAvvikPromilleUtenAvrunding())
-                    .medSammenligningsgrunnlagType(AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.get(s.getKey())));
+                    .medSammenligningsperiode(value.getSammenligningsperiode().getFom(), value.getSammenligningsperiode().getTom())
+                    .medRapportertPrÅr(value.getRapportertPrÅr())
+                    .medAvvikPromilleNy(value.getAvvikPromilleUtenAvrunding())
+                    .medSammenligningsgrunnlagType(AKTIVITETSTATUS_SAMMENLIGNINGSGRUNNLAGTYPE_MAP.get(key)));
         });
     }
 

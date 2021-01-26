@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningTy
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.FrisinnGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.FrisinnGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBGStatuserFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFRISINN;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;

@@ -51,7 +51,7 @@ public final class MapPeriodisertBruttoBeregningsgrunnlag {
         return BruttoBeregningsgrunnlag.builder()
             .medAktivitetStatus(regelAktivitetStatus)
             .medArbeidsforhold(arbeidsforhold.orElse(null))
-            .medBruttoBeregningsgrunnlag(a.getBruttoInkludertNaturalYtelser())
+            .medBruttoPrÅr(a.getBruttoInkludertNaturalYtelser())
             .build();
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
+package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
 
@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.omp.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;

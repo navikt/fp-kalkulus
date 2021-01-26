@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ForeldrepengerGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
