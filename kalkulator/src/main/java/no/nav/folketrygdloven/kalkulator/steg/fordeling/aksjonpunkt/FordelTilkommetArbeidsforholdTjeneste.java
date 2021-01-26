@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public final class FordelTilkommetArbeidsforholdTjeneste {
 
@@ -24,17 +25,18 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     public static boolean erNyttArbeidsforhold(Arbeidsgiver arbeidsgiver,
                                                InternArbeidsforholdRefDto arbeidsforholdRef,
                                                BeregningAktivitetAggregatDto aktivitetAggregat,
-                                               LocalDate skjæringstidspunkt) {
+                                               LocalDate skjæringstidspunkt,
+                                               FagsakYtelseType fagsakYtelseType) {
         var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
         return beregningAktiviteter.stream()
-                .filter(beregningAktivitet -> erIkkeAktivPåSisteAktivitetsdato(skjæringstidspunkt, beregningAktivitet))
+                .filter(beregningAktivitet -> erIkkeAktivPåSisteAktivitetsdato(skjæringstidspunkt, beregningAktivitet, fagsakYtelseType))
                 .noneMatch(
                         beregningAktivitet -> arbeidsforholdRef.gjelderFor(beregningAktivitet.getArbeidsforholdRef()) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
     }
 
-    private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
-        return !beregningAktivitet.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt)) &&
-                !beregningAktivitet.getPeriode().getFomDato().isAfter(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt));
+    private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet, FagsakYtelseType fagsakYtelseType) {
+        return !beregningAktivitet.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType)) &&
+                !beregningAktivitet.getPeriode().getFomDato().isAfter(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType));
     }
 
     private static boolean matcherArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningAktivitetDto beregningAktivitet) {

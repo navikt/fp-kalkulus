@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public final class FinnAnsettelsesPeriode {
 
@@ -17,21 +18,22 @@ public final class FinnAnsettelsesPeriode {
         // skjul public constructor
     }
 
-    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
-        return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt));
+    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
+        return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt, fagsakYtelseType));
     }
 
     /** Forventer at skjæringstidspunktet ligger i en av ansettelses periodene
      *
      *
-     * @param ansettelsesPerioder
-     * @param skjæringstidspunkt
+     * @param ansettelsesPerioder Ansettelsesperioder
+     * @param skjæringstidspunkt Skjæringstidspunkt
+     * @param fagsakYtelseType
      * @return Periode {@link Periode}
      */
-    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
             .stream()
-            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt)))
+            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType)))
             .collect(Collectors.toList());
         if (perioderSomSlutterEtterStp.isEmpty()) {
             return null;

@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 class FordelTilkommetArbeidsforholdTjenesteTest {
@@ -42,7 +43,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP, FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isFalse();
@@ -68,7 +69,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP, FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isTrue();
@@ -94,7 +95,7 @@ class FordelTilkommetArbeidsforholdTjenesteTest {
                 .build();
 
         // Act
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP);
+        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(yrkesaktivitetDto.getArbeidsgiver(), yrkesaktivitetDto.getArbeidsforholdRef(), beregningAktivitetAggregatDto, STP, FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(erNyttArbeidsforhold).isTrue();

@@ -11,7 +11,7 @@ public class KoblingReferanseMock extends KoblingReferanse {
 
     public static final AktørId AKTØR_ID = AktørId.dummy();
     private Skjæringstidspunkt skjæringstidspunkt;
-
+    private FagsakYtelseType fagsakYtelseType = FagsakYtelseType.FORELDREPENGER;
 
     public KoblingReferanseMock() {
         super();
@@ -26,6 +26,16 @@ public class KoblingReferanseMock extends KoblingReferanse {
                 .build();
     }
 
+    public KoblingReferanseMock(LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
+        super();
+        this.fagsakYtelseType = fagsakYtelseType;
+        this.skjæringstidspunkt = Skjæringstidspunkt.builder()
+                .medSkjæringstidspunktBeregning(skjæringstidspunkt)
+                .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
+                .medFørsteUttaksdato(skjæringstidspunkt.plusDays(1))
+                .build();
+    }
+
     public KoblingReferanseMock(LocalDate skjæringstidspunkt) {
         super();
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
@@ -37,7 +47,7 @@ public class KoblingReferanseMock extends KoblingReferanse {
 
     @Override
     public FagsakYtelseType getFagsakYtelseType() {
-        return FagsakYtelseType.FORELDREPENGER;
+        return fagsakYtelseType;
     }
 
     @Override

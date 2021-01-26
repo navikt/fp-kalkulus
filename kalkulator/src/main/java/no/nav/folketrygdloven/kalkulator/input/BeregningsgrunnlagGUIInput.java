@@ -116,7 +116,7 @@ public class BeregningsgrunnlagGUIInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening, getFagsakYtelseType());
     }
 
     public Optional<FaktaAggregatDto> getFaktaAggregat() {

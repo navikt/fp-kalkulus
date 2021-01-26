@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 class ErFjernetIOverstyrtTest {
     private static final LocalDate STP = LocalDate.of(2020,1,1);
@@ -59,7 +60,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isFalse();
     }
@@ -77,7 +78,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isFalse();
     }
@@ -94,7 +95,7 @@ class ErFjernetIOverstyrtTest {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(grunnlag.getArbeidsforholdInformasjon(), grunnlag.getAktørArbeidFraRegister());
 
         // Act
-        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP);
+        boolean erFjernet = ErFjernetIOverstyrt.erFjernetIOverstyrt(filter, ya.build(), bgAggregat, STP, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(erFjernet).isTrue();
     }

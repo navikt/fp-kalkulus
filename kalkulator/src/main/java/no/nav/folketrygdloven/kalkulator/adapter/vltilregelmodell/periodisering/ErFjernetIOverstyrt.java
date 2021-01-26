@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class ErFjernetIOverstyrt {
     private ErFjernetIOverstyrt() {
@@ -20,13 +21,14 @@ public class ErFjernetIOverstyrt {
     public static boolean erFjernetIOverstyrt(YrkesaktivitetFilterDto filter,
                                               YrkesaktivitetDto yrkesaktivitet,
                                               BeregningAktivitetAggregatDto aktivitetAggregatEntitet,
-                                              LocalDate skjæringstidspunktBeregning) {
+                                              LocalDate skjæringstidspunktBeregning,
+                                              FagsakYtelseType fagsakYtelseType) {
 
         List<Periode> ansettelsesPerioder = filter.getAnsettelsesPerioder(yrkesaktivitet).stream()
             .map(aa -> new Periode(aa.getPeriode().getFomDato(), aa.getPeriode().getTomDato()))
-            .filter(periode -> !periode.getTom().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning)))
+            .filter(periode -> !periode.getTom().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning, fagsakYtelseType)))
             .collect(Collectors.toList());
-        if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder)) {
+        if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder, fagsakYtelseType)) {
             return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(filter.getBekreftedePermisjonerForYrkesaktivitet(yrkesaktivitet), skjæringstidspunktBeregning);
         }
         return false;
@@ -44,8 +46,9 @@ public class ErFjernetIOverstyrt {
     }
 
     private static boolean erAktivDagenFørSkjæringstidspunktet(LocalDate skjæringstidspunktBeregning,
-                                                               List<Periode> ansettelsesPerioder) {
+                                                               List<Periode> ansettelsesPerioder,
+                                                               FagsakYtelseType fagsakYtelseType) {
         return ansettelsesPerioder.stream()
-                .anyMatch(periode -> periode.inneholder(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning)));
+                .anyMatch(periode -> periode.inneholder(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning, fagsakYtelseType)));
     }
 }

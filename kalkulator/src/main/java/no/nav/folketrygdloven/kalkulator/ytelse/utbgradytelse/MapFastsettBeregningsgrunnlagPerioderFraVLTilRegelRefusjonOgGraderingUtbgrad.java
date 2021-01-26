@@ -53,7 +53,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad
      *
      *
-     * @param startdatoPermisjon
+     * @param startdatoPermisjon Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya                      Yrkesaktivitet
      * @return Gyldige perioder for refusjon
@@ -145,7 +145,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             return false;
         }
         Optional<Periode> ansettelsesPeriodeSomSlutterVedEllerEtterStp = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(yrkesaktivitet.get()),
-                ref.getSkjæringstidspunktBeregning());
+                ref.getSkjæringstidspunktBeregning(), ref.getFagsakYtelseType());
         return ansettelsesPeriodeSomSlutterVedEllerEtterStp.isPresent();
     }
 
@@ -183,7 +183,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(arbeidsgiver, tilretteleggingArbeidsforholdRef);
             yrkesaktivitet.ifPresent(ya -> Arbeidsforhold.builder(arbeidsforhold)
                     .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya),
-                            ref.getSkjæringstidspunktBeregning())));
+                            ref.getSkjæringstidspunktBeregning(), ref.getFagsakYtelseType())));
             return arbeidsforhold;
         });
     }

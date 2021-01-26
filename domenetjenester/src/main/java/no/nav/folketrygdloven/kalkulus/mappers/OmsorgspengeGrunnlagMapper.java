@@ -73,14 +73,14 @@ class OmsorgspengeGrunnlagMapper {
     }
 
     private static Optional<Intervall> finnIntervallMedUgyligRefusjon(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
-                                                                                BeregningAktivitetAggregatDto gjeldendeAktiviteter,
-                                                                                UtbetalingsgradArbeidsforholdDto arbeidsforhold, RefusjonskravDatoDto dto) {
+                                                                      BeregningAktivitetAggregatDto gjeldendeAktiviteter,
+                                                                      UtbetalingsgradArbeidsforholdDto arbeidsforhold, RefusjonskravDatoDto dto) {
         LocalDate førsteDatoMedGyldigRefusjon = finnFørsteGyldigeDatoMedRefusjon(dto, FagsakYtelseType.OMSORGSPENGER);
         LocalDate førsteDatoMedRefusjon = HarYrkesaktivitetInnsendtRefusjonForSent.finnFørsteDagMedSøktRefusjon(
                 dto,
                 gjeldendeAktiviteter,
                 beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlag().get().getSkjæringstidspunkt(),
-                arbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(arbeidsforhold.getInternArbeidsforholdRef().getAbakusReferanse())
+                arbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(arbeidsforhold.getInternArbeidsforholdRef().getAbakusReferanse()), FagsakYtelseType.OMSORGSPENGER
         );
         if (førsteDatoMedGyldigRefusjon.isAfter(førsteDatoMedRefusjon)) {
             return Optional.of(Intervall.fraOgMedTilOgMed(førsteDatoMedRefusjon, førsteDatoMedGyldigRefusjon.minusDays(1)));

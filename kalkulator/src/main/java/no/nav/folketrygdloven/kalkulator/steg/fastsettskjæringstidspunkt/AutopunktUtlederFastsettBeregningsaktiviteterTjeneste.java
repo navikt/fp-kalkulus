@@ -33,26 +33,27 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
      * @param aktørYtelse aktørytelse for søker
      * @param beregningsgrunnlag beregningsgrunnlaget
      * @param dagensdato Dagens dato/ idag
+     * @param fagsakYtelseType Fagsakytelsetype
      * @return Optional som innholder ventefrist om autopunkt skal opprettes, Optional.empty ellers
      */
-    static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, BeregningsgrunnlagDto beregningsgrunnlag, LocalDate dagensdato) {
+    static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, BeregningsgrunnlagDto beregningsgrunnlag, LocalDate dagensdato, FagsakYtelseType fagsakYtelseType) {
         if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt()))
             return Optional.empty();
 
-        if(erSisteMeldekortMottatt(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt())){
+        if(erSisteMeldekortMottatt(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt(), fagsakYtelseType)){
             return Optional.empty();
         }
 
         return utledVenteFrist(beregningsgrunnlag.getSkjæringstidspunkt(), dagensdato);
     }
 
-    private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
+    private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
         var ytelseFilterVedtak = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
         Optional<YtelseDto> nyligsteVedtak = BeregningUtils.sisteVedtakFørStpForType(ytelseFilterVedtak, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, FagsakYtelseType.DAGPENGER));
 
         var ytelseFilterMeldekort = new YtelseFilterDto(aktørYtelse);
 
-        if(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt).isBefore(skjæringstidspunkt) && opphørerYtelseDagenFørStp(nyligsteVedtak.get(), skjæringstidspunkt)){
+        if(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType).isBefore(skjæringstidspunkt) && opphørerYtelseDagenFørStp(nyligsteVedtak.get(), skjæringstidspunkt)){
             Optional<YtelseAnvistDto> meldekortOpphørtYtelse = BeregningUtils.finnMeldekortSomInkludererGittDato(ytelseFilterMeldekort, nyligsteVedtak.get(),
                     Set.of(nyligsteVedtak.get().getRelatertYtelseType()), skjæringstidspunkt.minusDays(1));
             return meldekortOpphørtYtelse.isPresent();

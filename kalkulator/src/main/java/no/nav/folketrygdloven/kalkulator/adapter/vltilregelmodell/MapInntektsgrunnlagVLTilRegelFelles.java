@@ -122,9 +122,9 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     private void mapInntektsmelding(Inntektsgrunnlag inntektsgrunnlag,
                                     Collection<InntektsmeldingDto> inntektsmeldinger,
                                     YrkesaktivitetFilterDto filterYaRegister,
-                                    LocalDate skjæringstidspunktBeregning) {
+                                    LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
         inntektsmeldinger.stream()
-            .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
+            .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning, fagsakYtelseType))
             .map(this::mapNaturalYtelse)
             .forEach(naturalytelse -> inntektsgrunnlag.leggTilPeriodeinntekt(naturalytelse));
     }
@@ -151,10 +151,10 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         }
     }
 
-    private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
+    private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
         return filterYaRegister.getYrkesaktiviteter().stream()
             .filter(ya -> ya.gjelderFor(im))
-            .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
+            .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning, fagsakYtelseType)
                 .map(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false));
     }
 
@@ -263,7 +263,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
             lagInntekterSN(inntektsgrunnlag, filter);
         }
 
-        mapInntektsmelding(inntektsgrunnlag, inntektsmeldinger, filterYaRegister, skjæringstidspunktBeregning);
+        mapInntektsmelding(inntektsgrunnlag, inntektsmeldinger, filterYaRegister, skjæringstidspunktBeregning, input.getFagsakYtelseType());
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister()).før(skjæringstidspunktBeregning);
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {

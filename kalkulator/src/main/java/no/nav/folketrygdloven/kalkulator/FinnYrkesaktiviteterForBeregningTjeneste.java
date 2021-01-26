@@ -35,9 +35,10 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
                 !ErFjernetIOverstyrt.erFjernetIOverstyrt(filter,
                         yrkesaktivitet,
                         overstyrtEllerRegisterAktiviteter,
-                        skjæringstidspunktBeregning
+                        skjæringstidspunktBeregning,
+                        koblingReferanse.getFagsakYtelseType()
                 ))
-            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
+            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning, koblingReferanse.getFagsakYtelseType()).isPresent())
             .collect(Collectors.toList());
     }
 
@@ -55,7 +56,7 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
         LocalDate skjæringstidspunktBeregning = koblingReferanse.getSkjæringstidspunktBeregning();
         return yrkesaktiviteterForBeregning.stream()
-            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
+            .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning, koblingReferanse.getFagsakYtelseType()).isPresent())
             .collect(Collectors.toList());
     }
 

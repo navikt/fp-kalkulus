@@ -32,7 +32,7 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
      */
     public static boolean vurder(RefusjonskravDatoDto refusjonsdato, YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto gjeldendeAktiviteter, LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
         LocalDate førsteLovligeDatoForRefusjon = finnFørsteGyldigeDatoMedRefusjon(refusjonsdato, fagsakYtelseType);
-        LocalDate førsteDagMedRefusjon = finnFørsteDagMedSøktRefusjon(refusjonsdato, gjeldendeAktiviteter, skjæringstidspunktBeregning, yrkesaktivitet.getArbeidsforholdRef());
+        LocalDate førsteDagMedRefusjon = finnFørsteDagMedSøktRefusjon(refusjonsdato, gjeldendeAktiviteter, skjæringstidspunktBeregning, yrkesaktivitet.getArbeidsforholdRef(), fagsakYtelseType);
         return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
     }
 
@@ -43,17 +43,19 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
      * @param gjeldendeAktiviteter Alle gjeldende aktiviteter i beregning
      * @param skjæringstidspunktBeregning Skjæringstidspunkt for beregning
      * @param arbeidsforholdRef Arbeidsforholdreferanse
+     * @param fagsakYtelseType fagsakytelsetype som det er søkt for
      * @return Første dag med søkt refusjon
      */
     public static LocalDate finnFørsteDagMedSøktRefusjon(RefusjonskravDatoDto refusjonsdato,
                                                          BeregningAktivitetAggregatDto gjeldendeAktiviteter,
                                                          LocalDate skjæringstidspunktBeregning,
-                                                         InternArbeidsforholdRefDto arbeidsforholdRef) {
+                                                         InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                         FagsakYtelseType fagsakYtelseType) {
         LocalDate førsteDagMedRefusjon = refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(skjæringstidspunktBeregning);
         boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(
                 refusjonsdato.getArbeidsgiver(),
                 arbeidsforholdRef,
-                gjeldendeAktiviteter, skjæringstidspunktBeregning);
+                gjeldendeAktiviteter, skjæringstidspunktBeregning, fagsakYtelseType);
         boolean harRefusjonFraStart = refusjonsdato.harRefusjonFraStart();
         if (!erNyttArbeidsforhold && harRefusjonFraStart) {
             førsteDagMedRefusjon = skjæringstidspunktBeregning;

@@ -47,7 +47,7 @@
 
         <fpsak.tidsserie.version>2.5.5</fpsak.tidsserie.version>
 
-        <beregningsgrunnlag.regelmodell.version>2.1.4</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>2.1.5</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>3.0.69</felles.version>
 
@@ -305,7 +305,7 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>6.2.0.Final</version>
             </dependency>
-            
+
             <!-- Følgende kan fjernes når fpfelles får jaxws-rt istd håndkodede 
                 versjoner av disse bibliotekene. Men må overstyres nå pga kompatibilitet. -->
             <dependency>

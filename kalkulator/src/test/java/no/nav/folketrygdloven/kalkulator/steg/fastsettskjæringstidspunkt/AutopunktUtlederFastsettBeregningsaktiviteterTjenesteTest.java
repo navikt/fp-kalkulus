@@ -35,7 +35,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -55,7 +55,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -76,7 +76,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -98,7 +98,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.of(iayGrunnlagBuilder.build()), AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -119,7 +119,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isNotPresent();
@@ -138,7 +138,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isNotPresent();
@@ -157,7 +157,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 FagsakYtelseType.ARBEIDSAVKLARINGSPENGER, lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isNotPresent();
@@ -171,7 +171,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Optional.empty(), AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.empty(), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.empty(), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isNotPresent();
@@ -190,7 +190,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -211,7 +211,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom), lagMeldekortPeriode(meldekortFom2));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -231,7 +231,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isPresent();
@@ -251,7 +251,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
                 lagMeldekortPeriode(meldekortFom));
 
         // Act
-        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato);
+        Optional<LocalDate> resultat = AutopunktUtlederFastsettBeregningsaktiviteterTjeneste.skalVenteTilDatoPåMeldekortAAPellerDP(Optional.of(aktørYtelse), bg, dagensdato, FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(resultat).isNotPresent();

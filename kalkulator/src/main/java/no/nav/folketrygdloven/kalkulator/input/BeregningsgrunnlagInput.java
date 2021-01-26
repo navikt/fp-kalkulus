@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -143,7 +144,7 @@ public class BeregningsgrunnlagInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening, getFagsakYtelseType());
     }
 
     public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
@@ -156,7 +157,7 @@ public class BeregningsgrunnlagInput {
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
         return opptjeningAktiviteter.getOpptjeningPerioder()
             .stream()
-            .filter(p -> p.getPeriode().getFomDato().isBefore(skjæringstidspunktOpptjening))
+            .filter(p -> !p.getPeriode().getFomDato().isAfter(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktOpptjening, getFagsakYtelseType())))
             .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
             .collect(Collectors.toList());
     }
