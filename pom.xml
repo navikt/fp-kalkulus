@@ -51,7 +51,7 @@
 
         <felles.version>3.0.69</felles.version>
 
-        <prometheus.version>0.9.0</prometheus.version>
+        <prometheus.version>0.10.0</prometheus.version>
         <junit.version>5.7.0</junit.version>
         <swagger.version>2.1.6</swagger.version>
     </properties>
