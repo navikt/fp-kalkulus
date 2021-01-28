@@ -16,7 +16,7 @@ class AvklarAktiviteterHåndterer implements BeregningHåndterer<AvklarAktivitet
 
     @Override
     public HåndteringResultat håndter(AvklarAktiviteterHåndteringDto dto, HåndterBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.AvklarAktiviteterHåndterer.håndter(OppdatererDtoMapper.mapAvklarteAktiviteterDto(dto.getAvklarteAktiviteterDto()), input);
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.aksjonspunkt.AvklarAktiviteterHåndterer.håndter(OppdatererDtoMapper.mapAvklarteAktiviteterDto(dto.getAvklarteAktiviteterDto()), input);
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);
     }

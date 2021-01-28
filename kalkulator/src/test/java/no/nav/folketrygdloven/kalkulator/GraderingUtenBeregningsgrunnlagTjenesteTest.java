@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class GraderingUtenBeregningsgrunnlagTjenesteTest {
@@ -416,7 +417,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
     }
 
     private boolean harAndelerMedGraderingUtenGrunnlag(AktivitetGradering aktivitetGradering) {
-        return GraderingUtenBeregningsgrunnlagTjeneste.harAndelerMedGraderingUtenGrunnlag(beregningsgrunnlag, aktivitetGradering);
+        return !GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag, aktivitetGradering).isEmpty();
     }
 
     private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(LocalDate periodeFom, LocalDate periodeTom) {

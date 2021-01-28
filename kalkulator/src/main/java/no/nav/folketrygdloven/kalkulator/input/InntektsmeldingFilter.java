@@ -8,7 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
+
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -36,7 +37,7 @@ public class InntektsmeldingFilter {
      * @return Liste med inntektsmeldinger {@link InntektsmeldingDto}
      */
     public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(LocalDate skjæringstidspunktForOpptjening, FagsakYtelseType fagsakYtelseType) {
-        LocalDate sistedagForInkluderteAktiviteter = SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktForOpptjening, fagsakYtelseType);
+        LocalDate sistedagForInkluderteAktiviteter = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktForOpptjening, fagsakYtelseType);
         List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
             .orElse(emptyList());
 

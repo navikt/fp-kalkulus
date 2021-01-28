@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
+import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -106,7 +106,7 @@ public class MapTilBesteberegningRegelmodell {
 
     private static List<Periodeinntekt> lagYtelseDagpengerArbeidsavklaringspenger(YtelseFilterDto ytelseFilter) {
         Set<FagsakYtelseType> ytelseTyper = Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
-        List<YtelseAnvistDto> alleMeldekort = BeregningUtils.finnAlleMeldekort(ytelseFilter, ytelseTyper);
+        List<YtelseAnvistDto> alleMeldekort = MeldekortUtils.finnAlleMeldekort(ytelseFilter, ytelseTyper);
         // Mapper alle meldekort til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
         return alleMeldekort.stream().map(meldekort -> Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig

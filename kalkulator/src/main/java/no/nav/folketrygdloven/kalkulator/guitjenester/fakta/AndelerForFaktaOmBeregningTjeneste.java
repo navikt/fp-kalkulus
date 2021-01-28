@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel;
+import static no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste.lagVisningsnavn;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForKunLese;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForPreutfylling;

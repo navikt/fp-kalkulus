@@ -40,7 +40,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Sammenlign
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
+import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -120,7 +120,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
             skjæring.minusMonths(1).plusDays(1),
             skjæring.plusMonths(6),
             new BigDecimal(MELDEKORTSATS1),
-            BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG,
+            MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG,
             skjæring.minusMonths(1).plusDays(2),
             skjæring.minusMonths(1).plusDays(16));
         aktørYtelseBuilder.leggTilYtelse(ytelse);
@@ -144,7 +144,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
             skjæring.minusWeeks(2),
             skjæring.plusMonths(6),
             new BigDecimal(MELDEKORTSATS1),
-            BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG.subtract(BigDecimal.TEN),
+            MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG.subtract(BigDecimal.TEN),
             skjæring.minusDays(5),
             skjæring.plusDays(9));
         aktørYtelseBuilder.leggTilYtelse(ytelse);
@@ -432,7 +432,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         BigDecimal dagsats = BigDecimal.valueOf(MELDEKORTSATS1);
         assertThat(dpMånedsInntekter.get(0).getInntekt()).isEqualByComparingTo(dagsats);
         assertThat(dpMånedsInntekter.get(0).getUtbetalingsgrad()).hasValueSatisfying(utbg ->
-            assertThat(utbg).isEqualByComparingTo(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+            assertThat(utbg).isEqualByComparingTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
     }
 
     @Test
@@ -455,7 +455,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         BigDecimal dagsats = BigDecimal.valueOf(MELDEKORTSATS1);
         assertThat(dpMånedsInntekter.get(0).getInntekt()).isEqualByComparingTo(dagsats);
         assertThat(dpMånedsInntekter.get(0).getUtbetalingsgrad()).hasValueSatisfying(utbg ->
-            assertThat(utbg).isEqualByComparingTo(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+            assertThat(utbg).isEqualByComparingTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
     }
 
     @Test

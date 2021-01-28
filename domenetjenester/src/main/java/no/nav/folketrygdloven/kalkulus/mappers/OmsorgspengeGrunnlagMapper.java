@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
-import static no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusjonskravgyldighet.HarYrkesaktivitetInnsendtRefusjonForSent.finnFørsteGyldigeDatoMedRefusjon;
+import static no.nav.folketrygdloven.kalkulator.felles.HarYrkesaktivitetInnsendtRefusjonForSent.finnFørsteGyldigeDatoMedRefusjon;
 import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraDto;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.refusjonskravgyldighet.HarYrkesaktivitetInnsendtRefusjonForSent;
+import no.nav.folketrygdloven.kalkulator.felles.HarYrkesaktivitetInnsendtRefusjonForSent;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -40,7 +40,7 @@ class OmsorgspengeGrunnlagMapper {
      * @return Mappet omsorgspengegrunnlag til kalkulus
      */
     public static YtelsespesifiktGrunnlag mapOmsorgspengegrunnlag(KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
-        no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.OmsorgspengerGrunnlag(
+        no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag kalkulatorGrunnlag = new no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag(
                 UtbetalingsgradMapper.mapUtbetalingsgrad(omsorgspengerGrunnlag.getUtbetalingsgradPrAktivitet()));
         kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.OMSORGSPENGER).getAntallGMilitærHarKravPå().intValue());
         kalkulatorGrunnlag.setPeriodeUtenGyldigRefusjonPrArbeidsgiver(finnPeriodeUtenGyldigRefusjonPrArbeidsgiver(input, beregningsgrunnlagGrunnlagEntitet, omsorgspengerGrunnlag));

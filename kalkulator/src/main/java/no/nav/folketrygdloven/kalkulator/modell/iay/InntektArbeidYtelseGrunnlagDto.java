@@ -7,8 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-
 public class InntektArbeidYtelseGrunnlagDto {
 
     private InntektArbeidYtelseAggregatDto register;

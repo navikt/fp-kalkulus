@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -26,7 +26,7 @@ public class ErFjernetIOverstyrt {
 
         List<Periode> ansettelsesPerioder = filter.getAnsettelsesPerioder(yrkesaktivitet).stream()
             .map(aa -> new Periode(aa.getPeriode().getFomDato(), aa.getPeriode().getTomDato()))
-            .filter(periode -> !periode.getTom().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning, fagsakYtelseType)))
+            .filter(periode -> !periode.getTom().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning, fagsakYtelseType)))
             .collect(Collectors.toList());
         if (erAktivDagenFørSkjæringstidspunktet(skjæringstidspunktBeregning, ansettelsesPerioder, fagsakYtelseType)) {
             return liggerIkkeIBGAktivitetAggregat(yrkesaktivitet, aktivitetAggregatEntitet) && varIkkeIPermisjonPåSkjæringstidspunkt(filter.getBekreftedePermisjonerForYrkesaktivitet(yrkesaktivitet), skjæringstidspunktBeregning);
@@ -49,6 +49,6 @@ public class ErFjernetIOverstyrt {
                                                                List<Periode> ansettelsesPerioder,
                                                                FagsakYtelseType fagsakYtelseType) {
         return ansettelsesPerioder.stream()
-                .anyMatch(periode -> periode.inneholder(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunktBeregning, fagsakYtelseType)));
+                .anyMatch(periode -> periode.inneholder(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning, fagsakYtelseType)));
     }
 }

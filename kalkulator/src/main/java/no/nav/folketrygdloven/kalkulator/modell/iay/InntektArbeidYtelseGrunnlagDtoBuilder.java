@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.kontrakt.v1.ArbeidsgiverOpplysningerDto;
-
 public class InntektArbeidYtelseGrunnlagDtoBuilder {
 
     private InntektArbeidYtelseGrunnlagDto kladd;

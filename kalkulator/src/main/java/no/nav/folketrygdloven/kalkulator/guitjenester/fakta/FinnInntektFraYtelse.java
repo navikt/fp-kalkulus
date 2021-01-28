@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.felles.BeregningUtils;
+import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -37,12 +37,12 @@ class FinnInntektFraYtelse {
             return Optional.empty();
         }
 
-        Optional<YtelseDto> nyesteVedtak = BeregningUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(mapTilYtelseType(andel.getAktivitetStatus())));
+        Optional<YtelseDto> nyesteVedtak = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(mapTilYtelseType(andel.getAktivitetStatus())));
         if (nyesteVedtak.isEmpty()) {
             return Optional.empty();
         }
 
-        Optional<YtelseAnvistDto> nyesteMeldekort = BeregningUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(),
+        Optional<YtelseAnvistDto> nyesteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(),
                 skjæringstidspunkt,
                 Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
                 ref.getFagsakYtelseType());
@@ -74,8 +74,8 @@ class FinnInntektFraYtelse {
     private static BigDecimal finnÅrsbeløpMedHensynTilUtbetalingsfaktor(YtelseDto ytelse, Optional<YtelseAnvistDto> ytelseAnvist) {
         BigDecimal årsbeløpUtenHensynTilUtbetalingsfaktor = finnÅrsbeløp(ytelse, ytelseAnvist);
         BigDecimal utbetalingsgrad = ytelseAnvist.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi)
-            .orElse(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
-        BigDecimal utbetalingsFaktor = utbetalingsgrad.divide(BeregningUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP);
+            .orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
+        BigDecimal utbetalingsFaktor = utbetalingsgrad.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP);
         return årsbeløpUtenHensynTilUtbetalingsfaktor
             .multiply(utbetalingsFaktor);
     }

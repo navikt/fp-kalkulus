@@ -27,7 +27,7 @@ public class BeregningUtilsTest {
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelse, dpYtelse));
 
-        Optional<YtelseDto> ytelse = BeregningUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelse);
@@ -40,7 +40,7 @@ public class BeregningUtilsTest {
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelseNy, aapYtelseGammel));
 
-        Optional<YtelseDto> ytelse = BeregningUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelseNy);
@@ -54,7 +54,7 @@ public class BeregningUtilsTest {
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(aapYtelseNy, aapYtelseGammel, aapYtelseEtterStp));
 
-        Optional<YtelseDto> ytelse = BeregningUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> ytelse = MeldekortUtils.sisteVedtakFørStpForType(filter, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
 
         assertThat(ytelse).isPresent();
         assertThat(ytelse.get()).isEqualTo(aapYtelseNy);
@@ -72,7 +72,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(nyttMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -90,7 +90,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(gammeltMeldekort).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(nyttMeldekort);
@@ -108,7 +108,7 @@ public class BeregningUtilsTest {
         YtelseDto nyYtelse = aapYtelseNyBuilder.leggTilYtelseAnvist(meldekortFemti).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortFemti);
@@ -129,7 +129,7 @@ public class BeregningUtilsTest {
         YtelseDto ytelseEtterStp = aapYtelseEtterStpBuilder.leggTilYtelseAnvist(meldekortNyest).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse, ytelseEtterStp));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.sisteHeleMeldekortFørStp(filter, nyYtelse, SKJÆRINGSTIDSPUNKT, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekortNytt);
@@ -153,7 +153,7 @@ public class BeregningUtilsTest {
                 .leggTilYtelseAnvist(meldekort4).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT);
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT);
 
         assertThat(ytelseAnvist).isPresent();
         assertThat(ytelseAnvist.get()).isEqualTo(meldekort3);
@@ -177,7 +177,7 @@ public class BeregningUtilsTest {
                 .leggTilYtelseAnvist(meldekort4).build();
 
         YtelseFilterDto filter = new YtelseFilterDto(Arrays.asList(gammelYtelse, nyYtelse));
-        Optional<YtelseAnvistDto> ytelseAnvist = BeregningUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        Optional<YtelseAnvistDto> ytelseAnvist = MeldekortUtils.finnMeldekortSomInkludererGittDato(filter, nyYtelse, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), SKJÆRINGSTIDSPUNKT.plusDays(1));
 
         assertThat(ytelseAnvist).isEmpty();
     }

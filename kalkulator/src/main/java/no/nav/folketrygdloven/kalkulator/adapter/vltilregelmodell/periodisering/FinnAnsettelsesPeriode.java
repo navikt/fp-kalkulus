@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
@@ -33,7 +33,7 @@ public final class FinnAnsettelsesPeriode {
     public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
             .stream()
-            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType)))
+            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt, fagsakYtelseType)))
             .collect(Collectors.toList());
         if (perioderSomSlutterEtterStp.isEmpty()) {
             return null;

@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.KLASSER_MED_AVHENGIGHETER.aksjonspunkt.refusjon.MapTilRefusjonOverstyring;
+import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.aksjonspunkt.refusjon.MapTilRefusjonOverstyring;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;

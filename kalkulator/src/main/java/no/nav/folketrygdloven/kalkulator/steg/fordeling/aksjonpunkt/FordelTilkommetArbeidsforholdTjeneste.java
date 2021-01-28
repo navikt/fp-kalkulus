@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulator.SisteAktivitetsdagTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -35,8 +35,9 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     }
 
     private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet, FagsakYtelseType fagsakYtelseType) {
-        return !beregningAktivitet.getPeriode().getTomDato().isBefore(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType)) &&
-                !beregningAktivitet.getPeriode().getFomDato().isAfter(SisteAktivitetsdagTjeneste.finnDatogrenseForInkluderteAktiviteter(skjæringstidspunkt, fagsakYtelseType));
+        LocalDate beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt, fagsakYtelseType);
+        return !beregningAktivitet.getPeriode().getTomDato().isBefore(beregningstidspunkt) &&
+                !beregningAktivitet.getPeriode().getFomDato().isAfter(beregningstidspunkt);
     }
 
     private static boolean matcherArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningAktivitetDto beregningAktivitet) {
