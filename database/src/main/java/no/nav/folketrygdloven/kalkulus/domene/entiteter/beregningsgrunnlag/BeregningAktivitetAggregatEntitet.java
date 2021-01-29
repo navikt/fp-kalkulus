@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 @Table(name = "BG_AKTIVITETER")
 public class BeregningAktivitetAggregatEntitet extends BaseEntitet {
 
+    @SuppressWarnings("unused")
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_BG_AKTIVITETER")
     private Long id;

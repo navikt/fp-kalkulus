@@ -10,7 +10,6 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.felles.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -34,14 +33,13 @@ public class KortvarigeArbeidsforholdDtoTjeneste implements FaktaOmBeregningTilf
             return;
         }
         List<KortvarigeArbeidsforholdDto> arbeidsforholdDto = lagKortvarigeArbeidsforholdDto(
-                input.getKoblingReferanse(),
                 beregningsgrunnlag,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat());
         faktaOmBeregningDto.setKortvarigeArbeidsforhold(arbeidsforholdDto);
     }
 
-    private List<KortvarigeArbeidsforholdDto> lagKortvarigeArbeidsforholdDto(KoblingReferanse ref, BeregningsgrunnlagDto beregningsgrunnlag,
+    private List<KortvarigeArbeidsforholdDto> lagKortvarigeArbeidsforholdDto(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                              InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                              Optional<FaktaAggregatDto> faktaAggregat) {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, YrkesaktivitetDto> kortvarige = KortvarigArbeidsforholdTjeneste.hentAndelerForKortvarigeArbeidsforhold(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);

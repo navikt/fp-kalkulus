@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
@@ -111,7 +110,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var resultat = new Resultat();
         FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(referanse, iayGrunnlag, grunnlag)
             .stream()
-            .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya, inputAndeler.getBeregningsgrunnlagInput().getFagsakYtelseType()))
+            .filter(ya -> slutterEtterSkjæringstidspunktet(filter, skjæringstidspunktBeregning, ya))
             .sorted(refusjonFørstComparator(inntektsmeldinger))
             .forEach(ya -> lagArbeidsforholdOgInntektsmelding(
                 inputAndeler,
@@ -120,8 +119,8 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         return resultat.getArbeidGraderingOgInntektsmeldinger();
     }
 
-    private boolean slutterEtterSkjæringstidspunktet(YrkesaktivitetFilterDto filter, LocalDate skjæringstidspunktBeregning, YrkesaktivitetDto ya, FagsakYtelseType fagsakYtelseType) {
-        Optional<Periode> periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning, fagsakYtelseType);
+    private boolean slutterEtterSkjæringstidspunktet(YrkesaktivitetFilterDto filter, LocalDate skjæringstidspunktBeregning, YrkesaktivitetDto ya) {
+        Optional<Periode> periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
         return periode.map(p -> !p.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false);
     }
 
@@ -279,7 +278,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             .orElseThrow(() -> new IllegalStateException(SKAL_HA_BEREGNINGSGRUNNLAG))
             .getSkjæringstidspunkt();
 
-        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning, beregningsgrunnlagInput.getFagsakYtelseType());
+        Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
         Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(inputAndeler, skjæringstidspunktBeregning, ya, ansettelsesPeriode);
 
         if (startdatoPermisjonOpt.isPresent()) {

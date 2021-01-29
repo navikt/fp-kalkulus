@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -33,25 +32,24 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 public class BeregningsgrunnlagTestUtil {
 
-    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref, LocalDate skjæringstidspunktOpptjening,
+    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(LocalDate skjæringstidspunktOpptjening,
                                                                        Optional<InntektArbeidYtelseGrunnlagDto> inntektArbeidYtelseGrunnlagDto,
                                                                        AktivitetStatus... statuser) {
         HashMap<String, Integer> avkortet = new HashMap<>();
         HashMap<String, Integer> bruttoPrÅr = new HashMap<>();
         List<LocalDateInterval> perioder = Collections.singletonList(new LocalDateInterval(skjæringstidspunktOpptjening, null));
-        return lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, avkortet,
+        return lagGjeldendeBeregningsgrunnlag(skjæringstidspunktOpptjening, avkortet,
             bruttoPrÅr, Collections.emptyMap(), perioder, Collections.singletonList(Collections.emptyList()), Collections.emptyMap(), inntektArbeidYtelseGrunnlagDto, statuser);
     }
 
-    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref,
-                                                                       LocalDate skjæringstidspunktOpptjening,
+    public static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(LocalDate skjæringstidspunktOpptjening,
                                                                        List<LocalDateInterval> berPerioder,
                                                                        InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                        AktivitetStatus... statuser) {
-        return lagGjeldendeBeregningsgrunnlag(ref, skjæringstidspunktOpptjening, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), berPerioder, Collections.emptyList(), Collections.emptyMap(), Optional.of(iayGrunnlag), statuser);
+        return lagGjeldendeBeregningsgrunnlag(skjæringstidspunktOpptjening, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap(), berPerioder, Collections.emptyList(), Collections.emptyMap(), Optional.of(iayGrunnlag), statuser);
     }
 
-    private static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(KoblingReferanse ref, // NOSONAR - brukes bare til test
+    private static BeregningsgrunnlagDto lagGjeldendeBeregningsgrunnlag(// NOSONAR - brukes bare til test
                                                                         LocalDate skjæringstidspunktOpptjening,
                                                                         Map<String, Integer> andelAvkortet,
                                                                         Map<String, Integer> bruttoPrÅr,

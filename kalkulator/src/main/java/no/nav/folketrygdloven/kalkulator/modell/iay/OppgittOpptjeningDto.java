@@ -27,11 +27,6 @@ public class OppgittOpptjeningDto {
         // setter tidspunkt til nå slik at dette også er satt for nybakte objekter uten å lagring
     }
 
-    OppgittOpptjeningDto(UUID eksternReferanse, LocalDateTime opprettetTidspunktOriginalt) {
-        Objects.requireNonNull(eksternReferanse, "eksternReferanse");
-        this.uuid = eksternReferanse;
-    }
-
     /** Identifisere en immutable instans av grunnlaget unikt og er egnet for utveksling (eks. til abakus eller andre systemer) */
     public UUID getEksternReferanse() {
         return uuid;

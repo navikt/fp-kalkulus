@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-class FastsettBeregningAktiviteterPSBTest {
+class FastsettBeregningAktiviteterTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     public static final FagsakYtelseType PLEIEPENGER_SYKT_BARN = FagsakYtelseType.PLEIEPENGER_SYKT_BARN;
     private static final KoblingReferanseMock KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, PLEIEPENGER_SYKT_BARN);
@@ -51,14 +51,13 @@ class FastsettBeregningAktiviteterPSBTest {
     public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
     public static final InternArbeidsforholdRefDto NULL_REF = InternArbeidsforholdRefDto.nullRef();
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
-    private MapBeregningAktiviteterFraVLTilRegelK9 mapper = new MapBeregningAktiviteterFraVLTilRegelK9();
 
     private FastsettBeregningAktiviteter fastsettBeregningAktiviteter = new FastsettBeregningAktiviteter(
             new UnitTestLookupInstanceImpl(new MapBeregningAktiviteterFraVLTilRegelK9())
     );
 
     @Test
-    void skal_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
+    void skal_ikke_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT;
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, Collections.emptyList());
@@ -69,7 +68,7 @@ class FastsettBeregningAktiviteterPSBTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(1);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(0);
     }
 
     @Test

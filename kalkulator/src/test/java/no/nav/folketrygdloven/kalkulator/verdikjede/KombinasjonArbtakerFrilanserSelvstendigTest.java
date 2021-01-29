@@ -178,7 +178,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -276,7 +276,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -298,7 +298,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
         return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
     }
 
-    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagRegelResultat resultat) {
+    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().omfordelBeregningsgrunnlag(input).getBeregningsgrunnlag();
     }
 

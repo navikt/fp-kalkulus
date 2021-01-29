@@ -96,7 +96,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         orgnrsBeregnetMap.put(ORGNR2, beregnetPrÅr2);
         BigDecimal beregnetPrÅr3 = BigDecimal.valueOf(240_000);
         orgnrsBeregnetMap.put(ORGNR3, beregnetPrÅr3);
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, koblingReferanse, beregningAktivitetAggregat);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, beregningAktivitetAggregat);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         // Inntektsmelding
@@ -149,7 +149,7 @@ public class FordelBeregningsgrunnlagTjenesteTest {
         );
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Map<String, BigDecimal> orgnrs, KoblingReferanse koblingReferanse,
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlag(Map<String, BigDecimal> orgnrs,
                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()

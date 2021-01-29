@@ -72,7 +72,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
             .medRegisterAktiviteter(beregningAktiviteter)
             .medBeregningsgrunnlag(beregningsgrunnlag);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, koblingReferanse, registerBuilder);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2014, registerBuilder);
         Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
         var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(registerBuilder)

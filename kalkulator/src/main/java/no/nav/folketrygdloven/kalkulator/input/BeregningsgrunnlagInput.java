@@ -144,7 +144,7 @@ public class BeregningsgrunnlagInput {
     public Collection<InntektsmeldingDto> getInntektsmeldinger() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
-        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening, getFagsakYtelseType());
+        return new InntektsmeldingFilter(iayGrunnlag).hentInntektsmeldingerBeregning(skjæringstidspunktOpptjening);
     }
 
     public OpptjeningAktiviteterDto getOpptjeningAktiviteter() {
@@ -157,7 +157,7 @@ public class BeregningsgrunnlagInput {
         var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
         return opptjeningAktiviteter.getOpptjeningPerioder()
             .stream()
-            .filter(p -> !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening, getFagsakYtelseType())))
+            .filter(p -> !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening)))
             .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
             .collect(Collectors.toList());
     }

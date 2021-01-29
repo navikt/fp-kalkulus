@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -13,7 +12,6 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOp
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
@@ -51,7 +49,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return LagAktivPeriodeForArbeidstakerFelles.lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
-                opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, relevanteAktiviteter);
+                opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold);
         } else {
             return AktivPeriode.forAndre(aktivitetType, regelPeriode);
         }

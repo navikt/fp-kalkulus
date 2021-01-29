@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 
 public class InntektsmeldingFilter {
@@ -33,11 +32,10 @@ public class InntektsmeldingFilter {
      * Spesial håndtering i forbindelse med beregning.
      *
      * @param skjæringstidspunktForOpptjening datoen arbeidsforhold må inkludere eller starte etter for å bli regnet som aktive
-     * @param fagsakYtelseType
      * @return Liste med inntektsmeldinger {@link InntektsmeldingDto}
      */
-    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(LocalDate skjæringstidspunktForOpptjening, FagsakYtelseType fagsakYtelseType) {
-        LocalDate sistedagForInkluderteAktiviteter = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktForOpptjening, fagsakYtelseType);
+    public List<InntektsmeldingDto> hentInntektsmeldingerBeregning(LocalDate skjæringstidspunktForOpptjening) {
+        LocalDate sistedagForInkluderteAktiviteter = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktForOpptjening);
         List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
             .orElse(emptyList());
 

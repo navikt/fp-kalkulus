@@ -18,8 +18,8 @@ public final class FinnAnsettelsesPeriode {
         // skjul public constructor
     }
 
-    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
-        return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt, fagsakYtelseType));
+    public static Optional<Periode> finnMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
+        return Optional.ofNullable(getMinMaksPeriode(ansettelsesPerioder, skjæringstidspunkt));
     }
 
     /** Forventer at skjæringstidspunktet ligger i en av ansettelses periodene
@@ -27,13 +27,12 @@ public final class FinnAnsettelsesPeriode {
      *
      * @param ansettelsesPerioder Ansettelsesperioder
      * @param skjæringstidspunkt Skjæringstidspunkt
-     * @param fagsakYtelseType
      * @return Periode {@link Periode}
      */
-    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
+    public static Periode getMinMaksPeriode(Collection<AktivitetsAvtaleDto> ansettelsesPerioder, LocalDate skjæringstidspunkt) {
         List<AktivitetsAvtaleDto> perioderSomSlutterEtterStp = ansettelsesPerioder
             .stream()
-            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt, fagsakYtelseType)))
+            .filter(ap -> !ap.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt)))
             .collect(Collectors.toList());
         if (perioderSomSlutterEtterStp.isEmpty()) {
             return null;

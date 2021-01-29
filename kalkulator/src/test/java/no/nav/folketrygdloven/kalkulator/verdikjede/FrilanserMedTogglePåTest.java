@@ -172,7 +172,7 @@ public class FrilanserMedTogglePåTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
 
@@ -279,7 +279,7 @@ public class FrilanserMedTogglePåTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -391,7 +391,7 @@ public class FrilanserMedTogglePåTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -465,7 +465,7 @@ public class FrilanserMedTogglePåTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -534,7 +534,7 @@ public class FrilanserMedTogglePåTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input, resultat.getBeregningsgrunnlag(), grunnlag);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(input);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -552,9 +552,7 @@ public class FrilanserMedTogglePåTest {
        return verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(input, beregningTjenesteWrapper);
     }
 
-    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input,
-                                                           BeregningsgrunnlagDto beregningsgrunnlag,
-                                                           BeregningsgrunnlagGrunnlagDto grunnlag) {
+    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste().omfordelBeregningsgrunnlag(input).getBeregningsgrunnlag();
     }
 

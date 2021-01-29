@@ -16,12 +16,6 @@ public class RegelSporingAggregat {
         this.regelsporingPerioder = regelsporingPerioder;
     }
 
-    public RegelSporingAggregat(RegelSporingGrunnlag regelsporingerGrunnlag,
-                                List<RegelSporingPeriode> regelsporingPerioder) {
-        this.regelsporingerGrunnlag.add(regelsporingerGrunnlag);
-        this.regelsporingPerioder = regelsporingPerioder;
-    }
-
     public RegelSporingAggregat(List<RegelSporingGrunnlag> regelsporingerGrunnlag,
                                 List<RegelSporingPeriode> regelsporingPerioder) {
         this.regelsporingerGrunnlag.addAll(regelsporingerGrunnlag);

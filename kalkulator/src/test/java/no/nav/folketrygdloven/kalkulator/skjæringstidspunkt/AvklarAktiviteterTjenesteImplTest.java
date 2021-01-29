@@ -217,7 +217,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(koblingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -234,7 +234,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(koblingReferanse, iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();
@@ -294,7 +294,7 @@ public class AvklarAktiviteterTjenesteImplTest {
         );
     }
 
-    private Optional<AktørYtelseDto> getAktørYtelseFraRegister(KoblingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    private Optional<AktørYtelseDto> getAktørYtelseFraRegister(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         return iayGrunnlag.getAktørYtelseFraRegister();
     }
 }

@@ -565,11 +565,6 @@ class BeregningRefusjonTjenesteTest {
                 && Objects.equals(other.getArbeidsforholdRef().getReferanse(), one.getArbeidsforholdRef().getReferanse());
     }
 
-
-    private RefusjonAndel lagForventetAndel(Arbeidsgiver ag, int brutto, int refusjon) {
-        return lagForventetAndel(ag, null, brutto, refusjon);
-    }
-
     private RefusjonAndel lagForventetAndel(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, double brutto, double refusjon) {
         return new RefusjonAndel(ag == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER, ag, ref, BigDecimal.valueOf(brutto), BigDecimal.valueOf(refusjon));
     }

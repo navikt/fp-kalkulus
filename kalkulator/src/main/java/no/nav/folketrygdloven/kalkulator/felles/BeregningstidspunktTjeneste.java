@@ -19,14 +19,10 @@ public class BeregningstidspunktTjeneste {
      * Finne datogrensen for inkluderte aktiviteter/beregningstidspunkt. Aktiviteter som slutter på eller etter denne datoen blir med i beregningen.
      *
      * @param skjæringstidspunkt skjæringstidspunkt
-     * @param fagsakYtelseType Fagsakytelsetype
      * @return Dato for inkluderte aktiviteter
      */
     // Vi må vurdere om dette skal fortsette å vere ein static klasse eller om vi burde lage eit interface med implementasjoner pr ytelse
-    public static LocalDate finnBeregningstidspunkt(LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType) {
-        if (FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(fagsakYtelseType)) {
-            return skjæringstidspunkt;
-        }
+    public static LocalDate finnBeregningstidspunkt(LocalDate skjæringstidspunkt) {
         return skjæringstidspunkt.minusDays(1);
     }
 

@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-
 
 public class Virkedager {
 
@@ -18,12 +16,6 @@ public class Virkedager {
 
     private Virkedager() {
         // For å unngå instanser
-    }
-
-
-    public static int beregnAntallVirkedager(Periode periode) {
-        Objects.requireNonNull(periode);
-        return beregnAntallVirkedager(periode.getFom(), periode.getTom());
     }
 
     public static int beregnAntallVirkedagerEllerKunHelg(LocalDate fom, LocalDate tom) {
@@ -58,30 +50,6 @@ public class Virkedager {
         }
     }
 
-    public static int beregnAntallVirkedager(LocalDate fom, LocalDate tom) {
-        Objects.requireNonNull(fom);
-        Objects.requireNonNull(tom);
-        if (fom.isAfter(tom)) {
-            throw new IllegalArgumentException("Utviklerfeil: fom " + fom + " kan ikke være før tom " + tom);
-        }
-
-        return beregnVirkedager(fom, tom);
-    }
-
-    public static LocalDate plusVirkedager(LocalDate fom, int virkedager) {
-        int uker = virkedager / VIRKEDAGER_PR_UKE;
-        int dager = virkedager % VIRKEDAGER_PR_UKE;
-
-        LocalDate resultat = fom.plusWeeks(uker);
-
-        while (dager > 0 || erHelg(resultat)) {
-            if (!erHelg(resultat)) {
-                dager--;
-            }
-            resultat = resultat.plusDays(1);
-        }
-        return resultat;
-    }
     private static boolean erHelg(LocalDate dato) {
         return dato.getDayOfWeek().equals(DayOfWeek.SATURDAY) || dato.getDayOfWeek().equals(DayOfWeek.SUNDAY);
     }

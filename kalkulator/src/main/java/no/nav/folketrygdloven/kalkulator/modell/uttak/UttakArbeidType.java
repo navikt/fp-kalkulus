@@ -72,10 +72,6 @@ public enum UttakArbeidType implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, UttakArbeidType> kodeMap() {
-        return Collections.unmodifiableMap(KODER);
-    }
-
     @JsonProperty
     @Override
     public String getKode() {
@@ -98,20 +94,4 @@ public enum UttakArbeidType implements Kodeverdi {
         return navn;
     }
 
-    public boolean erArbeidstakerEllerFrilans() {
-        return ORDINÆRT_ARBEID.equals(this) || FRILANS.equals(this);
-    }
-
-    @Converter(autoApply = true)
-    public static class KodeverdiConverter implements AttributeConverter<UttakArbeidType, String> {
-        @Override
-        public String convertToDatabaseColumn(UttakArbeidType attribute) {
-            return attribute == null ? null : attribute.getKode();
-        }
-
-        @Override
-        public UttakArbeidType convertToEntityAttribute(String dbData) {
-            return dbData == null ? null : fraKode(dbData);
-        }
-    }
 }

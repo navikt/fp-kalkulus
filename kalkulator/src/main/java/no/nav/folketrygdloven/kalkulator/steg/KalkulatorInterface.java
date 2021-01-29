@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
  * Hver metode i interfacet korresponderer til et steg i beregning
  *
  */
+@SuppressWarnings("unused")
 public interface KalkulatorInterface {
 
     /** Steg 1: Fastsetter beregningsaktiviteter og forslår skjæringstidspunkt

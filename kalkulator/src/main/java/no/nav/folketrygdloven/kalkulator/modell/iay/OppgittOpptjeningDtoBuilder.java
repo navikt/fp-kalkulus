@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -24,14 +22,9 @@ public class OppgittOpptjeningDtoBuilder {
         return new OppgittOpptjeningDtoBuilder(new OppgittOpptjeningDto(UUID.randomUUID()));
     }
 
-    public static OppgittOpptjeningDtoBuilder ny(UUID eksternReferanse, LocalDateTime opprettetTidspunktOriginalt) {
-        return new OppgittOpptjeningDtoBuilder(new OppgittOpptjeningDto(eksternReferanse, opprettetTidspunktOriginalt));
+    public static OppgittOpptjeningDtoBuilder ny(UUID eksternReferanse) {
+        return new OppgittOpptjeningDtoBuilder(new OppgittOpptjeningDto(eksternReferanse));
     }
-
-    public static OppgittOpptjeningDtoBuilder ny(UUID eksternReferanse, OffsetDateTime opprettetTidspunktOriginalt) {
-        return new OppgittOpptjeningDtoBuilder(new OppgittOpptjeningDto(eksternReferanse, opprettetTidspunktOriginalt.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()));
-    }
-
 
     public OppgittOpptjeningDtoBuilder leggTilAnnenAktivitet(OppgittAnnenAktivitetDto annenAktivitet){
         this.kladd.leggTilAnnenAktivitet(annenAktivitet);

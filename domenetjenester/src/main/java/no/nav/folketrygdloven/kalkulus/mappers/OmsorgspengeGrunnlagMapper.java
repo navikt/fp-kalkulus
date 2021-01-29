@@ -80,7 +80,7 @@ class OmsorgspengeGrunnlagMapper {
                 dto,
                 gjeldendeAktiviteter,
                 beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlag().get().getSkjæringstidspunkt(),
-                arbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(arbeidsforhold.getInternArbeidsforholdRef().getAbakusReferanse()), FagsakYtelseType.OMSORGSPENGER
+                arbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(arbeidsforhold.getInternArbeidsforholdRef().getAbakusReferanse())
         );
         if (førsteDatoMedGyldigRefusjon.isAfter(førsteDatoMedRefusjon)) {
             return Optional.of(Intervall.fraOgMedTilOgMed(førsteDatoMedRefusjon, førsteDatoMedGyldigRefusjon.minusDays(1)));

@@ -28,14 +28,4 @@ public class BeregningAktivitetTestUtil {
         return aggregat;
     }
 
-    public static BeregningAktivitetAggregatDto opprettBeregningAktiviteter(LocalDate skjæringstidspunkt, Intervall periode, boolean medDagpenger, boolean ekstraAktivitet) {
-        if (medDagpenger) {
-            return opprettBeregningAktiviteter(skjæringstidspunkt, periode, OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER);
-        } else {
-            if (ekstraAktivitet) {
-                return opprettBeregningAktiviteter(skjæringstidspunkt, periode, OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.SYKEPENGER);
-            }
-            return opprettBeregningAktiviteter(skjæringstidspunkt, periode, OpptjeningAktivitetType.ARBEID);
-        }
-    }
 }

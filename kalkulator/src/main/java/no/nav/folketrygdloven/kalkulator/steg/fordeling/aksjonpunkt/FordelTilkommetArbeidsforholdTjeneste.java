@@ -25,17 +25,16 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     public static boolean erNyttArbeidsforhold(Arbeidsgiver arbeidsgiver,
                                                InternArbeidsforholdRefDto arbeidsforholdRef,
                                                BeregningAktivitetAggregatDto aktivitetAggregat,
-                                               LocalDate skjæringstidspunkt,
-                                               FagsakYtelseType fagsakYtelseType) {
+                                               LocalDate skjæringstidspunkt) {
         var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
         return beregningAktiviteter.stream()
-                .filter(beregningAktivitet -> erIkkeAktivPåSisteAktivitetsdato(skjæringstidspunkt, beregningAktivitet, fagsakYtelseType))
+                .filter(beregningAktivitet -> erIkkeAktivPåSisteAktivitetsdato(skjæringstidspunkt, beregningAktivitet))
                 .noneMatch(
                         beregningAktivitet -> arbeidsforholdRef.gjelderFor(beregningAktivitet.getArbeidsforholdRef()) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
     }
 
-    private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet, FagsakYtelseType fagsakYtelseType) {
-        LocalDate beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt, fagsakYtelseType);
+    private static boolean erIkkeAktivPåSisteAktivitetsdato(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
+        LocalDate beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt);
         return !beregningAktivitet.getPeriode().getTomDato().isBefore(beregningstidspunkt) &&
                 !beregningAktivitet.getPeriode().getFomDato().isAfter(beregningstidspunkt);
     }

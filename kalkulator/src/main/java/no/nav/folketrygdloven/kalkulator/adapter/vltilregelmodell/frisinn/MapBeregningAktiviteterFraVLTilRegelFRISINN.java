@@ -20,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
@@ -111,7 +110,7 @@ public class MapBeregningAktiviteterFraVLTilRegelFRISINN implements MapBeregning
             var opptjeningArbeidsgiverOrgnummer = opptjeningsperiode.getArbeidsgiverOrgNummer();
             var opptjeningArbeidsforhold = opptjeningsperiode.getArbeidsforholdId();
             return LagAktivPeriodeForArbeidstakerFelles.lagAktivPeriodeForArbeidstaker(inntektsmeldinger, regelPeriode, opptjeningArbeidsgiverAktørId,
-                    opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold, alleAktiviteter);
+                    opptjeningArbeidsgiverOrgnummer, opptjeningArbeidsforhold);
         } if (Aktivitet.NÆRINGSINNTEKT.equals(aktivitetType)) {
             return AktivPeriode.forAndre(aktivitetType, harSNEtterStp ? utvidetPeriode : regelPeriode);
         } else {

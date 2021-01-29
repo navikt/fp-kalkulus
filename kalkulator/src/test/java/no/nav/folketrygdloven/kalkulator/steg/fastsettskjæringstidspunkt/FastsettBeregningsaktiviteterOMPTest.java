@@ -44,10 +44,9 @@ public class FastsettBeregningsaktiviteterOMPTest {
     public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
     public static final InternArbeidsforholdRefDto NULL_REF = InternArbeidsforholdRefDto.nullRef();
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
-    private MapBeregningAktiviteterFraVLTilRegelK9 mapper = new MapBeregningAktiviteterFraVLTilRegelK9();
 
     private FastsettBeregningAktiviteter fastsettBeregningAktiviteter = new FastsettBeregningAktiviteter(
-            new UnitTestLookupInstanceImpl(new MapBeregningAktiviteterFraVLTilRegelK9())
+            new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegelK9())
     );
 
     @Test

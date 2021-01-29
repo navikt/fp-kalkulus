@@ -55,7 +55,7 @@ public final class MapAndelGradering {
                 andelGradering.getArbeidsforholdRef());
             yrkesaktivitet.ifPresent(ya -> Arbeidsforhold.builder(arbeidsforhold)
                 .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya),
-                    ref.getSkjæringstidspunktBeregning(), ref.getFagsakYtelseType())));
+                    ref.getSkjæringstidspunktBeregning())));
             builder.medArbeidsforhold(arbeidsforhold);
         }
         return builder.build();

@@ -79,7 +79,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new KoblingReferanseMock(), registerBuilder);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
@@ -113,7 +113,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, new KoblingReferanseMock(), registerBuilder);
+        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
 
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();

@@ -363,7 +363,7 @@ public class VerdikjedeTestHjelper {
     }
 
     public void lagBehandlingForSN(BigDecimal skattbarInntekt,
-                                   int førsteÅr, KoblingReferanse koblingReferanse, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
+                                   int førsteÅr, InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseAggregatBuilder) {
         for (LocalDate året = LocalDate.of(førsteÅr, Month.JANUARY, 1); året.getYear() < førsteÅr + 3; året = året.plusYears(1)) {
             lagInntektForSN(inntektArbeidYtelseAggregatBuilder, året, skattbarInntekt);
         }

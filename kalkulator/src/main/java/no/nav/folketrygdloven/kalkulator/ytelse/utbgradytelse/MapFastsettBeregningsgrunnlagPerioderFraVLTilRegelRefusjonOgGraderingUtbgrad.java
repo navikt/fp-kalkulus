@@ -145,7 +145,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             return false;
         }
         Optional<Periode> ansettelsesPeriodeSomSlutterVedEllerEtterStp = FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(yrkesaktivitet.get()),
-                ref.getSkjæringstidspunktBeregning(), ref.getFagsakYtelseType());
+                ref.getSkjæringstidspunktBeregning());
         return ansettelsesPeriodeSomSlutterVedEllerEtterStp.isPresent();
     }
 
@@ -183,7 +183,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
             Arbeidsforhold arbeidsforhold = MapArbeidsforholdFraVLTilRegel.mapArbeidsforhold(arbeidsgiver, tilretteleggingArbeidsforholdRef);
             yrkesaktivitet.ifPresent(ya -> Arbeidsforhold.builder(arbeidsforhold)
                     .medAnsettelsesPeriode(FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya),
-                            ref.getSkjæringstidspunktBeregning(), ref.getFagsakYtelseType())));
+                            ref.getSkjæringstidspunktBeregning())));
             return arbeidsforhold;
         });
     }

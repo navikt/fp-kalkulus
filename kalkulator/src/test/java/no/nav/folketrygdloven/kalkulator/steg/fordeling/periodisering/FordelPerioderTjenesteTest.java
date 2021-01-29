@@ -829,7 +829,7 @@ public class FordelPerioderTjenesteTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbId,
                 Arbeidsgiver.virksomhet(ORG_NUMMER), iayGrunnlagBuilder);
         List<LocalDateInterval> berPerioder = singletonList(new LocalDateInterval(SKJÆRINGSTIDSPUNKT, null));
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(behandlingRef, SKJÆRINGSTIDSPUNKT, berPerioder, iayGrunnlagBuilder.getKladd());
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT, berPerioder, iayGrunnlagBuilder.getKladd());
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
                 .medBeregningsgrunnlag(beregningsgrunnlag)
@@ -862,7 +862,7 @@ public class FordelPerioderTjenesteTest {
                 SKJÆRINGSTIDSPUNKT.minusYears(2),
                 TIDENES_ENDE, arbId, arbeidsgiver, iayGrunnlagBuilder);
         List<LocalDateInterval> berPerioder = singletonList(new LocalDateInterval(SKJÆRINGSTIDSPUNKT, null));
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(behandlingRef, SKJÆRINGSTIDSPUNKT, berPerioder, iayGrunnlagBuilder.getKladd());
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT, berPerioder, iayGrunnlagBuilder.getKladd());
         BeregningAktivitetDto aktivitetEntitet = BeregningAktivitetDto.builder().medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
                 .medArbeidsgiver(arbeidsgiver)
                 .medArbeidsforholdRef(arbId)
@@ -908,7 +908,7 @@ public class FordelPerioderTjenesteTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT,
                 SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbId, arbeidsgiver, iayGrunnlagBuilder);
         List<LocalDateInterval> berPerioder = singletonList(new LocalDateInterval(SKJÆRINGSTIDSPUNKT, null));
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(behandlingRef, SKJÆRINGSTIDSPUNKT,
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT,
                 berPerioder, iayGrunnlagBuilder.getKladd());
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
@@ -972,7 +972,7 @@ public class FordelPerioderTjenesteTest {
     @Test
     public void skalSetteRefusjonForAktivitetSomErFjernetISaksbehandlet() {
         // Arrange
-        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedSaksbehandlet(List.of(), behandlingRef,
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlagMedSaksbehandlet(List.of(),
                 beregningAktivitetAggregat, BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         BigDecimal inntekt1 = BigDecimal.valueOf(90000);
@@ -1004,7 +1004,7 @@ public class FordelPerioderTjenesteTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbId,
                 Arbeidsgiver.virksomhet(ORG_NUMMER), iayGrunnlagBuilder);
         List<LocalDateInterval> berPerioder = singletonList(new LocalDateInterval(SKJÆRINGSTIDSPUNKT, null));
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(behandlingRef, SKJÆRINGSTIDSPUNKT,
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT,
                 berPerioder, iayGrunnlagBuilder.getKladd());
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
@@ -1049,7 +1049,7 @@ public class FordelPerioderTjenesteTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbId,
                 Arbeidsgiver.virksomhet(ORG_NUMMER), iayGrunnlagBuilder);
         List<LocalDateInterval> berPerioder = singletonList(new LocalDateInterval(SKJÆRINGSTIDSPUNKT, null));
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(behandlingRef, SKJÆRINGSTIDSPUNKT,
+        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagTestUtil.lagGjeldendeBeregningsgrunnlag(SKJÆRINGSTIDSPUNKT,
                 berPerioder, iayGrunnlagBuilder.getKladd());
         BeregningsgrunnlagGrunnlagDto grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(beregningAktivitetAggregat)
@@ -1980,7 +1980,7 @@ public class FordelPerioderTjenesteTest {
         return lagBeregningsgrunnlag(orgnrs, beregningAktivitetAggregat, null);
     }
 
-    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlagMedSaksbehandlet(List<String> orgnrs, KoblingReferanse behandlingRef,
+    private BeregningsgrunnlagGrunnlagDto lagBeregningsgrunnlagMedSaksbehandlet(List<String> orgnrs,
                                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat, BeregningAktivitetAggregatDto saksbehandlet) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()

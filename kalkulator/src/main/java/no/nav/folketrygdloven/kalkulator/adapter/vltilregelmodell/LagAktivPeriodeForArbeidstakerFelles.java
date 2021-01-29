@@ -6,22 +6,20 @@ import java.util.Objects;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 
 public class LagAktivPeriodeForArbeidstakerFelles {
 
     public static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                                 Periode gjeldendePeriode,
-                                                                 String opptjeningArbeidsgiverAktørId,
-                                                                 String opptjeningArbeidsgiverOrgnummer,
-                                                                 InternArbeidsforholdRefDto arbeidsforholdRef,
-                                                                 Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
+                                                              Periode gjeldendePeriode,
+                                                              String opptjeningArbeidsgiverAktørId,
+                                                              String opptjeningArbeidsgiverOrgnummer,
+                                                              InternArbeidsforholdRefDto arbeidsforholdRef) {
         if (opptjeningArbeidsgiverAktørId != null) {
             return lagAktivePerioderForArbeidstakerHosPrivatperson(opptjeningArbeidsgiverAktørId, gjeldendePeriode);
         } else if (opptjeningArbeidsgiverOrgnummer != null) {
-            return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef, alleAktiviteter);
+            return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef);
         } else {
             throw new IllegalStateException("Må ha en arbeidsgiver som enten er aktør eller virksomhet når aktivitet er " + Aktivitet.ARBEIDSTAKERINNTEKT);
         }
@@ -34,8 +32,7 @@ public class LagAktivPeriodeForArbeidstakerFelles {
     private static AktivPeriode lagAktivePerioderForArbeidstakerHosVirksomhet(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                               Periode gjeldendePeriode,
                                                                               String opptjeningArbeidsgiverOrgnummer,
-                                                                              InternArbeidsforholdRefDto arbeidsforholdRef,
-                                                                              Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
+                                                                              InternArbeidsforholdRefDto arbeidsforholdRef) {
         if (harInntektsmeldingForArbeidsforhold(inntektsmeldinger, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef)) {
             return AktivPeriode.forArbeidstakerHosVirksomhet(gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef.getReferanse());
         } else {

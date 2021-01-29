@@ -62,14 +62,6 @@ public class BeregningInntektsmeldingTestUtil {
             Tid.TIDENES_ENDE, Collections.emptyList(), Collections.emptyList());
     }
 
-    public static InntektsmeldingDto opprettInntektsmelding(String orgnr, InternArbeidsforholdRefDto arbId, LocalDate skjæringstidspunktOpptjening,
-                                                            Integer refusjon, LocalDate opphørsdatoRefusjon, LocalDateTime innsendingstidspunkt) { // NOSONAR - brukes
-                                                                                                                                         // bare til test
-        BigDecimal refusjonEllerNull = refusjon != null ? BigDecimal.valueOf(refusjon) : null;
-        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.valueOf(7_000),
-            opphørsdatoRefusjon, Collections.emptyList(), Collections.emptyList());
-    }
-
     public static InntektsmeldingDto opprettInntektsmeldingMedNaturalYtelser(String orgnr, // NOSONAR - brukes bare til test
                                                                              LocalDate skjæringstidspunkt,
                                                                              BigDecimal inntektBeløp,

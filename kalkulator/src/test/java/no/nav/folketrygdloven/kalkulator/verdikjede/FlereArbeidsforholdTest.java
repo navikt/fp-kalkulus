@@ -172,7 +172,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -259,7 +259,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -347,7 +347,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -434,7 +434,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -522,7 +522,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -610,7 +610,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -710,7 +710,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -819,7 +819,7 @@ public class FlereArbeidsforholdTest {
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
         // Act 3.5 Fordel beregningsgrunnlag
-        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        BeregningsgrunnlagDto fordeltBeregningsgrunnlag = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(fordeltBeregningsgrunnlag).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -914,7 +914,7 @@ public class FlereArbeidsforholdTest {
 
 
         // Act 3.5 fordel beregningsgrunnlag
-        beregningsgrunnlagEtter1 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        beregningsgrunnlagEtter1 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(beregningsgrunnlagEtter1).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -937,7 +937,7 @@ public class FlereArbeidsforholdTest {
         BeregningsgrunnlagDto vurderRefusjonGrunnlag2 = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag2).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
-        beregningsgrunnlagEtter2 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input), grunnlag, resultat);
+        beregningsgrunnlagEtter2 = fordelBeregningsgrunnlag(lagFordelBeregningsgrunnlagInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(beregningsgrunnlagEtter2).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
 
         // Act 4: fastsette beregningsgrunnlag
@@ -1016,8 +1016,7 @@ public class FlereArbeidsforholdTest {
     }
 
 
-    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDto grunnlag,
-                                                           BeregningsgrunnlagRegelResultat resultat) {
+    private BeregningsgrunnlagDto fordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         return beregningTjenesteWrapper.getFordelBeregningsgrunnlagTjeneste()
                 .omfordelBeregningsgrunnlag(input).getBeregningsgrunnlag();
     }
