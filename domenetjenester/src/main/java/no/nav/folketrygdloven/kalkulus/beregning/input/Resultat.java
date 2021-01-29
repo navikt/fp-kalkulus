@@ -16,6 +16,10 @@ public class Resultat<T> {
         this.resultatPrKobling = resultatPrKobling;
     }
 
+    public static <T> Resultat<T> forGyldigInputMedData(Map<Long, T> resultatPrKobling) {
+        return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, resultatPrKobling);
+    }
+
     public HentInputResponsKode getKode() {
         return kode;
     }

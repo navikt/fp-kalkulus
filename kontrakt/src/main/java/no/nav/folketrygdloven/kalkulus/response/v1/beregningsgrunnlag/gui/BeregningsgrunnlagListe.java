@@ -25,12 +25,27 @@ public class BeregningsgrunnlagListe {
     @NotNull
     private List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> beregningsgrunnlagListe;
 
-    @JsonCreator
+    @JsonProperty(value = "trengerNyInput")
+    @Valid
+    private boolean trengerNyInput;
+
+    public BeregningsgrunnlagListe() {
+        // JSON deserialisering
+    }
+
     public BeregningsgrunnlagListe(@JsonProperty(value = "beregningsgrunnlagListe", required = true) @Valid @NotNull List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> beregningsgrunnlagListe) {
         this.beregningsgrunnlagListe = beregningsgrunnlagListe;
     }
 
+    public BeregningsgrunnlagListe(@Valid Boolean trengerNyInput) {
+        this.trengerNyInput = trengerNyInput;
+    }
+
     public List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> getBeregningsgrunnlagListe() {
         return beregningsgrunnlagListe;
+    }
+
+    public Boolean getTrengerNyInput() {
+        return trengerNyInput;
     }
 }

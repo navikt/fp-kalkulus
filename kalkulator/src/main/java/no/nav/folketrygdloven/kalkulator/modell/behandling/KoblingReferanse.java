@@ -61,7 +61,6 @@ public class KoblingReferanse {
     }
 
 
-    // skal byttes til koblingId
     public Long getKoblingId() {
         return koblingId;
     }

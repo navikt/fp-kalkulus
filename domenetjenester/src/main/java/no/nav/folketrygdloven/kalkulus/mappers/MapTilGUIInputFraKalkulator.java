@@ -3,13 +3,9 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 import java.util.Collections;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectReader;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
@@ -18,29 +14,8 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapTilGUIInputFraKalkulator {
 
-    private static final ObjectReader READER = JsonMapper.getMapper().reader();
 
-
-    public static BeregningsgrunnlagGUIInput map(KoblingEntitet kobling,
-                                                 KalkulatorInputEntitet kalkulatorInputEntitet,
-                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
-        String json = kalkulatorInputEntitet.getInput();
-        KalkulatorInputDto input = null;
-
-        try {
-            input = READER.forType(KalkulatorInputDto.class).readValue(json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        if (input != null) {
-            return mapFraKalkulatorInput(kobling, input, beregningsgrunnlagGrunnlagEntitet);
-        }
-
-        throw new IllegalStateException("Klarte ikke lage input for kobling med id:" + kalkulatorInputEntitet.getKoblingId());
-    }
-
-
-    private static BeregningsgrunnlagGUIInput mapFraKalkulatorInput(KoblingEntitet kobling, KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+    public static BeregningsgrunnlagGUIInput mapFraKalkulatorInput(KoblingEntitet kobling, KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(input.getSkjæringstidspunkt())
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
