@@ -32,7 +32,8 @@ public class UtbetalingDto {
     private InntektskildeType inntektsKilde;
 
     @JsonProperty(value = "utbetalingsPoster", required = true)
-    @Size(min = 1)
+    @NotNull
+    @Size()
     @Valid
     private List<UtbetalingsPostDto> poster;
 
