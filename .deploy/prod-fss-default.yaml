@@ -66,4 +66,4 @@ spec:
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
-        value: false
+      value: false
