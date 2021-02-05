@@ -33,8 +33,8 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
 
     /**
      *
-     * @param beregningsgrunnlagDto - beregningsgrunnlaget som skal splittes
-     * @param andeler - overstyringer avklart av saksbehandler som skal brukes til å bestemme splitten
+     * @param beregningsgrunnlagDto - beregningsgrunnlaget som skal splittes.
+     * @param andeler - overstyringer avklart av saksbehandler som skal brukes til å bestemme splitten.
      * @return beregningsgrunnlag splittet i henhold til refusjonsdatoer med refusjon kun fra refusjonsstart.
      */
     public static BeregningsgrunnlagDto periodiserOgFastsett(BeregningsgrunnlagDto beregningsgrunnlagDto,
