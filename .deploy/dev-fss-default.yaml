@@ -67,4 +67,4 @@ spec:
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
-      value: true
+      value: "true"
