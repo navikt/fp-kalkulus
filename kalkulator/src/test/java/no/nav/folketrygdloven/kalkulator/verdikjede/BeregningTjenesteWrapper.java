@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.verdikjede;
 
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
@@ -9,13 +9,13 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsg
 class BeregningTjenesteWrapper {
 
     private FullføreBeregningsgrunnlagFPImpl fullføreBeregningsgrunnlagTjeneste;
-    private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
+    private FordelBeregningsgrunnlagTjenesteImpl fordelBeregningsgrunnlagTjeneste;
     private AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning;
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
 
     public BeregningTjenesteWrapper(FullføreBeregningsgrunnlagFPImpl fullføreBeregningsgrunnlagTjeneste,
-                                    FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
+                                    FordelBeregningsgrunnlagTjenesteImpl fordelBeregningsgrunnlagTjeneste,
                                     AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning,
                                     FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
                                     VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag) {
@@ -34,7 +34,7 @@ class BeregningTjenesteWrapper {
         return vurderRefusjonBeregningsgrunnlag;
     }
 
-    public FordelBeregningsgrunnlagTjeneste getFordelBeregningsgrunnlagTjeneste() {
+    public FordelBeregningsgrunnlagTjenesteImpl getFordelBeregningsgrunnlagTjeneste() {
         return fordelBeregningsgrunnlagTjeneste;
     }
 

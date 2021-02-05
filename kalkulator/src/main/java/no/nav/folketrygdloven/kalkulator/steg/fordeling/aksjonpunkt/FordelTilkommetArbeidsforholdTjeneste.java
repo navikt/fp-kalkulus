@@ -19,7 +19,7 @@ public final class FordelTilkommetArbeidsforholdTjeneste {
     }
 
     public static boolean erAktivitetLagtTilIPeriodisering(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getKilde().equals(AndelKilde.PROSESS_PERIODISERING);
+        return andel.getKilde().equals(AndelKilde.PROSESS_PERIODISERING) || andel.getKilde().equals(AndelKilde.PROSESS_PERIODISERING_TILKOMMET_INNTEKT);
     }
 
     public static boolean erNyttArbeidsforhold(Arbeidsgiver arbeidsgiver,

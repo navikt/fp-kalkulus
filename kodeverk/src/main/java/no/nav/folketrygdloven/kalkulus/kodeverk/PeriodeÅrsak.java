@@ -26,6 +26,7 @@ public enum PeriodeÅrsak implements Kodeverdi {
     GRADERING("GRADERING", "Gradering"),
     GRADERING_OPPHØRER("GRADERING_OPPHØRER", "Gradering opphører"),
     ENDRING_I_AKTIVITETER_SØKT_FOR("ENDRING_I_AKTIVITETER_SØKT_FOR", "Endring i aktiviteter søkt for"),
+    TILKOMMET_INNTEKT("TILKOMMET_INNTEKT", "Tilkommet inntekt"),
 
     UDEFINERT("-", "Ikke definert"),
     ;
@@ -78,7 +79,7 @@ public enum PeriodeÅrsak implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

@@ -30,7 +30,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 public class OmfordelBeregningsgrunnlagTjeneste {
 
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
-    private MapBeregningsgrunnlagFraRegelTilVLFordel mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVLFordel();
+    private final MapBeregningsgrunnlagFraRegelTilVLFordel mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVLFordel();
 
     public OmfordelBeregningsgrunnlagTjeneste() {
         // CDI

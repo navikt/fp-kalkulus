@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.Aksjon
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.AksjonspunktUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
@@ -59,7 +60,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private final ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
-    private FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste;
+    private Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
     private Instance<VilkårTjeneste> vilkårTjeneste;
 
@@ -74,7 +75,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                                       @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
                                       @Any Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
-                                      FordelBeregningsgrunnlagTjeneste fordelBeregningsgrunnlagTjeneste,
+                                      @Any Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste,
                                       VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
@@ -123,11 +124,12 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     @Override
     public BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input) {
-        var fordelResultat = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input);
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
+        var fordelResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), fordelBeregningsgrunnlagTjeneste)
+                .omfordelBeregningsgrunnlag(input);
+        var nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
                 .build(input.getStegTilstand());
-        List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
+        var aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
                 input.getKoblingReferanse(),
                 nyttGrunnlag,
                 input.getAktivitetGradering(),

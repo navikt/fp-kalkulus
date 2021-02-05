@@ -63,3 +63,7 @@ spec:
       value: https://security-token-service.nais.adeo.no
     - name: OIDC_STS_JWKS_URL
       value: http://security-token-service.default/rest/v1/sts/jwks
+
+    # Feature-flag
+    - name: PSB_TILKOMMET_INNTEKT
+        value: false

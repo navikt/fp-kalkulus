@@ -10,26 +10,25 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.util.KopierBeregningsgrunnlagUtil;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class SplittBGPerioder {
     private SplittBGPerioder() {
         // skjul public constructor
     }
 
-    static void splitt(Beregningsgrunnlag regelBeregningsgrunnlag, Collection<AktivitetsAvtaleDto> ansettelsesPerioder) {
-        ansettelsesPerioder.forEach(aa -> {
-            LocalDate kortvarigArbeidsforholdTom = aa.getPeriode().getTomDato();
+    static void splitt(Beregningsgrunnlag regelBeregningsgrunnlag, Collection<Intervall> perioder, PeriodeÅrsak periodeårsak) {
+        perioder.forEach(periode -> {
+            LocalDate kortvarigArbeidsforholdTom = periode.getTomDato();
             List<BeregningsgrunnlagPeriode> eksisterendePerioder = regelBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
             ListIterator<BeregningsgrunnlagPeriode> periodeIterator = eksisterendePerioder.listIterator();
             while (periodeIterator.hasNext()) {
                 BeregningsgrunnlagPeriode beregningsgrunnlagPeriode = periodeIterator.next();
                 Periode bgPeriode = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriode();
-                PeriodeÅrsak nyPeriodeÅrsak = PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET;
                 if (bgPeriode.getTom().equals(kortvarigArbeidsforholdTom)) {
-                    oppdaterPeriodeÅrsakForNestePeriode(eksisterendePerioder, periodeIterator, nyPeriodeÅrsak);
+                    oppdaterPeriodeÅrsakForNestePeriode(eksisterendePerioder, periodeIterator, periodeårsak);
                 } else if (bgPeriode.inneholder(kortvarigArbeidsforholdTom)) {
-                    splitBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, kortvarigArbeidsforholdTom, nyPeriodeÅrsak);
+                    splitBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, kortvarigArbeidsforholdTom, periodeårsak);
                 }
             }
         });

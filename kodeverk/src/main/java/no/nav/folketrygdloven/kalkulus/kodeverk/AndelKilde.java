@@ -23,6 +23,8 @@ public enum AndelKilde implements Kodeverdi {
     PROSESS_PERIODISERING("PROSESS_PERIODISERING", "Prosess for periodisering grunnet refusjon/gradering/utbetalingsgrad"),
     PROSESS_OMFORDELING("PROSESS_OMFORDELING", "Prosess for automatisk omfordeling"),
     PROSESS_START("PROSESS_START", "Start av beregning"),
+    PROSESS_PERIODISERING_TILKOMMET_INNTEKT("PROSESS_PERIODISERING_TILKOMMET_INNTEKT", "Periodisering for tilkommet inntekt"),
+
     ;
     private static final Map<String, AndelKilde> KODER = new LinkedHashMap<>();
 
@@ -58,7 +60,7 @@ public enum AndelKilde implements Kodeverdi {
         }
         return ad;
     }
-    
+
     public static Map<String, AndelKilde> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
@@ -68,7 +70,7 @@ public enum AndelKilde implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
