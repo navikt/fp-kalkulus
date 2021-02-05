@@ -14,3 +14,4 @@ public interface BeregningsgrunnlagFeil extends DeklarerteFeil {
     @TekniskFeil(feilkode = "FT-370602", feilmelding = "Kunne ikke serialisere regelinput for beregningsgrunnlag.", logLevel = LogLevel.WARN)
     Feil kanIkkeSerialisereRegelinput(JsonProcessingException e);
 }
+
