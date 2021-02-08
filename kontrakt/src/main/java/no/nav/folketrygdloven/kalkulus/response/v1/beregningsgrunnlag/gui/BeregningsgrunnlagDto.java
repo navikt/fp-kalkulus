@@ -13,7 +13,6 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusjon.RefusjonTilVurderingDto;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -121,6 +121,10 @@ public class BeregningsgrunnlagDto {
     @Valid
     private LocalDate vilkårsperiodeFom;
 
+    @JsonProperty(value = "inntektsgrunnlag")
+    @Valid
+    private InntektsgrunnlagDto inntektsgrunnlag;
+
     public BeregningsgrunnlagDto() {
         // trengs for deserialisering av JSON
     }
@@ -144,6 +148,7 @@ public class BeregningsgrunnlagDto {
         this.vilkårsperiodeFom = beregningsgrunnlagDto.vilkårsperiodeFom;
         this.ytelsesspesifiktGrunnlag = beregningsgrunnlagDto.ytelsesspesifiktGrunnlag;
         this.årsinntektVisningstall = beregningsgrunnlagDto.årsinntektVisningstall;
+        this.inntektsgrunnlag = beregningsgrunnlagDto.inntektsgrunnlag;
     }
 
 
@@ -290,5 +295,13 @@ public class BeregningsgrunnlagDto {
 
     public void setRefusjonTilVurdering(RefusjonTilVurderingDto refusjonTilVurdering) {
         this.refusjonTilVurdering = refusjonTilVurdering;
+    }
+
+    public InntektsgrunnlagDto getInntektsgrunnlag() {
+        return inntektsgrunnlag;
+    }
+
+    public void setInntektsgrunnlag(InntektsgrunnlagDto inntektsgrunnlag) {
+        this.inntektsgrunnlag = inntektsgrunnlag;
     }
 }

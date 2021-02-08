@@ -6,10 +6,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
@@ -20,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnÅrsinntektvisningstall;
+import no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag.InntektsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.refusjon.VurderRefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag.YtelsespesifiktGrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -28,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
@@ -77,12 +75,19 @@ public class BeregningsgrunnlagDtoTjeneste {
             mapAktivitetGradering(input, dto);
             mapDekningsgrad(input, dto);
             mapYtelsesspesifiktGrunnlag(input, dto);
+            mapInntektsgrunnlag(input, dto);
         }
         return dto;
     }
 
     private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         VurderRefusjonDtoTjeneste.lagDto(input).ifPresent(dto::setRefusjonTilVurdering);
+    }
+
+    private void mapInntektsgrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
+        if (input.isEnabled("visning-inntektsgrunnlag", false)) {
+            InntektsgrunnlagTjeneste.lagDto(input).ifPresent(dto::setInntektsgrunnlag);
+        }
     }
 
     private void mapOverstyring(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

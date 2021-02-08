@@ -3,7 +3,9 @@ package no.nav.folketrygdloven.kalkulator.input;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,6 +58,8 @@ public class BeregningsgrunnlagGUIInput {
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
+    private Map<String, Boolean> toggles = new HashMap<>();
+
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                       AktivitetGradering aktivitetGradering,
@@ -75,6 +79,7 @@ public class BeregningsgrunnlagGUIInput {
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
         this.vurderRefusjonBeregningsgrunnlagGrunnlag = input.vurderRefusjonBeregningsgrunnlagGrunnlag;
+        this.toggles = input.getToggles();
 
     }
 
@@ -176,6 +181,18 @@ public class BeregningsgrunnlagGUIInput {
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);
         return newInput;
+    }
+
+    public void leggTilToggle(String feature, Boolean isEnabled) {
+        toggles.put(feature, isEnabled);
+    }
+
+    public Map<String, Boolean> getToggles() {
+        return toggles;
+    }
+
+    public boolean isEnabled(String feature, boolean defaultValue) {
+        return toggles.getOrDefault(feature, defaultValue);
     }
 
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {

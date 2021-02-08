@@ -1,0 +1,83 @@
+package no.nav.folketrygdloven.kalkulator.guitjenester.inntektsgrunnlag;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagInntektDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
+
+public class InntektsgrunnlagMapper {
+    private final LocalDate skjæringstidspunkt;
+    private final List<Arbeidsgiver> frilansArbeidsgivere;
+
+    public InntektsgrunnlagMapper(LocalDate skjæringstidspunkt,
+                                  List<Arbeidsgiver> frilansArbeidsgivere) {
+        this.skjæringstidspunkt = skjæringstidspunkt;
+        this.frilansArbeidsgivere = frilansArbeidsgivere;
+    }
+
+    public Optional<InntektsgrunnlagDto> map(List<InntektDto> inntekter) {
+
+        if (inntekter.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<InntektDtoMedMåned> alleInntektsposter = inntekter.stream().map(this::mapInntekt)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        Map<LocalDate, List<InntektDtoMedMåned>> dateMap = alleInntektsposter.stream().collect(Collectors.groupingBy(intp -> intp.månedFom));
+        if (dateMap.isEmpty()) {
+            return Optional.empty();
+        }
+        List<InntektsgrunnlagMånedDto> måneder = new ArrayList<>();
+        dateMap.forEach((månedFom, poster) -> {
+            List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
+                    .map(post -> new InntektsgrunnlagInntektDto(post.status, post.beløp))
+                    .collect(Collectors.toList());
+            LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
+            måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));
+        });
+        return Optional.of(new InntektsgrunnlagDto(måneder));
+    }
+
+    private List<InntektDtoMedMåned> mapInntekt(InntektDto inn) {
+        if (!inn.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING) || inn.getArbeidsgiver() == null) {
+            return Collections.emptyList();
+        }
+        AktivitetStatus status = frilansArbeidsgivere.contains(inn.getArbeidsgiver()) ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER;
+        List<LocalDate> fomDatoer = new ArrayList<>();
+        for (int i = 1; i<13; i++) {
+            fomDatoer.add(skjæringstidspunkt.minusMonths(i).withDayOfMonth(1));
+        }
+        return inn.getAlleInntektsposter().stream()
+                .filter(intp -> fomDatoer.contains(intp.getPeriode().getFomDato().withDayOfMonth(1)))
+                .map(intp -> new InntektDtoMedMåned(status, intp.getBeløp() != null ? intp.getBeløp().getVerdi() : BigDecimal.ZERO, intp.getPeriode().getFomDato().withDayOfMonth(1)))
+                .collect(Collectors.toList());
+
+    }
+
+    class InntektDtoMedMåned {
+        private final AktivitetStatus status;
+        private final BigDecimal beløp;
+        private final LocalDate månedFom;
+
+        public InntektDtoMedMåned(AktivitetStatus status, BigDecimal beløp, LocalDate månedFom) {
+            this.status = status;
+            this.beløp = beløp;
+            this.månedFom = månedFom;
+        }
+    }
+}
