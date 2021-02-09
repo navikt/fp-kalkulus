@@ -54,11 +54,6 @@ public class RefusjonAndelTilVurderingDto {
     @JsonProperty("arbeidsgiver")
     private Arbeidsgiver arbeidsgiver;
 
-    @Valid
-    @JsonProperty("arbeidsgiverNavn")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverNavn;
-
     @JsonProperty(value = "internArbeidsforholdRef")
     @Valid
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
@@ -135,14 +130,6 @@ public class RefusjonAndelTilVurderingDto {
         this.eksternArbeidsforholdRef = eksternArbeidsforholdRef;
     }
 
-    public String getArbeidsgiverNavn() {
-        return arbeidsgiverNavn;
-    }
-
-    public void setArbeidsgiverNavn(String arbeidsgiverNavn) {
-        this.arbeidsgiverNavn = arbeidsgiverNavn;
-    }
-
     public LocalDate getTidligsteMuligeRefusjonsdato() {
         return tidligsteMuligeRefusjonsdato;
     }
@@ -191,7 +178,6 @@ public class RefusjonAndelTilVurderingDto {
         return Objects.equals(aktivitetStatus, that.aktivitetStatus) &&
                 Objects.equals(tidligereUtbetalinger, that.tidligereUtbetalinger) &&
                 Objects.equals(nyttRefusjonskravFom, that.nyttRefusjonskravFom) &&
-                Objects.equals(arbeidsgiverNavn, that.arbeidsgiverNavn) &&
                 Objects.equals(fastsattNyttRefusjonskravFom, that.fastsattNyttRefusjonskravFom) &&
                 Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(skalKunneFastsetteDelvisRefusjon, that.skalKunneFastsetteDelvisRefusjon) &&
@@ -205,7 +191,6 @@ public class RefusjonAndelTilVurderingDto {
         return Objects.hash(aktivitetStatus,
                 tidligereUtbetalinger,
                 nyttRefusjonskravFom,
-                arbeidsgiverNavn,
                 fastsattNyttRefusjonskravFom,
                 arbeidsgiver,
                 skalKunneFastsetteDelvisRefusjon,

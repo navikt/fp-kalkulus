@@ -14,7 +14,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -24,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
@@ -47,7 +47,6 @@ public final class LagVurderRefusjonDto {
         if (orginaltGrunnlag.isEmpty() || orginaltGrunnlag.get().getBeregningsgrunnlag().isEmpty()) {
             return Optional.empty();
         }
-        List<ArbeidsgiverOpplysningerDto> agOpplysninger = input.getIayGrunnlag().getArbeidsgiverOpplysninger();
         BeregningsgrunnlagDto orginaltBG = orginaltGrunnlag.get().getBeregningsgrunnlag().get();
         List<BeregningRefusjonOverstyringDto> gjeldendeOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer()
                 .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
@@ -62,13 +61,13 @@ public final class LagVurderRefusjonDto {
             if (forrigeEntry == null) {
                 // Første periode, alle andeler skal legges til
                 List<RefusjonAndelTilVurderingDto> andeler = e.getValue().stream()
-                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, agOpplysninger, gjeldendeOverstyringer, arbeidsforholdInformasjon))
+                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, gjeldendeOverstyringer, arbeidsforholdInformasjon))
                         .collect(Collectors.toList());
                 dtoer.addAll(andeler);
             } else {
                 // Senere perioden, kun legg til andeler som ikke var i forrige periode (vi vet periodene er sammenhengende)
                 List<RefusjonAndelTilVurderingDto> andeler = e.getValue().stream().filter(a -> !forrigeEntry.getValue().contains(a))
-                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, agOpplysninger, gjeldendeOverstyringer, arbeidsforholdInformasjon))
+                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, gjeldendeOverstyringer, arbeidsforholdInformasjon))
                         .collect(Collectors.toList());
                 dtoer.addAll(andeler);
             }
@@ -80,7 +79,6 @@ public final class LagVurderRefusjonDto {
                                                          RefusjonAndel andel,
                                                          BeregningsgrunnlagDto gjeldendeBeregningsgrunnlag,
                                                          BeregningsgrunnlagDto orginalBG,
-                                                         List<ArbeidsgiverOpplysningerDto> agOpplysninger,
                                                          List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer,
                                                          Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon) {
         RefusjonAndelTilVurderingDto dto = new RefusjonAndelTilVurderingDto();
@@ -92,7 +90,6 @@ public final class LagVurderRefusjonDto {
         dto.setNyttRefusjonskravFom(periode.getFomDato());
         dto.setTidligereUtbetalinger(finnTidligereUtbetalinger(andel.getArbeidsgiver(), orginalBG));
         mapEksternReferanse(andel, arbeidsforholdInformasjon).ifPresent(ref -> dto.setEksternArbeidsforholdRef(ref.getReferanse()));
-        mapArbeidsgivernavn(andel, agOpplysninger).ifPresent(ago -> dto.setArbeidsgiverNavn(ago.getNavn()));
 
         // Sjekk om delvis refusjon skal settes og avklar evt valideringer
         BigDecimal tidligereRefusjonForAndelIPeriode = finnTidligereUtbetaltRefusjonForAndelIPeriode(periode, andel, orginalBG);

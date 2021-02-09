@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -121,26 +121,27 @@ public class BeregningsgrunnlagDtoUtil {
         Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = inntektArbeidYtelseGrunnlag.getArbeidsgiverOpplysninger()
                 .stream().filter(arbeidsgiverOpplysningerDto -> arbeidsgiver.getIdentifikator().equals(arbeidsgiverOpplysningerDto.getIdentifikator()))
                 .findFirst();
-        if (opplysningerDto.isPresent()) {
-            if (arbeidsgiver.getErVirksomhet()) {
+        if (arbeidsgiver != null) {
                 arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-                arbeidsforhold.setArbeidsgiverId(opplysningerDto.get().getIdentifikator());
-                arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
-                arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
-                if (OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) {
-                    arbeidsforhold.setOrganisasjonstype(Organisasjonstype.KUNSTIG);
-                }
-            } else if (arbeidsgiver.erAktørId()) {
-                arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
+                arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
+            if (OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) {
+                arbeidsforhold.setOrganisasjonstype(Organisasjonstype.KUNSTIG);
+            }
+            if (!arbeidsgiver.getErVirksomhet()) {
                 arbeidsforhold.setAktørId(new AktørId(arbeidsgiver.getAktørId().getId()));
                 arbeidsforhold.setAktørIdPersonIdent(new AktørIdPersonident(arbeidsgiver.getAktørId().getId()));
+            }
+        }
+        if (opplysningerDto.isPresent()) {
+            if (arbeidsgiver.getErVirksomhet()) {
+                arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
+                arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
+            } else if (arbeidsgiver.erAktørId()) {
                 LocalDate fødselsdato = opplysningerDto.get().getFødselsdato();
                 if (fødselsdato != null) {
                     String formatertDato = fødselsdato.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                     arbeidsforhold.setArbeidsgiverId(formatertDato);
                     arbeidsforhold.setArbeidsgiverIdVisning(formatertDato);
-                } else {
-                    arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getAktørId().getId());
                 }
                 arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
             }
