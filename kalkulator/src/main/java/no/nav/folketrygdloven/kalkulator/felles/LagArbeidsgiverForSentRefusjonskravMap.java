@@ -34,7 +34,7 @@ class LagArbeidsgiverForSentRefusjonskravMap {
                         entry.getValue().get(),
                         yrkesaktivitet,
                         gjeldendeAktiviteter,
-                        skjæringstidspunktBeregning, koblingReferanse.getFagsakYtelseType());
+                        skjæringstidspunktBeregning);
                 harSøktForSentMap.put(yrkesaktivitet.getArbeidsgiver(), harSøktForSentForArbeidsforhold || arbeidsgiverHarSøktForSent);
             }
         }

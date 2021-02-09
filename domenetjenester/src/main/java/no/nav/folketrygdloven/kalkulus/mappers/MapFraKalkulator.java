@@ -141,7 +141,7 @@ public class MapFraKalkulator {
                         frisinnPerioder, frisinnGrunnlag.getFrisinnBehandlingType() == null ? FrisinnBehandlingType.NY_SØKNADSPERIODE
                         : FrisinnBehandlingType.fraKode(frisinnGrunnlag.getFrisinnBehandlingType().getKode()));
             case OMSORGSPENGER:
-                return mapOmsorgspengegrunnlag(input, beregningsgrunnlagGrunnlagEntitet, (OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);
+                return mapOmsorgspengegrunnlag((OmsorgspengerGrunnlag) ytelsespesifiktGrunnlag);
             default:
                 return new StandardGrunnlag();
         }

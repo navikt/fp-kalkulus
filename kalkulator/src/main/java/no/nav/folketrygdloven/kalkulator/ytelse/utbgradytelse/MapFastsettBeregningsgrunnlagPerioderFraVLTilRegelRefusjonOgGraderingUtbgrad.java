@@ -43,10 +43,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
-@FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("OMP")
-@ApplicationScoped
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad
         extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering {
 

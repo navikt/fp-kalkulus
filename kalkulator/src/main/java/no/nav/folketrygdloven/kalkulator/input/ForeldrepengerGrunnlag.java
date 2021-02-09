@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 
 public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {

@@ -1,18 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapGraderingForYrkesaktivitet.mapGraderingForYrkesaktivitet;
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
@@ -24,7 +19,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Refus
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -37,8 +31,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering extends MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
-
-    private final static Logger log = LoggerFactory.getLogger(MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering.class);
 
     public MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering() {
         // For CDI
@@ -57,19 +49,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                 .findFirst();
         List<Refusjonskrav> refusjoner = mapRefusjonskrav(input.getYtelsespesifiktGrunnlag(), ya, startdatoPermisjon, refusjonOverstyringer, matchendeInntektsmelding);
         builder.medRefusjonskrav(refusjoner);
-        Optional<LocalDate> førsteMuligeRefusjonsdato = mapFørsteGyldigeDatoForRefusjon(ya, refusjonOverstyringer);
-        førsteMuligeRefusjonsdato.ifPresent(builder::medOverstyrtRefusjonsFrist);
+
 
         LocalDate innsendingsdatoFørsteInntektsmeldingMedRefusjon = førsteIMMap.get(ya.getArbeidsgiver());
-        if (innsendingsdatoFørsteInntektsmeldingMedRefusjon == null) {
-            log.info(
-                    "Mottatt inntektsmelding [journalpostId={}, kanalreferanse={}]. Arbeidsgiver har ingen inntektsmeldinger der de krever refusjon, kan ikke avgjøre frist for refusjon",
-                    matchendeInntektsmelding.map(InntektsmeldingDto::getJournalpostId).orElse(null),
-                    matchendeInntektsmelding.map(InntektsmeldingDto::getKanalreferanse).orElse(null));
-        } else {
-            LocalDate førsteDatoMedRefusjon = refusjoner.stream().map(Refusjonskrav::getFom).min(Comparator.naturalOrder()).orElse(TIDENES_ENDE);
-            builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon)
-                    .medRefusjonskravFrist(lagRefusjonskravFrist(input, førsteDatoMedRefusjon));
+        if (innsendingsdatoFørsteInntektsmeldingMedRefusjon != null) {
+            builder.medInnsendingsdatoFørsteInntektsmeldingMedRefusjon(innsendingsdatoFørsteInntektsmeldingMedRefusjon);
+            mapFørsteGyldigeDatoForRefusjon(ya, input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer()).ifPresent(builder::medOverstyrtRefusjonsFrist);
+            mapRefusjonskravFrist().ifPresent(builder::medRefusjonskravFrist);
         }
     }
 
@@ -101,26 +87,30 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return List.of(Intervall.fraOgMed(startdatoPermisjon));
     }
 
-    private RefusjonskravFrist lagRefusjonskravFrist(BeregningsgrunnlagInput input, LocalDate førsteDatoMedRefusjon) {
-        Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(input.getFagsakYtelseType());
-        int fristMånederEtterRefusjonskravStarter = konfigverdier.getFristMånederEtterRefusjon(førsteDatoMedRefusjon);
-        return new RefusjonskravFrist(fristMånederEtterRefusjonskravStarter,
-                BeregningsgrunnlagHjemmel.valueOf(konfigverdier.getHjemmelForRefusjonfrist(førsteDatoMedRefusjon).getKode()));
+
+    /**
+     * Setter informasjon for vurdering av refusjonskravfrist
+     *
+     * Settes til defaultverdier med mindre metode overrides
+     *
+     */
+    protected Optional<RefusjonskravFrist> mapRefusjonskravFrist() {
+        return Optional.of(new RefusjonskravFrist(Konfigverdier.FRIST_MÅNEDER_ETTER_REFUSJON, BeregningsgrunnlagHjemmel.REFUSJONSKRAV_FRIST));
     }
 
-    @Override
-    protected List<Gradering> mapGradering(Collection<AndelGradering> andelGraderinger, YrkesaktivitetDto ya) {
-        List<Gradering> graderinger = mapGraderingForYrkesaktivitet(andelGraderinger, ya);
-        return graderinger;
-    }
-
-    private Optional<LocalDate> mapFørsteGyldigeDatoForRefusjon(YrkesaktivitetDto ya, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
+    protected Optional<LocalDate> mapFørsteGyldigeDatoForRefusjon(YrkesaktivitetDto ya, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
         return refusjonOverstyringer.stream().flatMap(s -> s.getRefusjonOverstyringer().stream())
                 .filter(o -> o.getArbeidsgiver().equals(ya.getArbeidsgiver()))
                 .map(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
+    }
+
+    @Override
+    protected List<Gradering> mapGradering(Collection<AndelGradering> andelGraderinger, YrkesaktivitetDto ya) {
+        List<Gradering> graderinger = mapGraderingForYrkesaktivitet(andelGraderinger, ya);
+        return graderinger;
     }
 
     @Override

@@ -24,14 +24,10 @@ public class KonfigTjeneste {
         verfisierYtelsetype(ytelse);
         if (FagsakYtelseType.FORELDREPENGER.equals(ytelse)) {
             return new FPKonfig();
-        } else if (FagsakYtelseType.SVANGERSKAPSPENGER.equals(ytelse)) {
-            return new SVPKonfig();
         } else if (FagsakYtelseType.FRISINN.equals(ytelse)) {
             return new FRISINNKonfig();
-        } else if (FagsakYtelseType.PLEIEPENGER_SYKT_BARN.equals(ytelse)) {
-            return new PSBKonfig();
         } else {
-            return new OMPKonfig();
+            return new DefaultKonfig();
         }
     }
 

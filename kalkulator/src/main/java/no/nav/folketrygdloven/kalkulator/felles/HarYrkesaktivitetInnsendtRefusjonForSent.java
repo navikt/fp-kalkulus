@@ -1,16 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.felles;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
-
 import java.time.LocalDate;
 
-import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
+import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class HarYrkesaktivitetInnsendtRefusjonForSent {
 
@@ -27,11 +24,10 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
      * @param yrkesaktivitet aktuell yrkesaktivitet
      * @param gjeldendeAktiviteter gjeldende aktiviteter på skjæringstidspunktet
      * @param skjæringstidspunktBeregning skjæringstidspunkt for beregning
-     * @param fagsakYtelseType ytelsetype
      * @return Om refusjonskrav for aktivitet har komt inn for sent eller ikke
      */
-    public static boolean vurder(RefusjonskravDatoDto refusjonsdato, YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto gjeldendeAktiviteter, LocalDate skjæringstidspunktBeregning, FagsakYtelseType fagsakYtelseType) {
-        LocalDate førsteLovligeDatoForRefusjon = finnFørsteGyldigeDatoMedRefusjon(refusjonsdato, fagsakYtelseType);
+    public static boolean vurder(RefusjonskravDatoDto refusjonsdato, YrkesaktivitetDto yrkesaktivitet, BeregningAktivitetAggregatDto gjeldendeAktiviteter, LocalDate skjæringstidspunktBeregning) {
+        LocalDate førsteLovligeDatoForRefusjon = finnFørsteGyldigeDatoMedRefusjon(refusjonsdato);
         LocalDate førsteDagMedRefusjon = finnFørsteDagMedSøktRefusjon(refusjonsdato, gjeldendeAktiviteter, skjæringstidspunktBeregning, yrkesaktivitet.getArbeidsforholdRef());
         return førsteLovligeDatoForRefusjon.isAfter(førsteDagMedRefusjon);
     }
@@ -65,11 +61,10 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
      * Finner første gyldige dato med refusjon.
      *
      * @param refusjonsdato Dto for datoer for innsendte krav
-     * @param fagsakYtelseType Ytelsetype
      * @return Første lovlige dato med refusjon på grunnlag av opplysninger tilgjengelig i register
      */
-    public static LocalDate finnFørsteGyldigeDatoMedRefusjon(RefusjonskravDatoDto refusjonsdato, FagsakYtelseType fagsakYtelseType) {
-        int senesteGyldigeInnsendigsdatoForRefusjonskrav = KonfigTjeneste.forYtelse(fagsakYtelseType).getFristMånederEtterRefusjon(refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(TIDENES_ENDE)) + 1;
+    public static LocalDate finnFørsteGyldigeDatoMedRefusjon(RefusjonskravDatoDto refusjonsdato) {
+        int senesteGyldigeInnsendigsdatoForRefusjonskrav = Konfigverdier.FRIST_MÅNEDER_ETTER_REFUSJON + 1;
         return refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
     }
 
