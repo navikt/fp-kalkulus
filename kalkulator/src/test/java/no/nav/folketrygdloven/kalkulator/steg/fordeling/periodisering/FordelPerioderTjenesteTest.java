@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
@@ -222,8 +223,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -254,8 +254,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -272,18 +271,19 @@ public class FordelPerioderTjenesteTest {
                                                                          InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder) {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
         List<RefusjonskravDatoDto> refusjonskravDatoDtos = OpprettRefusjondatoerFraInntektsmeldinger.opprett(ref, iayGrunnlag);
-        var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, null, aktivitetGradering, refusjonskravDatoDtos, null)
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, null, refusjonskravDatoDtos, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
-    private BeregningsgrunnlagDto fastsettPerioderForRefusjonOgGradering(KoblingReferanse ref,
-                                                                         BeregningsgrunnlagGrunnlagDto grunnlag,
-                                                                         BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                         AktivitetGradering aktivitetGradering,
-                                                                         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder,
-                                                                         List<RefusjonskravDatoDto> refusjonskravDatoer) {
-        var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, aktivitetGradering, refusjonskravDatoer, null)
+    private BeregningsgrunnlagDto fastsettPerioderForRefusjonUtenGradering(KoblingReferanse ref,
+                                                                           BeregningsgrunnlagGrunnlagDto grunnlag,
+                                                                           BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                           InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder,
+                                                                           List<RefusjonskravDatoDto> refusjonskravDatoer) {
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, AktivitetGradering.INGEN_GRADERING);
+        var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, refusjonskravDatoer, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
@@ -302,10 +302,10 @@ public class FordelPerioderTjenesteTest {
                 SKJÆRINGSTIDSPUNKT, LocalDate.of(2019, Month.MAY, 2), true));
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef,
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonUtenGradering(behandlingRef,
                 grunnlag,
                 beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder, refusjonskravDatoDtoer);
+                iayGrunnlagBuilder, refusjonskravDatoDtoer);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -328,8 +328,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -348,8 +347,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
         assertThat(perioder).hasSize(2);
@@ -748,8 +746,7 @@ public class FordelPerioderTjenesteTest {
         fjernAktivitet(arbeidsgiver, arbId);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -777,8 +774,7 @@ public class FordelPerioderTjenesteTest {
         newGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -808,8 +804,7 @@ public class FordelPerioderTjenesteTest {
         fjernOgLeggTilNyBeregningAktivitet(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbeidsgiver3, arbId);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -841,8 +836,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -880,8 +874,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -924,8 +917,7 @@ public class FordelPerioderTjenesteTest {
         fjernOgLeggTilNyBeregningAktivitet(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE, arbeidsgiver, arbId);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -958,8 +950,7 @@ public class FordelPerioderTjenesteTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1021,8 +1012,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1065,8 +1055,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1115,8 +1104,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1185,8 +1173,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1337,8 +1324,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1405,8 +1391,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, newGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1456,8 +1441,7 @@ public class FordelPerioderTjenesteTest {
 
         // Act
 
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForRefusjonOgGradering(behandlingRef, grunnlag, beregningsgrunnlag, AktivitetGradering.INGEN_GRADERING, iayGrunnlagBuilder);
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1758,7 +1742,7 @@ public class FordelPerioderTjenesteTest {
                 .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
@@ -1843,7 +1827,8 @@ public class FordelPerioderTjenesteTest {
                 .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+        var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
@@ -1930,7 +1915,8 @@ public class FordelPerioderTjenesteTest {
                 .build());
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, aktivitetGradering, List.of(), null)
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
+        var input = new BeregningsgrunnlagInput(behandlingRef, iayGrunnlag, null, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

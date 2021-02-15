@@ -29,9 +29,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class BeregningsgrunnlagGUIInput {
 
-    /** Aktiviteter for graderign av uttak. */
-    private final AktivitetGradering aktivitetGradering;
-
     /** Data som referer behandlingen beregningsgrunnlag inngår i. */
     private KoblingReferanse koblingReferanse;
 
@@ -62,18 +59,16 @@ public class BeregningsgrunnlagGUIInput {
 
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                      AktivitetGradering aktivitetGradering,
                                       List<RefusjonskravDatoDto> refusjonskravDatoer,
                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
-        this.aktivitetGradering = aktivitetGradering;
         this.refusjonskravDatoer = refusjonskravDatoer;
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
     private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
@@ -88,10 +83,6 @@ public class BeregningsgrunnlagGUIInput {
             return Optional.empty();
         }
         return fordelBeregningsgrunnlagGrunnlag.getBeregningsgrunnlag();
-    }
-
-    public AktivitetGradering getAktivitetGradering() {
-        return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }
 
     public KoblingReferanse getKoblingReferanse() {

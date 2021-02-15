@@ -28,7 +28,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -95,7 +94,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), null)
             .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         // Act
@@ -126,7 +125,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste.lagDto(input);
@@ -150,7 +149,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste

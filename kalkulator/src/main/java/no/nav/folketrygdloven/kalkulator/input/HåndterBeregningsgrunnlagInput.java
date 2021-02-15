@@ -34,7 +34,7 @@ public class HåndterBeregningsgrunnlagInput extends BeregningsgrunnlagInput {
                                           AktivitetGradering aktivitetGradering,
                                           List<RefusjonskravDatoDto> refusjonskravDatoer,
                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
     }
 
     protected HåndterBeregningsgrunnlagInput(HåndterBeregningsgrunnlagInput input) {

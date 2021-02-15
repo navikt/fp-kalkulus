@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -93,11 +95,11 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
-    public static void verifiserFastsattBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
+    public static void verifiserFastsattBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         verifiserFordeltBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFastsattAndel));
-        if (aktivitetGradering != null) {
-            verifiserAtAndelerSomGraderesHarGrunnlag(beregningsgrunnlag, aktivitetGradering);
+        if (ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag) {
+            verifiserAtAndelerSomGraderesHarGrunnlag(beregningsgrunnlag, ((ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering());
         }
     }
 

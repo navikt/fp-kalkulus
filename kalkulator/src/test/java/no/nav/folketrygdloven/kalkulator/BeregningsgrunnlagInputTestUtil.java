@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -43,7 +42,7 @@ public class BeregningsgrunnlagInputTestUtil {
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse,
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand>... forrige) {
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         for (Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> bg : forrige) {
@@ -55,7 +54,7 @@ public class BeregningsgrunnlagInputTestUtil {
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse, BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningsgrunnlag, beregningsgrunnlagTilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -68,7 +67,7 @@ public class BeregningsgrunnlagInputTestUtil {
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse, BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder, BeregningsgrunnlagTilstand tilstand) {
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
@@ -82,7 +81,7 @@ public class BeregningsgrunnlagInputTestUtil {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(dekningsgrad, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(grunnbeløpMilitærHarKravPå);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
-            AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         input.setToggles(toggles);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return input;
@@ -94,7 +93,7 @@ public class BeregningsgrunnlagInputTestUtil {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(dekningsgrad, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(grunnbeløpMilitærHarKravPå);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, opptjeningAktiviteterDto,
-                AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         input.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNING, true);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         return input;
@@ -107,7 +106,7 @@ public class BeregningsgrunnlagInputTestUtil {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
-                AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -123,7 +122,7 @@ public class BeregningsgrunnlagInputTestUtil {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
-            AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -137,7 +136,7 @@ public class BeregningsgrunnlagInputTestUtil {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, null,
-                AktivitetGradering.INGEN_GRADERING, Collections.emptyList(), foreldrepengerGrunnlag);
+                Collections.emptyList(), foreldrepengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -152,7 +151,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                              SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
-            AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), svangerskapspengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), svangerskapspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -166,7 +165,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                              OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
-                AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), omsorgspengerGrunnlag);
+                opprett(koblingReferanse, iayGrunnlag), omsorgspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.setToggles(toggles);
@@ -181,7 +180,7 @@ public class BeregningsgrunnlagInputTestUtil {
                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                              Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
-            AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
+                opprett(koblingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         BeregningsgrunnlagInput inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);

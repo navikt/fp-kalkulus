@@ -31,7 +31,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -221,7 +220,7 @@ public class FordelPerioderTjenesteSVPTest {
                                                                          Skjæringstidspunkt skjæringstidspunkt,
                                                                          SvangerskapspengerGrunnlag svangerskapspengerGrunnlag) {
         KoblingReferanse refMeStp = koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
-        var input = new BeregningsgrunnlagInput(refMeStp, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), svangerskapspengerGrunnlag)
+        var input = new BeregningsgrunnlagInput(refMeStp, iayGrunnlag, null, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }

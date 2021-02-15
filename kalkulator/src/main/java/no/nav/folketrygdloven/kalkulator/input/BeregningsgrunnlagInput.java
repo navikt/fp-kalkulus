@@ -14,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
@@ -24,9 +23,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
 public class BeregningsgrunnlagInput {
-
-    /** Aktiviteter for graderign av uttak. */
-    private AktivitetGradering aktivitetGradering = AktivitetGradering.INGEN_GRADERING;
 
     /** Data som referer behandlingen beregningsgrunnlag inngår i. */
     private KoblingReferanse koblingReferanse;
@@ -52,20 +48,6 @@ public class BeregningsgrunnlagInput {
     public BeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                    OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                   AktivitetGradering aktivitetGradering,
-                                   List<RefusjonskravDatoDto> refusjonskravDatoer,
-                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
-        this.iayGrunnlag = iayGrunnlag;
-        this.opptjeningAktiviteter = opptjeningAktiviteter;
-        this.aktivitetGradering = aktivitetGradering;
-        this.refusjonskravDatoer = refusjonskravDatoer;
-        this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
-    }
-
-    public BeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
-                                   InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                   OpptjeningAktiviteterDto opptjeningAktiviteter,
                                    List<RefusjonskravDatoDto> refusjonskravDatoer,
                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
@@ -76,7 +58,7 @@ public class BeregningsgrunnlagInput {
     }
 
     protected BeregningsgrunnlagInput(BeregningsgrunnlagInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getOpptjeningAktiviteter(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();
@@ -110,11 +92,6 @@ public class BeregningsgrunnlagInput {
 
     public void setToggles(Map<String, Boolean> toggles) {
         this.toggles = toggles;
-    }
-
-
-    public AktivitetGradering getAktivitetGradering() {
-        return aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : aktivitetGradering;
     }
 
     public KoblingReferanse getKoblingReferanse() {
@@ -214,8 +191,7 @@ public class BeregningsgrunnlagInput {
     @Override
     public String toString() {
         return "BeregningsgrunnlagInput{" +
-            "aktivitetGradering=" + aktivitetGradering +
-            ", behandlingReferanse=" + koblingReferanse +
+            "behandlingReferanse=" + koblingReferanse +
             ", beregningsgrunnlagGrunnlag=" + beregningsgrunnlagGrunnlag +
             ", refusjonskravDatoer=" + refusjonskravDatoer +
             ", iayGrunnlag=" + iayGrunnlag +

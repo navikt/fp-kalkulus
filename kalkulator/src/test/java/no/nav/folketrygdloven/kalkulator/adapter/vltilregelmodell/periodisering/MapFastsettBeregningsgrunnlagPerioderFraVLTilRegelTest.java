@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Perio
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -101,12 +102,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, arbeidsforholdId);
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag,
-                null,
-                new AktivitetGradering(List.of(AndelGradering.builder()
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setAktivitetGradering(new AktivitetGradering(List.of(AndelGradering.builder()
                 .medStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medGradering(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), 50)
-                .medArbeidsgiver(arbeidsgiver).build())), opprett(koblingReferanse, iayGrunnlag), null);
+                .medArbeidsgiver(arbeidsgiver).build())));
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag,
+                null, opprett(koblingReferanse, iayGrunnlag), foreldrepengerGrunnlag);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -132,7 +134,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(arbeidsgiver, beregningAktivitetAggregat, InternArbeidsforholdRefDto.nullRef());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -152,7 +154,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), null);
 
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
 
@@ -182,7 +184,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BigDecimal inntekt = BigDecimal.valueOf(20000);
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -216,7 +218,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         var im1 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR, SKJÆRINGSTIDSPUNKT, inntekt, inntekt);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
@@ -251,7 +253,9 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
                 .build()));
 
         var iayGrunnlag = iayGrunnlagBuilder.build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, aktivitetGradering, List.of(), null);
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), foreldrepengerGrunnlag);
 
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
 
@@ -285,7 +289,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(im1).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, List.of(), null);
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, List.of(), null);
 
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);

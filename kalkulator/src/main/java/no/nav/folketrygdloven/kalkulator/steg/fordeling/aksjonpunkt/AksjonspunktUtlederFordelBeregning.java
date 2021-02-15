@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -20,10 +22,10 @@ public class AksjonspunktUtlederFordelBeregning {
 
     public static List<BeregningAksjonspunktResultat> utledAksjonspunkterFor(KoblingReferanse ref,
                                                                                 BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                                                AktivitetGradering aktivitetGradering,
+                                                                                YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultater = new ArrayList<>();
-        if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, aktivitetGradering, inntektsmeldinger)) {
+        if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, ytelsespesifiktGrunnlag, inntektsmeldinger)) {
             BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.FORDEL_BEREGNINGSGRUNNLAG);
             aksjonspunktResultater.add(aksjonspunktResultat);
         }
@@ -32,11 +34,15 @@ public class AksjonspunktUtlederFordelBeregning {
 
     private static boolean harTilfellerForFordeling(@SuppressWarnings("unused") KoblingReferanse ref,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
-                                                    AktivitetGradering aktivitetGradering,
+                                                    YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                     Collection<InntektsmeldingDto> inntektsmeldinger) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Mangler beregningsgrunnlagGrunnlag"));
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(beregningsgrunnlag, aktivitetGradering, inntektsmeldinger);
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(beregningsgrunnlag, finnGraderinger(ytelsespesifiktGrunnlag), inntektsmeldinger);
         return FordelBeregningsgrunnlagTilfelleTjeneste.harTilfelleForFordeling(fordelingInput);
+    }
+
+    private static AktivitetGradering finnGraderinger(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
+        return ytelsespesifiktGrunnlag instanceof ForeldrepengerGrunnlag ? ((ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
     }
 }

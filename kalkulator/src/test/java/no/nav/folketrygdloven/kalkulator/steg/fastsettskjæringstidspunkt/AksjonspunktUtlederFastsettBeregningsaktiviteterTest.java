@@ -84,7 +84,7 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
         beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
             .build();
-        input = new BeregningsgrunnlagInput(ref, null, null, null, null, null);
+        input = new BeregningsgrunnlagInput(ref, null, null, null, null);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 100000);
     }
 
@@ -335,13 +335,13 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterTest {
     }
 
     private BeregningsgrunnlagInput lagBeregningsgrunnlagInput(int rapporteringsfrist) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
+        BeregningsgrunnlagInput beregningsgrunnlagInput = new BeregningsgrunnlagInput(ref, getIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(100, false));
         beregningsgrunnlagInput.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, rapporteringsfrist);
         return beregningsgrunnlagInput;
     }
 
     private BeregningsgrunnlagInput lagMockBeregningsgrunnlagInput() {
-        return new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, null, List.of(), new ForeldrepengerGrunnlag(100, false));
+        return new BeregningsgrunnlagInput(ref, getMockedIAYGrunnlag(), opptjeningAktiviteter, List.of(), new ForeldrepengerGrunnlag(100, false));
     }
 
     private InntektArbeidYtelseGrunnlagDto getIAYGrunnlag() {

@@ -25,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
@@ -94,7 +93,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel();
 
         // Act
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         dtoTjeneste.lagDto(input, dto);
@@ -125,7 +124,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(arbeidsgiver, InternArbeidsforholdRefDto.nullRef())
                         .medHarMottattYtelse(true)
                         .build()).build();
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                         .medFaktaAggregat(fakta)
                         .build(BeregningsgrunnlagTilstand.KOFAKBER_UT));

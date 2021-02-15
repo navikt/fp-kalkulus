@@ -27,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -129,9 +128,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
     private BeregningsgrunnlagDto fastsettPerioderForNaturalytelse(KoblingReferanse ref,
                                                                    BeregningsgrunnlagGrunnlagDto grunnlag,
-                                                                   BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                   AktivitetGradering aktivitetGradering) {
-        var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, aktivitetGradering, List.of(), null)
+                                                                   BeregningsgrunnlagDto beregningsgrunnlag) {
+        var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         return tjeneste.fastsettPerioderForNaturalytelse(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
@@ -149,8 +147,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag
+        );
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -172,8 +170,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag
+        );
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -195,8 +193,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag
+        );
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -217,8 +215,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag
+        );
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -242,8 +240,8 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         iayGrunnlagBuilder.medInntektsmeldinger(im1);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag,
-                AktivitetGradering.INGEN_GRADERING);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = fastsettPerioderForNaturalytelse(behandlingRef, grunnlag, beregningsgrunnlag
+        );
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -272,7 +270,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
         // Assert
         // Act
         Assertions.assertThrows(TekniskException.class, () -> {
-            var input = new BeregningsgrunnlagInput(behandlingRef, null, null, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+            var input = new BeregningsgrunnlagInput(behandlingRef, null, null, List.of(), null)
                     .medBeregningsgrunnlagGrunnlag(grunnlag);
             tjeneste.fastsettPerioderForNaturalytelse(input, beregningsgrunnlag);
         });

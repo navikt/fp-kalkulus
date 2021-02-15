@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -21,16 +22,26 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public static final String YTELSE_TYPE = "FP";
 
+    @JsonProperty(value = "aktivitetGradering")
+    @Valid
+    private AktivitetGraderingDto aktivitetGradering;
+
     protected ForeldrepengerGrunnlag() {
         // default ctor
     }
 
-    public ForeldrepengerGrunnlag(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad, @Valid @NotNull Boolean kvalifisererTilBesteberegning) {
+    public ForeldrepengerGrunnlag(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad,
+                                  @Valid @NotNull Boolean kvalifisererTilBesteberegning,
+                                  @Valid AktivitetGraderingDto aktivitetGradering) {
         super(dekningsgrad, kvalifisererTilBesteberegning);
+        this.aktivitetGradering = aktivitetGradering;
     }
 
     public static String getYtelseType() {
         return YTELSE_TYPE;
     }
 
+    public AktivitetGraderingDto getAktivitetGradering() {
+        return aktivitetGradering;
+    }
 }

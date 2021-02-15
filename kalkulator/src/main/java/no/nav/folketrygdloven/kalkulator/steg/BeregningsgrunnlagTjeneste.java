@@ -132,7 +132,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         var aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
                 input.getKoblingReferanse(),
                 nyttGrunnlag,
-                input.getAktivitetGradering(),
+                input.getYtelsespesifiktGrunnlag(),
                 input.getInntektsmeldinger());
         return Builder.fra(input)
                 .medAksjonspunkter(aksjonspunkter)

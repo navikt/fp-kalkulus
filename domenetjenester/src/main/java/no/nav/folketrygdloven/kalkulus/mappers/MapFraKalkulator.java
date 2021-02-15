@@ -13,11 +13,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -78,7 +78,6 @@ public class MapFraKalkulator {
 
         var ref = KoblingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
 
-        var aktivitetGradering = input.getAktivitetGradering();
         var iayGrunnlag = input.getIayGrunnlag();
         var opptjeningAktiviteter = input.getOpptjeningAktiviteter();
         var refusjonskravDatoer = input.getRefusjonskravDatoer();
@@ -87,7 +86,6 @@ public class MapFraKalkulator {
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
                 iayGrunnlagMappet,
                 mapFraDto(opptjeningAktiviteter),
-                aktivitetGradering != null ? mapFraDto(aktivitetGradering) : null,
                 mapFraDto(refusjonskravDatoer,
                         input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
                         input.getSkjæringstidspunkt()),
@@ -117,8 +115,8 @@ public class MapFraKalkulator {
                 ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(ytelsespesifiktGrunnlag.getDekningsgrad().intValue(),
                         ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
                 // TODO(OJR) lag builder?
-                foreldrepengerGrunnlag
-                        .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.FORELDREPENGER).getAntallGMilitærHarKravPå().intValue());
+                foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.FORELDREPENGER).getAntallGMilitærHarKravPå().intValue());
+                foreldrepengerGrunnlag.setAktivitetGradering(mapFraDto(((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering()));
                 return foreldrepengerGrunnlag;
             case SVANGERSKAPSPENGER:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag;

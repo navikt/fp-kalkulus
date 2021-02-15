@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -55,7 +56,8 @@ public class AksjonspunktUtlederFordelBeregningTest {
     }
 
     private List<BeregningAksjonspunktResultat> utledAksjonspunkter(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag) {
-        List<BeregningAksjonspunktResultat> aksjonspunktResultats = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(ref, grunnlag, AktivitetGradering.INGEN_GRADERING, List.of());
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        List<BeregningAksjonspunktResultat> aksjonspunktResultats = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(ref, grunnlag, foreldrepengerGrunnlag, List.of());
         return aksjonspunktResultats;
     }
 

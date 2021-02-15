@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -74,7 +75,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                 .map(af -> {
                     FordelBeregningsgrunnlagArbeidsforholdDto endringAf = (FordelBeregningsgrunnlagArbeidsforholdDto) af;
                     settEndretArbeidsforholdForNyttRefusjonskrav(andel, endringAf, perioder);
-                    settEndretArbeidsforholdForSøktGradering(andel, endringAf, input.getAktivitetGradering());
+                    settEndretArbeidsforholdForSøktGradering(andel, endringAf, finnGradering(input));
                     lagPerioderForNyAktivitetMedSøktYtelse(input.getYtelsespesifiktGrunnlag(), tilfelleEntry.getValue(), andel, endringAf)
                             .forEach(endringAf::leggTilPeriodeMedGraderingEllerRefusjon);
                     andel.getBgAndelArbeidsforhold().flatMap(bga ->
@@ -82,6 +83,11 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                     ).ifPresent(endringAf::setPermisjon);
                     return endringAf;
                 });
+    }
+
+    private static AktivitetGradering finnGradering(BeregningsgrunnlagGUIInput input) {
+        return input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ?
+                ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
     }
 
     private static void settEndretArbeidsforholdForNyttRefusjonskrav(BeregningsgrunnlagPrStatusOgAndelDto distinctAndel,

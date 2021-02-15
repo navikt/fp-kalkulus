@@ -38,7 +38,7 @@ public class BeregningsperiodeTjenesteTest {
 
     @BeforeEach
     public void setUp() {
-        input = new BeregningsgrunnlagInput(koblingReferanse, null, null, null, null, null);
+        input = new BeregningsgrunnlagInput(koblingReferanse, null, null, null, null);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
     }
 

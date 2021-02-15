@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
@@ -18,10 +19,11 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Re
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.felles.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.InntektsmeldingMedRefusjonTjeneste;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -49,7 +51,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var ref = input.getKoblingReferanse();
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
-        var graderinger = input.getAktivitetGradering() == null ? new HashSet<AndelGradering>() : input.getAktivitetGradering().getAndelGradering();
+        var graderinger = finnGraderinger(input);
 
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
@@ -71,6 +73,12 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             eksisterendePerioder,
             regelInntektsmeldinger,
             List.copyOf(regelAndelGraderinger));
+    }
+
+    protected Set<AndelGradering> finnGraderinger(BeregningsgrunnlagInput input) {
+        return input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ?
+                ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering().getAndelGradering()
+                : new HashSet<>();
     }
 
     protected abstract PeriodeModell mapPeriodeModell(BeregningsgrunnlagInput input,
@@ -269,9 +277,7 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
         var iayGrunnlag = beregningsgrunnlagInput.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         var førsteIMMap = InntektsmeldingMedRefusjonTjeneste.finnFørsteInntektsmeldingMedRefusjon(beregningsgrunnlagInput);
-        var andelGraderinger = beregningsgrunnlagInput.getAktivitetGradering() == null
-            ? new ArrayList<AndelGradering>()
-            : beregningsgrunnlagInput.getAktivitetGradering().getAndelGradering();
+        var andelGraderinger = finnGraderinger(beregningsgrunnlagInput);
         var grunnlag = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
 
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag()

@@ -81,7 +81,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10))),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
@@ -125,7 +125,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         input.leggTilToggle("automatisk-besteberegning", true);
 
@@ -171,7 +171,7 @@ class VurderBesteberegningTilfelleUtlederTest {
         var opptjeningAktiviteter = new OpptjeningAktiviteterDto(List.of(
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         input.leggTilToggle("automatisk-besteberegning", false);
 
@@ -218,7 +218,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 OpptjeningAktiviteterDto.nyPeriodeOrgnr(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(STP.minusMonths(10)), virksomhet.getIdentifikator()),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.DAGPENGER, Intervall.fraOgMed(STP.minusMonths(10))),
                 OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.FRILANS, Intervall.fraOgMed(STP.minusMonths(10)))));
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, null, new ForeldrepengerGrunnlag(100, true));
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, null, opptjeningAktiviteter, null, new ForeldrepengerGrunnlag(100, true));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

@@ -40,10 +40,9 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
                                  KoblingReferanse koblingReferanse,
                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                  OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                 AktivitetGradering aktivitetGradering,
                                  List<RefusjonskravDatoDto> refusjonskravDatoer,
                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
         this.stegTilstand = stegTilstand;
     }
 

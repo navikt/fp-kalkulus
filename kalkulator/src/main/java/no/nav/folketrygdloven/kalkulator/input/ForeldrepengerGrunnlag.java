@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 
 public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
@@ -12,6 +13,8 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     private Integer grunnbeløpMilitærHarKravPå;
 
+    /** Aktiviteter for gradering av uttak. */
+    private AktivitetGradering aktivitetGradering = AktivitetGradering.INGEN_GRADERING;
 
     ForeldrepengerGrunnlag() {
     }
@@ -19,6 +22,12 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     public ForeldrepengerGrunnlag(int dekningsgrad, boolean kvalifisererTilBesteberegning) {
         this.dekningsgrad = dekningsgrad;
         this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
+    }
+
+    public ForeldrepengerGrunnlag(int dekningsgrad, boolean kvalifisererTilBesteberegning, AktivitetGradering aktivitetGradering) {
+        this.dekningsgrad = dekningsgrad;
+        this.kvalifisererTilBesteberegning = kvalifisererTilBesteberegning;
+        this.aktivitetGradering = aktivitetGradering;
     }
 
     public ForeldrepengerGrunnlag(int dekningsgrad, BesteberegningVurderingGrunnlag besteberegningVurderingGrunnlag) {
@@ -40,6 +49,15 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     @Override
     public void setGrunnbeløpMilitærHarKravPå(int grunnbeløpMilitærHarKravPå) {
         this.grunnbeløpMilitærHarKravPå = grunnbeløpMilitærHarKravPå;
+    }
+
+
+    public void setAktivitetGradering(AktivitetGradering aktivitetGradering) {
+        this.aktivitetGradering = aktivitetGradering;
+    }
+
+    public AktivitetGradering getAktivitetGradering() {
+        return aktivitetGradering;
     }
 
     public boolean isKvalifisererTilBesteberegning() {

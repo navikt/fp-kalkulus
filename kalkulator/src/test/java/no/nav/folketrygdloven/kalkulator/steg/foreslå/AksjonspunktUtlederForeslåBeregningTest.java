@@ -80,7 +80,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
 
     private BeregningsgrunnlagInput lagInput() {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(80, false);
-        return new BeregningsgrunnlagInput(referanse, null, null, null, List.of(), foreldrepengerGrunnlag);
+        return new BeregningsgrunnlagInput(referanse, null, null, List.of(), foreldrepengerGrunnlag);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
 
     private BeregningsgrunnlagInput lagInput(KoblingReferanse referanse) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        return new BeregningsgrunnlagInput(referanse, null, null, null, List.of(), foreldrepengerGrunnlag);
+        return new BeregningsgrunnlagInput(referanse, null, null, List.of(), foreldrepengerGrunnlag);
     }
 
     private RegelResultat lagRegelResultat(String merknadKode) {

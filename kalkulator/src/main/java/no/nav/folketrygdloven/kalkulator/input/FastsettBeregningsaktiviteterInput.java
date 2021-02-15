@@ -32,7 +32,7 @@ public class FastsettBeregningsaktiviteterInput extends StegProsesseringInput {
                                               AktivitetGradering aktivitetGradering,
                                               List<RefusjonskravDatoDto> refusjonskravDatoer,
                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
     }
 
     protected FastsettBeregningsaktiviteterInput(FastsettBeregningsaktiviteterInput input) {

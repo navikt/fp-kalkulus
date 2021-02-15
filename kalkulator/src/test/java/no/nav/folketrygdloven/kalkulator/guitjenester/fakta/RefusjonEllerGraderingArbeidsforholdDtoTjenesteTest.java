@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -218,7 +219,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
         return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }
@@ -462,7 +463,9 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlagOgGradering(AndelGradering andelGradering, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, new AktivitetGradering(andelGradering), List.of(), null)
+        ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
+        foreldrepengerGrunnlag.setAktivitetGradering(new AktivitetGradering(andelGradering));
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
         return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }

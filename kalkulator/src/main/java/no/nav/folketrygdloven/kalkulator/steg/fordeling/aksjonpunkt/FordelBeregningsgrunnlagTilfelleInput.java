@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -51,7 +52,8 @@ public class FordelBeregningsgrunnlagTilfelleInput {
 
     public static FordelBeregningsgrunnlagTilfelleInput fraBeregningsgrunnlagRestInput(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagDto bg = input.getFordelBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ikke kalle fordel-logikk uten å ha utført steg"));
-        AktivitetGradering aktivitetGradering = input.getAktivitetGradering();
+        AktivitetGradering aktivitetGradering = input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ?
+                ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         return new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, inntektsmeldinger);
     }

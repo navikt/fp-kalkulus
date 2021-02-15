@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -53,7 +52,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
         RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(refusjonskravDatoDto), null);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
         FaktaBeregningLagreDto dto = lagDto(false);
 
@@ -74,7 +73,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
         RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
-        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, AktivitetGradering.INGEN_GRADERING, List.of(refusjonskravDatoDto), null);
+        BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
         FaktaBeregningLagreDto dto = lagDto(true);
 

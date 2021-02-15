@@ -13,11 +13,13 @@ import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
@@ -48,15 +50,19 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                                                                      Optional<InntektsmeldingDto> inntektsmelding,
                                                                      BeregningsgrunnlagPeriodeDto periode) {
         FordelBeregningsgrunnlagAndelDto endringAndel = new FordelBeregningsgrunnlagAndelDto(BeregningsgrunnlagDtoUtil.lagFaktaOmBeregningAndel(
-            andel,
-            input.getAktivitetGradering(),
-            input.getIayGrunnlag(),
-            periode
+                andel,
+                finnGradering(input),
+                input.getIayGrunnlag(),
+                periode
         ));
         settFordelingForrigeBehandling(input, andel, endringAndel);
         endringAndel.setFordeltPrAar(andel.getFordeltPrÅr());
         inntektsmelding.ifPresent(im -> endringAndel.setBelopFraInntektsmelding(im.getInntektBeløp().getVerdi()));
         return endringAndel;
+    }
+
+    private static AktivitetGradering finnGradering(BeregningsgrunnlagGUIInput input) {
+        return input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ? ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
     }
 
     private static void settFordelingForrigeBehandling(BeregningsgrunnlagGUIInput input,
@@ -72,14 +78,14 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
         }
         BeregningsgrunnlagPeriodeDto periodeIOriginaltGrunnlag = MatchBeregningsgrunnlagTjeneste.finnPeriodeIBeregningsgrunnlag(andel.getBeregningsgrunnlagPeriode(), bgForrigeBehandling.get());
         BigDecimal fastsattForrigeBehandling = periodeIOriginaltGrunnlag.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(a -> a.matchUtenInntektskategori(andel.getAktivitetStatus(),
-                andel.getArbeidsgiver().orElse(null),
-                andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef()),
-                andel.getArbeidsforholdType()))
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getFordeltPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add)
-            .orElse(BigDecimal.ZERO);
+                .filter(a -> a.matchUtenInntektskategori(andel.getAktivitetStatus(),
+                        andel.getArbeidsgiver().orElse(null),
+                        andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef).orElse(InternArbeidsforholdRefDto.nullRef()),
+                        andel.getArbeidsforholdType()))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getFordeltPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
         if (fastsattForrigeBehandling != null) {
             endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP));
         }

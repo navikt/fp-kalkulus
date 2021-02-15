@@ -35,7 +35,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -112,7 +111,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         var inntektsmeldinger = List.of(im1, im2, im3);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, AktivitetGradering.INGEN_GRADERING, opprett(koblingReferanse, iayGrunnlag), null)
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(koblingReferanse, iayGrunnlag), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act

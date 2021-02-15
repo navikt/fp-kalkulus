@@ -138,7 +138,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
                 InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
                         .medInntektsmeldinger(inntektsmeldinger)
                         .build());
-        return new FaktaOmBeregningInput(input.getKoblingReferanse(), input.getIayGrunnlag(), null, input.getAktivitetGradering(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        return new FaktaOmBeregningInput(input.getKoblingReferanse(), input.getIayGrunnlag(), null, input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
     }
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(boolean medKunstigArbeid) {

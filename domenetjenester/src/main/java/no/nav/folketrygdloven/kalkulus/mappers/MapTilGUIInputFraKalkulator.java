@@ -26,13 +26,11 @@ public class MapTilGUIInputFraKalkulator {
                 kobling.getKoblingReferanse().getReferanse(),
                 Optional.empty(),
                 skjæringstidspunkt);
-        var aktivitetGradering = input.getAktivitetGradering();
         var refusjonskravDatoer = input.getRefusjonskravDatoer();
         var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
         return new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,
-                aktivitetGradering != null ? MapFraKalkulator.mapFraDto(aktivitetGradering) : null,
                 MapFraKalkulator.mapFraDto(refusjonskravDatoer,
                         input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
                         input.getSkjæringstidspunkt()),

@@ -30,11 +30,10 @@ public class FaktaOmBeregningInput extends StegProsesseringInput {
     public FaktaOmBeregningInput(KoblingReferanse koblingReferanse,
                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                  OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                 AktivitetGradering aktivitetGradering,
                                  List<RefusjonskravDatoDto> refusjonskravDatoer,
                                  YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         super(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER,
-                koblingReferanse, iayGrunnlag, opptjeningAktiviteter, aktivitetGradering, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+                koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
     }
 
     protected FaktaOmBeregningInput(FaktaOmBeregningInput input) {

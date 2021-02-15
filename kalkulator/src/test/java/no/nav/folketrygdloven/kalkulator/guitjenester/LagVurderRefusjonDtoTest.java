@@ -30,7 +30,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -234,7 +233,7 @@ class LagVurderRefusjonDtoTest {
             grunnlag.medRefusjonOverstyring(refusjonOverstyringerBuilder.build());
         }
         BeregningsgrunnlagGrunnlagDto byggetGrunnlag = grunnlag.build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
-        input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, AktivitetGradering.INGEN_GRADERING, List.of(), null)
+        input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(byggetGrunnlag)
                 .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
     }

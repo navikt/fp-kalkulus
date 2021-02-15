@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
@@ -39,7 +38,7 @@ class VilkårTjenesteFRISINNTest {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(
                 behandlingReferanse,
                 iayGrunnlag, null,
-                AktivitetGradering.INGEN_GRADERING, List.of(),
+                List.of(),
                 new FrisinnGrunnlag(List.of(),
                         Collections.singletonList(
                                 new FrisinnPeriode(

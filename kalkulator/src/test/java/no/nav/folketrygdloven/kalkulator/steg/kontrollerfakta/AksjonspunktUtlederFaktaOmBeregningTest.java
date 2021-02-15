@@ -33,7 +33,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -385,7 +384,7 @@ public class AksjonspunktUtlederFaktaOmBeregningTest {
 
     private FaktaOmBeregningInput lagInput(InntektArbeidYtelseGrunnlagDtoBuilder inntektArbeidYtelseGrunnlagBuilder) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        return new FaktaOmBeregningInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), AktivitetGradering.INGEN_GRADERING, List.of(), foreldrepengerGrunnlag);
+        return new FaktaOmBeregningInput(koblingReferanse, inntektArbeidYtelseGrunnlagBuilder.build(), new OpptjeningAktiviteterDto(), List.of(), foreldrepengerGrunnlag);
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagMedATSN(Periode periode) {

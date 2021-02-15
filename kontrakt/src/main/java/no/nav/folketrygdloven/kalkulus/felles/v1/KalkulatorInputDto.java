@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
@@ -24,10 +23,6 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class KalkulatorInputDto {
-
-    @JsonProperty(value = "aktivitetGradering")
-    @Valid
-    private AktivitetGraderingDto aktivitetGradering;
 
     @JsonProperty(value = "refusjonskravDatoer")
     @Valid
@@ -65,10 +60,6 @@ public class KalkulatorInputDto {
         this.skjæringstidspunkt = skjæringstidspunkt;
     }
 
-    public AktivitetGraderingDto getAktivitetGradering() {
-        return aktivitetGradering;
-    }
-
     public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
         return refusjonskravDatoer;
     }
@@ -87,11 +78,6 @@ public class KalkulatorInputDto {
 
     public KalkulatorInputDto medRefusjonskravDatoer(List<RefusjonskravDatoDto> refusjonskravDatoer) {
         this.refusjonskravDatoer = refusjonskravDatoer;
-        return this;
-    }
-
-    public KalkulatorInputDto medAktivitetGradering(AktivitetGraderingDto aktivitetGradering) {
-        this.aktivitetGradering = aktivitetGradering;
         return this;
     }
 
