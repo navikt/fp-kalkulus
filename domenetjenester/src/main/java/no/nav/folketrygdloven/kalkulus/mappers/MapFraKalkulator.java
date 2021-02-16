@@ -116,7 +116,8 @@ public class MapFraKalkulator {
                         ytelsespesifiktGrunnlag.getKvalifisererTilBesteberegning());
                 // TODO(OJR) lag builder?
                 foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.FORELDREPENGER).getAntallGMilitærHarKravPå().intValue());
-                foreldrepengerGrunnlag.setAktivitetGradering(mapFraDto(((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering()));
+                var aktivitetGradering = ((no.nav.folketrygdloven.kalkulus.beregning.v1.ForeldrepengerGrunnlag) ytelsespesifiktGrunnlag).getAktivitetGradering();
+                foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : mapFraDto(aktivitetGradering));
                 return foreldrepengerGrunnlag;
             case SVANGERSKAPSPENGER:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag;
