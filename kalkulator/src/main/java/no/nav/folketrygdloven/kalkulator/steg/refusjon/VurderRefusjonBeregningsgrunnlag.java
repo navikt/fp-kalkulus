@@ -33,7 +33,7 @@ public class VurderRefusjonBeregningsgrunnlag {
     public BeregningsgrunnlagRegelResultat vurderRefusjon(BeregningsgrunnlagInput input, BeregningsgrunnlagDto vilkårsvurdertBeregningsgrunnlag) {
         BeregningsgrunnlagRegelResultat resultatFraPeriodisering = fordelPerioderTjeneste.fastsettPerioderForRefusjonOgGradering(input, vilkårsvurdertBeregningsgrunnlag);
         List<BeregningAksjonspunktResultat> aksjonspunkter = FagsakYtelseTypeRef.Lookup.find(aksjonspunkutledere, input.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Fant ikke AksjonspunkutlederVurderRefusjon for ytelsetype " + input.getFagsakYtelseType().getKode()))
+                .orElseThrow(() -> new IllegalStateException("Fant ikke AksjonspunkutledertjenesteVurderRefusjon for ytelsetype " + input.getFagsakYtelseType().getKode()))
                 .utledAksjonspunkter(input, resultatFraPeriodisering.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatFraPeriodisering.getBeregningsgrunnlag(),
                 aksjonspunkter,
