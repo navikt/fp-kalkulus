@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +18,10 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public final class FordelingGraderingTjeneste {
-
+    private static final List<AktivitetStatus> STATUSER_PRIORITERT_OVER_SN = Arrays.asList(AktivitetStatus.ARBEIDSTAKER,
+            AktivitetStatus.FRILANSER,
+            AktivitetStatus.DAGPENGER,
+            AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
     private FordelingGraderingTjeneste() {
         // SKjuler default
     }
@@ -52,23 +56,27 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static boolean gradertAndelVilleBlittAvkortet(BeregningsgrunnlagPrStatusOgAndelDto andel, Beløp grunnbeløp, BeregningsgrunnlagPeriodeDto periode) {
-        if (erStatusSomAvkortesVedATOver6G(andel)) {
-            BigDecimal totaltBgFraArbeidstaker = periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                    .stream()
-                    .filter(a -> a.getAktivitetStatus().erArbeidstaker())
-                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
-                    .filter(Objects::nonNull)
-                    .reduce(BigDecimal::add)
-                    .orElse(BigDecimal.ZERO);
+        if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
+            BigDecimal totaltBgFraStatuserPrioritertOverSN = inntektFraAndelerMedStatus(periode, STATUSER_PRIORITERT_OVER_SN);
+            BigDecimal seksG = grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6));
+            return totaltBgFraStatuserPrioritertOverSN.compareTo(seksG) >= 0;
+        }
+        if (andel.getAktivitetStatus().erFrilanser()) {
+            BigDecimal totaltBgFraArbeidstaker = inntektFraAndelerMedStatus(periode, Collections.singletonList(AktivitetStatus.ARBEIDSTAKER));
             BigDecimal seksG = grunnbeløp.getVerdi().multiply(BigDecimal.valueOf(6));
             return totaltBgFraArbeidstaker.compareTo(seksG) >= 0;
         }
         return false;
     }
 
-    private static boolean erStatusSomAvkortesVedATOver6G(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        AktivitetStatus aktivitetStatus = andel.getAktivitetStatus();
-        return !aktivitetStatus.erArbeidstaker();
+    private static BigDecimal inntektFraAndelerMedStatus(BeregningsgrunnlagPeriodeDto periode, List<AktivitetStatus> statuserSomSkalTelles) {
+        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(a -> statuserSomSkalTelles.contains(a.getAktivitetStatus()))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
     }
 
 }
