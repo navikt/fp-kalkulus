@@ -23,6 +23,7 @@ public class MapPeriodeÅrsakFraVlTilRegel {
         mapPeriodeÅrsak.put(PeriodeÅrsak.GRADERING, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.GRADERING);
         mapPeriodeÅrsak.put(PeriodeÅrsak.GRADERING_OPPHØRER, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.GRADERING_OPPHØRER);
         mapPeriodeÅrsak.put(PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
+        mapPeriodeÅrsak.put(PeriodeÅrsak.TILKOMMET_INNTEKT, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.TILKOMMET_INNTEKT);
 
         PERIODE_ÅRSAK_MAP = Collections.unmodifiableMap(mapPeriodeÅrsak);
 
@@ -33,7 +34,10 @@ public class MapPeriodeÅrsakFraVlTilRegel {
     }
 
     public static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak map(PeriodeÅrsak periodeÅrsak) {
-        return PERIODE_ÅRSAK_MAP.get(periodeÅrsak);
+        no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak regelmodellPeriodeÅrsak = PERIODE_ÅRSAK_MAP.get(periodeÅrsak);
+        if (regelmodellPeriodeÅrsak == null) {
+            throw new IllegalStateException("Ukjent PeriodeÅrsak: (" + periodeÅrsak + ").");
+        }
+        return regelmodellPeriodeÅrsak;
     }
-
 }

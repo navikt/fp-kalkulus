@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -31,9 +33,14 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
             Optional<LocalDate> startDatoAktivitet = finnStartdato(yrkesaktivitetDto, beregningsgrunnlag.getSkjæringstidspunkt());
             if (startDatoAktivitet.isPresent()) {
                 nyttBg = SplittBGPerioder.splitt(beregningsgrunnlag, PeriodeÅrsak.TILKOMMET_INNTEKT, startDatoAktivitet.get());
+                var skjæringstidspunkt = nyttBg.getSkjæringstidspunkt();
                 nyttBg.getBeregningsgrunnlagPerioder().stream()
                         .filter(p -> !p.getBeregningsgrunnlagPeriodeFom().isBefore(startDatoAktivitet.get()))
-                        .forEach(p -> leggTilNyAndel(p, aktivitetDto));
+                        .forEach(p -> leggTilNyAndel(
+                                p,
+                                aktivitetDto,
+                                skjæringstidspunkt
+                        ));
             }
         }
         return nyttBg;
@@ -47,14 +54,28 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
                 .map(Intervall::getFomDato);
     }
 
-    private void leggTilNyAndel(BeregningsgrunnlagPeriodeDto p, AktivitetDto aktivitetDto) {
+    private void leggTilNyAndel(BeregningsgrunnlagPeriodeDto p, AktivitetDto aktivitetDto, LocalDate skjæringstidspunkt) {
         YrkesaktivitetDto yrkesaktivitetDto = aktivitetDto.getYrkesaktivitetDto();
+
+        var periode = FinnAnsettelsesPeriode.finnMinMaksPeriode(
+                yrkesaktivitetDto.getAlleAktivitetsAvtaler(),
+                skjæringstidspunkt);
+
+        if(periode.isEmpty()) {
+            throw new IllegalArgumentException("Fant ingen arbeidsperiode etter skjæringstidspunktet for aktivitet: "
+                    + yrkesaktivitetDto.getArbeidsgiver());
+        }
+
         if (yrkesaktivitetDto.getArbeidType().equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)) {
             Intervall beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(p.getBeregningsgrunnlagPeriodeFom());
+
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                    .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(yrkesaktivitetDto.getArbeidsgiver()))
+                    .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                            .medArbeidsperiodeFom(periode.get().getFom())
+                            .medArbeidsperiodeTom(periode.get().getTom())
+                            .medArbeidsgiver(yrkesaktivitetDto.getArbeidsgiver()))
                     .medArbforholdType(OpptjeningAktivitetType.ARBEID)
                     .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato())
                     .medKilde(AndelKilde.PROSESS_PERIODISERING_TILKOMMET_INNTEKT)
@@ -71,6 +92,4 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
             }
         }
     }
-
-
 }

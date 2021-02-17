@@ -33,6 +33,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesi
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.util.BeregningsgrunnlagUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapInntektskategoriFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapPeriodeÅrsakFraVlTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
@@ -164,20 +165,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
-        if (beregningsgrunnlagPeriodeÅrsaker.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> periodeÅrsakerMapped = new ArrayList<>();
-        beregningsgrunnlagPeriodeÅrsaker.forEach(bgPeriodeÅrsak -> {
-            if (!PeriodeÅrsak.UDEFINERT.equals(bgPeriodeÅrsak.getPeriodeÅrsak())) {
-                try {
-                    periodeÅrsakerMapped.add(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.valueOf(bgPeriodeÅrsak.getPeriodeÅrsak().getKode()));
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalStateException("Ukjent PeriodeÅrsak: (" + bgPeriodeÅrsak.getPeriodeÅrsak().getKode() + ").", e);
-                }
-            }
-        });
-        return periodeÅrsakerMapped;
+        return beregningsgrunnlagPeriodeÅrsaker.stream().map(BeregningsgrunnlagPeriodeÅrsakDto::getPeriodeÅrsak).map(MapPeriodeÅrsakFraVlTilRegel::map).collect(Collectors.toList());
     }
 
     private Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom) {

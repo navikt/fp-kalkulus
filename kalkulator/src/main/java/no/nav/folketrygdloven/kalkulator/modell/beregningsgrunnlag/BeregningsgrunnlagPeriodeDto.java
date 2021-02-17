@@ -59,7 +59,6 @@ public class BeregningsgrunnlagPeriodeDto {
         }
         return periode;
     }
-
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
         return periode.getFomDato();
     }
