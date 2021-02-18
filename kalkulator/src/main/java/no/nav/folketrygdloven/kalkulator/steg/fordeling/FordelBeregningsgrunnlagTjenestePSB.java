@@ -25,7 +25,7 @@ public class FordelBeregningsgrunnlagTjenestePSB implements FordelBeregningsgrun
 
     @Inject
     public FordelBeregningsgrunnlagTjenestePSB(OmfordelBeregningsgrunnlagTjeneste omfordelTjeneste,
-                                               @KonfigVerdi(value = "PSB_TILKOMMET_INNTEKT", defaultVerdi = "true", required = false) boolean tilkommetInntektAktivert) {
+                                               @KonfigVerdi(value = "PSB_TILKOMMET_INNTEKT", defaultVerdi = "false", required = false) boolean tilkommetInntektAktivert) {
         this.omfordelTjeneste = omfordelTjeneste;
         this.tilkommetInntektAktivert = tilkommetInntektAktivert;
     }
