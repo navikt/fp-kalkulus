@@ -221,7 +221,7 @@ public class HentKalkulusRestTjeneste {
             .collect(Collectors.toSet());
 
         if (ytelseSomSkalBeregnes.isEmpty()) {
-            throw new IllegalArgumentException("Ytelsetype er påkrevd");
+            return Resultat.forGyldigInputMedData(Map.of());
         } else if (ytelseSomSkalBeregnes.size() != 1) {
             throw new IllegalArgumentException("Støtter kun at alle har samme ytelse type. Fikk: " + ytelseSomSkalBeregnes);
         }
