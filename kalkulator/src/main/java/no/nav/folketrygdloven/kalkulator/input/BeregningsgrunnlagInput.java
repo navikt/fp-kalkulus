@@ -128,6 +128,19 @@ public class BeregningsgrunnlagInput {
         return opptjeningAktiviteter;
     }
 
+
+    public Collection<OpptjeningPeriodeDto> getOpptjeningAktiviteterForBeregningK9() {
+        LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
+        if(skjæringstidspunktOpptjening == null) return Collections.emptyList();
+        var aktivitetFilter = new OpptjeningsaktiviteterPerYtelse(getFagsakYtelseType());
+        return opptjeningAktiviteter.getOpptjeningPerioder()
+                .stream()
+                .filter(p -> !p.getPeriode().getFomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktOpptjening)) ||
+                        p.getPeriode().getFomDato().isEqual(skjæringstidspunktOpptjening))
+                .filter(p -> aktivitetFilter.erRelevantAktivitet(p.getOpptjeningAktivitetType()))
+                .collect(Collectors.toList());
+    }
+
     public Collection<OpptjeningPeriodeDto> getOpptjeningAktiviteterForBeregning() {
         LocalDate skjæringstidspunktOpptjening = getSkjæringstidspunktOpptjening();
         if(skjæringstidspunktOpptjening == null) return Collections.emptyList();

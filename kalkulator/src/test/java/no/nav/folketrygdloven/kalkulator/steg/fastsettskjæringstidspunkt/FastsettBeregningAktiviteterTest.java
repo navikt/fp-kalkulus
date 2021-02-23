@@ -57,7 +57,7 @@ class FastsettBeregningAktiviteterTest {
     );
 
     @Test
-    void skal_ikke_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
+    void skal_inkludere_aktiviteter_som_starter_på_skjæringstidspunkt() {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT;
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, Collections.emptyList());
@@ -68,7 +68,7 @@ class FastsettBeregningAktiviteterTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(0);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(1);
     }
 
     @Test

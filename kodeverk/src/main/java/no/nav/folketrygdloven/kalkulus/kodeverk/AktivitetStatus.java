@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum AktivitetStatus implements Kodeverdi {
+
+    MIDLERTIDIG_INAKTIV("MIDL_INAKTIV", "Midlertidig inaktiv", Inntektskategori.UDEFINERT),
     ARBEIDSAVKLARINGSPENGER("AAP", "Arbeidsavklaringspenger", Inntektskategori.ARBEIDSAVKLARINGSPENGER),
     ARBEIDSTAKER("AT", "Arbeidstaker", Inntektskategori.ARBEIDSTAKER),
     DAGPENGER("DP", "Dagpenger", Inntektskategori.DAGPENGER),
@@ -110,13 +112,13 @@ public enum AktivitetStatus implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
         return KODEVERK;
     }
-    
+
     public Inntektskategori getInntektskategori() {
         return inntektskategori;
     }

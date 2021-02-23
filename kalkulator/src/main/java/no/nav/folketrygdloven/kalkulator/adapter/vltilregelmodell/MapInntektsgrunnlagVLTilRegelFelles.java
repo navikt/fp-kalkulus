@@ -124,7 +124,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                     YrkesaktivitetFilterDto filterYaRegister,
                                     LocalDate skjæringstidspunktBeregning) {
         inntektsmeldinger.stream()
-            .filter(im -> erArbeidAktivPåSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
+            .filter(im -> slutterPåEllerEtterSkjæringstidspunkt(im, filterYaRegister, skjæringstidspunktBeregning))
             .map(this::mapNaturalYtelse)
             .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
     }
@@ -151,7 +151,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         }
     }
 
-    private boolean erArbeidAktivPåSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
+    private boolean slutterPåEllerEtterSkjæringstidspunkt(InntektsmeldingDto im, YrkesaktivitetFilterDto filterYaRegister, LocalDate skjæringstidspunktBeregning) {
         return filterYaRegister.getYrkesaktiviteter().stream()
             .filter(ya -> ya.gjelderFor(im))
             .anyMatch(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(ya.getAlleAktivitetsAvtaler(), skjæringstidspunktBeregning)
@@ -242,7 +242,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
 
         var filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister()).før(skjæringstidspunktBeregning);
         var aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
-        var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunktBeregning);
+        var filterYaRegister = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid);
 
         if (!filter.isEmpty()) {
             List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();

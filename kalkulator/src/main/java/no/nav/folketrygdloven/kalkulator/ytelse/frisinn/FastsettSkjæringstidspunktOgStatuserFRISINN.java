@@ -12,11 +12,13 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.FrisinnGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBGStatuserFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFRISINN;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.FrisinnGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -34,16 +36,17 @@ import no.nav.fpsak.nare.evaluation.Resultat;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
-public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjæringstidspunktOgStatuser {
+public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkjæringstidspunktOgStatuser {
 
+    protected MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel;
 
     public FastsettSkjæringstidspunktOgStatuserFRISINN() {
-        super();
+        // CDI
     }
 
     @Inject
     public FastsettSkjæringstidspunktOgStatuserFRISINN(MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapFraRegel) {
-        super(mapFraRegel);
+        this.mapFraRegel = mapFraRegel;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         }
         RegelResultat regelResultatFastsettStatus = fastsettStatus(input, regelmodell);
         if (regelmodell.getBeregningsgrunnlagPrStatusListe() == null || regelmodell.getBeregningsgrunnlagPrStatusListe().isEmpty()) {
-           return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.INGEN_AKTIVITETER)));
+            return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.INGEN_AKTIVITETER)));
         }
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)
@@ -66,8 +69,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
 
     }
 
-        @Override
-        protected RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
+    private RegelResultat fastsettSkjæringstidspunkt(BeregningsgrunnlagInput input, AktivitetStatusModell regelmodell) {
         // Tar sporingssnapshot av regelmodell, deretter oppdateres modell med fastsatt skjæringstidspunkt for Beregning
         var inntektsgrunnlagMapper = new MapInntektsgrunnlagVLTilRegelFRISINN();
         Inntektsgrunnlag inntektsgrunnlag = inntektsgrunnlagMapper.map(input, regelmodell.getSkjæringstidspunktForOpptjening());
@@ -103,6 +105,10 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN extends FastsettSkjær
         String inputStatusFastsetting = toJson(aktivitetStatusModellFRISINN);
         Evaluation evaluationStatusFastsetting = new RegelFastsettStatusVedSkjæringstidspunktFRISINN().evaluer(aktivitetStatusModellFRISINN);
         return RegelmodellOversetter.getRegelResultat(evaluationStatusFastsetting, inputStatusFastsetting);
+    }
+
+    private static String toJson(AktivitetStatusModell grunnlag) {
+        return JsonMapper.toJson(grunnlag, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
     }
 
 

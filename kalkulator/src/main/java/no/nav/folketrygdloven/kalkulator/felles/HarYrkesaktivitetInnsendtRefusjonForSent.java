@@ -1,11 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.felles;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelTilkommetArbeidsforholdTjeneste;
 
@@ -46,7 +49,7 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
                                                          LocalDate skjæringstidspunktBeregning,
                                                          InternArbeidsforholdRefDto arbeidsforholdRef) {
         LocalDate førsteDagMedRefusjon = refusjonsdato.getFørsteDagMedRefusjonskrav().orElse(skjæringstidspunktBeregning);
-        boolean erNyttArbeidsforhold = FordelTilkommetArbeidsforholdTjeneste.erNyttArbeidsforhold(
+        boolean erNyttArbeidsforhold = erTilkommetEtterBeregningstidspunkt(
                 refusjonsdato.getArbeidsgiver(),
                 arbeidsforholdRef,
                 gjeldendeAktiviteter, skjæringstidspunktBeregning);
@@ -66,6 +69,25 @@ public class HarYrkesaktivitetInnsendtRefusjonForSent {
     public static LocalDate finnFørsteGyldigeDatoMedRefusjon(RefusjonskravDatoDto refusjonsdato) {
         int senesteGyldigeInnsendigsdatoForRefusjonskrav = Konfigverdier.FRIST_MÅNEDER_ETTER_REFUSJON + 1;
         return refusjonsdato.getFørsteInnsendingAvRefusjonskrav().minusMonths(senesteGyldigeInnsendigsdatoForRefusjonskrav - 1).withDayOfMonth(1);
+    }
+
+    private static boolean erTilkommetEtterBeregningstidspunkt(Arbeidsgiver arbeidsgiver,
+                                                               InternArbeidsforholdRefDto arbeidsforholdRef,
+                                                               BeregningAktivitetAggregatDto aktivitetAggregat,
+                                                               LocalDate skjæringstidspunkt) {
+        var beregningAktiviteter = aktivitetAggregat.getBeregningAktiviteter();
+        return beregningAktiviteter.stream()
+                .filter(beregningAktivitet -> erAktivPåBeregningstidspunkt(skjæringstidspunkt, beregningAktivitet))
+                .noneMatch(beregningAktivitet -> arbeidsforholdRef.gjelderFor(beregningAktivitet.getArbeidsforholdRef()) && matcherArbeidsgiver(arbeidsgiver, beregningAktivitet));
+    }
+
+    private static boolean erAktivPåBeregningstidspunkt(LocalDate skjæringstidspunkt, BeregningAktivitetDto beregningAktivitet) {
+        LocalDate beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt);
+        return beregningAktivitet.getPeriode().inkluderer(beregningstidspunkt);
+    }
+
+    private static boolean matcherArbeidsgiver(Arbeidsgiver arbeidsgiver, BeregningAktivitetDto beregningAktivitet) {
+        return Objects.equals(arbeidsgiver, beregningAktivitet.getArbeidsgiver());
     }
 
 }

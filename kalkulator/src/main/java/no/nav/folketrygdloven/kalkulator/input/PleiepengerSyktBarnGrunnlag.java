@@ -2,11 +2,15 @@ package no.nav.folketrygdloven.kalkulator.input;
 
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class PleiepengerSyktBarnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
-    private int dekningsgrad = 100;
+    private final int dekningsgrad = 100;
+    private final int dekningsgrad_inaktiv = 65;
     private Integer grunnbeløpMilitærHarKravPå;
 
 
@@ -15,8 +19,23 @@ public class PleiepengerSyktBarnGrunnlag extends UtbetalingsgradGrunnlag impleme
     }
 
     @Override
-    public int getDekningsgrad() {
+    public int getDekningsgrad(BeregningsgrunnlagDto bg) {
+        if (erMidlertidigInaktiv(bg)) {
+            return erInaktivPåSkjæringstidspunktet(bg) ? dekningsgrad_inaktiv : dekningsgrad;
+        }
         return dekningsgrad;
+    }
+
+    private boolean erInaktivPåSkjæringstidspunktet(BeregningsgrunnlagDto bg) {
+        var periode = bg.getBeregningsgrunnlagPerioder().stream().filter(p -> p.getBeregningsgrunnlagPeriodeFom().equals(bg.getSkjæringstidspunkt()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Fant ingen periode med start på skjæringstidspunktet"));
+        boolean harKunBrukersAndelPÅSkjæringstidspunktet = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().allMatch(andel -> AktivitetStatus.BRUKERS_ANDEL.equals(andel.getAktivitetStatus()));
+        return !harKunBrukersAndelPÅSkjæringstidspunktet;
+    }
+
+    private boolean erMidlertidigInaktiv(BeregningsgrunnlagDto bg) {
+        return bg.getAktivitetStatuser().stream().anyMatch(a -> AktivitetStatus.MIDLERTIDIG_INAKTIV.equals(a.getAktivitetStatus()));
     }
 
     @Override

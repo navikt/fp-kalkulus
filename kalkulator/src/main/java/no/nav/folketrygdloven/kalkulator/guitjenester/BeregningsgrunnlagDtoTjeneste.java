@@ -103,7 +103,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapDekningsgrad(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad();
+        int dekningsgrad = input.getYtelsespesifiktGrunnlag().getDekningsgrad(input.getBeregningsgrunnlag());
         dto.setDekningsgrad(dekningsgrad);
     }
 

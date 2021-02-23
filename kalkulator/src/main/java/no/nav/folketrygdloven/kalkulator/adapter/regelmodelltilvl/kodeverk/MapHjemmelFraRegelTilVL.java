@@ -35,6 +35,8 @@ public class MapHjemmelFraRegelTilVL {
 
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_22_13_6, Hjemmel.F_22_13_6);
 
+        hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_47, Hjemmel.F_9_9_8_47);
+
 
         hjemmelMap.put(BeregningsgrunnlagHjemmel.KORONALOVEN_3, Hjemmel.KORONALOVEN_3);
     }

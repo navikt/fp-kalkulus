@@ -47,6 +47,7 @@ public enum Hjemmel implements Kodeverdi {
     KORONALOVEN_3("KORONALOVEN_3", "koronaloven § 3"),
 
 
+
     UDEFINERT("-", "Ikke definert"),
     ;
 
@@ -98,7 +99,7 @@ public enum Hjemmel implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

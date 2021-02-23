@@ -21,6 +21,7 @@ public class MapAktivitetStatusVedSkjæringstidspunktFraRegelTilVL {
         AKTIVITET_STATUS_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.KUN_YTELSE, AktivitetStatus.KUN_YTELSE);
         AKTIVITET_STATUS_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.MS, AktivitetStatus.MILITÆR_ELLER_SIVIL);
         AKTIVITET_STATUS_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.SN, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        AKTIVITET_STATUS_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.MIDL_INAKTIV, AktivitetStatus.MIDLERTIDIG_INAKTIV);
         AKTIVITET_STATUS_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus.UDEFINERT, AktivitetStatus.UDEFINERT);
     }
 

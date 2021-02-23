@@ -41,7 +41,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
         AktivitetStatusModell modell = new AktivitetStatusModell();
         modell.setSkjæringstidspunktForOpptjening(opptjeningSkjæringstidspunkt);
 
-        var relevanteAktiviteter = input.getOpptjeningAktiviteterForBeregning();
+        var relevanteAktiviteter = input.getOpptjeningAktiviteterForBeregningK9();
 
         if (!relevanteAktiviteter.isEmpty()) {
             var relevantYrkesaktivitet = input.getIayGrunnlag().getAktørArbeidFraRegister()

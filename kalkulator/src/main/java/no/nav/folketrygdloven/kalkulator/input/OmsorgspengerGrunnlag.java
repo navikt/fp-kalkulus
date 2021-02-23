@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.input;
 
 import java.util.List;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 
 public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
@@ -14,7 +15,7 @@ public class OmsorgspengerGrunnlag extends UtbetalingsgradGrunnlag implements Yt
     }
 
     @Override
-    public int getDekningsgrad() {
+    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         return dekningsgrad;
     }
 

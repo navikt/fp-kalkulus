@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 
@@ -37,7 +38,7 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     }
 
     @Override
-    public int getDekningsgrad() {
+    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         return dekningsgrad;
     }
 

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -26,7 +28,7 @@ public class FastsettInntektskategoriFraSøknadTjeneste {
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
             .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(andel))
-                .medInntektskategori(finnInntektskategoriForStatus(andel.getAktivitetStatus(), grunnlag)));
+                .medInntektskategori(finnInntektskategoriForStatus(andel.getAktivitetStatus(), grunnlag, beregningsgrunnlag.getAktivitetStatuser())));
     }
 
     static Optional<Inntektskategori> finnHøyestPrioriterteInntektskategoriForSN(List<Inntektskategori> inntektskategorier) {
@@ -48,9 +50,14 @@ public class FastsettInntektskategoriFraSøknadTjeneste {
         return Optional.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
-    private static Inntektskategori finnInntektskategoriForStatus(AktivitetStatus aktivitetStatus, InntektArbeidYtelseGrunnlagDto grunnlag) {
+    private static Inntektskategori finnInntektskategoriForStatus(AktivitetStatus aktivitetStatus,
+                                                                  InntektArbeidYtelseGrunnlagDto grunnlag,
+                                                                  List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser) {
         if (SELVSTENDIG_NÆRINGSDRIVENDE == aktivitetStatus) {
             return finnInntektskategoriForSelvstendigNæringsdrivende(grunnlag);
+        }
+        if (aktivitetStatuser.stream().anyMatch(a -> MIDLERTIDIG_INAKTIV.equals(a.getAktivitetStatus()))) {
+            return Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER; // Bruker arbeidstaker uten feriepenger for å unngå feriepenger for midlertidige inaktive
         }
         return aktivitetStatus.getInntektskategori();
     }

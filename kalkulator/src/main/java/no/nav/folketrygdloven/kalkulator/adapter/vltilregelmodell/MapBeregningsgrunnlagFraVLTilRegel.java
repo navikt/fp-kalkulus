@@ -60,7 +60,6 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
 @ApplicationScoped
@@ -121,9 +120,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         var builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag.builder();
         sammenligningsgrunnlagMap.forEach(builder::medSammenligningsgrunnlagPrStatus);
 
-        // TODO fjern denne når vi har tatt ibruk og verifisert funksjonalitet med dekningsgrad på periodenivå
-        Dekningsgrad dekningsgrad = finnDekningsgrad(input.getYtelsespesifiktGrunnlag(), null);
-
         return builder
                 .medInntektsgrunnlag(inntektsgrunnlag)
                 .medSkjæringstidspunkt(skjæringstidspunkt)
@@ -135,15 +131,25 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medYtelsesdagerIEtÅr(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getYtelsesdagerIÅr())
                 .medAvviksgrenseProsent(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAvviksgrenseProsent())
                 .medYtelsesSpesifiktGrunnlag(mapYtelsesSpesifiktGrunnlag(input, beregningsgrunnlag))
-                .medDekningsgrad(dekningsgrad)
                 .medSplitteATFLToggleVerdi(input.isEnabled(TOGGLE, false))
                 // Verdier som kun brukes av FORESLÅ (skille ut i egen mapping?)
                 .medAntallGMilitærHarKravPå(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGMilitærHarKravPå().intValue())
-                .medAntallGMinstekravVilkår(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår())
+                .medAntallGMinstekravVilkår(getAntallGForOppfyltVilkår(input))
                 .medAntallGØvreGrenseverdi(KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi())
                 .medUregulertGrunnbeløp(mapUregulertGrunnbeløp(input, beregningsgrunnlag))
                 .medGrunnbeløpSatser((input instanceof ForeslåBeregningsgrunnlagInput) ? ((ForeslåBeregningsgrunnlagInput) input).getGrunnbeløpsatser() : Collections.emptyList())
                 .build();
+    }
+
+    private BigDecimal getAntallGForOppfyltVilkår(BeregningsgrunnlagInput input) {
+        if (input.getBeregningsgrunnlag() != null && erMidlertidigInaktiv(input)) {
+            return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkårInaktiv();
+        }
+        return KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGForOppfyltVilkår();
+    }
+
+    private boolean erMidlertidigInaktiv(BeregningsgrunnlagInput input) {
+        return input.getBeregningsgrunnlag().getAktivitetStatuser().stream().anyMatch(a -> a.getAktivitetStatus().equals(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV));
     }
 
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -168,12 +174,12 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         return beregningsgrunnlagPeriodeÅrsaker.stream().map(BeregningsgrunnlagPeriodeÅrsakDto::getPeriodeÅrsak).map(MapPeriodeÅrsakFraVlTilRegel::map).collect(Collectors.toList());
     }
 
-    private Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom) {
+    private Dekningsgrad finnDekningsgrad(YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, LocalDate periodeFom, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
         if (ytelsespesifiktGrunnlag instanceof FrisinnGrunnlag && periodeFom != null) {
             FrisinnGrunnlag frisinngrunnlag = (FrisinnGrunnlag) ytelsespesifiktGrunnlag;
             return Dekningsgrad.fra(frisinngrunnlag.getDekningsgradForDato(periodeFom));
         }
-        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad());
+        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad(vlBeregningsgrunnlag));
     }
 
     private AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {
@@ -219,7 +225,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
         List<BeregningsgrunnlagPeriode> perioder = new ArrayList<>();
         vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(vlBGPeriode -> {
             YtelsespesifiktGrunnlag ytelsesgrunnlag = input.getYtelsespesifiktGrunnlag();
-            Dekningsgrad dekningsgradPeriode = ytelsesgrunnlag == null ? null : finnDekningsgrad(ytelsesgrunnlag, vlBGPeriode.getBeregningsgrunnlagPeriodeFom());
+            Dekningsgrad dekningsgradPeriode = ytelsesgrunnlag == null ? null : finnDekningsgrad(ytelsesgrunnlag, vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBeregningsgrunnlag);
             final BeregningsgrunnlagPeriode.Builder regelBGPeriode = BeregningsgrunnlagPeriode.builder()
                     .medPeriode(Periode.of(vlBGPeriode.getBeregningsgrunnlagPeriodeFom(), vlBGPeriode.getBeregningsgrunnlagPeriodeTom()))
                     .medDekningsgrad(dekningsgradPeriode)
