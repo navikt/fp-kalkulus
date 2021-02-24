@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
+package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.naturalytelse;
 
 import java.util.List;
 import java.util.stream.Collectors;

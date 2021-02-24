@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.naturalytelse.MapNaturalytelserFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -27,12 +27,11 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 public class FastsettBeregningsgrunnlagPerioderTjeneste {
     public static final int MÅNEDER_I_1_ÅR = 12;
 
-    private MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse oversetterTilRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelNaturalYtelse();
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
 
     public BeregningsgrunnlagRegelResultat fastsettPerioderForNaturalytelse(BeregningsgrunnlagInput input,
                                                                             BeregningsgrunnlagDto beregningsgrunnlag) {
-        PeriodeModell periodeModell = oversetterTilRegelNaturalytelse.map(input, beregningsgrunnlag);
+        PeriodeModell periodeModell = MapNaturalytelserFraVLTilRegel.map(input, beregningsgrunnlag);
         return kjørRegelOgMapTilVLNaturalytelse(beregningsgrunnlag, periodeModell);
     }
 

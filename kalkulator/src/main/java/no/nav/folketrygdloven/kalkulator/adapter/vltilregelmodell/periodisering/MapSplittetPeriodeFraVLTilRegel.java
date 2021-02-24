@@ -11,12 +11,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 
-class MapSplittetPeriodeFraVLTilRegel {
+public class MapSplittetPeriodeFraVLTilRegel {
     private MapSplittetPeriodeFraVLTilRegel() {
         // skjul public constructor
     }
 
-    static SplittetPeriode map(BeregningsgrunnlagPeriodeDto periode) {
+    public static SplittetPeriode map(BeregningsgrunnlagPeriodeDto periode) {
         return SplittetPeriode.builder()
             .medFørstePeriodeAndeler(periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getBgAndelArbeidsforhold().isPresent())

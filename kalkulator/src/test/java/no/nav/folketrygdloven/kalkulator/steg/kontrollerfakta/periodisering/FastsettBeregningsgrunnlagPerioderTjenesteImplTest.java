@@ -269,7 +269,7 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
 
         // Assert
         // Act
-        Assertions.assertThrows(TekniskException.class, () -> {
+        Assertions.assertThrows(IllegalStateException.class, () -> {
             var input = new BeregningsgrunnlagInput(behandlingRef, null, null, List.of(), null)
                     .medBeregningsgrunnlagGrunnlag(grunnlag);
             tjeneste.fastsettPerioderForNaturalytelse(input, beregningsgrunnlag);
