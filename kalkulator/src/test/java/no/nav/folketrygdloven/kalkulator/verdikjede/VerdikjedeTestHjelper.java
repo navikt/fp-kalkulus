@@ -44,7 +44,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.FastsettSkjæringstidspunktOgStatuserK14;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriFraSøknadTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -526,7 +526,7 @@ public class VerdikjedeTestHjelper {
             BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
-        FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
+        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
         return lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 

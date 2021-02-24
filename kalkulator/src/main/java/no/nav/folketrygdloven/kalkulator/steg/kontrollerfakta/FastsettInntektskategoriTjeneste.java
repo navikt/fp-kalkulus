@@ -1,26 +1,38 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
 
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktørInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.SkatteOgAvgiftsregelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 
-public class FastsettInntektskategoriFraSøknadTjeneste {
+public class FastsettInntektskategoriTjeneste {
 
-   private FastsettInntektskategoriFraSøknadTjeneste() {
+   private FastsettInntektskategoriTjeneste() {
         // hide me
     }
 
@@ -28,7 +40,7 @@ public class FastsettInntektskategoriFraSøknadTjeneste {
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
             .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(andel))
-                .medInntektskategori(finnInntektskategoriForStatus(andel.getAktivitetStatus(), grunnlag, beregningsgrunnlag.getAktivitetStatuser())));
+                .medInntektskategori(finnInntektskategoriForStatus(andel, grunnlag, beregningsgrunnlag.getAktivitetStatuser(), beregningsgrunnlag.getSkjæringstidspunkt())));
     }
 
     static Optional<Inntektskategori> finnHøyestPrioriterteInntektskategoriForSN(List<Inntektskategori> inntektskategorier) {
@@ -50,16 +62,41 @@ public class FastsettInntektskategoriFraSøknadTjeneste {
         return Optional.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
-    private static Inntektskategori finnInntektskategoriForStatus(AktivitetStatus aktivitetStatus,
+    private static Inntektskategori finnInntektskategoriForStatus(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                   InntektArbeidYtelseGrunnlagDto grunnlag,
-                                                                  List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser) {
-        if (SELVSTENDIG_NÆRINGSDRIVENDE == aktivitetStatus) {
+                                                                  List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser,
+                                                                  LocalDate skjæringstidspunkt) {
+        if (SELVSTENDIG_NÆRINGSDRIVENDE.equals(andel.getAktivitetStatus())) {
             return finnInntektskategoriForSelvstendigNæringsdrivende(grunnlag);
         }
         if (aktivitetStatuser.stream().anyMatch(a -> MIDLERTIDIG_INAKTIV.equals(a.getAktivitetStatus()))) {
             return Inntektskategori.ARBEIDSTAKER_UTEN_FERIEPENGER; // Bruker arbeidstaker uten feriepenger for å unngå feriepenger for midlertidige inaktive
         }
-        return aktivitetStatus.getInntektskategori();
+        if (ARBEIDSTAKER.equals(andel.getAktivitetStatus()) && erSjøfolk(andel, grunnlag, skjæringstidspunkt)) {
+            return Inntektskategori.SJØMANN;
+        }
+        return andel.getAktivitetStatus().getInntektskategori();
+    }
+
+    private static boolean erSjøfolk(BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto grunnlag, LocalDate skjæringstidspunkt) {
+        Collection<InntektDto> alleInntekter = grunnlag.getAktørInntektFraRegister()
+                .map(AktørInntektDto::getInntekt)
+                .orElse(Collections.emptyList());
+        List<Arbeidsgiver> arbeidsgivereSjøfolk = alleInntekter.stream()
+                .filter(innt -> innt.getInntektsKilde().equals(InntektskildeType.INNTEKT_BEREGNING))
+                .filter(innt -> innt.getArbeidsgiver() != null)
+                .filter(innt -> finnesInntektspostMedSkatteregelSjømann(innt.getAlleInntektsposter(), skjæringstidspunkt))
+                .map(InntektDto::getArbeidsgiver)
+                .collect(Collectors.toList());
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).map(arbeidsgivereSjøfolk::contains).orElse(false);
+    }
+
+    private static boolean finnesInntektspostMedSkatteregelSjømann(Collection<InntektspostDto> alleInntektsposter, LocalDate skjæringstidspunkt) {
+        Intervall periodeForÅLeteEtterSjøfolkinntekt = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
+        return alleInntektsposter.stream()
+                .filter(ip -> ip.getPeriode().overlapper(periodeForÅLeteEtterSjøfolkinntekt))
+                .anyMatch(ip -> SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK.equals(ip.getSkatteOgAvgiftsregelType())
+                || SkatteOgAvgiftsregelType.SÆRSKILT_FRADRAG_FOR_SJØFOLK.equals(ip.getSkatteOgAvgiftsregelType()));
     }
 
     private static Inntektskategori finnInntektskategoriForSelvstendigNæringsdrivende(InntektArbeidYtelseGrunnlagDto grunnlag) {

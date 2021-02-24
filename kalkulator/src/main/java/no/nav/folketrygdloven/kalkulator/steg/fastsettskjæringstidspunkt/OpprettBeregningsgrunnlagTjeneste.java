@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriFraSøknadTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
 
 
@@ -59,7 +59,10 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
         KoblingReferanse refMedSkjæringstidspunkt = ref
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(beregningAktiviteter, resultatMedAndeler.getBeregningsgrunnlag()));
-        FastsettInntektskategoriFraSøknadTjeneste.fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
+
+        // Fastsett inntektskategorier
+        FastsettInntektskategoriTjeneste.fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
+
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
         var resultatMedNaturalytelse = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, resultatMedAndeler.getBeregningsgrunnlag());
         BeregningsgrunnlagVerifiserer.verifiserOppdatertBeregningsgrunnlag(resultatMedNaturalytelse.getBeregningsgrunnlag());

@@ -81,7 +81,7 @@ public enum SkatteOgAvgiftsregelType implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
