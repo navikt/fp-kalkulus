@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class EksternArbeidsforholdRef {
 
     @JsonProperty(value = "referanse")
-    @Pattern(regexp = "^[\\p{L}\\p{N}_\\.\\-]+$", message = "EksternReferanse ${validatedValue} matcher ikke tillatt pattern '{regexp}'")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "EksternReferanse ${validatedValue} matcher ikke tillatt pattern '{regexp}'")
     @NotNull
     private String referanse;
 
