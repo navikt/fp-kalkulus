@@ -2,8 +2,10 @@ package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.ALWAYS, content = Include.ALWAYS)
@@ -99,5 +102,25 @@ public class UtbetalingDto {
     @Override
     public int hashCode() {
         return Objects.hash(inntektsKilde, arbeidsgiver);
+    }
+
+    @AssertTrue(message = "Det skal ikke være arbeidsgiver hvis det er en ytelse")
+    private boolean isYtelseIngenArbeidsgiver() {
+        var utbetalingspostList = poster.stream().filter(utbetalingsPostDto -> InntektspostType.YTELSE.equals(utbetalingsPostDto.getInntektspostType())).collect(Collectors.toList());
+
+        boolean erEnYtelse = !utbetalingspostList.isEmpty();
+        return !erEnYtelse || arbeidsgiver == null;
+    }
+
+    @AssertTrue(message = "Kan ikke blande andre inntektspostyper med ytelse i samme utbetaling")
+    private boolean isYtelseKanIkkeBlandeMedAndreInntektstyper() {
+        var utbetalingsDto = poster.stream().filter(utbetalingsPostDto -> utbetalingsPostDto.getInntektspostType() == InntektspostType.YTELSE).findFirst();
+
+        if (utbetalingsDto.isEmpty()) {
+            return true;
+        }
+
+        var utbetalingsPostList = poster.stream().filter(utbetalingsPostDto -> InntektspostType.YTELSE.equals(utbetalingsPostDto.getInntektspostType())).collect(Collectors.toList());
+        return utbetalingsPostList.size() == poster.size();
     }
 }

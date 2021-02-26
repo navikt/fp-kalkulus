@@ -102,6 +102,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return beregningsperiode != null ? beregningsperiode.getTomDato() : null;
     }
 
+    public Intervall getBeregningsperiode() {
+        return beregningsperiode;
+    }
+
     public boolean gjelderSammeArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto that) {
         if (!Objects.equals(this.getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER) || !Objects.equals(that.getAktivitetStatus(), AktivitetStatus.ARBEIDSTAKER)) {
             return false;
