@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagInntektDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
@@ -45,7 +47,7 @@ public class InntektsgrunnlagMapper {
         List<InntektsgrunnlagMånedDto> måneder = new ArrayList<>();
         dateMap.forEach((månedFom, poster) -> {
             List<InntektsgrunnlagInntektDto> inntekDtoer = poster.stream()
-                    .map(post -> new InntektsgrunnlagInntektDto(post.status, post.beløp))
+                    .map(post -> new InntektsgrunnlagInntektDto(post.status, post.inntektAktivitetType, post.beløp))
                     .collect(Collectors.toList());
             LocalDate tom = månedFom.with(TemporalAdjusters.lastDayOfMonth());
             måneder.add(new InntektsgrunnlagMånedDto(månedFom, tom, inntekDtoer));
@@ -54,28 +56,46 @@ public class InntektsgrunnlagMapper {
     }
 
     private List<InntektDtoMedMåned> mapInntekt(InntektDto inn) {
-        if (!inn.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING) || inn.getArbeidsgiver() == null) {
+        if (!inn.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING)) {
             return Collections.emptyList();
         }
+
+        // TODO aktivitetstatus kan fjernes når frontend bruker InntektAktivitetType
         AktivitetStatus status = frilansArbeidsgivere.contains(inn.getArbeidsgiver()) ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER;
+
         List<LocalDate> fomDatoer = new ArrayList<>();
         for (int i = 1; i<13; i++) {
             fomDatoer.add(skjæringstidspunkt.minusMonths(i).withDayOfMonth(1));
         }
         return inn.getAlleInntektsposter().stream()
                 .filter(intp -> fomDatoer.contains(intp.getPeriode().getFomDato().withDayOfMonth(1)))
-                .map(intp -> new InntektDtoMedMåned(status, intp.getBeløp() != null ? intp.getBeløp().getVerdi() : BigDecimal.ZERO, intp.getPeriode().getFomDato().withDayOfMonth(1)))
+                .map(intp -> new InntektDtoMedMåned(status,
+                        finnInntektType(inn.getArbeidsgiver(), intp.getInntektspostType()),
+                        intp.getBeløp() != null ? intp.getBeløp().getVerdi() : BigDecimal.ZERO,
+                        intp.getPeriode().getFomDato().withDayOfMonth(1)))
                 .collect(Collectors.toList());
 
     }
 
+    private InntektAktivitetType finnInntektType(Arbeidsgiver arbeidsgiver, InntektspostType inntektspostType) {
+        if (InntektspostType.YTELSE.equals(inntektspostType)) {
+            return InntektAktivitetType.YTELSEINNTEKT;
+        }
+        if (arbeidsgiver == null) {
+            return InntektAktivitetType.UDEFINERT;
+        }
+        return frilansArbeidsgivere.contains(arbeidsgiver) ? InntektAktivitetType.FRILANSINNTEKT : InntektAktivitetType.ARBEIDSTAKERINNTEKT;
+    }
+
     class InntektDtoMedMåned {
         private final AktivitetStatus status;
+        private final InntektAktivitetType inntektAktivitetType;
         private final BigDecimal beløp;
         private final LocalDate månedFom;
 
-        public InntektDtoMedMåned(AktivitetStatus status, BigDecimal beløp, LocalDate månedFom) {
+        public InntektDtoMedMåned(AktivitetStatus status, InntektAktivitetType inntektAktivitetType, BigDecimal beløp, LocalDate månedFom) {
             this.status = status;
+            this.inntektAktivitetType = inntektAktivitetType;
             this.beløp = beløp;
             this.månedFom = månedFom;
         }

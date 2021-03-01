@@ -6,17 +6,23 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagInntektDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagMånedDto;
 
 class InntektsgrunnlagMapperTest {
     private static final LocalDate STP = LocalDate.now();
@@ -37,6 +43,28 @@ class InntektsgrunnlagMapperTest {
         assertThat(dto.get().getMåneder()).hasSize(2);
         assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(1);
         assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(1);
+    }
+
+    @Test
+    public void skal_teste_at_inntekter_uten_arbeidsgiver_mappes_til_ytelse() {
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(LocalDate.now(), Collections.emptyList());
+        InntektDtoBuilder korrektKilde = lagInntekt(null, InntektskildeType.INNTEKT_SAMMENLIGNING);
+        korrektKilde.leggTilInntektspost(lagInntektspost(korrektKilde, 5000, månederFør(3), InntektspostType.YTELSE));
+        korrektKilde.leggTilInntektspost(lagInntektspost(korrektKilde, 5000, månederFør(2), InntektspostType.YTELSE));
+
+        Optional<InntektsgrunnlagDto> dto = mapper.map(Collections.singletonList(korrektKilde.build()));
+
+        assertThat(dto).isPresent();
+        assertThat(dto.get().getMåneder()).hasSize(2);
+        assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(1);
+        assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(1);
+        List<InntektsgrunnlagInntektDto> alleInntekter = dto.map(InntektsgrunnlagDto::getMåneder)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(InntektsgrunnlagMånedDto::getInntekter)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        assertThat(alleInntekter.stream().allMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.YTELSEINNTEKT))).isTrue();
     }
 
     @Test
@@ -78,12 +106,15 @@ class InntektsgrunnlagMapperTest {
 
     }
 
-
     private InntektspostDtoBuilder lagInntektspost(InntektDtoBuilder builder, int inntekt, LocalDate fom) {
+        return lagInntektspost(builder, inntekt, fom, InntektspostType.LØNN);
+    }
+
+    private InntektspostDtoBuilder lagInntektspost(InntektDtoBuilder builder, int inntekt, LocalDate fom, InntektspostType type) {
         return builder.getInntektspostBuilder()
                 .medPeriode(fom, fom.with(TemporalAdjusters.lastDayOfMonth()))
                 .medBeløp(BigDecimal.valueOf(inntekt))
-                .medInntektspostType(InntektspostType.LØNN);
+                .medInntektspostType(type);
     }
 
     private LocalDate månederFør(int månederFør) {
@@ -91,7 +122,7 @@ class InntektsgrunnlagMapperTest {
     }
 
     private InntektDtoBuilder lagInntekt(String orgnr, InntektskildeType kilde) {
-        return InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(kilde).medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr));
+        return InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(kilde).medArbeidsgiver(orgnr == null ? null :  Arbeidsgiver.virksomhet(orgnr));
     }
 
 }
