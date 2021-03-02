@@ -29,24 +29,58 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public class MapRefusjonskravFraVLTilRegel {
     private MapRefusjonskravFraVLTilRegel() {
         // skjul public constructor
     }
 
-    static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
+    public static List<Refusjonskrav> periodiserRefusjonsbeløp(InntektsmeldingDto inntektsmelding,
                                                         LocalDate startdatoPermisjon,
                                                         Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
                                                         List<Intervall> gyldigeRefusjonPerioder) {
-        Map<LocalDate, Beløp> refusjoner = new TreeMap<>();
-        finnRefusjonendringFraInntektsmelding(inntektsmelding, startdatoPermisjon, refusjonOverstyringer, gyldigeRefusjonPerioder)
-                .forEach(refusjoner::put);
-        new FinnRefusjonendringFraGyldigePerioder(gyldigeRefusjonPerioder, lagForenkletRefusjonListe(refusjoner), startdatoPermisjon)
-                .finnEndringerIRefusjon()
-                .forEach(refusjoner::put);
-        return lagForenkletRefusjonListe(refusjoner);
+
+        if (gyldigeRefusjonPerioder.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            LocalDateTimeline<BigDecimal> timeline = lagInntektsmeldingTidslinje(inntektsmelding, startdatoPermisjon, refusjonOverstyringer, gyldigeRefusjonPerioder);
+            timeline = velgGyldigePerioder(gyldigeRefusjonPerioder, timeline);
+            timeline = fyllMellomromMedNull(startdatoPermisjon, timeline);
+            return timeline.compress()
+                    .stream()
+                    .map(segment -> new Refusjonskrav(segment.getValue(), segment.getFom(), segment.getTom()))
+                    .collect(Collectors.toList());
+        }
     }
+
+    private static LocalDateTimeline<BigDecimal> velgGyldigePerioder(List<Intervall> gyldigeRefusjonPerioder, LocalDateTimeline<BigDecimal> timeline) {
+        return timeline.intersection(lagGyldigTidslinje(gyldigeRefusjonPerioder));
+    }
+
+    private static LocalDateTimeline<BigDecimal> fyllMellomromMedNull(LocalDate startdatoPermisjon, LocalDateTimeline<BigDecimal> timeline) {
+        return timeline.combine(new LocalDateSegment<>(startdatoPermisjon, TIDENES_ENDE, BigDecimal.ZERO),
+                StandardCombinators::sum, LocalDateTimeline.JoinStyle.RIGHT_JOIN);
+    }
+
+    private static LocalDateTimeline<BigDecimal> lagInntektsmeldingTidslinje(InntektsmeldingDto inntektsmelding, LocalDate startdatoPermisjon, Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer, List<Intervall> gyldigeRefusjonPerioder) {
+        Map<LocalDate, Beløp> refusjonFraInntektsmelding = finnRefusjonendringFraInntektsmelding(inntektsmelding, startdatoPermisjon, refusjonOverstyringer, gyldigeRefusjonPerioder);
+        List<Refusjonskrav> refusjonskravListeFraInntektsmelding = lagForenkletRefusjonListe(refusjonFraInntektsmelding);
+        List<LocalDateSegment<BigDecimal>> kravFraInntektsmelding = refusjonskravListeFraInntektsmelding.stream()
+                .map(krav -> new LocalDateSegment<>(krav.getPeriode().getFom(), krav.getPeriode().getTom(), krav.getMånedsbeløp()))
+                .collect(Collectors.toList());
+        return new LocalDateTimeline<>(kravFraInntektsmelding);
+    }
+
+    private static LocalDateTimeline<Object> lagGyldigTidslinje(List<Intervall> gyldigeRefusjonPerioder) {
+        List<LocalDateSegment<Object>> gyldigeSegmenter = gyldigeRefusjonPerioder.stream()
+                .map(p -> LocalDateSegment.emptySegment(p.getFomDato(), p.getTomDato()))
+                .collect(Collectors.toList());
+        return new LocalDateTimeline<>(gyldigeSegmenter);
+    }
+
 
     private static Map<LocalDate, Beløp> finnRefusjonendringFraInntektsmelding(InntektsmeldingDto inntektsmelding,
                                                                                LocalDate startdatoPermisjon,

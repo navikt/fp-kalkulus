@@ -20,7 +20,11 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
+import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
+import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
 import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
@@ -104,9 +108,11 @@ public class FordelPerioderTjenesteTest {
 
     private FordelPerioderTjeneste lagTjeneste() {
         var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
-        MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
+        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
         return new FordelPerioderTjeneste(
                 new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering),
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon),
                 oversetterFraRegelTilVLRefusjonOgGradering);
     }
 
@@ -274,7 +280,7 @@ public class FordelPerioderTjenesteTest {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, aktivitetGradering);
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlag, null, refusjonskravDatoDtos, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
-        return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        return tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
     private BeregningsgrunnlagDto fastsettPerioderForRefusjonUtenGradering(KoblingReferanse ref,
@@ -285,7 +291,7 @@ public class FordelPerioderTjenesteTest {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false, AktivitetGradering.INGEN_GRADERING);
         var input = new BeregningsgrunnlagInput(ref, iayGrunnlagBuilder.build(), null, refusjonskravDatoer, foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
-        return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        return tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
 
@@ -1746,7 +1752,7 @@ public class FordelPerioderTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1832,7 +1838,7 @@ public class FordelPerioderTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -1920,7 +1926,7 @@ public class FordelPerioderTjenesteTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
 
         // Assert
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder();

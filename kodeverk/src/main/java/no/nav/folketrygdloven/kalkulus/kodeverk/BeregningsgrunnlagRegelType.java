@@ -29,7 +29,8 @@ public enum BeregningsgrunnlagRegelType implements Kodeverdi {
     PERIODISERING("PERIODISERING", "Periodiser beregningsgrunnlag", OPPDATERT_MED_REFUSJON_OG_GRADERING),
 
     PERIODISERING_NATURALYTELSE("PERIODISERING_NATURALYTELSE", "Periodiser beregningsgrunnlag pga naturalytelse", OPPDATERT_MED_ANDELER),
-    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon, gradering og endring i utbetalingsgrad", VURDERT_REFUSJON),
+    PERIODISERING_REFUSJON("PERIODISERING_REFUSJON", "Periodiser beregningsgrunnlag pga refusjon", VURDERT_REFUSJON),
+    PERIODISERING_GRADERING("PERIODISERING_GRADERING", "Periodiser beregningsgrunnlag pga gradering og endring i utbetalingsgrad", VURDERT_REFUSJON),
     BESTEBEREGNING("BESTEBEREGNING", "Sammenligner beregning etter kap 8 med beregning ved besteberegning.", BESTEBEREGNET),
 
     UDEFINERT("-", "Ikke definert", BeregningsgrunnlagTilstand.UDEFINERT),

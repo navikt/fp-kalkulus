@@ -170,7 +170,7 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
 
         // Act
         var newInput = new Input(input, List.of());
-        Optional<LocalDate> førsteSøktePermisjonsdag = mapper.utledStartdatoPermisjon(newInput , STP, yrkesaktivitet, ansettelsesperiode);
+        Optional<LocalDate> førsteSøktePermisjonsdag = mapper.utledStartdatoPermisjon(newInput , STP, yrkesaktivitet, ansettelsesperiode, Optional.empty());
 
         // Assert
         assertThat(førsteSøktePermisjonsdag).isPresent();

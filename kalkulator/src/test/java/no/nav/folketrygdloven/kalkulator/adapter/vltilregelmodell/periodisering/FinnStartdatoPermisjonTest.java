@@ -4,7 +4,6 @@ import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ public class FinnStartdatoPermisjonTest {
     public void finnStartdatoPermisjonNårAktivitetTilkommerEtterStpOgHarInntektsmeldingMedStartdatoEtterAnsettelsesdato() {
         // Arrange
         LocalDate ansettelsesDato = LocalDate.now();
-        YrkesaktivitetDto ya = lagYrkesaktivitet(ansettelsesDato);
         LocalDate startPermisjon = ansettelsesDato.plusMonths(1);
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
             .medArbeidsforholdId(ref)
@@ -40,7 +38,7 @@ public class FinnStartdatoPermisjonTest {
             .build();
 
         // Act
-        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, SKJÆRINGSTIDSPUNKT, ansettelsesDato, List.of(inntektsmelding));
+        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(Optional.of(inntektsmelding), SKJÆRINGSTIDSPUNKT, ansettelsesDato);
 
         // Assert
         assertThat(startDato).isEqualTo(startPermisjon);
@@ -50,7 +48,6 @@ public class FinnStartdatoPermisjonTest {
     public void finnStartdatoPermisjonNårAktivitetTilkommerEtterStpOgHarInntektsmeldingMedStartdatoFørAnsettelsesdato() {
         // Arrange
         LocalDate ansettelsesDato = LocalDate.now();
-        YrkesaktivitetDto ya = lagYrkesaktivitet(ansettelsesDato);
         LocalDate startPermisjon = ansettelsesDato.minusMonths(1);
         InntektsmeldingDto inntektsmelding = InntektsmeldingDtoBuilder.builder()
             .medArbeidsforholdId(ref)
@@ -59,7 +56,7 @@ public class FinnStartdatoPermisjonTest {
             .build();
 
         // Act
-        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, SKJÆRINGSTIDSPUNKT, ansettelsesDato, List.of(inntektsmelding));
+        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(Optional.of(inntektsmelding), SKJÆRINGSTIDSPUNKT, ansettelsesDato);
 
         // Assert
         assertThat(startDato).isEqualTo(ansettelsesDato);
@@ -70,10 +67,9 @@ public class FinnStartdatoPermisjonTest {
     public void finnStartdatoPermisjonNårAktivitetTilkommerEtterStpUtenInntektsmelding() {
         // Arrange
         LocalDate ansettelsesDato = LocalDate.now();
-        YrkesaktivitetDto ya = lagYrkesaktivitet(ansettelsesDato);
 
         // Act
-        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, SKJÆRINGSTIDSPUNKT, ansettelsesDato, List.of());
+        LocalDate startDato = FinnStartdatoPermisjon.finnStartdatoPermisjon(Optional.empty(), SKJÆRINGSTIDSPUNKT, ansettelsesDato);
 
         // Assert
         assertThat(startDato).isEqualTo(ansettelsesDato);

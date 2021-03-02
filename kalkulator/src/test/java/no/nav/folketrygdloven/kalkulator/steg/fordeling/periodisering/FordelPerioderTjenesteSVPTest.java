@@ -45,7 +45,9 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
 import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad;
+import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPerioderFraVLTilRegelUtbgrad;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -222,7 +224,7 @@ public class FordelPerioderTjenesteSVPTest {
         KoblingReferanse refMeStp = koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
         var input = new BeregningsgrunnlagInput(refMeStp, iayGrunnlag, null, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
-        return tjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        return tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
     private void assertBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate expectedFom, LocalDate expectedTom,
@@ -274,8 +276,9 @@ public class FordelPerioderTjenesteSVPTest {
 
     private FordelPerioderTjeneste lagTjeneste() {
         var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP();
         var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        return new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelTilVLRefusjonOgGradering
+        return new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon), oversetterFraRegelTilVLRefusjonOgGradering
         );
     }
 }

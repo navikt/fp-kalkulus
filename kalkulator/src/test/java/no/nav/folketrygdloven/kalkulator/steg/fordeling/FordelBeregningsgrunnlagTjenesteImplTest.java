@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBere
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -115,7 +116,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForRefusjonOgGradering(input, beregningsgrunnlag);
+        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag);
         BeregningsgrunnlagGrunnlagDto periodisertGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                 .medBeregningsgrunnlag(periodisertBG.getBeregningsgrunnlag())
                 .build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
@@ -142,9 +143,12 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
 
     private FordelPerioderTjeneste lagTjeneste() {
         var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
         var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
         return new FordelPerioderTjeneste(
-            new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelTilVLRefusjonOgGradering
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering),
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon),
+                oversetterFraRegelTilVLRefusjonOgGradering
         );
     }
 
@@ -152,15 +156,15 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
                                                                 BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
         BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = lagBeregningsgrunnlagPerioderBuilder(SKJÆRINGSTIDSPUNKT, null, orgnrs);
         BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .medGrunnbeløp(GRUNNBELØP)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7));
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .medGrunnbeløp(GRUNNBELØP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7));
         beregningsgrunnlagBuilder.leggTilBeregningsgrunnlagPeriode(beregningsgrunnlagPeriodeBuilder);
         BeregningsgrunnlagDto bg = beregningsgrunnlagBuilder.build();
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medBeregningsgrunnlag(bg)
-            .medRegisterAktiviteter(beregningAktivitetAggregat)
-            .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+                .medBeregningsgrunnlag(bg)
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBeregningsgrunnlagPerioderBuilder(LocalDate fom, LocalDate tom, Map<String, BigDecimal> orgnrs) {
@@ -168,16 +172,16 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         for (String orgnr : orgnrs.keySet()) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                    .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                     .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBeregnetPrÅr(orgnrs.get(orgnr))
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                    .medArbeidsgiver(arbeidsgiver)
-                    .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT.minusYears(1)));
+                    .medBeregnetPrÅr(orgnrs.get(orgnr))
+                    .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                            .medArbeidsgiver(arbeidsgiver)
+                            .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT.minusYears(1)));
             builder.leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder);
         }
         return builder
-            .medBeregningsgrunnlagPeriode(fom, tom);
+                .medBeregningsgrunnlagPeriode(fom, tom);
     }
 
     private void leggTilYrkesaktiviteterOgBeregningAktiviteter(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, List<String> orgnrs) {
@@ -203,22 +207,22 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
 
     private BeregningAktivitetDto lagAktivitet(LocalDate fom, LocalDate tom, Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
         return BeregningAktivitetDto.builder()
-            .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
-            .medArbeidsgiver(arbeidsgiver)
-            .medArbeidsforholdRef(arbeidsforholdRef)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
-            .build();
+                .medPeriode(Intervall.fraOgMedTilOgMed(fom, tom))
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdRef(arbeidsforholdRef)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                .build();
     }
 
     private Arbeidsgiver leggTilYrkesaktivitet(Intervall arbeidsperiode, InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder,
                                                String orgnr) {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
         AktivitetsAvtaleDtoBuilder aaBuilder1 = AktivitetsAvtaleDtoBuilder.ny()
-            .medPeriode(arbeidsperiode);
+                .medPeriode(arbeidsperiode);
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidsgiver(arbeidsgiver)
-            .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .leggTilAktivitetsAvtale(aaBuilder1);
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .leggTilAktivitetsAvtale(aaBuilder1);
         aktørArbeidBuilder.leggTilYrkesaktivitet(yaBuilder);
         return arbeidsgiver;
     }

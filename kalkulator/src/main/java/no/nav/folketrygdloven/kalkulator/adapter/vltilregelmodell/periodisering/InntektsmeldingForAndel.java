@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -51,11 +52,12 @@ public class InntektsmeldingForAndel {
     private static List<YrkesaktivitetDto> finnYrkesaktiviteterForAndelSomStarterFørOgSlutterPåEllerEtterStp(BGAndelArbeidsforholdDto arbeidsforhold,
                                                                                                              Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                                                                              LocalDate skjæringstidspunkt) {
+        LocalDate beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt);
         return yrkesaktiviteter.stream()
                 .filter(ya -> ya.getArbeidsgiver() != null &&
                         arbeidsforhold.getArbeidsgiver().getIdentifikator().equals(ya.getArbeidsgiver().getIdentifikator()) &&
                         arbeidsforhold.getArbeidsforholdRef().gjelderFor(ya.getArbeidsforholdRef()))
-                .filter(ya -> getAnsettelsesperioder(ya).stream().anyMatch(a -> a.getPeriode().getFomDato().isBefore(skjæringstidspunkt) && !a.getPeriode().getTomDato().isBefore(skjæringstidspunkt)))
+                .filter(ya -> getAnsettelsesperioder(ya).stream().anyMatch(a -> !a.getPeriode().getFomDato().isAfter(beregningstidspunkt) && a.getPeriode().getTomDato().isAfter(beregningstidspunkt)))
                 .collect(Collectors.toList());
     }
 

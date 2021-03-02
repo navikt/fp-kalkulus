@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -36,6 +37,8 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 public class FordelPerioderTjeneste {
     private Instance<MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering> oversetterTilRegelRefusjonOgGradering;
+    private Instance<MapRefusjonPerioderFraVLTilRegel> oversetterTilRegelRefusjon;
+
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering;
 
     FordelPerioderTjeneste() {
@@ -44,23 +47,40 @@ public class FordelPerioderTjeneste {
 
     @Inject
     public FordelPerioderTjeneste(@Any Instance<MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering> oversetterTilRegelRefusjonOgGradering,
+                                  @Any Instance<MapRefusjonPerioderFraVLTilRegel> oversetterTilRegelRefusjon,
                                   MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonsOgGradering) {
         this.oversetterTilRegelRefusjonOgGradering = oversetterTilRegelRefusjonOgGradering;
+        this.oversetterTilRegelRefusjon = oversetterTilRegelRefusjon;
         this.oversetterFraRegelRefusjonsOgGradering = oversetterFraRegelRefusjonsOgGradering;
     }
 
-    public BeregningsgrunnlagRegelResultat fastsettPerioderForRefusjonOgGradering(BeregningsgrunnlagInput input,
+
+
+    public BeregningsgrunnlagRegelResultat fastsettPerioderForRefusjon(BeregningsgrunnlagInput input,
                                                                                   BeregningsgrunnlagDto beregningsgrunnlag) {
+        var ref = input.getKoblingReferanse();
+        var mapperForYtelse = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjon, ref.getFagsakYtelseType());
+
+        return mapperForYtelse.map(mapper -> {
+                    PeriodeModell periodeModell = mapper.map(input, beregningsgrunnlag);
+                    return kjørRegelOgMapTilVLRefusjonOgGradering(beregningsgrunnlag, periodeModell, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON);
+                }
+        ).orElse(new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, List.of()));
+    }
+
+    public BeregningsgrunnlagRegelResultat fastsettPerioderForGraderingOgUtbetalingsgrad(BeregningsgrunnlagInput input,
+                                                                                         BeregningsgrunnlagDto beregningsgrunnlag) {
         var ref = input.getKoblingReferanse();
         var mapper = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjonOgGradering, ref.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
 
         PeriodeModell periodeModell = mapper.map(input, beregningsgrunnlag);
-        return kjørRegelOgMapTilVLRefusjonOgGradering(beregningsgrunnlag, periodeModell);
+        return kjørRegelOgMapTilVLRefusjonOgGradering(beregningsgrunnlag, periodeModell, BeregningsgrunnlagRegelType.PERIODISERING_GRADERING);
     }
 
-
-    private BeregningsgrunnlagRegelResultat kjørRegelOgMapTilVLRefusjonOgGradering(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
+    private BeregningsgrunnlagRegelResultat kjørRegelOgMapTilVLRefusjonOgGradering(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                   PeriodeModell input,
+                                                                                   BeregningsgrunnlagRegelType regeltype) {
         String regelInput = toJson(input);
         List<SplittetPeriode> splittedePerioder = new ArrayList<>();
         Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
@@ -68,7 +88,7 @@ public class FordelPerioderTjeneste {
         var nyttBeregningsgrunnlag = oversetterFraRegelRefusjonsOgGradering.mapFraRegel(splittedePerioder, beregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(
                 nyttBeregningsgrunnlag,
-                new RegelSporingAggregat(mapRegelSporingGrunnlag(regelResultat, BeregningsgrunnlagRegelType.PERIODISERING_REFUSJON)));
+                new RegelSporingAggregat(mapRegelSporingGrunnlag(regelResultat, regeltype)));
     }
 
     private String toJson(Object o) {

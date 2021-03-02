@@ -154,7 +154,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
                 List.of(Intervall.fraOgMed(skjæringstidspunkt.minusMonths(12))));
 
         // Assert
-        assertThat(resultat).hasSize(1);
+        assertThat(resultat).hasSize(2);
         assertThat(resultat).anySatisfy(start -> {
             assertThat(start.getPeriode()).isEqualTo(Periode.of(overstyrtDato, Intervall.TIDENES_ENDE));
             assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);

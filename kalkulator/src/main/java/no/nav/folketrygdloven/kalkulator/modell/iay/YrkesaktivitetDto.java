@@ -113,6 +113,11 @@ public class YrkesaktivitetDto {
         return Collections.unmodifiableSet(aktivitetsAvtale);
     }
 
+    public Collection<AktivitetsAvtaleDto> getAlleAnsettelsesperioder() {
+        return aktivitetsAvtale.stream().filter(AktivitetsAvtaleDto::erAnsettelsesPeriode).collect(Collectors.toUnmodifiableSet());
+    }
+
+
     void leggTilAktivitetsAvtale(AktivitetsAvtaleDto aktivitetsAvtale) {
         this.aktivitetsAvtale.add(aktivitetsAvtale);
     }

@@ -17,18 +17,23 @@ import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.TilfelleUtlederMoc
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.AksjonspunktutledertjenesteVurderRefusjonFP;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 class BeregningTjenesteProvider {
 
     static BeregningTjenesteWrapper provide() {
         FaktaOmBeregningTilfelleTjeneste faktaOmBeregningTilfelleTjeneste = new FaktaOmBeregningTilfelleTjeneste(
-            TilfelleUtlederMockTjeneste.getUtlederInstances());
+                TilfelleUtlederMockTjeneste.getUtlederInstances());
         AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning = new AksjonspunktUtlederFaktaOmBeregning(faktaOmBeregningTilfelleTjeneste);
 
-        MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
-        MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering oversetterFraRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        var fordelPerioderTjeneste = new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), oversetterFraRegelRefusjonOgGradering);
+        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
+        var oversetterFraRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+        var fordelPerioderTjeneste = new FordelPerioderTjeneste(
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering),
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon),
+                oversetterFraRegelRefusjonOgGradering);
         var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste();
 
         MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();

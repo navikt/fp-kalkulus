@@ -204,14 +204,14 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
 
     protected Optional<LocalDate> utledStartdatoPermisjon(Input input,
                                                           LocalDate skjæringstidspunktBeregning,
-                                                          YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
+                                                          YrkesaktivitetDto ya, Periode ansettelsesPeriode,
+                                                          Optional<InntektsmeldingDto> inntektsmelding) {
         Optional<LocalDate> førstedagEtterBekreftetPermisjonOpt = finnFørsteSøktePermisjonsdag(input.getBeregningsgrunnlagInput(), ya, ansettelsesPeriode);
         if (førstedagEtterBekreftetPermisjonOpt.isEmpty()) {
             return Optional.empty();
         }
         return Optional
-            .of(FinnStartdatoPermisjon.finnStartdatoPermisjon(ya, skjæringstidspunktBeregning, førstedagEtterBekreftetPermisjonOpt.get(),
-                input.getInntektsmeldinger()));
+            .of(FinnStartdatoPermisjon.finnStartdatoPermisjon(inntektsmelding, skjæringstidspunktBeregning, førstedagEtterBekreftetPermisjonOpt.get()));
     }
 
     protected Optional<LocalDate> finnFørsteSøktePermisjonsdag(BeregningsgrunnlagInput input, YrkesaktivitetDto ya, Periode ansettelsesPeriode) {
@@ -285,7 +285,11 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
             .getSkjæringstidspunkt();
 
         Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning);
-        Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(inputAndeler, skjæringstidspunktBeregning, ya, ansettelsesPeriode);
+        Optional<InntektsmeldingDto> inntektsmelding = finnMatchendeInntektsmelding(ya, inntektsmeldinger);
+        Optional<LocalDate> startdatoPermisjonOpt = utledStartdatoPermisjon(inputAndeler,
+                skjæringstidspunktBeregning,
+                ya, ansettelsesPeriode,
+                inntektsmelding);
 
         if (startdatoPermisjonOpt.isPresent()) {
             LocalDate startdatoPermisjon = startdatoPermisjonOpt.get();
@@ -300,7 +304,6 @@ public abstract class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel {
                     ansettelsesPeriode,
                     ya);
             if (harKunSpesifikkeAndelerIkkeTilkommet) {
-                Optional<InntektsmeldingDto> inntektsmelding = finnMatchendeInntektsmelding(ya, inntektsmeldinger);
                 if (!tilkommerPåEllerEtterStp(iayGrunnlag, skjæringstidspunktBeregning, ansettelsesPeriode, ya)
                     || harAggregertAndelOgMottattInntektsmeldingUtenId(matchendeAndel, inntektsmelding)) {
                     matchendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr).ifPresent(builder::medAndelsnr);
