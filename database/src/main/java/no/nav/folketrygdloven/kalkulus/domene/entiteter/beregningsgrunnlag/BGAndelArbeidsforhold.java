@@ -66,12 +66,6 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Column(name = "naturalytelse_tilkommet_pr_aar")
     private BigDecimal naturalytelseTilkommetPrÅr;
 
-    @Column(name = "tidsbegrenset_arbeidsforhold")
-    private Boolean erTidsbegrensetArbeidsforhold;
-
-    @Column(name = "loennsendring_i_perioden")
-    private Boolean lønnsendringIBeregningsperioden;
-
     @Column(name = "arbeidsperiode_fom")
     private LocalDate arbeidsperiodeFom;
 
@@ -86,9 +80,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         this.arbeidsgiver = bgAndelArbeidsforhold.arbeidsgiver;
         this.arbeidsperiodeFom = bgAndelArbeidsforhold.arbeidsperiodeFom;
         this.arbeidsperiodeTom = bgAndelArbeidsforhold.arbeidsperiodeTom;
-        this.erTidsbegrensetArbeidsforhold = bgAndelArbeidsforhold.erTidsbegrensetArbeidsforhold;
         this.fordeltRefusjonPrÅr = bgAndelArbeidsforhold.fordeltRefusjonPrÅr;
-        this.lønnsendringIBeregningsperioden = bgAndelArbeidsforhold.lønnsendringIBeregningsperioden;
         this.naturalytelseBortfaltPrÅr = bgAndelArbeidsforhold.naturalytelseBortfaltPrÅr;
         this.refusjonskravPrÅr = bgAndelArbeidsforhold.refusjonskravPrÅr;
         this.saksbehandletRefusjonPrÅr = bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr;
