@@ -32,9 +32,13 @@ public class JsonMapper {
 
     public static String toJson(Object object, Function<JsonProcessingException, Feil> feilFactory) {
         try {
-            return OM.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+            return toJson(object);
         } catch (JsonProcessingException e) {
             throw feilFactory.apply(e).toException();
         }
+    }
+
+    public static String toJson(Object object) throws JsonProcessingException {
+        return OM.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     }
 }
