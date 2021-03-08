@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
@@ -37,11 +38,16 @@ public class AksjonspunktutledertjenesteVurderRefusjonFP implements Aksjonspunku
             aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.VURDER_REFUSJONSKRAV));
         }
 
-        Collection<YrkesaktivitetDto> yrkesaktiviteter = input.getIayGrunnlag().getAktørArbeidFraRegister()
-                .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
-                .orElse(Collections.emptyList());
-        // Skal ikke gi aksjonspunkt enda, ønsker analyse på hvor mange slike saker vi har
-        AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter, input.getKoblingReferanse().getKoblingUuid(), periodisertMedRefusjonOgGradering);
+        if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {
+            ForeldrepengerGrunnlag fpGrunnlag = input.getYtelsespesifiktGrunnlag();
+            Collection<YrkesaktivitetDto> yrkesaktiviteter = input.getIayGrunnlag().getAktørArbeidFraRegister()
+                    .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
+                    .orElse(Collections.emptyList());
+            // Skal ikke gi aksjonspunkt enda, ønsker analyse på hvor mange slike saker vi har
+            AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter,
+                    input.getKoblingReferanse().getKoblingUuid(), fpGrunnlag.getSisteSøkteUttaksdag(), periodisertMedRefusjonOgGradering);
+
+        }
 
         return aksjonspunkter;
     }

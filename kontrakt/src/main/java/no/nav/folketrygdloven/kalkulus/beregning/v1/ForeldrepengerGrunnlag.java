@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -26,6 +27,10 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     @Valid
     private AktivitetGraderingDto aktivitetGradering;
 
+    @JsonProperty(value = "sisteSøkteUttaksdag")
+    @Valid
+    private LocalDate sisteSøkteUttaksdag;
+
     protected ForeldrepengerGrunnlag() {
         // default ctor
     }
@@ -37,11 +42,24 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         this.aktivitetGradering = aktivitetGradering;
     }
 
+    public ForeldrepengerGrunnlag(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad,
+                                  @Valid @NotNull Boolean kvalifisererTilBesteberegning,
+                                  @Valid AktivitetGraderingDto aktivitetGradering,
+                                  @Valid LocalDate sisteSøkteUttaksdag) {
+        super(dekningsgrad, kvalifisererTilBesteberegning);
+        this.aktivitetGradering = aktivitetGradering;
+        this.sisteSøkteUttaksdag = sisteSøkteUttaksdag;
+    }
+
     public static String getYtelseType() {
         return YTELSE_TYPE;
     }
 
     public AktivitetGraderingDto getAktivitetGradering() {
         return aktivitetGradering;
+    }
+
+    public LocalDate getSisteSøkteUttaksdag() {
+        return sisteSøkteUttaksdag;
     }
 }

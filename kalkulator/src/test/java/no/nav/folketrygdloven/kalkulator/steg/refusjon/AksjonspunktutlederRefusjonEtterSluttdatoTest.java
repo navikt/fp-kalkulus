@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.vedtak.konfig.Tid;
 
 class AksjonspunktutlederRefusjonEtterSluttdatoTest {
     private static final UUID REFERANSE = UUID.randomUUID();
@@ -94,7 +95,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
     }
 
     private boolean kjørUtleder() {
-        return AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter, REFERANSE, grunnlagBuilder.build());
+        return AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter, REFERANSE, Optional.of(Tid.TIDENES_ENDE), grunnlagBuilder.build());
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBGAndel(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, int refusjonPrÅr) {

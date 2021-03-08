@@ -1,6 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import java.time.LocalDate;
+import java.util.Optional;
+
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 
@@ -16,6 +19,10 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     /** Aktiviteter for gradering av uttak. */
     private AktivitetGradering aktivitetGradering = AktivitetGradering.INGEN_GRADERING;
+
+
+    /** Når siste søkte uttaksdag er, skal brukes for å vurdere refusjon til arbeidsforhold som er avsluttet. */
+    private LocalDate sisteSøkteUttaksdag;
 
     ForeldrepengerGrunnlag() {
     }
@@ -69,4 +76,11 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
         return besteberegningVurderingGrunnlag;
     }
 
+    public Optional<LocalDate> getSisteSøkteUttaksdag() {
+        return Optional.ofNullable(sisteSøkteUttaksdag);
+    }
+
+    public void setSisteSøkteUttaksdag(LocalDate sisteSøkteUttaksdag) {
+        this.sisteSøkteUttaksdag = sisteSøkteUttaksdag;
+    }
 }
