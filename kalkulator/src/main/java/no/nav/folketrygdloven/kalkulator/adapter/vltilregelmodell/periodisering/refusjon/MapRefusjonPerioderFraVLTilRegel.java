@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,14 +70,23 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
     }
 
     private List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(Input inputAndeler) {
+        var referanse = inputAndeler.getBeregningsgrunnlagInput().getKoblingReferanse();
+        var grunnlag = inputAndeler.getBeregningsgrunnlagInput().getBeregningsgrunnlagGrunnlag();
         var iayGrunnlag = inputAndeler.getBeregningsgrunnlagInput().getIayGrunnlag();
+        Collection<YrkesaktivitetDto> yrkesaktiviteterSomErRelevant = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(referanse, iayGrunnlag, grunnlag);
         Collection<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger()
                 .map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
                 .orElse(Collections.emptyList());
         return inntektsmeldinger.stream()
                 .filter(this::harRefusjon)
+                .filter(im -> erFraRelevantArbeidsgiver(im, yrkesaktiviteterSomErRelevant))
                 .map(im -> mapRefusjonForInntektsmelding(im, inputAndeler))
                 .collect(Collectors.toList());
+    }
+
+
+    private boolean erFraRelevantArbeidsgiver(InntektsmeldingDto im, Collection<YrkesaktivitetDto> yrkesaktiviteterSomErRelevant) {
+        return !yrkesaktiviteterSomErRelevant.isEmpty() && yrkesaktiviteterSomErRelevant.stream().anyMatch(ya -> ya.gjelderFor(im));
     }
 
     private ArbeidsforholdOgInntektsmelding mapRefusjonForInntektsmelding(InntektsmeldingDto im, Input inputAndeler) {
