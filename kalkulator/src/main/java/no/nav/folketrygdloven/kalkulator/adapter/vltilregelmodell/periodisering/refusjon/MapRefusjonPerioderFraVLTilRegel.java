@@ -93,7 +93,8 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnAndelForInntektsmelding(im, inputAndeler);
         Set<YrkesaktivitetDto> yrkesaktiviteter = finnYrkesaktiviteterForInntektsmelding(im, inputAndeler);
         BeregningsgrunnlagInput beregningsgrunnlagInput = inputAndeler.getBeregningsgrunnlagInput();
-        LocalDate skjæringstidspunktBeregning = beregningsgrunnlagInput.getBeregningsgrunnlag().getSkjæringstidspunkt();
+        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagInput.getBeregningsgrunnlag();
+        LocalDate skjæringstidspunktBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning = finnAnsattperioderForInntektsmelding(yrkesaktiviteter, skjæringstidspunktBeregning);
         Periode ansettelsesPeriode = FinnAnsettelsesPeriode.getMinMaksPeriode(alleAnsattperioderForInntektsmeldingEtterStartAvBeregning, skjæringstidspunktBeregning);
         LocalDate startdatoPermisjon = utledStartdatoPermisjon(
@@ -109,7 +110,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
                 im,
                 startdatoPermisjon,
                 beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer(),
-                finnGyldigeRefusjonPerioder(startdatoPermisjon, beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), im));
+                finnGyldigeRefusjonPerioder(startdatoPermisjon, beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), im, beregningsgrunnlag));
 
         mapFristData(beregningsgrunnlagInput, im, builder);
 
@@ -130,9 +131,10 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
      * @param startdatoPermisjon      Startdato permisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param inntektsmelding         Inntektsmelding
+     * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto inntektsmelding) {
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto inntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag) {
         return List.of(Intervall.fraOgMed(startdatoPermisjon));
     }
 
