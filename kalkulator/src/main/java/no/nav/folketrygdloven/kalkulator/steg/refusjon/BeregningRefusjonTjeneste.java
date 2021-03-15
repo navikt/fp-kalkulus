@@ -39,7 +39,8 @@ public final class BeregningRefusjonTjeneste {
      */
     public static Map<Intervall, List<RefusjonAndel>> finnUtbetaltePerioderMedAndelerMedØktRefusjon(BeregningsgrunnlagDto revurderingBeregningsgrunnlag,
                                                                                                     BeregningsgrunnlagDto originaltBeregningsgrunnlag,
-                                                                                                    LocalDate alleredeUtbetaltTOM) {
+                                                                                                    LocalDate alleredeUtbetaltTOM,
+                                                                                                    BigDecimal grenseverdi) {
         if (alleredeUtbetaltTOM.isBefore(revurderingBeregningsgrunnlag.getSkjæringstidspunkt())) {
             return Collections.emptyMap();
         }
@@ -48,7 +49,7 @@ public final class BeregningRefusjonTjeneste {
         LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag);
         LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(originalUtbetaltTidslinje, revurderingTidslinje);
 
-        return vurderPerioder(endringTidslinje);
+        return vurderPerioder(endringTidslinje, grenseverdi);
     }
 
     private static LocalDateTimeline<RefusjonPeriode> finnAlleredeUtbetaltPeriode(LocalDate alleredeUtbetaltTOM) {
@@ -58,11 +59,11 @@ public final class BeregningRefusjonTjeneste {
                 null);
     }
 
-    private static Map<Intervall, List<RefusjonAndel>> vurderPerioder(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje) {
+    private static Map<Intervall, List<RefusjonAndel>> vurderPerioder(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje, BigDecimal grenseverdi) {
         Map<Intervall, List<RefusjonAndel>> andelerIPeriode = new HashMap<>();
         endringTidslinje.toSegments().forEach(segment -> {
             RefusjonPeriodeEndring refusjonsendring = segment.getValue();
-            if (erMindreAndelTilgjengeligForBruker(refusjonsendring)) {
+            if (erMindreAndelTilgjengeligForBruker(refusjonsendring, grenseverdi)) {
                 // Bruker vil få mindre andel av beregningsgrunnlaget, sjekk om noen andeler har fått økt refusjon
                 List<RefusjonAndel> andelerMedØktRefusjon = finnAndelerMedØktRefusjon(refusjonsendring);
                 if (!andelerMedØktRefusjon.isEmpty()) {
@@ -109,9 +110,11 @@ public final class BeregningRefusjonTjeneste {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private static boolean erMindreAndelTilgjengeligForBruker(RefusjonPeriodeEndring refusjonsendring) {
-        BigDecimal originalAndelTilBruker = refusjonsendring.getOriginalBrutto().subtract(refusjonsendring.getOriginalRefusjon()).max(BigDecimal.ZERO);
-        BigDecimal revurderingAndelTilBruker = refusjonsendring.getRevurderingBrutto().subtract(refusjonsendring.getRevurderingRefusjon()).max(BigDecimal.ZERO);
+    private static boolean erMindreAndelTilgjengeligForBruker(RefusjonPeriodeEndring refusjonsendring, BigDecimal grenseverdi) {
+        BigDecimal originalBrutto = refusjonsendring.getOriginalBrutto().min(grenseverdi);
+        BigDecimal revurderingBrutto = refusjonsendring.getRevurderingBrutto().min(grenseverdi);
+        BigDecimal originalAndelTilBruker = originalBrutto.subtract(refusjonsendring.getOriginalRefusjon()).max(BigDecimal.ZERO);
+        BigDecimal revurderingAndelTilBruker = revurderingBrutto.subtract(refusjonsendring.getRevurderingRefusjon()).max(BigDecimal.ZERO);
         return revurderingAndelTilBruker.compareTo(originalAndelTilBruker) < 0;
     }
 

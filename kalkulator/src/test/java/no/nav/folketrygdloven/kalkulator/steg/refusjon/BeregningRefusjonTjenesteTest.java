@@ -83,7 +83,7 @@ class BeregningRefusjonTjenesteTest {
                 .build(revurderingBG);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 0);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -104,7 +104,7 @@ class BeregningRefusjonTjenesteTest {
                 .build(revurderingBG);
         leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 500000, 200000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(10));
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(10));
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, REF1, 500000, 200000);
@@ -128,7 +128,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 500000, 200000);
         leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 500000, 200000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(10));
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(SKJÆRINGSTIDSPUNKT_BEREGNING.plusDays(10));
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, REF1, 500000, 200000);
@@ -151,7 +151,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
 
         // Act
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         // Assert
         assertThat(resultat).hasSize(1);
@@ -175,7 +175,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
 
         // Act
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         // Assert
         assertThat(resultat).hasSize(1);
@@ -196,7 +196,7 @@ class BeregningRefusjonTjenesteTest {
                 .build(revurderingBG);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -218,7 +218,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 200000, 200000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG3, REF1, 300000, 300000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG2, REF1,200000, 200000);
@@ -240,7 +240,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 100000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 300000, 300000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -261,7 +261,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 100000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 200000, 200000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel1 = lagForventetAndel(AG1, REF1, 100000, 100000);
@@ -286,7 +286,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 200000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 300000, 300000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG2, REF1, 300000, 300000);
@@ -315,7 +315,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 200000);
         leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG2, REF1, 300000, 300000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -348,7 +348,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 200000, 50000);
         leggTilAndel(beregningsgrunnlagPeriode4, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 50000, 50000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -374,7 +374,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, null, 279759.96, 279759.96);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0, 0);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, ref1, 105999.96, 105999.96);
@@ -404,7 +404,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, null, 100000, 100000);
 
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -429,7 +429,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, null, 100000, 100000);
 
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, null, 500000, 500000);
@@ -455,7 +455,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, null, 100000, 100000);
         leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 500, 0);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -474,7 +474,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, null, 200000, 200000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, ref1, 100000, 100000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).isEmpty();
     }
@@ -493,7 +493,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, null, 300000, 300000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, ref1, 100000, 100000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, null, 300000, 300000);
@@ -518,7 +518,7 @@ class BeregningRefusjonTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, null, 300000, 300000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, ref1, 100000, 100000);
 
-        Map<Intervall, List<RefusjonAndel>> resultat = BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, ALLEREDE_UTBETALT_TOM);
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
 
         assertThat(resultat).hasSize(1);
         RefusjonAndel forventetAndel = lagForventetAndel(AG1, null, 300000, 300000);
@@ -527,8 +527,29 @@ class BeregningRefusjonTjenesteTest {
         assertMap(resultat, forventetInterval, Arrays.asList(forventetAndel, forventetAndel2));
     }
 
+    @Test
+    public void inntekt_øker_like_mye_som_refusjon_men_kuttes_av_grenseverdi() {
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, null, 600000, 550000);
 
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE)
+                .build(revurderingBG);
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, null, 650000, 600000);
 
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
+
+        assertThat(resultat).hasSize(1);
+        RefusjonAndel forventetAndel = lagForventetAndel(AG1, null, 650000, 600000);
+        Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE);
+        assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
+    }
+
+    private Map<Intervall, List<RefusjonAndel>> kjørUtleder(LocalDate alleredeUtbetaltTOM) {
+        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, alleredeUtbetaltTOM, BigDecimal.valueOf(600000));
+    }
 
     private void leggTilAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
                               AktivitetStatus aktivitetStatus, Arbeidsgiver ag,

@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -32,8 +33,8 @@ public final class VurderRefusjonDtoTjeneste {
         if (orginaltBG.isEmpty() || beregningsgrunnlag.isEmpty()) {
             return Optional.empty();
         }
-
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), orginaltBG.get());
+        BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().getVerdi());
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), orginaltBG.get(), grenseverdi);
         if (!andelerMedØktRefusjon.isEmpty()) {
             return LagVurderRefusjonDto.lagDto(andelerMedØktRefusjon, input);
         }
