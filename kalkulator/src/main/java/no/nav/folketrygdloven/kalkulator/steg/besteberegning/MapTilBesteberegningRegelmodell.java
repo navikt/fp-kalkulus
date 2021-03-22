@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
-import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -31,9 +30,11 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
@@ -106,15 +107,29 @@ public class MapTilBesteberegningRegelmodell {
 
     private static List<Periodeinntekt> lagYtelseDagpengerArbeidsavklaringspenger(YtelseFilterDto ytelseFilter) {
         Set<FagsakYtelseType> ytelseTyper = Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
-        List<YtelseAnvistDto> alleMeldekort = MeldekortUtils.finnAlleMeldekort(ytelseFilter, ytelseTyper);
-        // Mapper alle meldekort til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
-        return alleMeldekort.stream().map(meldekort -> Periodeinntekt.builder()
-                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig
-                .medInntekt(meldekort.getBeløp().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
-                .medPeriode(Periode.of(meldekort.getAnvistFOM(), meldekort.getAnvistTOM()))
-                .build()).collect(Collectors.toList());
+        return ytelseFilter.getAlleYtelser().stream()
+                .filter(yt-> ytelseTyper.contains(yt.getRelatertYtelseType()))
+                .map(MapTilBesteberegningRegelmodell::mapYtelseTilPeriodeinntekt)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
+    private static List<Periodeinntekt> mapYtelseTilPeriodeinntekt(YtelseDto yt) {
+        // Mapper alle ytelser til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
+        return yt.getYtelseAnvist().stream()
+                .map(meldekort -> Periodeinntekt.builder()
+                        .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig
+                        .medInntekt(meldekort.getBeløp().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
+                        .medPeriode(utledMeldekortperiode(meldekort, yt.getPeriode()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private static Periode utledMeldekortperiode(YtelseAnvistDto meldekort, Intervall vedtaksperiode) {
+        LocalDate fom = meldekort.getAnvistFOM().isBefore(vedtaksperiode.getFomDato()) ? vedtaksperiode.getFomDato() : meldekort.getAnvistFOM();
+        LocalDate tom = meldekort.getAnvistTOM().isAfter(vedtaksperiode.getTomDato()) ? vedtaksperiode.getTomDato() : meldekort.getAnvistTOM();
+        return Periode.of(fom, tom);
+    }
 
 
     /** Henter ut ytelser fra sammenlignigsgrunnlaget:
