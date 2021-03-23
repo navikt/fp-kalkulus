@@ -33,28 +33,28 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
     private List<YrkesaktivitetDto> yrkesaktiviteter = new ArrayList<>();
 
     @Test
-    public void skal_ikke_slå_ut_på_løpende_arbeidsforhold_som_overlapper_bg() {
+    public void skal_ikke_slå_ut_på_løpende_arbeidsforhold_som_er_aktivt() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("333");
         lagJobb(ag, InternArbeidsforholdRefDto.nullRef(), lagAnsettelse(STP.minusDays(100), null));
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder();
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.minusDays(100));
 
         // Assert
         assertThat(slårUt).isFalse();
     }
 
     @Test
-    public void skal_slå_ut_på_avsluttet_arbeidsforhold_som_overlapper_bg() {
+    public void skal_slå_ut_på_avsluttet_arbeidsforhold_som_overlapper_refusjon_før_behandlingstidspunkt() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("333");
         lagJobb(ag, InternArbeidsforholdRefDto.nullRef(), lagAnsettelse(STP.minusDays(100), STP.plusDays(30)));
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder();
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(31));
 
         // Assert
         assertThat(slårUt).isTrue();
@@ -71,14 +71,14 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP.plusDays(31), null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000), lagBGAndel(ag2, InternArbeidsforholdRefDto.nullRef(), 0));
 
         // Act
-        boolean slårUt = kjørUtleder();
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(100));
 
         // Assert
         assertThat(slårUt).isFalse();
     }
 
     @Test
-    public void skal_ikke_ut_når_arbeidsforhold_som_er_avsluttet_har_ref_etter_men_ikke_før_sluttdato() {
+    public void skal_slå_ut_når_arbeidsforhold_som_er_avsluttet_har_ref_etter_men_ikke_før_sluttdato() {
         // Arrange
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("333");
         Arbeidsgiver ag2 = Arbeidsgiver.virksomhet("444");
@@ -88,14 +88,47 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP.plusDays(31), null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000), lagBGAndel(ag2, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder();
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(100));
 
         // Assert
         assertThat(slårUt).isTrue();
     }
 
-    private boolean kjørUtleder() {
-        return AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter, REFERANSE, Optional.of(Tid.TIDENES_ENDE), grunnlagBuilder.build());
+    @Test
+    public void skal_slå_ut_når_det_finnes_periode_med_refusjon_etter_arbfor_før_behandlingstidspunkt() {
+        // Arrange
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet("333");
+        lagJobb(ag, InternArbeidsforholdRefDto.nullRef(), lagAnsettelse(STP.minusDays(100), STP));
+        lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
+
+        // Act
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(1));
+
+        // Assert
+        assertThat(slårUt).isTrue();
+    }
+
+    @Test
+    public void skal_ikk_slå_ut_når_det_finnes_periode_med_refusjon_etter_arbfor_etter_behandlingstidspunkt() {
+        // Arrange
+        Arbeidsgiver ag = Arbeidsgiver.virksomhet("333");
+        lagJobb(ag, InternArbeidsforholdRefDto.nullRef(), lagAnsettelse(STP.minusDays(100), STP));
+        lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
+
+        // Act
+        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.minusDays(1));
+
+        // Assert
+        assertThat(slårUt).isFalse();
+    }
+
+
+    private boolean kjørUtleder(LocalDate sisteUttak, LocalDate behandlingstidspunkt) {
+        return AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter,
+                REFERANSE,
+                Optional.of(sisteUttak),
+                Optional.of(behandlingstidspunkt),
+                grunnlagBuilder.build());
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBGAndel(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, int refusjonPrÅr) {

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class AksjonspunktutledertjenesteVurderRefusjonSVP implements Aksjonspunk
                     .orElse(Collections.emptyList());
             // Skal ikke gi aksjonspunkt enda, ønsker analyse på hvor mange slike saker vi har
             AksjonspunktutlederRefusjonEtterSluttdato.harRefusjonEtterSisteDatoIArbeidsforhold(yrkesaktiviteter,
-                    input.getKoblingReferanse().getKoblingUuid(), finnSisteDagMedUtbetaling(svpGrunnlag), periodisertMedRefusjonOgGradering);
+                    input.getKoblingReferanse().getKoblingUuid(), finnSisteDagMedUtbetaling(svpGrunnlag), svpGrunnlag.getBehandlingstidspunkt(), periodisertMedRefusjonOgGradering);
         }
         return aksjonspunkter;
     }

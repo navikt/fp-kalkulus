@@ -20,6 +20,14 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 import no.nav.vedtak.konfig.Tid;
 
+/**
+ * På grunn av ulik rapporteringspraksis i aareg kan vi ikke bare se om søker har refusjon i et arbeidsforhold han/hun ikke lenger er aktiv i,
+ * men vi må også se hvor langt unna denne datoen vi er på behandlingstidspunktet.
+ * Eks: Vi beregner en sak 01.03.2021, og et av arbeidsforholdene det er innvilget refusjon i avsluttes 01.05.2021.
+ * Det er innvilget refusjon etter denne datoen, som kan virke rart, men siden vi behandler søknaden så lenge før
+ * denne sluttdatoen kan det hende den flyttes før vi kommer dit.
+ * Ser derfor kun på perioder som ligger før behandlingstidspunktet.
+ */
 public final class AksjonspunktutlederRefusjonEtterSluttdato {
     private static final Logger log = LoggerFactory.getLogger(AksjonspunktutlederRefusjonEtterSluttdato.class);
 
@@ -30,9 +38,10 @@ public final class AksjonspunktutlederRefusjonEtterSluttdato {
     public static boolean harRefusjonEtterSisteDatoIArbeidsforhold(Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                                    UUID koblingUuid,
                                                                    Optional<LocalDate> sisteSøkteUttaksdag,
+                                                                   Optional<LocalDate> behandlingstidspunkt,
                                                                    BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
         // Trenger ikke sjekke om søker ikke er i jobb eller om det ikke finnes uttak
-        if (yrkesaktiviteter.isEmpty() || sisteSøkteUttaksdag.isEmpty()) {
+        if (yrkesaktiviteter.isEmpty() || sisteSøkteUttaksdag.isEmpty() || behandlingstidspunkt.isEmpty()) {
             return false;
         }
         LocalDateTimeline<RefusjonPeriode> allePerioder = RefusjonTidslinjeTjeneste.lagTidslinje(periodisertMedRefusjonOgGradering);
@@ -40,14 +49,23 @@ public final class AksjonspunktutlederRefusjonEtterSluttdato {
 
         List<RefusjonAndel> andelerSomMåSjekkes = perioderMedPotensieltUttak.toSegments()
                 .stream()
+                .filter(segment -> erTilbakeITidFraBehandlingstidspunktet(behandlingstidspunkt.get(), segment.getFom()))
                 .flatMap(segment -> segment.getValue().getAndeler()
                         .stream()
-                        .filter(andel -> andel.getRefusjon().compareTo(BigDecimal.ZERO) > 0
-                                && !erAnsattPåDato(andel, segment.getLocalDateInterval(), yrkesaktiviteter)))
+                        .filter(AksjonspunktutlederRefusjonEtterSluttdato::erInnvilgetRefusjon)
+                        .filter(andel ->!erAnsattPåDato(andel, segment.getLocalDateInterval(), yrkesaktiviteter)))
                 .collect(Collectors.toList());
 
         andelerSomMåSjekkes.forEach(andel -> log.info("FT-718273: behandlingUUID {} : Arbeidsgiver {} ", koblingUuid, andel.getArbeidsgiver().toString()));
         return !andelerSomMåSjekkes.isEmpty();
+    }
+
+    private static boolean erTilbakeITidFraBehandlingstidspunktet(LocalDate behandlingstidspunkt, LocalDate segmentFom) {
+        return segmentFom.isBefore(behandlingstidspunkt);
+    }
+
+    private static boolean erInnvilgetRefusjon(RefusjonAndel andel) {
+        return andel.getRefusjon().compareTo(BigDecimal.ZERO) > 0;
     }
 
     private static LocalDateTimeline<RefusjonPeriode> finnPeriodeFremTilSisteUttak(LocalDate sisteUttaksdato) {
