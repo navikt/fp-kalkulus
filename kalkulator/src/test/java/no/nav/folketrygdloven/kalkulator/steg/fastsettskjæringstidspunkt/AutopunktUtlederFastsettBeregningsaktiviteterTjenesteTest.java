@@ -8,19 +8,15 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
 
 public class AutopunktUtlederFastsettBeregningsaktiviteterTjenesteTest {
-
-    private KoblingReferanse ref = new KoblingReferanseMock();
 
     @Test
     public void skal_vente_på_meldekort_når_har_AAP_og_meldekort_uten_AAP_status() {

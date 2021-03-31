@@ -5,18 +5,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -24,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.BeregningsgrunnlagFRISINNDto;
 
 class MapBeregningsgrunnlagFRISINNTest {
 
@@ -37,7 +35,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @BeforeEach
     public void setup() {
         beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(LocalDate.now()).medGrunnbeløp(G).build();
-        periode = lagPeriode(beregningsgrunnlagEntitet, LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
+        periode = lagPeriode(LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
         opptjening = OppgittOpptjeningDtoBuilder.ny();
     }
 
@@ -50,7 +48,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         lagNæringOpptjening(april);
 
         // Act
-        BeregningsgrunnlagFRISINNDto bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
+        var bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(false, true)
         );
@@ -68,7 +66,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         lagFrilansOpptjening(april);
 
         // Act
-        BeregningsgrunnlagFRISINNDto bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
+        var bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
         );
@@ -83,13 +81,13 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         atAndel(2L, bruttoAT, periode);
         flAndel(1L, bruttoFL, periode);
         lagFrilansOpptjening(april);
 
         // Act
-        BeregningsgrunnlagFRISINNDto bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
+        var bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
         );
@@ -104,13 +102,13 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         atAndel(2L, bruttoAT, periode);
         flAndel(1L, bruttoFL, periode);
         lagFrilansOpptjening(april);
 
         // Act
-        BeregningsgrunnlagFRISINNDto bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
+        var bg = MapBeregningsgrunnlagFRISINN.map(beregningsgrunnlagEntitet,
                 Optional.of(opptjening.build()),
                 frisinn(true, false)
         );
@@ -125,10 +123,10 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         atAndel(2L, bruttoAT, periode);
-        BeregningsgrunnlagPrStatusOgAndel andel = snAndel(1L, bruttoSN, periode);
-        List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
+        @SuppressWarnings("unused")
+        var andel = snAndel(1L, bruttoSN, periode);
         lagNæringOpptjening(april);
 
         // Act
@@ -147,7 +145,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         snAndel(2L, bruttoSN, periode);
         flAndel(1L, bruttoFL, periode);
         lagFrilansOpptjening(april);
@@ -168,7 +166,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         flAndel(2L, bruttoFL, periode);
         snAndel(1L, bruttoSN, periode);
         lagNæringOpptjening(april);
@@ -190,7 +188,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         flAndel(2L, bruttoFL, periode);
         atAndel(3L, bruttoAT, periode);
         snAndel(1L, bruttoSN, periode);
@@ -213,7 +211,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         flAndel(2L, bruttoFL, periode);
         atAndel(3L, bruttoAT, periode);
         snAndel(1L, bruttoSN, periode);
@@ -236,7 +234,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(150000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         snAndel(2L, bruttoSN, periode);
         atAndel(3L, bruttoAT, periode);
         flAndel(1L, bruttoFL, periode);
@@ -276,10 +274,9 @@ class MapBeregningsgrunnlagFRISINNTest {
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         snAndel(2L, bruttoSN, periode);
         flAndel(1L, bruttoFL, periode);
-        List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
         lagFrilansOpptjening(april);
         lagNæringOpptjening(april);
 
@@ -300,11 +297,10 @@ class MapBeregningsgrunnlagFRISINNTest {
         BigDecimal bruttoAT = BigDecimal.valueOf(400000);
         BigDecimal bruttoSN = BigDecimal.valueOf(150000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         snAndel(2L, bruttoSN, periode);
         atAndel(3L, bruttoAT, periode);
         flAndel(1L, bruttoFL, periode);
-        List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
         lagFrilansOpptjening(april);
         lagNæringOpptjening(april);
 
@@ -319,15 +315,13 @@ class MapBeregningsgrunnlagFRISINNTest {
 
     }
 
-
-
     @Test
     public void søkt_fl_utenfor_bg_periode() {
         // Arrange
         Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         periode.medBeregningsgrunnlagPeriode(LocalDate.of(2020,3,1), LocalDate.of(2020,3,31));
-        BeregningsgrunnlagPeriode periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
+        var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         flAndel(1L, bruttoFL, periode);
         lagFrilansOpptjening(april);
 
@@ -342,26 +336,21 @@ class MapBeregningsgrunnlagFRISINNTest {
         assertThat(inntektstak).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
-
-    private List<BeregningsgrunnlagPrStatusOgAndel> hentAndeler() {
-        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-    }
-
     private void lagNæringOpptjening(Intervall periode) {
-        OppgittOpptjeningDtoBuilder.EgenNæringBuilder en = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny().medPeriode(periode)
+        var en = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny().medPeriode(periode)
                 .medBruttoInntekt(BigDecimal.ZERO);
         opptjening.leggTilEgneNæring(en);
     }
 
     private void lagFrilansOpptjening(Intervall periode) {
-        OppgittFrilansInntektDto inntekt = new OppgittFrilansInntektDto(periode, BigDecimal.ZERO);
-        OppgittFrilansDto oppgittFL = new OppgittFrilansDto(false, Collections.singletonList(inntekt));
+        var inntekt = new OppgittFrilansInntektDto(periode, BigDecimal.ZERO);
+        var oppgittFL = new OppgittFrilansDto(false, Collections.singletonList(inntekt));
         opptjening.leggTilFrilansOpplysninger(oppgittFL);
     }
 
     private FrisinnGrunnlag frisinn(boolean søkerFL, boolean søkerSN) {
         Intervall periode = Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE);
-        FrisinnPeriode frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
+        var frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
         return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode), FrisinnBehandlingType.NY_SØKNADSPERIODE);
     }
 
@@ -378,7 +367,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     }
 
     private BeregningsgrunnlagPrStatusOgAndel byggAndel(AktivitetStatus status, BeregningsgrunnlagPeriode periode, Long andelsnr, BigDecimal brutto) {
-        BeregningsgrunnlagPrStatusOgAndel.Builder builder = BeregningsgrunnlagPrStatusOgAndel.builder()
+        var builder = BeregningsgrunnlagPrStatusOgAndel.builder()
                 .medAndelsnr(andelsnr)
                 .medAktivitetStatus(status)
                 .medFastsattAvSaksbehandler(true)
@@ -394,7 +383,7 @@ class MapBeregningsgrunnlagFRISINNTest {
         return BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999"));
     }
 
-    private BeregningsgrunnlagPeriode.Builder lagPeriode(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, LocalDate start, LocalDate slutt) {
+    private BeregningsgrunnlagPeriode.Builder lagPeriode(LocalDate start, LocalDate slutt) {
         return BeregningsgrunnlagPeriode.builder()
                 .medBeregningsgrunnlagPeriode(start, slutt);
     }

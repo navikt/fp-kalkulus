@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 
 import java.math.BigDecimal;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

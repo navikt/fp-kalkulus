@@ -36,26 +36,22 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 
 public class FastsettInntektskategoriTjenesteTest {
 
-
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000);
-    private static final Intervall BEREGNINGSPERIODE_ATFL = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(3).withDayOfMonth(1),
-            SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()));
-
     private static final String ARBEIDSFORHOLD_ORGNR = "973152351";
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(AktivitetStatus aktivitetStatus) {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
+        var beregningsgrunnlag = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
             .medGrunnbeløp(GRUNNBELØP)
             .build();
         BeregningsgrunnlagAktivitetStatusDto.builder()
             .medAktivitetStatus(aktivitetStatus)
             .build(beregningsgrunnlag);
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        var periode = BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
-        BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
+        var bga = BGAndelArbeidsforholdDto
             .builder()
             .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
             .medArbeidsperiodeTom(LocalDate.now().plusYears(2))
@@ -69,7 +65,7 @@ public class FastsettInntektskategoriTjenesteTest {
 
 
     private InntektArbeidYtelseGrunnlagDto opprettOppgittOpptjening(List<VirksomhetType> næringtyper) {
-        OppgittOpptjeningDtoBuilder oob = OppgittOpptjeningDtoBuilder.ny();
+        var oob = OppgittOpptjeningDtoBuilder.ny();
         ArrayList<OppgittOpptjeningDtoBuilder.EgenNæringBuilder> egneNæringBuilders = new ArrayList<>();
         LocalDate fraOgMed = LocalDate.now().minusMonths(1);
         LocalDate tilOgMed = LocalDate.now().plusMonths(1);
@@ -93,21 +89,21 @@ public class FastsettInntektskategoriTjenesteTest {
     private InntektArbeidYtelseGrunnlagDto lagIAY(InntektDtoBuilder inntektBuilder) {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder.oppdatere(Optional.empty()).leggTilInntekt(inntektBuilder);
         InntektArbeidYtelseAggregatBuilder data = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER).leggTilAktørInntekt(aktørInntektBuilder);
-        InntektArbeidYtelseGrunnlagDto iay = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medData(data).build();
+        var iay = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medData(data).build();
         return iay;
     }
 
     @Test
     public void arbeidstakerSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
+        var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -116,14 +112,14 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void frilanserSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.FRILANSER);
+        var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.FRILANSER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
@@ -133,8 +129,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void dagpengerSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.DAGPENGER);
+        var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.DAGPENGER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -149,8 +145,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void arbeidsavklaringspengerSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
+        var grunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build();
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -166,8 +162,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNUtenFiskeJordbrukEllerDagmammaSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.ANNEN));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.ANNEN));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -182,8 +178,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedFiskeSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.FISKE));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.FISKE));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -198,8 +194,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedJorbrukSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.JORDBRUK_SKOGBRUK));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.JORDBRUK_SKOGBRUK));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -214,8 +210,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedDagmammaSkalTilRiktigInntektskategori() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.DAGMAMMA));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(Collections.singletonList(VirksomhetType.DAGMAMMA));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -230,8 +226,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedFiskeOgJordbrukSkalMappeTilInntektskategoriFisker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.FISKE, VirksomhetType.JORDBRUK_SKOGBRUK));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.FISKE, VirksomhetType.JORDBRUK_SKOGBRUK));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -246,8 +242,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedFiskeOgDagmammaSkalMappeTilInntektskategoriFisker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.DAGMAMMA, VirksomhetType.FISKE));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.DAGMAMMA, VirksomhetType.FISKE));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -262,8 +258,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedJordbrukOgDagmammaSkalMappeTilInntektskategoriJordbruker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.DAGMAMMA, VirksomhetType.JORDBRUK_SKOGBRUK));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.DAGMAMMA, VirksomhetType.JORDBRUK_SKOGBRUK));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -278,8 +274,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedJordbrukOgOrdinærNæringSkalMappeTilInntektskategoriJordbruker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.JORDBRUK_SKOGBRUK));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.JORDBRUK_SKOGBRUK));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -294,8 +290,8 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedDagmammaOgOrdinærNæringSkalMappeTilInntektskategoriJordbruker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.DAGMAMMA));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.DAGMAMMA));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
@@ -310,14 +306,14 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void SNMedFiskeOgOrdinærNæringSkalMappeTilInntektskategoriFisker() {
         // Arrange
-        final var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.FISKE));
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var grunnlag = opprettOppgittOpptjening(List.of(VirksomhetType.ANNEN, VirksomhetType.FISKE));
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.FISKER);
@@ -326,19 +322,19 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void skal_gi_arbeidstaker_inntektskategori_når_ingen_fisker_inntekt_hos_det_arbeidsforholdet() {
         // Arrange
-        InntektDtoBuilder inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
+        var inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
         inntektBuilder.leggTilInntektspost(lagInntektspost(1,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(2,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(3,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(4,SkatteOgAvgiftsregelType.NETTOLØNN));
-        InntektArbeidYtelseGrunnlagDto iay = lagIAY(inntektBuilder);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
+        var iay = lagIAY(inntektBuilder);
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -347,19 +343,19 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void skal_gi_arbeidstaker_inntektskategori_når_ingen_fisker_inntekt_siste_3_mnd() {
         // Arrange
-        InntektDtoBuilder inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
+        var inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
         inntektBuilder.leggTilInntektspost(lagInntektspost(1,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(2,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(3,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(4,SkatteOgAvgiftsregelType.SÆRSKILT_FRADRAG_FOR_SJØFOLK));
-        InntektArbeidYtelseGrunnlagDto iay = lagIAY(inntektBuilder);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
+        var iay = lagIAY(inntektBuilder);
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -368,19 +364,19 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void skal_gi_inntektskategori_sjømann_når_fisker_inntekt_siste_3_mnd() {
         // Arrange
-        InntektDtoBuilder inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
+        var inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR));
         inntektBuilder.leggTilInntektspost(lagInntektspost(1,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(2,SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK));
         inntektBuilder.leggTilInntektspost(lagInntektspost(3,SkatteOgAvgiftsregelType.NETTOLØNN));
         inntektBuilder.leggTilInntektspost(lagInntektspost(4,SkatteOgAvgiftsregelType.NETTOLØNN));
-        InntektArbeidYtelseGrunnlagDto iay = lagIAY(inntektBuilder);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
+        var iay = lagIAY(inntektBuilder);
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.SJØMANN);
@@ -389,19 +385,19 @@ public class FastsettInntektskategoriTjenesteTest {
     @Test
     public void skal_gi_arbeidstaker_inntektskategori_når_fisker_inntekt_siste_3_mnd_i_annet_orgnr() {
         // Arrange
-        InntektDtoBuilder inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet("2333"));
+        var inntektBuilder = InntektDtoBuilder.oppdatere(Optional.empty()).medInntektsKilde(InntektskildeType.INNTEKT_BEREGNING).medArbeidsgiver(Arbeidsgiver.virksomhet("2333"));
         inntektBuilder.leggTilInntektspost(lagInntektspost(1,SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK));
         inntektBuilder.leggTilInntektspost(lagInntektspost(2,SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK));
         inntektBuilder.leggTilInntektspost(lagInntektspost(3,SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK));
         inntektBuilder.leggTilInntektspost(lagInntektspost(4,SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK));
-        InntektArbeidYtelseGrunnlagDto iay = lagIAY(inntektBuilder);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
+        var iay = lagIAY(inntektBuilder);
+        var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -409,28 +405,28 @@ public class FastsettInntektskategoriTjenesteTest {
 
     @Test
     public void skalReturnereFiskerSomHøgastPrioriterteInntektskategori() {
-        List<Inntektskategori> inntektskategoriList = List.of(Inntektskategori.FISKER, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA, Inntektskategori.JORDBRUKER);
+        var inntektskategoriList = List.of(Inntektskategori.FISKER, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA, Inntektskategori.JORDBRUKER);
         Optional<Inntektskategori> prioritert = FastsettInntektskategoriTjeneste.finnHøyestPrioriterteInntektskategoriForSN(inntektskategoriList);
         assertThat(prioritert.get()).isEqualTo(Inntektskategori.FISKER);
     }
 
     @Test
     public void skalReturnereJordbrukerSomHøgastPrioriterteInntektskategori() {
-        List<Inntektskategori> inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA, Inntektskategori.JORDBRUKER);
+        var inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA, Inntektskategori.JORDBRUKER);
         Optional<Inntektskategori> prioritert = FastsettInntektskategoriTjeneste.finnHøyestPrioriterteInntektskategoriForSN(inntektskategoriList);
         assertThat(prioritert.get()).isEqualTo(Inntektskategori.JORDBRUKER);
     }
 
     @Test
     public void skalReturnereDagmammaSomHøgastPrioriterteInntektskategori() {
-        List<Inntektskategori> inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA);
+        var inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE, Inntektskategori.DAGMAMMA);
         Optional<Inntektskategori> prioritert = FastsettInntektskategoriTjeneste.finnHøyestPrioriterteInntektskategoriForSN(inntektskategoriList);
         assertThat(prioritert.get()).isEqualTo(Inntektskategori.DAGMAMMA);
     }
 
     @Test
     public void skalReturnereSelvstendigNæringsdrivendeSomHøgastPrioriterteInntektskategori() {
-        List<Inntektskategori> inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var inntektskategoriList = List.of(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         Optional<Inntektskategori> prioritert = FastsettInntektskategoriTjeneste.finnHøyestPrioriterteInntektskategoriForSN(inntektskategoriList);
         assertThat(prioritert.get()).isEqualTo(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
     }

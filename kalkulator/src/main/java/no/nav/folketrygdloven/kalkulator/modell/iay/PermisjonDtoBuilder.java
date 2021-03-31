@@ -1,8 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 

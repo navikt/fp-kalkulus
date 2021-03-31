@@ -23,6 +23,7 @@ public class FordelBeregningsgrunnlagTjenesteImpl implements FordelBeregningsgru
         this.omfordelTjeneste = omfordelTjeneste;
     }
 
+    @Override
     public BeregningsgrunnlagRegelResultat omfordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var resultatFraOmfordeling = omfordelTjeneste.omfordel(input, input.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatFraOmfordeling.getBeregningsgrunnlag(),

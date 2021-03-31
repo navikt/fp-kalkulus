@@ -11,9 +11,6 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -22,11 +19,11 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningIAYTestUtil;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.utils.BeregningsgrunnlagTestUtil;
 
 public class KontrollerFaktaBeregningFrilanserTjenesteImplTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_OPPTJENING);
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
     @BeforeEach
@@ -94,7 +91,4 @@ public class KontrollerFaktaBeregningFrilanserTjenesteImplTest {
         assertThat(brukerErArbeidstakerOgFrilanserISammeOrganisasjon).hasSize(1);
     }
 
-    private static KoblingReferanse lagReferanseMedStp(KoblingReferanse koblingReferanse) {
-        return koblingReferanse.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING);
-    }
 }

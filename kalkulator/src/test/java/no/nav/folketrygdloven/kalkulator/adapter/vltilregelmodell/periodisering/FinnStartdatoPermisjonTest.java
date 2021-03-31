@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
@@ -8,15 +7,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 
 public class FinnStartdatoPermisjonTest {
@@ -75,25 +69,4 @@ public class FinnStartdatoPermisjonTest {
         assertThat(startDato).isEqualTo(ansettelsesDato);
     }
 
-    private YrkesaktivitetDto lagYrkesaktivitet(LocalDate ansettelsesDato) {
-        YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty());
-        AktivitetsAvtaleDtoBuilder aktivitetsavtaleBuilder = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder();
-
-        Intervall periode = Intervall.fraOgMedTilOgMed(ansettelsesDato, TIDENES_ENDE);
-        lagAktivitetsavtale(aktivitetsavtaleBuilder, periode);
-
-        AktivitetsAvtaleDtoBuilder ansettelsesPeriode = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder(periode, true);
-
-        return yrkesaktivitetBuilder.medArbeidsgiver(ARBEIDSGIVER)
-            .medArbeidsforholdId(ref)
-            .leggTilAktivitetsAvtale(aktivitetsavtaleBuilder)
-            .leggTilAktivitetsAvtale(ansettelsesPeriode)
-            .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .build();
-    }
-
-    private void lagAktivitetsavtale(AktivitetsAvtaleDtoBuilder aktivitetsavtaleBuilder, Intervall periode) {
-        aktivitetsavtaleBuilder.medPeriode(periode)
-            .medErAnsettelsesPeriode(false);
-    }
 }

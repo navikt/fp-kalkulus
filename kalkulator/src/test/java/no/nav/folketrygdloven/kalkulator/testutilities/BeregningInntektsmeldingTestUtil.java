@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.testutilities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

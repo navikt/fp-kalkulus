@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.uttak;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;

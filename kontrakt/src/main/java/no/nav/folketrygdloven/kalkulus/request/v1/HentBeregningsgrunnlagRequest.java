@@ -79,6 +79,7 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
         return inkluderRegelSporing;
     }
     
+    @Override
     public String getSaksnummer() {
         return saksnummer;
     }

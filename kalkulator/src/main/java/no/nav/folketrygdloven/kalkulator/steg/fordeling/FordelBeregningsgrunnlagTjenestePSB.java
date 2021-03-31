@@ -5,7 +5,6 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.TilkommetInntektPeriodeTjeneste;
@@ -30,6 +29,7 @@ public class FordelBeregningsgrunnlagTjenestePSB implements FordelBeregningsgrun
         this.tilkommetInntektAktivert = tilkommetInntektAktivert;
     }
 
+    @Override
     public BeregningsgrunnlagRegelResultat omfordelBeregningsgrunnlag(BeregningsgrunnlagInput input) {
         var resultatFraOmfordeling = omfordelTjeneste.omfordel(input, input.getBeregningsgrunnlag());
         if (!tilkommetInntektAktivert) {

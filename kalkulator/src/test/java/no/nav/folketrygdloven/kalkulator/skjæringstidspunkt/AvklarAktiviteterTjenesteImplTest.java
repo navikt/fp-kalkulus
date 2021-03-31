@@ -8,16 +8,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -35,22 +30,12 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.vedtak.util.Tuple;
 
 
 public class AvklarAktiviteterTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.of(2018, 9, 30);
     private static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet("900050001");
-    private static final AktørId AKTØR_ID = AktørId.dummy();
-    private static final long BEHANDLING_ID = 4234034L;
-
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
-
-    @BeforeEach
-    public void setUp() {
-        koblingReferanse = nyBehandling();
-    }
 
     @Test
     public void skal_returnere_false_om_ingen_aktiviteter() {
@@ -281,17 +266,6 @@ public class AvklarAktiviteterTjenesteImplTest {
 
     private Tuple<Periode, Integer> lagMeldekort(LocalDate tom, int utbetalingsgrad) {
         return new Tuple<>(Periode.of(tom.minusDays(13), tom), utbetalingsgrad);
-    }
-
-    private KoblingReferanse nyBehandling() {
-        return KoblingReferanse.fra(
-            FagsakYtelseType.FORELDREPENGER,
-                AKTØR_ID,
-            BEHANDLING_ID,
-            UUID.randomUUID(),
-            Optional.empty(),
-            Skjæringstidspunkt.builder().medFørsteUttaksdato(SKJÆRINGSTIDSPUNKT_BEREGNING).build()
-        );
     }
 
     private Optional<AktørYtelseDto> getAktørYtelseFraRegister(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

@@ -35,7 +35,7 @@ class MapInntektstakFRISINNTest {
     @BeforeEach
     public void setup() {
         beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(LocalDate.now()).build();
-        periode = lagPeriode(beregningsgrunnlagEntitet, LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
+        periode = lagPeriode(LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
         opptjening = OppgittOpptjeningDtoBuilder.ny();
     }
 
@@ -457,7 +457,7 @@ class MapInntektstakFRISINNTest {
         return BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999"));
     }
 
-    private BeregningsgrunnlagPeriode.Builder lagPeriode(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, LocalDate start, LocalDate slutt) {
+    private BeregningsgrunnlagPeriode.Builder lagPeriode(LocalDate start, LocalDate slutt) {
         return BeregningsgrunnlagPeriode.builder()
                 .medBeregningsgrunnlagPeriode(start, slutt);
     }

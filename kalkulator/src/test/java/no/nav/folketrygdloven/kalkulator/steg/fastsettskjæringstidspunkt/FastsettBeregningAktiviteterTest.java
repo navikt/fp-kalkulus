@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -28,11 +26,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
-
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegelK9;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
@@ -53,7 +48,7 @@ class FastsettBeregningAktiviteterTest {
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();
 
     private FastsettBeregningAktiviteter fastsettBeregningAktiviteter = new FastsettBeregningAktiviteter(
-            new UnitTestLookupInstanceImpl(new MapBeregningAktiviteterFraVLTilRegelK9())
+            new UnitTestLookupInstanceImpl<>(new MapBeregningAktiviteterFraVLTilRegelK9())
     );
 
     @Test

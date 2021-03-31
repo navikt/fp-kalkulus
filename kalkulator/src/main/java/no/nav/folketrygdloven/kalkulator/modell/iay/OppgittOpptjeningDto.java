@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
