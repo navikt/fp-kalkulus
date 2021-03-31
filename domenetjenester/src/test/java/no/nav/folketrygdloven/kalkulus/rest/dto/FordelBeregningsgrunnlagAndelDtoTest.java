@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest.dto;
 
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Collections;

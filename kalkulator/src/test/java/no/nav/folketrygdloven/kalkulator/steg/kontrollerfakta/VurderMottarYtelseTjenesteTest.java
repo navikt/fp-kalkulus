@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

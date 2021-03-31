@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
