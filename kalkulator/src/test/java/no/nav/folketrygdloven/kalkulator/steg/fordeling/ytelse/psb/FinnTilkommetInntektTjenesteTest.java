@@ -34,7 +34,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 class FinnTilkommetInntektTjenesteTest {
 
-    public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
+    public static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusMonths(1).withDayOfMonth(10);
     public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet("31564237482");
     public static final Arbeidsgiver ARBEIDSGIVER2 = Arbeidsgiver.virksomhet("09347858734");
     private final FinnTilkommetInntektTjeneste tjeneste = new FinnTilkommetInntektTjeneste();
