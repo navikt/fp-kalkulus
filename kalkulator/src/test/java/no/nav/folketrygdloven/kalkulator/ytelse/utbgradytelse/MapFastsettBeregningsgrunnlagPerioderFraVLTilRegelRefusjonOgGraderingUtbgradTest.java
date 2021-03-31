@@ -133,9 +133,9 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
         PeriodeModell map = mapper.map(input, beregningsgrunnlagDto);
 
         // Assert
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger()).hasSize(1);
         ArbeidsforholdOgInntektsmelding arbeidsforholdOgInntektsmelding = map.getArbeidsforholdOgInntektsmeldinger().get(0);
-        assertThat(arbeidsforholdOgInntektsmelding.getRefusjoner().size()).isEqualTo(2);
+        assertThat(arbeidsforholdOgInntektsmelding.getRefusjoner()).hasSize(2);
         Refusjonskrav refusjonskrav = arbeidsforholdOgInntektsmelding.getRefusjoner().get(0);
         assertThat(refusjonskrav.getPeriode().getFom()).isEqualTo(stp);
 

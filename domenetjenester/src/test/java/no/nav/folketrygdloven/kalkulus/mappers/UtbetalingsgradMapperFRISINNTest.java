@@ -53,10 +53,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 1);
     }
@@ -84,10 +84,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 100);
     }
@@ -109,10 +109,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 50);
     }
@@ -136,10 +136,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(halveApril, periode1, 1);
     }
@@ -164,10 +164,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(periode, periode1, 0);
     }
@@ -190,10 +190,10 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(1);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 50);
     }
@@ -220,15 +220,15 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(1);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
 
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto2 = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto2.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(0);
+        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad()).isEmpty();
 
         assertPeriode(april, periode1, 50);
     }
@@ -256,16 +256,16 @@ class UtbetalingsgradMapperFRISINNTest {
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader = UtbetalingsgradMapperFRISINN.map(iayGrunnlag, bgGrunnlagEntitet, frisinnPerioder);
 
         // Assert
-        assertThat(utbetalingsgrader.size()).isEqualTo(2);
+        assertThat(utbetalingsgrader).hasSize(2);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = utbetalingsgrader.get(1);
         assertThat(utbetalingsgradPrAktivitetDto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.FRILANS);
-        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode1 = utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().get(0);
         assertPeriode(april, periode1, 50);
 
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto2 = utbetalingsgrader.get(0);
         assertThat(utbetalingsgradPrAktivitetDto2.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()).isEqualTo(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().size()).isEqualTo(1);
+        assertThat(utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad()).hasSize(1);
         PeriodeMedUtbetalingsgradDto periode2 = utbetalingsgradPrAktivitetDto2.getPeriodeMedUtbetalingsgrad().get(0);
 
         assertPeriode(halveApril, periode2, 0);

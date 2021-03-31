@@ -55,7 +55,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
-        assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
+        assertThat(map.getPeriodeinntekter()).hasSize(1);
     }
 
 
@@ -96,7 +96,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
-        assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
+        assertThat(map.getPeriodeinntekter()).hasSize(1);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class MapInntektsgrunnlagVLTilRegelTest {
         // Act
         Inntektsgrunnlag map = mapInntektsgrunnlagVLTilRegel.map(input, SKJÆRINGSTIDSPUNKT_BEREGNING);
 
-        assertThat(map.getPeriodeinntekter().size()).isEqualTo(1);
+        assertThat(map.getPeriodeinntekter()).hasSize(1);
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIAYGrunnlagMedArbeidIPeriode(Intervall periode,

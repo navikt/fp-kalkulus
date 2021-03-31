@@ -93,7 +93,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         vurderRefusjonTilfelleDtoTjeneste.lagDto(input, faktaOmBeregningDto);
 
         // Assert
-        assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().size()).isEqualTo(1);
+        assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe()).hasSize(1);
         assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().iterator().next().getArbeidsgiverId()).isEqualTo(arbeidsgiver.getIdentifikator());
         assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().iterator().next().getArbeidsgiverVisningsnavn()).isEqualTo(arbeidsgiverNavnMap.get(ORGNR));
 

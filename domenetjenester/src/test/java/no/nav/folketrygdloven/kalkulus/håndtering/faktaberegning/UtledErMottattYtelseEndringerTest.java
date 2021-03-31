@@ -30,7 +30,7 @@ class UtledErMottattYtelseEndringerTest {
         List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.empty());
 
         // Assert
-        assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
+        assertThat(erMottattYtelseEndringList).hasSize(1);
         assertThat(erMottattYtelseEndringList.get(0).getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER);
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getFraVerdi()).isNull();
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getTilVerdi()).isTrue();
@@ -53,7 +53,7 @@ class UtledErMottattYtelseEndringerTest {
         List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
-        assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
+        assertThat(erMottattYtelseEndringList).hasSize(1);
         assertThat(erMottattYtelseEndringList.get(0).getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.FRILANSER);
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getFraVerdi()).isFalse();
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getTilVerdi()).isTrue();
@@ -75,7 +75,7 @@ class UtledErMottattYtelseEndringerTest {
         List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
-        assertThat(erMottattYtelseEndringList.size()).isEqualTo(0);
+        assertThat(erMottattYtelseEndringList).isEmpty();
     }
 
     @Test
@@ -89,7 +89,7 @@ class UtledErMottattYtelseEndringerTest {
         List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.empty());
 
         // Assert
-        assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
+        assertThat(erMottattYtelseEndringList).hasSize(1);
         assertThat(erMottattYtelseEndringList.get(0).getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(erMottattYtelseEndringList.get(0).getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getFraVerdi()).isNull();
@@ -111,7 +111,7 @@ class UtledErMottattYtelseEndringerTest {
         List<ErMottattYtelseEndring> erMottattYtelseEndringList = UtledErMottattYtelseEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
-        assertThat(erMottattYtelseEndringList.size()).isEqualTo(1);
+        assertThat(erMottattYtelseEndringList).hasSize(1);
         assertThat(erMottattYtelseEndringList.get(0).getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(erMottattYtelseEndringList.get(0).getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(erMottattYtelseEndringList.get(0).getErMottattYtelseEndring().getFraVerdi()).isFalse();

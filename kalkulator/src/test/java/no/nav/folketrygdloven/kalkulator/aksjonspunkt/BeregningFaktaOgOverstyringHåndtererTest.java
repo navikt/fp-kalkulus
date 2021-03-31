@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,10 +65,10 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
 
         // Assert
         Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
-        AssertionsForClassTypes.assertThat(nyttBg).isPresent();
+        assertThat(nyttBg).isPresent();
         assertThat(nyttBg.get().isOverstyrt()).isTrue();
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
-        AssertionsForClassTypes.assertThat(perioder.size()).isEqualTo(1);
+        assertThat(perioder).hasSize(1);
         BeregningsgrunnlagPeriodeDto p1 = perioder.get(0);
         assertThat(p1.getBeregningsgrunnlagPeriodeFom()).isEqualTo(STP);
         validerAndeler(fastsattBeløp, p1);
@@ -95,10 +94,10 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
 
         // Assert
         Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
-        AssertionsForClassTypes.assertThat(nyttBg).isPresent();
+        assertThat(nyttBg).isPresent();
         assertThat(nyttBg.get().isOverstyrt()).isTrue();
         List<BeregningsgrunnlagPeriodeDto> perioder = nyttBg.get().getBeregningsgrunnlagPerioder();
-        AssertionsForClassTypes.assertThat(perioder.size()).isEqualTo(2);
+        assertThat(perioder).hasSize(2);
         BeregningsgrunnlagPeriodeDto p1 = perioder.get(0);
         assertThat(p1.getBeregningsgrunnlagPeriodeFom()).isEqualTo(STP);
         validerAndeler(fastsattBeløp1, p1);
@@ -124,7 +123,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     }
 
     private void validerAndeler(int fastsattBeløp, BeregningsgrunnlagPeriodeDto p1) {
-        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().size()).isEqualTo(1);
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getBeregnetPrÅr().intValue()).isEqualTo(fastsattBeløp * 12);
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFastsattAvSaksbehandler()).isTrue();
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);

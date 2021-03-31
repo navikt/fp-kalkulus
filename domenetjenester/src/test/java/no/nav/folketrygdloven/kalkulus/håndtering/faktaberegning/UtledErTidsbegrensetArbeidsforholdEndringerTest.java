@@ -33,7 +33,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
         List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(fakta, Optional.of(fakta2));
 
         // Assert
-        assertThat(erTidsbegrensetArbeidsforholdEndringer.size()).isEqualTo(1);
+        assertThat(erTidsbegrensetArbeidsforholdEndringer).hasSize(1);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getFraVerdi()).isFalse();
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getTilVerdi()).isTrue();
@@ -50,7 +50,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
         List<ErTidsbegrensetArbeidsforholdEndring> erTidsbegrensetArbeidsforholdEndringer = UtledErTidsbegrensetArbeidsforholdEndringer.utled(fakta, Optional.empty());
 
         // Assert
-        assertThat(erTidsbegrensetArbeidsforholdEndringer.size()).isEqualTo(1);
+        assertThat(erTidsbegrensetArbeidsforholdEndringer).hasSize(1);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getArbeidsgiver().getIdent()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getFraVerdi()).isNull();
         assertThat(erTidsbegrensetArbeidsforholdEndringer.get(0).getErTidsbegrensetArbeidsforholdEndring().getTilVerdi()).isTrue();

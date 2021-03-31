@@ -59,7 +59,7 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
 
         // Assert
         var beregningsModell = aktivitetStatusModell.getAktivePerioder();
-        assertThat(beregningsModell.size()).isEqualTo(1);
+        assertThat(beregningsModell).hasSize(1);
         var aktivitet = beregningsModell.get(0);
         assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
@@ -77,7 +77,7 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
 
         // Assert
         var beregningsModell = aktivitetStatusModell.getAktivePerioder();
-        assertThat(beregningsModell.size()).isEqualTo(1);
+        assertThat(beregningsModell).hasSize(1);
         var aktivitet = beregningsModell.get(0);
         assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isEqualTo(ARBEIDSFORHOLD_ID.getReferanse());
@@ -98,7 +98,7 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
 
         // Assert
         var beregningsModell = aktivitetStatusModell.getAktivePerioder();
-        assertThat(beregningsModell.size()).isEqualTo(1);
+        assertThat(beregningsModell).hasSize(1);
         var aktivitet = beregningsModell.get(0);
         assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
@@ -119,7 +119,7 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
 
         // Assert
         var beregningsModell = aktivitetStatusModell.getAktivePerioder();
-        assertThat(beregningsModell.size()).isEqualTo(1);
+        assertThat(beregningsModell).hasSize(1);
         var aktivitet = beregningsModell.get(0);
         assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
         assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
@@ -140,7 +140,7 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
 
         // Assert
         var beregningsModell = aktivitetStatusModell.getAktivePerioder();
-        assertThat(beregningsModell.size()).isEqualTo(0);
+        assertThat(beregningsModell).isEmpty();
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {

@@ -123,10 +123,10 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = fordelBeregningsgrunnlagTjeneste.omfordelBeregningsgrunnlag(input.medBeregningsgrunnlagGrunnlag(periodisertGrunnlag)).getBeregningsgrunnlag();
 
         // Assert
-        assertThat(nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().size()).isEqualTo(1);
+        assertThat(nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto periode = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
-        assertThat(andeler.size()).isEqualTo(3);
+        assertThat(andeler).hasSize(3);
         BeregningsgrunnlagPrStatusOgAndelDto andel1 = andeler.stream().filter(a -> a.getBgAndelArbeidsforhold().get().getArbeidsgiver().getIdentifikator().equals(ORGNR1)).findFirst().get();
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = andeler.stream().filter(a -> a.getBgAndelArbeidsforhold().get().getArbeidsgiver().getIdentifikator().equals(ORGNR2)).findFirst().get();
         BeregningsgrunnlagPrStatusOgAndelDto andel3 = andeler.stream().filter(a -> a.getBgAndelArbeidsforhold().get().getArbeidsgiver().getIdentifikator().equals(ORGNR3)).findFirst().get();

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -92,7 +91,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         assertThat(nyttGrunnlag.getRefusjonOverstyringer()).isPresent();
         BeregningRefusjonOverstyringerDto beregningRefusjonOverstyringer = nyttGrunnlag.getRefusjonOverstyringer().get();
         List<BeregningRefusjonOverstyringDto> overstyringer = beregningRefusjonOverstyringer.getRefusjonOverstyringer();
-        AssertionsForClassTypes.assertThat(overstyringer.size()).isEqualTo(1);
+        assertThat(overstyringer).hasSize(1);
         assertThat(overstyringer.get(0).getArbeidsgiver()).isEqualTo(VIRKSOMHET);
         assertThat(overstyringer.get(0).getFørsteMuligeRefusjonFom().orElse(null)).isEqualTo(førsteMuligeDato);
     }

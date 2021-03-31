@@ -63,7 +63,7 @@ class FastsettBeregningAktiviteterTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(1);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).hasSize(1);
     }
 
     @Test
@@ -78,7 +78,7 @@ class FastsettBeregningAktiviteterTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(0);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).isEmpty();
     }
 
     @Test
@@ -93,7 +93,7 @@ class FastsettBeregningAktiviteterTest {
         BeregningAktivitetAggregatDto beregningAktivitetAggregatDto = fastsettBeregningAktiviteter.fastsettAktiviteter(input);
 
         // Assert
-        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter().size()).isEqualTo(1);
+        assertThat(beregningAktivitetAggregatDto.getBeregningAktiviteter()).hasSize(1);
     }
 
     private FastsettBeregningsaktiviteterInput lagFastsettBeregningsaktiviteterInput(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {

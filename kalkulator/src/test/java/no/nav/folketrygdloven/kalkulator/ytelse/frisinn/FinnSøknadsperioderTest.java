@@ -23,7 +23,7 @@ class FinnSøknadsperioderTest {
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 
-        assertThat(søknadsperioder.size()).isEqualTo(1);
+        assertThat(søknadsperioder).hasSize(1);
         assertThat(søknadsperioder.get(0).getFomDato()).isEqualTo(tidligsteFom);
         assertThat(søknadsperioder.get(0).getTomDato()).isEqualTo(sisteTom);
     }
@@ -39,7 +39,7 @@ class FinnSøknadsperioderTest {
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 
-        assertThat(søknadsperioder.size()).isEqualTo(1);
+        assertThat(søknadsperioder).hasSize(1);
         assertThat(søknadsperioder.get(0).getFomDato()).isEqualTo(tidligsteFom);
         assertThat(søknadsperioder.get(0).getTomDato()).isEqualTo(sisteTom);
     }
@@ -55,7 +55,7 @@ class FinnSøknadsperioderTest {
 
         List<Intervall> søknadsperioder = FinnSøknadsperioder.finnSøknadsperioder(frisinnGrunnlag);
 
-        assertThat(søknadsperioder.size()).isEqualTo(2);
+        assertThat(søknadsperioder).hasSize(2);
         assertThat(søknadsperioder.get(0).getFomDato()).isEqualTo(LocalDate.of(2020, 4, 4));
         assertThat(søknadsperioder.get(0).getTomDato()).isEqualTo(LocalDate.of(2020, 4, 30));
         assertThat(søknadsperioder.get(1).getFomDato()).isEqualTo(LocalDate.of(2020, 5, 4));

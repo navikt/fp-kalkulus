@@ -77,8 +77,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         PeriodeModell map = mapper.map(input, bg);
 
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().size()).isEqualTo(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger()).hasSize(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner()).hasSize(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isEqualTo(1);
     }
@@ -109,8 +109,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         PeriodeModell map = mapper.map(input, bg);
 
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().size()).isEqualTo(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger()).hasSize(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner()).hasSize(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(skjæringstidspunktOpptjening);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getMånedsbeløp()).isEqualTo(REFUSJON);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isEqualTo(1L);
@@ -140,8 +140,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         PeriodeModell map = mapper.map(input, bg);
 
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(1);
-        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().size()).isEqualTo(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger()).hasSize(1);
+        assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner()).hasSize(1);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getRefusjoner().get(0).getFom()).isEqualTo(skjæringstidspunktOpptjening);
         assertThat(map.getArbeidsforholdOgInntektsmeldinger().get(0).getAndelsnr()).isNull();
     }

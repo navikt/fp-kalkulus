@@ -114,7 +114,7 @@ public class VurderLønnsendringOppdatererTest {
 
         // Assert
         assertThat(faktaAggregat).isPresent();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold().size()).isEqualTo(1);
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold()).hasSize(1);
         assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperioden()).isTrue();
         assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
     }
@@ -133,7 +133,7 @@ public class VurderLønnsendringOppdatererTest {
 
         // Assert
         assertThat(faktaAggregat).isPresent();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold().size()).isEqualTo(1);
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold()).hasSize(1);
         assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidstakerAndel).get().getHarLønnsendringIBeregningsperioden()).isFalse();
         assertThat(frilansAndel.getBgAndelArbeidsforhold()).isNotPresent();
     }

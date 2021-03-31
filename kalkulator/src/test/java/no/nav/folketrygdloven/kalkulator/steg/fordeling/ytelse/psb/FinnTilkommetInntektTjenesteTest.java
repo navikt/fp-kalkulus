@@ -47,7 +47,7 @@ class FinnTilkommetInntektTjenesteTest {
 
         List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
 
-        assertThat(aktivitetDtos.size()).isEqualTo(0);
+        assertThat(aktivitetDtos).isEmpty();
     }
 
     @Test
@@ -64,8 +64,8 @@ class FinnTilkommetInntektTjenesteTest {
 
         List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
 
-        assertThat(aktivitetDtos.size()).isEqualTo(1);
-        assertThat(aktivitetDtos.get(0).getInntekter().size()).isEqualTo(1);
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
         assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
     }
 
@@ -83,8 +83,8 @@ class FinnTilkommetInntektTjenesteTest {
 
         List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
 
-        assertThat(aktivitetDtos.size()).isEqualTo(1);
-        assertThat(aktivitetDtos.get(0).getInntekter().size()).isEqualTo(1);
+        assertThat(aktivitetDtos).hasSize(1);
+        assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
         assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
     }
 
@@ -102,7 +102,7 @@ class FinnTilkommetInntektTjenesteTest {
 
         List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
 
-        assertThat(aktivitetDtos.size()).isEqualTo(0);
+        assertThat(aktivitetDtos).isEmpty();
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIayGrunnlag(Optional<YrkesaktivitetDtoBuilder> tilkommetAktivitet, Optional<InntektDtoBuilder> tilkommetInntekt) {

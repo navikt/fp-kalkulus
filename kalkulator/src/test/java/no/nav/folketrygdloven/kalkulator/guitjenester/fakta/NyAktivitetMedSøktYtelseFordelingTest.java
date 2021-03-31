@@ -49,7 +49,7 @@ class NyAktivitetMedSøktYtelseFordelingTest {
         List<NyPeriodeDto> nyPeriodeDtos = NyAktivitetMedSøktYtelseFordeling.lagPerioderForNyAktivitetMedSøktYtelse(svangerskapspengerGrunnlag, FordelingTilfelle.NY_AKTIVITET, andel, new FordelBeregningsgrunnlagArbeidsforholdDto());
 
         // Assert
-        assertThat(nyPeriodeDtos.size()).isEqualTo(1);
+        assertThat(nyPeriodeDtos).hasSize(1);
         assertThat(nyPeriodeDtos.get(0).getFom()).isEqualTo(fom);
         assertThat(nyPeriodeDtos.get(0).getTom()).isEqualTo(tom);
         assertThat(nyPeriodeDtos.get(0).isErSøktYtelse()).isEqualTo(true);
@@ -75,7 +75,7 @@ class NyAktivitetMedSøktYtelseFordelingTest {
         List<NyPeriodeDto> nyPeriodeDtos = NyAktivitetMedSøktYtelseFordeling.lagPerioderForNyAktivitetMedSøktYtelse(svangerskapspengerGrunnlag, FordelingTilfelle.NY_AKTIVITET, andel, new FordelBeregningsgrunnlagArbeidsforholdDto());
 
         // Assert
-        assertThat(nyPeriodeDtos.size()).isEqualTo(1);
+        assertThat(nyPeriodeDtos).hasSize(1);
         assertThat(nyPeriodeDtos.get(0).getFom()).isEqualTo(fom);
         assertThat(nyPeriodeDtos.get(0).getTom()).isEqualTo(tom);
         assertThat(nyPeriodeDtos.get(0).isErSøktYtelse()).isEqualTo(true);

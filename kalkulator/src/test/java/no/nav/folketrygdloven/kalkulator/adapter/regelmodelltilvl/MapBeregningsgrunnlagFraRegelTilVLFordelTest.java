@@ -40,7 +40,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         new MapBeregningsgrunnlagFraRegelTilVLFordel().mapAndelMedArbeidsforhold(periode, atflStatus);
 
         // Assert
-        assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList().size()).isEqualTo(2);
+        assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         BeregningsgrunnlagPrStatusOgAndelDto andel1 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(andel1.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
         assertThat(andel1.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER);

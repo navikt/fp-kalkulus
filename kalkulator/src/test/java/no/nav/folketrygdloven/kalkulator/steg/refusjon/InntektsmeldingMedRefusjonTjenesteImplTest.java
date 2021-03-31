@@ -79,7 +79,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 input.getRefusjonskravDatoer());
 
         // Assert
-        assertThat(arbeidsgivereSomHarSøktForSent.size()).isEqualTo(1);
+        assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
         assertThat(arbeidsgivereSomHarSøktForSent.iterator().next()).isEqualTo(arbeidsgiver);
     }
 
@@ -110,7 +110,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
             input.getRefusjonskravDatoer());
 
         // Assert
-        assertThat(arbeidsgivereSomHarSøktForSent.size()).isEqualTo(1);
+        assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
         assertThat(arbeidsgivereSomHarSøktForSent.iterator().next()).isEqualTo(arbeidsgiver);
     }
 
@@ -137,7 +137,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
             );
 
         // Assert
-        assertThat(arbeidsgivereSomHarSøktForSent.size()).isEqualTo(0);
+        assertThat(arbeidsgivereSomHarSøktForSent).isEmpty();
     }
 
     @Test
@@ -168,7 +168,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         );
 
         // Assert
-        assertThat(arbeidsgivereSomHarSøktForSent.size()).isEqualTo(0);
+        assertThat(arbeidsgivereSomHarSøktForSent).isEmpty();
     }
 
 

@@ -1,12 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.aksjonspunkt;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.assertj.core.api.AssertionsForClassTypes;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -93,7 +95,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
+        assertThat(map.get(fordeltAndel)).isNull();
     }
 
 
@@ -108,7 +110,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
     }
 
     @Test
@@ -128,7 +130,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
+        assertThat(map.get(fordeltAndel)).isNull();
     }
 
     @Test
@@ -144,7 +146,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
     }
 
     @Test
@@ -160,7 +162,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
     }
 
     @Test
@@ -175,7 +177,7 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel)).isNull();
+        assertThat(map.get(fordeltAndel)).isNull();
     }
 
     @Test
@@ -194,7 +196,7 @@ public class FordelRefusjonTjenesteTest {
 
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
     }
 
     @Test
@@ -228,8 +230,8 @@ public class FordelRefusjonTjenesteTest {
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
 
         // Assert
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(REFUSJONPRÅR);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(REFUSJONPRÅR);
     }
 
     @Test
@@ -262,8 +264,8 @@ public class FordelRefusjonTjenesteTest {
         double totalRefusjon = 2 * REFUSJONPRÅR;
         int forventetRefusjon1 = (int) (2 * totalRefusjon / 3);
         int forventetRefusjon2 = (int) (totalRefusjon / 3);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
     }
 
     @Test
@@ -298,8 +300,8 @@ public class FordelRefusjonTjenesteTest {
         double totalRefusjon = 2 * REFUSJONPRÅR;
         int forventetRefusjon1 = (int) (2 * totalRefusjon / 3);
         int forventetRefusjon2 = (int) (totalRefusjon / 3);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
     }
 
     @Test
@@ -332,9 +334,9 @@ public class FordelRefusjonTjenesteTest {
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
         int forventetRefusjon = (int) (totalRefusjon / 3);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
     }
 
     @Test
@@ -369,9 +371,9 @@ public class FordelRefusjonTjenesteTest {
         int forventetRefusjon1 = (int) (2 * totalRefusjon / 4);
         int forventetRefusjon2 = (int) (totalRefusjon / 4);
         int forventetRefusjon3 = (int) (totalRefusjon / 4);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
+        assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
     }
 
     @Test
@@ -409,9 +411,9 @@ public class FordelRefusjonTjenesteTest {
         int forventetRefusjon1 = (int) (2 * totalRefusjon / 4);
         int forventetRefusjon2 = (int) (totalRefusjon / 4);
         int forventetRefusjon3 = (int) (totalRefusjon / 4);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon1);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon2);
+        assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon3);
     }
 
     @Test
@@ -447,9 +449,9 @@ public class FordelRefusjonTjenesteTest {
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
         int forventetRefusjon = (int) (totalRefusjon / 3);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
-        AssertionsForClassTypes.assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel2).intValue()).isEqualTo(forventetRefusjon);
+        assertThat(map.get(fordeltAndel3).intValue()).isEqualTo(forventetRefusjon);
     }
 
     private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav() {

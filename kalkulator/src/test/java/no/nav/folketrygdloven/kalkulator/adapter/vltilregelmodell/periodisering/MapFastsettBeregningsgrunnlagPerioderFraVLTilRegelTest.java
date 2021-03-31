@@ -113,7 +113,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         // Act
         PeriodeModell regelmodell = mapRefusjonGradering(input.medBeregningsgrunnlagGrunnlag(grunnlag), beregningsgrunnlag);
 
-        assertThat(regelmodell.getArbeidsforholdOgInntektsmeldinger().size()).isEqualTo(2);
+        assertThat(regelmodell.getArbeidsforholdOgInntektsmeldinger()).hasSize(2);
         ArbeidsforholdOgInntektsmelding mappetMedRefusjon = regelmodell.getArbeidsforholdOgInntektsmeldinger().stream()
                 .filter(a -> a.getArbeidsforhold().getArbeidsforholdId().equals(arbeidsforholdId.getReferanse())).findFirst().get();
         assertThat(mappetMedRefusjon.getRefusjoner()).hasSize(1);
