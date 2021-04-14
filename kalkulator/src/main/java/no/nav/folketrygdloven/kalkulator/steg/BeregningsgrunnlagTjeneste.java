@@ -44,7 +44,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsg
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
- * Fasade tjeneste for å delegere alle kall fra steg
+ * Fasadetjeneste for å delegere alle kall fra steg
  */
 @ApplicationScoped
 public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
