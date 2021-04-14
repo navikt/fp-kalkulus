@@ -9,13 +9,14 @@ import java.util.function.Consumer;
 
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -122,15 +123,24 @@ public final class BeregningsgrunnlagVerifiserer {
                 }
             } else if (!andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
                 LocalDate bgPeriodeFom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
-                String andelBeskrivelse = "andel" + andel.getAktivitetStatus() + " i perioden fom " + bgPeriodeFom;
-                Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr er null for " + andelBeskrivelse);
-                Objects.requireNonNull(andel.getBeregnetPrÅr(), "beregnetPrÅr er null for " + andelBeskrivelse);
+                String andelBeskrivelse = lagAndelBeskrivelse(andel);
+                String feilBeskrivelse = "andel " + andelBeskrivelse + " i perioden fom " + bgPeriodeFom;
+                Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr er null for " + feilBeskrivelse);
+                Objects.requireNonNull(andel.getBeregnetPrÅr(), "beregnetPrÅr er null for " + feilBeskrivelse);
             }
             if (andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER) || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
                 Objects.requireNonNull(andel.getÅrsbeløpFraTilstøtendeYtelse(), "ÅrsbeløpFraTilstøtendeYtelse");
                 Objects.requireNonNull(andel.getOrginalDagsatsFraTilstøtendeYtelse(), "originalDagsatsFraTilstøtendeYtelse");
             }
         };
+    }
+
+    private static String lagAndelBeskrivelse(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        if (andel.getArbeidsgiver().isPresent()) {
+            InternArbeidsforholdRefDto ref = andel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef());
+            return andel.getAktivitetStatus().toString() + andel.getArbeidsgiver().toString() + ref.toString();
+        }
+        return andel.getAktivitetStatus().toString();
     }
 
     private static boolean periodeOppståttGrunnetGradering(List<PeriodeÅrsak> periodeÅrsaker) {
