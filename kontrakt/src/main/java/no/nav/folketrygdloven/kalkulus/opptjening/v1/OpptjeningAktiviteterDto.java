@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -20,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public class OpptjeningAktiviteterDto {
 
-
     @JsonProperty(value = "perioder", required = true)
     @Valid
     @Size(min = 1)
@@ -28,9 +26,8 @@ public class OpptjeningAktiviteterDto {
 
     @JsonProperty(value = "midlertidigInaktivType", required = false)
     @Valid
-    @Size(max = 1)
-    @Pattern(regexp = "([a-zA-Z]+)", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
-    private String midlertidigInaktivType;
+
+    private MidlertidigInaktivType midlertidigInaktivType;
 
     protected OpptjeningAktiviteterDto() {
         // default ctor
@@ -41,7 +38,8 @@ public class OpptjeningAktiviteterDto {
     }
 
     public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotEmpty List<OpptjeningPeriodeDto> perioder,
-                                    @JsonProperty(value = "midlertidigInaktivType",required = true) @Valid String midlertidigInaktivType) {
+                                    @JsonProperty(value = "midlertidigInaktivType",required = true) @Valid MidlertidigInaktivType midlertidigInaktivType) {
+
         this.perioder = perioder;
         this.midlertidigInaktivType = midlertidigInaktivType;
     }
@@ -50,7 +48,7 @@ public class OpptjeningAktiviteterDto {
         return perioder;
     }
 
-    public String getMidlertidigInaktivType() {
+    public MidlertidigInaktivType getMidlertidigInaktivType() {
         return midlertidigInaktivType;
     }
 }
