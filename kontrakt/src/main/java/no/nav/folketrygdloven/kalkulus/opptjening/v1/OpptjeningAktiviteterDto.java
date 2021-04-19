@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -25,6 +26,12 @@ public class OpptjeningAktiviteterDto {
     @Size(min = 1)
     private List<OpptjeningPeriodeDto> perioder;
 
+    @JsonProperty(value = "midlertidigInaktivType", required = false)
+    @Valid
+    @Size(max = 1)
+    @Pattern(regexp = "([a-zA-Z]+)", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String midlertidigInaktivType;
+
     protected OpptjeningAktiviteterDto() {
         // default ctor
     }
@@ -33,7 +40,17 @@ public class OpptjeningAktiviteterDto {
         this.perioder = perioder;
     }
 
+    public OpptjeningAktiviteterDto(@JsonProperty(value = "perioder",required = true) @Valid @NotEmpty List<OpptjeningPeriodeDto> perioder,
+                                    @JsonProperty(value = "midlertidigInaktivType",required = true) @Valid String midlertidigInaktivType) {
+        this.perioder = perioder;
+        this.midlertidigInaktivType = midlertidigInaktivType;
+    }
+
     public List<OpptjeningPeriodeDto> getPerioder() {
         return perioder;
+    }
+
+    public String getMidlertidigInaktivType() {
+        return midlertidigInaktivType;
     }
 }

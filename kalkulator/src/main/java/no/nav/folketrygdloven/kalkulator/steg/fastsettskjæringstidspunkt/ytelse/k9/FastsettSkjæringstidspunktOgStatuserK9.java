@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
@@ -25,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.Fastse
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.skjæringstidspunkt.regel.ytelse.k9.RegelFastsettSkjæringstidspunktK9;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
+import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModellK9;
 import no.nav.folketrygdloven.skjæringstidspunkt.status.RegelFastsettStatusVedSkjæringstidspunkt;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -47,14 +49,23 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
-        RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(regelmodell);
-        RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
+
+        no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
+        MidlertidigInaktivType midlertidigInaktivType = null;
+        if (midlerTidigInaktivInput != null) {
+            midlertidigInaktivType = MidlertidigInaktivType.valueOf(midlerTidigInaktivInput.name());
+        }
+
+        AktivitetStatusModellK9 k9Modell = new AktivitetStatusModellK9(midlertidigInaktivType, regelmodell);
+
+        RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(k9Modell);
+        RegelResultat regelResultatFastsettStatus = fastsettStatus(k9Modell);
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)
         List<RegelResultat> regelResultater = List.of(
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
-        BeregningsgrunnlagDto nyttBeregningsgrunnlag = mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
+        BeregningsgrunnlagDto nyttBeregningsgrunnlag = mapFraRegel.mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), k9Modell, regelResultater, iayGrunnlag, grunnbeløpSatser);
         return new BeregningsgrunnlagRegelResultat(nyttBeregningsgrunnlag,
                 new RegelSporingAggregat(
                         mapRegelSporingGrunnlag(regelResultatFastsettSkjæringstidspunkt, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT),

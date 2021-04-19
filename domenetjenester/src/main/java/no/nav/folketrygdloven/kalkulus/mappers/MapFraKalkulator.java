@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
@@ -221,7 +222,7 @@ public class MapFraKalkulator {
                                 opptjeningPeriodeDto.getAbakusReferanse() != null
                                         ? InternArbeidsforholdRefDto.ref(opptjeningPeriodeDto.getAbakusReferanse().getAbakusReferanse())
                                         : null))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()), opptjeningAktiviteter.getMidlertidigInaktivType() != null ? MidlertidigInaktivType.valueOf(opptjeningAktiviteter.getMidlertidigInaktivType()) : null);
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

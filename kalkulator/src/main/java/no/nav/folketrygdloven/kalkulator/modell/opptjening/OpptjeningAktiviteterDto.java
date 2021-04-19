@@ -12,11 +12,19 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class OpptjeningAktiviteterDto {
 
+    private MidlertidigInaktivType midlertidigInaktivType;
+
     private final List<OpptjeningPeriodeDto> opptjeningPerioder = new ArrayList<>();
+
+    public OpptjeningAktiviteterDto(Collection<OpptjeningPeriodeDto> perioder, MidlertidigInaktivType midlertidigInaktivType) {
+        this.opptjeningPerioder.addAll(perioder);
+        this.midlertidigInaktivType = midlertidigInaktivType;
+    }
 
     public OpptjeningAktiviteterDto(Collection<OpptjeningPeriodeDto> perioder) {
         this.opptjeningPerioder.addAll(perioder);
@@ -28,6 +36,10 @@ public class OpptjeningAktiviteterDto {
 
     public List<OpptjeningPeriodeDto> getOpptjeningPerioder() {
         return Collections.unmodifiableList(opptjeningPerioder);
+    }
+
+    public MidlertidigInaktivType getMidlertidigInaktivType() {
+        return midlertidigInaktivType;
     }
 
     public static class OpptjeningPeriodeDto {
