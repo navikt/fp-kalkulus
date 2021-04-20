@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Refusjonskrav;
@@ -117,11 +118,14 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         Arbeidsforhold arbeidsforhold = lagArbeidsforhold(im);
         return builder.medAnsettelsesperiode(ansettelsesPeriode)
                 .medArbeidsforhold(arbeidsforhold)
+                .medUtbetalingsgrader(mapUtbetalingsgrader(im, inputAndeler.getBeregningsgrunnlagInput()))
                 .medStartdatoPermisjon(skjæringstidspunktBeregning)
                 .medRefusjonskrav(refusjoner)
                 .build();
 
     }
+
+    protected abstract List<Gradering> mapUtbetalingsgrader(InntektsmeldingDto im, BeregningsgrunnlagInput beregningsgrunnlagInput);
 
     /**
      * Finner gyldige perioder for refusjon
