@@ -23,9 +23,8 @@
 
 
     <properties>
-        <java.version>11</java.version> <!--Brukes av jenkins -->
-        <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN
-        </argLine> <!-- default argLine for surefire-plugin -->
+        <java.version>16</java.version> <!--Brukes av jenkins -->
+        <argLine>-Xms256m -Dfile.encoding=UTF-8 -Dlog.level.no.nav=WARN</argLine>
         <jacoco.skip>true</jacoco.skip> <!-- default skip coverage -->
 
         <revision>1.1</revision>
@@ -37,19 +36,19 @@
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
         <compiler.plugin.version>3.8.1</compiler.plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <java.version>11</java.version>
+
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.1.2</fpsak.nare.version>
+        <fpsak.nare.version>2.1.4</fpsak.nare.version>
 
         <fpsak.tidsserie.version>2.5.5</fpsak.tidsserie.version>
 
         <beregningsgrunnlag.regelmodell.version>2.1.17</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>3.0.76</felles.version>
+        <felles.version>3.0.99</felles.version>
 
         <prometheus.version>0.10.0</prometheus.version>
         <junit.version>5.7.1</junit.version>
@@ -70,9 +69,16 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.7.1</version>
+                <version>7.8.1</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core-bom</artifactId>
+                <version>3.1.7.SP1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
             <!-- Interne avhengigheter -->
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
