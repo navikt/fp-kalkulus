@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +16,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Ar
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.RelatertYtelseType;
 import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -38,6 +38,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapTilBesteberegningRegelmodell {
 
@@ -142,17 +143,35 @@ public class MapTilBesteberegningRegelmodell {
      * @return periodeinntekter for ytelser
      */
     private static List<Periodeinntekt> lagInntektForYtelseFraSammenligningsgrunnlag(InntektFilterDto filter) {
-        Map<LocalDate, BigDecimal> månedsinntekter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
-                .filter(ip -> !ip.getYtelseType().equals(OffentligYtelseType.UDEFINERT))
-                .collect(Collectors.groupingBy(ip -> ip.getPeriode().getFomDato(), Collectors.reducing(BigDecimal.ZERO,
-                        ip -> ip.getBeløp().getVerdi(), BigDecimal::add)));
+        List<InntektspostDto> ytelseposter = filter.filterSammenligningsgrunnlag().getFiltrertInntektsposter().stream()
+                .filter(ip -> ip.getYtelseType() != null && !ip.getYtelseType().equals(OffentligYtelseType.UDEFINERT))
+                .collect(Collectors.toList());
 
-        return månedsinntekter.entrySet().stream().map(e -> Periodeinntekt.builder()
+        return ytelseposter.stream().map(e -> Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.INNTEKTSKOMPONENTEN_SAMMENLIGNING)
-                .medMåned(e.getKey())
-                .medInntekt(e.getValue())
                 .medAktivitetStatus(AktivitetStatus.KUN_YTELSE)
+                .medYtelse(mapTilRegelytelse(e.getYtelseType()))
+                .medMåned(e.getPeriode().getFomDato())
+                .medInntekt(e.getBeløp().getVerdi())
                 .build()).collect(Collectors.toList());
+    }
+
+    private static RelatertYtelseType mapTilRegelytelse(YtelseType ytelseType) {
+        if (!(ytelseType instanceof OffentligYtelseType)) {
+            throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
+        }
+        var ytelse = (OffentligYtelseType) ytelseType;
+        switch(ytelse) {
+            case SVANGERSKAPSPENGER:
+                return RelatertYtelseType.SVANGERSKAPSPENGER;
+            case FORELDREPENGER:
+                return RelatertYtelseType.FORELDREPENGER;
+            case SYKEPENGER:
+            case SYKEPENGER_FISKER:
+                return RelatertYtelseType.SYKEPENGER;
+            default:
+                throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
+        }
     }
 
 
