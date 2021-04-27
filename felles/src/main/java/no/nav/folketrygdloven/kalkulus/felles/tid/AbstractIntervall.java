@@ -2,12 +2,8 @@ package no.nav.folketrygdloven.kalkulus.felles.tid;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-
-import org.threeten.extra.Interval;
 
 import no.nav.vedtak.konfig.Tid;
 
@@ -22,22 +18,11 @@ public abstract class AbstractIntervall implements Comparable<AbstractIntervall>
 
     public abstract LocalDate getTomDato();
 
-    public Interval tilIntervall() {
-        return getIntervall(getFomDato(), getTomDato());
-    }
-
-    private static Interval getIntervall(LocalDate fomDato, LocalDate tomDato) {
-        Objects.requireNonNull(fomDato, "fom=null, tom=" + tomDato);
-        Objects.requireNonNull(fomDato, "fom=" + fomDato + ", tom=null");
-        LocalDateTime døgnstart = TIDENES_ENDE.equals(tomDato) ? tomDato.atStartOfDay() : tomDato.atStartOfDay().plusDays(1);
-        return Interval.of(
-            fomDato.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant(),
-            døgnstart.atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-    public boolean overlapper(AbstractIntervall periode) {
-        Objects.requireNonNull(periode, "null periode angitt vs periode=" + this);
-        return tilIntervall().overlaps(getIntervall(periode.getFomDato(), periode.getTomDato()));
+    public boolean overlapper(AbstractIntervall other) {
+        boolean fomBeforeOrEqual = this.getFomDato().isBefore(other.getTomDato()) || this.getFomDato().isEqual(other.getTomDato());
+        boolean tomAfterOrEqual = this.getTomDato().isAfter(other.getFomDato()) || this.getTomDato().isEqual(other.getFomDato());
+        boolean overlapper = fomBeforeOrEqual && tomAfterOrEqual;
+        return overlapper;
     }
 
     public boolean inkluderer(LocalDate dato) {
