@@ -56,13 +56,14 @@ public class KontrollerBeregningsinputTjeneste {
     public Optional<DiffResultatDto> kontrollerInputForKobling(KoblingEntitet kobling) {
         Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Collections.singletonList(kobling.getId()),
                 StegType.FORS_BERGRUNN, Collections.emptyMap()); // Bruker dette steget fordi det er her inntekt fastsettes
-        StegProsesseringInput input = res.getResultatPrKobling().get(kobling.getId());
+        ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.getResultatPrKobling().get(kobling.getId());
         BeregningsgrunnlagGrunnlagEntitet sisteGrunnlagFraKofak = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER).orElseThrow();
         BeregningsgrunnlagGrunnlagDto bgDto = BehandlingslagerTilKalkulusMapper.mapGrunnlag(sisteGrunnlagFraKofak);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(bgDto);
         StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.FORESLÅTT);
-        ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput);
-        input.leggTilToggle("feilretting-tsf-1715", true);
+        ForeslåBeregningsgrunnlagInput foreslåBeregningsgrunnlagInput = new ForeslåBeregningsgrunnlagInput(stegProsesseringInput)
+                .medGrunnbeløpsatser(input.getGrunnbeløpsatser());
+        foreslåBeregningsgrunnlagInput.leggTilToggle("feilretting-tsf-1715", true);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(foreslåBeregningsgrunnlagInput);
         BeregningsgrunnlagDto reberegnetGrunnlag = beregningsgrunnlagRegelResultat.getBeregningsgrunnlag();
         BeregningsgrunnlagGrunnlagEntitet gjeldendeBGGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.FORESLÅTT).orElseThrow();
