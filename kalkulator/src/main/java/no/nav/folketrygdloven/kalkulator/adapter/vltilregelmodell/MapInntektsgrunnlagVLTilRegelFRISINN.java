@@ -34,6 +34,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -126,21 +127,58 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         throw new IllegalStateException("Arbeidsgiver må være enten aktør eller virksomhet, men var: " + arbeidsgiver);
     }
 
+    private void mapAlleYtelserMedRetting(Inntektsgrunnlag inntektsgrunnlag,
+                                YtelseFilterDto ytelseFilter,
+                                LocalDate skjæringstidspunktOpptjening) {
+        ytelseFilter.getAlleYtelser().stream()
+                .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN))
+                .forEach(ytelse -> ytelse.getYtelseAnvist().stream()
+                        .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
+                        .filter(ya -> harHattUtbetalingForPeriode(ya, finnesAnvistYtelseMedUtbGrad(ytelse)))
+                        .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelseAntaFullDekningsgrad(anvist, ytelse.getVedtaksDagsats(), ytelse.getRelatertYtelseType()))));
+    }
+
+    private boolean finnesAnvistYtelseMedUtbGrad(YtelseDto ytelse) {
+        return ytelse.getYtelseAnvist().stream()
+                .anyMatch(ya -> ya.getUtbetalingsgradProsent()
+                        .map(utb -> !utb.erNulltall())
+                        .orElse(false));
+    }
+
     private void mapAlleYtelser(Inntektsgrunnlag inntektsgrunnlag,
                                 YtelseFilterDto ytelseFilter,
                                 LocalDate skjæringstidspunktOpptjening) {
         ytelseFilter.getAlleYtelser().stream()
-                .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN)).
-                forEach(ytelse -> ytelse.getYtelseAnvist().stream()
+                .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN))
+                .forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                     .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
                 .filter(this::harHattUtbetalingForPeriode)
                 .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getRelatertYtelseType()))));
+    }
+
+    private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse, boolean finnesYtelseAnvistMedUtbGrad) {
+        if (!finnesYtelseAnvistMedUtbGrad) {
+            // TSF-1715 Hvis vi ikke har noe perioder med utb.grad må vi anta at alle perioder med ytelse anvist har hatt utbetaling
+            return true;
+        }
+        return ytelse.getUtbetalingsgradProsent()
+                .map(beløp -> !beløp.erNulltall())
+                .orElse(false);
     }
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {
         return ytelse.getUtbetalingsgradProsent()
                 .map(beløp -> !beløp.erNulltall())
                 .orElse(false);
+    }
+
+    private Periodeinntekt byggPeriodeinntektForYtelseAntaFullDekningsgrad(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, FagsakYtelseType ytelsetype) {
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP: Inntektskilde.ANNEN_YTELSE)
+                .medInntekt(finnBeløp(anvist, vedtaksDagsats))
+                .medUtbetalingsgrad(BigDecimal.valueOf(100))
+                .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
+                .build();
     }
 
     private Periodeinntekt byggPeriodeinntektForYtelse(YtelseAnvistDto anvist, Optional<Beløp> vedtaksDagsats, FagsakYtelseType ytelsetype) {
@@ -187,7 +225,11 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister()).før(input.getSkjæringstidspunktOpptjening());
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
-            mapAlleYtelser(inntektsgrunnlag, ytelseFilter, input.getSkjæringstidspunktOpptjening());
+            if (input.isEnabled("feilretting-tsf-1715", false)) {
+                mapAlleYtelserMedRetting(inntektsgrunnlag, ytelseFilter, input.getSkjæringstidspunktOpptjening());
+            } else {
+                mapAlleYtelser(inntektsgrunnlag, ytelseFilter, input.getSkjæringstidspunktOpptjening());
+            }
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();

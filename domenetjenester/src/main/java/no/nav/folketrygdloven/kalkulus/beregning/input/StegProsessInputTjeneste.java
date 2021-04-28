@@ -85,7 +85,6 @@ public class StegProsessInputTjeneste {
         Objects.requireNonNull(koblingId, "koblingId");
         var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
-
         if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return new Resultat<>(inputRespons.getKode());
         }

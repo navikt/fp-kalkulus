@@ -41,15 +41,20 @@ enum BeregningAksjonspunkt implements Kodeverdi {
     // 7000 automatisk satt på vent
     AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST("7014","Vent på rapporteringsfrist for inntekt"),
     AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("7020","Vent på siste meldekort for AAP eller DP-mottaker"),
-    AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", "Autopunkt ulike startdatoer svangerskapspenger"),
-    AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027","Autopunkt delvis SVP og refusjon"),
-    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
 
     // 8000 frisinn
     AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av manglende funksjonalitet"),
     INGEN_AKTIVITETER("8001", "Gir avslag"),
 
     UNDEFINED,
+
+    // Punkter som ikke lenger utledes, tas vare på så vi vet hvilke koder kalkulus har brukt før
+    @Deprecated
+    AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", "Autopunkt ulike startdatoer svangerskapspenger"),
+    @Deprecated
+    AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027","Autopunkt delvis SVP og refusjon"),
+    @Deprecated
+    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
     ;
 
     static final String KODEVERK = "BEREGNING_AKSJONSPUNKT_DEF";
@@ -83,13 +88,13 @@ enum BeregningAksjonspunkt implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
         return KODEVERK;
     }
-    
+
     @Override
     public String toString() {
         return super.toString() + "('" + getKode() + "')";
@@ -107,7 +112,7 @@ enum BeregningAksjonspunkt implements Kodeverdi {
         }
         return ad;
     }
-    
+
     public static Map<String, BeregningAksjonspunkt> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }

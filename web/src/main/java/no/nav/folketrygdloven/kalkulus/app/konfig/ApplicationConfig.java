@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
+import no.nav.folketrygdloven.kalkulus.rest.ForvaltningFrisinnRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
@@ -69,6 +70,10 @@ public class ApplicationConfig extends Application {
         classes.add(JsonParseExceptionMapper.class);
         classes.add(GeneralRestExceptionMapper.class);
         classes.add(JacksonJsonConfig.class);
+
+        // forvaltning
+        classes.add(ForvaltningFrisinnRestTjeneste.class);
+
 
         return Collections.unmodifiableSet(classes);
     }
