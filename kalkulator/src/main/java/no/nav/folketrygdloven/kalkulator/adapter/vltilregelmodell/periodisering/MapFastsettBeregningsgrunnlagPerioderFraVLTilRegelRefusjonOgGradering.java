@@ -47,7 +47,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
                 .filter(ya::gjelderFor)
                 .findFirst();
-        List<Refusjonskrav> refusjoner = mapRefusjonskrav(input.getYtelsespesifiktGrunnlag(), ya, startdatoPermisjon, refusjonOverstyringer, matchendeInntektsmelding);
+        List<Refusjonskrav> refusjoner = mapRefusjonskrav(input.getYtelsespesifiktGrunnlag(), ya, startdatoPermisjon, refusjonOverstyringer, matchendeInntektsmelding, input.getBeregningsgrunnlag());
         builder.medRefusjonskrav(refusjoner);
 
 
@@ -63,13 +63,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                                                    YrkesaktivitetDto ya,
                                                    LocalDate startdatoPermisjon,
                                                    Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
-                                                   Optional<InntektsmeldingDto> matchendeInntektsmelding) {
+                                                   Optional<InntektsmeldingDto> matchendeInntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag) {
         return matchendeInntektsmelding
                 .map(im -> MapRefusjonskravFraVLTilRegel.periodiserRefusjonsbeløp(
                         im,
                         startdatoPermisjon,
                         refusjonOverstyringer,
-                        finnGyldigeRefusjonPerioder(startdatoPermisjon, ytelsespesifiktGrunnlag, ya)))
+                        finnGyldigeRefusjonPerioder(startdatoPermisjon, ytelsespesifiktGrunnlag, ya, beregningsgrunnlag)))
                 .orElse(Collections.emptyList());
     }
 
@@ -81,9 +81,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
      * @param startdatoPermisjon Startdato permisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya Yrkesaktivitet
+     * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya, BeregningsgrunnlagDto beregningsgrunnlag) {
         return List.of(Intervall.fraOgMed(startdatoPermisjon));
     }
 
