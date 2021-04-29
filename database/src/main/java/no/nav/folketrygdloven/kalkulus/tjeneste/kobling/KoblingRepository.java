@@ -79,6 +79,14 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
+    public Optional<KoblingEntitet> hentSisteKoblingForSaksnummer(Saksnummer saksnummer) {
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
+                "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);
+        query.setParameter("saksnummer", saksnummer);
+        query.setMaxResults(1);
+        return HibernateVerktøy.hentUniktResultat(query);
+    }
+
     public void lagre(KoblingEntitet nyKobling) {
         Optional<KoblingEntitet> eksisterendeKobling = hentForKoblingReferanse(nyKobling.getKoblingReferanse());
 
@@ -95,14 +103,14 @@ public class KoblingRepository {
         var config = new TraverseJpaEntityGraphConfig();
         config.setIgnoreNulls(true);
         config.setOnlyCheckTrackedFields(false);
-        
+
         config.addLeafClasses(Beløp.class);
         config.addLeafClasses(AktørId.class);
         config.addLeafClasses(Saksnummer.class);
         config.addLeafClasses(OrgNummer.class);
         config.addLeafClasses(InternArbeidsforholdRef.class);
         config.addLeafClasses(Arbeidsgiver.class);
-        
+
         var diffEntity = new DiffEntity(new TraverseGraph(config));
 
         return diffEntity.diff(eksisterendeKobling, nyKobling);

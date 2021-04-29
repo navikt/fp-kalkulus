@@ -138,9 +138,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
      * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto inntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag) {
-        return List.of(Intervall.fraOgMed(startdatoPermisjon));
-    }
+    protected abstract List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto inntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag);
 
     // Kun relevant for FP og SVP, burde det ligge ein annen stad enn felles implementasjon?
     protected void mapFristData(BeregningsgrunnlagInput input, InntektsmeldingDto inntektsmelding, ArbeidsforholdOgInntektsmelding.Builder builder) {

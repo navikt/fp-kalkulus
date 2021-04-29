@@ -3,15 +3,9 @@ package no.nav.folketrygdloven.kalkulator.tid;
 
 import java.time.LocalDate;
 
-import org.threeten.extra.Interval;
-
 import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 
 
-/** Skal ersatte {@link Intervall} for kalkulus
- *
- *  Wrapper om {@link Interval} som sikrer riktig behandling av intervaller i beregning
- */
 public class Intervall extends AbstractIntervall {
 
     private final LocalDate fomDato;
