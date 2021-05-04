@@ -35,8 +35,12 @@ public class VurderVarigEndretNyoppstartetSNHåndterer {
                     .medOverstyrtPrÅr(BigDecimal.valueOf(bruttoBeregningsgrunnlag));
             }
             return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_UT);
+        } else {
+            // Ingen endring
+            BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder
+                    .oppdatere(input.getBeregningsgrunnlagGrunnlag());
+            return grunnlagBuilder.build(BeregningsgrunnlagTilstand.FORESLÅTT_UT);
         }
-        return null;
     }
 
 }

@@ -25,7 +25,6 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
 
     @JsonProperty("bruttoBeregningsgrunnlag")
     @Valid
-    @NotNull
     @Min(0)
     @Max(Long.MAX_VALUE)
     private Integer bruttoBeregningsgrunnlag;
@@ -34,7 +33,7 @@ public class VurderVarigEndringEllerNyoppstartetSNDto {
         // For Json deserialisering
     }
 
-    public VurderVarigEndringEllerNyoppstartetSNDto(@Valid @NotNull boolean erVarigEndretNaering, @Valid @NotNull @Min(0) @Max(Long.MAX_VALUE) Integer bruttoBeregningsgrunnlag) {
+    public VurderVarigEndringEllerNyoppstartetSNDto(@Valid @NotNull boolean erVarigEndretNaering, @Valid @Min(0) @Max(Long.MAX_VALUE) Integer bruttoBeregningsgrunnlag) {
         this.erVarigEndretNaering = erVarigEndretNaering;
         this.bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlag;
     }
