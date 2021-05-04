@@ -98,7 +98,7 @@ public class MapTilBesteberegningRegelmodell {
 
     private static List<YtelsegrunnlagAndel> mapYtelseandeler(List<Ytelseandel> andeler) {
         return andeler.stream()
-                .map(a -> new YtelsegrunnlagAndel(mapTilYtelseAktivitetType(a), BigDecimal.valueOf(a.getDagsats())))
+                .map(a -> new YtelsegrunnlagAndel(mapTilYtelseAktivitetType(a), a.getDagsats() == null ? null : BigDecimal.valueOf(a.getDagsats())))
                 .collect(Collectors.toList());
     }
 

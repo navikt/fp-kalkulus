@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 public class MapBesteberegningFraRegelTilVL {
+    private static final List<Aktivitet> YTELSER_FRA_SAMMENLIGNINGSFILTERET = Arrays.asList(Aktivitet.SYKEPENGER_MOTTAKER, Aktivitet.FORELDREPENGER_MOTTAKER,
+            Aktivitet.SVANGERSKAPSPENGER_MOTTAKER);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBesteberegningFraRegelTilVL.class);
 
@@ -105,11 +108,24 @@ public class MapBesteberegningFraRegelTilVL {
         if (aktivitetNøkkel.getType().equals(Aktivitet.ARBEIDSTAKERINNTEKT)) {
             matchendeAndel = finnArbeidstakerAndel(periode, aktivitetNøkkel);
         } else if (aktivitetNøkkel.getType().equals(Aktivitet.FRILANSINNTEKT)) {
-            matchendeAndel = finnFrilansAndel(periode);
+            matchendeAndel = finnFørsteAndel(periode, AktivitetStatus.FRILANSER);
         } else if (aktivitetNøkkel.getType().equals(Aktivitet.NÆRINGSINNTEKT)) {
-            matchendeAndel = finnNæringAndel(periode);
+            matchendeAndel = finnFørsteAndel(periode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        } else if (YTELSER_FRA_SAMMENLIGNINGSFILTERET.contains(aktivitetNøkkel.getType())) {
+            matchendeAndel = finnAndelForYtelse(periode, aktivitetNøkkel);
         }
         return matchendeAndel;
+    }
+
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelForYtelse(BeregningsgrunnlagPeriodeDto periode,
+                                                                                     AktivitetNøkkel aktivitetNøkkel) {
+        return switch (aktivitetNøkkel.getYtelseGrunnlagType()) {
+            case YTELSE_FOR_ARBEID -> finnFørsteAndel(periode, AktivitetStatus.ARBEIDSTAKER);
+            case YTELSE_FOR_FRILANS -> finnFørsteAndel(periode, AktivitetStatus.FRILANSER);
+            case YTELSE_FOR_NÆRING -> finnFørsteAndel(periode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+            case YTELSE_FOR_ARBEIDSAVKLARINGSPENGER, YTELSE_FOR_DAGPENGER -> finnFørsteAndel(periode, AktivitetStatus.DAGPENGER);
+            default -> throw new IllegalStateException("Ukjent ytelsegrunnlagtype: " + aktivitetNøkkel.getYtelseGrunnlagType());
+        };
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnArbeidstakerAndel(BeregningsgrunnlagPeriodeDto periode, AktivitetNøkkel aktivitetNøkkel) {
@@ -124,15 +140,9 @@ public class MapBesteberegningFraRegelTilVL {
         return matchendeArbeidsforholdAndeler.size() == 0 ? Optional.empty() : Optional.of(matchendeArbeidsforholdAndeler.get(0));
     }
 
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnFrilansAndel(BeregningsgrunnlagPeriodeDto periode) {
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnFørsteAndel(BeregningsgrunnlagPeriodeDto periode, AktivitetStatus status) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream().filter(bgAndel -> bgAndel.getAktivitetStatus().erFrilanser())
-                .findFirst();
-    }
-
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnNæringAndel(BeregningsgrunnlagPeriodeDto periode) {
-        return periode.getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream().filter(bgAndel -> bgAndel.getAktivitetStatus().erSelvstendigNæringsdrivende())
+                .stream().filter(bgAndel -> bgAndel.getAktivitetStatus().equals(status))
                 .findFirst();
     }
 
