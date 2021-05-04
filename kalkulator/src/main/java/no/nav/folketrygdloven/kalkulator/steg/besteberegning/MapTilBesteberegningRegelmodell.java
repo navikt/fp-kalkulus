@@ -1,9 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.DAGPENGER;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -19,7 +23,12 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Pe
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.RelatertYtelseType;
 import no.nav.folketrygdloven.besteberegning.modell.BesteberegningRegelmodell;
 import no.nav.folketrygdloven.besteberegning.modell.input.BesteberegningInput;
+import no.nav.folketrygdloven.besteberegning.modell.input.YtelseAktivitetType;
+import no.nav.folketrygdloven.besteberegning.modell.input.Ytelsegrunnlag;
+import no.nav.folketrygdloven.besteberegning.modell.input.YtelsegrunnlagAndel;
+import no.nav.folketrygdloven.besteberegning.modell.input.YtelsegrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -42,7 +51,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseType;
 
 public class MapTilBesteberegningRegelmodell {
 
-
     public static BesteberegningRegelmodell map(ForeslåBesteberegningInput input) {
         BesteberegningInput besteberegningInput = lagInput(input);
         return new BesteberegningRegelmodell(besteberegningInput);
@@ -53,12 +61,67 @@ public class MapTilBesteberegningRegelmodell {
         Inntektsgrunnlag inntektsgrunnlag = new Inntektsgrunnlag();
         inntekter.forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
         List<Periode> perioderMedNæringsvirksomhet = finnPerioderMedOppgittNæring(input);
-        return new BesteberegningInput(inntektsgrunnlag,
-                input.getGrunnbeløpsatser(),
-                finnGrunnbeløp(input),
-                input.getSkjæringstidspunktOpptjening(),
-                perioderMedNæringsvirksomhet,
-                finnTotalBruttoUtenNaturalytelseFørstePeriode(input));
+        BesteberegningInput.Builder inputBuilder = BesteberegningInput.builder()
+                .medInntektsgrunnlag(inntektsgrunnlag)
+                .medGrunnbeløpSatser(input.getGrunnbeløpsatser())
+                .medGjeldendeGVerdi(finnGrunnbeløp(input))
+                .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunktOpptjening())
+                .medPerioderMedNæringsvirksomhet(perioderMedNæringsvirksomhet)
+                .medBeregnetGrunnlag(finnTotalBruttoUtenNaturalytelseFørstePeriode(input));
+        mapYtelsegrunnlag(input.getYtelsespesifiktGrunnlag()).forEach(inputBuilder::leggTilYtelsegrunnlag);
+        return inputBuilder.build();
+    }
+
+    private static List<Ytelsegrunnlag> mapYtelsegrunnlag(ForeldrepengerGrunnlag fpgrunnlag) {
+        if (fpgrunnlag.getBesteberegningYtelsegrunnlag() == null) {
+            return Collections.emptyList();
+        }
+        return fpgrunnlag.getBesteberegningYtelsegrunnlag().stream()
+                .map(yg -> new Ytelsegrunnlag(mapYtelse(yg.getYtelse()), mapYtelseperioder(yg.getPerioder())))
+                .collect(Collectors.toList());
+    }
+
+    private static RelatertYtelseType mapYtelse(FagsakYtelseType ytelse) {
+        return switch (ytelse) {
+            case FORELDREPENGER -> RelatertYtelseType.FORELDREPENGER;
+            case SVANGERSKAPSPENGER -> RelatertYtelseType.SVANGERSKAPSPENGER;
+            case SYKEPENGER -> RelatertYtelseType.SYKEPENGER;
+            default -> throw new IllegalStateException("Fikk inn ukjent ytelsetype under mapping til besteberegning " + ytelse);
+        };
+    }
+
+    private static List<YtelsegrunnlagPeriode> mapYtelseperioder(List<Ytelseperiode> perioder) {
+        return perioder.stream()
+                .map(p -> new YtelsegrunnlagPeriode(Periode.of(p.getPeriode().getFomDato(), p.getPeriode().getTomDato()), mapYtelseandeler(p.getAndeler())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<YtelsegrunnlagAndel> mapYtelseandeler(List<Ytelseandel> andeler) {
+        return andeler.stream()
+                .map(a -> new YtelsegrunnlagAndel(mapTilYtelseAktivitetType(a), BigDecimal.valueOf(a.getDagsats())))
+                .collect(Collectors.toList());
+    }
+
+    private static YtelseAktivitetType mapTilYtelseAktivitetType(Ytelseandel andel) {
+        if (andel.getAktivitetStatus() != null) {
+            return switch (andel.getAktivitetStatus()) {
+                case ARBEIDSTAKER -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
+                case SELVSTENDIG_NÆRINGSDRIVENDE -> YtelseAktivitetType.YTELSE_FOR_NÆRING;
+                case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
+                case DAGPENGER -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
+                case ARBEIDSAVKLARINGSPENGER -> YtelseAktivitetType.YTELSE_FOR_ARBEIDSAVKLARINGSPENGER;
+                default -> throw new IllegalStateException("Fikk inn ukjent aktivitetstatus ved mapping til besteberegning, status var " + andel.getAktivitetStatus());
+            };
+        }
+        else {
+            return switch (andel.getArbeidskategori()) {
+                case ARBEIDSTAKER, KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER, FISKER -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
+                case SELVSTENDIG_NÆRINGSDRIVENDE, JORDBRUKER, DAGMAMMA -> YtelseAktivitetType.YTELSE_FOR_NÆRING;
+                case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
+                case DAGPENGER -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
+                default -> throw new IllegalStateException("Fikk inn ukjent arbeidskategori ved mapping til besteberegning, kategori var " + andel.getArbeidskategori());
+            };
+        }
     }
 
     /** Finner total brutto beregningsgrunnlag i første periode.
@@ -107,7 +170,7 @@ public class MapTilBesteberegningRegelmodell {
 
 
     private static List<Periodeinntekt> lagYtelseDagpengerArbeidsavklaringspenger(YtelseFilterDto ytelseFilter) {
-        Set<FagsakYtelseType> ytelseTyper = Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        Set<FagsakYtelseType> ytelseTyper = Set.of(DAGPENGER, ARBEIDSAVKLARINGSPENGER);
         return ytelseFilter.getAlleYtelser().stream()
                 .filter(yt-> ytelseTyper.contains(yt.getRelatertYtelseType()))
                 .map(MapTilBesteberegningRegelmodell::mapYtelseTilPeriodeinntekt)

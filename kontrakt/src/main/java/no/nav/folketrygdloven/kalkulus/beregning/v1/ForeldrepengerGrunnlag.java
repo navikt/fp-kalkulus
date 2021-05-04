@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMax;
@@ -15,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelsegrunnlag;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
@@ -30,6 +33,10 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     @JsonProperty(value = "sisteSøkteUttaksdag")
     @Valid
     private LocalDate sisteSøkteUttaksdag;
+
+    @JsonProperty(value = "ytelsegrunnlagForBesteberegning")
+    @Valid
+    private List<Ytelsegrunnlag> ytelsegrunnlagForBesteberegning;
 
     protected ForeldrepengerGrunnlag() {
         // default ctor
@@ -51,6 +58,17 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         this.sisteSøkteUttaksdag = sisteSøkteUttaksdag;
     }
 
+    public ForeldrepengerGrunnlag(@Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "100.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 3, fraction = 2) BigDecimal dekningsgrad,
+                                  @Valid @NotNull Boolean kvalifisererTilBesteberegning,
+                                  @Valid AktivitetGraderingDto aktivitetGradering,
+                                  @Valid LocalDate sisteSøkteUttaksdag,
+                                  @Valid List<Ytelsegrunnlag> ytelsegrunnlagForBesteberegning) {
+        super(dekningsgrad, kvalifisererTilBesteberegning);
+        this.aktivitetGradering = aktivitetGradering;
+        this.sisteSøkteUttaksdag = sisteSøkteUttaksdag;
+        this.ytelsegrunnlagForBesteberegning = ytelsegrunnlagForBesteberegning;
+    }
+
     public static String getYtelseType() {
         return YTELSE_TYPE;
     }
@@ -61,5 +79,9 @@ public class ForeldrepengerGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     public LocalDate getSisteSøkteUttaksdag() {
         return sisteSøkteUttaksdag;
+    }
+
+    public List<Ytelsegrunnlag> getYtelsegrunnlagForBesteberegning() {
+        return ytelsegrunnlagForBesteberegning;
     }
 }

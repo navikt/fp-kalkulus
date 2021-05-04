@@ -1,0 +1,47 @@
+package no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning;
+
+import javax.validation.Valid;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+public class Ytelseandel {
+
+    @JsonProperty(value = "aktivitetStatus")
+    @Valid
+    private AktivitetStatus aktivitetStatus;
+
+    @JsonProperty(value = "arbeidskategori")
+    @Valid
+    private Arbeidskategori arbeidskategori;
+
+    @JsonProperty(value = "dagsats")
+    @Valid
+    private Long dagsats;
+
+    public Ytelseandel(@Valid AktivitetStatus aktivitetStatus,
+                       @Valid Arbeidskategori arbeidskategori,
+                       @Valid Long dagsats) {
+        this.aktivitetStatus = aktivitetStatus;
+        this.arbeidskategori = arbeidskategori;
+        this.dagsats = dagsats;
+    }
+
+    public AktivitetStatus getAktivitetStatus() {
+        return aktivitetStatus;
+    }
+
+    public Arbeidskategori getArbeidskategori() {
+        return arbeidskategori;
+    }
+
+    public Long getDagsats() {
+        return dagsats;
+    }
+}

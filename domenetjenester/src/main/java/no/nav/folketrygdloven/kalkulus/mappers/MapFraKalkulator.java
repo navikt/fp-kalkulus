@@ -28,6 +28,9 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Builder
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelseandel;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelsegrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelseperiode;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
@@ -123,6 +126,7 @@ public class MapFraKalkulator {
                 var aktivitetGradering = fpKontraktGrunnlag.getAktivitetGradering();
                 foreldrepengerGrunnlag.setAktivitetGradering(aktivitetGradering == null ? AktivitetGradering.INGEN_GRADERING : mapFraDto(aktivitetGradering));
                 foreldrepengerGrunnlag.setSisteSøkteUttaksdag(fpKontraktGrunnlag.getSisteSøkteUttaksdag());
+                foreldrepengerGrunnlag.setBesteberegningYtelsegrunnlag(mapYtelsegrunnlag(fpKontraktGrunnlag.getYtelsegrunnlagForBesteberegning()));
                 return foreldrepengerGrunnlag;
             case SVANGERSKAPSPENGER:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag svangerskapspengerGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.SvangerskapspengerGrunnlag) ytelsespesifiktGrunnlag;
@@ -149,6 +153,33 @@ public class MapFraKalkulator {
             default:
                 return new StandardGrunnlag();
         }
+    }
+
+    private static List<Ytelsegrunnlag> mapYtelsegrunnlag(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelsegrunnlag> ytelsegrunnlagForBesteberegning) {
+        if (ytelsegrunnlagForBesteberegning == null) {
+            return Collections.emptyList();
+        }
+        return ytelsegrunnlagForBesteberegning.stream()
+                .map(yg -> new Ytelsegrunnlag(FagsakYtelseType.fraKode(yg.getYtelse().getKode()), mapYtelseperioder(yg.getPerioder())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Ytelseperiode> mapYtelseperioder(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseperiode> perioder) {
+        return perioder.stream()
+                .map(p -> new Ytelseperiode(Intervall.fraOgMedTilOgMed(p.getPeriode().getFom(), p.getPeriode().getTom()), mapYtelseandeler(p.getAndeler())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Ytelseandel> mapYtelseandeler(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseandel> andeler) {
+        return andeler.stream()
+                .map(a -> {
+                    if (a.getAktivitetStatus() != null) {
+                        return new Ytelseandel(a.getAktivitetStatus(), a.getDagsats());
+                    } else {
+                        return new Ytelseandel(a.getArbeidskategori(), a.getDagsats());
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private static List<FrisinnPeriode> mapFraKontrakt(no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag,

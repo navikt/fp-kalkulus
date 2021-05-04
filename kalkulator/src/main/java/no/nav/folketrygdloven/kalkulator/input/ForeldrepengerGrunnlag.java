@@ -1,11 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelsegrunnlag;
 
 public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
@@ -26,6 +28,9 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     /** Når vi start behandlingen av saken, skal brukes for å vurdere refusjon til arbeidsforhold som er avsluttet */
     private LocalDate behandlingstidspunkt;
+
+    /**  Brukes kun for besteberegninger som skal gjøres automatisk */
+    private List<Ytelsegrunnlag> besteberegningYtelsegrunnlag;
 
     ForeldrepengerGrunnlag() {
     }
@@ -93,5 +98,13 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
 
     public void setBehandlingstidspunkt(LocalDate behandlingstidspunkt) {
         this.behandlingstidspunkt = behandlingstidspunkt;
+    }
+
+    public List<Ytelsegrunnlag> getBesteberegningYtelsegrunnlag() {
+        return besteberegningYtelsegrunnlag;
+    }
+
+    public void setBesteberegningYtelsegrunnlag(List<Ytelsegrunnlag> besteberegningYtelsegrunnlag) {
+        this.besteberegningYtelsegrunnlag = besteberegningYtelsegrunnlag;
     }
 }
