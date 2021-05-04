@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
-import static no.nav.folketrygdloven.kalkulator.steg.besteberegning.MapBesteberegningFraRegelTilVL.mapTilBeregningsgrunnlag;
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag;
+import static no.nav.folketrygdloven.kalkulator.steg.besteberegning.MapBesteberegningFraRegelTilVL.mapTilBeregningsgrunnlag;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -34,7 +34,7 @@ public class ForeslåBesteberegning {
     }
 
     private static String toJson(BesteberegningRegelmodell regelmodell) {
-        return JsonMapper.toJson(regelmodell, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(regelmodell, BeregningsgrunnlagFeil::kanIkkeSerialisereRegelinput);
     }
 
 }

@@ -116,7 +116,7 @@ public class JettyDevServer extends JettyServer {
     protected List<Connector> createConnectors(AppKonfigurasjon appKonfigurasjon, Server server) {
         List<Connector> connectors = super.createConnectors(appKonfigurasjon, server);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Server();
+        var sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(System.getProperty("javax.net.ssl.keyStore"));
         sslContextFactory.setKeyStorePassword(System.getProperty("javax.net.ssl.keyStorePassword"));
         sslContextFactory.setKeyManagerPassword(System.getProperty("javax.net.ssl.keyStorePassword"));

@@ -1,17 +1,18 @@
 package no.nav.folketrygdloven.kalkulus.felles.verktøy;
 
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
-public interface HibernateFeil extends DeklarerteFeil {
-    @TekniskFeil(feilkode = "FT-KALKULUS-DB-1000000", feilmelding = "Spørringen %s returnerte ikke et unikt resultat", logLevel = LogLevel.WARN)
-    Feil ikkeUniktResultat(String spørring);
+public class HibernateFeil {
 
-    @TekniskFeil(feilkode = "FT-KALKULUS-DB-1000001", feilmelding = "Spørringen %s returnerte mer enn eksakt ett resultat", logLevel = LogLevel.WARN)
-    Feil merEnnEttResultat(String spørring);
+    static TekniskException ikkeUniktResultat(String spørring) {
+        return new TekniskException("FT-KALKULUS-DB-1000000", String.format("Spørringen %s returnerte ikke et unikt resultat", spørring));
+    }
 
-    @TekniskFeil(feilkode = "FT-KALKULUS-DB-1000002", feilmelding = "Spørringen %s returnerte tomt resultat", logLevel = LogLevel.WARN, exceptionClass = TomtResultatException.class)
-    Feil tomtResultat(String spørring);
+    static TekniskException merEnnEttResultat(String spørring) {
+        return new TekniskException("FT-KALKULUS-DB-1000001", String.format("Spørringen %s returnerte mer enn eksakt ett resultat", spørring));
+    }
+
+    static TekniskException tomtResultat(String spørring) {
+        return new TomtResultatException("FT-KALKULUS-DB-1000002", String.format("Spørringen %s returnerte tomt resultat", spørring));
+    }
 }

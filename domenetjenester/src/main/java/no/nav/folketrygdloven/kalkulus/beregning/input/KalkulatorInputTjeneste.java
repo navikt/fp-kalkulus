@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.vedtak.feil.FeilFactory;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class KalkulatorInputTjeneste {
@@ -52,7 +52,7 @@ public class KalkulatorInputTjeneste {
         List<Long> koblingUtenInput = koblingId.stream().filter(id -> kalkulatorInputEntitetListe.stream().map(KalkulatorInputEntitet::getKoblingId).noneMatch(k -> k.equals(id)))
                 .collect(Collectors.toList());
         if (!koblingUtenInput.isEmpty()) {
-            throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingUtenInput).toException();
+            throw new TekniskException("FT-KALKULUS-INPUT-1000000", String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingUtenInput));
         }
         Map<Long, KalkulatorInputDto> inputMap = new HashMap<>();
 
@@ -74,7 +74,7 @@ public class KalkulatorInputTjeneste {
         try {
             input = READER.forType(KalkulatorInputDto.class).readValue(json);
         } catch (JsonProcessingException e) {
-            throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusKlarteIkkeLeseOppInput(koblingId, e.getMessage()).toException();
+            throw new TekniskException("FT-KALKULUS-INPUT-1000002", String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s", koblingId, e.getMessage()));
         }
 
         var violations = VALIDATOR.validate(input);
@@ -91,7 +91,7 @@ public class KalkulatorInputTjeneste {
             input = WRITER.writeValueAsString(kalkulatorInput);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw FeilFactory.create(KalkulatorInputFeil.class).kalkulusKlarteIkkeLagreNedInput(koblingId, e.getMessage()).toException();
+            throw new TekniskException("FT-KALKULUS-INPUT-1000002", String.format("Kalkulus klarte ikke lagre ned input for koblingId: %s med følgende feilmelding %s", koblingId, e.getMessage()));
         }
         return beregningsgrunnlagRepository.lagreOgSjekkStatus(new KalkulatorInputEntitet(koblingId, input));
     }

@@ -38,6 +38,7 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.MetaData;
+import org.eclipse.jetty.webapp.WebAppConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
@@ -58,6 +59,7 @@ public class JettyServer {
      * nedstrippet sett med Jetty configurations for raskere startup.
      */
     protected static final Configuration[] CONFIGURATIONS = new Configuration[] {
+            new WebAppConfiguration(),
             new WebInfConfiguration(),
             new WebXmlConfiguration(),
             new AnnotationConfiguration(),
@@ -181,9 +183,9 @@ public class JettyServer {
         webAppContext.setBaseResource(createResourceCollection());
         webAppContext.setContextPath(appKonfigurasjon.getContextPath());
         webAppContext.setConfigurations(CONFIGURATIONS);
-        
+
         webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
-        
+
         webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", "^.*resteasy-.*.jar$|^.*felles-.*.jar$");
         webAppContext.setSecurityHandler(createSecurityHandler());
         updateMetaData(webAppContext.getMetaData());
@@ -222,7 +224,7 @@ public class JettyServer {
             .distinct()
             .collect(Collectors.toList());
 
-        metaData.setWebInfClassesDirs(resources);
+        metaData.setWebInfClassesResources(resources);
     }
 
     protected List<Class<?>> getWebInfClasses() {

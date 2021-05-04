@@ -9,6 +9,7 @@ import javax.persistence.LockModeType;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class LåsRepository {
@@ -61,7 +62,7 @@ public class LåsRepository {
         LockModeType lockMode = LockModeType.PESSIMISTIC_FORCE_INCREMENT;
         Object entity = entityManager.find(KoblingEntitet.class, id);
         if (entity == null) {
-            throw KoblingRepositoryFeil.FACTORY.fantIkkeEntitetForLåsing(KoblingEntitet.class.getSimpleName(), id).toException();
+            throw new TekniskException("FT-131239", String.format("Fant ikke entitet for låsing [%s], id=%s.", KoblingEntitet.class.getSimpleName(), id));
         } else {
             entityManager.lock(entity, lockMode);
         }

@@ -17,11 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 @FaktaOmBeregningTilfelleRef("VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD")
@@ -37,28 +33,16 @@ public class VurderTidsbegrensetArbeidsforholdOppdaterer implements FaktaOmBereg
             BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(a -> a.getAndelsnr().equals(arbeidsforhold.getAndelsnr()))
                     .findFirst()
-                    .orElseThrow(() -> VurderTidsbegrensetArbeidsforholdOppdatererFeil.FACTORY.finnerIkkeAndelFeil().toException());
+                    .orElseThrow(() -> new TekniskException("FT-238175", "Finner ikke andelen for eksisterende grunnlag"));
 
             // Setter Fakta-aggregat
             BGAndelArbeidsforholdDto arbeidsforholdDto = korrektAndel.getBgAndelArbeidsforhold()
-                    .orElseThrow(() -> VurderTidsbegrensetArbeidsforholdOppdatererFeil.FACTORY.finnerIkkeArbeidsforholdFeil().toException());
+                    .orElseThrow(() -> new TekniskException("FT-238176", "Finner ikke arbeidsforhold for eksisterende andel"));
             FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaAggregatBuilder.getFaktaArbeidsforholdBuilderFor(arbeidsforholdDto.getArbeidsgiver(), arbeidsforholdDto.getArbeidsforholdRef())
                     .medErTidsbegrenset(arbeidsforhold.isTidsbegrensetArbeidsforhold());
             faktaAggregatBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());
             grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
         }
-    }
-
-    private interface VurderTidsbegrensetArbeidsforholdOppdatererFeil extends DeklarerteFeil {
-
-        VurderTidsbegrensetArbeidsforholdOppdatererFeil FACTORY = FeilFactory.create(VurderTidsbegrensetArbeidsforholdOppdatererFeil.class);
-
-        @TekniskFeil(feilkode = "FT-238175", feilmelding = "Finner ikke andelen for eksisterende grunnlag", logLevel = LogLevel.WARN)
-        Feil finnerIkkeAndelFeil();
-
-
-        @TekniskFeil(feilkode = "FT-238176", feilmelding = "Finner ikke arbeidsforhold for eksisterende andel", logLevel = LogLevel.WARN)
-        Feil finnerIkkeArbeidsforholdFeil();
     }
 
 

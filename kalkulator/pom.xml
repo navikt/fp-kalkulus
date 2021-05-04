@@ -45,10 +45,6 @@
         </dependency>
 
         <!-- Eksterne avhengigheter til andre prosjekter-->
-        <dependency>
-            <groupId>org.threeten</groupId>
-            <artifactId>threeten-extra</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>no.nav.foreldrepenger.felles</groupId>

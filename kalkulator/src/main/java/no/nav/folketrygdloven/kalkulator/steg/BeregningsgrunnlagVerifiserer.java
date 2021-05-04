@@ -20,11 +20,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.fp.GraderingUtenBeregningsgrunnl
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
 public final class BeregningsgrunnlagVerifiserer {
 
@@ -107,7 +103,7 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserAtAndelerSomGraderesHarGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG = GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag, aktivitetGradering);
         if (!andelerMedGraderingUtenBG.isEmpty()) {
-            throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.graderingUtenBG(andelerMedGraderingUtenBG.get(0).getAktivitetStatus().getKode()).toException();
+            throw new TekniskException("FT-370746", String.format("Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", andelerMedGraderingUtenBG.get(0).getAktivitetStatus().getKode()));
         }
     }
 
@@ -179,28 +175,15 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserIkkeTomListe(Collection<?> liste, String obj) {
         Objects.requireNonNull(liste, "Liste");
         if (liste.isEmpty()) {
-            throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.verifiserIkkeTomListeFeil(obj).toException();
+            throw new TekniskException("FT-370742", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
         }
     }
 
     private static void verifiserOptionalPresent(Optional<?> opt, String obj) {
         Objects.requireNonNull(opt, "Optional");
         if (!opt.isPresent()) {
-            throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.verifiserOptionalPresentFeil(obj).toException();
+            throw new TekniskException("FT-370743", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
         }
     }
 
-    private interface BeregningsgrunnlagVerifisererFeil extends DeklarerteFeil {
-        BeregningsgrunnlagVerifisererFeil FEILFACTORY = FeilFactory.create(BeregningsgrunnlagVerifisererFeil.class);
-
-        @TekniskFeil(feilkode = "FT-370742", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", logLevel = LogLevel.ERROR)
-        Feil verifiserIkkeTomListeFeil(String obj);
-
-        @TekniskFeil(feilkode = "FT-370743", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", logLevel = LogLevel.ERROR)
-        Feil verifiserOptionalPresentFeil(String obj);
-
-        @TekniskFeil(feilkode = "FT-370746", feilmelding = "Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", logLevel = LogLevel.WARN)
-        Feil graderingUtenBG(String andelStatus);
-
-    }
 }

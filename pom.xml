@@ -44,11 +44,11 @@
 
         <fpsak.nare.version>2.1.4</fpsak.nare.version>
 
-        <fpsak.tidsserie.version>2.5.5</fpsak.tidsserie.version>
+        <fpsak.tidsserie.version>2.5.6</fpsak.tidsserie.version>
 
         <beregningsgrunnlag.regelmodell.version>2.1.19</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>3.0.99</felles.version>
+        <felles.version>3.2.41</felles.version>
 
         <prometheus.version>0.10.0</prometheus.version>
         <junit.version>5.7.1</junit.version>
@@ -146,9 +146,20 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>2.0.1.Final</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>2.0.2</version>
+            </dependency>
+            <dependency>
+                <!-- kan fjernes ved Jakarta EE 9/ oppgradering av jakarta.platform -->
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>2.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>3.0.3</version>
             </dependency>
 
             <dependency>
@@ -186,13 +197,6 @@
                 <groupId>com.vladmihalcea</groupId>
                 <artifactId>hibernate-types-52</artifactId>
                 <version>2.10.4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>3.0.0</version>
-                <scope>compile</scope>
             </dependency>
 
             <dependency>
@@ -256,13 +260,6 @@
             <dependency>
                 <!-- Transitive avhengighet resolution for å sikre bestemt 
                     versjon -->
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>2.10.10</version>
-            </dependency>
-            <dependency>
-                <!-- Transitive avhengighet resolution for å sikre bestemt 
-                    versjon -->
                 <groupId>org.owasp.encoder</groupId>
                 <artifactId>encoder</artifactId>
                 <version>1.2.3</version>
@@ -270,7 +267,7 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-healthchecks</artifactId>
-                <version>4.1.20</version>
+                <version>4.1.21</version>
             </dependency>
             <dependency>
                 <groupId>io.prometheus</groupId>
@@ -445,7 +442,7 @@
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>3.8.0.2131</version>
+                    <version>3.9.0.2155</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

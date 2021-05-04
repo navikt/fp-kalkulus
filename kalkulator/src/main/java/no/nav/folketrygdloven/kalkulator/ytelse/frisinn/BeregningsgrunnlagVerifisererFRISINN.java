@@ -14,11 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
 public final class BeregningsgrunnlagVerifisererFRISINN {
 
@@ -95,25 +91,14 @@ public final class BeregningsgrunnlagVerifisererFRISINN {
     private static void verifiserIkkeTomListe(Collection<?> liste, String obj) {
         Objects.requireNonNull(liste, "Liste");
         if (liste.isEmpty()) {
-            throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.verifiserIkkeTomListeFeil(obj).toException();
+            throw new TekniskException("FT-370744", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
         }
     }
 
     private static void verifiserOptionalPresent(Optional<?> opt, String obj) {
         Objects.requireNonNull(opt, "Optional");
         if (opt.isEmpty()) {
-            throw BeregningsgrunnlagVerifisererFeil.FEILFACTORY.verifiserOptionalPresentFeil(obj).toException();
+            throw new TekniskException("FT-370745", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
         }
-    }
-
-    private interface BeregningsgrunnlagVerifisererFeil extends DeklarerteFeil {
-        BeregningsgrunnlagVerifisererFeil FEILFACTORY = FeilFactory.create(BeregningsgrunnlagVerifisererFeil.class);
-
-        @TekniskFeil(feilkode = "FT-370744", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", logLevel = LogLevel.ERROR)
-        Feil verifiserIkkeTomListeFeil(String obj);
-
-        @TekniskFeil(feilkode = "FT-370745", feilmelding = "Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", logLevel = LogLevel.ERROR)
-        Feil verifiserOptionalPresentFeil(String obj);
-
     }
 }

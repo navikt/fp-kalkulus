@@ -2,47 +2,69 @@ package no.nav.folketrygdloven.kalkulus.app.exceptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.nav.vedtak.feil.Feil;
 
 public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViolationException> {
 
-    private static final Logger log = LoggerFactory.getLogger(ConstraintViolationMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConstraintViolationMapper.class);
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        Collection<FeltFeilDto> feilene = new ArrayList<>();
+        log(exception);
+        return lagResponse(exception);
+    }
 
-        Set<ConstraintViolation<?>> constraintViolations = exception.getConstraintViolations();
-        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            String feltNavn = constraintViolation.getPropertyPath().toString();
-            feilene.add(new FeltFeilDto(feltNavn, constraintViolation.getMessage(), null));
+    private static Response lagResponse(ConstraintViolationException exception) {
+        Collection<FeltFeilDto> feilene = new ArrayList<>();
+        for (var constraintViolation : exception.getConstraintViolations()) {
+            var feltNavn = getFeltNavn(constraintViolation.getPropertyPath());
+            feilene.add(new FeltFeilDto(feltNavn, constraintViolation.getMessage()));
         }
-        Feil feil;
-        if (feilene.isEmpty()) {
-            feil = FeltValideringFeil.FACTORY.feilUnderValideringAvContraints(exception);
-        } else {
-            List<String> feltNavn = feilene.stream().map(FeltFeilDto::toString).collect(Collectors.toList());
-            feil = FeltValideringFeil.FACTORY.feltverdiKanIkkeValideres(feltNavn);
+        var feltNavn = feilene.stream().map(FeltFeilDto::navn).collect(Collectors.toList());
+        var feilmelding = String.format(
+                "Det oppstod en valideringsfeil på felt %s. " + "Vennligst kontroller at alle feltverdier er korrekte.",
+                feltNavn);
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new FeilDto(feilmelding, feilene))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
+    private void log(ConstraintViolationException exception) {
+        LOG.warn("Det oppstod en valideringsfeil: {}", constraints(exception));
+    }
+
+    private static Set<String> constraints(ConstraintViolationException exception) {
+        return exception.getConstraintViolations()
+                .stream()
+                .map(cv -> cv.getRootBeanClass().getSimpleName() + "." + cv.getLeafBean().getClass().getSimpleName()
+                        + "." + fieldName(cv) + " - " + cv.getMessage())
+                .collect(Collectors.toSet());
+    }
+
+    private static String fieldName(ConstraintViolation<?> cv) {
+        String field = null;
+        for (var node : cv.getPropertyPath()) {
+            field = node.getName();
         }
-        feil.log(log);
-        return Response
-            .status(Response.Status.BAD_REQUEST)
-            .entity(new FeilDto(feil.getFeilmelding(), feilene))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
+        return field;
+    }
+
+    private static String getFeltNavn(Path propertyPath) {
+        return propertyPath instanceof PathImpl ? ((PathImpl) propertyPath).getLeafNode().toString() : null;
     }
 
 }

@@ -8,14 +8,9 @@ import org.jboss.resteasy.spi.ApplicationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.vedtak.exception.VLException;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.FunksjonellFeil;
-import no.nav.vedtak.feil.deklarasjon.ManglerTilgangFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.FunksjonellException;
+import no.nav.vedtak.exception.ManglerTilgangException;
+import no.nav.vedtak.exception.TekniskException;
 
 @SuppressWarnings("resource")
 public class GeneralRestExceptionMapperTest {
@@ -29,23 +24,23 @@ public class GeneralRestExceptionMapperTest {
 
     @Test
     public void skalMappeManglerTilgangFeil() {
-        Feil manglerTilgangFeil = TestFeil.FACTORY.manglerTilgangFeil();
+        var manglerTilgangFeil = manglerTilgangFeil();
 
-        Response response = generalRestExceptionMapper.toResponse(new ApplicationException(manglerTilgangFeil.toException()));
+        Response response = generalRestExceptionMapper.toResponse(new ApplicationException(manglerTilgangFeil));
 
         assertThat(response.getStatus()).isEqualTo(403);
         assertThat(response.getEntity()).isInstanceOf(FeilDto.class);
         FeilDto feilDto = (FeilDto) response.getEntity();
 
         assertThat(feilDto.getType()).isEqualTo(FeilType.MANGLER_TILGANG_FEIL);
-        assertThat(feilDto.getFeilmelding()).isEqualTo("ManglerTilgangFeilmeldingKode");
+        assertThat(feilDto.getFeilmelding()).isEqualTo("MANGLER_TILGANG_FEIL:ManglerTilgangFeilmeldingKode");
     }
 
     @Test
     public void skalMappeFunksjonellFeil() {
-        Feil funksjonellFeil = TestFeil.FACTORY.funksjonellFeil();
+        var funksjonellFeil = funksjonellFeil();
 
-        Response response = generalRestExceptionMapper.toResponse(new ApplicationException(funksjonellFeil.toException()));
+        Response response = generalRestExceptionMapper.toResponse(new ApplicationException(funksjonellFeil));
 
         assertThat(response.getEntity()).isInstanceOf(FeilDto.class);
         FeilDto feilDto = (FeilDto) response.getEntity();
@@ -57,7 +52,7 @@ public class GeneralRestExceptionMapperTest {
 
     @Test
     public void skalMappeVLException() {
-        VLException vlException = TestFeil.FACTORY.tekniskFeil().toException();
+        var vlException = tekniskFeil();
 
         Response response = generalRestExceptionMapper.toResponse(new ApplicationException(vlException));
 
@@ -71,7 +66,7 @@ public class GeneralRestExceptionMapperTest {
     @Test
     public void skalMappeGenerellFeil() {
         String feilmelding = "en helt generell feil";
-        RuntimeException generellFeil = new RuntimeException(feilmelding);
+        var generellFeil = new RuntimeException(feilmelding);
 
         Response response = generalRestExceptionMapper.toResponse(new ApplicationException(generellFeil));
 
@@ -82,16 +77,15 @@ public class GeneralRestExceptionMapperTest {
         assertThat(feilDto.getFeilmelding()).contains(feilmelding);
     }
 
-    interface TestFeil extends DeklarerteFeil {
-        TestFeil FACTORY = FeilFactory.create(TestFeil.class); // NOSONAR ok med konstant i interface her
+    private static FunksjonellException funksjonellFeil() {
+        return new FunksjonellException("FUNK_FEIL", "en funksjonell feilmelding", "et løsningsforslag");
+    }
 
-        @FunksjonellFeil(feilkode = "FUNK_FEIL", feilmelding = "en funksjonell feilmelding", løsningsforslag = "et løsningsforslag", logLevel = LogLevel.WARN)
-        Feil funksjonellFeil();
+    private static TekniskException tekniskFeil() {
+        return new TekniskException("TEK_FEIL", "en teknisk feilmelding");
+    }
 
-        @TekniskFeil(feilkode = "TEK_FEIL", feilmelding = "en teknisk feilmelding", logLevel = LogLevel.WARN)
-        Feil tekniskFeil();
-
-        @ManglerTilgangFeil(feilkode = "MANGLER_TILGANG_FEIL", feilmelding = "ManglerTilgangFeilmeldingKode", logLevel = LogLevel.WARN)
-        Feil manglerTilgangFeil();
+    private static ManglerTilgangException manglerTilgangFeil() {
+        return new ManglerTilgangException("MANGLER_TILGANG_FEIL","ManglerTilgangFeilmeldingKode");
     }
 }

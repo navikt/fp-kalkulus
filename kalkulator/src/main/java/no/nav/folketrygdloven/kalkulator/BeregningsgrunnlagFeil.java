@@ -2,16 +2,12 @@ package no.nav.folketrygdloven.kalkulator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
-public interface BeregningsgrunnlagFeil extends DeklarerteFeil {
-    BeregningsgrunnlagFeil FEILFACTORY = FeilFactory.create(BeregningsgrunnlagFeil.class); //$NON-NLS-1$
+public class BeregningsgrunnlagFeil {
 
-    @TekniskFeil(feilkode = "FT-370602", feilmelding = "Kunne ikke serialisere regelinput for beregningsgrunnlag.", logLevel = LogLevel.WARN)
-    Feil kanIkkeSerialisereRegelinput(JsonProcessingException e);
+    public static TekniskException kanIkkeSerialisereRegelinput(JsonProcessingException e) {
+        return new TekniskException( "FT-370602", "Kunne ikke serialisere regelinput for beregningsgrunnlag.");
+    }
 }
 

@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.input.HentInputResponsKode;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputFeil;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -25,7 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.feil.FeilFactory;
+import no.nav.vedtak.exception.TekniskException;
 
 @Dependent
 public class GUIBeregningsgrunnlagInputTjeneste {
@@ -105,9 +104,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 .map(grunnlagEntitet -> {
                     Long koblingId = grunnlagEntitet.getKoblingId();
                     var kalkulatorInput = Optional.ofNullable(koblingKalkulatorInput.get(koblingId))
-                            .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKalkulatorInput(koblingId).toException());
+                            .orElseThrow(() -> new TekniskException("FT-KALKULUS-INPUT-1000000", String.format("Kalkulus finner ikke kalkulator input for koblingId: %s", koblingId)));
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
-                            .orElseThrow(() -> FeilFactory.create(KalkulatorInputFeil.class).kalkulusFinnerIkkeKobling(koblingId).toException());
+                            .orElseThrow(() -> new TekniskException("FT-KALKULUS-INPUT-1000003", String.format("Kalkulus finner ikke kobling: %s", koblingId)));
                     BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
                     BeregningsgrunnlagGrunnlagDto mappedGrunnlag = mapGrunnlag(grunnlagEntitet);
                     return leggTilGrunnlagFraFordel(input, grunnlagFraFordel).medBeregningsgrunnlagGrunnlag(mappedGrunnlag);

@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
-import static no.nav.folketrygdloven.kalkulus.håndtering.HåndteringApplikasjonFeil.FACTORY;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
+import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
@@ -76,7 +75,7 @@ public class HåndtererApplikasjonTjeneste {
                                                                            String hånterKode) {
         Instance<Object> instance = finnAdapter(dtoClass, BeregningHåndterer.class);
         if (instance.isUnsatisfied()) {
-            throw FACTORY.kanIkkeFinneHåndterer(hånterKode).toException();
+            throw new TekniskException("FT-770745", String.format("Finner ikke håndtering for aksjonspunkt med kode: %s", hånterKode));
         } else {
             Object minInstans = instance.get();
             if (minInstans.getClass().isAnnotationPresent(Dependent.class)) {

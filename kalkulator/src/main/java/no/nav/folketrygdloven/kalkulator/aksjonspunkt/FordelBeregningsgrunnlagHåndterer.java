@@ -24,11 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
 public class FordelBeregningsgrunnlagHåndterer {
 
@@ -189,7 +185,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         return perioder.stream()
                 .filter(periode -> periode.getBeregningsgrunnlagPeriodeFom().equals(endretPeriode.getFom()))
                 .findFirst()
-                .orElseThrow(() -> FordelBeregningsgrunnlagHåndtererFeil.FACTORY.finnerIkkePeriodeFeil(input.getKoblingReferanse().getKoblingId()).toException());
+                .orElseThrow(() -> new TekniskException("FT-401647", String.format("Finner ikke periode for eksisterende grunnlag. Behandling  %s", input.getKoblingReferanse().getKoblingId())));
     }
 
     private static List<FordelBeregningsgrunnlagAndelDto> sorterMedNyesteSist(FordelBeregningsgrunnlagPeriodeDto endretPeriode) {
@@ -203,15 +199,6 @@ public class FordelBeregningsgrunnlagHåndterer {
             return 0;
         };
         return endretPeriode.getAndeler().stream().sorted(FordelBeregningsgrunnlagAndelDtoComparator).collect(Collectors.toList());
-    }
-
-    private interface FordelBeregningsgrunnlagHåndtererFeil extends DeklarerteFeil {
-
-
-        FordelBeregningsgrunnlagHåndtererFeil FACTORY = FeilFactory.create(FordelBeregningsgrunnlagHåndtererFeil.class);
-
-        @TekniskFeil(feilkode = "FT-401647", feilmelding = "Finner ikke periode for eksisterende grunnlag. Behandling  %s", logLevel = LogLevel.WARN)
-        Feil finnerIkkePeriodeFeil(long behandlingId);
     }
 
 }

@@ -13,11 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.vedtak.feil.Feil;
-import no.nav.vedtak.feil.FeilFactory;
-import no.nav.vedtak.feil.LogLevel;
-import no.nav.vedtak.feil.deklarasjon.DeklarerteFeil;
-import no.nav.vedtak.feil.deklarasjon.TekniskFeil;
+import no.nav.vedtak.exception.TekniskException;
 
 /**
  * Tjeneste som finner andeler basert på informasjon om andelen (arbeidsforholdId, andelsnr)
@@ -82,7 +78,7 @@ public class MatchBeregningsgrunnlagTjeneste {
                 .isPresent()
             )
             .findFirst()
-            .orElseThrow(() -> MatchBeregningsgrunnlagTjenesteFeil.FACTORY.finnerIkkeAndelFeil().toException()));
+            .orElseThrow(MatchBeregningsgrunnlagTjeneste::finnerIkkeAndelFeil));
     }
 
 
@@ -95,7 +91,7 @@ public class MatchBeregningsgrunnlagTjeneste {
      */
     public static BeregningsgrunnlagPrStatusOgAndelDto matchMedAndelFraPeriodePåAndelsnr(BeregningsgrunnlagPeriodeDto periode, Long andelsnr) {
         return matchMedAndelFraPeriodePåAndelsnrOmFinnes(periode, andelsnr)
-            .orElseThrow(() -> MatchBeregningsgrunnlagTjenesteFeil.FACTORY.finnerIkkeAndelFeil().toException());
+            .orElseThrow(MatchBeregningsgrunnlagTjeneste::finnerIkkeAndelFeil);
     }
 
 
@@ -134,15 +130,12 @@ public class MatchBeregningsgrunnlagTjeneste {
             .findFirst();
     }
 
-    public interface MatchBeregningsgrunnlagTjenesteFeil extends DeklarerteFeil {
+    public static TekniskException finnerIkkeAndelFeil() {
+        return new TekniskException("FT-401644", "Finner ikke andelen for eksisterende grunnlag.");
+    }
 
-        MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil FACTORY = FeilFactory.create(MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil.class);
-
-        @TekniskFeil(feilkode = "FT-401644", feilmelding = "Finner ikke andelen for eksisterende grunnlag.", logLevel = LogLevel.WARN)
-        Feil finnerIkkeAndelFeil();
-
-        @TekniskFeil(feilkode = "FT-401692", feilmelding = "Fant flere enn 1 matchende periode i gjeldende grunnlag.", logLevel = LogLevel.WARN)
-        Feil fantFlereEnn1Periode();
+    public static TekniskException fantFlereEnn1Periode() {
+        return new TekniskException("FT-401692", "Fant flere enn 1 matchende periode i gjeldende grunnlag.");
     }
 
 }

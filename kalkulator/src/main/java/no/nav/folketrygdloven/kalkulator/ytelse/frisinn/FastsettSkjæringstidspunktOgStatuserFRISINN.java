@@ -108,7 +108,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
     }
 
     private static String toJson(AktivitetStatusModell grunnlag) {
-        return JsonMapper.toJson(grunnlag, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(grunnlag, BeregningsgrunnlagFeil::kanIkkeSerialisereRegelinput);
     }
 
 

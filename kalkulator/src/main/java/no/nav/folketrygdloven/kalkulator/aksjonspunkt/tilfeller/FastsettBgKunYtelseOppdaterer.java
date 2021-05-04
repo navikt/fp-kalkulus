@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FastsattBrukersAndel;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FastsettBgKunYtelseDto;
+import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
+import no.nav.vedtak.exception.TekniskException;
 
 
 @ApplicationScoped
@@ -124,7 +125,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
                 .findFirst()
-                .orElseThrow(() -> FastsettBGKunYtelseOppdatererFeil.FACTORY.finnerIkkeAndelFeil().toException());
+                .orElseThrow(() -> new TekniskException("FT-401646", "Finner ikke andelen for eksisterende grunnlag."));
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto finnAndelFraForrigeGrunnlag(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {
@@ -132,7 +133,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
                 .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
                 .filter(periodeIGjeldendeGrunnlag -> periodeIGjeldendeGrunnlag.getPeriode().overlapper(periode.getPeriode())).collect(Collectors.toList());
         if (matchendePerioder.size() != 1) {
-            throw MatchBeregningsgrunnlagTjeneste.MatchBeregningsgrunnlagTjenesteFeil.FACTORY.fantFlereEnn1Periode().toException();
+            throw MatchBeregningsgrunnlagTjeneste.fantFlereEnn1Periode();
         }
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelIForrigeGrunnlag = matchendePerioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))

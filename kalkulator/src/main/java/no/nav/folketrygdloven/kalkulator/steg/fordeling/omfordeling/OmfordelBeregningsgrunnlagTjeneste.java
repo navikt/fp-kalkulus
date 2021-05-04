@@ -57,7 +57,7 @@ public class OmfordelBeregningsgrunnlagTjeneste {
     }
 
     private static String toJson(List<BeregningsgrunnlagPeriode> regelPerioder) {
-        return JsonMapper.toJson(regelPerioder, BeregningsgrunnlagFeil.FEILFACTORY::kanIkkeSerialisereRegelinput);
+        return JsonMapper.toJson(regelPerioder, BeregningsgrunnlagFeil::kanIkkeSerialisereRegelinput);
     }
 
 }
