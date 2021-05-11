@@ -75,7 +75,10 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                     Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
-            LocalDate tomDato = finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
+            // Hvis vi kun har en relevant aktivitet har vi ikke anledning til å filtrere denne bort pga permisjon, så denne workarounden må til
+            LocalDate tomDato = relevanteAktiviteter.size() == 1
+                    ? gjeldendePeriode.getTomDato()
+                    : finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
             if (!tomDato.isBefore(gjeldendePeriode.getFomDato())) {
                 return Optional.of(lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
                         Periode.of(gjeldendePeriode.getFomDato(), tomDato),
@@ -106,7 +109,11 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
         }
     }
 
-    private LocalDate finnTomdatoTaHensynTilPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, LocalDate skjæringstidspunktOpptjening, Intervall gjeldendePeriode, Arbeidsgiver arbeidsgiver) {
+    private LocalDate finnTomdatoTaHensynTilPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                      OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
+                                                      LocalDate skjæringstidspunktOpptjening,
+                                                      Intervall gjeldendePeriode,
+                                                      Arbeidsgiver arbeidsgiver) {
         var relevantYrkesaktivitet = yrkesaktiviteter
                 .stream()
                 .filter(ya -> ya.gjelderFor(
