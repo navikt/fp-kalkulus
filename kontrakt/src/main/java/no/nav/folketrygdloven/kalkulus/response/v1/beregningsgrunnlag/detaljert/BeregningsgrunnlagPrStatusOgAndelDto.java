@@ -205,7 +205,23 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Max(Long.MAX_VALUE)
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
+    // TODO Fjern dette feltet når det er laget en egen brevtjeneste
+    @JsonProperty(value = "avkortetMotInntektstak")
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    @Valid
+    private BigDecimal avkortetMotInntektstak;
+
     public BeregningsgrunnlagPrStatusOgAndelDto() {
+    }
+
+    public BeregningsgrunnlagPrStatusOgAndelDto(@NotNull @Valid AktivitetStatus aktivitetStatus,
+                                                @Valid @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}") @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}") @Digits(integer = 10, fraction = 2) BigDecimal bruttoPrÅr,
+                                                @Valid BGAndelArbeidsforhold bgAndelArbeidsforhold) {
+        this.aktivitetStatus = aktivitetStatus;
+        this.bruttoPrÅr = bruttoPrÅr;
+        this.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
     }
 
     public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr, @NotNull @Valid AktivitetStatus aktivitetStatus,
@@ -397,4 +413,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return besteberegningPrÅr;
     }
 
+    public void setAvkortetMotInntektstak(BigDecimal avkortetMotInntektstak) {
+        this.avkortetMotInntektstak = avkortetMotInntektstak;
+    }
+
+    public BigDecimal getAvkortetMotInntektstak() {
+        return avkortetMotInntektstak;
+    }
 }
