@@ -1,8 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -71,6 +74,9 @@ public enum FagsakYtelseType implements Kodeverdi {
 
     private static final Map<String, FagsakYtelseType> KODER = new LinkedHashMap<>();
 
+    private static final Set<FagsakYtelseType> ARENA_YTELSER = new HashSet<>(Arrays.asList(DAGPENGER,
+            ARBEIDSAVKLARINGSPENGER));
+
     static {
         for (var v : values()) {
             if (KODER.putIfAbsent(v.kode, v) != null) {
@@ -89,10 +95,10 @@ public enum FagsakYtelseType implements Kodeverdi {
 
     @JsonIgnore
     private String navn;
-    
+
     @JsonIgnore
     private String fpsakKode;
-    
+
     private String kode;
 
     private FagsakYtelseType(String kode) {
@@ -109,7 +115,7 @@ public enum FagsakYtelseType implements Kodeverdi {
         this.navn = navn;
         this.fpsakKode = fpsakKode;
     }
-    
+
     @JsonCreator(mode = Mode.DELEGATING)
     public static FagsakYtelseType fraKode(Object node) {
         if (node == null) {
@@ -131,13 +137,17 @@ public enum FagsakYtelseType implements Kodeverdi {
         return Collections.unmodifiableMap(KODER);
     }
 
+    public boolean erArenaytelse() {
+        return ARENA_YTELSER.contains(this);
+    }
+
     @JsonProperty
     @Override
     public String getKode() {
         return kode;
     }
 
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {

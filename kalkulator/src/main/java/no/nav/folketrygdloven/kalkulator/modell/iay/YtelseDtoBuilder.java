@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
@@ -65,7 +66,24 @@ public class YtelseDtoBuilder {
     }
 
     public YtelseDto build() {
+        validerUtbetalingsgrader();
         return ytelse;
+    }
+
+    private void validerUtbetalingsgrader() {
+        if (ytelse.getRelatertYtelseType().erArenaytelse()) {
+            Optional<YtelseAnvistDto> ulovligMeldekort = ytelse.getYtelseAnvist().stream()
+                    .filter(this::harUtbetalingsgradOver200)
+                    .findFirst();
+            if (ulovligMeldekort.isPresent()) {
+                throw new IllegalStateException("Finnes meldekort " + ulovligMeldekort.get() +
+                        " med utbetalingsgrad som overskrider maksimalt tillatte verdi");
+            }
+        }
+    }
+
+    private boolean harUtbetalingsgradOver200(YtelseAnvistDto ya) {
+        return ya.getUtbetalingsgradProsent().orElse(Stillingsprosent.ZERO).getVerdi().compareTo(BigDecimal.valueOf(200)) > 0;
     }
 
     public YtelseAnvistDtoBuilder getAnvistBuilder() {
