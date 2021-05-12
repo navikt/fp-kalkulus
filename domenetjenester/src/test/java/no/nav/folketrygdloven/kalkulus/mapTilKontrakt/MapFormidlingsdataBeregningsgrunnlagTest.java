@@ -12,6 +12,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
+
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -25,6 +30,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
+
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
@@ -50,8 +56,15 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         lagBGPeriode(STP_DATO, etterSTP(10),
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000));
         lagUtbGrunnlasg(lagYGArbeid(orgnr, ref, UttakArbeidType.ORDINÆRT_ARBEID), lagYGPeriode(STP_DATO, etterSTP(10), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
 
+        // Test for omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000);
+
+        // Test for pleiepenger
+        res = mapForPleiepenger();
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000);
@@ -65,8 +78,15 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagBGAndel(AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 500000),
                 lagBGAndel(AktivitetStatus.FRILANSER, null, null, 500000));
         lagUtbGrunnlasg(lagYGArbeid(orgnr, ref, UttakArbeidType.ORDINÆRT_ARBEID), lagYGPeriode(STP_DATO, etterSTP(10), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
 
+        // Omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 100000);
+
+        // Pleiepenger
+        res = mapForPleiepenger();
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 100000);
@@ -88,16 +108,32 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
        lagUtbGrunnlasg(lagYGArbeid(null, null, UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE),
                 lagYGPeriode(etterSTP(11), etterSTP(50), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
+
+       // Omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
 
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
 
-        // Assert første periode
+        // Assert første periode - omsorgspenger
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 200000);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
 
-        // Assert andre periode
+        // Assert andre periode - omsorgspenger
+        assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 0);
+        assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 100000);
+
+        // Pleiepenger
+        res = mapForPleiepenger();
+
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
+
+        // Assert første periode - pleiepenger
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 200000);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
+
+        // Assert andre periode - pleiepenger
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 0);
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 100000);
     }
@@ -114,12 +150,24 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
         lagUtbGrunnlasg(lagYGArbeid(null, null, UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE),
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
+
+        // Omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
 
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
 
-        // Assert første periode
+        // Assert første periode - omsorgspenger
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 200000);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 100000);
+
+        // Pleiepenger
+        res = mapForPleiepenger();
+
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
+
+        // Assert første periode - pleiepenger
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 200000);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 100000);
     }
@@ -138,12 +186,25 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
         lagUtbGrunnlasg(lagYGArbeid(null, null, UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE),
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
+
+        // Omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
 
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
 
-        // Assert første periode
+        // Assert første periode - omsorgspenger
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 400000);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.FRILANSER, null, null, 200000);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
+
+        // Pleiepenger
+        res = mapForPleiepenger();
+
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
+
+        // Assert første periode - pleiepenger
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr, ref, 400000);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.FRILANSER, null, null, 200000);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
@@ -167,17 +228,35 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 lagYGPeriode(STP_DATO, etterSTP(10), 100));
         lagUtbGrunnlasg(lagYGArbeid(orgnr2, ref2, UttakArbeidType.ORDINÆRT_ARBEID),
                 lagYGPeriode(etterSTP(11), etterSTP(40), 100));
-        BeregningsgrunnlagGrunnlagDto res = map();
+
+        // Omsorgspenger
+        BeregningsgrunnlagGrunnlagDto res = mapForOmsorgspenger();
 
         assertThat(res.getBeregningsgrunnlag()).isNotNull();
         assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
 
-        // Assert første periode
+        // Assert første periode - omsorgspenger
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr1, ref1, 100000);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr2, ref2, 0);
         assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
 
-        // Assert andre periode
+        // Assert andre periode - omsorgspenger
+        assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr1, ref1, 0);
+        assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr2, ref2, 0);
+        assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
+
+        // Pleiepenger
+        res = mapForPleiepenger();
+
+        assertThat(res.getBeregningsgrunnlag()).isNotNull();
+        assertThat(res.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
+
+        // Assert første periode - pleiepenger
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr1, ref1, 100000);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.ARBEIDSTAKER, orgnr2, ref2, 0);
+        assertAndel(res.getBeregningsgrunnlag(), STP_DATO, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
+
+        // Assert andre periode - pleiepenger
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr1, ref1, 0);
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.ARBEIDSTAKER, orgnr2, ref2, 0);
         assertAndel(res.getBeregningsgrunnlag(), etterSTP(11), AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, null, null, 0);
@@ -201,10 +280,19 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         assertThat(andel.getAvkortetMotInntektstak().compareTo(BigDecimal.valueOf(inntektstak))).isEqualTo(0);
     }
 
-    private BeregningsgrunnlagGrunnlagDto map() {
+    private BeregningsgrunnlagGrunnlagDto mapForOmsorgspenger() {
         OmsorgspengerGrunnlag ompGr = new OmsorgspengerGrunnlag(utbGrader);
+        return map(ompGr);
+    }
+
+    private BeregningsgrunnlagGrunnlagDto mapForPleiepenger() {
+        PleiepengerSyktBarnGrunnlag pleieGr = new PleiepengerSyktBarnGrunnlag(utbGrader);
+        return map(pleieGr);
+    }
+
+    private BeregningsgrunnlagGrunnlagDto map(UtbetalingsgradGrunnlag grunnlag) {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(),
-                Optional.empty(), STP), null, null, ompGr);
+                Optional.empty(), STP), null, null, (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder, null,
                 null, null, false, GRUNNBELØP);

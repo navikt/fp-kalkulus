@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -20,20 +22,23 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 public class MapFormidlingsdataBeregningsgrunnlag {
 
     public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(BeregningsgrunnlagGrunnlagDto dto, BeregningsgrunnlagGUIInput input) {
-        if (!(input.getYtelsespesifiktGrunnlag() instanceof OmsorgspengerGrunnlag) ) {
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof OmsorgspengerGrunnlag || input.getYtelsespesifiktGrunnlag() instanceof PleiepengerSyktBarnGrunnlag)) {
             return dto;
         }
         BigDecimal grenseverdi = dto.getBeregningsgrunnlag().getGrunnbeløp() == null
                 ? BigDecimal.ZERO
                 : dto.getBeregningsgrunnlag().getGrunnbeløp().multiply(BigDecimal.valueOf(6));
-        OmsorgspengerGrunnlag yg = input.getYtelsespesifiktGrunnlag();
+
+        UtbetalingsgradGrunnlag yg = input.getYtelsespesifiktGrunnlag();
+
         dto.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
                 .forEach(periodeDto -> oppdaterAndelerMedFormidlingsfelt(periodeDto, yg, grenseverdi));
+
         return dto;
     }
 
     private static void oppdaterAndelerMedFormidlingsfelt(BeregningsgrunnlagPeriodeDto bgPeriode,
-                                                          OmsorgspengerGrunnlag yg, BigDecimal grenseverdi) {
+                                                          UtbetalingsgradGrunnlag yg, BigDecimal grenseverdi) {
         bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().forEach(andel -> {
             andel.setAvkortetMotInntektstak(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi));
         });
@@ -41,7 +46,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                       BeregningsgrunnlagPeriodeDto bgPeriode,
-                                                OmsorgspengerGrunnlag yg,
+                                                UtbetalingsgradGrunnlag yg,
                                                 BigDecimal grenseverdi) {
         if (andel.getAktivitetStatus().erArbeidstaker()) {
             return finnInntektstakForArbeidstaker(andel, bgPeriode, yg, grenseverdi);
@@ -57,7 +62,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                        BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
-                                                       OmsorgspengerGrunnlag yg,
+                                                       UtbetalingsgradGrunnlag yg,
                                                        BigDecimal grenseverdi) {
         if (!harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andel, yg)) {
             return BigDecimal.ZERO;
@@ -74,7 +79,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static BigDecimal finnInntektstakForFrilans(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                         BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
-                                                        OmsorgspengerGrunnlag yg,
+                                                        UtbetalingsgradGrunnlag yg,
                                                         BigDecimal grenseverdi) {
 
         if (!harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andel, yg)) {
@@ -89,7 +94,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
                 : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
     }
 
-    private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode, OmsorgspengerGrunnlag yg, AktivitetStatus status) {
+    private static BigDecimal finnInntektSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode, UtbetalingsgradGrunnlag yg, AktivitetStatus status) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerSøktOm = inneværendeBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bga -> bga.getAktivitetStatus().equals(status))
                 .filter(bga -> harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), bga, yg))
@@ -99,7 +104,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static BigDecimal finnInntektstakForArbeidstaker(BeregningsgrunnlagPrStatusOgAndelDto andelÅVurdere,
                                                              BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
-                                                             OmsorgspengerGrunnlag yg,
+                                                             UtbetalingsgradGrunnlag yg,
                                                              BigDecimal grenseverdi) {
         boolean harSøkt = harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andelÅVurdere, yg);
         if (!harSøkt) {
@@ -114,7 +119,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
     }
 
     private static BigDecimal finnInntektIkkeSøktOm(BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
-                                                    OmsorgspengerGrunnlag yg) {
+                                                    UtbetalingsgradGrunnlag yg) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndelerUtenUtb = inneværendeBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(bga -> !harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), bga, yg))
                 .collect(Collectors.toList());
@@ -131,7 +136,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static boolean harSøktUtbetalingForAndel(Periode bgPeriode,
                                                      BeregningsgrunnlagPrStatusOgAndelDto bgAndel,
-                                                     OmsorgspengerGrunnlag yg) {
+                                                     UtbetalingsgradGrunnlag yg) {
         return yg.getUtbetalingsgradPrAktivitet().stream()
                 .filter(utb -> matcherMedBGAndel(utb.getUtbetalingsgradArbeidsforhold(), bgAndel))
                 .anyMatch(utb -> harSøktUtbetalingIPeriode(utb.getPeriodeMedUtbetalingsgrad(), bgPeriode));

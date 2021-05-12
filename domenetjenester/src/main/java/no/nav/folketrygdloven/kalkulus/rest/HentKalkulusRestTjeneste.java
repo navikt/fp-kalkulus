@@ -114,7 +114,7 @@ public class HentKalkulusRestTjeneste {
         List<BeregningsgrunnlagGrunnlagDto> dtoer;
 
         // TODO Fjern dette, lag egen tjeneste for brev
-        if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType)) {
+        if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType) || YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
             List<Long> koblinger = new ArrayList<>();
             koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
             Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger);
@@ -133,7 +133,6 @@ public class HentKalkulusRestTjeneste {
         }
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
-
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
