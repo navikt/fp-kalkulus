@@ -26,7 +26,7 @@ class InntektForAndelTjeneste {
     private static final int MND_I_1_ÅR = 12;
 
     private InntektForAndelTjeneste() {
-        // Hide pulbic constructor
+        // Hide public constructor
     }
 
     static BigDecimal finnSnittinntektForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
