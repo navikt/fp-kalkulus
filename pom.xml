@@ -42,11 +42,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.1.4</fpsak.nare.version>
+        <fpsak.nare.version>2.1.5</fpsak.nare.version>
 
-        <fpsak.tidsserie.version>2.5.6</fpsak.tidsserie.version>
+        <fpsak.tidsserie.version>2.5.7</fpsak.tidsserie.version>
 
-        <beregningsgrunnlag.regelmodell.version>2.1.19</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>2.1.20</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>3.2.41</felles.version>
 
@@ -190,13 +190,13 @@
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
-                <version>3.27.0-GA</version>
+                <version>3.28.0-GA</version>
             </dependency>
 
             <dependency>
                 <groupId>com.vladmihalcea</groupId>
                 <artifactId>hibernate-types-52</artifactId>
-                <version>2.10.4</version>
+                <version>2.11.1</version>
             </dependency>
 
             <dependency>
@@ -383,7 +383,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.6</version>
+                    <version>0.8.7</version>
                     <executions>
                         <execution>
                             <goals>
