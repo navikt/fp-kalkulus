@@ -1,8 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
-import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.ARBEIDSAVKLARINGSPENGER;
-import static no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType.DAGPENGER;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,12 +34,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
@@ -160,7 +153,7 @@ public class MapTilBesteberegningRegelmodell {
         YrkesaktivitetFilterDto yrkesaktivitetFilterDto = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         List<Periodeinntekt> inntekterATFLSN = finnInntekterATFLSN(input.getSkjæringstidspunktForBeregning(), inntektFilterDto, yrkesaktivitetFilterDto);
         List<Periodeinntekt> ytelserFraSammenligningsgrunnlaget = lagInntektForYtelseFraSammenligningsgrunnlag(inntektFilterDto);
-        List<Periodeinntekt> ytelserDPOgAAP = lagYtelseDagpengerArbeidsavklaringspenger(ytelseFilterDto);
+        List<Periodeinntekt> ytelserDPOgAAP = MapArenaVedtakTilBesteberegningRegelmodell.lagInntektFraArenaYtelser(ytelseFilterDto);
         List<Periodeinntekt> alleInntekter = new ArrayList<>();
         alleInntekter.addAll(inntekterATFLSN);
         alleInntekter.addAll(ytelserFraSammenligningsgrunnlaget);
@@ -169,31 +162,6 @@ public class MapTilBesteberegningRegelmodell {
     }
 
 
-    private static List<Periodeinntekt> lagYtelseDagpengerArbeidsavklaringspenger(YtelseFilterDto ytelseFilter) {
-        Set<FagsakYtelseType> ytelseTyper = Set.of(DAGPENGER, ARBEIDSAVKLARINGSPENGER);
-        return ytelseFilter.getAlleYtelser().stream()
-                .filter(yt-> ytelseTyper.contains(yt.getRelatertYtelseType()))
-                .map(MapTilBesteberegningRegelmodell::mapYtelseTilPeriodeinntekt)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
-
-    private static List<Periodeinntekt> mapYtelseTilPeriodeinntekt(YtelseDto yt) {
-        // Mapper alle ytelser til DP sidan man ikkje kan ha både AAP og DP på skjæringstidspunktet
-        return yt.getYtelseAnvist().stream()
-                .map(meldekort -> Periodeinntekt.builder()
-                        .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP) // OBS: Utbetaling er eit eingangsbeløp og skjer ikkje daglig
-                        .medInntekt(meldekort.getBeløp().map(Beløp::getVerdi).orElse(BigDecimal.ZERO))
-                        .medPeriode(utledMeldekortperiode(meldekort, yt.getPeriode()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    private static Periode utledMeldekortperiode(YtelseAnvistDto meldekort, Intervall vedtaksperiode) {
-        LocalDate fom = meldekort.getAnvistFOM().isBefore(vedtaksperiode.getFomDato()) ? vedtaksperiode.getFomDato() : meldekort.getAnvistFOM();
-        LocalDate tom = meldekort.getAnvistTOM().isAfter(vedtaksperiode.getTomDato()) ? vedtaksperiode.getTomDato() : meldekort.getAnvistTOM();
-        return Periode.of(fom, tom);
-    }
 
 
     /** Henter ut ytelser fra sammenlignigsgrunnlaget:
@@ -324,6 +292,5 @@ public class MapTilBesteberegningRegelmodell {
                         .medPeriode(Periode.of(inntektspost.getPeriode().getFomDato(), inntektspost.getPeriode().getTomDato()))
                         .build()).collect(Collectors.toList());
     }
-
 
 }
