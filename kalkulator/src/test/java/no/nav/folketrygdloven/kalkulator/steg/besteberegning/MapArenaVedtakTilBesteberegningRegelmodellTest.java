@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +24,9 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
     private static final LocalDate STP = LocalDate.of(2021,5,1);
 
     @Test
-    public void skal_mappe_dagpenger_meldekort_innenfor_vedtak() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER, lagMeldekort(STP, stpPluss(14), 500)));
+    public void skal_mappe_et_meldekort_dagpenger() {
+        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
+                lagMeldekort(STP, stpPluss(14), 500)));
 
         List<Periodeinntekt> inntekter = kjørMapping(vedtak);
 
@@ -33,74 +35,19 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
     }
 
     @Test
-    public void skal_mappe_dagpenger_meldekort_avgrenses_av_vedtak() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER, lagMeldekort(stpPluss(20), stpPluss(34), 500)));
-
-        List<Periodeinntekt> inntekter = kjørMapping(vedtak);
-
-        assertThat(inntekter).hasSize(1);
-        assertInntekt(inntekter, stpPluss(20), stpPluss(30), 500);
-    }
-
-    @Test
-    public void skal_mappe_dagpenger_flere_ikke_overlappende_vedtak() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
-                lagMeldekort(STP, stpPluss(14), 500)),
-        lagVedtak(stpPluss(31), stpPluss(60), FagsakYtelseType.DAGPENGER,
-                lagMeldekort(stpPluss(31), stpPluss(45), 600)));
-
-        List<Periodeinntekt> inntekter = kjørMapping(vedtak);
-
-        assertThat(inntekter).hasSize(2);
-        assertInntekt(inntekter, STP, stpPluss(14), 500);
-        assertInntekt(inntekter, stpPluss(31), stpPluss(45), 600);
-    }
-
-    @Test
-    public void skal_ikke_slå_sammen_vedtak_med_opphold() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
+    public void skal_mappe_flere_meldekort_ulike_vedtak_aap() {
+        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
                 lagMeldekort(STP, stpPluss(14), 500),
                 lagMeldekort(stpPluss(15), stpPluss(35), 600)),
-                lagVedtak(stpPluss(32), stpPluss(60), FagsakYtelseType.DAGPENGER,
-                        lagMeldekort(stpPluss(30), stpPluss(45), 700),
-                        lagMeldekort(stpPluss(46), stpPluss(65), 800)));
+        lagVedtak(stpPluss(40), stpPluss(60), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
+                lagMeldekort(stpPluss(40), stpPluss(54), 700)));
 
         List<Periodeinntekt> inntekter = kjørMapping(vedtak);
 
-        assertThat(inntekter).hasSize(4);
+        assertThat(inntekter).hasSize(3);
         assertInntekt(inntekter, STP, stpPluss(14), 500);
-        assertInntekt(inntekter, stpPluss(15), stpPluss(30), 600);
-        assertInntekt(inntekter, stpPluss(32), stpPluss(45), 700); // Fom avgrenses av vedtaksperiode
-        assertInntekt(inntekter, stpPluss(46), stpPluss(60), 800); // tom avgrenses av vedtaksperiode
-    }
-
-    @Test
-    public void skal_mappe_aap_flere_overlappende_vedtak() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, STP, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                lagMeldekort(STP, stpPluss(14), 500), lagMeldekort(stpPluss(15), stpPluss(29), 700)),
-        lagVedtak(STP, stpPluss(20), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
-
-        List<Periodeinntekt> inntekter = kjørMapping(vedtak);
-
-        assertThat(inntekter).hasSize(2);
-        assertInntekt(inntekter, STP, stpPluss(14), 500);
-        assertInntekt(inntekter, stpPluss(15), stpPluss(20), 700);
-    }
-
-    @Test
-    public void vedtak_med_meldekort_utenfor_periode_skal_slås_sammen_med_neste_vegg_i_vegg_vedtak() {
-        List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
-                lagMeldekort(STP, stpPluss(14), 500), lagMeldekort(stpPluss(15), stpPluss(30), 700),
-                lagMeldekort(stpPluss(31), stpPluss(45), 800), lagMeldekort(stpPluss(46), stpPluss(60), 900)),
-        lagVedtak(stpPluss(31), stpPluss(50), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
-
-        List<Periodeinntekt> inntekter = kjørMapping(vedtak);
-
-        assertThat(inntekter).hasSize(4);
-        assertInntekt(inntekter, STP, stpPluss(14), 500);
-        assertInntekt(inntekter, stpPluss(15), stpPluss(30), 700);
-        assertInntekt(inntekter, stpPluss(31), stpPluss(45), 800);
-        assertInntekt(inntekter, stpPluss(46), stpPluss(50), 900); // Avkuttes av vedtaksperiode
+        assertInntekt(inntekter, stpPluss(15), stpPluss(35), 600);
+        assertInntekt(inntekter, stpPluss(40), stpPluss(54), 700);
     }
 
     private void assertInntekt(List<Periodeinntekt> inntekter, LocalDate fom, LocalDate tom, int inntekt) {
