@@ -61,7 +61,7 @@ jobs:
         env:
           TZ: "Europe/Oslo"
           GITHUB_USERNAME: x-access-token
-          GITHUB_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          GITHUB_PASSWORD: ${{ secrets.GH_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           DATASOURCE_HOST: localhost
@@ -70,7 +70,7 @@ jobs:
       - name: Bygg og push docker-image
         run: |
           docker build --pull --tag ${IMAGE_BASE_CR}:${TAG} --tag ${IMAGE_BASE_CR}:latest .
-          echo "${{ secrets.GITHUB_ACCESS_TOKEN }}" | docker login --username "x-access-token" --password-stdin ghcr.io
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login --username "x-access-token" --password-stdin ghcr.io
           docker push ${IMAGE_BASE_CR}:${TAG}
           docker push ${IMAGE_BASE_CR}:latest
 
@@ -78,7 +78,7 @@ jobs:
         uses: release-drafter/release-drafter@v5
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
                   
       - name: Lukk gamle issues
         uses: actions/github-script@v4
@@ -122,7 +122,7 @@ jobs:
         if: success()
         shell: bash
         run: |
-          curl -XPOST -u "x-access-token:${{secrets.GITHUB_ACCESS_TOKEN}}" \
+          curl -XPOST -u "x-access-token:${{secrets.GH_ACCESS_TOKEN}}" \
           -H "Accept: application/vnd.github.everest-preview+json" \
           -H "Content-Type: application/json" \
           https://api.github.com/repos/navikt/ft-kalkulus-verdikjede/dispatches \
@@ -137,7 +137,7 @@ jobs:
       - name: Trigger k9 verdikjede test
         shell: bash
         run: |
-          curl -XPOST -u "x-access-token:${{secrets.GITHUB_ACCESS_TOKEN}}" \
+          curl -XPOST -u "x-access-token:${{secrets.GH_ACCESS_TOKEN}}" \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/navikt/k9-verdikjede/actions/workflows/build.yml/dispatches \
           -d '{"ref":"master",
