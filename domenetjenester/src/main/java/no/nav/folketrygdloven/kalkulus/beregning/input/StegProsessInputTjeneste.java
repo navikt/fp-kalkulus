@@ -38,8 +38,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator;
@@ -80,7 +80,7 @@ public class StegProsessInputTjeneste {
     }
 
     public Resultat<StegProsesseringInput> lagFortsettInput(List<Long> koblingId,
-                                                            StegType stegType,
+                                                            BeregningSteg stegType,
                                                             Map<UUID, List<UUID>> koblingRelasjon) {
         Objects.requireNonNull(koblingId, "koblingId");
         var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
@@ -113,22 +113,22 @@ public class StegProsessInputTjeneste {
     public StegProsesseringInput mapStegInput(KoblingEntitet kobling,
                                               KalkulatorInputDto input,
                                               BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet,
-                                              StegType stegType,
+                                              BeregningSteg stegType,
                                               List<UUID> originaleKoblinger) {
         StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
-        if (stegType.equals(StegType.KOFAKBER)) {
+        if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
-        } else if (stegType.equals(StegType.FORS_BESTEBEREGNING)) {
+        } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
-        } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
-        } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
             return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
-        } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
             return lagInputFordel(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
-        } else if (stegType.equals(StegType.FAST_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FAST_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
             return lagInputFullføre(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         }
@@ -167,7 +167,7 @@ public class StegProsessInputTjeneste {
 
     }
 
-    private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, StegType stegType) {
+    private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, BeregningSteg stegType) {
         BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(grunnlagEntitet));
         // Vurder om vi skal begynne å ta inn koblingId for originalbehandling ved revurdering
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), mapTilStegTilstand(stegType));
@@ -232,7 +232,7 @@ public class StegProsessInputTjeneste {
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(KoblingEntitet kobling,
                                                                                              Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,
-                                                                                             StegType stegType) {
+                                                                                             BeregningSteg stegType) {
         Optional<BeregningsgrunnlagTilstand> tilstandUt = mapTilStegUtTilstand(stegType);
         if (tilstandUt.isEmpty()) {
             return Optional.empty();

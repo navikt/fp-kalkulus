@@ -19,11 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -54,9 +54,9 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
@@ -615,8 +615,8 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         assertThat(bg.getBeregningsgrunnlagPerioder()).hasSize(2);
         bg.getBeregningsgrunnlagPerioder().forEach(p -> assertThat(p.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2));
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
     }
 
     @Test
@@ -653,8 +653,8 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, null);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0), ÅRSINNTEKT1,
             SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
             BigDecimal.valueOf(500L), SammenligningsgrunnlagType.SAMMENLIGNING_AT);
@@ -694,8 +694,8 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         BeregningsgrunnlagRegelResultat resultat = act(grunnlagFL, inntektsmeldinger, null);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlagPrStatusListe().get(0),ÅRSINNTEKT1,
             SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
             BigDecimal.valueOf(2000L), SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -717,8 +717,8 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
 
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     private void verifiserPeriode(BeregningsgrunnlagPeriodeDto periode, LocalDate fom, LocalDate tom, int antallAndeler,

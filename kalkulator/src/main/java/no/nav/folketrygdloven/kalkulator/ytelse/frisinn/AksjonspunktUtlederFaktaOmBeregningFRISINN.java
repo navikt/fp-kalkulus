@@ -16,7 +16,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
@@ -40,7 +40,7 @@ public class AksjonspunktUtlederFaktaOmBeregningFRISINN extends AksjonspunktUtle
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAksjonspunkt(input, beregningsgrunnlagGrunnlag);
         if (faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
-           return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN)),
+           return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)),
                     List.of(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON));
         }
         return FaktaOmBeregningAksjonspunktResultat.INGEN_AKSJONSPUNKTER;

@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AksjonspunktutlederRefusjonEtterSluttdato;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AksjonspunktutlederVurderRefusjon;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AksjonspunkutledertjenesteVurderRefusjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FP")
@@ -34,7 +34,7 @@ public class AksjonspunktutledertjenesteVurderRefusjonFP implements Aksjonspunku
         List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
 
         if (AksjonspunktutlederVurderRefusjon.skalHaAksjonspunktVurderRefusjonskrav(input, periodisertMedRefusjonOgGradering)) {
-            aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.VURDER_REFUSJONSKRAV));
+            aksjonspunkter.add(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.VURDER_REFUSJONSKRAV));
         }
 
         if (input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag) {

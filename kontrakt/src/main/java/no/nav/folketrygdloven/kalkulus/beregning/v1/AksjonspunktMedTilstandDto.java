@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
 
@@ -21,7 +21,7 @@ public class AksjonspunktMedTilstandDto {
     @JsonProperty(value = "beregningAksjonspunktDefinisjon")
     @Valid
     @NotNull
-    private BeregningAksjonspunkt beregningAksjonspunktDefinisjon;
+    private AksjonspunktDefinisjon beregningAksjonspunktDefinisjon;
 
     @JsonProperty(value = "venteårsak")
     @Valid
@@ -37,13 +37,13 @@ public class AksjonspunktMedTilstandDto {
         // default ctor
     }
 
-    public AksjonspunktMedTilstandDto(@Valid @NotNull BeregningAksjonspunkt beregningAksjonspunktDefinisjon, @Valid @NotNull BeregningVenteårsak venteårsak, @Valid @NotNull LocalDateTime ventefrist) {
+    public AksjonspunktMedTilstandDto(@Valid @NotNull AksjonspunktDefinisjon beregningAksjonspunktDefinisjon, @Valid @NotNull BeregningVenteårsak venteårsak, @Valid @NotNull LocalDateTime ventefrist) {
         this.beregningAksjonspunktDefinisjon = beregningAksjonspunktDefinisjon;
         this.venteårsak = venteårsak;
         this.ventefrist = ventefrist;
     }
 
-    public BeregningAksjonspunkt getBeregningAksjonspunktDefinisjon() {
+    public AksjonspunktDefinisjon getBeregningAksjonspunktDefinisjon() {
         return beregningAksjonspunktDefinisjon;
     }
 

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public
-enum BeregningAksjonspunkt implements Kodeverdi {
+enum AksjonspunktDefinisjon implements Kodeverdi {
 
     // 5000 vanlig saksbehandlig
     FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS("5038", "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
@@ -59,7 +59,7 @@ enum BeregningAksjonspunkt implements Kodeverdi {
 
     static final String KODEVERK = "BEREGNING_AKSJONSPUNKT_DEF";
 
-    private static final Map<String, BeregningAksjonspunkt> KODER = new LinkedHashMap<>();
+    private static final Map<String, AksjonspunktDefinisjon> KODER = new LinkedHashMap<>();
 
     static {
         for (var v : values()) {
@@ -74,11 +74,11 @@ enum BeregningAksjonspunkt implements Kodeverdi {
     @JsonIgnore
     private String navn;
 
-    private BeregningAksjonspunkt() {
+    private AksjonspunktDefinisjon() {
         // for hibernate
     }
 
-    private BeregningAksjonspunkt(String kode, String navn) {
+    private AksjonspunktDefinisjon(String kode, String navn) {
         this.kode = Objects.requireNonNull(kode);
         this.navn = navn;
     }
@@ -101,11 +101,11 @@ enum BeregningAksjonspunkt implements Kodeverdi {
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
-    public static BeregningAksjonspunkt fraKode(Object node) {
+    public static AksjonspunktDefinisjon fraKode(Object node) {
         if (node == null) {
             return null;
         }
-        String kode = TempAvledeKode.getVerdi(BeregningAksjonspunkt.class, node, "kode");
+        String kode = TempAvledeKode.getVerdi(AksjonspunktDefinisjon.class, node, "kode");
         var ad = KODER.get(kode);
         if (ad == null) {
             throw new IllegalArgumentException("Ukjent BeregningAksjonspunktDefinisjon: " + kode);
@@ -113,7 +113,7 @@ enum BeregningAksjonspunkt implements Kodeverdi {
         return ad;
     }
 
-    public static Map<String, BeregningAksjonspunkt> kodeMap() {
+    public static Map<String, AksjonspunktDefinisjon> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
 }

@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
 @ApplicationScoped
@@ -40,19 +40,19 @@ public class AksjonspunktUtlederFastsettBeregningsaktiviteterSVP implements Aksj
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
         Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, arbeidsgivere, LocalDate.now());
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
-            return List.of(autopunkt(BeregningAksjonspunkt.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
+            return List.of(autopunkt(AksjonspunktDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
         }
         if (erOverstyrt) {
             return emptyList();
         }
 
         if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningsgrunnlag, beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
-            return List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.AVKLAR_AKTIVITETER));
+            return List.of(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.AVKLAR_AKTIVITETER));
         }
         return emptyList();
     }
 
-    protected static BeregningAksjonspunktResultat autopunkt(BeregningAksjonspunkt apDef, BeregningVenteårsak venteårsak, LocalDate settPåVentTom) {
+    protected static BeregningAksjonspunktResultat autopunkt(AksjonspunktDefinisjon apDef, BeregningVenteårsak venteårsak, LocalDate settPåVentTom) {
         return BeregningAksjonspunktResultat.opprettMedFristFor(apDef, venteårsak, LocalDateTime.of(settPåVentTom, LocalTime.MIDNIGHT));
     }
 

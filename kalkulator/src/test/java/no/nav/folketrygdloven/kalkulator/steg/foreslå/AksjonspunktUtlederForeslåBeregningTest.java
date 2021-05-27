@@ -12,11 +12,11 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 
 public class AksjonspunktUtlederForeslåBeregningTest {
 
@@ -48,7 +48,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
         List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederForeslåBeregning.utledAksjonspunkter(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
         var apDefs = aksjonspunkter.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
         List<BeregningAksjonspunktResultat> aksjonspunkter = AksjonspunktUtlederForeslåBeregning.utledAksjonspunkter(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
         var apDefs = aksjonspunkter.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class AksjonspunktUtlederForeslåBeregningTest {
         // Assert
         var apDefs = aksjonspunkter.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).containsExactlyInAnyOrder(
-            BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS
+            AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS
         );
     }
 

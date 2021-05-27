@@ -28,8 +28,8 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 
@@ -55,7 +55,7 @@ public class KontrollerBeregningsinputTjeneste {
 
     public Optional<DiffResultatDto> kontrollerInputForKobling(KoblingEntitet kobling) {
         Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Collections.singletonList(kobling.getId()),
-                StegType.FORS_BERGRUNN, Collections.emptyMap()); // Bruker dette steget fordi det er her inntekt fastsettes
+                BeregningSteg.FORS_BERGRUNN, Collections.emptyMap()); // Bruker dette steget fordi det er her inntekt fastsettes
         ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.getResultatPrKobling().get(kobling.getId());
         BeregningsgrunnlagGrunnlagEntitet sisteGrunnlagFraKofak = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER).orElseThrow();
         BeregningsgrunnlagGrunnlagDto bgDto = BehandlingslagerTilKalkulusMapper.mapGrunnlag(sisteGrunnlagFraKofak);

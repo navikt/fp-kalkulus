@@ -54,6 +54,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -177,7 +178,8 @@ public class OperereKalkulusRestTjeneste {
 
         for (var inputPrKobling : inputResultat.getResultatPrKobling().entrySet()) {
             MDC.put("prosess_koblingreferanse", inputPrKobling.getKey().toString());
-            var tilstandResponse = beregningStegTjeneste.beregnFor(spesifikasjon.getStegType(), inputPrKobling.getValue());
+            BeregningSteg stegtype = BeregningSteg.fraKode(spesifikasjon.getStegType().getKode());
+            var tilstandResponse = beregningStegTjeneste.beregnFor(stegtype, inputPrKobling.getValue());
             resultat.add(tilstandResponse);
         }
 
@@ -271,7 +273,8 @@ public class OperereKalkulusRestTjeneste {
         }
 
 
-        return stegInputTjeneste.lagFortsettInput(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()), spesifikasjon.getStegType(),
+        BeregningSteg stegType = BeregningSteg.fraKode(spesifikasjon.getStegType().getKode());
+        return stegInputTjeneste.lagFortsettInput(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()), stegType,
                 spesifikasjon.getKoblingRelasjon().orElse(Collections.emptyMap()));
     }
 

@@ -28,9 +28,9 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.AksjonspunktUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -67,7 +67,7 @@ public class AksjonspunktUtlederFordelBeregningTest {
         List<BeregningAksjonspunktResultat> aksjonspunktResultats = utledAksjonspunkter(koblingReferanse, grunnlag);
 
         assertThat(aksjonspunktResultats).hasSize(1);
-        assertThat(aksjonspunktResultats.get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(BeregningAksjonspunkt.FORDEL_BEREGNINGSGRUNNLAG);
+        assertThat(aksjonspunktResultats.get(0).getBeregningAksjonspunktDefinisjon()).isEqualTo(AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
     }
 
 

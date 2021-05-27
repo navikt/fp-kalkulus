@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -30,10 +30,10 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
@@ -68,19 +68,19 @@ public class BeregningStegTjeneste {
      * @param input Steginput
      * @return
      */
-    public TilstandResponse beregnFor(StegType stegType, StegProsesseringInput input) {
+    public TilstandResponse beregnFor(BeregningSteg stegType, StegProsesseringInput input) {
         rullTilbakeTjeneste.rullTilbakeTilTilstandFørVedBehov(input.getKoblingId(), input.getStegTilstand());
-        if (stegType.equals(StegType.KOFAKBER)) {
+        if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
-        } else if (stegType.equals(StegType.FORS_BESTEBEREGNING)) {
+        } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {
             return foreslåBesteberegning((ForeslåBesteberegningInput) input);
-        } else if (stegType.equals(StegType.FORS_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
-        } else if (stegType.equals(StegType.VURDER_REF_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
             return vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
-        } else if (stegType.equals(StegType.FORDEL_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
             return fordelBeregningsgrunnlag((FordelBeregningsgrunnlagInput) input);
-        } else if (stegType.equals(StegType.FAST_BERGRUNN)) {
+        } else if (stegType.equals(BeregningSteg.FAST_BERGRUNN)) {
             return fastsettBeregningsgrunnlag(input);
         }
         throw new IllegalStateException("Kan ikke beregne for " + stegType.getKode());

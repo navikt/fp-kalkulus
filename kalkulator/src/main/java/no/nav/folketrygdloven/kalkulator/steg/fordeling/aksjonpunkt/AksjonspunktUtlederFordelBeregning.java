@@ -12,7 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 
 public class AksjonspunktUtlederFordelBeregning {
 
@@ -26,7 +26,7 @@ public class AksjonspunktUtlederFordelBeregning {
                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<BeregningAksjonspunktResultat> aksjonspunktResultater = new ArrayList<>();
         if (harTilfellerForFordeling(ref, beregningsgrunnlagGrunnlag, ytelsespesifiktGrunnlag, inntektsmeldinger)) {
-            BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.FORDEL_BEREGNINGSGRUNNLAG);
+            BeregningAksjonspunktResultat aksjonspunktResultat = BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
             aksjonspunktResultater.add(aksjonspunktResultat);
         }
         return aksjonspunktResultater;

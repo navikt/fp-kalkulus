@@ -21,14 +21,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.OmsorgspengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.OmsorgspengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -64,9 +64,9 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
@@ -614,8 +614,8 @@ public class ForeslåBeregningsgrunnlagTest {
         assertThat(bg.getBeregningsgrunnlagPerioder()).hasSize(2);
         bg.getBeregningsgrunnlagPerioder().forEach(p -> assertThat(p.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2));
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
     }
 
     @Test
@@ -638,7 +638,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
@@ -663,7 +663,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
@@ -688,7 +688,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
@@ -719,8 +719,8 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     @Test
@@ -749,8 +749,8 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(BeregningAksjonspunkt.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     @Test
@@ -801,7 +801,7 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
         List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<BeregningAksjonspunkt> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 

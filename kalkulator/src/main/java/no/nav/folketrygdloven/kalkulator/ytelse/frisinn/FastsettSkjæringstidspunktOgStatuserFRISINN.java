@@ -26,7 +26,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.AksjonspunktUtlederForeslåBeregning;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.skjæringstidspunkt.regel.ytelse.RegelFastsettSkjæringstidspunktFrisinn;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModellFRISINN;
@@ -58,7 +58,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
         }
         RegelResultat regelResultatFastsettStatus = fastsettStatus(input, regelmodell);
         if (regelmodell.getBeregningsgrunnlagPrStatusListe() == null || regelmodell.getBeregningsgrunnlagPrStatusListe().isEmpty()) {
-            return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.INGEN_AKTIVITETER)));
+            return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.INGEN_AKTIVITETER)));
         }
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)

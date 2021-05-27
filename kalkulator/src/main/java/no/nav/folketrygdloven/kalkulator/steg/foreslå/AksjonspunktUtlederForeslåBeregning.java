@@ -8,7 +8,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 
 public class AksjonspunktUtlederForeslåBeregning {
 
@@ -31,7 +31,7 @@ public class AksjonspunktUtlederForeslåBeregning {
             .collect(Collectors.toList());
     }
 
-    private static BeregningAksjonspunkt mapRegelMerknad(RegelMerknad regelMerknad) {
-        return BeregningAksjonspunkt.fraKode(regelMerknad.getMerknadKode());
+    private static AksjonspunktDefinisjon mapRegelMerknad(RegelMerknad regelMerknad) {
+        return AksjonspunktDefinisjon.fraKode(regelMerknad.getMerknadKode());
     }
 }

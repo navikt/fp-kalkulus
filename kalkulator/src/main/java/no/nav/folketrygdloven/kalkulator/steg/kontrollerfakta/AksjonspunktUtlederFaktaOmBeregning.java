@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
 import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAksjonspunkt;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
@@ -41,13 +41,13 @@ public class AksjonspunktUtlederFaktaOmBeregning {
         List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = faktaOmBeregningTilfelleTjeneste.finnTilfellerForFellesAksjonspunkt(input, beregningsgrunnlagGrunnlag);
 
         if (erOverstyrt) {
-            return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
+            return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG)),
                 faktaOmBeregningTilfeller);
         }
         if (faktaOmBeregningTilfeller.isEmpty()) {
             return FaktaOmBeregningAksjonspunktResultat.INGEN_AKSJONSPUNKTER;
         }
-        return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(BeregningAksjonspunkt.VURDER_FAKTA_FOR_ATFL_SN)),
+        return new FaktaOmBeregningAksjonspunktResultat(singletonList(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)),
             faktaOmBeregningTilfeller);
     }
 }
