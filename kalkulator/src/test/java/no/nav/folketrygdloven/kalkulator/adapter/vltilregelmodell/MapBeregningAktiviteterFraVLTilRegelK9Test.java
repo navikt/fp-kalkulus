@@ -101,6 +101,30 @@ class MapBeregningAktiviteterFraVLTilRegelK9Test {
     }
 
     @Test
+    void skal_mappe_et_arbeidsforhold_med_full_permisjon_når_andre_aktiviteter_slutter_før_stp() {
+        // Arrange
+        LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
+        var permisjonsPeriode = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(1), SKJÆRINGSTIDSPUNKT.plusDays(1));
+        List<PermisjonDtoBuilder> permisjonDtoBuilders = List.of(PermisjonDtoBuilder.ny().medPeriode(permisjonsPeriode).medProsentsats(BigDecimal.valueOf(100)));
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = lagIAY(ansettelsesDato, NULL_REF, permisjonDtoBuilders);
+        OpptjeningAktiviteterDto.OpptjeningPeriodeDto op1 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMedTilOgMed(ansettelsesDato, ansettelsesDato.plusDays(4)), ARBEIDSGIVER_ORGNR, null, NULL_REF);
+        OpptjeningAktiviteterDto.OpptjeningPeriodeDto op2 = OpptjeningAktiviteterDto.nyPeriode(OpptjeningAktivitetType.ARBEID, Intervall.fraOgMed(ansettelsesDato), ARBEIDSGIVER_ORGNR, null, NULL_REF);
+
+
+        // Act
+        AktivitetStatusModell aktivitetStatusModell = mapForSkjæringstidspunkt(iayGrunnlagBuilder, new OpptjeningAktiviteterDto(op1, op2));
+
+        // Assert
+        var beregningsModell = aktivitetStatusModell.getAktivePerioder();
+        assertThat(beregningsModell).hasSize(1);
+        var aktivitet = beregningsModell.get(0);
+        assertThat(aktivitet.getArbeidsforhold().getOrgnr()).isEqualTo(ARBEIDSGIVER_ORGNR);
+        assertThat(aktivitet.getArbeidsforhold().getArbeidsforholdId()).isNull();
+        assertThat(aktivitet.getPeriode().getTom()).isEqualTo(op2.getPeriode().getTomDato());
+    }
+
+
+    @Test
     void skal_mappe_et_arbeidsforhold_med_delvis_permisjon() {
         // Arrange
         LocalDate ansettelsesDato = SKJÆRINGSTIDSPUNKT.minusYears(1);
