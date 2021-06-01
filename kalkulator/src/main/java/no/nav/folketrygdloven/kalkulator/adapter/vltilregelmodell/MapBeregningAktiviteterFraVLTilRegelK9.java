@@ -75,11 +75,12 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                     Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         } else if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
-            // Hvis vi kun har en relevant aktivitet har vi ikke anledning til å filtrere denne bort pga permisjon, så denne workarounden må til
-            long antallAktiviteterPåSTP = finnAntallAktiviteterPåSTP(relevanteAktiviteter, skjæringstidspunktOpptjening);
-            LocalDate tomDato = antallAktiviteterPåSTP == 1
-                    ? gjeldendePeriode.getTomDato()
-                    : finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
+
+            // Hvis vi ikke har relevante aktiviteter på stp uten permisjon må vi ignorere permisjonsperioder for å få aktiviteter til beregning.
+            boolean finnesAktivitePåSTPOmPermisjonHensyntas = finnesAktivitetPåSTPUtenPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, relevanteAktiviteter);
+            LocalDate tomDato = finnesAktivitePåSTPOmPermisjonHensyntas
+                    ? finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver)
+                    : gjeldendePeriode.getTomDato();
             if (!tomDato.isBefore(gjeldendePeriode.getFomDato())) {
                 return Optional.of(lagAktivPeriodeForArbeidstaker(inntektsmeldinger,
                         Periode.of(gjeldendePeriode.getFomDato(), tomDato),
@@ -94,6 +95,14 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                     aktivitetType,
                     Periode.of(gjeldendePeriode.getFomDato(), gjeldendePeriode.getTomDato())));
         }
+    }
+
+    private boolean finnesAktivitetPåSTPUtenPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, LocalDate skjæringstidspunktOpptjening, Intervall gjeldendePeriode, Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter) {
+        List<LocalDate> alleTOMDatoerHensyntattPermisjon = relevanteAktiviteter.stream().map(ra -> {
+            Arbeidsgiver arbeidsgiver = opptjeningsperiode.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer arbeidsgiver"));
+            return finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, gjeldendePeriode, arbeidsgiver);
+        }).collect(Collectors.toList());
+        return alleTOMDatoerHensyntattPermisjon.stream().anyMatch(tom -> !tom.isBefore(skjæringstidspunktOpptjening));
     }
 
     private long finnAntallAktiviteterPåSTP(Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter, LocalDate skjæringstidspunktOpptjening) {
