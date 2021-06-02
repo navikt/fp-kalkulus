@@ -27,6 +27,7 @@
     <sequence-generator name="SEQ_FAKTA_AGGREGAT" allocation-size="50" sequence-name="SEQ_FAKTA_AGGREGAT"/>
     <sequence-generator name="SEQ_FAKTA_ARBEIDSFORHOLD" allocation-size="50" sequence-name="SEQ_FAKTA_ARBEIDSFORHOLD"/>
     <sequence-generator name="SEQ_FAKTA_AKTOER" allocation-size="50" sequence-name="SEQ_FAKTA_AKTOER"/>
+    <sequence-generator name="SEQ_AKSJONSPUNKT" allocation-size="50" sequence-name="SEQ_AKSJONSPUNKT"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats"/>
@@ -52,6 +53,9 @@
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />
+
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.aksjonspunkt.AksjonspunktEntitet" />
+
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet" />
