@@ -25,13 +25,20 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
 
     @Override
     public boolean skalGrunnlagFastsettes(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPrStatusOgAndelDto andel){
-        if(erBrukerKunArbeidstaker(input)){
+        if (erBlittOverstyrtFør(andel)) {
+            return true;
+        }
+        if(erBrukerKunArbeidstaker(input)) {
             if(girDirekteUtbetalingTilBruker(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0))){
                 return erAvvikStørreEnn25Prosent(finnAvvikPromille(input));
             }
             return false;
         }
         return super.skalGrunnlagFastsettes(input, andel);
+    }
+
+    private boolean erBlittOverstyrtFør(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getOverstyrtPrÅr() != null;
     }
 
     public static boolean girDirekteUtbetalingTilBruker(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPeriodeDto periode) {
