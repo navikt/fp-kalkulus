@@ -109,14 +109,14 @@ public class BeregningsgrunnlagPeriodeDto {
 
     void addBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto bgPrStatusOgAndel) {
         Objects.requireNonNull(bgPrStatusOgAndel, "beregningsgrunnlagPrStatusOgAndel");
-        if (!beregningsgrunnlagPrStatusOgAndelList.contains(bgPrStatusOgAndel)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
+        if (!beregningsgrunnlagPrStatusOgAndelList.contains(bgPrStatusOgAndel)) {
             beregningsgrunnlagPrStatusOgAndelList.add(bgPrStatusOgAndel);
         }
     }
 
     void addBeregningsgrunnlagPeriodeÅrsak(BeregningsgrunnlagPeriodeÅrsakDto bgPeriodeÅrsak) {
         Objects.requireNonNull(bgPeriodeÅrsak, "beregningsgrunnlagPeriodeÅrsak");
-        if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) { // NOSONAR Class defines List based fields but uses them like Sets: Ingening å tjene på å bytte til Set ettersom det er små lister
+        if (!beregningsgrunnlagPeriodeÅrsaker.contains(bgPeriodeÅrsak)) {
             beregningsgrunnlagPeriodeÅrsaker.add(bgPeriodeÅrsak);
         }
     }
