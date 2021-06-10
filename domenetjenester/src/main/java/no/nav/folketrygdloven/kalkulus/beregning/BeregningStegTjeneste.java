@@ -30,12 +30,14 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
+import no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt.AksjonspunktTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -47,6 +49,7 @@ public class BeregningStegTjeneste {
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
+    private AksjonspunktTjeneste aksjonspunktTjeneste;
 
     BeregningStegTjeneste() {
         // CDI
@@ -54,11 +57,13 @@ public class BeregningStegTjeneste {
 
     @Inject
     public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository,
-                                 RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste) {
+                                 RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste,
+                                 AksjonspunktTjeneste aksjonspunktTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
+        this.aksjonspunktTjeneste = aksjonspunktTjeneste;
     }
 
     /**
@@ -96,6 +101,7 @@ public class BeregningStegTjeneste {
     public TilstandResponse fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
+        lagreAksjonspunkter(input, resultat, BeregningSteg.FASTSETT_STP_BER);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
 
@@ -109,6 +115,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.KOFAKBER);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -122,6 +129,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.FORS_BERGRUNN);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -157,6 +165,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.VURDER_REF_BERGRUNN);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
@@ -174,6 +183,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.FORDEL_BERGRUNN);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -285,5 +295,16 @@ public class BeregningStegTjeneste {
             .medRegelInput(sporing.getRegelInput())
             .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
             .collect(Collectors.toList());
+    }
+
+    private void lagreAksjonspunkter(StegProsesseringInput input, BeregningResultatAggregat beregningResultatAggregat, BeregningSteg steg) {
+        if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
+            // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+            List<AksjonspunktDefinisjon> aksjonspunkterSomLagresIKalkulus = beregningResultatAggregat.getBeregningAksjonspunktResultater().stream()
+                    .map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon)
+                    .filter(ap -> !ap.erVentepunkt())
+                    .collect(Collectors.toList());
+            aksjonspunktTjeneste.lagreAksjonspunktresultater(input.getKoblingId(), steg, aksjonspunkterSomLagresIKalkulus);
+        }
     }
 }

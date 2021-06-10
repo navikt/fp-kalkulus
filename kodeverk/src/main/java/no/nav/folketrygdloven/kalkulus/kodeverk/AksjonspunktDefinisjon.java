@@ -1,5 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.kodeverk;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktType.AUTOPUNKT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktType.MANUELL;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktType.OVERSTYRING;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,37 +28,37 @@ public
 enum AksjonspunktDefinisjon implements Kodeverdi {
 
     // 5000 vanlig saksbehandlig
-    FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS("5038", "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
-    VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE("5039", "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
-    FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE("5042" ,"Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
-    FORDEL_BEREGNINGSGRUNNLAG("5046", "Fordel beregningsgrunnlag"),
-    FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD("5047", "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
-    FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET("5049", "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
-    VURDER_GRADERING_UTEN_BEREGNINGSGRUNNLAG("5050","Vurder gradering på andel uten beregningsgrunnlag"),
-    AVKLAR_AKTIVITETER("5052","Avklar aktivitet for beregning"),
-    VURDER_FAKTA_FOR_ATFL_SN("5058","Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
-    VURDER_REFUSJONSKRAV("5059", "Vurder refusjonskrav for beregningen"),
+    FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS("5038", MANUELL, "Fastsette beregningsgrunnlag for arbeidstaker/frilanser skjønnsmessig"),
+    VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE("5039", MANUELL, "Vurder varig endret/nyoppstartet næring selvstendig næringsdrivende"),
+    FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE("5042", MANUELL, "Fastsett beregningsgrunnlag for selvstendig næringsdrivende"),
+    FORDEL_BEREGNINGSGRUNNLAG("5046", MANUELL, "Fordel beregningsgrunnlag"),
+    FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD("5047", MANUELL, "Fastsett beregningsgrunnlag for tidsbegrenset arbeidsforhold"),
+    FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET("5049", MANUELL, "Fastsett beregningsgrunnlag for SN som er ny i arbeidslivet"),
+    VURDER_GRADERING_UTEN_BEREGNINGSGRUNNLAG("5050", MANUELL, "Vurder gradering på andel uten beregningsgrunnlag"),
+    AVKLAR_AKTIVITETER("5052", MANUELL, "Avklar aktivitet for beregning"),
+    VURDER_FAKTA_FOR_ATFL_SN("5058", MANUELL, "Vurder fakta for arbeidstaker, frilans og selvstendig næringsdrivende"),
+    VURDER_REFUSJONSKRAV("5059", MANUELL, "Vurder refusjonskrav for beregningen"),
 
     // 6000 overstyring
-    OVERSTYRING_AV_BEREGNINGSGRUNNLAG("6015","Overstyring av beregningsgrunnlag"),
+    OVERSTYRING_AV_BEREGNINGSGRUNNLAG("6015", OVERSTYRING, "Overstyring av beregningsgrunnlag"),
 
     // 7000 automatisk satt på vent
-    AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST("7014","Vent på rapporteringsfrist for inntekt"),
-    AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("7020","Vent på siste meldekort for AAP eller DP-mottaker"),
+    AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST("7014", AUTOPUNKT, "Vent på rapporteringsfrist for inntekt"),
+    AUTO_VENT_PÅ_SISTE_AAP_ELLER_DP_MELDEKORT("7020", AUTOPUNKT, "Vent på siste meldekort for AAP eller DP-mottaker"),
 
     // 8000 frisinn
-    AUTO_VENT_FRISINN("8000", "Sak settes på vent på grunn av manglende funksjonalitet"),
-    INGEN_AKTIVITETER("8001", "Gir avslag"),
+    AUTO_VENT_FRISINN("8000", AUTOPUNKT, "Sak settes på vent på grunn av manglende funksjonalitet"),
+    INGEN_AKTIVITETER("8001", AUTOPUNKT, "Gir avslag"),
 
     UNDEFINED,
 
     // Punkter som ikke lenger utledes, tas vare på så vi vet hvilke koder kalkulus har brukt før
     @Deprecated
-    AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", "Autopunkt ulike startdatoer svangerskapspenger"),
+    AUTO_VENT_ULIKE_STARTDATOER_SVP("7026", AUTOPUNKT, "Autopunkt ulike startdatoer svangerskapspenger"),
     @Deprecated
-    AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027","Autopunkt delvis SVP og refusjon"),
+    AUTO_VENT_DELVIS_TILRETTELEGGING_OG_REFUSJON_SVP("7027", AUTOPUNKT, "Autopunkt delvis SVP og refusjon"),
     @Deprecated
-    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", "Sak settes på vent pga kommune- og fylkesammenslåing."),
+    AUTO_VENT_PÅ_MANGLENDE_ARBEIDSFORHOLD_KOMMUNEREFORM("7036", AUTOPUNKT, "Sak settes på vent pga kommune- og fylkesammenslåing."),
     ;
 
     static final String KODEVERK = "BEREGNING_AKSJONSPUNKT_DEF";
@@ -74,13 +78,16 @@ enum AksjonspunktDefinisjon implements Kodeverdi {
     @JsonIgnore
     private String navn;
 
+    private AksjonspunktType aksjonspunktType;
+
     private AksjonspunktDefinisjon() {
         // for hibernate
     }
 
-    private AksjonspunktDefinisjon(String kode, String navn) {
+    private AksjonspunktDefinisjon(String kode, AksjonspunktType aksjonspunktType, String navn) {
         this.kode = Objects.requireNonNull(kode);
         this.navn = navn;
+        this.aksjonspunktType = null;
     }
 
     @JsonProperty
@@ -93,6 +100,10 @@ enum AksjonspunktDefinisjon implements Kodeverdi {
     @Override
     public String getKodeverk() {
         return KODEVERK;
+    }
+
+    public AksjonspunktType getAksjonspunktType() {
+        return aksjonspunktType;
     }
 
     @Override
@@ -113,7 +124,16 @@ enum AksjonspunktDefinisjon implements Kodeverdi {
         return ad;
     }
 
+    public static AksjonspunktDefinisjon fraHåndtering(HåndteringKode håndteringKode) {
+        return fraKode(håndteringKode.getKode());
+    }
+
     public static Map<String, AksjonspunktDefinisjon> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
+
+    public boolean erVentepunkt() {
+        return AUTOPUNKT.equals(this.aksjonspunktType);
+    }
+
 }

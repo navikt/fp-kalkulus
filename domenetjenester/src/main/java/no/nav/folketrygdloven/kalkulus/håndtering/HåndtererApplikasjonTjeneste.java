@@ -10,31 +10,41 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
+import no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt.AksjonspunktTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
+    private static final Logger LOG = LoggerFactory.getLogger(HåndtererApplikasjonTjeneste.class);
 
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private AksjonspunktTjeneste aksjonspunktTjeneste;
 
     public HåndtererApplikasjonTjeneste() {
         // CDI
     }
 
     @Inject
-    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
+    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste,
+                                        BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                        AksjonspunktTjeneste aksjonspunktTjeneste) {
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.aksjonspunktTjeneste = aksjonspunktTjeneste;
     }
 
     public Map<Long, OppdateringRespons> håndter(Map<Long, HåndterBeregningsgrunnlagInput> håndterBeregningInputPrKobling, Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
@@ -42,18 +52,40 @@ public class HåndtererApplikasjonTjeneste {
         Map<Long, OppdateringRespons> resultatPrKobling = new HashMap<>();
 
         for (Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling : håndterBeregningInputPrKobling.entrySet()) {
-            HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(hånteringInputPrKobling.getKey());
-            HåndteringKode håndteringKode = håndterBeregningDto.getKode();
-            BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndteringKode);
-            HåndteringResultat resultat = håndterOgLagre(hånteringInputPrKobling, håndterBeregningDto, håndteringKode, tilstand);
-            if (resultat.getEndring() != null) {
-                resultatPrKobling.put(hånteringInputPrKobling.getKey(), resultat.getEndring());
-            } else {
-                resultatPrKobling.put(hånteringInputPrKobling.getKey(), new OppdateringRespons());
+            Long koblingId = hånteringInputPrKobling.getKey();
+            HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(koblingId);
 
+            // Siden vi i starten kan få inn aksjonspunkter som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
+            // må vi sjekke på dette intill gamle saker er passert beregning
+            if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
+                if (harUtledetAksjonspunkt(koblingId, håndterBeregningDto)) {
+                    løsAksjonspunkt(koblingId, håndterBeregningDto);
+                } else {
+                    LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
+                }
+            }
+
+            BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
+            HåndteringResultat resultat = håndterOgLagre(hånteringInputPrKobling, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);
+            if (resultat.getEndring() != null) {
+                resultatPrKobling.put(koblingId, resultat.getEndring());
+            } else {
+                resultatPrKobling.put(koblingId, new OppdateringRespons());
             }
         }
         return resultatPrKobling;
+    }
+
+    private boolean harUtledetAksjonspunkt(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+        return aksjonspunktTjeneste.hentAksjonspunkt(koblingId,
+                AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode())).isPresent();
+    }
+
+    private void løsAksjonspunkt(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+        if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
+            aksjonspunktTjeneste.løsAksjonspunkt(koblingId, AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode()),
+                    håndterBeregningDto.getBegrunnelse());
+        }
     }
 
     private HåndteringResultat håndterOgLagre(Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {

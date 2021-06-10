@@ -68,3 +68,5 @@ spec:
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
       value: "true"
+    - name: LAGRE_AKSJONSPUNKT_I_KALKULUS
+      value: "false"

@@ -5,6 +5,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -43,13 +45,18 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
         @JsonSubTypes.Type(value = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.class, name = VurderVarigEndringEllerNyoppstartetSNHåndteringDto.IDENT_TYPE),
 })
 @JsonInclude(value = NON_ABSENT, content = NON_EMPTY)
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
 public abstract class HåndterBeregningDto {
 
     @JsonProperty(value = "kode")
     @NotNull
     @Valid
     private HåndteringKode kode;
+
+    @JsonProperty("begrunnelse")
+    @Size(max = 4000)
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String begrunnelse;
 
     public HåndterBeregningDto(@NotNull @Valid HåndteringKode kode) {
         this.kode = kode;
@@ -65,4 +72,12 @@ public abstract class HåndterBeregningDto {
 
     /** Type ident. (per ident fra subklasse). */
     public abstract String getIdentType();
+
+    public String getBegrunnelse() {
+        return begrunnelse;
+    }
+
+    public void setBegrunnelse(String begrunnelse) {
+        this.begrunnelse = begrunnelse;
+    }
 }
