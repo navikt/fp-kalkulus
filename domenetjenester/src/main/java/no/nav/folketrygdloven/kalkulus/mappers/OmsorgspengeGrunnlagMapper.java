@@ -22,5 +22,4 @@ class OmsorgspengeGrunnlagMapper {
         kalkulatorGrunnlag.setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.OMSORGSPENGER).getAntallGMilitærHarKravPå().intValue());
         return kalkulatorGrunnlag;
     }
-
 }

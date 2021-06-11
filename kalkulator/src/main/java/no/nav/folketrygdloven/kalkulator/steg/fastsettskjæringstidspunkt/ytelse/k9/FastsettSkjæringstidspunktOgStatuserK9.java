@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytels
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL.mapRegelSporingGrunnlag;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.skjæringstidspunkt.regel.ytelse.k9.RegelFastsettSkjæringstidspunktK9;
+import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModellK9;
 import no.nav.folketrygdloven.skjæringstidspunkt.status.RegelFastsettStatusVedSkjæringstidspunkt;
@@ -53,6 +55,12 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
         no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
         MidlertidigInaktivType midlertidigInaktivType = null;
         if (midlerTidigInaktivInput != null) {
+            if (midlerTidigInaktivInput.name().equals(MidlertidigInaktivType.A.name())) {
+                List<AktivPeriode> aktiviteterPåStp = regelmodell.getAktivePerioder().stream().filter(aktivPeriode -> aktivPeriode.getPeriode().inneholder(input.getSkjæringstidspunktOpptjening())).collect(Collectors.toList());
+                if(!aktiviteterPåStp.isEmpty()) {
+                    throw new IllegalArgumentException("Skjæringstidspunktet kan ikke overlappe med aktive perioder for midlertidig inaktiv 8-47-A for: "+ aktiviteterPåStp);
+                }
+            }
             midlertidigInaktivType = MidlertidigInaktivType.valueOf(midlerTidigInaktivInput.name());
         }
 

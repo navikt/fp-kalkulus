@@ -17,6 +17,9 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         if (UttakArbeidType.FRILANS.equals(uttakArbeidType)) {
             return AktivitetStatusV2.FL;
         }
+        if (UttakArbeidType.INAKTIV.equals(uttakArbeidType)) {
+            return AktivitetStatusV2.IN;
+        }
         if (UttakArbeidType.ANNET.equals(uttakArbeidType)) {
             throw new IllegalArgumentException("Kan ikke gradere " + UttakArbeidType.ANNET);
         }

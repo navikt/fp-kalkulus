@@ -100,5 +100,4 @@ public enum YtelseTyperKalkulusStøtterKontrakt implements Kodeverdi {
     public String getKodeverk() {
         return KODEVERK;
     }
-    
 }
