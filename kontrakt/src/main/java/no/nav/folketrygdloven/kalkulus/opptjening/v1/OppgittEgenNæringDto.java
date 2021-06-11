@@ -9,6 +9,8 @@ import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -54,6 +56,12 @@ public class OppgittEgenNæringDto {
     @NotNull
     private Boolean nyIArbeidslivet;
 
+    @JsonProperty(value = "begrunnelse")
+    @Valid
+    @Size(max = 4000)
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}§]+$", message = "[${validatedValue}] matcher ikke tillatt pattern [{regexp}]")
+    private String begrunnelse;
+
     @JsonProperty(value = "bruttoInntekt")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -72,6 +80,7 @@ public class OppgittEgenNæringDto {
                                 @Valid @NotNull Boolean varigEndring,
                                 @Valid LocalDate endringDato,
                                 @Valid @NotNull Boolean nyIArbeidslivet,
+                                @Valid String begrunnelse,
                                 @Valid @NotNull BigDecimal bruttoInntekt) {
 
         this.periode = periode;
@@ -81,6 +90,7 @@ public class OppgittEgenNæringDto {
         this.varigEndring = varigEndring;
         this.endringDato = endringDato;
         this.nyIArbeidslivet = nyIArbeidslivet;
+        this.begrunnelse = begrunnelse;
         this.bruttoInntekt = bruttoInntekt;
     }
 
@@ -114,5 +124,9 @@ public class OppgittEgenNæringDto {
 
     public LocalDate getEndringDato() {
         return endringDato;
+    }
+
+    public String getBegrunnelse() {
+        return begrunnelse;
     }
 }

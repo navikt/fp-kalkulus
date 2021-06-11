@@ -6,11 +6,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -171,6 +171,7 @@ public class MapIAYTilKalulator {
                 .medEndringDato(oppgittEgenNæring.getEndringDato())
                 .medVirksomhetType(VirksomhetType.fraKode(oppgittEgenNæring.getVirksomhetType().getKode()))
                 .medVarigEndring(oppgittEgenNæring.getVarigEndring())
+                .medBegrunnelse(oppgittEgenNæring.getBegrunnelse())
                 .medNyoppstartet(oppgittEgenNæring.getNyoppstartet());
         if (oppgittEgenNæring.getAktør() != null && oppgittEgenNæring.getAktør().getErOrganisasjon()) {
             egenNæringBuilder.medVirksomhet(oppgittEgenNæring.getAktør().getIdent());
