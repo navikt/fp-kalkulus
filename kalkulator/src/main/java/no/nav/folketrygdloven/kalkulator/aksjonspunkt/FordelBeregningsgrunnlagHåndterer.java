@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.aksjonspunkt;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,10 @@ public class FordelBeregningsgrunnlagHåndterer {
     private static void mapBeregnetOgOverstyrt(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
         andelBuilder.medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr());
         andelBuilder.medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
+        if (korrektAndel.getPgiSnitt() != null) {
+            andelBuilder.medPgi(korrektAndel.getPgiSnitt(),
+                    Arrays.asList(korrektAndel.getPgi1(), korrektAndel.getPgi2(), korrektAndel.getPgi3()));
+        }
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelMedMatchendeAndelsnr(BeregningsgrunnlagPeriodeDto korrektPeriode, FordelBeregningsgrunnlagAndelDto endretAndel) {
