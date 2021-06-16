@@ -14,10 +14,22 @@ Folketrygdloven - Kalkulus (ft-kalkulus)
 Dette er repository for kildkode som dekker applikasjonen som beregner potensiell dagsats ved hjelp av beregnignsreglene i folketrygdloven.
 
 ### Struktur
-Dette er en kalkulator for foreldrepengeområdet, pleiepenger og svangerskapspenger (Folketrygdloven kapittel 14.7 og kapittel 8).
+Dette er en kalkulator for å beregne et *beregningsgrunnlag* for følgende ytelser
+ * foreldrepenger [ftrl 14-7](https://lovdata.no/nav/folketrygdloven/kap14/%C2%A714-7)
+ * svangerskapspenger [ftrl 14-4](https://lovdata.no/nav/folketrygdloven/kap14/%C2%A714-4)
+ * pleiepenger for sykt barn [ftrl 9-10](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-10)
+ * pleiepenger for pleie av nærstående [ftrl 9-13](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-13)
+ * omsorgspenger [ftrl 9-5](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-5)
+ * opplæringspenger [ftrl 9-14](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-14)
+  
+Reglene baserer seg i hovedsak på beregningsregler fra Sykepenger [ftrl 8](https://lovdata.no/nav/folketrygdloven/kap8/%C2%A78), med noen få særbestemmelser videre angitt under kapitler [ftrl 14](https://lovdata.no/nav/folketrygdloven/kap14) og [ftrl 9](https://lovdata.no/nav/folketrygdloven/kap9)
+
+Beregningsgrunnlaget er utgangspunktet for en maksimal dagsats som kan utbetales bruker i en angitt periode.
+Beregningsgrunnlaget består av andeler per aktivitet (arbeidstype, selvstendig næringsdrivende, frilanser) og arbeidsgiver (både privatperson og virksomheter).
 
 ## Lokal utvikling
-Team Duplo
+Team Foreldrepenger
+Team K9Saksbehandling
 
 
 ### Spørsmål
@@ -45,8 +57,8 @@ docker-compose down
 ```
 
 ## Teknologistakk
-* Java 11
-* Postgres 11.5
+* Java 16
+* Postgres 12
 * Hibernate
 * Weld SE
 * Jetty
