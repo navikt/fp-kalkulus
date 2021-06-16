@@ -28,8 +28,8 @@ Beregningsgrunnlaget er utgangspunktet for en maksimal dagsats som kan utbetales
 Beregningsgrunnlaget består av andeler per aktivitet (arbeidstype, selvstendig næringsdrivende, frilanser) og arbeidsgiver (både privatperson og virksomheter).
 
 ## Lokal utvikling
-Team Foreldrepenger
-Team K9Saksbehandling
+* Team Foreldrepenger
+* Team K9Saksbehandling
 
 
 ### Spørsmål
