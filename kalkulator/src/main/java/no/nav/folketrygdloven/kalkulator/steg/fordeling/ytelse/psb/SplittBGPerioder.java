@@ -27,7 +27,10 @@ public class SplittBGPerioder {
                 // Hva skal skje her om perioden er 1 dag?
                 if (bgPeriode.getTomDato().equals(tilkommetInntektDato.minusDays(1))) {
                     oppdaterPeriodeÅrsakForNestePeriode(eksisterendePerioder, periodeIterator, periodeårsak);
-                } else if (bgPeriode.inkluderer(tilkommetInntektDato)) {
+                } else if(bgPeriode.getFomDato().equals(tilkommetInntektDato)) {
+                    oppdaterPeriodeÅrsakForPeriode(beregningsgrunnlagPeriode, periodeårsak);
+                }
+                else if (bgPeriode.inkluderer(tilkommetInntektDato)) {
                     splittBeregningsgrunnlagPeriode(nyttBg,
                             beregningsgrunnlagPeriode,
                             tilkommetInntektDato, periodeårsak);
@@ -36,11 +39,17 @@ public class SplittBGPerioder {
             return nyttBg;
     }
 
+    private static void oppdaterPeriodeÅrsakForPeriode(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, PeriodeÅrsak periodeårsak) {
+            BeregningsgrunnlagPeriodeDto.oppdater(beregningsgrunnlagPeriode)
+                    .leggTilPeriodeÅrsak(periodeårsak)
+                    .build();
+    }
+
     private static void oppdaterPeriodeÅrsakForNestePeriode(List<BeregningsgrunnlagPeriodeDto> eksisterendePerioder,
                                                             ListIterator<BeregningsgrunnlagPeriodeDto> periodeIterator, PeriodeÅrsak nyPeriodeÅrsak) {
         if (periodeIterator.hasNext()) {
             var nestePeriode = eksisterendePerioder.get(periodeIterator.nextIndex());
-            BeregningsgrunnlagPeriodeDto.builder(nestePeriode)
+            BeregningsgrunnlagPeriodeDto.oppdater(nestePeriode)
                 .leggTilPeriodeÅrsak(nyPeriodeÅrsak)
                 .build();
         }
