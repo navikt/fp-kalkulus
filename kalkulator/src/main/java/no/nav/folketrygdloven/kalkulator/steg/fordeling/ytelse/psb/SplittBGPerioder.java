@@ -24,7 +24,6 @@ public class SplittBGPerioder {
             while (periodeIterator.hasNext()) {
                 var beregningsgrunnlagPeriode = periodeIterator.next();
                 var bgPeriode = beregningsgrunnlagPeriode.getPeriode();
-                // Hva skal skje her om perioden er 1 dag?
                 if (bgPeriode.getTomDato().equals(tilkommetInntektDato.minusDays(1))) {
                     oppdaterPeriodeÅrsakForNestePeriode(eksisterendePerioder, periodeIterator, periodeårsak);
                 } else if(bgPeriode.getFomDato().equals(tilkommetInntektDato)) {
