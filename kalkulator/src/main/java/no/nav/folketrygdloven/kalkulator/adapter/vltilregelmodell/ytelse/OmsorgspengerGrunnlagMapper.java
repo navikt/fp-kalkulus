@@ -14,8 +14,11 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.Ytelsesspesifi
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 
 @ApplicationScoped
@@ -32,7 +35,7 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
                     .filter(this::erFrilansEllerNæring)
                     .anyMatch(this::harUtbetaling);
             BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag());
-            return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt, harSøktFLEllerSN);
+            return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt, harSøktFLEllerSN, finnesArbeidsandelIkkeSøktOm(utbetalingsgradPrAktivitet, beregningsgrunnlagDto));
         }
 
         throw new IllegalStateException("Forventer OmsorgspengerGrunnlag for OMP");
@@ -46,6 +49,20 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
     private boolean erFrilansEllerNæring(UtbetalingsgradPrAktivitetDto aktivitet) {
         return aktivitet.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.FRILANS)
                 || aktivitet.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+    }
+
+    private boolean finnesArbeidsandelIkkeSøktOm(List<UtbetalingsgradPrAktivitetDto> utbetalingsgrader, BeregningsgrunnlagDto beregningsgrunnlagDto) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = beregningsgrunnlagDto.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        return andeler.stream()
+                .filter(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER))
+                .anyMatch(andel -> !erSøktOm(utbetalingsgrader, andel));
+    }
+
+    private boolean erSøktOm(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return utbetalingsgradPrAktivitet.stream()
+                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID))
+                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().equals(andel.getArbeidsgiver()))
+                .anyMatch(utb -> utb.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(andel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef())));
     }
 
 }
