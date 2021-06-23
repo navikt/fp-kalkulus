@@ -1,0 +1,89 @@
+package no.nav.folketrygdloven.kalkulus.forvaltning;
+
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.Set;
+
+import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
+import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+
+public class Greguleringsstatusutleder {
+    private static final Set<AktivitetStatus> SN_REGULERING = Set.of(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, AktivitetStatus.KOMBINERT_AT_SN,
+            AktivitetStatus.KOMBINERT_FL_SN, AktivitetStatus.KOMBINERT_AT_FL_SN);
+
+
+    private Greguleringsstatusutleder() {
+        // SKjuler default
+    }
+
+    public static GrunnbeløpReguleringStatus utledStatus(Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                         BigDecimal nyttGrunnbeløp,
+                                                         YtelseTyperKalkulusStøtterKontrakt ytelse) {
+        Optional<BeregningsgrunnlagEntitet> bgOpt = beregningsgrunnlagGrunnlagEntitet.flatMap(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlag);
+        if (bgOpt.isEmpty() || beregningsgrunnlagGrunnlagEntitet.get().getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)) {
+            return GrunnbeløpReguleringStatus.IKKE_VURDERT;
+        }
+        BigDecimal grunnbeløpBenyttetIBeregningen = bgOpt.map(BeregningsgrunnlagEntitet::getGrunnbeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO);
+        if (måGreguleres(nyttGrunnbeløp, ytelse, bgOpt.get(), grunnbeløpBenyttetIBeregningen)) {
+            return GrunnbeløpReguleringStatus.NØDVENDIG;
+        }
+        return GrunnbeløpReguleringStatus.IKKE_NØDVENDIG;
+    }
+
+    private static boolean måGreguleres(BigDecimal nyttGrunnbeløp,
+                                                           YtelseTyperKalkulusStøtterKontrakt ytelse,
+                                                           BeregningsgrunnlagEntitet bg,
+                                                           BigDecimal grunnbeløpBenyttetIBeregningen) {
+        if (grunnbeløpBenyttetIBeregningen.compareTo(nyttGrunnbeløp) == 0) {
+            return false;
+        }
+        Konfigverdier konfigverdier = KonfigTjeneste.forYtelse(FagsakYtelseType.fraKode(ytelse.getKode()));
+        if (harGrunnlagSomBleAvkortet(bg, konfigverdier, grunnbeløpBenyttetIBeregningen)) {
+            return true;
+        }
+        if (erMilitærUnderMinstekravForMilitær(bg, konfigverdier, nyttGrunnbeløp)) {
+            return true;
+        }
+        if (erBeregnetSomNæringsdrivende(bg)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean harGrunnlagSomBleAvkortet(BeregningsgrunnlagEntitet bg, Konfigverdier konfigverdier, BigDecimal grunnbeløpBenyttetIBeregningen) {
+        BigDecimal størsteBrutto = bg.getBeregningsgrunnlagPerioder().stream()
+                .map(BeregningsgrunnlagPeriode::getBruttoPrÅr)
+                .max(Comparator.naturalOrder())
+                .orElse(BigDecimal.ZERO);
+        BigDecimal antallGØvreGrenseverdi = konfigverdier.getAntallGØvreGrenseverdi();
+        BigDecimal grenseverdi = antallGØvreGrenseverdi.multiply(grunnbeløpBenyttetIBeregningen);
+        return størsteBrutto.compareTo(grenseverdi) > 0;
+
+    }
+
+    private static boolean erMilitærUnderMinstekravForMilitær(BeregningsgrunnlagEntitet bg, Konfigverdier konfigverdier, BigDecimal nyG) {
+        return bg.getBeregningsgrunnlagPerioder().stream()
+                .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                .anyMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
+                        && (a.getBeregningsgrunnlagPeriode().getBruttoPrÅr()
+                        .compareTo(konfigverdier.getAntallGMilitærHarKravPå().multiply(nyG))) < 0);
+    }
+
+    private static boolean erBeregnetSomNæringsdrivende(BeregningsgrunnlagEntitet bg) {
+        return bg.getAktivitetStatuser().stream()
+                .map(BeregningsgrunnlagAktivitetStatus::getAktivitetStatus)
+                .anyMatch(SN_REGULERING::contains);
+    }
+
+}

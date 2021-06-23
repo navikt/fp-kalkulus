@@ -4,12 +4,18 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,8 +33,12 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.forvaltning.GrunnbeløpreguleringTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningSats;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentGrunnbeløpRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -41,14 +51,17 @@ import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
 public class GrunnbeløpRestTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private GrunnbeløpreguleringTjeneste grunnbeløpreguleringTjeneste;
 
     public GrunnbeløpRestTjeneste() {
         // for CDI
     }
 
     @Inject
-    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository) {
+    public GrunnbeløpRestTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                  GrunnbeløpreguleringTjeneste grunnbeløpreguleringTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.grunnbeløpreguleringTjeneste = grunnbeløpreguleringTjeneste;
     }
 
     @POST
@@ -61,7 +74,27 @@ public class GrunnbeløpRestTjeneste {
         final Response response = Response.ok(MapBeregningSats.map(grunnbeløp)).build();
         return response;
     }
-    
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Verifiserer grunnbeløpet på et grunnlag, og kontrollerer at grunnbeløpet som er brukt fortsatt er korrekt.",
+            summary = ("Returnerer en liste over koblinger og status for gregulering for hver kobling."), tags = "grunnbelop")
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
+    @Path("/kontrollerGregulering")
+    public Response hentGrunnbeløp(@NotNull @Valid KontrollerGrunnbeløpRequestAbacDto spesifikasjon) {
+        List<UUID> referanser = spesifikasjon.getKoblinger();
+        Map<UUID, GrunnbeløpReguleringStatus> resultat = new HashMap<>();
+
+        for (UUID ref : referanser) {
+            if (ref != null) {
+                GrunnbeløpReguleringStatus status = grunnbeløpreguleringTjeneste.undersøkBehovForGregulering(new KoblingReferanse(ref), spesifikasjon.getSaksnummer());
+                resultat.put(ref, status);
+            }
+        }
+        return Response.ok(resultat).build();
+    }
+
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -80,5 +113,24 @@ public class GrunnbeløpRestTjeneste {
         }
     }
 
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class KontrollerGrunnbeløpRequestAbacDto extends KontrollerGrunnbeløpRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+
+
+        @JsonCreator
+        public KontrollerGrunnbeløpRequestAbacDto(@JsonProperty(value = "koblinger", required = true) @Valid @NotNull @Size(min = 1) List<UUID> koblinger,
+                                                  @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer) {
+            super(koblinger, saksnummer);
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            return abacDataAttributter;
+        }
+    }
 
 }
