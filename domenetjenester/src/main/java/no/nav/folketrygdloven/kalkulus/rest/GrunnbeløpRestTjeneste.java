@@ -39,6 +39,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningSats;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentGrunnbeløpRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerGrunnbeløpRequest;
+import no.nav.folketrygdloven.kalkulus.response.v1.GrunnbeløpReguleringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
 import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
@@ -91,7 +92,8 @@ public class GrunnbeløpRestTjeneste {
                 resultat.put(ref, status);
             }
         }
-        return Response.ok(resultat).build();
+        GrunnbeløpReguleringRespons respons = new GrunnbeløpReguleringRespons(resultat);
+        return Response.ok(respons).build();
     }
 
 
