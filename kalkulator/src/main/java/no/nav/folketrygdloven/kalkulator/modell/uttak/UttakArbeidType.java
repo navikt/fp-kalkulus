@@ -21,6 +21,7 @@ public enum UttakArbeidType implements Kodeverdi {
     SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "SN"),
     FRILANS("FRILANS", "Frilans", "FL"),
     INAKTIV("INAKTIV", "Inaktiv", "Inaktiv"),
+    DAGPENGER("DAGPENGER", "Dagpenger", "DP"),
     ANNET("ANNET", "Annet"),
     ;
     public static final String KODEVERK = "UTTAK_ARBEID_TYPE";

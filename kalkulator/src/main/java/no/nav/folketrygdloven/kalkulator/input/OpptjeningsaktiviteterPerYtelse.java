@@ -28,7 +28,6 @@ public class OpptjeningsaktiviteterPerYtelse {
             FagsakYtelseType.PLEIEPENGER_SYKT_BARN, Set.of(
                     OpptjeningAktivitetType.VIDERE_ETTERUTDANNING,
                     OpptjeningAktivitetType.UTENLANDSK_ARBEIDSFORHOLD,
-                    OpptjeningAktivitetType.DAGPENGER,
                     OpptjeningAktivitetType.ARBEIDSAVKLARING,
                     OpptjeningAktivitetType.VENTELØNN_VARTPENGER,
                     OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE),

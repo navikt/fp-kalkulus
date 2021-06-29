@@ -19,6 +19,9 @@ public class AktivitetStatusMapper {
         if (UttakArbeidType.INAKTIV.equals(uttakArbeidType)) {
             return AktivitetStatus.BRUKERS_ANDEL;
         }
+        if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
+            return AktivitetStatus.DAGPENGER;
+        }
         if (UttakArbeidType.ANNET.equals(uttakArbeidType)) {
             throw new IllegalArgumentException("Kan ikke gradere " + UttakArbeidType.ANNET);
         }
