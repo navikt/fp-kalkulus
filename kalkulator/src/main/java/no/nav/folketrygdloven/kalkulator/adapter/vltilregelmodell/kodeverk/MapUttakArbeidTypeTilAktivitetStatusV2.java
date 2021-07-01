@@ -23,6 +23,9 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
             return AktivitetStatusV2.DP;
         }
+        if (UttakArbeidType.KUN_YTELSE.equals(uttakArbeidType)) {
+            return AktivitetStatusV2.BA;
+        }
         if (UttakArbeidType.ANNET.equals(uttakArbeidType)) {
             throw new IllegalArgumentException("Kan ikke gradere " + UttakArbeidType.ANNET);
         }
