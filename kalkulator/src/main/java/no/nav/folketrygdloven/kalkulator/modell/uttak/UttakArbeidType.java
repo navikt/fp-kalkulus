@@ -22,7 +22,7 @@ public enum UttakArbeidType implements Kodeverdi {
     FRILANS("FRILANS", "Frilans", "FL"),
     INAKTIV("INAKTIV", "Inaktiv", "Inaktiv"),
     DAGPENGER("DAGPENGER", "Dagpenger", "DP"),
-    BRUKERS_ANDEL("BA", "Brukers andel", "BA"), // Brukes når søker kun har ytelse
+    BRUKERS_ANDEL("BA", "Brukers andel", "BA"), // Brukes når søker kun søker uttak for ytelse (PSB)
     ANNET("ANNET", "Annet"),
     ;
     public static final String KODEVERK = "UTTAK_ARBEID_TYPE";
