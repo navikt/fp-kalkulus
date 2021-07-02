@@ -23,7 +23,7 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
             return AktivitetStatusV2.DP;
         }
-        if (UttakArbeidType.KUN_YTELSE.equals(uttakArbeidType)) {
+        if (UttakArbeidType.BRUKERS_ANDEL.equals(uttakArbeidType)) {
             return AktivitetStatusV2.BA;
         }
         if (UttakArbeidType.ANNET.equals(uttakArbeidType)) {

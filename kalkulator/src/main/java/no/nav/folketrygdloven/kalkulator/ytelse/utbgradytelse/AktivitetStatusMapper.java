@@ -22,7 +22,7 @@ public class AktivitetStatusMapper {
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
             return AktivitetStatus.DAGPENGER;
         }
-        if (UttakArbeidType.KUN_YTELSE.equals(uttakArbeidType)) {
+        if (UttakArbeidType.BRUKERS_ANDEL.equals(uttakArbeidType)) {
             return AktivitetStatus.BRUKERS_ANDEL;
         }
         if (UttakArbeidType.ANNET.equals(uttakArbeidType)) {
