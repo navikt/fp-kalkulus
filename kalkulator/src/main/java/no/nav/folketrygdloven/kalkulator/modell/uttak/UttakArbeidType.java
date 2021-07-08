@@ -20,7 +20,7 @@ public enum UttakArbeidType implements Kodeverdi {
     ORDINÆRT_ARBEID("ORDINÆRT_ARBEID", "Ordinært arbeid", "AT"),
     SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "SN"),
     FRILANS("FRILANS", "Frilans", "FL"),
-    INAKTIV("INAKTIV", "Inaktiv", "Inaktiv"),
+    MIDL_INAKTIV("MIDL_INAKTIV", "Inaktiv", "MIDL_INAKTIV"),
     DAGPENGER("DAGPENGER", "Dagpenger", "DP"),
     BRUKERS_ANDEL("BA", "Brukers andel", "BA"), // Brukes når søker kun søker uttak for ytelse (PSB)
     ANNET("ANNET", "Annet"),

@@ -16,7 +16,7 @@ public class AktivitetStatusMapper {
         if (UttakArbeidType.FRILANS.equals(uttakArbeidType)) {
             return AktivitetStatus.FRILANSER;
         }
-        if (UttakArbeidType.INAKTIV.equals(uttakArbeidType)) {
+        if (UttakArbeidType.MIDL_INAKTIV.equals(uttakArbeidType)) {
             return AktivitetStatus.BRUKERS_ANDEL;
         }
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {

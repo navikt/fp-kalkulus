@@ -17,7 +17,7 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         if (UttakArbeidType.FRILANS.equals(uttakArbeidType)) {
             return AktivitetStatusV2.FL;
         }
-        if (UttakArbeidType.INAKTIV.equals(uttakArbeidType)) {
+        if (UttakArbeidType.MIDL_INAKTIV.equals(uttakArbeidType)) {
             return AktivitetStatusV2.IN;
         }
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
