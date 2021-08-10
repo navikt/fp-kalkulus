@@ -1,137 +1,84 @@
 package no.nav.folketrygdloven.kalkulus.app.exceptions;
 
-import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.spi.ApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import no.nav.vedtak.exception.FunksjonellException;
 import no.nav.vedtak.exception.ManglerTilgangException;
-import no.nav.vedtak.exception.VLException;
 import no.nav.vedtak.felles.jpa.TomtResultatException;
 import no.nav.vedtak.log.mdc.MDCOperations;
 import no.nav.vedtak.log.util.LoggerUtils;
 
 @Provider
-public class GeneralRestExceptionMapper implements ExceptionMapper<ApplicationException> {
+public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralRestExceptionMapper.class);
 
     @Override
-    public Response toResponse(ApplicationException exception) {
-        Throwable cause = exception.getCause();
-
-        if (cause instanceof TomtResultatException) {
-            return handleTomtResultatFeil((TomtResultatException) cause);
+    public Response toResponse(Throwable feil) {
+        try {
+            if (feil instanceof TomtResultatException) {
+                return handleTomtResultatFeil(getExceptionMelding(feil));
+            }
+            if (feil instanceof ManglerTilgangException) {
+                return ikkeTilgang(getExceptionMelding(feil));
+            }
+            loggTilApplikasjonslogg(feil);
+            return serverError(getExceptionFullFeilmelding(feil));
+        } finally {
+            MDC.remove("prosess"); //$NON-NLS-1$
         }
-
-        loggTilApplikasjonslogg(cause);
-        String callId = MDCOperations.getCallId();
-
-        if (cause instanceof VLException) {
-            return handleVLException((VLException) cause, callId);
-        } else if (cause instanceof ConstraintViolationException) {
-            return new ConstraintViolationMapper().toResponse((ConstraintViolationException) cause);
-        }
-        if (cause instanceof UnsupportedOperationException) {
-            return handleUnsupportedException(callId, cause);
-        }
-
-        return handleGenerellFeil(cause, callId);
     }
 
-    private Response handleTomtResultatFeil(TomtResultatException tomtResultatException) {
+    private static Response handleTomtResultatFeil(String feilmelding) {
         return Response
-            .status(Response.Status.NOT_FOUND)
-            .entity(new FeilDto(FeilType.TOMT_RESULTAT_FEIL, tomtResultatException.getMessage()))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
+                .status(Response.Status.NOT_FOUND)
+                .entity(new FeilDto(FeilType.TOMT_RESULTAT_FEIL, feilmelding))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 
-    private Response handleVLException(VLException vlException, String callId) {
-        if (vlException instanceof ManglerTilgangException) {
-            return ikkeTilgang(vlException);
-        } else if (vlException instanceof FunksjonellException) {
-            return handleValideringsfeil(callId, vlException);
-        } else {
-            return serverError(callId, vlException);
-        }
-    }
-
-    private Response handleValideringsfeil(String callId, VLException vlException) {
-        String feilmelding = getVLExceptionFeilmelding(callId, vlException);
-        FeilType feilType = FeilType.GENERELL_FEIL;
-        return Response.status(Response.Status.BAD_REQUEST)
-            .entity(new FeilDto(feilType, feilmelding))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
-    }
-
-    private static Response serverError(String callId, VLException feil) {
-        var feilmelding = getVLExceptionFeilmelding(callId, feil);
-        var feilType = FeilType.GENERELL_FEIL;
+    private static Response serverError(String feilmelding) {
         return Response.serverError()
-                .entity(new FeilDto(feilType, feilmelding))
+                .entity(new FeilDto(FeilType.GENERELL_FEIL, feilmelding))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
-    private static Response ikkeTilgang(VLException feil) {
-        var feilmelding = feil.getMessage();
-        var feilType = FeilType.MANGLER_TILGANG_FEIL;
+    private static Response ikkeTilgang(String feilmelding) {
         return Response.status(Response.Status.FORBIDDEN)
-                .entity(new FeilDto(feilType, feilmelding))
+                .entity(new FeilDto(FeilType.MANGLER_TILGANG_FEIL, feilmelding))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
-    private Response handleUnsupportedException(String callId, Throwable cause) {
-        String feilmelding = "Funksjonalitet er ikke støttet: " + cause.getMessage() + ". Meld til support med referanse-id: " + callId; //$NON-NLS-1$ //$NON-NLS-2$
-        FeilType feilType = FeilType.GENERELL_FEIL;
-        return Response.status(Response.Status.NOT_IMPLEMENTED)
-            .entity(new FeilDto(feilType, feilmelding))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
-    }
-
-    private static String getVLExceptionFeilmelding(String callId, VLException feil) {
-        var feilbeskrivelse = feil.getMessage();
+    private static String getExceptionFullFeilmelding(Throwable feil) {
+        var callId = MDCOperations.getCallId();
+        var feilbeskrivelse = getExceptionMelding(feil);
         if (feil instanceof FunksjonellException fe) {
-            var løsningsforslag = fe.getLøsningsforslag();
+            var løsningsforslag = getTextForField(fe.getLøsningsforslag());
             return String.format("Det oppstod en feil: %s - %s. Referanse-id: %s", feilbeskrivelse, løsningsforslag, callId);
         }
         return String.format("Det oppstod en serverfeil: %s. Meld til support med referanse-id: %s", feilbeskrivelse, callId);
     }
 
-    private Response handleGenerellFeil(Throwable cause, String callId) {
-        String generellFeilmelding = "Det oppstod en serverfeil: " + cause.getMessage() + ". Meld til support med referanse-id: " + callId; //$NON-NLS-1$ //$NON-NLS-2$
-        return Response.serverError()
-            .entity(new FeilDto(FeilType.GENERELL_FEIL, generellFeilmelding))
-            .type(MediaType.APPLICATION_JSON)
-            .build();
+    private static void loggTilApplikasjonslogg(Throwable feil) {
+        var melding = "Fikk uventet feil: " + getExceptionMelding(feil);
+        LOGGER.warn(melding, feil);
     }
 
-    private static void loggTilApplikasjonslogg(Throwable cause) {
-        if (cause instanceof ManglerTilgangException) {
-            // ikke logg
-        } else if (cause instanceof VLException) {
-            LOGGER.warn(cause.getMessage(), cause);
-        } else if (cause instanceof UnsupportedOperationException) {
-            var message = cause.getMessage() != null ? LoggerUtils.removeLineBreaks(cause.getMessage()) : "";
-            LOGGER.info("Fikk ikke-implementert-feil: {}", message, cause);
-        } else {
-            var message = cause.getMessage() != null ? LoggerUtils.removeLineBreaks(cause.getMessage()) : "";
-            LOGGER.error("Fikk uventet feil: " + message, cause);
-        }
+    private static String getExceptionMelding(Throwable feil) {
+        return getTextForField(feil.getMessage());
+    }
 
-        // key for å tracke prosess -- nullstill denne
-        MDC.remove("prosess"); //$NON-NLS-1$
+    private static String getTextForField(String input) {
+        return input != null ? LoggerUtils.removeLineBreaks(input) : "";
     }
 
 }

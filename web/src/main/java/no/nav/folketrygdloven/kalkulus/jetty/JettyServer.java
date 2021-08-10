@@ -186,7 +186,7 @@ public class JettyServer {
 
         webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
-        webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", "^.*resteasy-.*.jar$|^.*felles-.*.jar$");
+        webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", "^.*jersey-.*.jar$|^.*felles-.*.jar$");
         webAppContext.setSecurityHandler(createSecurityHandler());
         updateMetaData(webAppContext.getMetaData());
         return webAppContext;

@@ -21,7 +21,6 @@
     <logger name="org.flywaydb" level="${log.level.org.flywaydb:-INFO}" />
     <logger name="org.apache" level="${log.level.org.apache:-ERROR}" />
     <logger name="org.jboss.weld" level="${log.level.org.jboss.weld:-WARN}" />
-    <logger name="org.jboss.resteasy" level="${log.level.org.jboss.resteasy:-WARN}" />
 
     <logger name="Hibernate Types" level="ERROR" />
 
