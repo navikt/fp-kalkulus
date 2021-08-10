@@ -163,7 +163,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
     private List<AktivitetsAvtaleDto> finnAnsattperioderForInntektsmelding(Set<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunktBeregning) {
         return yrkesaktiviteter.stream()
                 .flatMap(ya -> ya.getAlleAnsettelsesperioder().stream())
-                .filter(a -> a.getPeriode().getTomDato().isAfter(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)))
+                .filter(a -> !a.getPeriode().getTomDato().isBefore(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunktBeregning)))
                 .collect(Collectors.toList());
     }
 
