@@ -36,6 +36,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
     static {
         statusMap.put(AktivitetStatusV2.SN, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
         statusMap.put(AktivitetStatusV2.FL, AktivitetStatus.FRILANSER);
+        statusMap.put(AktivitetStatusV2.DP, AktivitetStatus.DAGPENGER);
         aktivitetTypeMap.put(AktivitetStatus.FRILANSER, OpptjeningAktivitetType.FRILANS);
         aktivitetTypeMap.put(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, OpptjeningAktivitetType.NÆRING);
     }
@@ -57,7 +58,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
         } else {
             beregningsperiode = beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
         }
-        if (nyAndelErSNEllerFl(nyAndel)) {
+        if (nyAndelErSNFlDP(nyAndel)) {
             AktivitetStatus aktivitetStatus = mapAktivitetStatus(nyAndel.getAktivitetStatus());
             if (aktivitetStatus == null) {
                 throw new IllegalStateException("Klarte ikke identifisere aktivitetstatus under periodesplitt. Status var " + nyAndel.getAktivitetStatus());
@@ -105,9 +106,11 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
         return status;
     }
 
-    private boolean nyAndelErSNEllerFl(SplittetAndel nyAndel) {
+    private boolean nyAndelErSNFlDP(SplittetAndel nyAndel) {
         return nyAndel.getAktivitetStatus() != null
-                && (nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.SN) || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.FL));
+                && (nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.SN)
+                || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.FL)
+                || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.DP));
     }
 
     private void mapEksisterendeAndel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
