@@ -250,13 +250,6 @@
                 <version>1.0.0</version>
             </dependency>
 
-            <!-- Java11 -->
-            <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-rt</artifactId>
-                <version>2.3.3</version>
-            </dependency>
-
             <dependency>
                 <!-- Transitive avhengighet resolution for å sikre bestemt 
                     versjon -->
