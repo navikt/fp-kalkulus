@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AksjonspunktDefinisjonKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AksjonspunktStatusDefinisjonKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningStegKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktStatus;
@@ -45,10 +44,6 @@ public class AksjonspunktEntitet extends BaseEntitet {
     @Convert(converter = AksjonspunktStatusDefinisjonKodeverdiConverter.class)
     @Column(name = "aksjonspunkt_status", nullable = false)
     private AksjonspunktStatus status;
-
-    @Convert(converter = BeregningStegKodeverdiConverter.class)
-    @Column(name = "steg_funnet", nullable = false)
-    private BeregningSteg stegFunnet;
 
     @Column(name = "begrunnelse")
     private String begrunnelse;
@@ -78,10 +73,6 @@ public class AksjonspunktEntitet extends BaseEntitet {
         return status;
     }
 
-    public BeregningSteg getStegFunnet() {
-        return stegFunnet;
-    }
-
     public String getBegrunnelse() {
         return begrunnelse;
     }
@@ -89,11 +80,6 @@ public class AksjonspunktEntitet extends BaseEntitet {
     void setKobling(KoblingEntitet kobling) {
         Objects.requireNonNull(kobling, "koblingId");
         this.kobling = kobling;
-    }
-
-    void setStegFunnet(BeregningSteg steg) {
-        Objects.requireNonNull(steg, "steg");
-        this.stegFunnet = steg;
     }
 
     void setBegrunnelse(String begrunnelse) {
@@ -147,9 +133,12 @@ public class AksjonspunktEntitet extends BaseEntitet {
                 "koblingId=" + kobling +
                 ", definisjon=" + definisjon +
                 ", status=" + status +
-                ", stegFunnet=" + stegFunnet +
                 ", begrunnelse='" + begrunnelse + '\'' +
                 '}';
+    }
+
+    public BeregningSteg getStegFunnet() {
+        return definisjon.getStegFunnet();
     }
 
     static class Builder {
@@ -161,11 +150,6 @@ public class AksjonspunktEntitet extends BaseEntitet {
 
         AksjonspunktEntitet.Builder medStatus(AksjonspunktStatus status) {
             mal.setStatus(status);
-            return this;
-        }
-
-        AksjonspunktEntitet.Builder medStegFunnet(BeregningSteg stegFunnet) {
-            mal.setStegFunnet(stegFunnet);
             return this;
         }
 

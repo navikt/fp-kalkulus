@@ -56,12 +56,18 @@ public class HåndtererApplikasjonTjeneste {
             HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(koblingId);
 
             // Siden vi i starten kan få inn aksjonspunkter som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
-            // må vi sjekke på dette intill gamle saker er passert beregning
+            // må vi sjekke på dette intill gamle saker har passert beregning
+            boolean skalLøseAksjonspunktEtterOppdatering = false;
+            AksjonspunktDefinisjon aksjonspunktdefinisjon = AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
             if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
-                if (harUtledetAksjonspunkt(koblingId, håndterBeregningDto)) {
-                    løsAksjonspunkt(koblingId, håndterBeregningDto);
-                } else {
-                    LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
+                if (harUtledetAksjonspunkt(koblingId, aksjonspunktdefinisjon)) {
+                    skalLøseAksjonspunktEtterOppdatering = true;
+                } else if (aksjonspunktdefinisjon.erOverstyring()) {
+                    opprettOverstyringAksjonspunkt(koblingId, aksjonspunktdefinisjon);
+                    skalLøseAksjonspunktEtterOppdatering = true;
+                }
+                else {
+                        LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
                 }
             }
 
@@ -72,21 +78,33 @@ public class HåndtererApplikasjonTjeneste {
             } else {
                 resultatPrKobling.put(koblingId, new OppdateringRespons());
             }
+
+            if (skalLøseAksjonspunktEtterOppdatering) {
+                løsAksjonspunkt(koblingId, håndterBeregningDto);
+            }
         }
         return resultatPrKobling;
     }
 
-    private boolean harUtledetAksjonspunkt(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        return aksjonspunktTjeneste.hentAksjonspunkt(koblingId,
-                AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode())).isPresent();
+    private boolean harUtledetAksjonspunkt(Long koblingId, AksjonspunktDefinisjon aksjonspunktdefinisjon) {
+        return aksjonspunktTjeneste.hentAksjonspunkt(koblingId, aksjonspunktdefinisjon).isPresent();
     }
 
     private void løsAksjonspunkt(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
         if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
-            aksjonspunktTjeneste.løsAksjonspunkt(koblingId, AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode()),
+            AksjonspunktDefinisjon aksjonspunkt = AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+            aksjonspunktTjeneste.avbrytAlleAksjonspunktEtter(koblingId, aksjonspunkt);
+            aksjonspunktTjeneste.settOpprettetVedBehov(koblingId, aksjonspunkt);
+            aksjonspunktTjeneste.løsAksjonspunkt(koblingId, aksjonspunkt,
                     håndterBeregningDto.getBegrunnelse());
         }
     }
+
+    private void opprettOverstyringAksjonspunkt(Long koblingId, AksjonspunktDefinisjon aksjonspunktdefinisjon) {
+        aksjonspunktTjeneste.avbrytAndreAksjonspunkterISammeSteg(koblingId, aksjonspunktdefinisjon);
+        aksjonspunktTjeneste.opprettEllerGjennopprettAksjonspunkt(koblingId, aksjonspunktdefinisjon);
+    }
+
 
     private HåndteringResultat håndterOgLagre(Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
         rullTilbakeVedBehov(hånteringInputPrKobling.getKey(), tilstand);

@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.kodeverk;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -26,9 +27,22 @@ public enum BeregningSteg implements Kodeverdi {
 
     VURDER_REF_BERGRUNN("VURDER_REF_BERGRUNN", "Vurder refusjon for beregningsgrunnlaget"),
     FORDEL_BERGRUNN("FORDEL_BERGRUNN", "Fordel beregningsgrunnlag"),
-    FAST_BERGRUNN("FAST_BERGRUNN", "Fastsett beregningsgrunnlag"),
+    FAST_BERGRUNN("FAST_BERGRUNN", "Fastsett beregningsgrunnlag");
 
-    ;
+    /**
+     * Rekkefølge stegene opptrer i løsningen.
+     * <p>
+     * IKKE ENDRE REKKEFØLGE AV STEG UTEN Å SYNKE MED KONSUMENTER.
+     */
+    private static final List<BeregningSteg> stegRekkefølge = List.of(
+            FASTSETT_STP_BER,
+            KOFAKBER,
+            FORS_BERGRUNN,
+            FORS_BESTEBEREGNING,
+            VURDER_REF_BERGRUNN,
+            FORDEL_BERGRUNN,
+            FAST_BERGRUNN);
+
     private static final Map<String, BeregningSteg> KODER = new LinkedHashMap<>();
 
     public static final String KODEVERK = "BEREGNING_STEG";
@@ -79,4 +93,18 @@ public enum BeregningSteg implements Kodeverdi {
     public String getKodeverk() {
         return KODEVERK;
     }
+
+    public boolean erFør(BeregningSteg that) {
+        int thisIndex = stegRekkefølge.indexOf(this);
+        int thatIndex = stegRekkefølge.indexOf(that);
+        return thisIndex < thatIndex;
+    }
+
+    public boolean erEtter(BeregningSteg that) {
+        int thisIndex = stegRekkefølge.indexOf(this);
+        int thatIndex = stegRekkefølge.indexOf(that);
+        return thisIndex > thatIndex;
+    }
+
+
 }

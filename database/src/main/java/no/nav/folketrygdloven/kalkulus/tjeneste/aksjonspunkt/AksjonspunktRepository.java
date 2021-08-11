@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt;
 
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -38,9 +39,15 @@ class AksjonspunktRepository {
         return hentUniktResultat(query);
     }
 
+    public List<AksjonspunktEntitet> hentAksjonspunkterforKobling(KoblingEntitet kobling) {
+        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM Aksjonspunkt ap WHERE kobling = :kobling", AksjonspunktEntitet.class);
+        query.setParameter("kobling", kobling);
+        return query.getResultList();
+    }
+
     public void lagre(AksjonspunktEntitet aksjonspunkt) {
-        LOG.info("Lagrer aksjonspunkt med definisjon {} og status {} på kobling",
-                aksjonspunkt.getDefinisjon(), aksjonspunkt.getStatus());
+        LOG.info("Lagrer aksjonspunkt med definisjon {} og status {} på kobling {}",
+                aksjonspunkt.getDefinisjon(), aksjonspunkt.getStatus(), aksjonspunkt.getKobling().getId());
         entityManager.persist(aksjonspunkt);
         entityManager.flush();
     }

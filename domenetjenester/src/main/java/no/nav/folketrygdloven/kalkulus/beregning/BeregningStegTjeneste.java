@@ -74,6 +74,7 @@ public class BeregningStegTjeneste {
      * @return
      */
     public TilstandResponse beregnFor(BeregningSteg stegType, StegProsesseringInput input) {
+        kontrollerIngenUløsteAksjonspunkterFørSteg(stegType, input.getKoblingId());
         rullTilbakeTjeneste.rullTilbakeTilTilstandFørVedBehov(input.getKoblingId(), input.getStegTilstand());
         if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
@@ -99,9 +100,10 @@ public class BeregningStegTjeneste {
      * @return {@link TilstandResponse}
      */
     public TilstandResponse fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
+        validerIngenÅpneAksjonspunkter(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
-        lagreAksjonspunkter(input, resultat, BeregningSteg.FASTSETT_STP_BER);
+        lagreAksjonspunkter(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
 
@@ -115,7 +117,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.KOFAKBER);
+        lagreAksjonspunkter(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -129,7 +131,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.FORS_BERGRUNN);
+        lagreAksjonspunkter(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -165,7 +167,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.VURDER_REF_BERGRUNN);
+        lagreAksjonspunkter(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
@@ -183,7 +185,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreAksjonspunkter(input, beregningResultatAggregat, BeregningSteg.FORDEL_BERGRUNN);
+        lagreAksjonspunkter(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
@@ -297,14 +299,27 @@ public class BeregningStegTjeneste {
             .collect(Collectors.toList());
     }
 
-    private void lagreAksjonspunkter(StegProsesseringInput input, BeregningResultatAggregat beregningResultatAggregat, BeregningSteg steg) {
+    private void lagreAksjonspunkter(StegProsesseringInput input, BeregningResultatAggregat beregningResultatAggregat) {
         if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
             // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
             List<AksjonspunktDefinisjon> aksjonspunkterSomLagresIKalkulus = beregningResultatAggregat.getBeregningAksjonspunktResultater().stream()
                     .map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon)
                     .filter(ap -> !ap.erVentepunkt())
                     .collect(Collectors.toList());
-            aksjonspunktTjeneste.lagreAksjonspunktresultater(input.getKoblingId(), steg, aksjonspunkterSomLagresIKalkulus);
+            aksjonspunktTjeneste.lagreAksjonspunktresultater(input.getKoblingId(), aksjonspunkterSomLagresIKalkulus);
         }
     }
+
+    private void kontrollerIngenUløsteAksjonspunkterFørSteg(BeregningSteg stegType, Long koblingId) {
+        if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
+            aksjonspunktTjeneste.validerIngenAksjonspunktFørStegÅpne(stegType, koblingId);
+        }
+    }
+
+    private void validerIngenÅpneAksjonspunkter(Long koblingId) {
+        if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
+            aksjonspunktTjeneste.validerIngenÅpneAksjonspunkterPåKobling(koblingId);
+        }
+    }
+
 }

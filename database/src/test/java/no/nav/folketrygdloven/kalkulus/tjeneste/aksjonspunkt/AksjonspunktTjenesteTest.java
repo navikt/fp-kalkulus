@@ -51,7 +51,7 @@ class AksjonspunktTjenesteTest extends EntityManagerAwareTest {
     public void skal_opprette_lagre_og_hente_aksjonspunkt() {
         List<AksjonspunktDefinisjon> aksjonspunkter = Collections.singletonList(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
 
-        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), BeregningSteg.FORS_BERGRUNN, aksjonspunkter);
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), aksjonspunkter);
 
         AksjonspunktEntitet lagretAksjonspunkt = aksjonspunktTjeneste.hentAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)
                 .orElse(null);
@@ -67,7 +67,7 @@ class AksjonspunktTjenesteTest extends EntityManagerAwareTest {
         List<AksjonspunktDefinisjon> aksjonspunkter = Collections.singletonList(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
 
         // Opprett
-        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), BeregningSteg.FORS_BERGRUNN, aksjonspunkter);
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), aksjonspunkter);
         // Løs
         aksjonspunktTjeneste.løsAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
 
@@ -78,6 +78,43 @@ class AksjonspunktTjenesteTest extends EntityManagerAwareTest {
         assertThat(løstAksjonspunkt.getStatus()).isEqualTo(AksjonspunktStatus.UTFØRT);
         assertThat(løstAksjonspunkt.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
         assertThat(løstAksjonspunkt.getBegrunnelse()).isEqualTo("Dette er en begrunnelse");
+    }
+
+    @Test
+    public void skal_avbryte_aksjonspunkter_fra_og_med_oppgitt_aksjonspunkt_ved_tilbakerulling() {
+        // Opprett
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), Collections.singletonList(AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN));
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), Collections.singletonList(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS));
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), Collections.singletonList(AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG));
+
+        // Løs
+        aksjonspunktTjeneste.løsAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN, "Dette er en begrunnelse");
+        aksjonspunktTjeneste.løsAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
+        aksjonspunktTjeneste.løsAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG, "Dette er en begrunnelse");
+
+        // Rull tilbake fra og med avvikaksjonspunkt
+        aksjonspunktTjeneste.avbrytAlleAksjonspunktEtter(kobling.getId(), AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+
+        List<AksjonspunktEntitet> aksjonspunkter = aksjonspunktRepository.hentAksjonspunkterforKobling(kobling);
+
+        assertThat(aksjonspunkter).hasSize(3);
+        AksjonspunktEntitet faktaAP = aksjonspunkter.stream().filter(ap -> ap.getDefinisjon().equals(AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN)).findFirst().orElse(null);
+        assertThat(faktaAP).isNotNull();
+        assertThat(faktaAP.getDefinisjon()).isEqualTo(AksjonspunktDefinisjon.VURDER_FAKTA_FOR_ATFL_SN);
+        assertThat(faktaAP.getStatus()).isEqualTo(AksjonspunktStatus.UTFØRT);
+        assertThat(faktaAP.getStegFunnet()).isEqualTo(BeregningSteg.KOFAKBER);
+
+        AksjonspunktEntitet avvikAP = aksjonspunkter.stream().filter(ap -> ap.getDefinisjon().equals(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS)).findFirst().orElse(null);
+        assertThat(avvikAP).isNotNull();
+        assertThat(avvikAP.getDefinisjon()).isEqualTo(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        assertThat(avvikAP.getStatus()).isEqualTo(AksjonspunktStatus.UTFØRT);
+        assertThat(avvikAP.getStegFunnet()).isEqualTo(BeregningSteg.FORS_BERGRUNN);
+
+        AksjonspunktEntitet fordelAP = aksjonspunkter.stream().filter(ap -> ap.getDefinisjon().equals(AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG)).findFirst().orElse(null);
+        assertThat(fordelAP).isNotNull();
+        assertThat(fordelAP.getDefinisjon()).isEqualTo(AksjonspunktDefinisjon.FORDEL_BEREGNINGSGRUNNLAG);
+        assertThat(fordelAP.getStatus()).isEqualTo(AksjonspunktStatus.AVBRUTT);
+        assertThat(fordelAP.getStegFunnet()).isEqualTo(BeregningSteg.FORDEL_BERGRUNN);
     }
 
     @Test
@@ -92,7 +129,7 @@ class AksjonspunktTjenesteTest extends EntityManagerAwareTest {
         List<AksjonspunktDefinisjon> aksjonspunkter = Collections.singletonList(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
 
         // Opprett
-        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), BeregningSteg.FORS_BERGRUNN, aksjonspunkter);
+        aksjonspunktTjeneste.lagreAksjonspunktresultater(kobling.getId(), aksjonspunkter);
         // Løs
         aksjonspunktTjeneste.løsAksjonspunkt(kobling.getId(), AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS, "Dette er en begrunnelse");
 

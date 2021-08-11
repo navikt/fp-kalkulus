@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
@@ -44,7 +43,7 @@ class AksjonspunktRepositoryTest extends EntityManagerAwareTest {
 
     @Test
     public void skal_lagre_og_hente_aksjonspunkt() {
-        AksjonspunktEntitet ap = aksjonspunktKontrollTjeneste.opprettForKobling(kobling, BeregningSteg.FORS_BERGRUNN, AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        AksjonspunktEntitet ap = aksjonspunktKontrollTjeneste.opprettForKobling(kobling, AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
         aksjonspunktRepository.lagre(ap);
 
         Optional<AksjonspunktEntitet> hentetAP = aksjonspunktRepository.hentAksjonspunktforKobling(kobling, AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
