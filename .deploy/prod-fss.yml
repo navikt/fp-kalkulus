@@ -2,15 +2,14 @@ kind: "Application"
 apiVersion: "nais.io/v1alpha1"
 metadata:
   name: ftkalkulus
-  namespace: default
+  namespace: k9saksbehandling
   labels:
-    team: teamforeldrepenger
+    team: k9saksbehandling
 spec:
   image: {{ image }}
   port: 8080
   ingresses:
-    - "https://ftkalkulus.nais.preprod.local/"
-    - "https://ftkalkulus.dev.adeo.no/"
+    - "https://ftkalkulus.nais.adeo.no/"
   liveness:
     path: "/ftkalkulus/internal/isAlive"
     initialDelay: 30
@@ -42,31 +41,33 @@ spec:
     enabled: true
     paths:
       - mountPath: /var/run/secrets/nais.io/serviceuser
-        kvPath: serviceuser/data/dev/srvftkalkulus
+        kvPath: serviceuser/data/prod/srvftkalkulus
       - mountPath: /var/run/secrets/nais.io/appdynamics
-        kvPath: /apikey/appdynamics/dev
+        kvPath: /apikey/appdynamics/prod
+      - mountPath: /var/run/secrets/nais.io/vault
+        kvPath: /kv/prod/fss/ftkalkulus/k9saksbehandling
   env:
     - name: LOADBALANCER_URL
-      value: https://ftkalkulus.nais.preprod.local
+      value: https://ftkalkulus.nais.adeo.no
     - name: ABAC_PDP_ENDPOINT_URL
       value: http://abac-duplo.default/application/authorize
     - name: SECURITYTOKENSERVICE_URL
-      value: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+      value: https://sts.adeo.no/SecurityTokenServiceProvider/
     #OpenID
     - name: OPENIDCONNECT_ISSOHOST
-      value: https://isso-q.adeo.no:443/isso/oauth2
+      value: https://isso.adeo.no:443/isso/oauth2
     - name: OPENIDCONNECT_ISSOISSUER
-      value: https://isso-q.adeo.no:443/isso/oauth2
+      value: https://isso.adeo.no:443/isso/oauth2
     - name: OPENIDCONNECT_ISSOJWKS
-      value: https://isso-q.adeo.no:443/isso/oauth2/connect/jwk_uri
+      value: https://isso.adeo.no:443/isso/oauth2/connect/jwk_uri
     #OIDC
     - name: OIDC_STS_ISSUER_URL
-      value: https://security-token-service.nais.preprod.local
+      value: https://security-token-service.nais.adeo.no
     - name: OIDC_STS_JWKS_URL
       value: http://security-token-service.default/rest/v1/sts/jwks
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
-      value: "true"
+      value: "false"
     - name: LAGRE_AKSJONSPUNKT_I_KALKULUS
       value: "false"
