@@ -33,12 +33,12 @@ jobs:
         with:
           ref: ${{ env.TAG }}
 
-      - name: Promoter til cluster og namespace
+      - name: Promoter til cluster
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.DEPLOY_KEY }}
           CLUSTER: ${{ env.CLUSTER }}
-          RESOURCE: .deploy/${{ env.CLUSTER }}-${{ env.NAMESPACE }}.yml
+          RESOURCE: .deploy/${{ env.CLUSTER }}.yml
 
       - name: Oppdater kommentar med deployment status ved feil
         if: failure()
