@@ -15,7 +15,9 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 public class MapTilGUIInputFraKalkulator {
 
 
-    public static BeregningsgrunnlagGUIInput mapFraKalkulatorInput(KoblingEntitet kobling, KalkulatorInputDto input, Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+    public static BeregningsgrunnlagGUIInput mapFraKalkulatorInput(KoblingEntitet kobling,
+                                                                   KalkulatorInputDto input,
+                                                                   Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medFørsteUttaksdato(input.getSkjæringstidspunkt())
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();

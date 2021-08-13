@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.modell.aksjonspunkt.AksjonspunktDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto;
@@ -23,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.aksjonspunkt.AksjonspunktEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
@@ -155,5 +157,13 @@ public class BehandlingslagerTilKalkulusMapper {
         builder.medSkjæringstidspunktOpptjening(registerAktiviteter.getSkjæringstidspunktOpptjening());
         registerAktiviteter.getBeregningAktiviteter().forEach(mapAktivitet(builder));
         return builder.build();
+    }
+
+    public static List<AksjonspunktDto> mapAksjonspunkter(List<AksjonspunktEntitet> aksjonspunkter) {
+        return aksjonspunkter.stream().map(BehandlingslagerTilKalkulusMapper::mapAksjonspunkt).collect(Collectors.toList());
+    }
+
+    private static AksjonspunktDto mapAksjonspunkt(AksjonspunktEntitet aksjonspunktEntitet) {
+        return new AksjonspunktDto(aksjonspunktEntitet.getDefinisjon(), aksjonspunktEntitet.getStatus(), aksjonspunktEntitet.getBegrunnelse());
     }
 }

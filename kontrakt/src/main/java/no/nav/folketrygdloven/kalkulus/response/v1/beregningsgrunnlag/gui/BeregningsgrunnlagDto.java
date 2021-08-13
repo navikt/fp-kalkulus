@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -29,6 +30,12 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagDto {
+
+    @JsonProperty(value = "aksjonspunkter")
+    @Size(max = 10)
+    @NotNull
+    @Valid
+    private List<AksjonspunktDto> aksjonspunkter = Collections.emptyList();
 
     @JsonProperty(value = "skjaeringstidspunktBeregning")
     @NotNull
@@ -303,5 +310,13 @@ public class BeregningsgrunnlagDto {
 
     public void setInntektsgrunnlag(InntektsgrunnlagDto inntektsgrunnlag) {
         this.inntektsgrunnlag = inntektsgrunnlag;
+    }
+
+    public List<AksjonspunktDto> getAksjonspunkter() {
+        return aksjonspunkter;
+    }
+
+    public void setAksjonspunkter(List<AksjonspunktDto> aksjonspunkter) {
+        this.aksjonspunkter = aksjonspunkter;
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +70,10 @@ public class AksjonspunktTjeneste {
     public Optional<AksjonspunktEntitet> hentAksjonspunkt(Long koblingId, AksjonspunktDefinisjon definisjon) {
         KoblingEntitet kobling = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
         return aksjonspunktRepository.hentAksjonspunktforKobling(kobling, definisjon);
+    }
+
+    public List<AksjonspunktEntitet> hentAlleAksjonspunkterForKoblinger(Collection<Long> koblingIder) {
+        return aksjonspunktRepository.hentAksjonspunkterforKoblinger(koblingIder);
     }
 
     public void løsAksjonspunkt(Long koblingId, AksjonspunktDefinisjon definisjon, String begrunnelse) {

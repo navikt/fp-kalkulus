@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import no.nav.folketrygdloven.kalkulator.modell.aksjonspunkt.AksjonspunktDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -33,6 +34,9 @@ public class BeregningsgrunnlagGUIInput {
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
+
+    /** Aksjonspunkter som finnes på grunnlaget */
+    private List<AksjonspunktDto> aksjonspunkter;
 
     /** Grunnlag fra fordelsteget. Brukes i visning av automatisk fordeling og utledning av andeler som skal redigeres */
     private BeregningsgrunnlagGrunnlagDto fordelBeregningsgrunnlagGrunnlag;
@@ -75,6 +79,10 @@ public class BeregningsgrunnlagGUIInput {
         this.vurderRefusjonBeregningsgrunnlagGrunnlag = input.vurderRefusjonBeregningsgrunnlagGrunnlag;
         this.toggles = input.getToggles();
 
+    }
+
+    public List<AksjonspunktDto> getAksjonspunkter() {
+        return aksjonspunkter == null ? Collections.emptyList() : aksjonspunkter;
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
@@ -171,6 +179,14 @@ public class BeregningsgrunnlagGUIInput {
             .map(newInput::medSkjæringstidspunktForBeregning)
             .orElse(newInput);
         return newInput;
+    }
+
+    public BeregningsgrunnlagGUIInput medAksjonspunkter(List<AksjonspunktDto> aksjonspunkter) {
+        if (this.aksjonspunkter != null) {
+            throw new IllegalStateException("Listen med aksjonspunkter kan ikke endres.");
+        }
+        this.aksjonspunkter = Collections.unmodifiableList(aksjonspunkter);
+        return this;
     }
 
     public void leggTilToggle(String feature, Boolean isEnabled) {

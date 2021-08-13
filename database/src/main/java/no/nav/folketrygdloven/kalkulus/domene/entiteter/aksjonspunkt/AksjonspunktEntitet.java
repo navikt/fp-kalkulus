@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 
-@Entity(name = "Aksjonspunkt")
+@Entity(name = "AksjonspunktEntitet")
 @Table(name = "AKSJONSPUNKT")
 public class AksjonspunktEntitet extends BaseEntitet {
 
@@ -63,6 +63,10 @@ public class AksjonspunktEntitet extends BaseEntitet {
 
     public KoblingEntitet getKobling() {
         return kobling;
+    }
+
+    public Long getKoblingId() {
+        return kobling.getId();
     }
 
     public AksjonspunktDefinisjon getDefinisjon() {

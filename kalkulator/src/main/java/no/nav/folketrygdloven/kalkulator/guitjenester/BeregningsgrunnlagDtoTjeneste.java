@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
@@ -30,6 +31,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AksjonspunktDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
@@ -61,9 +63,8 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     private BeregningsgrunnlagDto lagDto(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagDto dto = new BeregningsgrunnlagDto();
-
+        mapAksjonspunkter(input, dto);
         mapFaktaOmBeregning(input, dto);
-
         if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isPresent()) {
             mapOverstyring(input, dto);
             mapSkjæringstidspunkt(input, dto);
@@ -80,6 +81,10 @@ public class BeregningsgrunnlagDtoTjeneste {
             mapInntektsgrunnlag(input, dto);
         }
         return dto;
+    }
+
+    private void mapAksjonspunkter(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
+        dto.setAksjonspunkter(input.getAksjonspunkter().stream().map(a -> new AksjonspunktDto(a.getDefinisjon(), a.getStatus(), a.getBegrunnelse())).collect(Collectors.toList()));
     }
 
     private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

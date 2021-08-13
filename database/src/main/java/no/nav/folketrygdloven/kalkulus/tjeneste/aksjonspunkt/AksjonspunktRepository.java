@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt;
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.util.List;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,22 +34,29 @@ class AksjonspunktRepository {
     }
 
     public Optional<AksjonspunktEntitet> hentAksjonspunktforKobling(KoblingEntitet kobling, AksjonspunktDefinisjon definisjon) {
-        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM Aksjonspunkt ap WHERE kobling = :kobling " +
+        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM AksjonspunktEntitet ap WHERE kobling = :kobling " +
                 "and definisjon =:def", AksjonspunktEntitet.class);
         query.setParameter("kobling", kobling);
         query.setParameter("def", definisjon);
         return hentUniktResultat(query);
     }
 
+    public List<AksjonspunktEntitet> hentAksjonspunkterforKoblinger(Collection<Long> koblingIder) {
+        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM AksjonspunktEntitet ap " +
+                "WHERE ap.kobling.id in :koblinger", AksjonspunktEntitet.class);
+        query.setParameter("koblinger", koblingIder);
+        return query.getResultList();
+    }
+
     public List<AksjonspunktEntitet> hentAksjonspunkterforKobling(KoblingEntitet kobling) {
-        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM Aksjonspunkt ap WHERE kobling = :kobling", AksjonspunktEntitet.class);
+        TypedQuery<AksjonspunktEntitet> query = entityManager.createQuery("FROM AksjonspunktEntitet ap WHERE kobling = :kobling", AksjonspunktEntitet.class);
         query.setParameter("kobling", kobling);
         return query.getResultList();
     }
 
     public void lagre(AksjonspunktEntitet aksjonspunkt) {
-        LOG.info("Lagrer aksjonspunkt med definisjon {} og status {} på kobling {}",
-                aksjonspunkt.getDefinisjon(), aksjonspunkt.getStatus(), aksjonspunkt.getKobling().getId());
+        LOG.info("Lagrer aksjonspunkt med definisjon {} og status {} på kobling",
+                aksjonspunkt.getDefinisjon(), aksjonspunkt.getStatus());
         entityManager.persist(aksjonspunkt);
         entityManager.flush();
     }
