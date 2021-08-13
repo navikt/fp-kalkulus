@@ -1,7 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,16 +19,21 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 class FinnTilkommetInntektTjeneste {
 
     private final BeregningsperiodeTjeneste beregningsperiodeTjeneste = new BeregningsperiodeTjeneste();
 
     List<AktivitetDto> finnAktiviteterMedTilkommetInntekt(BeregningsgrunnlagDto beregningsgrunnlagDto,
-                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+                                                          InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                          List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         var skjæringstidspunkt = beregningsgrunnlagDto.getSkjæringstidspunkt();
+        var sisteSøkteDato = finnSisteSøkteDato(utbetalingsgradPrAktivitet);
         var inntektsposterIBeregningsperioden = finnInntektposterIBeregningsperioden(iayGrunnlag, skjæringstidspunkt);
-        var inntektsposterEtter = finnInntektsposterEtter(iayGrunnlag, skjæringstidspunkt);
+        var inntektsposterEtter = finnInntektsposterMellom(iayGrunnlag, skjæringstidspunkt, sisteSøkteDato);
         var yrkesaktivitetFilterDto = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         var tilkomneInntekterFraInntektregister = finnTilkomneInntekter(
                 beregningsgrunnlagDto,
@@ -32,6 +41,16 @@ class FinnTilkommetInntektTjeneste {
                 inntektsposterEtter,
                 yrkesaktivitetFilterDto);
         return mapTilAktiviteter(tilkomneInntekterFraInntektregister);
+    }
+
+    private LocalDate finnSisteSøkteDato(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+        LocalDate sisteSøkteDato = utbetalingsgradPrAktivitet.stream()
+                .flatMap(utbetalingsgradPrAktivitetDto -> utbetalingsgradPrAktivitetDto.getPeriodeMedUtbetalingsgrad().stream())
+                .filter(p -> p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
+                .map(PeriodeMedUtbetalingsgradDto::getPeriode)
+                .map(Intervall::getTomDato)
+                .max(Comparator.naturalOrder()).orElse(TIDENES_ENDE);
+        return sisteSøkteDato;
     }
 
     private List<AktivitetDto> mapTilAktiviteter(Map<YrkesaktivitetDto, List<InntektspostDto>> tilkomneInntekter) {
@@ -52,11 +71,15 @@ class FinnTilkommetInntektTjeneste {
                 .collect(Collectors.groupingBy(i -> finnYrkesaktivitet(i, yrkesaktivitetFilterDto.getYrkesaktiviteter()).get()));
     }
 
-    private Collection<InntektspostDto> finnInntektsposterEtter(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunkt) {
+    private Collection<InntektspostDto> finnInntektsposterMellom(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                 LocalDate skjæringstidspunkt,
+                                                                 LocalDate sisteSøkteDato) {
         var inntektEtterStp = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister())
                 .etter(skjæringstidspunkt)
                 .filterBeregningsgrunnlag();
-        return inntektEtterStp.getFiltrertInntektsposter();
+        return inntektEtterStp.getFiltrertInntektsposter().stream()
+                .filter(inntektspostDto -> inntektspostDto.getPeriode().getFomDato().isBefore(sisteSøkteDato.plusDays(1)))
+                .collect(Collectors.toList());
     }
 
     private Collection<InntektspostDto> finnInntektposterIBeregningsperioden(InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate skjæringstidspunkt) {

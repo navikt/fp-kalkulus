@@ -23,7 +23,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -45,7 +50,8 @@ class FinnTilkommetInntektTjenesteTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.empty(), Optional.empty());
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).isEmpty();
     }
@@ -61,13 +67,34 @@ class FinnTilkommetInntektTjenesteTest {
         );
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
+        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
         assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
         assertThat(aktivitetDtos.get(0).getYrkesaktivitetDto().getArbeidsgiver()).isEqualTo(ARBEIDSGIVER2);
     }
+
+
+    @Test
+    void skal_ikke_finne_en_aktivitet_for_tilkommet_inntekt_utenfor_søkt_periode() {
+        YrkesaktivitetDtoBuilder tilkommetYrkesaktivitet = lagYrkesaktivitet(ARBEIDSGIVER2, SKJÆRINGSTIDSPUNKT.plusMonths(1));
+        InntektDtoBuilder tilkommetInntekt = lagInntektDto(ARBEIDSGIVER2,
+                List.of(lagInntektspost(
+                        SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1),
+                        SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1),
+                        30000))
+        );
+        InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1));
+
+        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+
+        assertThat(aktivitetDtos).isEmpty();
+    }
+
 
     @Test
     void skal_finne_en_aktivitet_for_tilkommet_inntekt_på_skjæringstidspunktet() {
@@ -80,8 +107,9 @@ class FinnTilkommetInntektTjenesteTest {
         );
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
+        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
         assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
@@ -99,10 +127,18 @@ class FinnTilkommetInntektTjenesteTest {
         );
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagIayGrunnlag(Optional.of(tilkommetYrkesaktivitet), Optional.of(tilkommetInntekt));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER, ARBEIDSGIVER2));
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag);
+        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).isEmpty();
+    }
+
+    private List<UtbetalingsgradPrAktivitetDto> lagUtbetalingsgradperiode(LocalDate sisteSøkteDato) {
+        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        PeriodeMedUtbetalingsgradDto søktPeriode = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, sisteSøkteDato), BigDecimal.TEN);
+        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = List.of(new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforhold, List.of(søktPeriode)));
+        return utbetalingsgradPrAktivitet;
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIayGrunnlag(Optional<YrkesaktivitetDtoBuilder> tilkommetAktivitet, Optional<InntektDtoBuilder> tilkommetInntekt) {
