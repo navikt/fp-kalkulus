@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
@@ -68,16 +69,23 @@ public class BeregningsgrunnlagRepository {
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
      * @param koblingId                  en koblingId
+     * @param skjæringstidspunktOpptjening                  skjæringstidspunkt for opptjening
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(Long koblingId,
-                                                                                                                 Optional<Long> originalKoblingId,
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(KoblingEntitet kobling,
+                                                                                                                 LocalDate skjæringstidspunktOpptjening,
                                                                                                                  BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, beregningsgrunnlagTilstand);
-        if (!sisteBg.isPresent() && originalKoblingId.isPresent()) {
-            return hentSisteBeregningsgrunnlagGrunnlagEntitet(originalKoblingId.get(), beregningsgrunnlagTilstand);
+        Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), beregningsgrunnlagTilstand);
+        if (!sisteBg.isPresent()) {
+            // Henter siste grunnlaget som ble lagret med samme skjæringstidspunkt (tilsvarer original kobling)
+            return hentSisteGrunnlagForSkjæringstidspunktOgTilstand(
+                    kobling.getSaksnummer(),
+                    kobling.getAktørId(),
+                    kobling.getYtelseTyperKalkulusStøtter(),
+                    skjæringstidspunktOpptjening,
+                    beregningsgrunnlagTilstand);
         }
         return sisteBg;
     }
@@ -142,13 +150,15 @@ public class BeregningsgrunnlagRepository {
      * @param aktørId            aktørid
      * @param ytelsetype         ytelsetype
      * @param skjæringstidspunkt skjæringstidspunkt
+     * @param tilstand
      * @return
      */
     @SuppressWarnings("unchecked")
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteFastsatteGrunnlagForSkjæringstidspunkt(Saksnummer saksnummer,
-                                                                                                       AktørId aktørId,
-                                                                                                       YtelseTyperKalkulusStøtterKontrakt ytelsetype,
-                                                                                                       LocalDate skjæringstidspunkt) {
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteGrunnlagForSkjæringstidspunktOgTilstand(Saksnummer saksnummer,
+                                                                                                        AktørId aktørId,
+                                                                                                        YtelseTyperKalkulusStøtterKontrakt ytelsetype,
+                                                                                                        LocalDate skjæringstidspunkt,
+                                                                                                        BeregningsgrunnlagTilstand tilstand) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
                         "WHERE exists (SELECT 1 FROM KOBLING " +
@@ -166,7 +176,7 @@ public class BeregningsgrunnlagRepository {
         query.setParameter("ytelsetype", ytelsetype.getKode()); // $NON-NLS-1$
         query.setParameter("aktørId", aktørId.getId()); // $NON-NLS-1$
         query.setParameter("skjæringstidspunkt", skjæringstidspunkt); // $NON-NLS-1$
-        query.setParameter("beregningsgrunnlagTilstand", BeregningsgrunnlagTilstand.FASTSATT.getKode()); // $NON-NLS-1$
+        query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
         query.setMaxResults(1);
         return query.getResultStream().findFirst();
     }

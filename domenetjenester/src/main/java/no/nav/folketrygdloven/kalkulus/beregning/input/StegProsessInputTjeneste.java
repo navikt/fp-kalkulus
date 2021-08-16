@@ -68,11 +68,13 @@ public class StegProsessInputTjeneste {
     }
 
     public FastsettBeregningsaktiviteterInput lagStartInput(KoblingEntitet koblingEntitet, KalkulatorInputDto input) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, input, Optional.empty());
-        // Vurder om vi skal begynne å ta inn koblingId for originalbehandling ved revurdering
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(koblingEntitet.getId(), Optional.empty(), BeregningsgrunnlagTilstand.OPPRETTET);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = finnForrigeAvklarteGrunnlagForTilstand(koblingEntitet, grunnlagFraSteg, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        StegProsesseringInput stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.OPPRETTET)
+        var beregningsgrunnlagInput = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, input, Optional.empty());
+        var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
+                koblingEntitet,
+                beregningsgrunnlagInput.getSkjæringstidspunktOpptjening(),
+                BeregningsgrunnlagTilstand.OPPRETTET);
+        var grunnlagFraStegUt = finnForrigeAvklarteGrunnlagForTilstand(grunnlagFraSteg, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
+        var stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.OPPRETTET)
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medStegUtTilstand(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
@@ -168,10 +170,12 @@ public class StegProsessInputTjeneste {
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, BeregningSteg stegType) {
-        BeregningsgrunnlagInput beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(grunnlagEntitet));
-        // Vurder om vi skal begynne å ta inn koblingId for originalbehandling ved revurdering
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(kobling.getId(), Optional.empty(), mapTilStegTilstand(stegType));
-        Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(kobling, grunnlagFraSteg, stegType);
+        var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(grunnlagEntitet));
+        var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
+                kobling,
+                beregningsgrunnlagInput.getSkjæringstidspunktOpptjening(),
+                mapTilStegTilstand(stegType));
+        var grunnlagFraStegUt = finnForrigeAvklartGrunnlagHvisFinnes(grunnlagFraSteg, stegType);
         return new StegProsesseringInput(beregningsgrunnlagInput, mapTilStegTilstand(stegType))
                 .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
                 .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
@@ -223,28 +227,26 @@ public class StegProsessInputTjeneste {
         if (MonthDay.from(skjæringstidspunktBeregning).isBefore(ENDRING_AV_GRUNNBELØP)) {
             return Optional.empty();
         }
-        return beregningsgrunnlagRepository.hentSisteFastsatteGrunnlagForSkjæringstidspunkt(
+        return beregningsgrunnlagRepository.hentSisteGrunnlagForSkjæringstidspunktOgTilstand(
                 koblingEntitet.getSaksnummer(),
                 koblingEntitet.getAktørId(),
                 koblingEntitet.getYtelseTyperKalkulusStøtter(),
-                skjæringstidspunktOpptjening);
+                skjæringstidspunktOpptjening, BeregningsgrunnlagTilstand.FASTSATT);
     }
 
-    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(KoblingEntitet kobling,
-                                                                                             Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,
                                                                                              BeregningSteg stegType) {
         Optional<BeregningsgrunnlagTilstand> tilstandUt = mapTilStegUtTilstand(stegType);
         if (tilstandUt.isEmpty()) {
             return Optional.empty();
         }
-        return finnForrigeAvklarteGrunnlagForTilstand(kobling, forrigeGrunnlagFraSteg, tilstandUt.get());
+        return finnForrigeAvklarteGrunnlagForTilstand(forrigeGrunnlagFraSteg, tilstandUt.get());
     }
 
-    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklarteGrunnlagForTilstand(KoblingEntitet kobling, Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        if (forrigeGrunnlagFraSteg.isEmpty()) {
-            return Optional.empty();
-        }
-        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetEtter(kobling.getId(), forrigeGrunnlagFraSteg.get().getOpprettetTidspunkt(), beregningsgrunnlagTilstand);
+    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklarteGrunnlagForTilstand(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        return forrigeGrunnlagFraSteg
+                .map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId)
+                .flatMap(koblingId -> beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetEtter(koblingId, forrigeGrunnlagFraSteg.get().getOpprettetTidspunkt(), beregningsgrunnlagTilstand));
     }
 
 }
