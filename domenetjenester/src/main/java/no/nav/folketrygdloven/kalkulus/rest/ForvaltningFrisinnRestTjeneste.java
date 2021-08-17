@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.DRIFT;
-import static no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
+import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -36,8 +36,8 @@ import no.nav.folketrygdloven.kalkulus.forvaltning.KontrollerBeregningsinputTjen
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.request.v1.KontrollerInputForSakerRequest;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.sikkerhet.abac.AbacDataAttributter;
-import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
+import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 
 @Produces(MediaType.APPLICATION_JSON)
 @OpenAPIDefinition(tags = @Tag(name = "frisinnForvaltning"))
@@ -100,7 +100,7 @@ public class ForvaltningFrisinnRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class KontrollerInputForSakerRequestAbacDto extends KontrollerInputForSakerRequest implements no.nav.vedtak.sikkerhet.abac.AbacDto {
+    public static class KontrollerInputForSakerRequestAbacDto extends KontrollerInputForSakerRequest implements no.nav.k9.felles.sikkerhet.abac.AbacDto {
 
 
         @JsonCreator

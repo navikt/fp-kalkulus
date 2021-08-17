@@ -35,7 +35,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.vedtak.util.Tuple;
+import no.nav.folketrygdloven.utils.Tuple;
 
 public class FordelBeregningsgrunnlagHåndtererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();

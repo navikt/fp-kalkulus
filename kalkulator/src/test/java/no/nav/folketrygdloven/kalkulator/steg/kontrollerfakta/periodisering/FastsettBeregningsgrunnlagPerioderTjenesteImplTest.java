@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering;
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -49,15 +49,11 @@ public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
     private static final String ORG_NUMMER = "915933149";
-
+    private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
-
     private FastsettBeregningsgrunnlagPerioderTjeneste tjeneste;
-
     private KoblingReferanse behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-    private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
-
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
     @BeforeEach

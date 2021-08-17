@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.util;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.Collection;

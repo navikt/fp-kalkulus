@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderRefusjonAndelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderRefusjonBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -17,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefu
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.vedtak.exception.TekniskException;
 
 public final class MapTilRefusjonOverstyring {
 
@@ -67,7 +67,7 @@ public final class MapTilRefusjonOverstyring {
             LocalDate tidligsteStartdato = eksisterendeOverstyring.getFørsteMuligeRefusjonFom().get();
             Optional<VurderRefusjonAndelBeregningsgrunnlagDto> ugyldigOverstyring = avklarteStartdatoer.stream().filter(os -> os.getFastsattRefusjonFom().isBefore(tidligsteStartdato)).findFirst();
             if (ugyldigOverstyring.isPresent()) {
-                throw new TekniskException("FT-401650",
+                throw new KalkulatorException("FT-401650",
                         String.format("Det finnes en startdato for refusjon dato som er før tidligste tillate startdato for refusjon. Startdato var %s og tidligste tillate startdato var %s", ugyldigOverstyring.get().getFastsattRefusjonFom(), tidligsteStartdato));
             }
         }

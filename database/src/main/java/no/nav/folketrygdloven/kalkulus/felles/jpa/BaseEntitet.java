@@ -9,7 +9,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
-import no.nav.vedtak.sikkerhet.context.SubjectHandler;
+import no.nav.k9.sikkerhet.context.SubjectHandler;
 
 /**
  * En basis entitetklasse som håndtere felles standarder for utformign av tabeller (eks. sporing av hvem som har
@@ -61,19 +61,19 @@ public class BaseEntitet implements Serializable {
         return opprettetTidspunkt;
     }
 
-    public String getEndretAv() {
-        return endretAv;
-    }
-
-    public LocalDateTime getEndretTidspunkt() {
-        return endretTidspunkt;
-    }
-
     /**
      * Kan brukes til å eksplisitt sette opprettet tidspunkt, f.eks. ved migrering av data fra et annet system. Ivaretar da opprinnelig
      * tidspunkt istdf å sette likt now().
      */
     protected void setOpprettetTidspunkt(LocalDateTime opprettetTidspunkt) {
         this.opprettetTidspunkt = opprettetTidspunkt;
+    }
+
+    public String getEndretAv() {
+        return endretAv;
+    }
+
+    public LocalDateTime getEndretTidspunkt() {
+        return endretTidspunkt;
     }
 }

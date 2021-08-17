@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -156,7 +157,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         // Assert
         assertThat(resultat).hasSize(2);
         assertThat(resultat).anySatisfy(start -> {
-            assertThat(start.getPeriode()).isEqualTo(Periode.of(overstyrtDato, Intervall.TIDENES_ENDE));
+            assertThat(start.getPeriode()).isEqualTo(Periode.of(overstyrtDato, TIDENES_ENDE));
             assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
         });
     }
@@ -183,7 +184,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
         // Assert
         assertThat(resultat).hasSize(1);
         assertThat(resultat).anySatisfy(start -> {
-            assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, Intervall.TIDENES_ENDE));
+            assertThat(start.getPeriode()).isEqualTo(Periode.of(skjæringstidspunkt, TIDENES_ENDE));
             assertThat(start.getMånedsbeløp()).isEqualByComparingTo(BigDecimal.TEN);
         });
     }

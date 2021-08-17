@@ -54,7 +54,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
-import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 
 public class VerdikjedeTestHjelper {
@@ -117,10 +117,10 @@ public class VerdikjedeTestHjelper {
             assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
             final int index = ix;
             assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
-                .hasValueSatisfying(arbeidsgiver -> assertThat(arbeidsgiver.getOrgnr()).isEqualTo(virksomheterOrgnr.get(index)));
+                    .hasValueSatisfying(arbeidsgiver -> assertThat(arbeidsgiver.getOrgnr()).isEqualTo(virksomheterOrgnr.get(index)));
             assertThat(bgpsa.getBgAndelArbeidsforhold()
-                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
-                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
+                    .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+                    .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                     .as("gjelderSpesifiktArbeidsforhold").isFalse();
             assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
             assertThat(bgpsa.getBeregnetPrÅr().doubleValue()).isEqualTo(bgListe.get(ix), within(0.01));
@@ -159,10 +159,10 @@ public class VerdikjedeTestHjelper {
             assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
             final int index = ix;
             assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
-                .hasValueSatisfying(arbeidsgiver -> assertThat(arbeidsgiver.getOrgnr()).isEqualTo(virksomheteneOrgnr.get(index)));
+                    .hasValueSatisfying(arbeidsgiver -> assertThat(arbeidsgiver.getOrgnr()).isEqualTo(virksomheteneOrgnr.get(index)));
             assertThat(bgpsa.getBgAndelArbeidsforhold()
-                .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
-                .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
+                    .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
+                    .map(InternArbeidsforholdRefDto::gjelderForSpesifiktArbeidsforhold).orElse(false))
                     .as("gjelderSpesifiktArbeidsforhold").isFalse();
             assertThat(bgpsa.getArbeidsforholdType()).isEqualTo(OpptjeningAktivitetType.ARBEID);
             if (beregnetListe.get(ix) == null) {
@@ -181,16 +181,16 @@ public class VerdikjedeTestHjelper {
             assertThat(bgpsa.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr)).isEmpty();
 
             assertThat(bgpsa.getMaksimalRefusjonPrÅr().doubleValue()).as("MaksimalRefusjonPrÅr")
-                .isCloseTo(maksimalRefusjonListe.get(ix), within(0.01));
+                    .isCloseTo(maksimalRefusjonListe.get(ix), within(0.01));
             assertThat(bgpsa.getAvkortetRefusjonPrÅr().doubleValue()).as("AvkortetRefusjonPrÅr")
-                .isCloseTo(avkortetRefusjonListe.get(ix), within(0.01));
+                    .isCloseTo(avkortetRefusjonListe.get(ix), within(0.01));
             assertThat(bgpsa.getRedusertRefusjonPrÅr().doubleValue()).as("RedusertRefusjonPrÅr")
-                .isCloseTo(avkortetRefusjonListe.get(ix), within(0.01));
+                    .isCloseTo(avkortetRefusjonListe.get(ix), within(0.01));
 
             assertThat(bgpsa.getAvkortetBrukersAndelPrÅr().doubleValue()).as("AvkortetBrukersAndelPrÅr")
-                .isCloseTo(avkortetBrukersAndelListe.get(ix), within(0.01));
+                    .isCloseTo(avkortetBrukersAndelListe.get(ix), within(0.01));
             assertThat(bgpsa.getRedusertBrukersAndelPrÅr().doubleValue()).as("RedusertBrukersAndelPrÅr")
-                .isCloseTo(avkortetBrukersAndelListe.get(ix), within(0.01));
+                    .isCloseTo(avkortetBrukersAndelListe.get(ix), within(0.01));
         }
     }
 
@@ -315,9 +315,9 @@ public class VerdikjedeTestHjelper {
 
     private List<BeregningsgrunnlagPrStatusOgAndelDto> statusliste(BeregningsgrunnlagPeriodeDto periode, AktivitetStatus status) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(bpsa -> status.equals(bpsa.getAktivitetStatus()))
-            .sorted(Comparator.comparing(bga -> bga.getBgAndelArbeidsforhold().get().getArbeidsforholdOrgnr()))
-            .collect(Collectors.toList());
+                .filter(bpsa -> status.equals(bpsa.getAktivitetStatus()))
+                .sorted(Comparator.comparing(bga -> bga.getBgAndelArbeidsforhold().get().getArbeidsforholdOrgnr()))
+                .collect(Collectors.toList());
     }
 
     private InntektsmeldingDto lagInntektsmelding(BigDecimal beløp,
@@ -352,11 +352,11 @@ public class VerdikjedeTestHjelper {
 
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             lagInntektForSammenligning(register, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
-                arbeidsgiver);
+                    arbeidsgiver);
             lagInntektForArbeidsforhold(register, dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
-                arbeidsgiver);
+                    arbeidsgiver);
             lagInntektForOpptjening(register, dt, dt.plusMonths(1), inntektBeregningsgrunnlag,
-                virksomhetOrgnr);
+                    virksomhetOrgnr);
         }
         return register;
     }
@@ -373,9 +373,9 @@ public class VerdikjedeTestHjelper {
         InntektArbeidYtelseAggregatBuilder.AktørInntektBuilder aktørInntektBuilder = inntektArbeidYtelseAggregatBuilder.getAktørInntektBuilder();
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(InntektskildeType.SIGRUN, null);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-            .medBeløp(årsinntekt)
-            .medPeriode(år.withMonth(1).withDayOfMonth(1), år.withMonth(12).withDayOfMonth(31))
-            .medInntektspostType(InntektspostType.SELVSTENDIG_NÆRINGSDRIVENDE);
+                .medBeløp(årsinntekt)
+                .medPeriode(år.withMonth(1).withDayOfMonth(1), år.withMonth(12).withDayOfMonth(31))
+                .medInntektspostType(InntektspostType.SELVSTENDIG_NÆRINGSDRIVENDE);
         inntektBuilder.leggTilInntektspost(inntektspost);
         aktørInntektBuilder.leggTilInntekt(inntektBuilder);
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
@@ -389,11 +389,11 @@ public class VerdikjedeTestHjelper {
         lagAktørArbeid(inntektArbeidYtelseAggregatBuilder, arbeidsgiver, fraOgMed, ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER);
         for (LocalDate dt = fraOgMed; dt.isBefore(tilOgMed); dt = dt.plusMonths(1)) {
             lagInntektForArbeidsforhold(inntektArbeidYtelseAggregatBuilder, dt, dt.plusMonths(1), inntektFrilans,
-                arbeidsgiver);
+                    arbeidsgiver);
             lagInntektForSammenligning(inntektArbeidYtelseAggregatBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
-                arbeidsgiver);
+                    arbeidsgiver);
             lagInntektForOpptjening(inntektArbeidYtelseAggregatBuilder, dt, dt.plusMonths(1), inntektSammenligningsgrunnlag,
-                virksomhetOrgnr);
+                    virksomhetOrgnr);
         }
         return inntektArbeidYtelseAggregatBuilder;
     }
@@ -402,18 +402,18 @@ public class VerdikjedeTestHjelper {
                                                    Arbeidsgiver arbeidsgiver,
                                                    LocalDate fom, ArbeidType arbeidType) {
         InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder = inntektArbeidYtelseAggregatBuilder
-            .getAktørArbeidBuilder();
+                .getAktørArbeidBuilder();
 
         OpptjeningsnøkkelDto opptjeningsnøkkel = OpptjeningsnøkkelDto.forArbeidsgiver(arbeidsgiver);
 
         YrkesaktivitetDtoBuilder yrkesaktivitetBuilder = aktørArbeidBuilder
-            .getYrkesaktivitetBuilderForNøkkelAvType(opptjeningsnøkkel, arbeidType);
+                .getYrkesaktivitetBuilderForNøkkelAvType(opptjeningsnøkkel, arbeidType);
         AktivitetsAvtaleDtoBuilder aktivitetsAvtaleBuilder = yrkesaktivitetBuilder.getAktivitetsAvtaleBuilder();
 
         AktivitetsAvtaleDtoBuilder aktivitetsAvtale = aktivitetsAvtaleBuilder.medPeriode(Intervall.fraOgMed(fom));
         yrkesaktivitetBuilder.leggTilAktivitetsAvtale(aktivitetsAvtale)
-            .medArbeidType(arbeidType)
-            .medArbeidsgiver(arbeidsgiver);
+                .medArbeidType(arbeidType)
+                .medArbeidsgiver(arbeidsgiver);
 
         aktørArbeidBuilder.leggTilYrkesaktivitet(yrkesaktivitetBuilder);
         inntektArbeidYtelseAggregatBuilder.leggTilAktørArbeid(aktørArbeidBuilder);
@@ -431,9 +431,9 @@ public class VerdikjedeTestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_SAMMENLIGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-            .medBeløp(månedsbeløp)
-            .medPeriode(fom, tom)
-            .medInntektspostType(InntektspostType.LØNN);
+                .medBeløp(månedsbeløp)
+                .medPeriode(fom, tom)
+                .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost).medArbeidsgiver(arbeidsgiver);
         aktørInntektBuilder.leggTilInntekt(inntektBuilder);
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
@@ -449,9 +449,9 @@ public class VerdikjedeTestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_BEREGNING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-            .medBeløp(månedsbeløp)
-            .medPeriode(fom, tom)
-            .medInntektspostType(InntektspostType.LØNN);
+                .medBeløp(månedsbeløp)
+                .medPeriode(fom, tom)
+                .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost).medArbeidsgiver(arbeidsgiver);
         aktørInntektBuilder.leggTilInntekt(inntektBuilder);
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
@@ -492,11 +492,11 @@ public class VerdikjedeTestHjelper {
         InntektskildeType kilde = InntektskildeType.INNTEKT_OPPTJENING;
         InntektDtoBuilder inntektBuilder = aktørInntektBuilder.getInntektBuilder(kilde, opptjeningsnøkkel);
         InntektspostDtoBuilder inntektspost = InntektspostDtoBuilder.ny()
-            .medBeløp(månedsbeløp)
-            .medPeriode(fom, tom)
-            .medInntektspostType(InntektspostType.LØNN);
+                .medBeløp(månedsbeløp)
+                .medPeriode(fom, tom)
+                .medInntektspostType(InntektspostType.LØNN);
         inntektBuilder.leggTilInntektspost(inntektspost)
-            .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhetOrgnr));
+                .medArbeidsgiver(Arbeidsgiver.virksomhet(virksomhetOrgnr));
         aktørInntektBuilder.leggTilInntekt(inntektBuilder);
         inntektArbeidYtelseAggregatBuilder.leggTilAktørInntekt(aktørInntektBuilder);
     }
@@ -510,9 +510,9 @@ public class VerdikjedeTestHjelper {
                                                                      NaturalYtelseDto naturalYtelse,
                                                                      BigDecimal refusjonskrav) {
         return lagInntektsmelding(inntektInntektsmelding,
-            arbeidsgiver,
-            refusjonskrav,
-            naturalYtelse);
+                arbeidsgiver,
+                refusjonskrav,
+                naturalYtelse);
     }
 
     BeregningsgrunnlagGrunnlagDto kjørStegOgLagreGrunnlag(FastsettBeregningsaktiviteterInput input,
@@ -523,7 +523,7 @@ public class VerdikjedeTestHjelper {
         var regelResultat = fastsettSkjæringstidspunktOgStatuser.fastsett(input,
                 beregningAktivitetAggregat, input.getIayGrunnlag(), GRUNNBELØPSATSER);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(beregningAktivitetAggregat, regelResultat.getBeregningsgrunnlag(),
-            BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
+                BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
@@ -533,9 +533,9 @@ public class VerdikjedeTestHjelper {
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                       BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand tilstand) {
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(beregningAktivitetAggregat)
-            .medBeregningsgrunnlag(beregningsgrunnlag)
-            .build(tilstand);
+                .medRegisterAktiviteter(beregningAktivitetAggregat)
+                .medBeregningsgrunnlag(beregningsgrunnlag)
+                .build(tilstand);
     }
 
     InntektArbeidYtelseGrunnlagDtoBuilder lagBehandlingATogFLogSN(List<BigDecimal> inntektBeregningsgrunnlag,
@@ -550,8 +550,8 @@ public class VerdikjedeTestHjelper {
         InntektArbeidYtelseAggregatBuilder inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 
         beregningVirksomhetOrgnr
-            .forEach(orgnr -> lagAktørArbeid(inntektArbeidYtelseBuilder,
-                    Arbeidsgiver.virksomhet(orgnr), fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
+                .forEach(orgnr -> lagAktørArbeid(inntektArbeidYtelseBuilder,
+                        Arbeidsgiver.virksomhet(orgnr), fraOgMed, ArbeidType.ORDINÆRT_ARBEIDSFORHOLD));
 
         String dummyVirksomhetOrgnr = "999";
         Arbeidsgiver dummyVirksomhet = Arbeidsgiver.virksomhet(dummyVirksomhetOrgnr);
@@ -565,42 +565,42 @@ public class VerdikjedeTestHjelper {
                 String virksomhetOrgnr_i = beregningVirksomhetOrgnr.get(i);
                 lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder,
                         dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
-                    Arbeidsgiver.virksomhet(virksomhetOrgnr_i));
+                        Arbeidsgiver.virksomhet(virksomhetOrgnr_i));
                 lagInntektForOpptjening(inntektArbeidYtelseBuilder,
                         dt, dt.plusMonths(1), inntektBeregningsgrunnlag.get(i),
-                    virksomhetOrgnr_i);
+                        virksomhetOrgnr_i);
             }
             if (inntektFrilans != null) {
                 lagInntektForArbeidsforhold(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektFrilans,
-                    dummyVirksomhet);
+                        dummyVirksomhet);
                 lagInntektForOpptjening(inntektArbeidYtelseBuilder, dt, dt.plusMonths(1), inntektFrilans,
-                    dummyVirksomhetOrgnr);
+                        dummyVirksomhetOrgnr);
             }
         }
 
         if (årsinntekterSN != null) {
             for (int ix = 0; ix < 3; ix++) {
                 lagInntektForSN(inntektArbeidYtelseBuilder, LocalDate.of(førsteÅr + ix, Month.JANUARY, 1),
-                    årsinntekterSN.get(ix));
+                        årsinntekterSN.get(ix));
             }
         }
         OppgittOpptjeningDtoBuilder oppgittOpptjeningBuilder = OppgittOpptjeningDtoBuilder.ny();
         OppgittOpptjeningDtoBuilder.EgenNæringBuilder egenNæringBuilder = OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
-            .medBruttoInntekt(årsinntektVarigEndring)
-            .medVarigEndring(årsinntektVarigEndring != null)
-            .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING))
-            .medEndringDato(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1));
+                .medBruttoInntekt(årsinntektVarigEndring)
+                .medVarigEndring(årsinntektVarigEndring != null)
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1), SKJÆRINGSTIDSPUNKT_OPPTJENING))
+                .medEndringDato(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1));
         oppgittOpptjeningBuilder
-            .leggTilEgneNæringer(List.of(egenNæringBuilder));
+                .leggTilEgneNæringer(List.of(egenNæringBuilder));
         if (inntektFrilans != null) {
             OppgittAnnenAktivitetDto frilanserAktivitet = new OppgittAnnenAktivitetDto(Intervall.fraOgMedTilOgMed(fraOgMed, tilOgMed),
-                ArbeidType.FRILANSER);
+                    ArbeidType.FRILANSER);
             oppgittOpptjeningBuilder.leggTilAnnenAktivitet(frilanserAktivitet);
         }
 
         return InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(inntektArbeidYtelseBuilder)
-            .medOppgittOpptjening(oppgittOpptjeningBuilder);
+                .medData(inntektArbeidYtelseBuilder)
+                .medOppgittOpptjening(oppgittOpptjeningBuilder);
 
     }
 }

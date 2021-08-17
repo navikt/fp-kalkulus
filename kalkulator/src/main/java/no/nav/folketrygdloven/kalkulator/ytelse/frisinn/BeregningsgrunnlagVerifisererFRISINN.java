@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -14,11 +15,11 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.vedtak.exception.TekniskException;
 
 public final class BeregningsgrunnlagVerifisererFRISINN {
 
-    private BeregningsgrunnlagVerifisererFRISINN() {}
+    private BeregningsgrunnlagVerifisererFRISINN() {
+    }
 
     public static void verifiserOppdatertBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         Objects.requireNonNull(beregningsgrunnlag.getSkjæringstidspunkt(), "Skjæringstidspunkt");
@@ -64,7 +65,7 @@ public final class BeregningsgrunnlagVerifisererFRISINN {
 
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p , lagVerifiserForeslåttAndelConsumer(p)));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, lagVerifiserForeslåttAndelConsumer(p)));
         SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
         if (sg != null) {
             Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
@@ -91,14 +92,14 @@ public final class BeregningsgrunnlagVerifisererFRISINN {
     private static void verifiserIkkeTomListe(Collection<?> liste, String obj) {
         Objects.requireNonNull(liste, "Liste");
         if (liste.isEmpty()) {
-            throw new TekniskException("FT-370744", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
+            throw new KalkulatorException("FT-370744", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
         }
     }
 
     private static void verifiserOptionalPresent(Optional<?> opt, String obj) {
         Objects.requireNonNull(opt, "Optional");
         if (opt.isEmpty()) {
-            throw new TekniskException("FT-370745", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
+            throw new KalkulatorException("FT-370745", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
         }
     }
 }

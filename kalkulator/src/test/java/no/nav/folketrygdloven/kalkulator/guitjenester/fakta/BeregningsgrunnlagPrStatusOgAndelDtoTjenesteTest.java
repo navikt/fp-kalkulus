@@ -12,8 +12,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -37,13 +37,10 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
-import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
-
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
-
     private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
     private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
     private static final BigDecimal BRUTTO_PR_AAR = BigDecimal.valueOf(300000);
@@ -53,13 +50,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     private static final LocalDate ANDEL_TOM = LocalDate.now();
     private static final String ORGNR = "973093681";
     private static final Long ANDELSNR = 1L;
-
     private static final BigDecimal RAPPORTERT_PR_AAR = BigDecimal.valueOf(300000);
     private static final BigDecimal AVVIK_OVER_25_PROSENT = BigDecimal.valueOf(500L);
     private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
     private static final LocalDate SAMMENLIGNING_FOM = LocalDate.now().minusDays(100);
     private static final LocalDate SAMMENLIGNING_TOM = LocalDate.now();
-
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
     private BeregningsgrunnlagGrunnlagDto grunnlag;
 
     @Test

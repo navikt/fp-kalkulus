@@ -19,14 +19,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AksjonspunktDefinisjonKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AksjonspunktStatusDefinisjonKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 
 @Entity(name = "AksjonspunktEntitet")
 @Table(name = "AKSJONSPUNKT")
-public class AksjonspunktEntitet extends BaseEntitet {
+public class AksjonspunktEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_AKSJONSPUNKT")

@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -8,7 +10,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.BekreftetPermisjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
-import no.nav.vedtak.konfig.Tid;
 
 public class FinnFørsteDagEtterBekreftetPermisjon {
     private FinnFørsteDagEtterBekreftetPermisjon() {
@@ -29,7 +30,7 @@ public class FinnFørsteDagEtterBekreftetPermisjon {
         }
         BekreftetPermisjonDto bekreftetPermisjon = bekreftetPermisjonOpt.get();
         LocalDate sisteDagMedPermisjon = bekreftetPermisjon.getPeriode().getTomDato();
-        if (sisteDagMedPermisjon.equals(Tid.TIDENES_ENDE)) {
+        if (sisteDagMedPermisjon.equals(TIDENES_ENDE)) {
             return Optional.empty();
         }
         LocalDate dagenEtterBekreftetPermisjon = sisteDagMedPermisjon.plusDays(1);

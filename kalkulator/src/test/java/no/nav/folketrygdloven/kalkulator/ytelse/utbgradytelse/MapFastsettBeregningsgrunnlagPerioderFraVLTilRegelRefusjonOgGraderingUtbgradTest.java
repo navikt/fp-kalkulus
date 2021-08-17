@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -18,9 +19,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Arbei
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegel.Input;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -107,7 +108,7 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(virksomhet))
                 .build();
         BeregningsgrunnlagPeriodeDto.Builder bgperiode = BeregningsgrunnlagPeriodeDto.builder()
-                .medBeregningsgrunnlagPeriode(stp, Intervall.TIDENES_ENDE)
+                .medBeregningsgrunnlagPeriode(stp, TIDENES_ENDE)
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(andel);
         BeregningsgrunnlagDto beregningsgrunnlagDto = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(stp)
@@ -299,7 +300,7 @@ class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgr
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(VIRKSOMHET))
                 .build();
         BeregningsgrunnlagPeriodeDto.Builder periode = BeregningsgrunnlagPeriodeDto.builder()
-                .medBeregningsgrunnlagPeriode(STP, Intervall.TIDENES_ENDE)
+                .medBeregningsgrunnlagPeriode(STP, TIDENES_ENDE)
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(andel);
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(BeregningsgrunnlagDto.builder()

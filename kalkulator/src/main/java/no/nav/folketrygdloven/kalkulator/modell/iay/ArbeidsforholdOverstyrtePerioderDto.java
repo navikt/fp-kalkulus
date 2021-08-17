@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 
 public class ArbeidsforholdOverstyrtePerioderDto {
 
@@ -20,10 +19,6 @@ public class ArbeidsforholdOverstyrtePerioderDto {
 
     ArbeidsforholdOverstyrtePerioderDto(ArbeidsforholdOverstyrtePerioderDto arbeidsforholdOverstyrtePerioder) {
         this.periode = arbeidsforholdOverstyrtePerioder.getOverstyrtePeriode();
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(getOverstyrtePeriode());
     }
 
     void setPeriode(Intervall periode) {
@@ -54,9 +49,9 @@ public class ArbeidsforholdOverstyrtePerioderDto {
     @Override
     public String toString() {
         return "ArbeidsforholdInformasjonEntitet{" +
-            "periode=" + periode +
-            ", arbeidsforholdOverstyring=" + arbeidsforholdOverstyring +
-            '}';
+                "periode=" + periode +
+                ", arbeidsforholdOverstyring=" + arbeidsforholdOverstyring +
+                '}';
     }
 
     public Intervall getOverstyrtePeriode() {

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.aksjonspunkt;
 
 import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -29,7 +30,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -54,7 +54,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     public void skal_sette_inntekt_for_en_andel_i_en_periode() {
         // Arrange
         Long andelsnr = 1L;
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(Intervall.fraOgMedTilOgMed(STP, AbstractIntervall.TIDENES_ENDE)));
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(Intervall.fraOgMedTilOgMed(STP, TIDENES_ENDE)));
         int fastsattBeløp = 10000;
         OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp), null);
         BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
@@ -81,9 +81,9 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         Long andelsnr = 1L;
         LocalDate tilOgMed = STP.plusMonths(1).minusDays(1);
         List<Intervall> periodeList = List.of(Intervall.fraOgMedTilOgMed(STP, tilOgMed),
-            Intervall.fraOgMedTilOgMed(tilOgMed.plusDays(1), AbstractIntervall.TIDENES_ENDE));
+                Intervall.fraOgMedTilOgMed(tilOgMed.plusDays(1), TIDENES_ENDE));
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr,
-            periodeList);
+                periodeList);
         int fastsattBeløp1 = 10000;
         OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp1), null);
         BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
@@ -108,16 +108,16 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<Intervall> perioder) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(STP)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
+                .medSkjæringstidspunkt(STP)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .build();
         perioder.forEach(p -> {
             BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato())
-                .build(beregningsgrunnlag);
+                    .build(beregningsgrunnlag);
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(andelsnr)
-                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.fra(AktørId.dummy())))
-                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(periode);
+                    .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                    .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.fra(AktørId.dummy())))
+                    .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(periode);
         });
         return beregningsgrunnlag;
     }
@@ -132,7 +132,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1) {
         RedigerbarAndelFaktaOmBeregningDto andelsInfo = new RedigerbarAndelFaktaOmBeregningDto(andelsnr, false, AktivitetStatus.ARBEIDSTAKER, false);
         FastsatteVerdierDto fastsatteVerdier1 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(fastsattBeløp1).build();
-        FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, Inntektskategori.ARBEIDSTAKER, null,null);
+        FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, Inntektskategori.ARBEIDSTAKER, null, null);
         return List.of(andelDto1);
     }
 

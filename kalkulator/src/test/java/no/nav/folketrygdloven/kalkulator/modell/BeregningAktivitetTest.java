@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell;
 
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;

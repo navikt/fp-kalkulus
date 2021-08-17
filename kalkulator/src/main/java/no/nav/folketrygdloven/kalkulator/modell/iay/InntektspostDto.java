@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NæringsinntektType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OffentligYtelseType;
@@ -48,10 +47,6 @@ public class InntektspostDto {
         this.periode = inntektspost.getPeriode();
         this.beløp = inntektspost.getBeløp();
         this.ytelseType = inntektspost.getYtelseType().getKodeverk();
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(getInntektspostType(), getYtelseType().getKodeverk(), getYtelseType().getKode(), getSkatteOgAvgiftsregelType(), periode);
     }
 
     /**

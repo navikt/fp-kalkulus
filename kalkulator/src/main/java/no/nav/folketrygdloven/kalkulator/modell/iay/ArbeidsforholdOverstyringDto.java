@@ -16,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
 
@@ -32,7 +31,8 @@ public class ArbeidsforholdOverstyringDto {
     private List<ArbeidsforholdOverstyrtePerioderDto> arbeidsforholdOverstyrtePerioder = new ArrayList<>();
     private BekreftetPermisjonDto bekreftetPermisjon = new BekreftetPermisjonDto();
 
-    ArbeidsforholdOverstyringDto() {}
+    ArbeidsforholdOverstyringDto() {
+    }
 
     ArbeidsforholdOverstyringDto(ArbeidsforholdOverstyringDto arbeidsforholdOverstyringEntitet) {
         this.arbeidsgiver = arbeidsforholdOverstyringEntitet.getArbeidsgiver();
@@ -116,19 +116,15 @@ public class ArbeidsforholdOverstyringDto {
         this.bekreftetPermisjon = bekreftetPermisjon;
     }
 
-    public boolean erOverstyrt(){
+    public boolean erOverstyrt() {
         return !Objects.equals(ArbeidsforholdHandlingType.BRUK, handling)
-            || ( Objects.equals(ArbeidsforholdHandlingType.BRUK, handling) &&
-            !Objects.equals(bekreftetPermisjon.getStatus(), BekreftetPermisjonStatus.UDEFINERT) );
+                || (Objects.equals(ArbeidsforholdHandlingType.BRUK, handling) &&
+                !Objects.equals(bekreftetPermisjon.getStatus(), BekreftetPermisjonStatus.UDEFINERT));
     }
 
     public boolean kreverIkkeInntektsmelding() {
         return Set.of(LAGT_TIL_AV_SAKSBEHANDLER, BRUK_UTEN_INNTEKTSMELDING,
-            BRUK_MED_OVERSTYRT_PERIODE, INNTEKT_IKKE_MED_I_BG).contains(handling);
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(arbeidsgiver, arbeidsforholdRef);
+                BRUK_MED_OVERSTYRT_PERIODE, INNTEKT_IKKE_MED_I_BG).contains(handling);
     }
 
     @Override
@@ -137,7 +133,7 @@ public class ArbeidsforholdOverstyringDto {
         if (o == null || !(o instanceof ArbeidsforholdOverstyringDto)) return false;
         ArbeidsforholdOverstyringDto that = (ArbeidsforholdOverstyringDto) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
-            Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef);
+                Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef);
     }
 
     @Override
@@ -148,14 +144,18 @@ public class ArbeidsforholdOverstyringDto {
     @Override
     public String toString() {
         return "ArbeidsforholdOverstyringEntitet{" +
-            "arbeidsgiver=" + arbeidsgiver +
-            ", arbeidsforholdRef=" + arbeidsforholdRef +
-            ", handling=" + handling +
-            '}';
+                "arbeidsgiver=" + arbeidsgiver +
+                ", arbeidsforholdRef=" + arbeidsforholdRef +
+                ", handling=" + handling +
+                '}';
     }
 
     public Stillingsprosent getStillingsprosent() {
         return stillingsprosent;
+    }
+
+    void setStillingsprosent(Stillingsprosent stillingsprosent) {
+        this.stillingsprosent = stillingsprosent;
     }
 
     public String getArbeidsgiverNavn() {
@@ -164,9 +164,5 @@ public class ArbeidsforholdOverstyringDto {
 
     void setNavn(String navn) {
         this.navn = navn;
-    }
-
-    void setStillingsprosent(Stillingsprosent stillingsprosent) {
-        this.stillingsprosent = stillingsprosent;
     }
 }

@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -42,7 +44,7 @@ class VilkårTjenesteFRISINNTest {
                 new FrisinnGrunnlag(List.of(),
                         Collections.singletonList(
                                 new FrisinnPeriode(
-                                Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE), true, true)), FrisinnBehandlingType.NY_SØKNADSPERIODE));
+                                        Intervall.fraOgMedTilOgMed(TIDENES_BEGYNNELSE, TIDENES_ENDE), true, true)), FrisinnBehandlingType.NY_SØKNADSPERIODE));
 
         // Act
         var beregningVilkårResultat = new VilkårTjenesteFRISINN().lagVilkårResultatFullføre(input, bg);
@@ -76,13 +78,13 @@ class VilkårTjenesteFRISINNTest {
     private InntektArbeidYtelseGrunnlagDto lagIayMedNæringOgFrilans() {
         Intervall søknadsperiode = Intervall.fraOgMedTilOgMed(SØKNAD_FOM, SØKNAD_FOM.plusMonths(1));
         return InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
-                    .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
-                            .leggTilEgneNæring(OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
-                                    .medPeriode(søknadsperiode)
-                                    .medBruttoInntekt(BigDecimal.valueOf(100_000)))
-                            .leggTilFrilansOpplysninger(
-                                    new OppgittFrilansDto(false,
-                                    List.of(new OppgittFrilansInntektDto(søknadsperiode, BigDecimal.TEN)))))
-                            .build();
+                .medOppgittOpptjening(OppgittOpptjeningDtoBuilder.ny()
+                        .leggTilEgneNæring(OppgittOpptjeningDtoBuilder.EgenNæringBuilder.ny()
+                                .medPeriode(søknadsperiode)
+                                .medBruttoInntekt(BigDecimal.valueOf(100_000)))
+                        .leggTilFrilansOpplysninger(
+                                new OppgittFrilansDto(false,
+                                        List.of(new OppgittFrilansInntektDto(søknadsperiode, BigDecimal.TEN)))))
+                .build();
     }
 }

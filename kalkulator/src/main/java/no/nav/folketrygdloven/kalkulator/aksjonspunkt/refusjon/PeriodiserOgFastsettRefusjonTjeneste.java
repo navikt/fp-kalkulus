@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.aksjonspunkt.refusjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -135,7 +137,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
 
         while (iterator.hasNext()) {
             LocalDate fom = iterator.next();
-            LocalDate tom = iterator.hasNext() ? datoliste.get(iterator.nextIndex()).minusDays(1) : Intervall.TIDENES_ENDE;
+            LocalDate tom = iterator.hasNext() ? datoliste.get(iterator.nextIndex()).minusDays(1) : TIDENES_ENDE;
             intervaller.add(Intervall.fraOgMedTilOgMed(fom, tom));
         }
         return intervaller;

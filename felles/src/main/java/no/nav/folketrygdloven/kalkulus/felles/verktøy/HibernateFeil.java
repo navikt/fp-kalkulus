@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.felles.verktøy;
 
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.folketrygdloven.kalkulus.felles.feil.TekniskException;
 
 public class HibernateFeil {
 

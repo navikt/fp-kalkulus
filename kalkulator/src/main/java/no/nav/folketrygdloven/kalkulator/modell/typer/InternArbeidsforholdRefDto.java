@@ -5,19 +5,13 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.persistence.Embeddable;
-
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
-
 /**
  * Intern arbeidsforhold referanse.
  * <p>
  * Hvis null gjelder det flere arbeidsforhold, ellers for et spesifikt forhold
  */
 
-@Embeddable
-public class InternArbeidsforholdRefDto implements IndexKey, TraverseValue, Serializable {
+public class InternArbeidsforholdRefDto implements Serializable {
 
     /**
      * Instans som representerer alle arbeidsforhold (for en arbeidsgiver).
@@ -62,11 +56,6 @@ public class InternArbeidsforholdRefDto implements IndexKey, TraverseValue, Seri
 
     public UUID getUUIDReferanse() {
         return referanse;
-    }
-
-    @Override
-    public String getIndexKey() {
-        return IndexKey.createKey(referanse == null ? null : referanse.toString());
     }
 
     public boolean gjelderForSpesifiktArbeidsforhold() {

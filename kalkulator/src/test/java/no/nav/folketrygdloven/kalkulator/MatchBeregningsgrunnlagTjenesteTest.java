@@ -19,7 +19,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.vedtak.exception.TekniskException;
 
 public class MatchBeregningsgrunnlagTjenesteTest {
 
@@ -97,7 +96,7 @@ public class MatchBeregningsgrunnlagTjenesteTest {
                 .build(periode);
 
         // Act
-        Assertions.assertThrows(TekniskException.class, () -> {
+        Assertions.assertThrows(KalkulatorException.class, () -> {
             MatchBeregningsgrunnlagTjeneste.matchMedAndelFraPeriode(periode, 2L, InternArbeidsforholdRefDto.nyRef());
         });
     }

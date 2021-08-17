@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
 import static java.util.stream.Collectors.toList;
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.util.Comparator;
 import java.util.List;

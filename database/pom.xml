@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -28,6 +28,22 @@
 
         <!-- Eksterne avhengigheter til andre prosjekter -->
         <dependency>
+            <groupId>no.nav.k9.felles</groupId>
+            <artifactId>k9-felles-konfigurasjon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.k9.felles.oidc-token</groupId>
+            <artifactId>k9-sikkerhet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.k9.felles</groupId>
+            <artifactId>k9-felles-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.k9.felles</groupId>
+            <artifactId>k9-felles-util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
@@ -38,26 +54,25 @@
         </dependency>
 
         <dependency>
-            <groupId>no.nav.foreldrepenger.felles</groupId>
-            <artifactId>felles-testutilities</artifactId>
+            <groupId>no.nav.k9.felles</groupId>
+            <artifactId>k9-felles-testutilities</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-junit5</artifactId>
             <scope>test</scope>
             <exclusions>
-            	<exclusion>
-            		<groupId>org.jboss.spec.javax.el</groupId>
-            		<artifactId>jboss-el-api_3.0_spec</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.jboss.spec.javax.annotation</groupId>
-            		<artifactId>
-            			jboss-annotations-api_1.3_spec
-            		</artifactId>
-            	</exclusion>
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.el</groupId>
+                    <artifactId>jboss-el-api_3.0_spec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.spec.javax.annotation</groupId>
+                    <artifactId>
+                        jboss-annotations-api_1.3_spec
+                    </artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 

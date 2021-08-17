@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -76,7 +76,7 @@ public class MapInntektstakFRISINN {
                                                               OppgittOpptjeningDto oppgittOpptjeningDto) {
         return oppgittOpptjeningDto.getEgenNæring()
                 .stream()
-                .anyMatch(en -> en.getPeriode().overlapper(bgPeriode));
+                .anyMatch(en -> IntervallEntitet.fraOgMedTilOgMed(en.getPeriode().getFomDato(), en.getPeriode().getTomDato()).overlapper(bgPeriode));
     }
 
     private static BigDecimal finnFrilanstakForPeriode(List<BeregningsgrunnlagPrStatusOgAndel> andeler,
@@ -113,7 +113,7 @@ public class MapInntektstakFRISINN {
                 .map(OppgittFrilansDto::getOppgittFrilansInntekt)
                 .orElse(Collections.emptyList());
 
-        return flInntekter.stream().anyMatch(fli -> fli.getPeriode().overlapper(bgPeriode));
+        return flInntekter.stream().anyMatch(fli -> IntervallEntitet.fraOgMedTilOgMed(fli.getPeriode().getFomDato(), fli.getPeriode().getTomDato()).overlapper(bgPeriode));
     }
 
     private static BigDecimal bruttoArbeidsforhold(List<BeregningsgrunnlagPrStatusOgAndel> andeler) {

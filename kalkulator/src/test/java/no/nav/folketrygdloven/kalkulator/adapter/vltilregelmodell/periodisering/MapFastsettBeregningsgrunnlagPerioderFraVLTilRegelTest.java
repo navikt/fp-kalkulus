@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
 import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -53,7 +53,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
-import no.nav.vedtak.konfig.Tid;
 
 
 public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
@@ -162,7 +161,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         assertUtenRefusjonOgGradering(regelmodell);
         List<PeriodisertBruttoBeregningsgrunnlag> periodisertBruttoBeregningsgrunnlagList = regelmodell.getPeriodisertBruttoBeregningsgrunnlagList();
         assertThat(periodisertBruttoBeregningsgrunnlagList).hasSize(1);
-        assertThat(periodisertBruttoBeregningsgrunnlagList.get(0).getPeriode()).isEqualTo(Periode.of(SKJÆRINGSTIDSPUNKT, Tid.TIDENES_ENDE));
+        assertThat(periodisertBruttoBeregningsgrunnlagList.get(0).getPeriode()).isEqualTo(Periode.of(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE));
         List<BruttoBeregningsgrunnlag> bruttoBeregningsgrunnlagList = periodisertBruttoBeregningsgrunnlagList.get(0).getBruttoBeregningsgrunnlag();
         assertThat(bruttoBeregningsgrunnlagList).hasSize(1);
         BruttoBeregningsgrunnlag bruttoBeregningsgrunnlag = bruttoBeregningsgrunnlagList.get(0);
@@ -196,7 +195,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         Refusjonskrav refusjonskrav = arbeidsforhold.getRefusjoner().get(0);
         assertThat(refusjonskrav.getFom()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(refusjonskrav.getMånedsbeløp()).isEqualByComparingTo(inntekt);
-        assertThat(refusjonskrav.getPeriode().getTom()).isEqualTo(Tid.TIDENES_ENDE);
+        assertThat(refusjonskrav.getPeriode().getTom()).isEqualTo(TIDENES_ENDE);
         assertThat(arbeidsforhold.getGyldigeRefusjonskrav()).isEmpty();
     }
 
@@ -208,7 +207,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
             List.of(
                 Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), SKJÆRINGSTIDSPUNKT.minusYears(1)),
                 Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(1).plusDays(1), SKJÆRINGSTIDSPUNKT.minusMonths(5)),
-                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(5).plusDays(1), Tid.TIDENES_ENDE)));
+                Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(5).plusDays(1), TIDENES_ENDE)));
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
 
         BeregningAktivitetAggregatDto beregningAktivitetAggregat = lagBeregningAktiviteter(SKJÆRINGSTIDSPUNKT, arbeidsgiver);
@@ -230,7 +229,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         Refusjonskrav refusjonskrav = arbeidsforhold.getRefusjoner().get(0);
         assertThat(refusjonskrav.getFom()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(refusjonskrav.getMånedsbeløp()).isEqualByComparingTo(inntekt);
-        assertThat(refusjonskrav.getPeriode().getTom()).isEqualTo(Tid.TIDENES_ENDE);
+        assertThat(refusjonskrav.getPeriode().getTom()).isEqualTo(TIDENES_ENDE);
         assertThat(arbeidsforhold.getGyldigeRefusjonskrav()).isEmpty();
     }
 
@@ -271,8 +270,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
     public void testToArbeidsforholdISammeVirksomhetEtTilkommerEtterSkjæringstidspunkt() {
         // Arrange
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
-        Intervall arbeidsperiode2 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusMonths(2), Tid.TIDENES_ENDE);
+        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
+        Intervall arbeidsperiode2 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.plusMonths(2), TIDENES_ENDE);
 
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
         leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, ORGNR);
@@ -322,13 +321,13 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
         assertThat(arbeidsforhold.getStartdatoPermisjon()).isEqualTo(SKJÆRINGSTIDSPUNKT);
         assertThat(arbeidsforhold.getNaturalYtelser()).isEmpty();
         assertThat(arbeidsforhold.getGraderinger()).isEmpty();
-        assertThat(arbeidsforhold.getAnsettelsesperiode()).isEqualTo(Periode.of(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE));
+        assertThat(arbeidsforhold.getAnsettelsesperiode()).isEqualTo(Periode.of(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE));
         assertThat(arbeidsforhold.getArbeidsforhold().getOrgnr()).isEqualTo(ORGNR);
         assertThat(arbeidsforhold.getAktivitetStatus()).isEqualTo(AktivitetStatusV2.AT);
     }
 
     private void leggTilYrkesaktiviteter(InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder, List<String> orgnrs) {
-        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), Tid.TIDENES_ENDE);
+        Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
         for (String orgnr : orgnrs) {
             leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, orgnr);
@@ -381,7 +380,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelTest {
             .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder()
-                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, Tid.TIDENES_ENDE)
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE)
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(
                     BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medAndelsnr(1L)

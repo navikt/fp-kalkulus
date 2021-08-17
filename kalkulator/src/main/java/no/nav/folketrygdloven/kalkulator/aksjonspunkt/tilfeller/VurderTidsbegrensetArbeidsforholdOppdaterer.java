@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderTidsbegrensetArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.VurderteArbeidsforholdDto;
@@ -17,7 +18,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.vedtak.exception.TekniskException;
 
 @ApplicationScoped
 @FaktaOmBeregningTilfelleRef("VURDER_TIDSBEGRENSET_ARBEIDSFORHOLD")
@@ -33,11 +33,11 @@ public class VurderTidsbegrensetArbeidsforholdOppdaterer implements FaktaOmBereg
             BeregningsgrunnlagPrStatusOgAndelDto korrektAndel = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(a -> a.getAndelsnr().equals(arbeidsforhold.getAndelsnr()))
                     .findFirst()
-                    .orElseThrow(() -> new TekniskException("FT-238175", "Finner ikke andelen for eksisterende grunnlag"));
+                    .orElseThrow(() -> new KalkulatorException("FT-238175", "Finner ikke andelen for eksisterende grunnlag"));
 
             // Setter Fakta-aggregat
             BGAndelArbeidsforholdDto arbeidsforholdDto = korrektAndel.getBgAndelArbeidsforhold()
-                    .orElseThrow(() -> new TekniskException("FT-238176", "Finner ikke arbeidsforhold for eksisterende andel"));
+                    .orElseThrow(() -> new KalkulatorException("FT-238176", "Finner ikke arbeidsforhold for eksisterende andel"));
             FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaAggregatBuilder.getFaktaArbeidsforholdBuilderFor(arbeidsforholdDto.getArbeidsgiver(), arbeidsforholdDto.getArbeidsforholdRef())
                     .medErTidsbegrenset(arbeidsforhold.isTidsbegrensetArbeidsforhold());
             faktaAggregatBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());

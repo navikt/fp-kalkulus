@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BekreftetPermisjonStatus;
@@ -54,7 +55,9 @@ public class YrkesaktivitetFilterDto {
         this(arbeidsforholdInformasjon.orElse(null), yrkesaktivitet == null ? Collections.emptyList() : List.of(yrkesaktivitet));
     }
 
-    /** Tar inn angitte yrkesaktiviteter, uten hensyn til overstyringer. */
+    /**
+     * Tar inn angitte yrkesaktiviteter, uten hensyn til overstyringer.
+     */
     public YrkesaktivitetFilterDto(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
         this(null, yrkesaktiviteter);
     }
@@ -70,24 +73,24 @@ public class YrkesaktivitetFilterDto {
 
     private Set<AktivitetsAvtaleDto> internGetAktivitetsAvtalerForArbeid(YrkesaktivitetDto ya) {
         return ya.getAlleAktivitetsAvtaler().stream()
-            .filter(av -> (!ya.erArbeidsforhold() || !av.erAnsettelsesPeriode()))
-            .filter(this::skalMedEtterSkjæringstidspunktVurdering)
-            .collect(Collectors.toUnmodifiableSet());
+                .filter(av -> (!ya.erArbeidsforhold() || !av.erAnsettelsesPeriode()))
+                .filter(this::skalMedEtterSkjæringstidspunktVurdering)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Collection<YrkesaktivitetDto> getFrilansOppdrag() {
         return getAlleYrkesaktiviteter().stream()
-            .filter(this::erFrilansOppdrag)
-            .filter(it -> !getAktivitetsAvtalerForArbeid(it).isEmpty())
-            .collect(Collectors.toUnmodifiableSet());
+                .filter(this::erFrilansOppdrag)
+                .filter(it -> !getAktivitetsAvtalerForArbeid(it).isEmpty())
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Collection<YrkesaktivitetDto> getYrkesaktiviteter() {
         var ya = getYrkesaktiviteterInklusiveFiktive().stream()
-            .filter(this::erIkkeFrilansOppdrag)
-            .filter(this::skalBrukes)
-            .filter(it -> (erArbeidsforholdOgStarterPåRettSideAvSkjæringstidspunkt(it) || !getAktivitetsAvtalerForArbeid(it).isEmpty()))
-            .collect(Collectors.toUnmodifiableSet());
+                .filter(this::erIkkeFrilansOppdrag)
+                .filter(this::skalBrukes)
+                .filter(it -> (erArbeidsforholdOgStarterPåRettSideAvSkjæringstidspunkt(it) || !getAktivitetsAvtalerForArbeid(it).isEmpty()))
+                .collect(Collectors.toUnmodifiableSet());
         return ya;
     }
 
@@ -99,29 +102,29 @@ public class YrkesaktivitetFilterDto {
      */
     public Collection<YrkesaktivitetDto> getYrkesaktiviteterForBeregning() {
         return getYrkesaktiviteterInklusiveFiktive().stream()
-            .filter(this::erIkkeFrilansOppdrag)
-            .filter(this::skalBrukesIBeregning)
-            .filter(it -> (erArbeidsforholdOgStarterPåRettSideAvSkjæringstidspunkt(it) || !getAktivitetsAvtalerForArbeid(it).isEmpty()))
-            .collect(Collectors.toUnmodifiableSet());
+                .filter(this::erIkkeFrilansOppdrag)
+                .filter(this::skalBrukesIBeregning)
+                .filter(it -> (erArbeidsforholdOgStarterPåRettSideAvSkjæringstidspunkt(it) || !getAktivitetsAvtalerForArbeid(it).isEmpty()))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     private List<YrkesaktivitetDto> arbeidsforholdLagtTilAvSaksbehandler() {
         List<YrkesaktivitetDto> fiktiveArbeidsforhold = new ArrayList<>();
         if (arbeidsforholdOverstyringer != null) {
             var overstyringer = arbeidsforholdOverstyringer.getOverstyringer()
-                .stream()
-                .filter(os -> os.getStillingsprosent() != null && os.getStillingsprosent().getVerdi() != null)
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(os -> os.getStillingsprosent() != null && os.getStillingsprosent().getVerdi() != null)
+                    .collect(Collectors.toList());
             for (var arbeidsforholdOverstyringEntitet : overstyringer) {
                 var yrkesaktivitetBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-                    .medArbeidsgiver(arbeidsforholdOverstyringEntitet.getArbeidsgiver())
-                    .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-                    .medArbeidsforholdId(arbeidsforholdOverstyringEntitet.getArbeidsforholdRef());
+                        .medArbeidsgiver(arbeidsforholdOverstyringEntitet.getArbeidsgiver())
+                        .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                        .medArbeidsforholdId(arbeidsforholdOverstyringEntitet.getArbeidsforholdRef());
                 var arbeidsforholdOverstyrtePerioder = arbeidsforholdOverstyringEntitet
-                    .getArbeidsforholdOverstyrtePerioder();
+                        .getArbeidsforholdOverstyrtePerioder();
                 for (var arbeidsforholdOverstyrtePeriode : arbeidsforholdOverstyrtePerioder) {
                     var aktivitetsAvtaleBuilder = yrkesaktivitetBuilder
-                        .getAktivitetsAvtaleBuilder(arbeidsforholdOverstyrtePeriode.getOverstyrtePeriode(), true);
+                            .getAktivitetsAvtaleBuilder(arbeidsforholdOverstyrtePeriode.getOverstyrtePeriode(), true);
                     yrkesaktivitetBuilder.leggTilAktivitetsAvtale(aktivitetsAvtaleBuilder);
                 }
                 var yrkesaktivitetEntitet = yrkesaktivitetBuilder.build();
@@ -134,7 +137,7 @@ public class YrkesaktivitetFilterDto {
 
     private boolean erArbeidsforholdOgStarterPåRettSideAvSkjæringstidspunkt(YrkesaktivitetDto it) {
         boolean retval = it.erArbeidsforhold()
-            && getAnsettelsesPerioder(it).stream().anyMatch(ap -> skalMedEtterSkjæringstidspunktVurdering(ap));
+                && getAnsettelsesPerioder(it).stream().anyMatch(ap -> skalMedEtterSkjæringstidspunktVurdering(ap));
         return retval;
     }
 
@@ -158,16 +161,16 @@ public class YrkesaktivitetFilterDto {
 
     private boolean skalBrukes(YrkesaktivitetDto entitet) {
         return arbeidsforholdOverstyringer == null || arbeidsforholdOverstyringer.getOverstyringer()
-            .stream()
-            .noneMatch(ov -> entitet.gjelderFor(ov.getArbeidsgiver(), ov.getArbeidsforholdRef())
-                && Objects.equals(ArbeidsforholdHandlingType.IKKE_BRUK, ov.getHandling()));
+                .stream()
+                .noneMatch(ov -> entitet.gjelderFor(ov.getArbeidsgiver(), ov.getArbeidsforholdRef())
+                        && Objects.equals(ArbeidsforholdHandlingType.IKKE_BRUK, ov.getHandling()));
     }
 
     private boolean skalBrukesIBeregning(YrkesaktivitetDto entitet) {
         return arbeidsforholdOverstyringer == null || arbeidsforholdOverstyringer.getOverstyringer().stream()
-            .noneMatch(ov -> entitet.gjelderFor(ov.getArbeidsgiver(), ov.getArbeidsforholdRef()) &&
-                (Objects.equals(ArbeidsforholdHandlingType.INNTEKT_IKKE_MED_I_BG, ov.getHandling()) ||
-                    Objects.equals(ArbeidsforholdHandlingType.IKKE_BRUK, ov.getHandling())));
+                .noneMatch(ov -> entitet.gjelderFor(ov.getArbeidsgiver(), ov.getArbeidsforholdRef()) &&
+                        (Objects.equals(ArbeidsforholdHandlingType.INNTEKT_IKKE_MED_I_BG, ov.getHandling()) ||
+                                Objects.equals(ArbeidsforholdHandlingType.IKKE_BRUK, ov.getHandling())));
     }
 
     public YrkesaktivitetFilterDto etter(LocalDate skjæringstidspunkt) {
@@ -191,7 +194,7 @@ public class YrkesaktivitetFilterDto {
                 return ap.getPeriode().getFomDato().isBefore(skjæringstidspunkt);
             } else {
                 return ap.getPeriode().getFomDato().isAfter(skjæringstidspunkt.minusDays(1)) ||
-                    ap.getPeriode().getFomDato().isBefore(skjæringstidspunkt) && ap.getPeriode().getTomDato().isAfter(skjæringstidspunkt.minusDays(1));
+                        ap.getPeriode().getFomDato().isBefore(skjæringstidspunkt) && ap.getPeriode().getTomDato().isAfter(skjæringstidspunkt.minusDays(1));
             }
         }
         return true;
@@ -215,10 +218,10 @@ public class YrkesaktivitetFilterDto {
         if (handling.erPeriodeOverstyrt() && !overstyrtePerioder.isEmpty()) {
             Set<AktivitetsAvtaleDto> avtaler = new LinkedHashSet<>();
             overstyrtePerioder.forEach(overstyrtPeriode -> yaAvtaler.stream()
-                .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)
-                .filter(aa -> AbstractIntervall.TIDENES_ENDE.equals(aa.getPeriodeUtenOverstyring().getTomDato()))
-                .filter(aa -> overstyrtPeriode.getOverstyrtePeriode().getFomDato().isEqual(aa.getPeriodeUtenOverstyring().getFomDato()))
-                .forEach(avtale -> avtaler.add(new AktivitetsAvtaleDto(avtale, Intervall.fraOgMedTilOgMed(overstyrtPeriode.getOverstyrtePeriode().getFomDato(), overstyrtPeriode.getOverstyrtePeriode().getTomDato())))));
+                    .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)
+                    .filter(aa -> TIDENES_ENDE.equals(aa.getPeriodeUtenOverstyring().getTomDato()))
+                    .filter(aa -> overstyrtPeriode.getOverstyrtePeriode().getFomDato().isEqual(aa.getPeriodeUtenOverstyring().getFomDato()))
+                    .forEach(avtale -> avtaler.add(new AktivitetsAvtaleDto(avtale, Intervall.fraOgMedTilOgMed(overstyrtPeriode.getOverstyrtePeriode().getFomDato(), overstyrtPeriode.getOverstyrtePeriode().getTomDato())))));
 
             // legg til resten, bruk av set hindrer oss i å legge dobbelt.
             yaAvtaler.stream().forEach(avtale -> avtaler.add(new AktivitetsAvtaleDto(avtale)));
@@ -235,12 +238,12 @@ public class YrkesaktivitetFilterDto {
             return Optional.empty(); // ikke initialisert, så kan ikke ha overstyringer
         }
         List<ArbeidsforholdOverstyringDto> overstyringer = arbeidsforholdOverstyringer.getOverstyringer();
-        if(overstyringer.isEmpty()) {
+        if (overstyringer.isEmpty()) {
             return Optional.empty();
         }
         return overstyringer.stream()
-            .filter(os -> ya.gjelderFor(os.getArbeidsgiver(), os.getArbeidsforholdRef()))
-            .findFirst();
+                .filter(os -> ya.gjelderFor(os.getArbeidsgiver(), os.getArbeidsforholdRef()))
+                .findFirst();
     }
 
     /**
@@ -253,8 +256,8 @@ public class YrkesaktivitetFilterDto {
     public List<AktivitetsAvtaleDto> getAnsettelsesPerioder(YrkesaktivitetDto ya) {
         if (ya.erArbeidsforhold()) {
             List<AktivitetsAvtaleDto> ansettelsesAvtaler = ya.getAlleAktivitetsAvtaler().stream()
-                .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)
-                .collect(Collectors.toList());
+                    .filter(AktivitetsAvtaleDto::erAnsettelsesPeriode)
+                    .collect(Collectors.toList());
             List<AktivitetsAvtaleDto> filtrert = List.copyOf(filterAktivitetsAvtaleOverstyring(ya, ansettelsesAvtaler));
             return filtrert;
         }
@@ -263,6 +266,7 @@ public class YrkesaktivitetFilterDto {
 
     /**
      * Gir ansettelsesperioder for angitte arbeidsforhold.
+     *
      * @see #getAnsettelsesPerioder(YrkesaktivitetDto)
      */
     public Collection<AktivitetsAvtaleDto> getAnsettelsesPerioder(Collection<YrkesaktivitetDto> yrkesaktiviteter) {
@@ -272,6 +276,7 @@ public class YrkesaktivitetFilterDto {
 
     /**
      * Gir alle ansettelsesperioder for filteret, inklusiv fiktive fra saksbehandler hvis konfigurert på filteret.
+     *
      * @see #getAnsettelsesPerioder(YrkesaktivitetDto)
      */
     public Collection<AktivitetsAvtaleDto> getAnsettelsesPerioder() {
@@ -280,7 +285,7 @@ public class YrkesaktivitetFilterDto {
     }
 
     public Collection<ArbeidsforholdOverstyringDto> getArbeidsforholdOverstyringer() {
-        return arbeidsforholdOverstyringer==null ? Collections.emptyList() : arbeidsforholdOverstyringer.getOverstyringer();
+        return arbeidsforholdOverstyringer == null ? Collections.emptyList() : arbeidsforholdOverstyringer.getOverstyringer();
     }
 
     public Collection<ArbeidsforholdOverstyringDto> getBekreftedePermisjonerForYrkesaktivitet(YrkesaktivitetDto ya) {

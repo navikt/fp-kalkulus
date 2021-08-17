@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationServiceStarter;
-import no.nav.vedtak.apptjeneste.AppServiceHandler;
+import no.nav.k9.felles.apptjeneste.AppServiceHandler;
 
 public class ApplicationServiceStarterTest {
 

@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 
 
@@ -38,10 +37,6 @@ public class NaturalYtelseDto {
         this.type = naturalYtelse.getType();
     }
 
-    public String getIndexKey() {
-        return IndexKey.createKey(type, periode);
-    }
-
     public Intervall getPeriode() {
         return periode;
     }
@@ -62,7 +57,7 @@ public class NaturalYtelseDto {
             return false;
         NaturalYtelseDto that = (NaturalYtelseDto) o;
         return Objects.equals(periode, that.periode) &&
-            Objects.equals(type, that.type);
+                Objects.equals(type, that.type);
     }
 
     @Override
@@ -73,9 +68,9 @@ public class NaturalYtelseDto {
     @Override
     public String toString() {
         return "NaturalYtelseEntitet{" +
-            "periode=" + periode +
-            ", beloepPerMnd=" + beloepPerMnd +
-            ", type=" + type +
-            '}';
+                "periode=" + periode +
+                ", beloepPerMnd=" + beloepPerMnd +
+                ", type=" + type +
+                '}';
     }
 }

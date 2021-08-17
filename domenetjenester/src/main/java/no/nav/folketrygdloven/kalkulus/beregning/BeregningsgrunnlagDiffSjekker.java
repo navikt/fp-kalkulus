@@ -17,7 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Sammenligning
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
-import no.nav.vedtak.util.Tuple;
+import no.nav.k9.felles.util.Tuple;
 
 class BeregningsgrunnlagDiffSjekker {
 
@@ -85,18 +85,18 @@ class BeregningsgrunnlagDiffSjekker {
     }
 
     private static boolean harSammenligningsgrunnlagPrStatusDiff(List<SammenligningsgrunnlagPrStatusDto> aktivt, List<SammenligningsgrunnlagPrStatusDto> forrige) {
-        if(aktivt.isEmpty() != forrige.isEmpty()){
+        if (aktivt.isEmpty() != forrige.isEmpty()) {
             return true;
         }
 
-        if(!inneholderLikeSammenligningstyper(aktivt, forrige)){
+        if (!inneholderLikeSammenligningstyper(aktivt, forrige)) {
             return true;
         }
 
-        for(SammenligningsgrunnlagPrStatusDto aktivSgPrStatus : aktivt){
+        for (SammenligningsgrunnlagPrStatusDto aktivSgPrStatus : aktivt) {
             SammenligningsgrunnlagPrStatusDto forrigeSgPrStatus = forrige.stream().filter(s -> aktivSgPrStatus.getSammenligningsgrunnlagType().equals(s.getSammenligningsgrunnlagType())).findFirst().get();
 
-            if(!erLike(aktivSgPrStatus.getAvvikPromilleNy(), forrigeSgPrStatus.getAvvikPromilleNy())){
+            if (!erLike(aktivSgPrStatus.getAvvikPromilleNy(), forrigeSgPrStatus.getAvvikPromilleNy())) {
                 return true;
             }
             if (!erLike(aktivSgPrStatus.getRapportertPrÅr(), forrigeSgPrStatus.getRapportertPrÅr())) {
@@ -140,8 +140,8 @@ class BeregningsgrunnlagDiffSjekker {
     private static boolean sjekkAndeler(List<BeregningsgrunnlagPrStatusOgAndelDto> aktiveAndeler, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
         for (BeregningsgrunnlagPrStatusOgAndelDto aktivAndel : aktiveAndeler) {
             Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndelOpt = forrigeAndeler
-                .stream().filter(a -> a.getAndelsnr().equals(aktivAndel.getAndelsnr()))
-                .findFirst();
+                    .stream().filter(a -> a.getAndelsnr().equals(aktivAndel.getAndelsnr()))
+                    .findFirst();
             if (forrigeAndelOpt.isEmpty()) {
                 return true;
             }
@@ -196,12 +196,12 @@ class BeregningsgrunnlagDiffSjekker {
         return false;
     }
 
-    private static boolean inneholderLikeSammenligningstyper(List<SammenligningsgrunnlagPrStatusDto> aktivt, List<SammenligningsgrunnlagPrStatusDto> forrige){
+    private static boolean inneholderLikeSammenligningstyper(List<SammenligningsgrunnlagPrStatusDto> aktivt, List<SammenligningsgrunnlagPrStatusDto> forrige) {
         EnumSet<SammenligningsgrunnlagType> sammenligningsgrunnlagTyper = EnumSet.allOf(SammenligningsgrunnlagType.class);
 
-        for(SammenligningsgrunnlagType sgType : sammenligningsgrunnlagTyper){
-            if(forrige.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType())) !=
-                    aktivt.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType()))){
+        for (SammenligningsgrunnlagType sgType : sammenligningsgrunnlagTyper) {
+            if (forrige.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType())) !=
+                    aktivt.stream().anyMatch(s -> sgType.equals(s.getSammenligningsgrunnlagType()))) {
                 return false;
             }
         }
@@ -215,10 +215,10 @@ class BeregningsgrunnlagDiffSjekker {
     private static Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> finnAndeler(BeregningsgrunnlagPeriodeDto aktivPeriode, BeregningsgrunnlagPeriodeDto forrigePeriode) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> aktiveAndeler = aktivPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
         List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler = forrigePeriode
-            .getBeregningsgrunnlagPrStatusOgAndelList()
-            .stream()
-            .filter(a -> !a.erLagtTilAvSaksbehandler())
-            .collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(a -> !a.erLagtTilAvSaksbehandler())
+                .collect(Collectors.toList());
         return new Tuple<>(aktiveAndeler, forrigeAndeler);
     }
 

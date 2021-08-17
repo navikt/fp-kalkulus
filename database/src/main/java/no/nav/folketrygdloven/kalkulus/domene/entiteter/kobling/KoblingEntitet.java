@@ -16,17 +16,16 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.NaturalId;
 
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.YtelseTyperKalkulusStøtterKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @Entity(name = "Kobling")
 @Table(name = "KOBLING")
-public class KoblingEntitet extends BaseEntitet implements IndexKey {
+public class KoblingEntitet implements IndexKey {
 
     /**
      * Kalkulus intern kobling_id.

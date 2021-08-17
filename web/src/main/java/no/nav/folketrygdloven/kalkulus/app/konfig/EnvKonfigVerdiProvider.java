@@ -4,9 +4,9 @@ import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.vedtak.konfig.KonfigVerdi;
-import no.nav.vedtak.konfig.PropertiesKonfigVerdiProvider;
-import no.nav.vedtak.konfig.StandardPropertySource;
+import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
+import no.nav.k9.felles.konfigurasjon.konfig.PropertiesKonfigVerdiProvider;
+import no.nav.k9.felles.konfigurasjon.konfig.StandardPropertySource;
 
 //FIXME (u139158): PFP-1176 Bør flyttes til no.nav.vedtak.felles:felles-util siden alle applikasjonene blir NAIS-apps
 @ApplicationScoped

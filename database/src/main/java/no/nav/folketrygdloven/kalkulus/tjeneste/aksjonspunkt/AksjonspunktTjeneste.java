@@ -20,8 +20,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.foreldrepenger.konfig.KonfigVerdi;
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.k9.felles.exception.TekniskException;
+import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
 
 @ApplicationScoped
 public class AksjonspunktTjeneste {

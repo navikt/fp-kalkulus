@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -33,7 +34,7 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
     private static final InternArbeidsforholdRefDto REF2 = InternArbeidsforholdRefDto.nyRef();
     private static final InternArbeidsforholdRefDto REF3 = InternArbeidsforholdRefDto.nyRef();
     private static final LocalDate STP = LocalDate.now();
-    private static final LocalDate UENDELIG = Intervall.TIDENES_ENDE;
+    private static final LocalDate UENDELIG = TIDENES_ENDE;
 
     private BeregningsgrunnlagDto.Builder grunnlagBuilder = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(STP);
     private List<VurderRefusjonAndelBeregningsgrunnlagDto> saksbehandlerAvklaringer = new ArrayList<>();

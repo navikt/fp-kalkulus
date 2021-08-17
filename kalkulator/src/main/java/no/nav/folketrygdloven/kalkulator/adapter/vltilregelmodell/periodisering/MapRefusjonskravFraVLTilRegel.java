@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

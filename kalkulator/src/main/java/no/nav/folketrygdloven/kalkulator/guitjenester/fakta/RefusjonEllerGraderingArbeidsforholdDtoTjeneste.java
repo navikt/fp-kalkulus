@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.NyAktivitetMedSøktYtelseFordeling.lagPerioderForNyAktivitetMedSøktYtelse;
 import static no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode;
-import static no.nav.vedtak.konfig.Tid.TIDENES_BEGYNNELSE;
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -59,10 +59,9 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
                             .findFirst()
                             .orElseThrow(() -> new IllegalStateException("Forventet å finne matchende periode"));
                     var andelTilfelleMap = vurderManuellBehandlingForPeriode(periodeFraSteg, fordelingInput);
-                    andelTilfelleMap.entrySet().stream()
+                    tilfelleMap.putAll(andelTilfelleMap.entrySet().stream()
                             .filter(e -> Boolean.FALSE.equals(e.getKey().erLagtTilAvSaksbehandler()))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                            .forEach(tilfelleMap::put);
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
                 });
         return tilfelleMap;
     }

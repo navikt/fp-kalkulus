@@ -5,23 +5,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
-
 /**
  * Beløp representerer kombinasjon av kroner og øre på standardisert format
  */
-@Embeddable
-public class Beløp implements Serializable, IndexKey, TraverseValue {
+public class Beløp implements Serializable {
     public static final Beløp ZERO = new Beløp(BigDecimal.ZERO);
     private static final RoundingMode AVRUNDINGSMODUS = RoundingMode.HALF_EVEN;
 
-    @Column(name = "beloep", scale = 2)
-    @ChangeTracked
     private BigDecimal verdi;
 
     protected Beløp() {
@@ -45,12 +35,6 @@ public class Beløp implements Serializable, IndexKey, TraverseValue {
 
     private BigDecimal skalertVerdi() {
         return verdi == null ? null : verdi.setScale(2, AVRUNDINGSMODUS);
-    }
-
-    @Override
-    public String getIndexKey() {
-        BigDecimal skalertVerdi = skalertVerdi();
-        return skalertVerdi != null ? skalertVerdi.toString() : null;
     }
 
     public BigDecimal getVerdi() {

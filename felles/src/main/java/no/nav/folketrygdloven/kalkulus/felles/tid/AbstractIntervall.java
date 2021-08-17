@@ -2,15 +2,19 @@ package no.nav.folketrygdloven.kalkulus.felles.tid;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import no.nav.vedtak.konfig.Tid;
-
 public abstract class AbstractIntervall implements Comparable<AbstractIntervall>, Serializable {
 
-    public static final LocalDate TIDENES_BEGYNNELSE = Tid.TIDENES_BEGYNNELSE;
-    public static final LocalDate TIDENES_ENDE = Tid.TIDENES_ENDE;
+    public static final LocalDate TIDENES_BEGYNNELSE;
+    public static final LocalDate TIDENES_ENDE;
+
+    static {
+        TIDENES_BEGYNNELSE = LocalDate.of(-4712, Month.JANUARY, 1);
+        TIDENES_ENDE = LocalDate.of(9999, Month.DECEMBER, 31);
+    }
 
     static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -50,7 +54,7 @@ public abstract class AbstractIntervall implements Comparable<AbstractIntervall>
         }
         AbstractIntervall annen = (AbstractIntervall) object;
         return Objects.equals(this.getFomDato(), annen.getFomDato())
-            && Objects.equals(this.getTomDato(), annen.getTomDato());
+                && Objects.equals(this.getTomDato(), annen.getTomDato());
     }
 
     @Override

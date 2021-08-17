@@ -9,7 +9,7 @@ import javax.persistence.LockModeType;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingLås;
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.k9.felles.exception.TekniskException;
 
 @ApplicationScoped
 public class LåsRepository {
@@ -42,10 +42,10 @@ public class LåsRepository {
 
     private Long lås(final Long behandlingId, LockModeType lockModeType) {
         Object[] result = (Object[]) entityManager
-            .createQuery("select k.id, k.versjon from Kobling k where k.id=:id") //$NON-NLS-1$
-            .setParameter("id", behandlingId) //$NON-NLS-1$
-            .setLockMode(lockModeType)
-            .getSingleResult();
+                .createQuery("select k.id, k.versjon from Kobling k where k.id=:id") //$NON-NLS-1$
+                .setParameter("id", behandlingId) //$NON-NLS-1$
+                .setLockMode(lockModeType)
+                .getSingleResult();
         return (Long) result[0];
     }
 

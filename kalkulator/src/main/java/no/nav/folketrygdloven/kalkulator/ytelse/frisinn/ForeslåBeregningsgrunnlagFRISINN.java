@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import static no.nav.folketrygdloven.kalkulator.steg.foreslå.SplittBGPerioder.splitBeregningsgrunnlagPeriode;
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

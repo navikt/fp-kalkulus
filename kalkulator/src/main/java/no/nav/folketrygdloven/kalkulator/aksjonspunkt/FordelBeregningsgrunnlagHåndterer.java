@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.fordeling.FordelBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
@@ -25,7 +26,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
-import no.nav.vedtak.exception.TekniskException;
 
 public class FordelBeregningsgrunnlagHåndterer {
 
@@ -190,7 +190,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         return perioder.stream()
                 .filter(periode -> periode.getBeregningsgrunnlagPeriodeFom().equals(endretPeriode.getFom()))
                 .findFirst()
-                .orElseThrow(() -> new TekniskException("FT-401647", String.format("Finner ikke periode for eksisterende grunnlag. Behandling  %s", input.getKoblingReferanse().getKoblingId())));
+                .orElseThrow(() -> new KalkulatorException("FT-401647", String.format("Finner ikke periode for eksisterende grunnlag. Behandling  %s", input.getKoblingReferanse().getKoblingId())));
     }
 
     private static List<FordelBeregningsgrunnlagAndelDto> sorterMedNyesteSist(FordelBeregningsgrunnlagPeriodeDto endretPeriode) {

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.vedtak.util.Tuple;
+import no.nav.folketrygdloven.utils.Tuple;
 
 
 public class BeregningsgrunnlagInputTestUtil {
@@ -100,9 +100,9 @@ public class BeregningsgrunnlagInputTestUtil {
     }
 
     public static ForeslåBeregningsgrunnlagInput lagForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
-                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
-                                                                             BeregningsgrunnlagTilstand tilstand,
-                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+                                                                                     BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                                     BeregningsgrunnlagTilstand tilstand,
+                                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setGrunnbeløpMilitærHarKravPå(2);
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
@@ -160,10 +160,10 @@ public class BeregningsgrunnlagInputTestUtil {
     }
 
     public static ForeslåBeregningsgrunnlagInput lagForeslåttBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
-                                                                             BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
-                                                                             BeregningsgrunnlagTilstand tilstand,
-                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                             OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
+                                                                                     BeregningsgrunnlagGrunnlagDtoBuilder beregningsgrunnlagGrunnlagBuilder,
+                                                                                     BeregningsgrunnlagTilstand tilstand,
+                                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                     OmsorgspengerGrunnlag omsorgspengerGrunnlag) {
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null,
                 opprett(koblingReferanse, iayGrunnlag), omsorgspengerGrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);

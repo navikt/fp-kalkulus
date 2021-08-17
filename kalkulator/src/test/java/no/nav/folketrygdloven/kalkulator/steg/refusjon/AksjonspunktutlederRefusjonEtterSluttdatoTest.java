@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -24,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.vedtak.konfig.Tid;
 
 class AksjonspunktutlederRefusjonEtterSluttdatoTest {
     private static final UUID REFERANSE = UUID.randomUUID();
@@ -40,7 +40,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.minusDays(100));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.minusDays(100));
 
         // Assert
         assertThat(slårUt).isFalse();
@@ -54,7 +54,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(31));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.plusDays(31));
 
         // Assert
         assertThat(slårUt).isTrue();
@@ -71,7 +71,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP.plusDays(31), null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000), lagBGAndel(ag2, InternArbeidsforholdRefDto.nullRef(), 0));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(100));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.plusDays(100));
 
         // Assert
         assertThat(slårUt).isFalse();
@@ -88,7 +88,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP.plusDays(31), null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000), lagBGAndel(ag2, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(100));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.plusDays(100));
 
         // Assert
         assertThat(slårUt).isTrue();
@@ -102,7 +102,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.plusDays(1));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.plusDays(1));
 
         // Assert
         assertThat(slårUt).isTrue();
@@ -116,7 +116,7 @@ class AksjonspunktutlederRefusjonEtterSluttdatoTest {
         lagBGPeriode(STP, null, lagBGAndel(ag, InternArbeidsforholdRefDto.nullRef(), 300000));
 
         // Act
-        boolean slårUt = kjørUtleder(Tid.TIDENES_ENDE, STP.minusDays(1));
+        boolean slårUt = kjørUtleder(TIDENES_ENDE, STP.minusDays(1));
 
         // Assert
         assertThat(slårUt).isFalse();

@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.testutilities;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.NaturalYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.vedtak.konfig.Tid;
 
 
 @ApplicationScoped
@@ -27,7 +28,7 @@ public class BeregningInntektsmeldingTestUtil {
 
     public static InntektsmeldingDto opprettInntektsmelding(String orgNummer, LocalDate skjæringstidspunkt, BigDecimal refusjonskrav,
                                                             BigDecimal inntekt) {
-        return opprettInntektsmelding(orgNummer, null, skjæringstidspunkt, refusjonskrav, inntekt, Tid.TIDENES_ENDE,
+        return opprettInntektsmelding(orgNummer, null, skjæringstidspunkt, refusjonskrav, inntekt, TIDENES_ENDE,
             Collections.emptyList(), Collections.emptyList());
     }
 
@@ -45,7 +46,7 @@ public class BeregningInntektsmeldingTestUtil {
                                                             Integer refusjon) { // NOSONAR - brukes bare
                                                                                                                                        // til test
         BigDecimal refusjonEllerNull = refusjon != null ? BigDecimal.valueOf(refusjon) : null;
-        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.TEN, Tid.TIDENES_ENDE,
+        return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.TEN, TIDENES_ENDE,
             Collections.emptyList(), Collections.emptyList());
     }
 
@@ -58,7 +59,7 @@ public class BeregningInntektsmeldingTestUtil {
                                                                                                                                                         // test
         BigDecimal refusjonEllerNull = refusjon != null ? BigDecimal.valueOf(refusjon) : null;
         return opprettInntektsmelding(orgnr, arbId, skjæringstidspunktOpptjening, refusjonEllerNull, BigDecimal.valueOf(inntekt),
-            Tid.TIDENES_ENDE, Collections.emptyList(), Collections.emptyList());
+            TIDENES_ENDE, Collections.emptyList(), Collections.emptyList());
     }
 
     public static InntektsmeldingDto opprettInntektsmeldingMedNaturalYtelser(String orgnr, // NOSONAR - brukes bare til test

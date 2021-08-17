@@ -1,10 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_BEGYNNELSE;
 import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT;
 import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak.AVKORTET_GRUNNET_LØPENDE_INNTEKT;
 import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak.FOR_LAVT_BG;
 import static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak.INGEN_FRILANS_I_PERIODE_UTEN_YTELSE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -191,7 +191,7 @@ public class MapTilAvslagsårsakerFRISINN {
             Set<Avslagsårsak> avslagsårsaker = andeler.stream()
                     .flatMap(a -> map(a, andeler, frisinnGrunnlag, oppgittOpptjening.get(), gbeløp, skjæringstidspunkt).stream())
                     .collect(Collectors.toSet());
-            if (harForLavtBeregningsgrunnlag(frisinnGrunnlag, gbeløp, fom, andeler)){
+            if (harForLavtBeregningsgrunnlag(frisinnGrunnlag, gbeløp, fom, andeler)) {
                 if (avslagsårsaker.contains(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE)) {
                     return Optional.of(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE);
                 }

@@ -1,17 +1,16 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
-
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.JournalpostId;
-import no.nav.vedtak.konfig.Tid;
 
 public class InntektsmeldingDtoBuilder {
     private final InntektsmeldingDto kladd;
@@ -36,7 +35,7 @@ public class InntektsmeldingDtoBuilder {
             // magic - hvis har ekstern referanse må også intern referanse være spesifikk
             if ((eksternArbeidsforholdId != null && eksternArbeidsforholdId.gjelderForSpesifiktArbeidsforhold()) && internRef.get().getReferanse() == null) {
                 throw new IllegalArgumentException(
-                    "Begge referanser må gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + internRef);
+                        "Begge referanser må gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + internRef);
             }
         }
         erBygget = true; // Kan ikke bygge mer med samme builder, vil bare returnere samme kladd.
@@ -75,7 +74,7 @@ public class InntektsmeldingDtoBuilder {
             // magic - hvis har ekstern referanse må også intern referanse være spesifikk
             if (arbeidsforholdId.getReferanse() == null && eksternArbeidsforholdId != null && eksternArbeidsforholdId.gjelderForSpesifiktArbeidsforhold()) {
                 throw new IllegalArgumentException(
-                    "Begge referanser gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + arbeidsforholdId);
+                        "Begge referanser gjelde spesifikke arbeidsforhold. " + " Ekstern: " + eksternArbeidsforholdId + ", Intern: " + arbeidsforholdId);
             }
             kladd.setArbeidsforholdId(arbeidsforholdId);
         }
@@ -97,7 +96,7 @@ public class InntektsmeldingDtoBuilder {
     public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi) {
         precondition();
         kladd.setRefusjonBeløpPerMnd(verdi == null ? null : new Beløp(verdi));
-        kladd.setRefusjonOpphører(Tid.TIDENES_ENDE);
+        kladd.setRefusjonOpphører(TIDENES_ENDE);
         return this;
     }
 
@@ -111,7 +110,7 @@ public class InntektsmeldingDtoBuilder {
         precondition();
         kladd.setKanalreferanse(kanalreferanse);
         return this;
-    
+
     }
 
     public InntektsmeldingDtoBuilder medRefusjon(BigDecimal verdi, LocalDate opphører) {

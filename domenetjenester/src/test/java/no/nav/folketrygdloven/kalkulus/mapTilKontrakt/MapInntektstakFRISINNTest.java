@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_BEGYNNELSE;
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -11,12 +13,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -26,23 +28,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 class MapInntektstakFRISINNTest {
+    private static final BigDecimal G = BigDecimal.valueOf(99858);
+    private static final BigDecimal SEKS_G = G.multiply(BigDecimal.valueOf(6));
     private static BeregningsgrunnlagEntitet beregningsgrunnlagEntitet;
     private static BeregningsgrunnlagPeriode.Builder periode;
     private static OppgittOpptjeningDtoBuilder opptjening;
-    private static final BigDecimal G = BigDecimal.valueOf(99858);
-    private static final BigDecimal SEKS_G = G.multiply(BigDecimal.valueOf(6));
 
     @BeforeEach
     public void setup() {
         beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(LocalDate.now()).build();
-        periode = lagPeriode(LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
+        periode = lagPeriode(LocalDate.of(2020, 3, 1), TIDENES_ENDE);
         opptjening = OppgittOpptjeningDtoBuilder.ny();
     }
 
     @Test
     public void skal_teste_at_sn_eneste_status_under_6g_får_korrekt_tak() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BeregningsgrunnlagPrStatusOgAndel andel = snAndel(1L, bruttoSN, periode.build(beregningsgrunnlagEntitet));
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
@@ -59,7 +61,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_teste_at_fl_eneste_status_under_6g_får_korrekt_tak() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BeregningsgrunnlagPrStatusOgAndel andel = flAndel(1L, bruttoFL, periode.build(beregningsgrunnlagEntitet));
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
@@ -76,7 +78,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_ingen_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -96,7 +98,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_med_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -116,7 +118,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_sn_med_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -136,7 +138,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void fl_sn_søker_kun_fl() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -156,7 +158,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void fl_sn_søker_kun_sn_avkortes() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -176,7 +178,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_sn_avkortes() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
@@ -198,7 +200,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_sn_avkortes_ikke() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
@@ -220,7 +222,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_fl_avkortes_ikke() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(150000);
@@ -242,7 +244,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_sette_tak_for_at_til_0() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(150000);
@@ -264,7 +266,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_sette_andel_fl_ikke_søkt_for_til_0() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(150000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         BeregningsgrunnlagPrStatusOgAndel andel = flAndel(1L, bruttoFL, periode);
@@ -282,7 +284,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_sette_andel_sn_ikke_søkt_for_til_0() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(150000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         BeregningsgrunnlagPrStatusOgAndel andel = snAndel(1L, bruttoSN, periode);
@@ -300,7 +302,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_gi_0_ved_ingen_andeler_i_perioden() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         periode.build(beregningsgrunnlagEntitet);
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
         lagNæringOpptjening(april);
@@ -316,7 +318,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void skal_gi_0_når_andel_ikke_finnes() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BeregningsgrunnlagPeriode p = periode.build(beregningsgrunnlagEntitet);
         flAndel(1L, BigDecimal.valueOf(300000), p);
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
@@ -333,7 +335,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_søker_begge_ingen_avkorting() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -357,7 +359,7 @@ class MapInntektstakFRISINNTest {
     @Test
     public void at_fl_sn_søker_begge_avkortes_grunnet_at() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoAT = BigDecimal.valueOf(400000);
         BigDecimal bruttoSN = BigDecimal.valueOf(150000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
@@ -385,13 +387,12 @@ class MapInntektstakFRISINNTest {
     }
 
 
-
     @Test
     public void søkt_fl_utenfor_bg_periode() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
-        periode.medBeregningsgrunnlagPeriode(LocalDate.of(2020,3,1), LocalDate.of(2020,3,31));
+        periode.medBeregningsgrunnlagPeriode(LocalDate.of(2020, 3, 1), LocalDate.of(2020, 3, 31));
         BeregningsgrunnlagPeriode periode = MapInntektstakFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         BeregningsgrunnlagPrStatusOgAndel andel = flAndel(1L, bruttoFL, periode);
         List<BeregningsgrunnlagPrStatusOgAndel> andeler = hentAndeler();
@@ -423,7 +424,7 @@ class MapInntektstakFRISINNTest {
     }
 
     private FrisinnGrunnlag frisinn(boolean søkerFL, boolean søkerSN) {
-        Intervall periode = Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE);
+        Intervall periode = Intervall.fraOgMedTilOgMed(TIDENES_BEGYNNELSE, TIDENES_ENDE);
         FrisinnPeriode frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
         return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode), FrisinnBehandlingType.NY_SØKNADSPERIODE);
     }

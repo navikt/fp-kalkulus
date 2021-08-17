@@ -11,22 +11,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
-import no.nav.vedtak.felles.testutilities.db.EntityManagerAwareTest;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
 public class KoblingRepositoryTest extends EntityManagerAwareTest {
 
-    private KoblingRepository koblingRepository;
-
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Oslo"));
     }
+
+    private KoblingRepository koblingRepository;
 
     @BeforeEach
     public void beforeEach() {

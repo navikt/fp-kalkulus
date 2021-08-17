@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 
-import no.nav.vedtak.log.util.LoggerUtils;
+import no.nav.k9.felles.log.util.LoggerUtils;
 
 public class StringSerializer extends StdScalarSerializer<Object> {
     private static final long serialVersionUID = 1L;

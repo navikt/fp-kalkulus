@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FastsattBrukersAndel;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.dto.FastsettBgKunYtelseDto;
@@ -23,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
-import no.nav.vedtak.exception.TekniskException;
 
 
 @ApplicationScoped
@@ -125,7 +125,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAndelsnr().equals(andel.getAndelsnr()))
                 .findFirst()
-                .orElseThrow(() -> new TekniskException("FT-401646", "Finner ikke andelen for eksisterende grunnlag."));
+                .orElseThrow(() -> new KalkulatorException("FT-401646", "Finner ikke andelen for eksisterende grunnlag."));
     }
 
     private BeregningsgrunnlagPrStatusOgAndelDto finnAndelFraForrigeGrunnlag(BeregningsgrunnlagPeriodeDto periode, FastsattBrukersAndel andel, Optional<BeregningsgrunnlagDto> forrigeBg) {

@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +16,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 
@@ -26,7 +27,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
     @Override
     public BeregningVilkårResultat lagVilkårResultatFordel(BeregningsgrunnlagInput input, List<BeregningVilkårResultat> beregningVilkårResultatListe) {
         boolean erAvslått = erBeregningsgrunnlagVilkåretAvslått(input, beregningVilkårResultatListe);
-        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), TIDENES_ENDE);
         if (erAvslått) {
             Optional<BeregningVilkårResultat> avslåttVilkår = beregningVilkårResultatListe.stream().filter(vr -> !vr.getErVilkårOppfylt()).findFirst();
             return avslåttVilkår
@@ -40,7 +41,7 @@ public class VilkårTjenesteFRISINN extends VilkårTjeneste {
     @Override
     public Optional<BeregningVilkårResultat> lagVilkårResultatFullføre(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlagDto) {
         boolean harAvkortetHeleSistePeriode = harAvslagGrunnetAvkorting(beregningsgrunnlagDto, input.getYtelsespesifiktGrunnlag());
-        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), AbstractIntervall.TIDENES_ENDE);
+        Intervall vilkårsperiode = Intervall.fraOgMedTilOgMed(input.getSkjæringstidspunktForBeregning(), TIDENES_ENDE);
         return harAvkortetHeleSistePeriode ? Optional.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.AVKORTET_GRUNNET_ANNEN_INNTEKT, vilkårsperiode)) :
                 Optional.empty();
     }

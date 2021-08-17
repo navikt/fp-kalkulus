@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.prometheus.client.hotspot.DefaultExports;
-import no.nav.vedtak.apptjeneste.AppServiceHandler;
+import no.nav.k9.felles.apptjeneste.AppServiceHandler;
 
 /**
  * Initialiserer applikasjontjenester som implementer AppServiceHandler

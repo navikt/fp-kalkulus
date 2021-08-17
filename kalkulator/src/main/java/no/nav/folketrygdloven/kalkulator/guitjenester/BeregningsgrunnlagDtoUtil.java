@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,10 +54,10 @@ public class BeregningsgrunnlagDtoUtil {
         andelDto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         andelDto.setKilde(andel.getKilde());
         List<Gradering> graderingForAndelIPeriode = FordelingGraderingTjeneste.hentGraderingerForAndelIPeriode(andel, aktivitetGradering, periode.getPeriode()).stream()
-            .sorted().collect(Collectors.toList());
+                .sorted().collect(Collectors.toList());
         finnArbeidsprosenterIPeriode(graderingForAndelIPeriode, andel.getBeregningsgrunnlagPeriode().getPeriode()).forEach(andelDto::leggTilAndelIArbeid);
         lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
-            .ifPresent(andelDto::setArbeidsforhold);
+                .ifPresent(andelDto::setArbeidsforhold);
         return andelDto;
     }
 
@@ -85,7 +85,7 @@ public class BeregningsgrunnlagDtoUtil {
 
     private static boolean skalIkkeOppretteArbeidsforhold(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         boolean arbeidsforholdTypeErIkkeSatt = andel.getArbeidsforholdType() == null
-            || OpptjeningAktivitetType.UDEFINERT.equals(andel.getArbeidsforholdType());
+                || OpptjeningAktivitetType.UDEFINERT.equals(andel.getArbeidsforholdType());
         return arbeidsforholdTypeErIkkeSatt && !andel.getBgAndelArbeidsforhold().isPresent();
 
     }
@@ -122,8 +122,8 @@ public class BeregningsgrunnlagDtoUtil {
                 .stream().filter(arbeidsgiverOpplysningerDto -> arbeidsgiver.getIdentifikator().equals(arbeidsgiverOpplysningerDto.getIdentifikator()))
                 .findFirst();
         if (arbeidsgiver != null) {
-                arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-                arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
+            arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
+            arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
             if (OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) {
                 arbeidsforhold.setOrganisasjonstype(Organisasjonstype.KUNSTIG);
             }
@@ -150,9 +150,9 @@ public class BeregningsgrunnlagDtoUtil {
 
     private static LocalDate finnKorrektOpphørsdato(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getBgAndelArbeidsforhold()
-            .flatMap(BGAndelArbeidsforholdDto::getArbeidsperiodeTom)
-            .filter(tom -> !TIDENES_ENDE.equals(tom))
-            .orElse(null);
+                .flatMap(BGAndelArbeidsforholdDto::getArbeidsperiodeTom)
+                .filter(tom -> !TIDENES_ENDE.equals(tom))
+                .orElse(null);
     }
 
     public static List<BigDecimal> finnArbeidsprosenterIPeriode(List<Gradering> graderingForAndelIPeriode, Intervall periode) {
@@ -178,7 +178,7 @@ public class BeregningsgrunnlagDtoUtil {
                 break;
             }
             if (gradering.getPeriode().getTomDato().isBefore(nesteGradering.getPeriode().getFomDato()) &&
-                !gradering.getPeriode().getTomDato().equals(nesteGradering.getPeriode().getFomDato().minusDays(1))) {
+                    !gradering.getPeriode().getTomDato().equals(nesteGradering.getPeriode().getFomDato().minusDays(1))) {
                 leggTilNullProsent(prosentAndelerIPeriode);
             }
             gradering = nesteGradering;
@@ -199,9 +199,9 @@ public class BeregningsgrunnlagDtoUtil {
 
     private static boolean graderingDekkerHeilePerioden(Gradering gradering, Intervall periode) {
         return !gradering.getPeriode().getFomDato().isAfter(periode.getFomDato()) &&
-            (gradering.getPeriode().getTomDato().equals(TIDENES_ENDE) ||
-                (periode.getTomDato() != null &&
-                    !gradering.getPeriode().getTomDato().isBefore(periode.getTomDato())));
+                (gradering.getPeriode().getTomDato().equals(TIDENES_ENDE) ||
+                        (periode.getTomDato() != null &&
+                                !gradering.getPeriode().getTomDato().isBefore(periode.getTomDato())));
     }
 
 }

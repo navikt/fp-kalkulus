@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 public class OppgittAnnenAktivitetDto {
@@ -19,10 +18,6 @@ public class OppgittAnnenAktivitetDto {
 
     public OppgittAnnenAktivitetDto() {
         // hibernate
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(periode, arbeidType);
     }
 
     public ArbeidType getArbeidType() {

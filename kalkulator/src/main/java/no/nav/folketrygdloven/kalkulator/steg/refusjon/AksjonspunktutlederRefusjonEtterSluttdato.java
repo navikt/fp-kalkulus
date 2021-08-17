@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -18,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.vedtak.konfig.Tid;
 
 /**
  * På grunn av ulik rapporteringspraksis i aareg kan vi ikke bare se om søker har refusjon i et arbeidsforhold han/hun ikke lenger er aktiv i,
@@ -53,7 +54,7 @@ public final class AksjonspunktutlederRefusjonEtterSluttdato {
                 .flatMap(segment -> segment.getValue().getAndeler()
                         .stream()
                         .filter(AksjonspunktutlederRefusjonEtterSluttdato::erInnvilgetRefusjon)
-                        .filter(andel ->!erAnsattPåDato(andel, segment.getLocalDateInterval(), yrkesaktiviteter)))
+                        .filter(andel -> !erAnsattPåDato(andel, segment.getLocalDateInterval(), yrkesaktiviteter)))
                 .collect(Collectors.toList());
 
         andelerSomMåSjekkes.forEach(andel -> log.info("FT-718273: behandlingUUID {} : Arbeidsgiver {} ", koblingUuid, andel.getArbeidsgiver().toString()));
@@ -70,7 +71,7 @@ public final class AksjonspunktutlederRefusjonEtterSluttdato {
 
     private static LocalDateTimeline<RefusjonPeriode> finnPeriodeFremTilSisteUttak(LocalDate sisteUttaksdato) {
         return new LocalDateTimeline<>(
-                Tid.TIDENES_BEGYNNELSE,
+                TIDENES_BEGYNNELSE,
                 sisteUttaksdato,
                 null);
     }

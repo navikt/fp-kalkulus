@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
 public class YrkesaktivitetDto {
@@ -40,10 +39,6 @@ public class YrkesaktivitetDto {
             var permisjon = new PermisjonDto(p);
             return permisjon;
         }).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(arbeidsgiver, arbeidsforholdRef, arbeidType);
     }
 
     /**
@@ -91,7 +86,7 @@ public class YrkesaktivitetDto {
     /**
      * Identifiser om yrkesaktiviteten gjelder for arbeidsgiver og arbeidsforholdRef.
      *
-     * @param arbeidsgiver en {@link Arbeidsgiver}
+     * @param arbeidsgiver      en {@link Arbeidsgiver}
      * @param arbeidsforholdRef et {@link InternArbeidsforholdRefDto}
      * @return true hvis arbeidsgiver og arbeidsforholdRef macther
      */
@@ -151,7 +146,6 @@ public class YrkesaktivitetDto {
     }
 
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -161,8 +155,8 @@ public class YrkesaktivitetDto {
         }
         YrkesaktivitetDto other = (YrkesaktivitetDto) obj;
         return Objects.equals(this.getArbeidsforholdRef(), other.getArbeidsforholdRef()) &&
-            Objects.equals(this.getArbeidType(), other.getArbeidType()) &&
-            Objects.equals(this.getArbeidsgiver(), other.getArbeidsgiver());
+                Objects.equals(this.getArbeidType(), other.getArbeidType()) &&
+                Objects.equals(this.getArbeidsgiver(), other.getArbeidsgiver());
     }
 
     @Override
@@ -173,10 +167,10 @@ public class YrkesaktivitetDto {
     @Override
     public String toString() {
         return "YrkesaktivitetEntitet{" +
-            "arbeidsgiver=" + arbeidsgiver +
-            ", arbeidsforholdRef=" + arbeidsforholdRef +
-            ", arbeidType=" + arbeidType +
-            '}';
+                "arbeidsgiver=" + arbeidsgiver +
+                ", arbeidsforholdRef=" + arbeidsforholdRef +
+                ", arbeidType=" + arbeidType +
+                '}';
     }
 
 }

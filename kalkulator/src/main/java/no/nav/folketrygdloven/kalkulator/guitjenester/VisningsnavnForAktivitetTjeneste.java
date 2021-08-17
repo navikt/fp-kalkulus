@@ -4,10 +4,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
@@ -15,10 +15,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class VisningsnavnForAktivitetTjeneste {
 
-    private static final int ANTALL_SIFFER_SOM_SKAL_VISES_AV_REFERANSE = 4;
     public static final String PRIVATPERSON_DEFAULT_VISNING = "Privatperson";
-
     public static final String NAVN_FOR_FEILET_TPS_KALL = "N/A";
+    private static final int ANTALL_SIFFER_SOM_SKAL_VISES_AV_REFERANSE = 4;
 
     private VisningsnavnForAktivitetTjeneste() {
         // For CDI
@@ -57,11 +56,11 @@ public class VisningsnavnForAktivitetTjeneste {
 
     private static String finnVisningsnavnForArbeidstaker(KoblingReferanse ref, InntektArbeidYtelseGrunnlagDto iayGrunnlag, BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getBgAndelArbeidsforhold()
-            .map(bgAndelArbeidsforhold -> {
-                Arbeidsgiver arbeidsgiver = bgAndelArbeidsforhold.getArbeidsgiver();
-                String visningsnavnUtenReferanse = finnVisningsnavnUtenReferanse(arbeidsgiver, iayGrunnlag.getArbeidsgiverOpplysninger());
-                return finnVisningsnavnMedReferanseHvisFinnes(ref, arbeidsgiver, bgAndelArbeidsforhold, visningsnavnUtenReferanse, iayGrunnlag);
-            }).orElse(andel.getArbeidsforholdType().getNavn());
+                .map(bgAndelArbeidsforhold -> {
+                    Arbeidsgiver arbeidsgiver = bgAndelArbeidsforhold.getArbeidsgiver();
+                    String visningsnavnUtenReferanse = finnVisningsnavnUtenReferanse(arbeidsgiver, iayGrunnlag.getArbeidsgiverOpplysninger());
+                    return finnVisningsnavnMedReferanseHvisFinnes(ref, arbeidsgiver, bgAndelArbeidsforhold, visningsnavnUtenReferanse, iayGrunnlag);
+                }).orElse(andel.getArbeidsforholdType().getNavn());
     }
 
     private static String finnVisningsnavnMedReferanseHvisFinnes(KoblingReferanse ref, Arbeidsgiver arbeidsgiver, BGAndelArbeidsforholdDto bgAndelArbeidsforhold, String visningsnavnUtenReferanse, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {

@@ -7,9 +7,8 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.vedtak.exception.FunksjonellException;
-import no.nav.vedtak.exception.ManglerTilgangException;
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.k9.felles.exception.ManglerTilgangException;
+import no.nav.k9.felles.exception.TekniskException;
 
 @SuppressWarnings("resource")
 public class GeneralRestExceptionMapperTest {
@@ -33,20 +32,6 @@ public class GeneralRestExceptionMapperTest {
 
         assertThat(feilDto.getType()).isEqualTo(FeilType.MANGLER_TILGANG_FEIL);
         assertThat(feilDto.getFeilmelding()).isEqualTo("MANGLER_TILGANG_FEIL:ManglerTilgangFeilmeldingKode");
-    }
-
-    @Test
-    public void skalMappeFunksjonellFeil() {
-        var funksjonellFeil = funksjonellFeil();
-
-        Response response = generalRestExceptionMapper.toResponse(funksjonellFeil);
-
-        assertThat(response.getEntity()).isInstanceOf(FeilDto.class);
-        FeilDto feilDto = (FeilDto) response.getEntity();
-
-        assertThat(feilDto.getFeilmelding()).contains("FUNK_FEIL");
-        assertThat(feilDto.getFeilmelding()).contains("en funksjonell feilmelding");
-        assertThat(feilDto.getFeilmelding()).contains("et løsningsforslag");
     }
 
     @Test
@@ -74,10 +59,6 @@ public class GeneralRestExceptionMapperTest {
         FeilDto feilDto = (FeilDto) response.getEntity();
 
         assertThat(feilDto.getFeilmelding()).contains(feilmelding);
-    }
-
-    private static FunksjonellException funksjonellFeil() {
-        return new FunksjonellException("FUNK_FEIL", "en funksjonell feilmelding", "et løsningsforslag");
     }
 
     private static TekniskException tekniskFeil() {

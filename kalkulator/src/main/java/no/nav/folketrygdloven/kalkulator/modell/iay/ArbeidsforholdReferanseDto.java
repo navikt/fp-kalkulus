@@ -5,7 +5,6 @@ import java.util.Objects;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 
 public class ArbeidsforholdReferanseDto {
 
@@ -24,10 +23,6 @@ public class ArbeidsforholdReferanseDto {
 
     ArbeidsforholdReferanseDto(ArbeidsforholdReferanseDto arbeidsforholdInformasjonEntitet) {
         this(arbeidsforholdInformasjonEntitet.arbeidsgiver, arbeidsforholdInformasjonEntitet.internReferanse, arbeidsforholdInformasjonEntitet.eksternReferanse);
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(internReferanse, eksternReferanse);
     }
 
     public InternArbeidsforholdRefDto getInternReferanse() {
@@ -50,8 +45,8 @@ public class ArbeidsforholdReferanseDto {
             return false;
         ArbeidsforholdReferanseDto that = (ArbeidsforholdReferanseDto) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
-            Objects.equals(internReferanse, that.internReferanse) &&
-            Objects.equals(eksternReferanse, that.eksternReferanse);
+                Objects.equals(internReferanse, that.internReferanse) &&
+                Objects.equals(eksternReferanse, that.eksternReferanse);
     }
 
     @Override
@@ -62,9 +57,9 @@ public class ArbeidsforholdReferanseDto {
     @Override
     public String toString() {
         return "ArbeidsforholdReferanseEntitet{" +
-            "arbeidsgiver=" + arbeidsgiver +
-            ", internReferanse=" + internReferanse +
-            ", eksternReferanse=" + eksternReferanse +
-            '}';
+                "arbeidsgiver=" + arbeidsgiver +
+                ", internReferanse=" + internReferanse +
+                ", eksternReferanse=" + eksternReferanse +
+                '}';
     }
 }

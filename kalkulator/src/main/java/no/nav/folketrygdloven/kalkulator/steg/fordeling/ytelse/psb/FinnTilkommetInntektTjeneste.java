@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb;
 
-import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

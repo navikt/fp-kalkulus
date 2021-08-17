@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespon
 import no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt.AksjonspunktTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.k9.felles.exception.TekniskException;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
@@ -65,9 +65,8 @@ public class HåndtererApplikasjonTjeneste {
                 } else if (aksjonspunktdefinisjon.erOverstyring()) {
                     opprettOverstyringAksjonspunkt(koblingId, aksjonspunktdefinisjon);
                     skalLøseAksjonspunktEtterOppdatering = true;
-                }
-                else {
-                        LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
+                } else {
+                    LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
                 }
             }
 

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
-import no.nav.vedtak.util.env.Environment;
+import no.nav.k9.felles.konfigurasjon.env.Environment;
 
 public class JettyDevServer extends JettyServer {
     private static final Environment ENV = Environment.current();
@@ -45,13 +45,13 @@ public class JettyDevServer extends JettyServer {
         File storeFile = new File(storePath);
         if (!storeFile.exists()) {
             throw new IllegalStateException("Finner ikke " + storeName + " i " + storePath
-                + "\n\tKonfigurer enten som System property '" + storeProperty + "' eller environment variabel '"
-                + storeProperty.toUpperCase().replace('.', '_') + "'");
+                    + "\n\tKonfigurer enten som System property '" + storeProperty + "' eller environment variabel '"
+                    + storeProperty.toUpperCase().replace('.', '_') + "'");
         }
         String password = getProperty(storePasswordProperty, defaultPassword);
         if (password == null) {
             throw new IllegalStateException(
-                "Passord for å aksessere store " + storeName + " i " + storePath + " er null");
+                    "Passord for å aksessere store " + storeName + " i " + storePath + " er null");
         }
 
         System.setProperty(storeProperty, storeFile.getAbsolutePath());
@@ -60,7 +60,7 @@ public class JettyDevServer extends JettyServer {
     }
 
     private static String getProperty(String key, String defaultValue) {
-        String val = System.getProperty(key, defaultValue);
+        String val = System.getProperty(key);
         if (val == null) {
             val = System.getenv(key.toUpperCase().replace('.', '_'));
             val = val == null ? defaultValue : val;
@@ -125,8 +125,8 @@ public class JettyDevServer extends JettyServer {
         https.addCustomizer(new SecureRequestCustomizer());
 
         ServerConnector sslConnector = new ServerConnector(server,
-            new SslConnectionFactory(sslContextFactory, "http/1.1"),
-            new HttpConnectionFactory(https));
+                new SslConnectionFactory(sslContextFactory, "http/1.1"),
+                new HttpConnectionFactory(https));
         sslConnector.setPort(appKonfigurasjon.getSslPort());
         connectors.add(sslConnector);
 

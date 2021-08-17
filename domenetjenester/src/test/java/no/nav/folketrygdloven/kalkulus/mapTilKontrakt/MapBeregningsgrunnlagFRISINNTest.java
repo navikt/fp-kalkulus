@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_BEGYNNELSE;
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -26,23 +28,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
 class MapBeregningsgrunnlagFRISINNTest {
 
+    private static final BigDecimal G = BigDecimal.valueOf(99858);
+    private static final BigDecimal SEKS_G = G.multiply(BigDecimal.valueOf(6));
     private static BeregningsgrunnlagEntitet beregningsgrunnlagEntitet;
     private static BeregningsgrunnlagPeriode.Builder periode;
     private static OppgittOpptjeningDtoBuilder opptjening;
-    private static final BigDecimal G = BigDecimal.valueOf(99858);
-    private static final BigDecimal SEKS_G = G.multiply(BigDecimal.valueOf(6));
 
     @BeforeEach
     public void setup() {
         beregningsgrunnlagEntitet = BeregningsgrunnlagEntitet.builder().medSkjæringstidspunkt(LocalDate.now()).medGrunnbeløp(G).build();
-        periode = lagPeriode(LocalDate.of(2020,3,1), Intervall.TIDENES_ENDE);
+        periode = lagPeriode(LocalDate.of(2020, 3, 1), TIDENES_ENDE);
         opptjening = OppgittOpptjeningDtoBuilder.ny();
     }
 
     @Test
     public void skal_teste_at_periode_med_sn_eneste_status_under_6g_får_korrekt_tak() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         snAndel(1L, bruttoSN, periode.build(beregningsgrunnlagEntitet));
         lagNæringOpptjening(april);
@@ -60,7 +62,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void skal_teste_at_periode_med_fl_eneste_status_under_6g_får_korrekt_tak() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         flAndel(1L, bruttoFL, periode.build(beregningsgrunnlagEntitet));
         lagFrilansOpptjening(april);
@@ -78,7 +80,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_ingen_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -99,7 +101,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_med_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -120,7 +122,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_sn_med_redusering() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoAT = BigDecimal.valueOf(500000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -142,7 +144,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void fl_sn_søker_kun_fl() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -163,7 +165,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void fl_sn_søker_kun_sn_avkortes() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(300000);
         BigDecimal bruttoFL = BigDecimal.valueOf(500000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -184,7 +186,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_sn_avkortes() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
@@ -207,7 +209,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_sn_avkortes_ikke() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(200000);
@@ -230,7 +232,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_sn_søker_kun_fl_avkortes_ikke() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoAT = BigDecimal.valueOf(100000);
         BigDecimal bruttoFL = BigDecimal.valueOf(150000);
@@ -254,7 +256,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void skal_gi_seks_G_ved_ingen_andeler_i_perioden() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         periode.build(beregningsgrunnlagEntitet);
         lagNæringOpptjening(april);
 
@@ -271,7 +273,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_søker_begge_ingen_avkorting() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoSN = BigDecimal.valueOf(200000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
@@ -293,7 +295,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void at_fl_sn_søker_begge_avkortes_grunnet_at() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoAT = BigDecimal.valueOf(400000);
         BigDecimal bruttoSN = BigDecimal.valueOf(150000);
         BigDecimal bruttoFL = BigDecimal.valueOf(100000);
@@ -318,9 +320,9 @@ class MapBeregningsgrunnlagFRISINNTest {
     @Test
     public void søkt_fl_utenfor_bg_periode() {
         // Arrange
-        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020,4,1), LocalDate.of(2020,4,30));
+        Intervall april = Intervall.fraOgMedTilOgMed(LocalDate.of(2020, 4, 1), LocalDate.of(2020, 4, 30));
         BigDecimal bruttoFL = BigDecimal.valueOf(300000);
-        periode.medBeregningsgrunnlagPeriode(LocalDate.of(2020,3,1), LocalDate.of(2020,3,31));
+        periode.medBeregningsgrunnlagPeriode(LocalDate.of(2020, 3, 1), LocalDate.of(2020, 3, 31));
         var periode = MapBeregningsgrunnlagFRISINNTest.periode.build(beregningsgrunnlagEntitet);
         flAndel(1L, bruttoFL, periode);
         lagFrilansOpptjening(april);
@@ -349,7 +351,7 @@ class MapBeregningsgrunnlagFRISINNTest {
     }
 
     private FrisinnGrunnlag frisinn(boolean søkerFL, boolean søkerSN) {
-        Intervall periode = Intervall.fraOgMedTilOgMed(Intervall.TIDENES_BEGYNNELSE, Intervall.TIDENES_ENDE);
+        Intervall periode = Intervall.fraOgMedTilOgMed(TIDENES_BEGYNNELSE, TIDENES_ENDE);
         var frisinnPeriode = new FrisinnPeriode(periode, søkerFL, søkerSN);
         return new FrisinnGrunnlag(Collections.emptyList(), Collections.singletonList(frisinnPeriode), FrisinnBehandlingType.NY_SØKNADSPERIODE);
     }

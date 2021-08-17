@@ -3,14 +3,13 @@ package no.nav.folketrygdloven.kalkulator.modell.typer;
 import java.io.Serializable;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 /**
  * En arbeidsgiver (enten virksomhet eller personlig arbeidsgiver).
  */
-public class Arbeidsgiver implements Serializable, IndexKey {
+public class Arbeidsgiver implements Serializable {
 
     private String arbeidsgiverOrgnr;
     private AktørId arbeidsgiverAktørId;
@@ -38,13 +37,6 @@ public class Arbeidsgiver implements Serializable, IndexKey {
         }
         this.arbeidsgiverOrgnr = arbeidsgiverOrgnr;
         this.arbeidsgiverAktørId = arbeidsgiverAktørId;
-    }
-
-    @Override
-    public String getIndexKey() {
-        return getAktørId() != null
-            ? IndexKey.createKey("arbeidsgiverAktørId", getAktørId())
-            : IndexKey.createKey("virksomhet", getOrgnr());
     }
 
     public static Arbeidsgiver virksomhet(String arbeidsgiverOrgnr) {

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.aksjonspunkt.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
@@ -13,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.vedtak.exception.TekniskException;
 
 public class FordelRefusjonTjeneste {
 
@@ -152,7 +152,7 @@ public class FordelRefusjonTjeneste {
         var arbeidsforholdId = fordeltAndel.getArbeidsforholdId();
         var arbeidsgiverId = fordeltAndel.getArbeidsgiverId();
         return MatchBeregningsgrunnlagTjeneste.matchArbeidsforholdIAktivtGrunnlag(input, arbeidsgiverId, arbeidsforholdId)
-            .orElseThrow(() -> new TekniskException("FT-401711", String.format("Fant ikke bgAndelArbeidsforhold for arbeidsgiverId %s og arbeidsforholdId %s", arbeidsgiverId, arbeidsforholdId.getReferanse())));
+            .orElseThrow(() -> new KalkulatorException("FT-401711", String.format("Fant ikke bgAndelArbeidsforhold for arbeidsgiverId %s og arbeidsforholdId %s", arbeidsgiverId, arbeidsforholdId.getReferanse())));
     }
 
 

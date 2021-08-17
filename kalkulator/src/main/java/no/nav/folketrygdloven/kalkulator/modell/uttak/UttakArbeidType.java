@@ -10,12 +10,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulator.modell.kodeverk.Kodeverdi;
-
-
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
-public enum UttakArbeidType implements Kodeverdi {
+public enum UttakArbeidType {
 
     ORDINÆRT_ARBEID("ORDINÆRT_ARBEID", "Ordinært arbeid", "AT"),
     SELVSTENDIG_NÆRINGSDRIVENDE("SELVSTENDIG_NÆRINGSDRIVENDE", "Selvstendig næringsdrivende", "SN"),
@@ -72,25 +69,20 @@ public enum UttakArbeidType implements Kodeverdi {
     }
 
     @JsonProperty
-    @Override
     public String getKode() {
         return kode;
     }
 
     @JsonProperty
-    @Override
     public String getKodeverk() {
         return KODEVERK;
     }
 
-    @Override
     public String getOffisiellKode() {
         return this.getKode();
     }
 
-    @Override
     public String getNavn() {
         return navn;
     }
-
 }

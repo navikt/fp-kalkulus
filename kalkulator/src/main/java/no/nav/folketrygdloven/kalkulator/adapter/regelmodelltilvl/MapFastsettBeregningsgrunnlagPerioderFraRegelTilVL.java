@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +12,6 @@ import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapPe
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.vedtak.konfig.Tid;
 
 abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
@@ -47,7 +48,7 @@ abstract class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
     LocalDate utledPeriodeTom(SplittetPeriode splittetPeriode) {
         LocalDate tom = splittetPeriode.getPeriode().getTom();
-        if (Tid.TIDENES_ENDE.equals(tom)) {
+        if (TIDENES_ENDE.equals(tom)) {
             return null;
         }
         return tom;

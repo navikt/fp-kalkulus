@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import no.nav.vedtak.exception.VLException;
-
 public class JsonMapper {
 
     private static final ObjectMapper OM = new ObjectMapper();
@@ -30,7 +28,7 @@ public class JsonMapper {
         // skjul public constructor
     }
 
-    public static String toJson(Object object, Function<JsonProcessingException, VLException> feilFactory) {
+    public static String toJson(Object object, Function<JsonProcessingException, KalkulatorException> feilFactory) {
         try {
             return toJson(object);
         } catch (JsonProcessingException e) {

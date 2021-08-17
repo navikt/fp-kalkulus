@@ -14,11 +14,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import no.nav.vedtak.isso.config.ServerInfo;
-import no.nav.vedtak.sikkerhet.abac.AbacDto;
-import no.nav.vedtak.sikkerhet.abac.BeskyttetRessurs;
-import no.nav.vedtak.sikkerhet.abac.BeskyttetRessursActionAttributt;
-import no.nav.vedtak.sikkerhet.abac.TilpassetAbacAttributt;
+import no.nav.k9.felles.oidc.config.ServerInfo;
+import no.nav.k9.felles.sikkerhet.abac.AbacDto;
+import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
+import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt;
+import no.nav.k9.felles.sikkerhet.abac.TilpassetAbacAttributt;
 
 public class RestApiAbacTest {
 
@@ -74,14 +74,14 @@ public class RestApiAbacTest {
                     @SuppressWarnings("rawtypes")
                     Class<?> aClass = (Class) (type.getActualTypeArguments()[0]);
                     if (!AbacDto.class.isAssignableFrom(aClass)
-                        && !parameter.isAnnotationPresent(TilpassetAbacAttributt.class)
-                        && !IgnorerteInputTyper.ignore(aClass)) {
+                            && !parameter.isAnnotationPresent(TilpassetAbacAttributt.class)
+                            && !IgnorerteInputTyper.ignore(aClass)) {
                         feilmeldinger.append(String.format(feilmelding, restMethode.getDeclaringClass().getSimpleName(), restMethode.getName(), aClass.getSimpleName()));
                     }
                 } else {
                     if (!AbacDto.class.isAssignableFrom(parameter.getType())
-                        && !parameter.isAnnotationPresent(TilpassetAbacAttributt.class)
-                        && !IgnorerteInputTyper.ignore(parameter.getType())) {
+                            && !parameter.isAnnotationPresent(TilpassetAbacAttributt.class)
+                            && !IgnorerteInputTyper.ignore(parameter.getType())) {
                         feilmeldinger.append(String.format(feilmelding, restMethode.getDeclaringClass().getSimpleName(), restMethode.getName(), parameter.getType().getSimpleName()));
                     }
                 }
@@ -97,7 +97,7 @@ public class RestApiAbacTest {
         BeskyttetRessurs annotation = metode.getAnnotation(BeskyttetRessurs.class);
         if (annotation != null && annotation.action() == BeskyttetRessursActionAttributt.DUMMY) {
             fail(klasse.getSimpleName() + "." + metode.getName() + " Ikke bruk DUMMY-verdi for "
-                + BeskyttetRessursActionAttributt.class.getSimpleName());
+                    + BeskyttetRessursActionAttributt.class.getSimpleName());
         } else if (annotation != null && annotation.resource().isEmpty()) {
             fail(klasse.getSimpleName() + "." + metode.getName() + " En verdi for resource må være satt!");
         }

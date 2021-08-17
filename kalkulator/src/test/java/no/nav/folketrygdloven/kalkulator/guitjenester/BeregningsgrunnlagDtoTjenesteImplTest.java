@@ -11,7 +11,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.BeregningsgrunnlagPrStatusOgAndelDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningDtoTjeneste;
@@ -19,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FaktaOmBeregningTilf
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FastsettGrunnlagGenerell;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.YtelsespesifiktGrunnlagTjenesteMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -30,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -43,13 +43,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.vedtak.felles.testutilities.cdi.UnitTestLookupInstanceImpl;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 
 public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now().minusDays(5);
-    private BigDecimal GRUNNBELØP = BigDecimal.valueOf(99_888);
     private static final Inntektskategori INNTEKTSKATEGORI = Inntektskategori.ARBEIDSTAKER;
     private static final BigDecimal AVKORTET_PR_AAR = BigDecimal.valueOf(150000);
     private static final BigDecimal BRUTTO_PR_AAR = BigDecimal.valueOf(300000);
@@ -67,13 +66,12 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     private static final BigDecimal AVVIK_UNDER_25_PROSENT = BigDecimal.valueOf(30L);
     private static final LocalDate SAMMENLIGNING_FOM = LocalDate.now().minusDays(100);
     private static final LocalDate SAMMENLIGNING_TOM = LocalDate.now();
-
-
+    private static Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(ORGNR);
+    private BigDecimal GRUNNBELØP = BigDecimal.valueOf(99_888);
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
     private BeregningsgrunnlagDtoTjeneste beregningsgrunnlagDtoTjeneste;
     private BeregningsgrunnlagGrunnlagDto grunnlag;
     private BeregningAktivitetAggregatDto beregningAktiviteter;
-    private static Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet(ORGNR);
 
     @BeforeEach
     public void setup() {

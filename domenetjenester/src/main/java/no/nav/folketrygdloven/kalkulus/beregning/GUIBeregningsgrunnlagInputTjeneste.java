@@ -28,7 +28,7 @@ import no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt.AksjonspunktTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
-import no.nav.vedtak.exception.TekniskException;
+import no.nav.k9.felles.exception.TekniskException;
 
 @Dependent
 public class GUIBeregningsgrunnlagInputTjeneste {
@@ -46,53 +46,6 @@ public class GUIBeregningsgrunnlagInputTjeneste {
         this.koblingRepository = koblingRepository;
         this.aksjonspunktTjeneste = aksjonspunktTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
-    }
-
-    /**
-     * Returnerer BeregningsgrunnlagInput for alle angitte koblinger (hvis eksisterer).
-     */
-    public Resultat<BeregningsgrunnlagGUIInput> lagInputForKoblinger(List<Long> koblingIder) {
-        List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository
-                .hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-
-        Set<Long> koblingerMedBeregningsgrunnlag = beregningsgrunnlagGrunnlagEntiteter
-                .stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
-
-        Resultat<KalkulatorInputDto> kalkulatorInputDtoResultat = kalkulatorInputTjeneste.hentForKoblinger(koblingerMedBeregningsgrunnlag);
-
-        if (kalkulatorInputDtoResultat.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
-            return new Resultat<BeregningsgrunnlagGUIInput>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
-        } else {
-            return mapKalkulatorInputTilModellForGyldigInput(koblingIder, beregningsgrunnlagGrunnlagEntiteter, koblingerMedBeregningsgrunnlag, kalkulatorInputDtoResultat);
-        }
-
-    }
-
-    private Resultat<BeregningsgrunnlagGUIInput> mapKalkulatorInputTilModellForGyldigInput(List<Long> koblingIder,
-                                                                                           List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
-                                                                                           Set<Long> koblingerMedBeregningsgrunnlag,
-                                                                                           Resultat<KalkulatorInputDto> kalkulatorInputDtoResultat) {
-        List<BeregningsgrunnlagTilstand> aktiveTilstander = beregningsgrunnlagGrunnlagEntiteter.stream().map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
-                .distinct()
-                .collect(Collectors.toList());
-        Map<Long, KalkulatorInputDto> koblingKalkulatorInput = kalkulatorInputDtoResultat.getResultatPrKobling();
-
-        Map<Long, KoblingEntitet> koblinger = koblingRepository.hentKoblingerFor(koblingerMedBeregningsgrunnlag)
-                .stream().collect(Collectors.toMap(KoblingEntitet::getId, Function.identity()));
-
-        Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel = alleTilstanderErFørFordel(aktiveTilstander) ? Map.of() :
-                beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                        .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-
-        Map<Long, List<AksjonspunktEntitet>> aksjonspunkterPrKobling = aksjonspunktTjeneste.hentAlleAksjonspunkterForKoblinger(koblingIder).stream()
-                .collect(Collectors.groupingBy(AksjonspunktEntitet::getKoblingId));
-
-        return Resultat.forGyldigInputMedData(mapInputListe(beregningsgrunnlagGrunnlagEntiteter, grunnlagFraFordel, aksjonspunkterPrKobling, koblingKalkulatorInput, koblinger));
-    }
-
-    private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {
-        return aktiveTilstander.stream()
-                .allMatch(tilstand -> tilstand.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
     }
 
     /**
@@ -147,5 +100,52 @@ public class GUIBeregningsgrunnlagInputTjeneste {
             return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId)));
         }
         return input;
+    }
+
+    /**
+     * Returnerer BeregningsgrunnlagInput for alle angitte koblinger (hvis eksisterer).
+     */
+    public Resultat<BeregningsgrunnlagGUIInput> lagInputForKoblinger(List<Long> koblingIder) {
+        List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository
+                .hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+
+        Set<Long> koblingerMedBeregningsgrunnlag = beregningsgrunnlagGrunnlagEntiteter
+                .stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
+
+        Resultat<KalkulatorInputDto> kalkulatorInputDtoResultat = kalkulatorInputTjeneste.hentForKoblinger(koblingerMedBeregningsgrunnlag);
+
+        if (kalkulatorInputDtoResultat.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
+            return new Resultat<BeregningsgrunnlagGUIInput>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
+        } else {
+            return mapKalkulatorInputTilModellForGyldigInput(koblingIder, beregningsgrunnlagGrunnlagEntiteter, koblingerMedBeregningsgrunnlag, kalkulatorInputDtoResultat);
+        }
+
+    }
+
+    private Resultat<BeregningsgrunnlagGUIInput> mapKalkulatorInputTilModellForGyldigInput(List<Long> koblingIder,
+                                                                                           List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
+                                                                                           Set<Long> koblingerMedBeregningsgrunnlag,
+                                                                                           Resultat<KalkulatorInputDto> kalkulatorInputDtoResultat) {
+        List<BeregningsgrunnlagTilstand> aktiveTilstander = beregningsgrunnlagGrunnlagEntiteter.stream().map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
+                .distinct()
+                .collect(Collectors.toList());
+        Map<Long, KalkulatorInputDto> koblingKalkulatorInput = kalkulatorInputDtoResultat.getResultatPrKobling();
+
+        Map<Long, KoblingEntitet> koblinger = koblingRepository.hentKoblingerFor(koblingerMedBeregningsgrunnlag)
+                .stream().collect(Collectors.toMap(KoblingEntitet::getId, Function.identity()));
+
+        Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel = alleTilstanderErFørFordel(aktiveTilstander) ? Map.of() :
+                beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
+                        .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
+
+        Map<Long, List<AksjonspunktEntitet>> aksjonspunkterPrKobling = aksjonspunktTjeneste.hentAlleAksjonspunkterForKoblinger(koblingIder).stream()
+                .collect(Collectors.groupingBy(AksjonspunktEntitet::getKoblingId));
+
+        return Resultat.forGyldigInputMedData(mapInputListe(beregningsgrunnlagGrunnlagEntiteter, grunnlagFraFordel, aksjonspunkterPrKobling, koblingKalkulatorInput, koblinger));
+    }
+
+    private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {
+        return aktiveTilstander.stream()
+                .allMatch(tilstand -> tilstand.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
     }
 }

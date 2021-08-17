@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.jetty.db;
 
-import static no.nav.vedtak.util.env.Cluster.LOCAL;
+import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
 
 import java.util.Properties;
 
@@ -9,10 +9,10 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import no.nav.k9.felles.konfigurasjon.env.Cluster;
+import no.nav.k9.felles.konfigurasjon.env.Environment;
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil;
 import no.nav.vault.jdbc.hikaricp.VaultError;
-import no.nav.vedtak.util.env.Cluster;
-import no.nav.vedtak.util.env.Environment;
 
 public class DatasourceUtil {
 
@@ -21,7 +21,7 @@ public class DatasourceUtil {
     private static final String VAULT_PREPROD_NAVN = "preprod-fss";
 
     public static DataSource createDatasource(String datasourceName, DatasourceRole role, Cluster cluster,
-            int maxPoolSize) {
+                                              int maxPoolSize) {
         String rolePrefix = getRolePrefix(datasourceName);
         HikariConfig config = initConnectionPoolConfig(datasourceName, maxPoolSize);
         if (LOCAL.equals(cluster)) {
@@ -58,7 +58,7 @@ public class DatasourceUtil {
         config.setDriverClassName("org.postgresql.Driver");
 
         // optimaliserer inserts for postgres
-        var dsProperties=new Properties();
+        var dsProperties = new Properties();
         dsProperties.setProperty("reWriteBatchedInserts", "true");
         dsProperties.setProperty("logServerErrorDetail", "false");
         config.setDataSourceProperties(dsProperties);
@@ -78,7 +78,7 @@ public class DatasourceUtil {
     }
 
     private static DataSource createLocalDatasource(HikariConfig config, String schema, String username,
-            String password) {
+                                                    String password) {
         config.setUsername(username);
         config.setPassword(password); // NOSONAR false positive
         if (schema != null && !schema.isEmpty()) {

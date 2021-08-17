@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 
 public class RefusjonDto {
 
@@ -25,10 +24,6 @@ public class RefusjonDto {
         this.fom = refusjon.getFom();
     }
 
-    public String getIndexKey() {
-        return IndexKey.createKey(fom, refusjonsbeløpMnd);
-    }
-
     public Beløp getRefusjonsbeløp() {
         return refusjonsbeløpMnd;
     }
@@ -43,7 +38,7 @@ public class RefusjonDto {
         if (o == null || !(o instanceof RefusjonDto)) return false;
         RefusjonDto that = (RefusjonDto) o;
         return Objects.equals(refusjonsbeløpMnd, that.refusjonsbeløpMnd) &&
-            Objects.equals(fom, that.fom);
+                Objects.equals(fom, that.fom);
     }
 
     @Override

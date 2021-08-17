@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -21,11 +22,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
-import no.nav.vedtak.exception.TekniskException;
 
 public final class BeregningsgrunnlagVerifiserer {
 
-    private BeregningsgrunnlagVerifiserer() {}
+    private BeregningsgrunnlagVerifiserer() {
+    }
 
     public static void verifiserOppdatertBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         Objects.requireNonNull(beregningsgrunnlag.getSkjæringstidspunkt(), "Skjæringstidspunkt");
@@ -71,7 +72,7 @@ public final class BeregningsgrunnlagVerifiserer {
 
     public static void verifiserForeslåttBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p , lagVerifiserForeslåttAndelConsumer(p)));
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, lagVerifiserForeslåttAndelConsumer(p)));
         SammenligningsgrunnlagDto sg = beregningsgrunnlag.getSammenligningsgrunnlag();
         if (sg != null) {
             Objects.requireNonNull(sg.getRapportertPrÅr(), "RapportertPrÅr");
@@ -104,7 +105,7 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserAtAndelerSomGraderesHarGrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetGradering aktivitetGradering) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedGraderingUtenBG = GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag, aktivitetGradering);
         if (!andelerMedGraderingUtenBG.isEmpty()) {
-            throw new TekniskException("FT-370746", String.format("Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", andelerMedGraderingUtenBG.get(0).getAktivitetStatus().getKode()));
+            throw new KalkulatorException("FT-370746", String.format("Det mangler beregningsgrunnlag på en andel som skal graderes, ugyldig tilstand. Gjelder andel med status %s", andelerMedGraderingUtenBG.get(0).getAktivitetStatus().getKode()));
         }
     }
 
@@ -178,14 +179,14 @@ public final class BeregningsgrunnlagVerifiserer {
     private static void verifiserIkkeTomListe(Collection<?> liste, String obj) {
         Objects.requireNonNull(liste, "Liste");
         if (liste.isEmpty()) {
-            throw new TekniskException("FT-370742", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
+            throw new KalkulatorException("FT-370742", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Listen %s er tom, men skulle ikke vært det.", obj));
         }
     }
 
     private static void verifiserOptionalPresent(Optional<?> opt, String obj) {
         Objects.requireNonNull(opt, "Optional");
-        if (!opt.isPresent()) {
-            throw new TekniskException("FT-370743", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
+        if (opt.isEmpty()) {
+            throw new KalkulatorException("FT-370743", String.format("Postcondition feilet: Beregningsgrunnlag i ugyldig tilstand etter steg. Optional %s er ikke present, men skulle ha vært det.", obj));
         }
     }
 

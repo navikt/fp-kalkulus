@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 
@@ -33,10 +32,6 @@ public class YtelseDto {
         this.temaUnderkategori = ytelse.getBehandlingsTema();
         this.ytelseAnvist = ytelse.getYtelseAnvist().stream().map(YtelseAnvistDto::new).collect(Collectors.toCollection(LinkedHashSet::new));
         ytelse.getVedtaksDagsats().ifPresent(dagsats -> this.vedtaksDagsats = new Beløp(dagsats.getVerdi()));
-    }
-
-    public String getIndexKey() {
-        return IndexKey.createKey(periode, relatertYtelseType);
     }
 
     public Optional<Beløp> getVedtaksDagsats() {
@@ -92,8 +87,8 @@ public class YtelseDto {
             return false;
         YtelseDto that = (YtelseDto) o;
         return Objects.equals(relatertYtelseType, that.relatertYtelseType) &&
-            Objects.equals(temaUnderkategori, that.temaUnderkategori) &&
-            Objects.equals(periode, that.periode);
+                Objects.equals(temaUnderkategori, that.temaUnderkategori) &&
+                Objects.equals(periode, that.periode);
     }
 
     @Override
@@ -104,10 +99,10 @@ public class YtelseDto {
     @Override
     public String toString() {
         return "YtelseEntitet{" + //$NON-NLS-1$
-            "relatertYtelseType=" + relatertYtelseType + //$NON-NLS-1$
-            ", typeUnderkategori=" + temaUnderkategori + //$NON-NLS-1$
-            ", periode=" + periode + //$NON-NLS-1$
-            '}';
+                "relatertYtelseType=" + relatertYtelseType + //$NON-NLS-1$
+                ", typeUnderkategori=" + temaUnderkategori + //$NON-NLS-1$
+                ", periode=" + periode + //$NON-NLS-1$
+                '}';
     }
 
 }

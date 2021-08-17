@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,15 +31,15 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BeregningsgrunnlagPeriodeDto(BeregningsgrunnlagPeriodeDto kopiereFra) {
         this.beregningsgrunnlagPrStatusOgAndelList = kopiereFra.beregningsgrunnlagPrStatusOgAndelList.stream().map(a ->
-            {
-                BeregningsgrunnlagPrStatusOgAndelDto kopi = new BeregningsgrunnlagPrStatusOgAndelDto(a);
-                kopi.setBeregningsgrunnlagPeriode(this);
-                return kopi;
-            }
+                {
+                    BeregningsgrunnlagPrStatusOgAndelDto kopi = new BeregningsgrunnlagPrStatusOgAndelDto(a);
+                    kopi.setBeregningsgrunnlagPeriode(this);
+                    return kopi;
+                }
         ).collect(Collectors.toList());
 
         this.beregningsgrunnlagPeriodeÅrsaker = kopiereFra.beregningsgrunnlagPeriodeÅrsaker.stream().map(o ->
-            BeregningsgrunnlagPeriodeÅrsakDto.Builder.kopier(o).build(this)
+                BeregningsgrunnlagPeriodeÅrsakDto.Builder.kopier(o).build(this)
         ).collect(Collectors.toList());
 
         this.periode = kopiereFra.periode;
@@ -47,6 +47,18 @@ public class BeregningsgrunnlagPeriodeDto {
         this.avkortetPrÅr = kopiereFra.avkortetPrÅr;
         this.redusertPrÅr = kopiereFra.redusertPrÅr;
         this.dagsats = kopiereFra.dagsats;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
+        return new Builder(eksisterendeBeregningsgrunnlagPeriode);
+    }
+
+    public static Builder oppdater(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
+        return new Builder(eksisterendeBeregningsgrunnlagPeriode, true);
     }
 
     public List<BeregningsgrunnlagPrStatusOgAndelDto> getBeregningsgrunnlagPrStatusOgAndelList() {
@@ -59,6 +71,7 @@ public class BeregningsgrunnlagPeriodeDto {
         }
         return periode;
     }
+
     public LocalDate getBeregningsgrunnlagPeriodeFom() {
         return periode.getFomDato();
     }
@@ -69,8 +82,8 @@ public class BeregningsgrunnlagPeriodeDto {
 
     public BigDecimal getBeregnetPrÅr() {
         return beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getBeregnetPrÅr() != null)
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
@@ -155,26 +168,10 @@ public class BeregningsgrunnlagPeriodeDto {
                 '}';
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static Builder builder(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
-        return new Builder(eksisterendeBeregningsgrunnlagPeriode);
-    }
-
-    public static Builder oppdater(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
-        return new Builder(eksisterendeBeregningsgrunnlagPeriode, true);
-    }
-
     public static class Builder {
         private BeregningsgrunnlagPeriodeDto kladd;
         private boolean built;
         private boolean oppdater;
-
-        public static Builder kopier(BeregningsgrunnlagPeriodeDto p) {
-            return new Builder(p);
-        }
 
         public Builder(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriod, boolean oppdater) {
             this.oppdater = oppdater;
@@ -187,6 +184,10 @@ public class BeregningsgrunnlagPeriodeDto {
 
         public Builder(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriod) {
             this.kladd = new BeregningsgrunnlagPeriodeDto(eksisterendeBeregningsgrunnlagPeriod);
+        }
+
+        public static Builder kopier(BeregningsgrunnlagPeriodeDto p) {
+            return new Builder(p);
         }
 
         public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
@@ -279,10 +280,10 @@ public class BeregningsgrunnlagPeriodeDto {
 
         public BeregningsgrunnlagPeriodeDto build() {
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getDagsats() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
-                .reduce(Long::sum)
-                .orElse(null);
+                    .filter(bgpsa -> bgpsa.getDagsats() != null)
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
+                    .reduce(Long::sum)
+                    .orElse(null);
             kladd.dagsats = dagsatsSum;
             built = true;
             return kladd;
@@ -295,10 +296,10 @@ public class BeregningsgrunnlagPeriodeDto {
             kladd.beregningsgrunnlag.leggTilBeregningsgrunnlagPeriode(kladd);
 
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getDagsats() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
-                .reduce(Long::sum)
-                .orElse(null);
+                    .filter(bgpsa -> bgpsa.getDagsats() != null)
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
+                    .reduce(Long::sum)
+                    .orElse(null);
             kladd.dagsats = dagsatsSum;
             built = true;
             return kladd;
@@ -306,17 +307,17 @@ public class BeregningsgrunnlagPeriodeDto {
 
         public BeregningsgrunnlagPeriodeDto buildForKopi() {
             Long dagsatsSum = kladd.beregningsgrunnlagPrStatusOgAndelList.stream()
-                .filter(bgpsa -> bgpsa.getDagsats() != null)
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
-                .reduce(Long::sum)
-                .orElse(null);
+                    .filter(bgpsa -> bgpsa.getDagsats() != null)
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getDagsats)
+                    .reduce(Long::sum)
+                    .orElse(null);
             kladd.dagsats = dagsatsSum;
             built = true;
             return kladd;
         }
 
         private void verifiserKanModifisere() {
-            if(built) {
+            if (built) {
                 throw new IllegalStateException("Er allerede bygd, kan ikke oppdatere videre: " + this.kladd);
             }
         }

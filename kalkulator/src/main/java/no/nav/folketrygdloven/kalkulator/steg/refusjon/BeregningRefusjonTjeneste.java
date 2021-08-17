@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
-import no.nav.vedtak.konfig.Tid;
 
 /**
  * Tjeneste for å vurdere refusjonskrav for beregning
@@ -30,10 +31,9 @@ public final class BeregningRefusjonTjeneste {
     }
 
     /**
-     *
      * @param revurderingBeregningsgrunnlag - nytt beregningsgrunnlag
-     * @param originaltBeregningsgrunnlag - beregningsgrunnlag fra forrige behandling
-     * @param alleredeUtbetaltTOM - datoen ytelse er utbetalt til, det er kun relevant å se på perioder frem til denne datoen
+     * @param originaltBeregningsgrunnlag   - beregningsgrunnlag fra forrige behandling
+     * @param alleredeUtbetaltTOM           - datoen ytelse er utbetalt til, det er kun relevant å se på perioder frem til denne datoen
      * @return - Ser på revurderingBeregningsgrunnlag og sjekker hvilke andeler i hvilke perioder
      * frem til alleredeUtbetaltTOM som har hatt økt refusjon i forhold til originaltBeregningsgrunnlag
      */
@@ -54,7 +54,7 @@ public final class BeregningRefusjonTjeneste {
 
     private static LocalDateTimeline<RefusjonPeriode> finnAlleredeUtbetaltPeriode(LocalDate alleredeUtbetaltTOM) {
         return new LocalDateTimeline<>(
-                Tid.TIDENES_BEGYNNELSE,
+                TIDENES_BEGYNNELSE,
                 alleredeUtbetaltTOM,
                 null);
     }

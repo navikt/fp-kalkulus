@@ -9,32 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import no.nav.vedtak.exception.FunksjonellException;
-import no.nav.vedtak.exception.ManglerTilgangException;
-import no.nav.vedtak.felles.jpa.TomtResultatException;
-import no.nav.vedtak.log.mdc.MDCOperations;
-import no.nav.vedtak.log.util.LoggerUtils;
+import no.nav.folketrygdloven.kalkulator.KalkulatorException;
+import no.nav.folketrygdloven.kalkulus.felles.verktøy.TomtResultatException;
+import no.nav.k9.felles.exception.ManglerTilgangException;
+import no.nav.k9.felles.log.mdc.MDCOperations;
+import no.nav.k9.felles.log.util.LoggerUtils;
 
 @Provider
 public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneralRestExceptionMapper.class);
-
-    @Override
-    public Response toResponse(Throwable feil) {
-        try {
-            if (feil instanceof TomtResultatException) {
-                return handleTomtResultatFeil(getExceptionMelding(feil));
-            }
-            if (feil instanceof ManglerTilgangException) {
-                return ikkeTilgang(getExceptionMelding(feil));
-            }
-            loggTilApplikasjonslogg(feil);
-            return serverError(getExceptionFullFeilmelding(feil));
-        } finally {
-            MDC.remove("prosess"); //$NON-NLS-1$
-        }
-    }
 
     private static Response handleTomtResultatFeil(String feilmelding) {
         return Response
@@ -61,10 +45,6 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
     private static String getExceptionFullFeilmelding(Throwable feil) {
         var callId = MDCOperations.getCallId();
         var feilbeskrivelse = getExceptionMelding(feil);
-        if (feil instanceof FunksjonellException fe) {
-            var løsningsforslag = getTextForField(fe.getLøsningsforslag());
-            return String.format("Det oppstod en feil: %s - %s. Referanse-id: %s", feilbeskrivelse, løsningsforslag, callId);
-        }
         return String.format("Det oppstod en serverfeil: %s. Meld til support med referanse-id: %s", feilbeskrivelse, callId);
     }
 
@@ -79,6 +59,25 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
 
     private static String getTextForField(String input) {
         return input != null ? LoggerUtils.removeLineBreaks(input) : "";
+    }
+
+    @Override
+    public Response toResponse(Throwable feil) {
+        try {
+            if (feil instanceof KalkulatorException) {
+                return handleTomtResultatFeil(getExceptionMelding(feil));
+            }
+            if (feil instanceof TomtResultatException) {
+                return handleTomtResultatFeil(getExceptionMelding(feil));
+            }
+            if (feil instanceof ManglerTilgangException) {
+                return ikkeTilgang(getExceptionMelding(feil));
+            }
+            loggTilApplikasjonslogg(feil);
+            return serverError(getExceptionFullFeilmelding(feil));
+        } finally {
+            MDC.remove("prosess"); //$NON-NLS-1$
+        }
     }
 
 }

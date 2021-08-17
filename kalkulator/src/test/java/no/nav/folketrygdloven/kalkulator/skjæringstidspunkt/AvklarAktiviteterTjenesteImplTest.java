@@ -30,7 +30,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
-import no.nav.vedtak.util.Tuple;
+import no.nav.folketrygdloven.utils.Tuple;
 
 
 public class AvklarAktiviteterTjenesteImplTest {

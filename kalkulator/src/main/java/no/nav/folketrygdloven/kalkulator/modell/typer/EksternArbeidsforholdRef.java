@@ -3,19 +3,18 @@ package no.nav.folketrygdloven.kalkulator.modell.typer;
 import java.io.Serializable;
 import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
-import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
-
 /**
  * Ekstern arbeidsforhold referanse.
  * Mottatt fra inntektsmelding eller AARegisteret.
- *
+ * <p>
  * Hvis null gjelder det flere arbeidsforhold, ellers for et spesifikt forhold
  */
 
-public class EksternArbeidsforholdRef implements IndexKey, TraverseValue, Serializable {
+public class EksternArbeidsforholdRef implements Serializable {
 
-    /** Representerer alle arbeidsforhold for en arbeidsgiver. */
+    /**
+     * Representerer alle arbeidsforhold for en arbeidsgiver.
+     */
     private static final EksternArbeidsforholdRef NULL_OBJECT = new EksternArbeidsforholdRef(null);
 
     private String referanse;
@@ -34,13 +33,9 @@ public class EksternArbeidsforholdRef implements IndexKey, TraverseValue, Serial
     public static EksternArbeidsforholdRef nullRef() {
         return NULL_OBJECT;
     }
+
     public String getReferanse() {
         return referanse;
-    }
-
-    @Override
-    public String getIndexKey() {
-        return IndexKey.createKey(referanse);
     }
 
     public boolean gjelderForSpesifiktArbeidsforhold() {

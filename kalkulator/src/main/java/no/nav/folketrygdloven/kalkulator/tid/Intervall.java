@@ -1,25 +1,17 @@
 package no.nav.folketrygdloven.kalkulator.tid;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
-import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
+public class Intervall implements Comparable<Intervall>, Serializable {
 
-
-public class Intervall extends AbstractIntervall {
-
+    static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final LocalDate fomDato;
     private final LocalDate tomDato;
-
-    @Override
-    public LocalDate getFomDato() {
-        return fomDato;
-    }
-
-    @Override
-    public LocalDate getTomDato() {
-        return tomDato;
-    }
 
     private Intervall(LocalDate fomDato, LocalDate tomDato) {
         if (fomDato == null) {
@@ -40,6 +32,64 @@ public class Intervall extends AbstractIntervall {
     }
 
     public static Intervall fraOgMed(LocalDate fomDato) {
-        return new Intervall(fomDato, AbstractIntervall.TIDENES_ENDE);
+        return new Intervall(fomDato, TIDENES_ENDE);
+    }
+
+    public LocalDate getFomDato() {
+        return fomDato;
+    }
+
+    public LocalDate getTomDato() {
+        return tomDato;
+    }
+
+    public boolean overlapper(Intervall other) {
+        boolean fomBeforeOrEqual = this.getFomDato().isBefore(other.getTomDato()) || this.getFomDato().isEqual(other.getTomDato());
+        boolean tomAfterOrEqual = this.getTomDato().isAfter(other.getFomDato()) || this.getTomDato().isEqual(other.getFomDato());
+        boolean overlapper = fomBeforeOrEqual && tomAfterOrEqual;
+        return overlapper;
+    }
+
+    public boolean inkluderer(LocalDate dato) {
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
+        return erEtterEllerLikPeriodestart(dato) && erFørEllerLikPeriodeslutt(dato);
+    }
+
+    private boolean erEtterEllerLikPeriodestart(LocalDate dato) {
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
+        return (getFomDato().isBefore(dato) || getFomDato().isEqual(dato));
+    }
+
+    private boolean erFørEllerLikPeriodeslutt(LocalDate dato) {
+        Objects.requireNonNull(dato, "null dato, periode=" + this);
+        return (getTomDato() == null || getTomDato().isAfter(dato) || getTomDato().isEqual(dato));
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Intervall)) {
+            return false;
+        }
+        Intervall annen = (Intervall) object;
+        return Objects.equals(this.getFomDato(), annen.getFomDato())
+                && Objects.equals(this.getTomDato(), annen.getTomDato());
+    }
+
+    @Override
+    public int compareTo(Intervall periode) {
+        return getFomDato().compareTo(periode.getFomDato());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFomDato(), getTomDato());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Periode: %s - %s", getFomDato().format(FORMATTER), getTomDato().format(FORMATTER));
     }
 }

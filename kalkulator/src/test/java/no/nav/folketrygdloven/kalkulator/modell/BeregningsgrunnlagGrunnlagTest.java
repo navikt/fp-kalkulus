@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.modell;
 
-import static no.nav.vedtak.konfig.Tid.TIDENES_ENDE;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
@@ -28,24 +28,24 @@ public class BeregningsgrunnlagGrunnlagTest {
     @Test
     public void skal_returnere_register() {
         BeregningAktivitetDto beregningAktivitetSN = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
+                .build();
 
         BeregningAktivitetDto beregningAktivitetAAP = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
+                .build();
 
         BeregningAktivitetAggregatDto registerAktiviteter = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitet(beregningAktivitetSN)
-            .leggTilAktivitet(beregningAktivitetAAP)
-            .build();
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(beregningAktivitetSN)
+                .leggTilAktivitet(beregningAktivitetAAP)
+                .build();
 
         BeregningsgrunnlagGrunnlagDto bgg = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(registerAktiviteter)
-            .build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medRegisterAktiviteter(registerAktiviteter)
+                .build(BeregningsgrunnlagTilstand.OPPRETTET);
 
         // Act
         BeregningAktivitetAggregatDto resultat = bgg.getGjeldendeAktiviteter();
@@ -60,29 +60,29 @@ public class BeregningsgrunnlagGrunnlagTest {
     @Test
     public void skal_returnere_overstyringer() {
         BeregningAktivitetDto beregningAktivitetSN = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
+                .build();
 
         BeregningAktivitetDto beregningAktivitetAAP = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
+                .build();
 
         BeregningAktivitetAggregatDto registerAktiviteter = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitet(beregningAktivitetSN)
-            .leggTilAktivitet(beregningAktivitetAAP)
-            .build();
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(beregningAktivitetSN)
+                .leggTilAktivitet(beregningAktivitetAAP)
+                .build();
 
         BeregningAktivitetOverstyringDto overstyring = lagOverstyringForBA(beregningAktivitetAAP);
         BeregningAktivitetOverstyringerDto overstyringerEntitet = BeregningAktivitetOverstyringerDto.builder()
-            .leggTilOverstyring(overstyring)
-            .build();
+                .leggTilOverstyring(overstyring)
+                .build();
         BeregningsgrunnlagGrunnlagDto bgg = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(registerAktiviteter)
-            .medOverstyring(overstyringerEntitet)
-            .build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medRegisterAktiviteter(registerAktiviteter)
+                .medOverstyring(overstyringerEntitet)
+                .build(BeregningsgrunnlagTilstand.OPPRETTET);
 
         // Act
         BeregningAktivitetAggregatDto resultat = bgg.getGjeldendeAktiviteter();
@@ -96,30 +96,30 @@ public class BeregningsgrunnlagGrunnlagTest {
     @Test
     public void skal_returnere_overstyringer_når_saksbehandlet_finnes() {
         BeregningAktivitetDto beregningAktivitetSN = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
+                .build();
 
         BeregningAktivitetDto beregningAktivitetAAP = BeregningAktivitetDto.builder()
-            .medPeriode(PERIODE)
-            .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
-            .build();
+                .medPeriode(PERIODE)
+                .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEIDSAVKLARING)
+                .build();
 
         BeregningAktivitetAggregatDto registerAktiviteter = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitet(beregningAktivitetSN)
-            .leggTilAktivitet(beregningAktivitetAAP)
-            .build();
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(beregningAktivitetSN)
+                .leggTilAktivitet(beregningAktivitetAAP)
+                .build();
 
         BeregningAktivitetOverstyringDto overstyring = lagOverstyringForBA(beregningAktivitetAAP);
         BeregningAktivitetOverstyringerDto overstyringerEntitet = BeregningAktivitetOverstyringerDto.builder()
-            .leggTilOverstyring(overstyring)
-            .build();
+                .leggTilOverstyring(overstyring)
+                .build();
         BeregningsgrunnlagGrunnlagDto bgg = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(registerAktiviteter)
-            .medOverstyring(overstyringerEntitet)
-            .medSaksbehandletAktiviteter(registerAktiviteter)
-            .build(BeregningsgrunnlagTilstand.OPPRETTET);
+                .medRegisterAktiviteter(registerAktiviteter)
+                .medOverstyring(overstyringerEntitet)
+                .medSaksbehandletAktiviteter(registerAktiviteter)
+                .build(BeregningsgrunnlagTilstand.OPPRETTET);
 
         // Act
         BeregningAktivitetAggregatDto resultat = bgg.getGjeldendeAktiviteter();
@@ -132,11 +132,11 @@ public class BeregningsgrunnlagGrunnlagTest {
 
     private BeregningAktivitetOverstyringDto lagOverstyringForBA(BeregningAktivitetDto beregningAktivitet) {
         return BeregningAktivitetOverstyringDto.builder()
-            .medOpptjeningAktivitetType(beregningAktivitet.getOpptjeningAktivitetType())
-            .medPeriode(beregningAktivitet.getPeriode())
-            .medArbeidsgiver(beregningAktivitet.getArbeidsgiver())
-            .medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef())
-            .medHandling(BeregningAktivitetHandlingType.IKKE_BENYTT)
-            .build();
+                .medOpptjeningAktivitetType(beregningAktivitet.getOpptjeningAktivitetType())
+                .medPeriode(beregningAktivitet.getPeriode())
+                .medArbeidsgiver(beregningAktivitet.getArbeidsgiver())
+                .medArbeidsforholdRef(beregningAktivitet.getArbeidsforholdRef())
+                .medHandling(BeregningAktivitetHandlingType.IKKE_BENYTT)
+                .build();
     }
 }

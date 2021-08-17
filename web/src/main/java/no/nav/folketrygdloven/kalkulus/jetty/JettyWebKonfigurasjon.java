@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.jetty;
 
-import no.nav.vedtak.sikkerhet.ContextPathHolder;
+import no.nav.k9.felles.sikkerhet.ContextPathHolder;
 
 public class JettyWebKonfigurasjon implements AppKonfigurasjon {
     private static final String CONTEXT_PATH = "/ftkalkulus";

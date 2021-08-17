@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.verdikjede;
 
 import static no.nav.folketrygdloven.kalkulator.verdikjede.BeregningsgrunnlagGrunnlagTestUtil.nyttGrunnlag;
 import static no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper.SKJÆRINGSTIDSPUNKT_OPPTJENING;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -18,11 +19,11 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpMock;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -56,45 +57,42 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.utils.Tuple;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
-import no.nav.vedtak.util.Tuple;
 
 public class FlereArbeidsforholdMedTogglePåTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
+    public static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING));
+    private static double SEKS_G = GRUNNBELØP.multiply(BigDecimal.valueOf(6)).doubleValue();
     private static final LocalDate MINUS_YEARS_2 = SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(2);
     private static final String ARBEIDSFORHOLD_ORGNR1 = "890412882";
     private static final String ARBEIDSFORHOLD_ORGNR2 = "915933149";
     private static final String ARBEIDSFORHOLD_ORGNR3 = "923609016";
     private static final String ARBEIDSFORHOLD_ORGNR4 = "973152351";
-    public static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(GrunnbeløpMock.finnGrunnbeløp(SKJÆRINGSTIDSPUNKT_BEREGNING));
-    private static double SEKS_G = GRUNNBELØP.multiply(BigDecimal.valueOf(6)).doubleValue();
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
-
     private static final String TOGGLE = "fpsak.splitteSammenligningATFL";
-
+    private static BeregningsgrunnlagInput input;
+    private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private String beregningVirksomhet1 = ARBEIDSFORHOLD_ORGNR1;
     private String beregningVirksomhet2 = ARBEIDSFORHOLD_ORGNR2;
     private String beregningVirksomhet3 = ARBEIDSFORHOLD_ORGNR3;
     private String beregningVirksomhet4 = ARBEIDSFORHOLD_ORGNR4;
-
     private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
     private BeregningTjenesteWrapper beregningTjenesteWrapper;
-    private static BeregningsgrunnlagInput input;
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
-    private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
     private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
     private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel);
 
-    @BeforeEach
-    public void setup() {
-        beregningTjenesteWrapper = BeregningTjenesteProvider.provide();
-    }
-
     @AfterAll
     public static void teardown() {
         input.leggTilToggle(TOGGLE, false);
+    }
+
+    @BeforeEach
+    public void setup() {
+        beregningTjenesteWrapper = BeregningTjenesteProvider.provide();
     }
 
     private Tuple<KoblingReferanse, InntektArbeidYtelseAggregatBuilder> lagBehandlingAT(BigDecimal inntektSammenligningsgrunnlag,
@@ -169,7 +167,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 bg, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -193,7 +191,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, forventetDagsats);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, List.of(forventetRedusert), ÅRSINNTEKT, List.of(forventetRedusert), List.of(0.0d), false);
     }
@@ -250,7 +248,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -280,7 +278,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, forventetDagsats);
         verifiserBGATetterOverstyring(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
                 bg, beregningVirksomhet1, overstyrt, overstyrt, overstyrt, bg, forventetAvkortet1, overstyrt - forventetAvkortet1, forventetRedusert1,
                 overstyrt - forventetRedusert1);
@@ -342,7 +340,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -372,7 +370,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, forventetDagsats);
         verifiserBGATetterOverstyring(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
                 bg, beregningVirksomhet1, overstyrt, SEKS_G, SEKS_G, bg, forventetAvkortet1, SEKS_G - forventetAvkortet1, forventetRedusert1,
                 SEKS_G - forventetRedusert1);
@@ -429,7 +427,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 bg / 2, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -459,7 +457,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 1, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, forventetDagsats);
         verifiserBGATetterOverstyring(periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0),
                 bg, beregningVirksomhet1, overstyrt, forventetAvkortet, forventetRedusert, bg,
                 forventetAvkortet1, SEKS_G - forventetAvkortet1,
@@ -523,7 +521,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -547,7 +545,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2, forventetDagsats);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, forventetRedusert, ÅRSINNTEKT, forventetRedusert, forventetRedusertBrukersAndel, false);
     }
@@ -610,7 +608,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -634,7 +632,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2, forventetDagsats);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, forventetRedusert, ÅRSINNTEKT, forventetRedusert, forventetRedusertBrukersAndel, false);
     }
@@ -709,7 +707,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 4);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -733,7 +731,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 4, forventetDagsats);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, forventetRedusert, refusjonsKrav, forventetRedusert, forventetRedusertBrukersAndel, false);
     }
@@ -817,7 +815,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 4);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlagPrStatusListe().get(0),
                 totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -841,7 +839,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
         verdikjedeTestHjelper.verifiserBeregningsgrunnlagBasis(fastsattBeregningsgrunnlag, Hjemmel.F_14_7_8_30);
 
         periode = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 4, forventetDagsats);
+        verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 4, forventetDagsats);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periode,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, forventetAvkortet, refusjonsKrav, forventetRedusert, forventetRedusertBrukersAndel, false);
     }
@@ -903,7 +901,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagDto beregningsgrunnlagEtter1 = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periodeEtter1 = beregningsgrunnlagEtter1.getBeregningsgrunnlagPerioder().get(0);
-        verdikjedeTestHjelper.verifiserPeriode(periodeEtter1, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2);
+        verdikjedeTestHjelper.verifiserPeriode(periodeEtter1, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periodeEtter1, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserSammenligningsgrunnlagPrStatus(beregningsgrunnlagEtter1.getSammenligningsgrunnlagPrStatusListe().get(0),
                 totalÅrsinntekt, SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1),
@@ -958,7 +956,7 @@ public class FlereArbeidsforholdMedTogglePåTest {
 
         BeregningsgrunnlagPeriodeDto periodeEtter3 = fastsattBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         Long forvetetAndelSum = Math.round((SEKS_G / 2) / 260) * 2;
-        verdikjedeTestHjelper.verifiserPeriode(periodeEtter3, SKJÆRINGSTIDSPUNKT_BEREGNING, Intervall.TIDENES_ENDE, 2, forvetetAndelSum);
+        verdikjedeTestHjelper.verifiserPeriode(periodeEtter3, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2, forvetetAndelSum);
         verdikjedeTestHjelper.verifiserBGATetterAvkorting(periodeEtter3,
                 ÅRSINNTEKT, ÅRSINNTEKT, virksomhetene, forventetRedusert, refusjonsKrav, forventetRedusert, forventetRedusertBrukersAndel, true);
     }

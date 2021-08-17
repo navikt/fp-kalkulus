@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.jetty;
 
-import static no.nav.vedtak.util.env.Cluster.LOCAL;
-import static no.nav.vedtak.util.env.Cluster.NAIS_CLUSTER_NAME;
+import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
+import static no.nav.k9.felles.konfigurasjon.env.Cluster.NAIS_CLUSTER_NAME;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,15 +50,15 @@ import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationConfig;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatabaseScript;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
-import no.nav.vedtak.isso.IssoApplication;
-import no.nav.vedtak.util.env.Environment;
+import no.nav.k9.felles.konfigurasjon.env.Environment;
+import no.nav.k9.felles.oidc.OidcApplication;
 
 public class JettyServer {
 
     /**
      * nedstrippet sett med Jetty configurations for raskere startup.
      */
-    protected static final Configuration[] CONFIGURATIONS = new Configuration[] {
+    protected static final Configuration[] CONFIGURATIONS = new Configuration[]{
             new WebAppConfiguration(),
             new WebInfConfiguration(),
             new WebXmlConfiguration(),
@@ -66,35 +66,8 @@ public class JettyServer {
             new EnvConfiguration(),
             new PlusConfiguration(),
     };
-
-    /**
-     * Legges først slik at alltid resetter context før prosesserer nye requests. Kjøres først så ikke risikerer andre har satt
-     * Request#setHandled(true).
-     */
-    static final class ResetLogContextHandler extends AbstractHandler {
-        @Override
-        public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
-            MDC.clear();
-        }
-    }
-
     private static final Environment ENV = Environment.current();
-
     private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
-
-    public static void main(String[] args) throws Exception {
-        // for logback import to work
-        System.setProperty(NAIS_CLUSTER_NAME, ENV.clusterName());
-        jettyServer(args).bootStrap();
-    }
-
-    private static JettyServer jettyServer(String[] args) {
-        if (args.length > 0) {
-            return new JettyServer(Integer.parseUnsignedInt(args[0]));
-        }
-        return new JettyServer();
-    }
-
     private AppKonfigurasjon appKonfigurasjon;
 
     public JettyServer() {
@@ -109,9 +82,22 @@ public class JettyServer {
         this.appKonfigurasjon = appKonfigurasjon;
     }
 
+    public static void main(String[] args) throws Exception {
+        // for logback import to work
+        System.setProperty(NAIS_CLUSTER_NAME, ENV.clusterName());
+        jettyServer(args).bootStrap();
+    }
+
+    private static JettyServer jettyServer(String[] args) {
+        if (args.length > 0) {
+            return new JettyServer(Integer.parseUnsignedInt(args[0]));
+        }
+        return new JettyServer();
+    }
+
     protected void start(AppKonfigurasjon appKonfigurasjon) throws Exception {
         Server server = new Server(appKonfigurasjon.getServerPort());
-        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[] {}));
+        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[]{}));
 
         var handlers = new HandlerList(new ResetLogContextHandler(), createContext(appKonfigurasjon));
         server.setHandler(handlers);
@@ -139,7 +125,7 @@ public class JettyServer {
 
     protected void konfigurerJndi() throws Exception {
         new EnvEntry("jdbc/defaultDS",
-            DatasourceUtil.createDatasource("defaultDS", DatasourceRole.USER, ENV.getCluster(), 4));
+                DatasourceUtil.createDatasource("defaultDS", DatasourceRole.USER, ENV.getCluster(), 4));
     }
 
     protected void konfigurerSikkerhet(File jaspiConf) {
@@ -220,15 +206,15 @@ public class JettyServer {
         List<Class<?>> appClasses = getWebInfClasses();
 
         List<Resource> resources = appClasses.stream()
-            .map(c -> Resource.newResource(c.getProtectionDomain().getCodeSource().getLocation()))
-            .distinct()
-            .collect(Collectors.toList());
+                .map(c -> Resource.newResource(c.getProtectionDomain().getCodeSource().getLocation()))
+                .distinct()
+                .collect(Collectors.toList());
 
         metaData.setWebInfClassesResources(resources);
     }
 
     protected List<Class<?>> getWebInfClasses() {
-        return Arrays.asList(ApplicationConfig.class, IssoApplication.class);
+        return Arrays.asList(ApplicationConfig.class, OidcApplication.class);
     }
 
     @SuppressWarnings("resource")
@@ -244,8 +230,19 @@ public class JettyServer {
     @SuppressWarnings("resource")
     protected ResourceCollection createResourceCollection() throws IOException {
         return new ResourceCollection(
-            Resource.newClassPathResource("META-INF/resources/webjars/"),
-            Resource.newClassPathResource("/web"));
+                Resource.newClassPathResource("META-INF/resources/webjars/"),
+                Resource.newClassPathResource("/web"));
+    }
+
+    /**
+     * Legges først slik at alltid resetter context før prosesserer nye requests. Kjøres først så ikke risikerer andre har satt
+     * Request#setHandled(true).
+     */
+    static final class ResetLogContextHandler extends AbstractHandler {
+        @Override
+        public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
+            MDC.clear();
+        }
     }
 
 }

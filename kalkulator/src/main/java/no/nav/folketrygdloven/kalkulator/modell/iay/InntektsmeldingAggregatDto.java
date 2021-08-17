@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
-
-
 public class InntektsmeldingAggregatDto {
 
-    @ChangeTracked
     private List<InntektsmeldingDto> inntektsmeldinger = new ArrayList<>();
 
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
