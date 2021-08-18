@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -408,8 +409,12 @@ public class BeregningsgrunnlagRepository {
         entitetOpt.ifPresent(this::deaktiverBeregningsgrunnlagGrunnlagEntitet);
     }
 
+    public void deaktiverBeregningsgrunnlagGrunnlagEntiteter(List<BeregningsgrunnlagGrunnlagEntitet> entiteter) {
+        endreAktivOgLagre(entiteter, false);
+    }
+
     private void deaktiverBeregningsgrunnlagGrunnlagEntitet(BeregningsgrunnlagGrunnlagEntitet entitet) {
-        setAktivOgLagre(entitet, false);
+        endreAktivOgLagre(entitet, false);
     }
 
     private void deaktiverKalkulatorInput(KalkulatorInputEntitet entitet) {
@@ -418,11 +423,20 @@ public class BeregningsgrunnlagRepository {
         entityManager.flush();
     }
 
-    private void setAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
+    private void endreAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
         entitet.setAktiv(aktiv);
         entityManager.persist(entitet);
         entityManager.flush();
     }
+
+    private void endreAktivOgLagre(List<BeregningsgrunnlagGrunnlagEntitet> entiteter, boolean aktiv) {
+        entiteter.forEach(e -> {
+            e.setAktiv(aktiv);
+            entityManager.persist(e);
+        });
+        entityManager.flush();
+    }
+
 
     public boolean reaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -430,10 +444,23 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> kontrollerFaktaEntitetOpt = hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId,
                 beregningsgrunnlagTilstand);
         boolean reaktiverer = kontrollerFaktaEntitetOpt.isPresent();
-        kontrollerFaktaEntitetOpt.ifPresent(entitet -> setAktivOgLagre(entitet, true));
+        kontrollerFaktaEntitetOpt.ifPresent(entitet -> endreAktivOgLagre(entitet, true));
         entityManager.flush();
         return reaktiverer;
     }
+
+
+    public boolean reaktiverBeregningsgrunnlagGrunnlagEntiteter(Set<Long> koblingIder, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
+        List<BeregningsgrunnlagGrunnlagEntitet> aktiveEntiteter = hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+        deaktiverBeregningsgrunnlagGrunnlagEntiteter(aktiveEntiteter);
+        var kontrollerFaktaEntiteter = koblingIder.stream()
+                .flatMap(id -> hentSisteBeregningsgrunnlagGrunnlagEntitet(id, beregningsgrunnlagTilstand).stream())
+                .collect(Collectors.toList());
+        endreAktivOgLagre(kontrollerFaktaEntiteter, true);
+        entityManager.flush();
+        return !kontrollerFaktaEntiteter.isEmpty();
+    }
+
 
     public boolean reaktiverSisteBeregningsgrunnlagGrunnlagEntitetFørTilstand(Long koblingId, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivEntitetOpt = hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -445,7 +472,7 @@ public class BeregningsgrunnlagRepository {
             forrigeTilstand = BeregningsgrunnlagTilstand.finnForrigeTilstand(forrigeTilstand.get());
             forrigeEntitet = forrigeTilstand.flatMap(tilstand -> hentSisteBeregningsgrunnlagGrunnlagEntitet(koblingId, tilstand));
         }
-        forrigeEntitet.ifPresent(entitet -> setAktivOgLagre(entitet, true));
+        forrigeEntitet.ifPresent(entitet -> endreAktivOgLagre(entitet, true));
         entityManager.flush();
         return forrigeTilstand.isPresent();
     }

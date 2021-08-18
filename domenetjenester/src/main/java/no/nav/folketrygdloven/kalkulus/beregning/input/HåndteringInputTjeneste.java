@@ -43,33 +43,30 @@ public class HåndteringInputTjeneste {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
     }
 
-    public Resultat<HåndterBeregningsgrunnlagInput> lagInput(Set<Long> koblingId, BeregningsgrunnlagTilstand tilstand) {
+    public Resultat<KalkulatorInputDto> lagKalkulatorInput(Set<Long> koblingId) {
         Objects.requireNonNull(koblingId, "koblingId");
-
-        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
+        return new Resultat<>(inputRespons.getKode(), inputRespons.getResultatPrKobling());
+    }
 
-        if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-            return new Resultat<>(inputRespons.getKode());
-        }
-
+    public Map<Long, HåndterBeregningsgrunnlagInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
+                                                                               Map<Long, KalkulatorInputDto> inputPrKobling,
+                                                                               BeregningsgrunnlagTilstand tilstand) {
+        Objects.requireNonNull(koblingId, "koblingId");
+        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
         validerKoblingMotGrunnlag(koblingId, tilstand, grunnlagEntiteter);
-
         var grunnlagFraForrigeOppdatering = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingId, tilstand)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-
-        Map<Long, HåndterBeregningsgrunnlagInput> koblingHåndteringInputMap = koblingEntiteter.stream()
+        return koblingEntiteter.stream()
                 .collect(Collectors.toMap(KoblingEntitet::getId, id ->
                         lagHåndteringBeregningsgrunnlagInput(id,
-                                inputRespons.getResultatPrKobling().get(id.getId()),
+                                inputPrKobling.get(id.getId()),
                                 grunnlagEntiteter.get(id.getId()),
                                 tilstand,
                                 Optional.ofNullable(grunnlagFraForrigeOppdatering.get(id.getId())))
                 ));
-
-        return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, koblingHåndteringInputMap);
     }
 
     private void validerKoblingMotGrunnlag(Collection<Long> koblingId, BeregningsgrunnlagTilstand tilstand, Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntiteter) {

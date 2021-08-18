@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,6 +25,21 @@ public class RullTilbakeTjeneste {
     public RullTilbakeTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, RegelsporingRepository regelsporingRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.regelsporingRepository = regelsporingRepository;
+    }
+
+    public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
+        List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
+        if (skalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand)) {
+            beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(beregningsgrunnlagGrunnlagEntiteter);
+            regelsporingRepository.ryddRegelsporingerForTilstand(koblingIder, tilstand);
+            Optional<BeregningsgrunnlagTilstand> forrigeObligatoriskTilstand = tilstand.erObligatoriskTilstand() ? Optional.of(tilstand) : BeregningsgrunnlagTilstand.finnForrigeObligatoriskTilstand(tilstand);
+            if (forrigeObligatoriskTilstand.isPresent()) {
+                beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(koblingIder, forrigeObligatoriskTilstand.get());
+            } else {
+                BeregningsgrunnlagTilstand første = BeregningsgrunnlagTilstand.finnFørste();
+                beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(koblingIder, første);
+            }
+        }
     }
 
     public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Long koblingId, BeregningsgrunnlagTilstand tilstand) {
@@ -53,6 +70,12 @@ public class RullTilbakeTjeneste {
                 beregningsgrunnlagRepository.reaktiverSisteBeregningsgrunnlagGrunnlagEntitetFørTilstand(koblingId, aktivTilstand);
             }
         }
+    }
+
+    private boolean skalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, BeregningsgrunnlagTilstand tilstand) {
+        return beregningsgrunnlagGrunnlagEntitet.stream()
+                .map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
+                .anyMatch(aktivTilstand ->  !aktivTilstand.erFør(tilstand));
     }
 
     public void deaktiverAktivtBeregningsgrunnlagOgInput(Long koblingId) {

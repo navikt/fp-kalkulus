@@ -106,17 +106,11 @@ public class HåndtererApplikasjonTjeneste {
 
 
     private HåndteringResultat håndterOgLagre(Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
-        rullTilbakeVedBehov(hånteringInputPrKobling.getKey(), tilstand);
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
         HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, hånteringInputPrKobling.getValue());
         var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
         beregningsgrunnlagRepository.lagre(hånteringInputPrKobling.getKey(), beregningsgrunnlagGrunnlagBuilder, tilstand);
         return resultat;
-    }
-
-
-    private void rullTilbakeVedBehov(Long koblingId, BeregningsgrunnlagTilstand tilstand) {
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, tilstand);
     }
 
     @SuppressWarnings("unchecked")

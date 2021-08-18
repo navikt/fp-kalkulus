@@ -200,32 +200,36 @@ public class OperereKalkulusRestTjeneste {
         var koblingReferanser = spesifikasjon.getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse)
                 .map(KoblingReferanse::new).collect(Collectors.toList());
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser);
-        Map<Long, HåndterBeregningDto> koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
+        var koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
                 .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
 
-        Resultat<HåndterBeregningsgrunnlagInput> håndterInputResultat;
-        var tilstand = finnTilstandFraDto(koblingTilDto);
         // Sjekker om request har oppdatert kalkulatorinput
         if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
             // kalkulatorinput oppdateres
             kalkulatorInputTjeneste.lagreKalkulatorInput(spesifikasjon.getKalkulatorInputPerKoblingReferanse());
-            // Lager Input for oppdatering
-            håndterInputResultat = håndteringInputTjeneste.lagInput(koblingTilDto.keySet(), tilstand);
-        } else {
-            // Lager Input for oppdatering
-            håndterInputResultat = håndteringInputTjeneste.lagInput(koblingTilDto.keySet(), tilstand);
-            // Sjekker om kalkulatorinput må oppdateres
-            if (håndterInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-                return Response.ok(new OppdateringListeRespons(true)).build();
-            }
         }
 
+        // Lager Input for oppdatering
+        var hentInputResultat = håndteringInputTjeneste.lagKalkulatorInput(koblingTilDto.keySet());
+        // Sjekker om kalkulatorinput må oppdateres
+        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return Response.ok(new OppdateringListeRespons(true)).build();
+        }
+
+        var tilstand = finnTilstandFraDto(koblingTilDto);
+
+        // Ruller tilbake hvis det er tilbakehopp
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingTilDto.keySet(), tilstand);
+
+        var håndterInputPrKobling = håndteringInputTjeneste.lagBeregningsgrunnlagInput(koblingTilDto.keySet(),
+                hentInputResultat.getResultatPrKobling(), tilstand);
+
         // Håndterer oppdatering
-        Map<Long, OppdateringRespons> håndterResultat = håndtererApplikasjonTjeneste.håndter(håndterInputResultat.getResultatPrKobling(), koblingTilDto);
+        var håndterResultat = håndtererApplikasjonTjeneste.håndter(håndterInputPrKobling, koblingTilDto);
 
         // Lager responsobjekt
         List<OppdateringPrRequest> oppdateringer = håndterResultat.entrySet().stream()
-                .sorted(Comparator.comparing(e -> håndterInputResultat.getResultatPrKobling().get(e.getKey()).getSkjæringstidspunktOpptjening()))
+                .sorted(Comparator.comparing(e -> håndterInputPrKobling.get(e.getKey()).getSkjæringstidspunktOpptjening()))
                 .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res)))
                 .collect(Collectors.toList());
         return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
