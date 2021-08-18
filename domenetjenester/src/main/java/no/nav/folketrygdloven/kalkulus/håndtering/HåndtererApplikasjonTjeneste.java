@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
-import no.nav.folketrygdloven.kalkulus.tjeneste.aksjonspunkt.AksjonspunktTjeneste;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.k9.felles.exception.TekniskException;
@@ -32,7 +32,7 @@ public class HåndtererApplikasjonTjeneste {
 
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
-    private AksjonspunktTjeneste aksjonspunktTjeneste;
+    private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     public HåndtererApplikasjonTjeneste() {
         // CDI
@@ -41,10 +41,10 @@ public class HåndtererApplikasjonTjeneste {
     @Inject
     public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste,
                                         BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-                                        AksjonspunktTjeneste aksjonspunktTjeneste) {
+                                        AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
-        this.aksjonspunktTjeneste = aksjonspunktTjeneste;
+        this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
     public Map<Long, OppdateringRespons> håndter(Map<Long, HåndterBeregningsgrunnlagInput> håndterBeregningInputPrKobling, Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
@@ -55,18 +55,18 @@ public class HåndtererApplikasjonTjeneste {
             Long koblingId = hånteringInputPrKobling.getKey();
             HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(koblingId);
 
-            // Siden vi i starten kan få inn aksjonspunkter som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
+            // Siden vi i starten kan få inn avklaringsbehov som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
             // må vi sjekke på dette intill gamle saker har passert beregning
-            boolean skalLøseAksjonspunktEtterOppdatering = false;
-            AksjonspunktDefinisjon aksjonspunktdefinisjon = AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
-            if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
-                if (harUtledetAksjonspunkt(koblingId, aksjonspunktdefinisjon)) {
-                    skalLøseAksjonspunktEtterOppdatering = true;
-                } else if (aksjonspunktdefinisjon.erOverstyring()) {
-                    opprettOverstyringAksjonspunkt(koblingId, aksjonspunktdefinisjon);
-                    skalLøseAksjonspunktEtterOppdatering = true;
+            boolean skalLøseAvklaringsbehovEtterOppdatering = false;
+            AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+            if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+                if (harUtledetAvklaringsbehov(koblingId, avklaringsbehovdefinisjon)) {
+                    skalLøseAvklaringsbehovEtterOppdatering = true;
+                } else if (avklaringsbehovdefinisjon.erOverstyring()) {
+                    opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+                    skalLøseAvklaringsbehovEtterOppdatering = true;
                 } else {
-                    LOG.info("FT-406871: Prøver å løse aksjonspunkt {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
+                    LOG.info("FT-406871: Prøver å løse avklaringsbehov {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
                 }
             }
 
@@ -78,30 +78,30 @@ public class HåndtererApplikasjonTjeneste {
                 resultatPrKobling.put(koblingId, new OppdateringRespons());
             }
 
-            if (skalLøseAksjonspunktEtterOppdatering) {
-                løsAksjonspunkt(koblingId, håndterBeregningDto);
+            if (skalLøseAvklaringsbehovEtterOppdatering) {
+                løsAvklaringsbehov(koblingId, håndterBeregningDto);
             }
         }
         return resultatPrKobling;
     }
 
-    private boolean harUtledetAksjonspunkt(Long koblingId, AksjonspunktDefinisjon aksjonspunktdefinisjon) {
-        return aksjonspunktTjeneste.hentAksjonspunkt(koblingId, aksjonspunktdefinisjon).isPresent();
+    private boolean harUtledetAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
+        return avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovdefinisjon).isPresent();
     }
 
-    private void løsAksjonspunkt(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        if (aksjonspunktTjeneste.skalLagreAksjonspunktIKalkulus()) {
-            AksjonspunktDefinisjon aksjonspunkt = AksjonspunktDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
-            aksjonspunktTjeneste.avbrytAlleAksjonspunktEtter(koblingId, aksjonspunkt);
-            aksjonspunktTjeneste.settOpprettetVedBehov(koblingId, aksjonspunkt);
-            aksjonspunktTjeneste.løsAksjonspunkt(koblingId, aksjonspunkt,
+    private void løsAvklaringsbehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
+        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+            AvklaringsbehovDefinisjon avklaringsbehov = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+            avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(koblingId, avklaringsbehov);
+            avklaringsbehovTjeneste.settOpprettetVedBehov(koblingId, avklaringsbehov);
+            avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehov,
                     håndterBeregningDto.getBegrunnelse());
         }
     }
 
-    private void opprettOverstyringAksjonspunkt(Long koblingId, AksjonspunktDefinisjon aksjonspunktdefinisjon) {
-        aksjonspunktTjeneste.avbrytAndreAksjonspunkterISammeSteg(koblingId, aksjonspunktdefinisjon);
-        aksjonspunktTjeneste.opprettEllerGjennopprettAksjonspunkt(koblingId, aksjonspunktdefinisjon);
+    private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
+        avklaringsbehovTjeneste.avbrytAndreAvklaringsbehovISammeSteg(koblingId, avklaringsbehovdefinisjon);
+        avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
     }
 
 
@@ -118,7 +118,7 @@ public class HåndtererApplikasjonTjeneste {
                                                                            String hånterKode) {
         Instance<Object> instance = finnAdapter(dtoClass, BeregningHåndterer.class);
         if (instance.isUnsatisfied()) {
-            throw new TekniskException("FT-770745", String.format("Finner ikke håndtering for aksjonspunkt med kode: %s", hånterKode));
+            throw new TekniskException("FT-770745", String.format("Finner ikke håndtering for avklaringsbehov med kode: %s", hånterKode));
         } else {
             Object minInstans = instance.get();
             if (minInstans.getClass().isAnnotationPresent(Dependent.class)) {

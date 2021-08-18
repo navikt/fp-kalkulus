@@ -16,7 +16,7 @@ class FastsettBGTidsbegrensetArbeidsforholdHåndterer implements BeregningHåndt
 
     @Override
     public HåndteringResultat håndter(FastsettBGTidsbegrensetArbeidsforholdHåndteringDto dto, HåndterBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.aksjonspunkt.FastsettBGTidsbegrensetArbeidsforholdHåndterer.håndter(input, OppdatererDtoMapper.mapFastsettBGTidsbegrensetArbeidsforholdDto(dto.getFastsettBGTidsbegrensetArbeidsforholdDto()));
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBGTidsbegrensetArbeidsforholdHåndterer.håndter(input, OppdatererDtoMapper.mapFastsettBGTidsbegrensetArbeidsforholdDto(dto.getFastsettBGTidsbegrensetArbeidsforholdDto()));
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);
     }

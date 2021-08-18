@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import no.nav.folketrygdloven.kalkulator.modell.aksjonspunkt.AksjonspunktDto;
+import no.nav.folketrygdloven.kalkulator.modell.avklaringsbehov.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -35,13 +35,13 @@ public class BeregningsgrunnlagGUIInput {
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen. Settes på av modulen. */
     private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
-    /** Aksjonspunkter som finnes på grunnlaget */
-    private List<AksjonspunktDto> aksjonspunkter;
+    /** Avklaringsbehov som finnes på grunnlaget */
+    private List<AvklaringsbehovDto> avklaringsbehov;
 
     /** Grunnlag fra fordelsteget. Brukes i visning av automatisk fordeling og utledning av andeler som skal redigeres */
     private BeregningsgrunnlagGrunnlagDto fordelBeregningsgrunnlagGrunnlag;
 
-    /** Grunnlag fra vurderrefusjonsteget. Brukes i visning av aksjonspunkt og andeler som kan redigeres. */
+    /** Grunnlag fra vurderrefusjonsteget. Brukes i visning av avklaringsbehov og andeler som kan redigeres. */
     private BeregningsgrunnlagGrunnlagDto vurderRefusjonBeregningsgrunnlagGrunnlag;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
@@ -81,8 +81,8 @@ public class BeregningsgrunnlagGUIInput {
 
     }
 
-    public List<AksjonspunktDto> getAksjonspunkter() {
-        return aksjonspunkter == null ? Collections.emptyList() : aksjonspunkter;
+    public List<AvklaringsbehovDto> getAvklaringsbehov() {
+        return avklaringsbehov == null ? Collections.emptyList() : avklaringsbehov;
     }
 
     public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
@@ -181,11 +181,11 @@ public class BeregningsgrunnlagGUIInput {
         return newInput;
     }
 
-    public BeregningsgrunnlagGUIInput medAksjonspunkter(List<AksjonspunktDto> aksjonspunkter) {
-        if (this.aksjonspunkter != null) {
-            throw new IllegalStateException("Listen med aksjonspunkter kan ikke endres.");
+    public BeregningsgrunnlagGUIInput medAvklaringsbehov(List<AvklaringsbehovDto> avklaringsbehov) {
+        if (this.avklaringsbehov != null) {
+            throw new IllegalStateException("Listen med avklaringsbehov kan ikke endres.");
         }
-        this.aksjonspunkter = Collections.unmodifiableList(aksjonspunkter);
+        this.avklaringsbehov = Collections.unmodifiableList(avklaringsbehov);
         return this;
     }
 

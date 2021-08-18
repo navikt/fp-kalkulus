@@ -101,10 +101,10 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -170,10 +170,10 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -238,10 +238,10 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -306,10 +306,10 @@ public class SelvstendigNæringsdrivendeMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));

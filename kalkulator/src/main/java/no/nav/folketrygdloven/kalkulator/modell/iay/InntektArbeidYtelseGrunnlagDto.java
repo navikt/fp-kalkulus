@@ -32,7 +32,7 @@ public class InntektArbeidYtelseGrunnlagDto {
     }
 
     /**
-     * Returnerer en overstyrt versjon av aggregat. Hvis saksbehandler har løst et aksjonspunkt i forbindele med
+     * Returnerer en overstyrt versjon av aggregat. Hvis saksbehandler har løst et avklaringsbehov i forbindele med
      * opptjening vil det finnes et overstyrt aggregat, gjelder for FØR første dag i permisjonsuttaket (skjæringstidspunktet)
      */
     private Optional<InntektArbeidYtelseAggregatDto> getSaksbehandletVersjon() {

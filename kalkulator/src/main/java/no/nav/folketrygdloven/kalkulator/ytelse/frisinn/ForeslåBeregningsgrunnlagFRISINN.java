@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
@@ -43,7 +43,7 @@ public class ForeslåBeregningsgrunnlagFRISINN extends ForeslåBeregningsgrunnla
     }
 
     @Override
-    protected List<BeregningAksjonspunktResultat> utledAksjonspunkter(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater) {
+    protected List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater) {
         return Collections.emptyList();
     }
 

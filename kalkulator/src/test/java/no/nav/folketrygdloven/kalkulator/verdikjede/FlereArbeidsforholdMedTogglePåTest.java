@@ -155,9 +155,9 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input),
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input),
                 grunnlag, false);
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -234,17 +234,17 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input),
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input),
                 grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
-        verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
+        verifiserBeregningsgrunnlagMedAvklaringsbehov(resultat);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -325,18 +325,18 @@ public class FlereArbeidsforholdMedTogglePåTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input),
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input),
                 grunnlag,
                 false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
-        verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
+        verifiserBeregningsgrunnlagMedAvklaringsbehov(resultat);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -414,16 +414,16 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         var grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
 
         // Assert 2
-        verifiserBeregningsgrunnlagMedAksjonspunkt(resultat);
+        verifiserBeregningsgrunnlagMedAvklaringsbehov(resultat);
 
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = resultat.getBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -508,10 +508,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -595,10 +595,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -694,10 +694,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -802,10 +802,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -888,10 +888,10 @@ public class FlereArbeidsforholdMedTogglePåTest {
         // Act 1: kontroller fakta for beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = verdikjedeTestHjelper.kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input), beregningTjenesteWrapper);
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -974,9 +974,9 @@ public class FlereArbeidsforholdMedTogglePåTest {
                         .build());
     }
 
-    private void verifiserBeregningsgrunnlagMedAksjonspunkt(BeregningsgrunnlagRegelResultat resultat) {
+    private void verifiserBeregningsgrunnlagMedAvklaringsbehov(BeregningsgrunnlagRegelResultat resultat) {
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).hasSize(1);
+        assertThat(resultat.getAvklaringsbehov()).hasSize(1);
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
     }
 

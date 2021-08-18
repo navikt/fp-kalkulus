@@ -37,7 +37,7 @@ public class LønnsendringTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
 
     @Test
-    public void skalTesteAtAksjonspunktOpprettesNårBrukerHarLønnsendringUtenInntektsmelding() {
+    public void skalTesteAtAvklaringsbehovOpprettesNårBrukerHarLønnsendringUtenInntektsmelding() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
@@ -66,7 +66,7 @@ public class LønnsendringTjenesteTest {
     }
 
     @Test
-    public void skalTesteAtAksjonspunktIkkeOpprettesNårBrukerHarLønnsendringUtenforBeregningsperioden() {
+    public void skalTesteAtAvklaringsbehovIkkeOpprettesNårBrukerHarLønnsendringUtenforBeregningsperioden() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         String orgnr = "123456780";
@@ -88,7 +88,7 @@ public class LønnsendringTjenesteTest {
     }
 
     @Test
-    public void skalFåAksjonspunktNårOverstyrtPeriodeInneholderSkjæringstidspunkt() {
+    public void skalFåAvklaringsbehovNårOverstyrtPeriodeInneholderSkjæringstidspunkt() {
         // Arrange
         ArbeidType arbeidType = ArbeidType.ORDINÆRT_ARBEIDSFORHOLD;
         var arbId = InternArbeidsforholdRefDto.nyRef();
@@ -116,7 +116,7 @@ public class LønnsendringTjenesteTest {
     }
 
     @Test
-    public void skalIkkeFåAksjonspunktNårOverstyrtPeriodeIkkeInneholderSkjæringstidspunkt() {
+    public void skalIkkeFåAvklaringsbehovNårOverstyrtPeriodeIkkeInneholderSkjæringstidspunkt() {
         // Arrange
         ArbeidType arbeidType = ArbeidType.ORDINÆRT_ARBEIDSFORHOLD;
         var arbId = InternArbeidsforholdRefDto.nyRef();

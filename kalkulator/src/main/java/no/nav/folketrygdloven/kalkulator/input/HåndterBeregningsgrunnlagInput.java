@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 public class HåndterBeregningsgrunnlagInput extends BeregningsgrunnlagInput {
 
     /**
-     * Tilstand som beregningsgrunnlag lagres med ut av steget (ved aksjonspunktbekreftelse)
+     * Tilstand som beregningsgrunnlag lagres med ut av steget (ved avklaringsbehovbekreftelse)
      */
     protected BeregningsgrunnlagTilstand håndteringTilstand;
 

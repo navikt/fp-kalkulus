@@ -31,11 +31,11 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.refusj
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagDto {
 
-    @JsonProperty(value = "aksjonspunkter")
+    @JsonProperty(value = "avklaringsbehov")
     @Size(max = 10)
     @NotNull
     @Valid
-    private List<AksjonspunktDto> aksjonspunkter = Collections.emptyList();
+    private List<AvklaringsbehovDto> avklaringsbehov = Collections.emptyList();
 
     @JsonProperty(value = "skjaeringstidspunktBeregning")
     @NotNull
@@ -312,11 +312,11 @@ public class BeregningsgrunnlagDto {
         this.inntektsgrunnlag = inntektsgrunnlag;
     }
 
-    public List<AksjonspunktDto> getAksjonspunkter() {
-        return aksjonspunkter;
+    public List<AvklaringsbehovDto> getAvklaringsbehov() {
+        return avklaringsbehov;
     }
 
-    public void setAksjonspunkter(List<AksjonspunktDto> aksjonspunkter) {
-        this.aksjonspunkter = aksjonspunkter;
+    public void setAvklaringsbehov(List<AvklaringsbehovDto> avklaringsbehov) {
+        this.avklaringsbehov = avklaringsbehov;
     }
 }

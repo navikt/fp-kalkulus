@@ -19,7 +19,7 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
     protected BeregningsgrunnlagTilstand stegTilstand;
 
     /**
-     * Tilstand som beregningsgrunnlag lagres med ut av steget (ved aksjonspunktbekreftelse)
+     * Tilstand som beregningsgrunnlag lagres med ut av steget (ved avklaringsbehovbekreftelse)
      */
     protected BeregningsgrunnlagTilstand stegUtTilstand;
 

@@ -19,14 +19,14 @@ public interface KalkulatorInterface {
     /** Steg 1: Fastsetter beregningsaktiviteter og forslår skjæringstidspunkt
      *
      * @param input Input til steget
-     * @return Beregningresultat med aksjonspunkter og eventuelt avslag på vilkår.
+     * @return Beregningresultat med avklaringsbehov og eventuelt avslag på vilkår.
      */
     BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input);
 
     /** Steg 2: Kontroller fakta for beregning
      *
      * @param input Input til steget
-     * @return Resultat med aksjonspunkter og nytt beregningsgrunnlag
+     * @return Resultat med avklaringsbehov og nytt beregningsgrunnlag
      */
     BeregningResultatAggregat kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input);
 
@@ -35,7 +35,7 @@ public interface KalkulatorInterface {
      *  Utfører beregning i henhold til kap 8 i folketrygdloven
      *
      * @param input Input til steget
-     * @return Resultat med aksjonspunkter og nytt beregningsgrunnlag
+     * @return Resultat med avklaringsbehov og nytt beregningsgrunnlag
      */
     BeregningResultatAggregat foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input);
 
@@ -58,7 +58,7 @@ public interface KalkulatorInterface {
     /** Steg 5: Fordel beregningsgrunnlag
      *
      * @param input Input til steget
-     * @return Nytt beregningsgrunnlag og aksjonspunkter
+     * @return Nytt beregningsgrunnlag og avklaringsbehov
      */
     BeregningResultatAggregat fordelBeregningsgrunnlag(StegProsesseringInput input);
 

@@ -22,11 +22,11 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.Frisinn
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
-import no.nav.folketrygdloven.kalkulator.steg.foreslå.AksjonspunktUtlederForeslåBeregning;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulator.steg.foreslå.AvklaringsbehovUtlederForeslåBeregning;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.skjæringstidspunkt.regel.ytelse.RegelFastsettSkjæringstidspunktFrisinn;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModellFRISINN;
@@ -54,11 +54,11 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
         AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(input, regelmodell);
         if (regelmodell.getSkjæringstidspunktForBeregning() == null) {
-            return new BeregningsgrunnlagRegelResultat(null, AksjonspunktUtlederForeslåBeregning.utledAksjonspunkter(input, List.of(regelResultatFastsettSkjæringstidspunkt)));
+            return new BeregningsgrunnlagRegelResultat(null, AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(input, List.of(regelResultatFastsettSkjæringstidspunkt)));
         }
         RegelResultat regelResultatFastsettStatus = fastsettStatus(input, regelmodell);
         if (regelmodell.getBeregningsgrunnlagPrStatusListe() == null || regelmodell.getBeregningsgrunnlagPrStatusListe().isEmpty()) {
-            return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAksjonspunktResultat.opprettFor(AksjonspunktDefinisjon.INGEN_AKTIVITETER)));
+            return new BeregningsgrunnlagRegelResultat(null, List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.INGEN_AKTIVITETER)));
         }
 
         // Oversett endelig resultat av regelmodell (+ spore input -> evaluation)

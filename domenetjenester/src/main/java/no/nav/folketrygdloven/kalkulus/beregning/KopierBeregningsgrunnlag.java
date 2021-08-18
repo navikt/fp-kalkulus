@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 
 @ApplicationScoped
 class KopierBeregningsgrunnlag {
@@ -18,15 +18,15 @@ class KopierBeregningsgrunnlag {
     }
 
     /**
-     * Sjekker om det er mulig å kopiere beregningsgrunnlagGrunnlaget som ble bekreftet ved forrige saksbehandling om det har oppstått aksjonspunkter.
-     * @param aksjonspunkter Utledede aksjonspunkter for nytt beregningsgrunnlag
+     * Sjekker om det er mulig å kopiere beregningsgrunnlagGrunnlaget som ble bekreftet ved forrige saksbehandling om det har oppstått avklaringsbehov.
+     * @param avklaringsbehov Utledede avklaringsbehov for nytt beregningsgrunnlag
      * @param nyttGrunnlag Nytt beregningsgrunnlagGrunnlag
      * @param forrigeGrunnlag Forrige grunnlag som lagres i beregningsteget
      */
-    static boolean kanKopiereForrigeGrunnlagAvklartIStegUt(List<BeregningAksjonspunktResultat> aksjonspunkter,
+    static boolean kanKopiereForrigeGrunnlagAvklartIStegUt(List<BeregningAvklaringsbehovResultat> avklaringsbehov,
                                                            BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                            Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
-        if (aksjonspunkter.isEmpty()) {
+        if (avklaringsbehov.isEmpty()) {
             return false;
         }
         boolean kanKopiereAktiviteter = kanKopiereAktiviteter(nyttGrunnlag, forrigeGrunnlag);

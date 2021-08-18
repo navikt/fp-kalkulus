@@ -85,7 +85,7 @@ public class VerdikjedeTestHjelper {
     }
 
     void verifiserBeregningsgrunnlagBasis(BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat, Hjemmel hjemmel) {
-        assertThat(beregningsgrunnlagRegelResultat.getAksjonspunkter()).isEmpty();
+        assertThat(beregningsgrunnlagRegelResultat.getAvklaringsbehov()).isEmpty();
         verifiserBeregningsgrunnlagBasis(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), hjemmel);
     }
 

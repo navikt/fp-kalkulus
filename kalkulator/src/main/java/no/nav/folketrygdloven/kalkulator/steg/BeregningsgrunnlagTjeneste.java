@@ -25,21 +25,21 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat.Builder;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.FaktaOmBeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningResultat;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.ForeslåBesteberegning;
-import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AksjonspunktUtlederFastsettBeregningsaktiviteter;
+import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklaringsbehovUtlederFastsettBeregningsaktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ForeslåSkjæringstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.OpprettBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.AksjonspunktUtlederFordelBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.AvklaringsbehovUtlederFordelBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VilkårTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
@@ -51,8 +51,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
     private ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste;
     protected OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste;
-    private Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning;
-    private Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
+    private Instance<AvklaringsbehovUtlederFaktaOmBeregning> avklaringsbehovUtledereFaktaOmBeregning;
+    private Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter;
     private Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag;
     private Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag;
     private final ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
@@ -69,8 +69,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     @Inject
     public BeregningsgrunnlagTjeneste(ForeslåSkjæringstidspunktTjeneste foreslåSkjæringstidspunktTjeneste,
                                       @Any Instance<FullføreBeregningsgrunnlag> fullføreBeregningsgrunnlag,
-                                      @Any Instance<AksjonspunktUtlederFaktaOmBeregning> aksjonspunktUtledereFaktaOmBeregning,
-                                      @Any Instance<AksjonspunktUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
+                                      @Any Instance<AvklaringsbehovUtlederFaktaOmBeregning> avklaringsbehovUtledereFaktaOmBeregning,
+                                      @Any Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       @Any Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste,
                                       VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag,
@@ -79,7 +79,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                                       @Any Instance<VilkårTjeneste> vilkårTjeneste) {
         this.foreslåSkjæringstidspunktTjeneste = foreslåSkjæringstidspunktTjeneste;
         this.fullføreBeregningsgrunnlag = fullføreBeregningsgrunnlag;
-        this.aksjonspunktUtledereFaktaOmBeregning = aksjonspunktUtledereFaktaOmBeregning;
+        this.avklaringsbehovUtledereFaktaOmBeregning = avklaringsbehovUtledereFaktaOmBeregning;
         this.apUtlederFastsettAktiviteter = apUtlederFastsettAktiviteter;
         this.opprettBeregningsgrunnlagTjeneste = opprettBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
@@ -93,8 +93,8 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     public BeregningResultatAggregat fastsettBeregningsaktiviteter(FastsettBeregningsaktiviteterInput input) {
         var beregningsgrunnlagRegelResultat = foreslåSkjæringstidspunktTjeneste.foreslåSkjæringstidspunkt(input);
         var tidligereAktivitetOverstyring = hentTidligereOverstyringer(input);
-        var aksjonspunkter = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter)
-                .utledAksjonspunkter(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
+        var avklaringsbehov = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), apUtlederFastsettAktiviteter)
+                .utledAvklaringsbehov(beregningsgrunnlagRegelResultat, input, tidligereAktivitetOverstyring.isPresent());
         var vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
                 .lagVilkårResultatFastsettAktiviteter(input, beregningsgrunnlagRegelResultat.getVilkårsresultat());
         return BeregningResultatAggregat.Builder.fra(input)
@@ -102,7 +102,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                 .medOverstyrteAktiviteter(vilkårResultat.isPresent() ? null : tidligereAktivitetOverstyring.orElse(null))
                 .medBeregningsgrunnlag(beregningsgrunnlagRegelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
                 .medVilkårResultat(vilkårResultat.orElse(null))
-                .medAksjonspunkter(aksjonspunkter)
+                .medAvklaringsbehov(avklaringsbehov)
                 .build();
     }
 
@@ -126,13 +126,13 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         var nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag())
                 .build(input.getStegTilstand());
-        var aksjonspunkter = AksjonspunktUtlederFordelBeregning.utledAksjonspunkterFor(
+        var avklaringsbehov = AvklaringsbehovUtlederFordelBeregning.utledAvklaringsbehovFor(
                 input.getKoblingReferanse(),
                 nyttGrunnlag,
                 input.getYtelsespesifiktGrunnlag(),
                 input.getInntektsmeldinger());
         return Builder.fra(input)
-                .medAksjonspunkter(aksjonspunkter)
+                .medAvklaringsbehov(avklaringsbehov)
                 .medBeregningsgrunnlag(fordelResultat.getBeregningsgrunnlag(), input.getStegTilstand())
                 .medRegelSporingAggregat(new RegelSporingAggregat(
                         fordelResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
@@ -151,7 +151,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         if (!vilkårResultat.getErVilkårOppfylt()) {
             // Om vilkåret ikke er oppfylt kan vi returnere uten å kjøre fordeling
             return BeregningResultatAggregat.Builder.fra(input)
-                    .medAksjonspunkter(vilkårVurderingResultat.getAksjonspunkter())
+                    .medAvklaringsbehov(vilkårVurderingResultat.getAvklaringsbehov())
                     .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
                     .medVilkårResultat(vilkårResultat)
                     .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
@@ -159,7 +159,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         } else {
             BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input, vurdertBeregningsgrunnlag);
             return Builder.fra(input)
-                    .medAksjonspunkter(vurderRefusjonResultat.getAksjonspunkter())
+                    .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
                     .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
                     .medVilkårResultat(vilkårResultat)
                     .medRegelSporingAggregat(new RegelSporingAggregat(
@@ -198,7 +198,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         BeregningsgrunnlagRegelResultat resultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), foreslåBeregningsgrunnlag)
                 .foreslåBeregningsgrunnlag(input);
         return BeregningResultatAggregat.Builder.fra(input)
-                .medAksjonspunkter(resultat.getAksjonspunkter())
+                .medAvklaringsbehov(resultat.getAvklaringsbehov())
                 .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag(), input.getStegTilstand())
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .build();
@@ -212,19 +212,19 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag())
                 .medBeregningsgrunnlag(beregningsgrunnlag)
                 .build(input.getStegTilstand());
-        var apUtleder = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), aksjonspunktUtledereFaktaOmBeregning);
-        FaktaOmBeregningAksjonspunktResultat aksjonspunktresultat = apUtleder.utledAksjonspunkterFor(
+        var apUtleder = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), avklaringsbehovUtledereFaktaOmBeregning);
+        FaktaOmBeregningAvklaringsbehovResultat avklaringsbehovresultat = apUtleder.utledAvklaringsbehovFor(
                 input,
                 nyttGrunnlag,
                 harOverstyrtBergningsgrunnlag(input));
 
         BeregningsgrunnlagDto grunnlagMedTilfeller = BeregningsgrunnlagDto.builder(beregningsgrunnlag)
-                .leggTilFaktaOmBeregningTilfeller(aksjonspunktresultat.getFaktaOmBeregningTilfeller())
+                .leggTilFaktaOmBeregningTilfeller(avklaringsbehovresultat.getFaktaOmBeregningTilfeller())
                 .build();
 
         return BeregningResultatAggregat.Builder.fra(input)
                 .medBeregningsgrunnlag(grunnlagMedTilfeller, input.getStegTilstand())
-                .medAksjonspunkter(aksjonspunktresultat.getBeregningAksjonspunktResultatList())
+                .medAvklaringsbehov(avklaringsbehovresultat.getBeregningAvklaringsbehovResultatList())
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .build();
     }

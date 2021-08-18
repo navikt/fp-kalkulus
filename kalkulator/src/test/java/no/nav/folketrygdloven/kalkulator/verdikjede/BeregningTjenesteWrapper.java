@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.verdikjede;
 
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.fp.FullføreBeregningsgrunnlagFPImpl;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AksjonspunktUtlederFaktaOmBeregning;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 
@@ -10,18 +10,18 @@ class BeregningTjenesteWrapper {
 
     private FullføreBeregningsgrunnlagFPImpl fullføreBeregningsgrunnlagTjeneste;
     private FordelBeregningsgrunnlagTjenesteImpl fordelBeregningsgrunnlagTjeneste;
-    private AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning;
+    private AvklaringsbehovUtlederFaktaOmBeregning avklaringsbehovUtlederFaktaOmBeregning;
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
     private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
 
     public BeregningTjenesteWrapper(FullføreBeregningsgrunnlagFPImpl fullføreBeregningsgrunnlagTjeneste,
                                     FordelBeregningsgrunnlagTjenesteImpl fordelBeregningsgrunnlagTjeneste,
-                                    AksjonspunktUtlederFaktaOmBeregning aksjonspunktUtlederFaktaOmBeregning,
+                                    AvklaringsbehovUtlederFaktaOmBeregning avklaringsbehovUtlederFaktaOmBeregning,
                                     FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
                                     VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag) {
         this.fullføreBeregningsgrunnlagTjeneste = fullføreBeregningsgrunnlagTjeneste;
         this.fordelBeregningsgrunnlagTjeneste = fordelBeregningsgrunnlagTjeneste;
-        this.aksjonspunktUtlederFaktaOmBeregning = aksjonspunktUtlederFaktaOmBeregning;
+        this.avklaringsbehovUtlederFaktaOmBeregning = avklaringsbehovUtlederFaktaOmBeregning;
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
         this.vurderRefusjonBeregningsgrunnlag = vurderRefusjonBeregningsgrunnlag;
     }
@@ -38,8 +38,8 @@ class BeregningTjenesteWrapper {
         return fordelBeregningsgrunnlagTjeneste;
     }
 
-    public AksjonspunktUtlederFaktaOmBeregning getAksjonspunktUtlederFaktaOmBeregning() {
-        return aksjonspunktUtlederFaktaOmBeregning;
+    public AvklaringsbehovUtlederFaktaOmBeregning getAvklaringsbehovUtlederFaktaOmBeregning() {
+        return avklaringsbehovUtlederFaktaOmBeregning;
     }
 
     public FastsettBeregningsgrunnlagPerioderTjeneste getFastsettBeregningsgrunnlagPerioderTjeneste() {

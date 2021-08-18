@@ -31,7 +31,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
-import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AksjonspunktDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.SammenligningsgrunnlagDto;
@@ -63,7 +63,7 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     private BeregningsgrunnlagDto lagDto(BeregningsgrunnlagGUIInput input) {
         BeregningsgrunnlagDto dto = new BeregningsgrunnlagDto();
-        mapAksjonspunkter(input, dto);
+        mapAvklaringsbehov(input, dto);
         mapFaktaOmBeregning(input, dto);
         if (input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag().isPresent()) {
             mapOverstyring(input, dto);
@@ -83,8 +83,8 @@ public class BeregningsgrunnlagDtoTjeneste {
         return dto;
     }
 
-    private void mapAksjonspunkter(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        dto.setAksjonspunkter(input.getAksjonspunkter().stream().map(a -> new AksjonspunktDto(a.getDefinisjon(), a.getStatus(), a.getBegrunnelse())).collect(Collectors.toList()));
+    private void mapAvklaringsbehov(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
+        dto.setAvklaringsbehov(input.getAvklaringsbehov().stream().map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), a.getBegrunnelse())).collect(Collectors.toList()));
     }
 
     private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {

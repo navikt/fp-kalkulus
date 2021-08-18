@@ -17,7 +17,7 @@ class VurderVarigEndretNyoppstartetSNHåndterer implements BeregningHåndterer<V
 
     @Override
     public HåndteringResultat håndter(VurderVarigEndringEllerNyoppstartetSNHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.aksjonspunkt.VurderVarigEndretNyoppstartetSNHåndterer.håndter(beregningsgrunnlagInput, mapVurderVarigEndringEllerNyoppstartetSNDto(dto.getVurderVarigEndringEllerNyoppstartetSNDto()));
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.VurderVarigEndretNyoppstartetSNHåndterer.håndter(beregningsgrunnlagInput, mapVurderVarigEndringEllerNyoppstartetSNDto(dto.getVurderVarigEndringEllerNyoppstartetSNDto()));
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);
     }

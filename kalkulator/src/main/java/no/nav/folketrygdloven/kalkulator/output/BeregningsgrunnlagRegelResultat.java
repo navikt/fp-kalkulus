@@ -10,7 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 public class BeregningsgrunnlagRegelResultat {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningAktivitetAggregatDto registerAktiviteter;
-    private List<BeregningAksjonspunktResultat> aksjonspunkter = new ArrayList<>();
+    private List<BeregningAvklaringsbehovResultat> avklaringsbehov = new ArrayList<>();
     private List<BeregningVilkårResultat> vilkårsresultat = new ArrayList<>();
     private RegelSporingAggregat regelsporinger;
 
@@ -19,9 +19,9 @@ public class BeregningsgrunnlagRegelResultat {
     }
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
-                                           List<BeregningAksjonspunktResultat> aksjonspunktResultatListe) {
+                                           List<BeregningAvklaringsbehovResultat> avklaringsbehovResultatListe) {
         this.beregningsgrunnlag = beregningsgrunnlag;
-        this.aksjonspunkter = aksjonspunktResultatListe;
+        this.avklaringsbehov = avklaringsbehovResultatListe;
     }
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, RegelSporingAggregat regelsporinger) {
@@ -30,10 +30,10 @@ public class BeregningsgrunnlagRegelResultat {
     }
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
-                                           List<BeregningAksjonspunktResultat> aksjonspunkter,
+                                           List<BeregningAvklaringsbehovResultat> avklaringsbehov,
                                            RegelSporingAggregat regelsporinger) {
         this.beregningsgrunnlag = beregningsgrunnlag;
-        this.aksjonspunkter = aksjonspunkter;
+        this.avklaringsbehov = avklaringsbehov;
         this.regelsporinger = regelsporinger;
     }
 
@@ -49,8 +49,8 @@ public class BeregningsgrunnlagRegelResultat {
         return registerAktiviteter;
     }
 
-    public List<BeregningAksjonspunktResultat> getAksjonspunkter() {
-        return aksjonspunkter;
+    public List<BeregningAvklaringsbehovResultat> getAvklaringsbehov() {
+        return avklaringsbehov;
     }
 
     public Boolean getVilkårOppfylt() {

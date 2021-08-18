@@ -116,7 +116,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start/bolk")
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
+            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
@@ -154,7 +154,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/fortsett/bolk")
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Fortsetter en beregning basert på stegInput."), responses = {
-            @ApiResponse(description = "Liste med aksjonspunkter som har oppstått", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
+            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
     })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningListeRequestAbacDto spesifikasjon) {
@@ -189,7 +189,7 @@ public class OperereKalkulusRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/oppdaterListe")
-    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av aksjonspunkt for oppgitt liste."), responses = {
+    @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {
             @ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))
     })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
@@ -288,7 +288,7 @@ public class OperereKalkulusRestTjeneste {
                 .distinct()
                 .collect(Collectors.toList());
         if (tilstander.size() > 1) {
-            throw new IllegalStateException("Kan ikke løse aksjonspunkt for flere tilstander samtidig");
+            throw new IllegalStateException("Kan ikke løse avklaringsbehov for flere tilstander samtidig");
         }
         return tilstander.get(0);
     }

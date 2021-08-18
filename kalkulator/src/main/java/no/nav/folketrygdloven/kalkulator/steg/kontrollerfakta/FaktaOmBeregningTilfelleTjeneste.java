@@ -42,7 +42,7 @@ public class FaktaOmBeregningTilfelleTjeneste {
      * @param beregningsgrunnlagGrunnlag Beregningsgrunnlag
      * @return Liste med tilfeller
      */
-    public List<FaktaOmBeregningTilfelle> finnTilfellerForFellesAksjonspunkt(FaktaOmBeregningInput input,
+    public List<FaktaOmBeregningTilfelle> finnTilfellerForFellesAvklaringsbehov(FaktaOmBeregningInput input,
                                                                              BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         List<FaktaOmBeregningTilfelle> tilfeller = new ArrayList<>();
         List<TilfelleUtleder> utledere = finnUtledere(input.getFagsakYtelseType());

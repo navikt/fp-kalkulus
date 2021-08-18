@@ -196,13 +196,13 @@ Starter en beregning med gitt inputdata
 ```
 
 ### Response
-HTTP 200 - Liste med aksjonspunkter som må løses av sakssystemet (K9-SAK eller FP-SAK)
+HTTP 200 - Liste med avklaringsbehov som må løses av sakssystemet (K9-SAK eller FP-SAK)
 
 
 ```json
 {
-  "aksjonspunktMedTilstandDto" : [ {
-    "beregningAksjonspunktDefinisjon" : {
+  "avklaringsbehovMedTilstandDto" : [ {
+    "beregningAvklaringsbehovDefinisjon" : {
       "kodeverk" : "BEREGNING_AKSJONSPUNKT_DEF",
       "kode" : "5058"
     },
@@ -233,12 +233,12 @@ Kjører angitt steg av beregningsprosessen
 ```
 
 ### Response
-HTTP 200 - Liste med aksjonspunkter som må løses av sakssystemet (K9-SAK eller FP-SAK)
+HTTP 200 - Liste med avklaringsbehov som må løses av sakssystemet (K9-SAK eller FP-SAK)
 
 ```json
 {
-  "aksjonspunktMedTilstandDto" : [ {
-    "beregningAksjonspunktDefinisjon" : {
+  "avklaringsbehovMedTilstandDto" : [ {
+    "beregningAvklaringsbehovDefinisjon" : {
       "kodeverk" : "BEREGNING_AKSJONSPUNKT_DEF",
       "kode" : "5058"
     },

@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
@@ -18,7 +18,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPeri
 @ApplicationScoped
 public class VurderRefusjonBeregningsgrunnlag {
     private FordelPerioderTjeneste fordelPerioderTjeneste;
-    private Instance<AksjonspunkutledertjenesteVurderRefusjon> aksjonspunkutledere;
+    private Instance<AvklaringsbehovutledertjenesteVurderRefusjon> aksjonspunkutledere;
 
     public VurderRefusjonBeregningsgrunnlag() {
         // CDI
@@ -26,19 +26,19 @@ public class VurderRefusjonBeregningsgrunnlag {
 
     @Inject
     public VurderRefusjonBeregningsgrunnlag(FordelPerioderTjeneste fordelPerioderTjeneste,
-                                            @Any Instance<AksjonspunkutledertjenesteVurderRefusjon> aksjonspunktUtledere) {
+                                            @Any Instance<AvklaringsbehovutledertjenesteVurderRefusjon> avklaringsbehovUtledere) {
         this.fordelPerioderTjeneste = fordelPerioderTjeneste;
-        this.aksjonspunkutledere = aksjonspunktUtledere;
+        this.aksjonspunkutledere = avklaringsbehovUtledere;
     }
 
     public BeregningsgrunnlagRegelResultat vurderRefusjon(BeregningsgrunnlagInput input, BeregningsgrunnlagDto vilkårsvurdertBeregningsgrunnlag) {
         BeregningsgrunnlagRegelResultat resultatFraRefusjonPeriodisering = fordelPerioderTjeneste.fastsettPerioderForRefusjon(input, vilkårsvurdertBeregningsgrunnlag);
         BeregningsgrunnlagRegelResultat resultatFraPeriodisering = fordelPerioderTjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, resultatFraRefusjonPeriodisering.getBeregningsgrunnlag());
-        List<BeregningAksjonspunktResultat> aksjonspunkter = FagsakYtelseTypeRef.Lookup.find(aksjonspunkutledere, input.getFagsakYtelseType())
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = FagsakYtelseTypeRef.Lookup.find(aksjonspunkutledere, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke AksjonspunkutledertjenesteVurderRefusjon for ytelsetype " + input.getFagsakYtelseType().getKode()))
-                .utledAksjonspunkter(input, resultatFraPeriodisering.getBeregningsgrunnlag());
+                .utledAvklaringsbehov(input, resultatFraPeriodisering.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatFraPeriodisering.getBeregningsgrunnlag(),
-                aksjonspunkter,
+                avklaringsbehov,
                 RegelSporingAggregat.konkatiner(resultatFraRefusjonPeriodisering.getRegelsporinger().orElse(null), resultatFraPeriodisering.getRegelsporinger().orElse(null)));
     }
 }

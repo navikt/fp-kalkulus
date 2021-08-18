@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.modell.aksjonspunkt.AksjonspunktDto;
+import no.nav.folketrygdloven.kalkulator.modell.avklaringsbehov.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringDto;
@@ -24,7 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregat
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.aksjonspunkt.AksjonspunktEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
@@ -159,11 +159,11 @@ public class BehandlingslagerTilKalkulusMapper {
         return builder.build();
     }
 
-    public static List<AksjonspunktDto> mapAksjonspunkter(List<AksjonspunktEntitet> aksjonspunkter) {
-        return aksjonspunkter.stream().map(BehandlingslagerTilKalkulusMapper::mapAksjonspunkt).collect(Collectors.toList());
+    public static List<AvklaringsbehovDto> mapAvklaringsbehov(List<AvklaringsbehovEntitet> avklaringsbehov) {
+        return avklaringsbehov.stream().map(BehandlingslagerTilKalkulusMapper::mapAvklaringsbehov).collect(Collectors.toList());
     }
 
-    private static AksjonspunktDto mapAksjonspunkt(AksjonspunktEntitet aksjonspunktEntitet) {
-        return new AksjonspunktDto(aksjonspunktEntitet.getDefinisjon(), aksjonspunktEntitet.getStatus(), aksjonspunktEntitet.getBegrunnelse());
+    private static AvklaringsbehovDto mapAvklaringsbehov(AvklaringsbehovEntitet avklaringsbehovEntitet) {
+        return new AvklaringsbehovDto(avklaringsbehovEntitet.getDefinisjon(), avklaringsbehovEntitet.getStatus(), avklaringsbehovEntitet.getBegrunnelse());
     }
 }

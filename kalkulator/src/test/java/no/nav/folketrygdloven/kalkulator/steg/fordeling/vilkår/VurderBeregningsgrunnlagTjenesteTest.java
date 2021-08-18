@@ -91,7 +91,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isTrue();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()
@@ -127,7 +127,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getVilkårOppfylt()).isFalse();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         var vilkårVurdering = resultat.getRegelsporinger().get().getRegelsporingPerioder().stream()

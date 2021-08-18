@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.NyAktivitetMedSøktYtelseFordeling.lagPerioderForNyAktivitetMedSøktYtelse;
-import static no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode;
+import static no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
@@ -24,9 +24,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelBeregningsgrunnlagTilfelleInput;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingGraderingTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.fordeling.aksjonpunkt.FordelingTilfelle;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleInput;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingGraderingTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingTilfelle;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.NyPeriodeDto;

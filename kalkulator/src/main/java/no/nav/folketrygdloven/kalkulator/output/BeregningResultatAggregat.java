@@ -15,7 +15,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 public class BeregningResultatAggregat {
 
-    protected List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater = new ArrayList<>();
+    protected List<BeregningAvklaringsbehovResultat> beregningAvklaringsbehovResultater = new ArrayList<>();
 
     protected BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
@@ -23,8 +23,8 @@ public class BeregningResultatAggregat {
 
     protected RegelSporingAggregat regelSporingAggregat;
 
-    public List<BeregningAksjonspunktResultat> getBeregningAksjonspunktResultater() {
-        return beregningAksjonspunktResultater;
+    public List<BeregningAvklaringsbehovResultat> getBeregningAvklaringsbehovResultater() {
+        return beregningAvklaringsbehovResultater;
     }
 
     public BeregningsgrunnlagGrunnlagDto getBeregningsgrunnlagGrunnlag() {
@@ -79,8 +79,8 @@ public class BeregningResultatAggregat {
             return this;
         }
 
-        public Builder medAksjonspunkter(List<BeregningAksjonspunktResultat> beregningAksjonspunktResultater) {
-            this.kladd.beregningAksjonspunktResultater = beregningAksjonspunktResultater;
+        public Builder medAvklaringsbehov(List<BeregningAvklaringsbehovResultat> beregningAvklaringsbehovResultater) {
+            this.kladd.beregningAvklaringsbehovResultater = beregningAvklaringsbehovResultater;
             return this;
         }
 
@@ -99,10 +99,10 @@ public class BeregningResultatAggregat {
             if (this.tilstand != null && this.grunnlagBuilder != null) {
                 this.kladd.beregningsgrunnlagGrunnlag = grunnlagBuilder.build(tilstand);
                 return kladd;
-            } else if (this.kladd.beregningAksjonspunktResultater != null) {
+            } else if (this.kladd.beregningAvklaringsbehovResultater != null) {
                 return kladd;
             }
-            throw new IllegalStateException("Må sette enten beregningsgrunnlag eller beregningaksjonspunkter på beregningresultataggregat!");
+            throw new IllegalStateException("Må sette enten beregningsgrunnlag eller beregningavklaringsbehov på beregningresultataggregat!");
         }
 
     }

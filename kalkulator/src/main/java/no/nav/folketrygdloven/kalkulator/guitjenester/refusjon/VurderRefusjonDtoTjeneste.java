@@ -42,7 +42,7 @@ public final class VurderRefusjonDtoTjeneste {
         return lagDtoBasertPåTidligereAvklaringer(input);
     }
 
-    // Metode for å støtte visning av saker som tidligere er løst men som av ulike grunner ikke lenger gir samme resultat i aksjonspunktutledning
+    // Metode for å støtte visning av saker som tidligere er løst men som av ulike grunner ikke lenger gir samme resultat i avklaringsbehovutledning
     private static Optional<RefusjonTilVurderingDto> lagDtoBasertPåTidligereAvklaringer(BeregningsgrunnlagGUIInput input) {
         Intervall hardkodetIntervall = Intervall.fraOgMed(input.getSkjæringstidspunktForBeregning()); // Bruker hele perioden det kan kreves refusjon for
         List<RefusjonAndel> andeler = new ArrayList<>();

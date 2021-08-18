@@ -322,7 +322,7 @@ class BeregningRefusjonTjenesteTest {
     }
 
     /**
-     * I tilfeller der det blir mindre til bruker men refusjonskravet er likt skal det ikke opprettes aksjonspunkt.
+     * I tilfeller der det blir mindre til bruker men refusjonskravet er likt skal det ikke opprettes avklaringsbehov.
      * Dette betyr da at brutto er senket, enten av saksbehandler eller av ny inntektsmelding og skal ikke vurderes.
      */
     @Test

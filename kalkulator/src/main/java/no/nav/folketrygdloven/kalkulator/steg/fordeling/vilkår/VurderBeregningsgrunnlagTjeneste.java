@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
@@ -56,19 +56,19 @@ public class VurderBeregningsgrunnlagTjeneste {
         // Oversetter foreslått Beregningsgrunnlag -> regelmodell
         var beregningsgrunnlagRegel = mapBeregningsgrunnlagFraVLTilRegel.map(input, oppdatertGrunnlag);
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
-        List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = Collections.emptyList();
         BeregningsgrunnlagDto beregningsgrunnlag = oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow();
-        return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, aksjonspunkter);
+        return mapTilRegelresultat(input, regelResultater, beregningsgrunnlag, avklaringsbehov);
     }
 
     protected BeregningsgrunnlagRegelResultat mapTilRegelresultat(BeregningsgrunnlagInput input, List<RegelResultat> regelResultater,
                                                                   BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                  List<BeregningAksjonspunktResultat> aksjonspunkter) {
+                                                                  List<BeregningAvklaringsbehovResultat> avklaringsbehov) {
         List<Intervall> perioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList());
         List<RegelSporingPeriode> regelsporinger = MapRegelSporingFraRegelTilVL.mapRegelsporingPerioder(regelResultater, perioder, BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING);
         BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(
                 beregningsgrunnlag,
-                aksjonspunkter,
+                avklaringsbehov,
                 new RegelSporingAggregat(regelsporinger));
         beregningsgrunnlagRegelResultat.setVilkårsresultat(mapTilVilkårResultatListe(regelResultater, beregningsgrunnlag, input.getYtelsespesifiktGrunnlag()));
         return beregningsgrunnlagRegelResultat;

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Beskriver hvilke endringer som er gjort på beregningsgrunnlaget ved løst aksjonspunkt
+ * Beskriver hvilke endringer som er gjort på beregningsgrunnlaget ved løst avklaringsbehov
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)

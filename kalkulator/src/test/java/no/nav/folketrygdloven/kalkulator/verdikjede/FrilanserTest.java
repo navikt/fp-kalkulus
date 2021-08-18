@@ -132,11 +132,11 @@ public class FrilanserTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
+        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
@@ -236,11 +236,11 @@ public class FrilanserTest {
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
+        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
@@ -344,11 +344,11 @@ public class FrilanserTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
 
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
+        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
@@ -420,11 +420,11 @@ public class FrilanserTest {
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
+        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 
@@ -489,11 +489,11 @@ public class FrilanserTest {
         // Act 1: kontroller fakta om beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input), grunnlag, false);
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = aksjonspunktResultat.getFaktaOmBeregningTilfeller();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
+        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
         assertThat(faktaOmBeregningTilfeller).hasSize(1);
         assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
 

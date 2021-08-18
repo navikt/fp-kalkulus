@@ -12,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.beregning.v1.AksjonspunktMedTilstandDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.AvklaringsbehovMedTilstandDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 
 /**
- * Beskriver hvilke aksjonspunkter som må løses av K9 eller FPSAK for at beregningen kan fortsette
+ * Beskriver hvilke avklaringsbehov som må løses av K9 eller FPSAK for at beregningen kan fortsette
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,9 +28,14 @@ public class TilstandResponse {
     @Valid
     private UUID eksternReferanse;
 
+    @JsonProperty(value = "avklaringsbehovMedTilstandDto")
+    @Valid
+    private List<AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto;
+
     @JsonProperty(value = "aksjonspunktMedTilstandDto")
     @Valid
-    private List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto;
+    private List<AvklaringsbehovMedTilstandDto> aksjonspunktMedTilstandDto;
+
 
     @JsonProperty(value = "vilkarOppfylt")
     @Valid
@@ -45,17 +50,19 @@ public class TilstandResponse {
     }
 
     public TilstandResponse(@JsonProperty(value = "eksternReferanse") @Valid UUID eksternReferanse,
-                            @JsonProperty(value = "aksjonspunktMedTilstandDto") @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto) {
+                            @JsonProperty(value = "avklaringsbehovMedTilstandDto") @Valid List<AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto) {
         this.eksternReferanse = eksternReferanse;
-        this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
+        this.avklaringsbehovMedTilstandDto = avklaringsbehovMedTilstandDto;
+        this.aksjonspunktMedTilstandDto = avklaringsbehovMedTilstandDto;
     }
 
     public TilstandResponse(@Valid UUID eksternReferanse,
-                            @Valid List<AksjonspunktMedTilstandDto> aksjonspunktMedTilstandDto,
-                            @Valid Boolean vilkarOppfylt, 
+                            @Valid List<AvklaringsbehovMedTilstandDto> avklaringsbehovMedTilstandDto,
+                            @Valid Boolean vilkarOppfylt,
                             @Valid Vilkårsavslagsårsak vilkårsavslagsårsak) {
         this.eksternReferanse = eksternReferanse;
-        this.aksjonspunktMedTilstandDto = aksjonspunktMedTilstandDto;
+        this.avklaringsbehovMedTilstandDto = avklaringsbehovMedTilstandDto;
+        this.aksjonspunktMedTilstandDto = avklaringsbehovMedTilstandDto;
         this.vilkarOppfylt = vilkarOppfylt;
         this.vilkårsavslagsårsak = vilkårsavslagsårsak;
     }
@@ -78,8 +85,12 @@ public class TilstandResponse {
         return true;
     }
 
-    public List<AksjonspunktMedTilstandDto> getAksjonspunktMedTilstandDto() {
-        return aksjonspunktMedTilstandDto;
+    public List<AvklaringsbehovMedTilstandDto> getAvklaringsbehovMedTilstandDto() {
+        return avklaringsbehovMedTilstandDto;
+    }
+
+    public List<AvklaringsbehovMedTilstandDto> getAksjonspunktMedTilstandDto() {
+        return avklaringsbehovMedTilstandDto;
     }
 
     public Boolean getVilkarOppfylt() {

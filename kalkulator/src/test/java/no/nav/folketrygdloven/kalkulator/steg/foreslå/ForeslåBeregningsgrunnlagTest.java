@@ -61,12 +61,12 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDt
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AksjonspunktDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -245,7 +245,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         verifiserSammenligningsgrunnlag(resultat.getBeregningsgrunnlag().getSammenligningsgrunnlag(), ÅRSINNTEKT1,
                 SKJÆRINGSTIDSPUNKT_BEREGNING.minusYears(1).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1),
@@ -270,7 +270,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1, PeriodeÅrsak.NATURALYTELSE_BORTFALT);
@@ -319,7 +319,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
@@ -345,7 +345,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
@@ -373,7 +373,7 @@ public class ForeslåBeregningsgrunnlagTest {
         // Her skulle det vært inntekter på andelen
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
@@ -402,7 +402,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(3);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(3).minusDays(1), 1);
@@ -497,7 +497,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(2);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(4).minusDays(1), 1);
@@ -536,7 +536,7 @@ public class ForeslåBeregningsgrunnlagTest {
         // Assert
         BeregningsgrunnlagDto beregningsgrunnlag = resultat.getBeregningsgrunnlag();
         assertThat(beregningsgrunnlag).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder()).hasSize(3);
 
         BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
@@ -575,7 +575,7 @@ public class ForeslåBeregningsgrunnlagTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(3);
 
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
@@ -593,7 +593,7 @@ public class ForeslåBeregningsgrunnlagTest {
     }
 
     @Test
-    public void skalGiEittAksjonspunktForSNNyIArbeidslivetOgKortvarigArbeidsforhold() {
+    public void skalGiEittAvklaringsbehovForSNNyIArbeidslivetOgKortvarigArbeidsforhold() {
         // Arrange
         BeregningsgrunnlagDto nyttGrunnlag = lagBeregningsgrunnlagATFL_SN();
         InntektArbeidYtelseAggregatBuilder register = verdikjedeTestHjelper.initBehandlingFor_AT_SN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1),
@@ -612,13 +612,13 @@ public class ForeslåBeregningsgrunnlagTest {
         BeregningsgrunnlagDto bg = resultat.getBeregningsgrunnlag();
         assertThat(bg.getBeregningsgrunnlagPerioder()).hasSize(2);
         bg.getBeregningsgrunnlagPerioder().forEach(p -> assertThat(p.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2));
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET);
     }
 
     @Test
-    public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgATMedOver25ProsentAvvikOOgRefusjonTilsvarerBeregnet() {
+    public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedOver25ProsentAvvikOOgRefusjonTilsvarerBeregnet() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
                 SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
@@ -636,13 +636,13 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
     @Test
-    public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOOgRefusjon6G() {
+    public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOOgRefusjon6G() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
                 SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
@@ -661,13 +661,13 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
     @Test
-    public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOgAvkorting() {
+    public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgATMedAvvikOver25ProsentAvvikOgAvkorting() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
                 SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
@@ -686,13 +686,13 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 
     @Test
-    public void skalReturnereAksjonspunktNårOmsorgspengerOgATMedOver25ProsentAvvikOgUtbetalingDirekteTilBruker() {
+    public void skalReturnereAvklaringsbehovNårOmsorgspengerOgATMedOver25ProsentAvvikOgUtbetalingDirekteTilBruker() {
         // Arrange
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
                 SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(1)), BigDecimal.valueOf(100));
@@ -717,13 +717,13 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     @Test
-    public void skalReturnereAksjonspunktNårOmsorgspengerOgFLMedOver25ProsentAvvik() {
+    public void skalReturnereAvklaringsbehovNårOmsorgspengerOgFLMedOver25ProsentAvvik() {
         // Arrange
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagFL();
         PeriodeMedUtbetalingsgradDto periodeMedUtbetalingsgradDto = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,
@@ -747,13 +747,13 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, List.of(), omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AksjonspunktDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS);
     }
 
     @Test
-    public void skalIkkeReturnereAksjonspunktNårOmsorgspengerOgFlereArbeidsforholdMedAvvikOgEttKravMedFullRefusjon() {
+    public void skalIkkeReturnereAvklaringsbehovNårOmsorgspengerOgFlereArbeidsforholdMedAvvikOgEttKravMedFullRefusjon() {
         // Arrange
         BigDecimal inntektBeregnetArbeidsgiver1 = BigDecimal.valueOf(40_000);
         BigDecimal refusjon = BigDecimal.valueOf(40_000);
@@ -799,8 +799,8 @@ public class ForeslåBeregningsgrunnlagTest {
         // Act
         BeregningsgrunnlagRegelResultat resultat = act(beregningsgrunnlag, inntektsmeldinger, omsorgspengerGrunnlag);
         // Assert
-        List<BeregningAksjonspunktResultat> aps = resultat.getAksjonspunkter();
-        List<AksjonspunktDefinisjon> apDefs = aps.stream().map(BeregningAksjonspunktResultat::getBeregningAksjonspunktDefinisjon).collect(Collectors.toList());
+        List<BeregningAvklaringsbehovResultat> aps = resultat.getAvklaringsbehov();
+        List<AvklaringsbehovDefinisjon> apDefs = aps.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
         assertThat(apDefs).isEmpty();
     }
 

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Beskriver hvilke aksjonspunkter som må løses av K9 eller FPSAK for at beregningen kan fortsette
+ * Beskriver hvilke avklaringsbehov som må løses av K9 eller FPSAK for at beregningen kan fortsette
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)

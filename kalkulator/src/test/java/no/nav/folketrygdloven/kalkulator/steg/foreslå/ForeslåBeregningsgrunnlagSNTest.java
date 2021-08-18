@@ -85,7 +85,7 @@ public class ForeslåBeregningsgrunnlagSNTest {
 
         // Assert
         assertThat(resultat.getBeregningsgrunnlag()).isNotNull();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         assertThat(resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()).hasSize(1);
         BeregningsgrunnlagPeriodeDto periode = resultat.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
         verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 1);

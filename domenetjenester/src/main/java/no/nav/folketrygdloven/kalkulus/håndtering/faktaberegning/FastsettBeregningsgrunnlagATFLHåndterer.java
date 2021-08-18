@@ -18,7 +18,7 @@ public class FastsettBeregningsgrunnlagATFLHåndterer implements BeregningHåndt
 
     @Override
     public HåndteringResultat håndter(FastsettBeregningsgrunnlagATFLHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
-        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.aksjonspunkt.FastsettBeregningsgrunnlagATFLHåndterer.håndter(beregningsgrunnlagInput, mapFastsettBeregningsgrunnlagATFLDto(dto));
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBeregningsgrunnlagATFLHåndterer.håndter(beregningsgrunnlagInput, mapFastsettBeregningsgrunnlagATFLDto(dto));
         // TODO Lag endringresultat
         return new HåndteringResultat(nyttGrunnlag, null);
     }

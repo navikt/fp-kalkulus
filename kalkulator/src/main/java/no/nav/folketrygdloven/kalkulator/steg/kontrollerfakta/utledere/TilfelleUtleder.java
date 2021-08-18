@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
  * Alle implementasjoner av denne klassen kan enten vere en defaultimplementasjon eller en implementasjon for en spesifikk ytelse.
  * Tilfeller som har spesifikke implementasjoner av klassen må også spesifisere @FaktaOmBeregningTilfelleRef, ellers blir både defaultimplementasjon
  * og spesifikk implementasjon evaluert.
- * Implementasjoner av denne klassen må derfor være injectable for å skulle kunne brukes i utledelsen av aksjonspunkt for
+ * Implementasjoner av denne klassen må derfor være injectable for å skulle kunne brukes i utledelsen av avklaringsbehov for
  * kontroller fakta om beregning.
  */
 public interface TilfelleUtleder {

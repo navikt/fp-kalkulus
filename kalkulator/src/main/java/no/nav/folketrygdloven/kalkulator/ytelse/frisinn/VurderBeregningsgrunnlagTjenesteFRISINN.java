@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.output.BeregningAksjonspunktResultat;
+import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.vilkår.VurderBeregningsgrunnlagTjeneste;
@@ -56,8 +56,8 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
             throw new IllegalStateException("Har ikke FRISINN grunnlag når frisinnvilkår skal vurderes");
         }
         List<RegelResultat> regelResultater = kjørRegel(input, beregningsgrunnlagRegel);
-        List<BeregningAksjonspunktResultat> aksjonspunkter = Collections.emptyList();
-        return mapTilRegelresultat(input, regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow(), aksjonspunkter);
+        List<BeregningAvklaringsbehovResultat> avklaringsbehov = Collections.emptyList();
+        return mapTilRegelresultat(input, regelResultater, oppdatertGrunnlag.getBeregningsgrunnlag().orElseThrow(), avklaringsbehov);
     }
 
     @Override

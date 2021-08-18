@@ -77,11 +77,11 @@ public class MilitærTest {
         // Act 1: Fastsett beregningaktiviteter og kontroller fakta beregning
         BeregningsgrunnlagGrunnlagDto grunnlag = kjørStegOgLagreGrunnlag(lagFastsettBeregningsaktiviteteterInput(input));
         input = input.medBeregningsgrunnlagGrunnlag(grunnlag);
-        var aksjonspunktResultat = beregningTjenesteWrapper.getAksjonspunktUtlederFaktaOmBeregning().utledAksjonspunkterFor(lagFaktaOmBeregningInput(input),
+        var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input),
             grunnlag, false);
 
         // Assert 1
-        assertThat(aksjonspunktResultat.getBeregningAksjonspunktResultatList()).isEmpty();
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -97,7 +97,7 @@ public class MilitærTest {
         resultat = vurderBeregningsgrunnlagTjeneste.vurderBeregningsgrunnlag(lagVurderRefusjonBeregningsgrunnlagInput(input),
                 nyttGrunnlag(grunnlag, foreslåttBeregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT));
         assertThat(resultat.getVilkårOppfylt()).isTrue();
-        assertThat(resultat.getAksjonspunkter()).isEmpty();
+        assertThat(resultat.getAvklaringsbehov()).isEmpty();
         BeregningsgrunnlagDto vurderRefusjonGrunnlag = vurderRefusjonBeregningsgrunnlag(input, grunnlag, resultat);
         input = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag).medBeregningsgrunnlag(vurderRefusjonGrunnlag).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON));
 
