@@ -30,7 +30,7 @@ public enum AvklaringsbehovType implements Kodeverdi {
     UDEFINERT("-", "Ikke definert"),
     ;
 
-    public static final String KODEVERK = "AKSJONSPUNKT_TYPE";
+    public static final String KODEVERK = "AVKLARINGSBEHOV_TYPE";
     private static final Map<String, AvklaringsbehovType> KODER = new LinkedHashMap<>();
 
     static {
