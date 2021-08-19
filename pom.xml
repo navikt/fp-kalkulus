@@ -11,12 +11,10 @@
     <name>Kalkulus :: Root</name>
 
     <modules>
-        <module>felles</module>
         <module>web</module>
         <module>kalkulator</module>
         <module>kontrakt</module>
         <module>domenetjenester</module>
-        <module>database</module>
         <module>migreringer</module>
         <module>kodeverk</module>
     </modules>
@@ -128,12 +126,6 @@
             <!-- Interne avhengigheter -->
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>felles</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>kontrakt</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -141,12 +133,6 @@
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
                 <artifactId>kodeverk</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>database</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

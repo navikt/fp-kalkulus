@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;

@@ -95,10 +95,6 @@
 
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>felles</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.folketrygdloven.kalkulus</groupId>
             <artifactId>kontrakt</artifactId>
         </dependency>
         <!-- Test avhengigheter -->
