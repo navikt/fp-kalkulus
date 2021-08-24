@@ -19,7 +19,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
 @ApplicationScoped
-class AvklaringsbehovRepository {
+public class AvklaringsbehovRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AvklaringsbehovRepository.class);
     private EntityManager entityManager;
 

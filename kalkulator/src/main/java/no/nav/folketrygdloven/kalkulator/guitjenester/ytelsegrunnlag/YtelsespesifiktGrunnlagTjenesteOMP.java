@@ -21,7 +21,6 @@ public class YtelsespesifiktGrunnlagTjenesteOMP implements YtelsespesifiktGrunnl
     public Optional<YtelsespesifiktGrunnlagDto> map(BeregningsgrunnlagGUIInput input){
         var beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag();
         var omsorgspengeGrunnlagDto = new OmsorgspengeGrunnlagDto();
-        var førsteBeregningsperiode = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0);
 
         if (harForeslåttBeregning(beregningsgrunnlag) && erBrukerKunArbeidstaker(input)) {
             omsorgspengeGrunnlagDto.setSkalAvviksvurdere(!FastsettGrunnlagOmsorgspenger.finnesKunFullRefusjon(input));

@@ -112,7 +112,7 @@ public class StegProsessInputTjeneste {
     }
 
 
-    public StegProsesseringInput mapStegInput(KoblingEntitet kobling,
+    private StegProsesseringInput mapStegInput(KoblingEntitet kobling,
                                               KalkulatorInputDto input,
                                               BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet,
                                               BeregningSteg stegType,
