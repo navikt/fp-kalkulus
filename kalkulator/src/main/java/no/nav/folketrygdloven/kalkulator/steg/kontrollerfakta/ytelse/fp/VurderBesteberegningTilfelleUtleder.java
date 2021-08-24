@@ -1,13 +1,14 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ytelse.fp;
 
 import java.util.Optional;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.TilfelleUtleder;
@@ -20,15 +21,16 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 @FagsakYtelseTypeRef("FP")
 @FaktaOmBeregningTilfelleRef("VURDER_BESTEBEREGNING")
 public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
+    private static final Set<OpptjeningAktivitetType> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES = Set.of(OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER, OpptjeningAktivitetType.SYKEPENGER);
 
     public static final String TOGGLE_BESTEBEREGNING = "automatisk-besteberegning";
 
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input,
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
-        boolean harKunArbeidEllerDagpenger = input.getOpptjeningAktiviteterForBeregning().stream()
-                .allMatch(a -> a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.ARBEID) || a.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.DAGPENGER));
-        if (input.isEnabled(TOGGLE_BESTEBEREGNING, false) && harKunArbeidEllerDagpenger) {
+        boolean kanAutomatiskBesteberegnes = input.getOpptjeningAktiviteterForBeregning().stream()
+                .allMatch(a -> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES.contains(a.getOpptjeningAktivitetType()));
+        if (input.isEnabled(TOGGLE_BESTEBEREGNING, false) && kanAutomatiskBesteberegnes) {
             return Optional.empty();
         }
         boolean harKunYtelse = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag"))
