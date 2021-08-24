@@ -39,7 +39,7 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
         return super.skalGrunnlagFastsettes(input, andel);
     }
 
-    private boolean finnesKunFullRefusjon(BeregningsgrunnlagGUIInput input) {
+    public static boolean finnesKunFullRefusjon(BeregningsgrunnlagGUIInput input) {
         OmsorgspengerGrunnlag yg = input.getYtelsespesifiktGrunnlag();
         boolean finnesAtAndelIkkeSøktOm = input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0)
                 .getBeregningsgrunnlagPrStatusOgAndelList().stream()
@@ -51,18 +51,11 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
         return !girDirekteUtbetalingTilBruker(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0));
     }
 
-    private boolean erSøktOm(BeregningsgrunnlagPrStatusOgAndelDto andel, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
-        return utbetalingsgradPrAktivitet.stream()
-                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID))
-                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().equals(andel.getArbeidsgiver()))
-                .anyMatch(utb -> utb.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(andel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef())));
-    }
-
     private boolean erBlittFastsattFør(BeregningsgrunnlagPrStatusOgAndelDto andel) {
         return andel.getOverstyrtPrÅr() != null;
     }
 
-    public static boolean girDirekteUtbetalingTilBruker(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPeriodeDto periode) {
+    private static boolean girDirekteUtbetalingTilBruker(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagPeriodeDto periode) {
         if(!harForeslåttBeregning(input.getBeregningsgrunnlagGrunnlag())){
             return false;
         }
@@ -86,4 +79,13 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
     private static boolean harForeslåttBeregning(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto){
         return !beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT);
     }
+
+    private static boolean erSøktOm(BeregningsgrunnlagPrStatusOgAndelDto andel, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+        return utbetalingsgradPrAktivitet.stream()
+                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID))
+                .filter(utb -> utb.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().equals(andel.getArbeidsgiver()))
+                .anyMatch(utb -> utb.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(andel.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef())));
+    }
+
+
 }
