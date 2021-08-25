@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
@@ -153,11 +154,11 @@ public class MapFormidlingsdataBeregningsgrunnlag {
             String agBGOAktor = bgAndel.getArbeidsgiver() == null ? null : bgAndel.getArbeidsgiver().getArbeidsgiverAktørId();
             String agIDUtbetaling = utbArbeid.getArbeidsgiver().map(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver::getIdentifikator).orElse(null);
 
-            String bgAndelRef = bgAndel.getBgAndelArbeidsforhold() == null ? null : bgAndel.getBgAndelArbeidsforhold().getArbeidsforholdRef();
-            String utbRef = utbArbeid.getInternArbeidsforholdRef() == null ? null : utbArbeid.getInternArbeidsforholdRef().getReferanse();
+            var bgAndelRef = InternArbeidsforholdRefDto.ref(bgAndel.getBgAndelArbeidsforhold().getArbeidsforholdRef());
+            var utbRef = utbArbeid.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : utbArbeid.getInternArbeidsforholdRef();
 
             boolean agMatcher = agBGOAktor == null ? Objects.equals(agBGOrgnr, agIDUtbetaling) : Objects.equals(agBGOAktor, agIDUtbetaling);
-            boolean refMatcher = Objects.equals(bgAndelRef, utbRef);
+            boolean refMatcher = bgAndelRef.gjelderFor(utbRef);
             return agMatcher && refMatcher;
         } else return false;
     }
