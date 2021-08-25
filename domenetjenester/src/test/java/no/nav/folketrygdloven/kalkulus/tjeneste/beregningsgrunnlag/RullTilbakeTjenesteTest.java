@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
@@ -22,10 +24,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
@@ -39,6 +45,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     private RegelsporingRepository regelsporingRepository;
     private KoblingRepository koblingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
+    private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private Long koblingId;
 
     @BeforeEach
@@ -46,7 +53,10 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
-        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository);
+        AvklaringsbehovRepository avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
+        AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
+        avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste, true);
+        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository, avklaringsbehovTjeneste);
     }
 
     @Test
@@ -131,6 +141,8 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         String json = getTestJSON();
         KalkulatorInputEntitet input = new KalkulatorInputEntitet(koblingId, json);
         repository.lagreOgSjekkStatus(input);
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
+        avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
@@ -138,7 +150,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         regelsporingRepository.lagre(koblingId, RegelSporingGrunnlagEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()), BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT);
         var aktiveRegelsporingerFørDeaktivering = regelsporingRepository.hentRegelSporingGrunnlagMedGittType(koblingId, List.of(BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT));
         assertThat(aktiveRegelsporingerFørDeaktivering.isEmpty()).isFalse();
-        rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(koblingId);
+        rullTilbakeTjeneste.deaktiverAllKoblingdata(koblingId);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -149,6 +161,10 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         assertThat(aktivtGrunnlag).isEmpty();
         assertThat(kalkulatorInputEntitet).isEmpty();
         assertThat(aktiveRegelsporinger.isEmpty()).isTrue();
+
+        Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
+        assertThat(avklaringsbehovEntitet.isPresent());
+        assertThat(avklaringsbehovEntitet.get().getStatus()).isEqualTo(AvklaringsbehovStatus.AVBRUTT);
     }
 
     private String getTestJSON() {

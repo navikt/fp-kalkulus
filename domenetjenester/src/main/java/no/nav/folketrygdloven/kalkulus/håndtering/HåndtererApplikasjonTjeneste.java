@@ -30,7 +30,6 @@ import no.nav.k9.felles.exception.TekniskException;
 public class HåndtererApplikasjonTjeneste {
     private static final Logger LOG = LoggerFactory.getLogger(HåndtererApplikasjonTjeneste.class);
 
-    private RullTilbakeTjeneste rullTilbakeTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
@@ -39,10 +38,8 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     @Inject
-    public HåndtererApplikasjonTjeneste(RullTilbakeTjeneste rullTilbakeTjeneste,
-                                        BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+    public HåndtererApplikasjonTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                         AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
-        this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }

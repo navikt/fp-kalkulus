@@ -189,6 +189,15 @@ public class AvklaringsbehovTjeneste {
         });
     }
 
+    /** Avbryter alle avklaringsbehov på kobling
+     * @param koblingId KoblingId
+     */
+    public void avbrytAlleAvklaringsbehov(Long koblingId) {
+        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
+        List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
+        alleApPåKobling.forEach(ap -> avbrytAvklaringsbehov(koblingId, ap));
+    }
+
     private boolean avklaringsbehovErFunnetEtter(AvklaringsbehovEntitet ap, AvklaringsbehovEntitet avklaringsbehovEntitet) {
         return ap.getStegFunnet().erEtter(avklaringsbehovEntitet.getStegFunnet());
     }

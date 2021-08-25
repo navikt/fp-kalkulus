@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -16,15 +17,19 @@ public class RullTilbakeTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
+    private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     public RullTilbakeTjeneste() {
         // CDI
     }
 
     @Inject
-    public RullTilbakeTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, RegelsporingRepository regelsporingRepository) {
+    public RullTilbakeTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                               RegelsporingRepository regelsporingRepository,
+                               AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.regelsporingRepository = regelsporingRepository;
+        this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
     public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
@@ -78,9 +83,10 @@ public class RullTilbakeTjeneste {
                 .anyMatch(aktivTilstand ->  !aktivTilstand.erFør(tilstand));
     }
 
-    public void deaktiverAktivtBeregningsgrunnlagOgInput(Long koblingId) {
+    public void deaktiverAllKoblingdata(Long koblingId) {
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntitet(koblingId);
         beregningsgrunnlagRepository.deaktiverKalkulatorInput(koblingId);
+        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(koblingId);
         regelsporingRepository.ryddRegelsporingForTilstand(koblingId, BeregningsgrunnlagTilstand.finnFørste());
     }
 

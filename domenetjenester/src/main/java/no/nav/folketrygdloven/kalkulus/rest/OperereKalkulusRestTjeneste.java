@@ -37,7 +37,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
@@ -258,7 +257,7 @@ public class OperereKalkulusRestTjeneste {
                 if (!Objects.equals(kobling.getSaksnummer().getVerdi(), saksnummer)) {
                     throw new IllegalArgumentException("Kobling tilhører ikke saksnummer [" + saksnummer + "]: " + kobling);
                 }
-                rullTilbakeTjeneste.deaktiverAktivtBeregningsgrunnlagOgInput(kobling.getId());
+                rullTilbakeTjeneste.deaktiverAllKoblingdata(kobling.getId());
             }
         }
 
