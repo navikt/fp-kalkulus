@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning;
 
-import static no.nav.folketrygdloven.kalkulus.beregning.KopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
 import java.util.List;
@@ -35,6 +34,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
@@ -207,17 +207,15 @@ public class BeregningStegTjeneste {
         // Lagring av grunnlag fra steg
         repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
-
-        // Kopiering av forrige grunnlag i steg ut
-        boolean kanKopiereAvklartIStegUt = kanKopiereForrigeGrunnlagAvklartIStegUt(
-            resultat.getBeregningAvklaringsbehovResultater(),
-            resultat.getBeregningsgrunnlagGrunnlag(),
-            input.getForrigeGrunnlagFraSteg());
-        if (kanKopiereAvklartIStegUt) {
-            input.getForrigeGrunnlagFraStegUt().map(KalkulatorTilEntitetMapper::mapGrunnlag)
+        // Kopiering av data og spoling fram til neste tilstand
+        SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
+                resultat.getBeregningsgrunnlagGrunnlag(),
+                input.getForrigeGrunnlagFraSteg(),
+                input.getForrigeGrunnlagFraStegUt()).map(builder -> builder.build(input.getStegUtTilstand()))
+                .map(KalkulatorTilEntitetMapper::mapGrunnlag)
                 .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
-        }
     }
+
 
     private TilstandResponse mapTilstandResponse(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
         var avklaringsbehov = resultat.getBeregningAvklaringsbehovResultater().stream()

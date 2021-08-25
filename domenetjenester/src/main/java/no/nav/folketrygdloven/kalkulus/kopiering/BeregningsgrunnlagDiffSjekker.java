@@ -1,10 +1,12 @@
-package no.nav.folketrygdloven.kalkulus.beregning;
+package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -15,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.k9.felles.util.Tuple;
@@ -40,6 +43,25 @@ class BeregningsgrunnlagDiffSjekker {
 
 
     static boolean harSignifikantDiffIBeregningsgrunnlag(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
+        if (harDiffIFelterPåBeregningsgrunnlag(aktivt, forrige)) {
+            return true;
+        }
+
+        List<BeregningsgrunnlagPeriodeDto> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
+        return harPeriodeDiff(aktivePerioder, forrigePerioder);
+    }
+
+    static Set<Intervall> finnPerioderUtenDiff(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
+        if (harDiffIFelterPåBeregningsgrunnlag(aktivt, forrige)){
+            return Set.of();
+        }
+        List<BeregningsgrunnlagPeriodeDto> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
+        return finnPerioderUtenDiff(aktivePerioder, forrigePerioder);
+    }
+
+    private static boolean harDiffIFelterPåBeregningsgrunnlag(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
         if (!erLike(aktivt.getGrunnbeløp() == null ? null : aktivt.getGrunnbeløp().getVerdi(), forrige.getGrunnbeløp() == null ? null : forrige.getGrunnbeløp().getVerdi())) {
             return true;
         }
@@ -59,11 +81,9 @@ class BeregningsgrunnlagDiffSjekker {
         if (harSammenligningsgrunnlagPrStatusDiff(aktivt.getSammenligningsgrunnlagPrStatusListe(), forrige.getSammenligningsgrunnlagPrStatusListe())) {
             return true;
         }
-
-        List<BeregningsgrunnlagPeriodeDto> aktivePerioder = aktivt.getBeregningsgrunnlagPerioder();
-        List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrige.getBeregningsgrunnlagPerioder();
-        return harPeriodeDiff(aktivePerioder, forrigePerioder);
+        return false;
     }
+
 
     private static boolean harSammenligningsgrunnlagDiff(SammenligningsgrunnlagDto aktivt, SammenligningsgrunnlagDto forrige) {
         if (aktivt == null || forrige == null) {
@@ -120,21 +140,42 @@ class BeregningsgrunnlagDiffSjekker {
         for (int i = 0; i < aktivePerioder.size(); i++) {
             BeregningsgrunnlagPeriodeDto aktivPeriode = aktivePerioder.get(i);
             BeregningsgrunnlagPeriodeDto forrigePeriode = forrigePerioder.get(i);
-            if (!aktivPeriode.getBeregningsgrunnlagPeriodeFom().equals(forrigePeriode.getBeregningsgrunnlagPeriodeFom())) {
-                return true;
-            }
-            if (!erLike(aktivPeriode.getBruttoPrÅr(), forrigePeriode.getBruttoPrÅr())) {
-                return true;
-            }
-            Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> resultat = finnAndeler(aktivPeriode, forrigePeriode);
-            if (resultat.getElement1().size() != resultat.getElement2().size()) {
-                return true;
-            }
-            if (sjekkAndeler(resultat.getElement1(), resultat.getElement2())) {
+            if (erDiffMellomToPerioder(aktivPeriode, forrigePeriode)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean erDiffMellomToPerioder(BeregningsgrunnlagPeriodeDto aktivPeriode, BeregningsgrunnlagPeriodeDto forrigePeriode) {
+        if (!aktivPeriode.getBeregningsgrunnlagPeriodeFom().equals(forrigePeriode.getBeregningsgrunnlagPeriodeFom())) {
+            return true;
+        }
+        if (!aktivPeriode.getBeregningsgrunnlagPeriodeTom().equals(forrigePeriode.getBeregningsgrunnlagPeriodeTom())) {
+            return true;
+        }
+        if (!erLike(aktivPeriode.getBruttoPrÅr(), forrigePeriode.getBruttoPrÅr())) {
+            return true;
+        }
+        Tuple<List<BeregningsgrunnlagPrStatusOgAndelDto>, List<BeregningsgrunnlagPrStatusOgAndelDto>> resultat = finnAndeler(aktivPeriode, forrigePeriode);
+        if (resultat.getElement1().size() != resultat.getElement2().size()) {
+            return true;
+        }
+        if (sjekkAndeler(resultat.getElement1(), resultat.getElement2())) {
+            return true;
+        }
+        return false;
+    }
+
+    private static Set<Intervall> finnPerioderUtenDiff(List<BeregningsgrunnlagPeriodeDto> aktivePerioder, List<BeregningsgrunnlagPeriodeDto> forrigePerioder) {
+        var perioderUtenDiff = new HashSet<Intervall>();
+        // begge listene er sorter på fom dato så det er mulig å benytte indeks her
+        int i = 0;
+        while (i < forrigePerioder.size() && i < aktivePerioder.size() && !erDiffMellomToPerioder(aktivePerioder.get(i), forrigePerioder.get(i))) {
+                perioderUtenDiff.add(aktivePerioder.get(i).getPeriode());
+                i++;
+        }
+        return perioderUtenDiff;
     }
 
     private static boolean sjekkAndeler(List<BeregningsgrunnlagPrStatusOgAndelDto> aktiveAndeler, List<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndeler) {
