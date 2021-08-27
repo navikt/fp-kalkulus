@@ -79,6 +79,7 @@ public class FordelBeregningsgrunnlagHåndterer {
             }
             if (!endretAndel.getNyAndel()) {
                 mapBeregnetOgOverstyrt(korrektAndel.get(), andelBuilder);
+                andelBuilder.medKilde(korrektAndel.get().getKilde());
             }
         }
         return andelBuilder;
