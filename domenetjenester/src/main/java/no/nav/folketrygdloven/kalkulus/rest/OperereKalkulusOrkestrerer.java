@@ -85,6 +85,7 @@ public class OperereKalkulusOrkestrerer {
 
     public Resultat<KalkulusRespons> lagInputOgBeregnVidere(Map<UUID, KalkulatorInputDto> inputPrReferanse,
                                                             List<UUID> eksternReferanser,
+                                                            Map<UUID, List<UUID>> koblingRelasjon,
                                                             YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                             Saksnummer saksnummer,
                                                             StegType stegType) {
@@ -93,7 +94,7 @@ public class OperereKalkulusOrkestrerer {
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         // Lag input
         BeregningSteg beregningSteg = BeregningSteg.fraKode(stegType.getKode());
-        var stegInputPrKobling = lagInput(koblingIder, inputPrReferanse, new InputForSteg(beregningSteg));
+        var stegInputPrKobling = lagInput(koblingIder, inputPrReferanse, new InputForSteg(beregningSteg, koblingRelasjon));
         // Operer
         return opererAlle(koblinger, stegInputPrKobling, new Fortsetter(beregningSteg));
     }
@@ -211,14 +212,21 @@ public class OperereKalkulusOrkestrerer {
     private class InputForSteg implements LagInputTjeneste {
 
         private final BeregningSteg steg;
+        private Map<UUID, List<UUID>> koblingRelasjon;
 
         private InputForSteg(BeregningSteg steg) {
             this.steg = steg;
         }
 
+        private InputForSteg(BeregningSteg steg, Map<UUID, List<UUID>> koblingRelasjon) {
+            this.steg = steg;
+            this.koblingRelasjon = koblingRelasjon;
+        }
+
         @Override
         public Map<Long, BeregningsgrunnlagInput> utfør(Set<Long> koblingIder, Map<Long, KalkulatorInputDto> inputPrKobling) {
-            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingIder, inputPrKobling, steg, Map.of())
+            koblingRelasjon = Map.of();
+            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingIder, inputPrKobling, steg, koblingRelasjon)
                     .entrySet().stream()
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
