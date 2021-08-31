@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Vilkårsavslagsårsak;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-public class TilstandResponse {
+public class TilstandResponse implements KalkulusRespons {
 
     @JsonProperty(value = "eksternReferanse")
     @Valid
@@ -101,6 +101,7 @@ public class TilstandResponse {
         return vilkårsavslagsårsak;
     }
 
+    @Override
     public UUID getEksternReferanse() {
         return eksternReferanse;
     }

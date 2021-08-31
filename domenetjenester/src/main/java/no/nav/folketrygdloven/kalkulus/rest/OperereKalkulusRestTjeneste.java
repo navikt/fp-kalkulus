@@ -4,8 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -37,32 +35,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
-import no.nav.folketrygdloven.kalkulus.beregning.BeregningStegTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
 import no.nav.folketrygdloven.kalkulus.beregning.input.HentInputResponsKode;
-import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
-import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
-import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
-import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningListeRequest;
-import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandListeResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
@@ -83,12 +71,8 @@ import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
 public class OperereKalkulusRestTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
-    private BeregningStegTjeneste beregningStegTjeneste;
-    private KalkulatorInputTjeneste kalkulatorInputTjeneste;
-    private StegProsessInputTjeneste stegInputTjeneste;
-    private HåndteringInputTjeneste håndteringInputTjeneste;
-    private HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
+    private OperereKalkulusOrkestrerer orkestrerer;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
@@ -96,19 +80,11 @@ public class OperereKalkulusRestTjeneste {
 
     @Inject
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
-                                       BeregningStegTjeneste beregningStegTjeneste,
-                                       KalkulatorInputTjeneste kalkulatorInputTjeneste,
-                                       StegProsessInputTjeneste stegInputTjeneste,
-                                       HåndteringInputTjeneste håndteringInputTjeneste,
-                                       HåndtererApplikasjonTjeneste håndtererApplikasjonTjeneste,
-                                       RullTilbakeTjeneste rullTilbakeTjeneste) {
+                                       RullTilbakeTjeneste rullTilbakeTjeneste,
+                                       OperereKalkulusOrkestrerer orkestrerer) {
         this.koblingTjeneste = koblingTjeneste;
-        this.beregningStegTjeneste = beregningStegTjeneste;
-        this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
-        this.stegInputTjeneste = stegInputTjeneste;
-        this.håndteringInputTjeneste = håndteringInputTjeneste;
-        this.håndtererApplikasjonTjeneste = håndtererApplikasjonTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
+        this.orkestrerer = orkestrerer;
     }
 
     @POST
@@ -120,33 +96,20 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
-        var aktørId = new AktørId(spesifikasjon.getAktør().getIdent());
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
 
-        List<TilstandResponse> resultat = new ArrayList<>();
+        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgStartBeregning(
+                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                spesifikasjon.getYtelseSomSkalBeregnes(),
+                new Saksnummer(spesifikasjon.getSaksnummer()),
+                new AktørId(spesifikasjon.getAktør().getIdent())
+        );
 
-        for (var entry : spesifikasjon.getKalkulatorInputPerKoblingReferanse().entrySet()) {
-            var eksternReferanse = entry.getKey();
-            var kalkulatorInput = entry.getValue();
-            var koblingReferanse = new KoblingReferanse(eksternReferanse);
-            MDC.put("prosess_koblingreferanse", eksternReferanse.toString());
-
-            var koblingEntitet = koblingTjeneste.finnEllerOpprett(koblingReferanse, ytelseTyperKalkulusStøtter, aktørId, saksnummer);
-
-            boolean inputHarEndretSeg = kalkulatorInputTjeneste.lagreKalkulatorInput(koblingEntitet.getId(), kalkulatorInput);
-
-            if (inputHarEndretSeg) {
-                rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingEntitet.getId(), BeregningsgrunnlagTilstand.OPPRETTET);
-            }
-
-            var input = stegInputTjeneste.lagStartInput(koblingEntitet, kalkulatorInput);
-            var tilstandResponse = beregningStegTjeneste.fastsettBeregningsaktiviteter(input);
-            resultat.add(tilstandResponse);
-        }
-
-        return Response.ok(new TilstandListeResponse(resultat)).build();
+        return Response.ok(new TilstandListeResponse(respons.getResultatPrReferanse()
+                .values().stream()
+                .map(r -> (TilstandResponse) r)
+                .toList())).build();
     }
 
     @POST
@@ -157,32 +120,24 @@ public class OperereKalkulusRestTjeneste {
     })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningListeRequestAbacDto spesifikasjon) {
-        String saksnummer = spesifikasjon.getSaksnummer();
-        MDC.put("prosess_saksnummer", saksnummer);
-        List<TilstandResponse> resultat = new ArrayList<>();
-        Resultat<StegProsesseringInput> inputResultat;
-        // Sjekker om request har oppdatert kalkulatorinput
-        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
-            // kalkulatorinput oppdateres
-            var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-            kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseTyperKalkulusStøtter, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
-            inputResultat = lagStegInputForKoblinger(spesifikasjon);
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+
+        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgBeregnVidere(
+                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                spesifikasjon.getEksternReferanser(),
+                spesifikasjon.getYtelseSomSkalBeregnes(),
+                new Saksnummer(spesifikasjon.getSaksnummer()),
+                spesifikasjon.getStegType()
+        );
+
+        if (respons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return Response.ok(new OppdateringListeRespons(true)).build();
         } else {
-            inputResultat = lagStegInputForKoblinger(spesifikasjon);
-            // Sjekker om kalkulatorinput må oppdateres
-            if (inputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-                return Response.ok(new TilstandListeResponse(true)).build();
-            }
+            return Response.ok(new TilstandListeResponse(respons.getResultatPrKobling()
+                    .values().stream()
+                    .map(r -> (TilstandResponse) r)
+                    .toList())).build();
         }
-
-        for (var inputPrKobling : inputResultat.getResultatPrKobling().entrySet()) {
-            MDC.put("prosess_koblingreferanse", inputPrKobling.getKey().toString());
-            BeregningSteg stegtype = BeregningSteg.fraKode(spesifikasjon.getStegType().getKode());
-            var tilstandResponse = beregningStegTjeneste.beregnFor(stegtype, inputPrKobling.getValue());
-            resultat.add(tilstandResponse);
-        }
-
-        return Response.ok(new TilstandListeResponse(resultat)).build();
     }
 
     @POST
@@ -194,44 +149,23 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
 
-        // Mapper informasjon om kobling
-        var koblingReferanser = spesifikasjon.getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse)
-                .map(KoblingReferanse::new).collect(Collectors.toList());
-        var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser);
-        var koblingTilDto = spesifikasjon.getHåndterBeregningListe().stream()
-                .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
+        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgHåndter(
+                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                spesifikasjon.getYtelseSomSkalBeregnes(),
+                new Saksnummer(spesifikasjon.getSaksnummer()),
+                spesifikasjon.getHåndterBeregningListe());
 
-        // Sjekker om request har oppdatert kalkulatorinput
-        if (spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null) {
-            // kalkulatorinput oppdateres
-            kalkulatorInputTjeneste.lagreKalkulatorInput(spesifikasjon.getKalkulatorInputPerKoblingReferanse());
-        }
-
-        // Lager Input for oppdatering
-        var hentInputResultat = håndteringInputTjeneste.lagKalkulatorInput(koblingTilDto.keySet());
-        // Sjekker om kalkulatorinput må oppdateres
-        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+        if (respons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return Response.ok(new OppdateringListeRespons(true)).build();
+        } else {
+            List<OppdateringPrRequest> oppdateringer = respons.getResultatPrReferanse().entrySet().stream()
+                    .sorted(Comparator.comparing(e -> respons.getSkjæringstidspunktPrReferanse().get(e.getKey())))
+                    .map(res -> new OppdateringPrRequest((OppdateringRespons) res.getValue(), res.getKey()))
+                    .collect(Collectors.toList());
+            return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
         }
-
-        var tilstand = finnTilstandFraDto(koblingTilDto);
-
-        // Ruller tilbake hvis det er tilbakehopp
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingTilDto.keySet(), tilstand);
-
-        var håndterInputPrKobling = håndteringInputTjeneste.lagBeregningsgrunnlagInput(koblingTilDto.keySet(),
-                hentInputResultat.getResultatPrKobling(), tilstand);
-
-        // Håndterer oppdatering
-        var håndterResultat = håndtererApplikasjonTjeneste.håndter(håndterInputPrKobling, koblingTilDto);
-
-        // Lager responsobjekt
-        List<OppdateringPrRequest> oppdateringer = håndterResultat.entrySet().stream()
-                .sorted(Comparator.comparing(e -> håndterInputPrKobling.get(e.getKey()).getSkjæringstidspunktOpptjening()))
-                .map(res -> new OppdateringPrRequest(res.getValue(), finnKoblingUUIDForKoblingId(koblinger, res)))
-                .collect(Collectors.toList());
-        return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
     @POST
@@ -264,43 +198,6 @@ public class OperereKalkulusRestTjeneste {
         return Response.ok().build();
     }
 
-    private Resultat<StegProsesseringInput> lagStegInputForKoblinger(@Valid @NotNull FortsettBeregningListeRequestAbacDto spesifikasjon) {
-        var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
-        List<KoblingReferanse> referanser = spesifikasjon.getEksternReferanser().stream().map(KoblingReferanse::new).collect(Collectors.toList());
-        var koblinger = koblingTjeneste.hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
-
-        List<KoblingEntitet> koblingUtenSaksnummer = koblinger.stream()
-                .filter(k -> !Objects.equals(k.getSaksnummer().getVerdi(), spesifikasjon.getSaksnummer())).collect(Collectors.toList());
-        if (!koblingUtenSaksnummer.isEmpty()) {
-            throw new IllegalArgumentException("Koblinger tilhører ikke saksnummer [" + spesifikasjon.getSaksnummer() + "]: " + koblingUtenSaksnummer);
-        }
-
-
-        BeregningSteg stegType = BeregningSteg.fraKode(spesifikasjon.getStegType().getKode());
-        return stegInputTjeneste.lagFortsettInput(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()), stegType,
-                spesifikasjon.getKoblingRelasjon().orElse(Collections.emptyMap()));
-    }
-
-    private BeregningsgrunnlagTilstand finnTilstandFraDto(Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
-        List<BeregningsgrunnlagTilstand> tilstander = håndterBeregningDtoPrKobling.values().stream().map(HåndterBeregningDto::getKode)
-                .map(MapHåndteringskodeTilTilstand::map)
-                .distinct()
-                .collect(Collectors.toList());
-        if (tilstander.size() > 1) {
-            throw new IllegalStateException("Kan ikke løse avklaringsbehov for flere tilstander samtidig");
-        }
-        return tilstander.get(0);
-    }
-
-    private Long finnKoblingId(List<KoblingEntitet> koblinger, HåndterBeregningRequest s) {
-        return koblinger.stream().filter(kobling -> kobling.getKoblingReferanse().getReferanse().equals(s.getEksternReferanse()))
-                .findFirst().map(KoblingEntitet::getId).orElse(null);
-    }
-
-    private UUID finnKoblingUUIDForKoblingId(List<KoblingEntitet> koblinger, Map.Entry<Long, OppdateringRespons> res) {
-        return koblinger.stream().filter(k -> k.getId().equals(res.getKey())).findFirst().map(KoblingEntitet::getKoblingReferanse)
-                .map(KoblingReferanse::getReferanse).orElse(null);
-    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)

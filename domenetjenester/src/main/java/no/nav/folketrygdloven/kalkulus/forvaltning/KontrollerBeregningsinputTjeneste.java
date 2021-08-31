@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -54,7 +55,7 @@ public class KontrollerBeregningsinputTjeneste {
     }
 
     public Optional<DiffResultatDto> kontrollerInputForKobling(KoblingEntitet kobling) {
-        Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Collections.singletonList(kobling.getId()),
+        Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Set.of(kobling.getId()),
                 BeregningSteg.FORS_BERGRUNN, Collections.emptyMap()); // Bruker dette steget fordi det er her inntekt fastsettes
         ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.getResultatPrKobling().get(kobling.getId());
         BeregningsgrunnlagGrunnlagEntitet sisteGrunnlagFraKofak = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER).orElseThrow();

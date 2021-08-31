@@ -3,6 +3,8 @@ package no.nav.folketrygdloven.kalkulus.kobling;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -34,6 +36,18 @@ public class KoblingTjeneste {
         KoblingEntitet kobling = hentFor(referanse).orElse(new KoblingEntitet(referanse, ytelseTyperKalkulusStøtter, saksnummer, aktørId));
         repository.lagre(kobling);
         return kobling;
+    }
+
+    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
+        var koblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
+        if (koblinger.isEmpty()) {
+            koblinger = referanser.stream().map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
+                    .collect(Collectors.toList());
+        } else if (koblinger.size() != referanser.size()) {
+            throw new IllegalStateException("Det finnes referanser som ikke har kobling");
+        }
+        koblinger.forEach(kobling -> repository.lagre(kobling));
+        return koblinger;
     }
 
     public Optional<KoblingEntitet> hentFor(KoblingReferanse referanse) {

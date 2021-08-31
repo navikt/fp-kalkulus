@@ -11,6 +11,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 public class UtledEndring {
@@ -19,12 +20,12 @@ public class UtledEndring {
         // skjul
     }
 
-    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
+    public static Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, forrigeBeregningsgrunnlagOpt);
-        return new OppdateringRespons(beregningsgrunnlagEndring);
+        return new Endringer(beregningsgrunnlagEndring);
     }
 
     private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {

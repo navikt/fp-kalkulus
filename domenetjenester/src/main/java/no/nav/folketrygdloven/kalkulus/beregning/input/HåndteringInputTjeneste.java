@@ -43,13 +43,7 @@ public class HåndteringInputTjeneste {
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
     }
 
-    public Resultat<KalkulatorInputDto> lagKalkulatorInput(Set<Long> koblingId) {
-        Objects.requireNonNull(koblingId, "koblingId");
-        var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
-        return new Resultat<>(inputRespons.getKode(), inputRespons.getResultatPrKobling());
-    }
-
-    public Map<Long, HåndterBeregningsgrunnlagInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
+    public Map<Long, BeregningsgrunnlagInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
                                                                                Map<Long, KalkulatorInputDto> inputPrKobling,
                                                                                BeregningsgrunnlagTilstand tilstand) {
         Objects.requireNonNull(koblingId, "koblingId");

@@ -20,7 +20,7 @@ public class VurderRefusjonBeregningsgrunnlagHåndterer implements BeregningHån
     @Override
     public HåndteringResultat håndter(VurderRefusjonBeregningsgrunnlagDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.refusjon.VurderRefusjonBeregningsgrunnlagHåndterer.håndter(mapVurderRefusjonBeregningsgrunnlagDto(dto), beregningsgrunnlagInput);
-        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand());
+        var endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand());
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 }

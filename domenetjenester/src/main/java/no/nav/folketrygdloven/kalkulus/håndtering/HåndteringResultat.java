@@ -1,15 +1,15 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 public class HåndteringResultat {
 
-    private BeregningsgrunnlagGrunnlagDto nyttGrunnlag;
+    private final BeregningsgrunnlagGrunnlagDto nyttGrunnlag;
+    private final Endringer endring;
 
-    private OppdateringRespons endring;
-
-    public HåndteringResultat(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, OppdateringRespons endring) {
+    public HåndteringResultat(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, Endringer endring) {
         this.nyttGrunnlag = nyttGrunnlag;
         this.endring = endring;
     }
@@ -19,7 +19,7 @@ public class HåndteringResultat {
         return nyttGrunnlag;
     }
 
-    public OppdateringRespons getEndring() {
+    public Endringer getEndring() {
         return endring;
     }
 }

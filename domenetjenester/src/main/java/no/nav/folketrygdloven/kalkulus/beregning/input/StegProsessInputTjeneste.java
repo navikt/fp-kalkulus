@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
@@ -81,16 +81,22 @@ public class StegProsessInputTjeneste {
         return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
 
-    public Resultat<StegProsesseringInput> lagFortsettInput(List<Long> koblingId,
+    @Deprecated // Bruk kalkulatorInputTjeneste og lagBeregningsgrunnlagInput separat (sjå OperereKalkulusOrkestrerer)
+    public Resultat<StegProsesseringInput> lagFortsettInput(Set<Long> koblingId,
                                                             BeregningSteg stegType,
                                                             Map<UUID, List<UUID>> koblingRelasjon) {
         Objects.requireNonNull(koblingId, "koblingId");
-        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
         if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return new Resultat<>(inputRespons.getKode());
         }
 
+        return Resultat.forGyldigInputMedData(lagBeregningsgrunnlagInput(koblingId, inputRespons.getResultatPrKobling(), stegType, koblingRelasjon));
+    }
+
+    public Map<Long, StegProsesseringInput> lagBeregningsgrunnlagInput(Set<Long> koblingId, Map<Long, KalkulatorInputDto> inputPrKobling, BeregningSteg stegType,
+                                                                       Map<UUID, List<UUID>> koblingRelasjon) {
+        var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
         List<Long> koblingUtenGrunnlag = koblingId.stream().filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
@@ -102,9 +108,9 @@ public class StegProsessInputTjeneste {
         Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
                 .collect(Collectors.toMap(
                         KoblingEntitet::getId,
-                        id -> mapStegInput(id, inputRespons.getResultatPrKobling().get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjon))
+                        id -> mapStegInput(id, inputPrKobling.get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjon))
                         ));
-        return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, koblingStegInputMap);
+        return koblingStegInputMap;
     }
 
     private List<UUID> finnOriginalKobling(KoblingEntitet kobling, Map<UUID, List<UUID>> koblingRelasjon) {

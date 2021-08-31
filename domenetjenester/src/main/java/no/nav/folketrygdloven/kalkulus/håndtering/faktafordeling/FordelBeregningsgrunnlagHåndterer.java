@@ -20,7 +20,7 @@ public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<F
     @Override
     public HåndteringResultat håndter(FaktaOmFordelingHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FordelBeregningsgrunnlagHåndterer.håndter(mapFordelBeregningsgrunnlagDto(dto.getFordelBeregningsgrunnlagDto()), beregningsgrunnlagInput);
-        OppdateringRespons endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand());
+        var endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand());
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 

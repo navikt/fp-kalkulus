@@ -44,42 +44,36 @@ public class HåndtererApplikasjonTjeneste {
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
-    public Map<Long, OppdateringRespons> håndter(Map<Long, HåndterBeregningsgrunnlagInput> håndterBeregningInputPrKobling, Map<Long, HåndterBeregningDto> håndterBeregningDtoPrKobling) {
+    public OppdateringRespons håndter(HåndterBeregningsgrunnlagInput håndterBeregningInput, HåndterBeregningDto håndterBeregningDto) {
 
-        Map<Long, OppdateringRespons> resultatPrKobling = new HashMap<>();
+        Long koblingId = håndterBeregningInput.getKoblingId();
 
-        for (Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling : håndterBeregningInputPrKobling.entrySet()) {
-            Long koblingId = hånteringInputPrKobling.getKey();
-            HåndterBeregningDto håndterBeregningDto = håndterBeregningDtoPrKobling.get(koblingId);
-
-            // Siden vi i starten kan få inn avklaringsbehov som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
-            // må vi sjekke på dette intill gamle saker har passert beregning
-            boolean skalLøseAvklaringsbehovEtterOppdatering = false;
-            AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
-            if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-                if (harUtledetAvklaringsbehov(koblingId, avklaringsbehovdefinisjon)) {
-                    skalLøseAvklaringsbehovEtterOppdatering = true;
-                } else if (avklaringsbehovdefinisjon.erOverstyring()) {
-                    opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
-                    skalLøseAvklaringsbehovEtterOppdatering = true;
-                } else {
-                    LOG.info("FT-406871: Prøver å løse avklaringsbehov {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
-                }
-            }
-
-            BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
-            HåndteringResultat resultat = håndterOgLagre(hånteringInputPrKobling, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);
-            if (resultat.getEndring() != null) {
-                resultatPrKobling.put(koblingId, resultat.getEndring());
+        // Siden vi i starten kan få inn avklaringsbehov som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
+        // må vi sjekke på dette intill gamle saker har passert beregning
+        boolean skalLøseAvklaringsbehovEtterOppdatering = false;
+        AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+            if (harUtledetAvklaringsbehov(koblingId, avklaringsbehovdefinisjon)) {
+                skalLøseAvklaringsbehovEtterOppdatering = true;
+            } else if (avklaringsbehovdefinisjon.erOverstyring()) {
+                opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
+                skalLøseAvklaringsbehovEtterOppdatering = true;
             } else {
-                resultatPrKobling.put(koblingId, new OppdateringRespons());
-            }
-
-            if (skalLøseAvklaringsbehovEtterOppdatering) {
-                løsAvklaringsbehov(koblingId, håndterBeregningDto);
+                LOG.info("FT-406871: Prøver å løse avklaringsbehov {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
             }
         }
-        return resultatPrKobling;
+
+        BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
+        HåndteringResultat resultat = håndterOgLagre(håndterBeregningInput, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);
+
+        if (skalLøseAvklaringsbehovEtterOppdatering) {
+            løsAvklaringsbehov(koblingId, håndterBeregningDto);
+        }
+        if (resultat.getEndring() != null) {
+            return new OppdateringRespons(resultat.getEndring(), håndterBeregningInput.getKoblingReferanse().getKoblingUuid());
+        } else {
+            return new OppdateringRespons();
+        }
     }
 
     private boolean harUtledetAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
@@ -102,11 +96,11 @@ public class HåndtererApplikasjonTjeneste {
     }
 
 
-    private HåndteringResultat håndterOgLagre(Map.Entry<Long, HåndterBeregningsgrunnlagInput> hånteringInputPrKobling, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
+    private HåndteringResultat håndterOgLagre(HåndterBeregningsgrunnlagInput hånteringInput, HåndterBeregningDto håndterBeregningDto, HåndteringKode håndteringKode, BeregningsgrunnlagTilstand tilstand) {
         BeregningHåndterer<HåndterBeregningDto> beregningHåndterer = finnBeregningHåndterer(håndterBeregningDto.getClass(), håndteringKode.getKode());
-        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, hånteringInputPrKobling.getValue());
+        HåndteringResultat resultat = beregningHåndterer.håndter(håndterBeregningDto, hånteringInput);
         var beregningsgrunnlagGrunnlagBuilder = KalkulatorTilEntitetMapper.mapGrunnlag(resultat.getNyttGrunnlag());
-        beregningsgrunnlagRepository.lagre(hånteringInputPrKobling.getKey(), beregningsgrunnlagGrunnlagBuilder, tilstand);
+        beregningsgrunnlagRepository.lagre(hånteringInput.getKoblingId(), beregningsgrunnlagGrunnlagBuilder, tilstand);
         return resultat;
     }
 

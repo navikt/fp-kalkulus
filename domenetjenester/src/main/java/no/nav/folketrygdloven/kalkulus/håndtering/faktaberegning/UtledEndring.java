@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
@@ -21,7 +22,7 @@ public class UtledEndring {
         // skjul
     }
 
-    public static OppdateringRespons utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagGrunnlagDto grunnlagFraSteg, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, FaktaOmBeregningHåndteringDto dto) {
+    public static Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagGrunnlagDto grunnlagFraSteg, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, FaktaOmBeregningHåndteringDto dto) {
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
         BeregningsgrunnlagDto bgFraSteg = grunnlagFraSteg.getBeregningsgrunnlag()
@@ -29,7 +30,7 @@ public class UtledEndring {
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
         FaktaOmBeregningVurderinger faktaOmBeregningVurderinger = UtledFaktaOmBeregningVurderinger.utled(dto, beregningsgrunnlagGrunnlagDto.getFaktaAggregat(), forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getFaktaAggregat));
-        return new OppdateringRespons(beregningsgrunnlagEndring, faktaOmBeregningVurderinger);
+        return new Endringer(beregningsgrunnlagEndring, faktaOmBeregningVurderinger);
     }
 
     private static BeregningsgrunnlagEndring utledBeregningsgrunnlagEndring(BeregningsgrunnlagDto beregningsgrunnlagEntitet, BeregningsgrunnlagDto bgFraSteg, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {

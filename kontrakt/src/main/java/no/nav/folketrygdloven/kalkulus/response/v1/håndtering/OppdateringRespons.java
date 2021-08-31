@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.response.v1.håndtering;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
+import java.util.UUID;
+
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
+
 /**
  * Beskriver hvilke endringer som er gjort på beregningsgrunnlaget ved løst avklaringsbehov
  */
@@ -17,7 +21,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
-public class OppdateringRespons {
+public class OppdateringRespons implements KalkulusRespons {
+
+    @JsonProperty(value = "eksternReferanse")
+    @Valid
+    private UUID eksternReferanse;
 
     @JsonProperty(value = "beregningsgrunnlagEndring")
     @Valid
@@ -34,18 +42,11 @@ public class OppdateringRespons {
     public OppdateringRespons() {
     }
 
-    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring,
-                              @Valid FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
-        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
-        this.faktaOmBeregningVurderinger = faktaOmBeregningVurderinger;
-    }
-
-    public OppdateringRespons(@Valid RefusjonoverstyringEndring refusjonoverstyringEndring) {
-        this.refusjonoverstyringEndring = refusjonoverstyringEndring;
-    }
-
-    public OppdateringRespons(@Valid BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
-        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+    public OppdateringRespons(Endringer endringer, UUID eksternReferanse) {
+        this.beregningsgrunnlagEndring = endringer.getBeregningsgrunnlagEndring();
+        this.faktaOmBeregningVurderinger = endringer.getFaktaOmBeregningVurderinger();
+        this.refusjonoverstyringEndring = endringer.getRefusjonoverstyringEndring();
+        this.eksternReferanse = eksternReferanse;
     }
 
     public static OppdateringRespons TOM_RESPONS() {
@@ -64,4 +65,8 @@ public class OppdateringRespons {
         return refusjonoverstyringEndring;
     }
 
+    @Override
+    public UUID getEksternReferanse() {
+        return eksternReferanse;
+    }
 }

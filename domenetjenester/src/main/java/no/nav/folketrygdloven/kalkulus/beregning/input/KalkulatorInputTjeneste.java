@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,14 @@ public class KalkulatorInputTjeneste {
 
     public KalkulatorInputTjeneste() {
         // CDI-runner
+    }
+
+    public Resultat<KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
+        if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
+            // kalkulatorinput oppdateres
+            lagreKalkulatorInput(inputPrReferanse);
+        }
+        return hentForKoblinger(koblingIder);
     }
 
     public Resultat<KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) {
