@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.DRIFT;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.k9_DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,14 +21,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.forvaltning.AksjonspunktMigreringTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.request.v1.migrerAksjonspunkt.MigrerAksjonspunktListeRequest;
-import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.AbacDto;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
@@ -56,7 +52,7 @@ public class MigrerAksjonspunktRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/migrerAksjonspunkter")
     @Operation(description = "Migrerer/kopierer aksjonspunkt fra k9-sak til ft-kalkulus", tags = "migrerAksjonspunkt", summary = ("Migrerer aksjonspunkt."))
-    @BeskyttetRessurs(action = CREATE, resource = DRIFT)
+    @BeskyttetRessurs(action = CREATE, resource = k9_DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response migrerAksjonspunkt(@NotNull @Valid MigrerAksjonspunktListeRequestAbacDto spesifikasjon) {
         var avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.fraKode(spesifikasjon.getAvklaringsbehovKode());

@@ -4,4 +4,6 @@ public final class KalkulusBeskyttetRessursAttributt {
     public static final String KALKULUS = "no.nav.abac.attributter.resource.duplo.kalkulus";
     public static final String BEREGNINGSGRUNNLAG = "no.nav.abac.attributter.resource.duplo.kalkulus.beregningsgrunnlag";
     public static final String DRIFT = "no.nav.abac.attributter.resource.duplo.kalkulus.drift";
+    public static final String k9_DRIFT = "no.nav.abac.attributter.k9.drift";
+
 }
