@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kobling;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -32,22 +33,20 @@ public class KoblingTjeneste {
         this.låsRepository = låsRepository;
     }
 
-    public KoblingEntitet finnEllerOpprett(KoblingReferanse referanse, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
-        KoblingEntitet kobling = hentFor(referanse).orElse(new KoblingEntitet(referanse, ytelseTyperKalkulusStøtter, saksnummer, aktørId));
-        repository.lagre(kobling);
-        return kobling;
-    }
-
     public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
-        var koblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
-        if (koblinger.isEmpty()) {
-            koblinger = referanser.stream().map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
+        var eksisterendeKoblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
+        var alleKoblinger = new ArrayList<KoblingEntitet>(eksisterendeKoblinger);
+        if (eksisterendeKoblinger.size() != referanser.size()) {
+            List<KoblingEntitet> nyeKoblinger = referanser.stream()
+                    .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)
+                            .map(KoblingReferanse::getReferanse)
+                            .noneMatch(koblingRef -> koblingRef.equals(ref.getReferanse())))
+                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
                     .collect(Collectors.toList());
-        } else if (koblinger.size() != referanser.size()) {
-            throw new IllegalStateException("Det finnes referanser som ikke har kobling");
+            nyeKoblinger.forEach(kobling -> repository.lagre(kobling));
+            alleKoblinger.addAll(nyeKoblinger);
         }
-        koblinger.forEach(kobling -> repository.lagre(kobling));
-        return koblinger;
+        return alleKoblinger;
     }
 
     public Optional<KoblingEntitet> hentFor(KoblingReferanse referanse) {
