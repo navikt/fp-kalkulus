@@ -51,7 +51,7 @@ public class MapArenaVedtakTilBesteberegningRegelmodell {
     private static void loggMeldekortSomStarterFørVedtak(Collection<YtelseDto> arenaytelser) {
         arenaytelser.forEach(vedtak -> {
             List<YtelseAnvistDto> meldekortSomStarterFørVedtak = vedtak.getYtelseAnvist().stream()
-                    .filter(meldekort -> vedtak.getPeriode().getFomDato().isBefore(meldekort.getAnvistFOM()))
+                    .filter(meldekort -> !vedtak.getPeriode().getFomDato().isBefore(meldekort.getAnvistFOM()))
                     .collect(Collectors.toList());
             meldekortSomStarterFørVedtak.forEach(mk -> {
                 String msg = String.format("FT-684563: Meldekort starter før vedtak, meldekort har startdato %s mens tilhørende vedtak har startdato %s", mk.getAnvistFOM(), vedtak.getPeriode().getFomDato());
