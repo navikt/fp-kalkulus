@@ -54,7 +54,7 @@ public class MigrerAksjonspunktRestTjeneste {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/migrerAksjonspunkt")
+    @Path("/migrerAksjonspunkter")
     @Operation(description = "Migrerer/kopierer aksjonspunkt fra k9-sak til ft-kalkulus", tags = "migrerAksjonspunkt", summary = ("Migrerer aksjonspunkt."))
     @BeskyttetRessurs(action = CREATE, resource = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
