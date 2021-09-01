@@ -70,4 +70,4 @@ spec:
     - name: PSB_TILKOMMET_INNTEKT
       value: "false"
     - name: LAGRE_AKSJONSPUNKT_I_KALKULUS
-      value: "false"
+      value: "true"
