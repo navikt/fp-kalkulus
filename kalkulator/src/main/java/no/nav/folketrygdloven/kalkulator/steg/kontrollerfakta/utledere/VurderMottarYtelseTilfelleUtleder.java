@@ -15,10 +15,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("FP")
-@FagsakYtelseTypeRef("SVP")
+@FagsakYtelseTypeRef()
 @FaktaOmBeregningTilfelleRef("VURDER_MOTTAR_YTELSE")
-public class VurderMottarYtelseTilfelleUtlederK14 implements TilfelleUtleder {
+public class VurderMottarYtelseTilfelleUtleder implements TilfelleUtleder {
 
     @Override
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {

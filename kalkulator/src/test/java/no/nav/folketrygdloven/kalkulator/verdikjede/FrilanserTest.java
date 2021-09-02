@@ -135,10 +135,7 @@ public class FrilanserTest {
         var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -239,10 +236,7 @@ public class FrilanserTest {
         var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -347,10 +341,7 @@ public class FrilanserTest {
         var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -423,10 +414,7 @@ public class FrilanserTest {
         var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -492,10 +480,7 @@ public class FrilanserTest {
         var avklaringsbehovResultat = beregningTjenesteWrapper.getAvklaringsbehovUtlederFaktaOmBeregning().utledAvklaringsbehovFor(lagFaktaOmBeregningInput(input), grunnlag, false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));

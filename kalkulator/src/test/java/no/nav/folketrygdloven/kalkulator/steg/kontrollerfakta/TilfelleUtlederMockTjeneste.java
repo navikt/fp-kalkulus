@@ -18,8 +18,7 @@ import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.NyIArbeid
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.NyoppstartetFLTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.TilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderLønnsendringTilfelleUtleder;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderMottarYtelseTilfelleUtlederK14;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderMottarYtelseTilfelleUtlederK9;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere.VurderMottarYtelseTilfelleUtleder;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ytelse.fp.VurderBesteberegningTilfelleUtleder;
 
 public class TilfelleUtlederMockTjeneste {
@@ -43,8 +42,7 @@ public class TilfelleUtlederMockTjeneste {
         leggTilUtleder(new KortvarigArbeidsforholdTilfelleUtleder(), utledere);
         leggTilUtleder(new ArbeidstakerOgFrilanserISammeOrganisasjonTilfelleUtleder(), utledere);
         leggTilUtleder(new EtterlønnSluttpakkeTilfelleUtleder(), utledere);
-        leggTilUtleder(new VurderMottarYtelseTilfelleUtlederK9(), utledere);
-        leggTilUtleder(new VurderMottarYtelseTilfelleUtlederK14(), utledere);
+        leggTilUtleder(new VurderMottarYtelseTilfelleUtleder(), utledere);
         leggTilUtleder(new VurderBesteberegningTilfelleUtleder(), utledere);
         when(utlederInstances.iterator()).thenReturn(utledere.iterator());
         when(utlederInstances.stream()).thenReturn(utledere.stream());

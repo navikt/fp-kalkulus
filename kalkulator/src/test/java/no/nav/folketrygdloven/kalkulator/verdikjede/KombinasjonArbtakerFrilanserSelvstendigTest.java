@@ -151,10 +151,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -248,11 +245,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
             false);
 
         // Assert 1
-        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).hasSize(1);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().orElse(null);
-        List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller = avklaringsbehovResultat.getFaktaOmBeregningTilfeller();
-        assertThat(faktaOmBeregningTilfeller).hasSize(1);
-        assertThat(faktaOmBeregningTilfeller.get(0)).isEqualTo(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE);
+        assertThat(avklaringsbehovResultat.getBeregningAvklaringsbehovResultatList()).isEmpty();
 
         // Act 2: foreslå beregningsgrunnlag
         BeregningsgrunnlagRegelResultat resultat = foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(lagForeslåBeregningsgrunnlagInput(input));
@@ -264,7 +257,7 @@ public class KombinasjonArbtakerFrilanserSelvstendigTest {
         BeregningsgrunnlagPeriodeDto periode = foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         verdikjedeTestHjelper.verifiserPeriode(periode, SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE, 2);
         verdikjedeTestHjelper.verifiserBGSNførAvkorting(periode, forventetBruttoSN, forventetBruttoSN, 2016);
-        assertThat(beregningsgrunnlag.getSammenligningsgrunnlag()).isNull();
+        assertThat(foreslåttBeregningsgrunnlag.getSammenligningsgrunnlag()).isNull();
 
         verdikjedeTestHjelper.verifiserBGATførAvkorting(periode, ÅRSINNTEKT, virksomhetene);
         verdikjedeTestHjelper.verifiserFLførAvkorting(periode, frilansÅrsinntekt);
