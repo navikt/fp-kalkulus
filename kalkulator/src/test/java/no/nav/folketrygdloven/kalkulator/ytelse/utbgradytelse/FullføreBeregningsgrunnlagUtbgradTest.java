@@ -55,6 +55,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -94,7 +95,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
             .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
             .build();
         BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
@@ -111,7 +112,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
             .medGrunnbeløp(BigDecimal.valueOf(GRUNNBELØP))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).medHjemmel(Hjemmel.F_14_7_8_30))
             .build();
         BeregningsgrunnlagPeriodeDto.builder()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(2))

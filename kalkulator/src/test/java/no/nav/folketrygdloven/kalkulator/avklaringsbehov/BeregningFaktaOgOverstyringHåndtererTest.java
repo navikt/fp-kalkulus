@@ -5,8 +5,10 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -106,10 +108,37 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         validerAndeler(fastsattBeløp1, p2);
     }
 
+
+
+    @Test
+    public void skal_ikke_opprette_status_som_allerede_finnes_kombinert() {
+        // Arrange
+        Long andelsnr = 1L;
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(andelsnr, List.of(Intervall.fraOgMedTilOgMed(STP, TIDENES_ENDE)), AktivitetStatus.KOMBINERT_AT_FL);
+        int fastsattBeløp = 10000;
+        OverstyrBeregningsgrunnlagDto overstyrDto = new OverstyrBeregningsgrunnlagDto(lagFastsattAndeler(andelsnr, fastsattBeløp, AktivitetStatus.ARBEIDSTAKER), null);
+        BeregningsgrunnlagInput input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        HåndterBeregningsgrunnlagInput håndterBeregningsgrunnlagInput = new HåndterBeregningsgrunnlagInput(input, BeregningsgrunnlagTilstand.KOFAKBER_UT);
+
+        // Act
+        BeregningsgrunnlagGrunnlagDto nyttGrunnlag = beregningFaktaOgOverstyringHåndterer.håndterMedOverstyring(håndterBeregningsgrunnlagInput, overstyrDto);
+
+        // Assert
+        Optional<BeregningsgrunnlagDto> nyttBg = nyttGrunnlag.getBeregningsgrunnlag();
+        assertThat(nyttBg).isPresent();
+        assertThat(nyttBg.get().isOverstyrt()).isTrue();
+        var statuser = nyttBg.get().getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).collect(Collectors.toList());
+        assertThat(statuser).isEqualTo(Collections.singletonList(AktivitetStatus.KOMBINERT_AT_FL));
+    }
+
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<Intervall> perioder) {
+        return lagBeregningsgrunnlag(andelsnr, perioder, AktivitetStatus.ARBEIDSTAKER);
+    }
+
+    private BeregningsgrunnlagDto lagBeregningsgrunnlag(Long andelsnr, List<Intervall> perioder, AktivitetStatus aktivitetStatus) {
         BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(STP)
-                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(aktivitetStatus))
                 .build();
         perioder.forEach(p -> {
             BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato())
@@ -130,9 +159,13 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
     }
 
     private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1) {
-        RedigerbarAndelFaktaOmBeregningDto andelsInfo = new RedigerbarAndelFaktaOmBeregningDto(andelsnr, false, AktivitetStatus.ARBEIDSTAKER, false);
+        return lagFastsattAndeler(andelsnr, fastsattBeløp1, AktivitetStatus.ARBEIDSTAKER);
+    }
+
+    private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1, AktivitetStatus aktivitetStatus) {
+        RedigerbarAndelFaktaOmBeregningDto andelsInfo = new RedigerbarAndelFaktaOmBeregningDto(andelsnr, false, aktivitetStatus, false);
         FastsatteVerdierDto fastsatteVerdier1 = FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(fastsattBeløp1).build();
-        FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, Inntektskategori.ARBEIDSTAKER, null, null);
+        FastsettBeregningsgrunnlagAndelDto andelDto1 = new FastsettBeregningsgrunnlagAndelDto(andelsInfo, fastsatteVerdier1, aktivitetStatus.getInntektskategori(), null, null);
         return List.of(andelDto1);
     }
 

@@ -1,17 +1,17 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FastsettBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.OverstyrBeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller.FaktaOmBeregningTilfellerOppdaterer;
+import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -63,9 +63,26 @@ public class BeregningFaktaOgOverstyringHåndterer {
     }
 
     private List<AktivitetStatus> finnManglendeAktivitetstatuser(BeregningsgrunnlagDto bg, List<FastsettBeregningsgrunnlagAndelDto> overstyrteAndeler) {
-        return overstyrteAndeler.stream().flatMap(a -> a.getAktivitetStatus().stream())
-                .filter(as -> bg.getAktivitetStatuser().stream().map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).noneMatch(as::equals))
-                .collect(Collectors.toList());
+        List<AktivitetStatus> manglendeStatuser = new ArrayList<>();
+        overstyrteAndeler.stream().flatMap(a -> a.getAktivitetStatus().stream()).forEach(as -> {
+            if (bgManglerStatus(bg.getAktivitetStatuser(), as)) {
+                manglendeStatuser.add(as);
+            }
+        });
+        return manglendeStatuser;
+    }
+
+    private boolean bgManglerStatus(List<BeregningsgrunnlagAktivitetStatusDto> statuser, AktivitetStatus statusSomSjekkes) {
+        if (statusSomSjekkes.erSelvstendigNæringsdrivende()) {
+            return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().erSelvstendigNæringsdrivende());
+        }
+        else if (statusSomSjekkes.erFrilanser()) {
+            return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().erFrilanser());
+        }
+        else if (statusSomSjekkes.erArbeidstaker()) {
+            return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().erArbeidstaker());
+        }
+        else return statuser.stream().noneMatch(aks -> aks.getAktivitetStatus().equals(statusSomSjekkes));
     }
 
     private void overstyrInntekterPrPeriode(BeregningsgrunnlagDto nyttGrunnlag,
