@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingSomIkkeKommerDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -49,9 +51,8 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_andeler_uten_inntektsmelding() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
-        when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
+        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.empty());
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -70,9 +71,8 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_andeler_uten_inntektsmelding_privatperson_som_arbeidsgiver() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.person(AKTØR_ID_ARBEIDSGIVER);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
-        when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
+        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.empty());
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -92,8 +92,11 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_tom_liste_med_andeler_om_ingen_arbeidstakere_uten_inntektsmelding() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
+        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdId(ARB_ID).build();
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
-        when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.emptyList());
+        InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder aggregat = InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder.ny();
+        aggregat.leggTil(im);
+        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.of(aggregat.build()));
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -111,10 +114,8 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     @Test
     public void skal_returnere_tom_liste_med_andeler_arbeidstaker_uten_inntektsmelding_status_DP_på_skjæringstidspunktet() {
         // Arrange
-        Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
-        InntektsmeldingSomIkkeKommerDto imSomIkkeKommer = new InntektsmeldingSomIkkeKommerDto(arbeidsgiver, ARB_ID);
         InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
-        when(iayGrunnlagMock.getInntektsmeldingerSomIkkeKommer()).thenReturn(Collections.singletonList(imSomIkkeKommer));
+        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.empty());
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.DAGPENGER)
             .medInntektskategori(Inntektskategori.DAGPENGER)

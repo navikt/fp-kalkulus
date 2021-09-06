@@ -269,7 +269,9 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
                     .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr));
-            andelBuilder.medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);
+            andelBuilder
+                    .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
+                    .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);
         }
         andelBuilder.build(beregningsgrunnlagPeriode);
     }
@@ -399,6 +401,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsperiodeFom(periode.getFom()).medArbeidsperiodeTom(periode.getTom()).medArbeidsforholdRef(arbId))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
                 .build(bgPeriode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
@@ -443,6 +446,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiver).medArbeidsperiodeFom(periode.getFom()).medArbeidsperiodeTom(periode.getTom()).medArbeidsforholdRef(arbId))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
                 .build(bgPeriode);
         return bg;
     }

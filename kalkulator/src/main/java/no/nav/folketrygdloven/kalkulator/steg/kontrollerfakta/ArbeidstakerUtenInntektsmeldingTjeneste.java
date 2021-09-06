@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingSomIkkeKommerDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 public class ArbeidstakerUtenInntektsmeldingTjeneste {
 
@@ -22,13 +22,17 @@ public class ArbeidstakerUtenInntektsmeldingTjeneste {
             return Collections.emptyList();
         }
 
-        List<InntektsmeldingSomIkkeKommerDto> manglendeInntektsmeldinger = inntektArbeidYtelseGrunnlag.getInntektsmeldingerSomIkkeKommer();
-        if (manglendeInntektsmeldinger.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIFørstePeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
-            .getBeregningsgrunnlagPrStatusOgAndelList();
-        return finnAndelerSomManglerIM(andelerIFørstePeriode, manglendeInntektsmeldinger);
+        List<InntektsmeldingDto> inntektsmeldinger = inntektArbeidYtelseGrunnlag.getInntektsmeldinger().stream()
+                .flatMap(im -> im.getAlleInntektsmeldinger().stream())
+                .collect(Collectors.toList());
+
+        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
+                .getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream()
+                .filter(a -> a.getAktivitetStatus().erArbeidstaker() && a.getArbeidsgiver().isPresent())
+                .filter(a -> inntektsmeldinger.stream().noneMatch(im -> a.gjelderInntektsmeldingFor(im.getArbeidsgiver(), im.getArbeidsforholdRef())))
+                .collect(Collectors.toList());
+
     }
 
     private static boolean harArbeidstakerandel(BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -36,17 +40,4 @@ public class ArbeidstakerUtenInntektsmeldingTjeneste {
             .anyMatch(andel -> andel.getAktivitetStatus().erArbeidstaker());
     }
 
-    private static Collection<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelerSomManglerIM(Collection<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
-                                                                                            List<InntektsmeldingSomIkkeKommerDto> manglendeInntektsmeldinger) {
-        return andeler.stream()
-            .filter(a -> a.getBgAndelArbeidsforhold().isPresent())
-            .filter(a -> matchAndelMedInntektsmeldingSomIkkeKommer(manglendeInntektsmeldinger, a))
-            .collect(Collectors.toList());
-    }
-
-    private static boolean matchAndelMedInntektsmeldingSomIkkeKommer(List<InntektsmeldingSomIkkeKommerDto> manglendeInntektsmeldinger,
-                                                                     BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return manglendeInntektsmeldinger.stream()
-            .anyMatch(im -> andel.gjelderSammeArbeidsforhold(im.getArbeidsgiver(), im.getRef()));
-    }
 }

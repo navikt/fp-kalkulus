@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørArbeidDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingSomIkkeKommerDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -29,11 +29,8 @@ public class LønnsendringTjeneste {
         return !aktiviteterMedLønnsendringUtenIM.isEmpty();
     }
 
-    public static List<YrkesaktivitetDto> finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        var manglendeInntektsmeldinger = iayGrunnlag.getInntektsmeldingerSomIkkeKommer();
-        if (manglendeInntektsmeldinger.isEmpty()) {
-            return Collections.emptyList();
-        }
+    public static List<YrkesaktivitetDto> finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
         Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
@@ -55,11 +52,18 @@ public class LønnsendringTjeneste {
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }
+        List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().stream()
+                .flatMap(im -> im.getAlleInntektsmeldinger().stream())
+                .collect(Collectors.toList());
         return aktiviteterMedLønnsendring.stream()
             .filter(ya -> ya.getArbeidsgiver() != null && ya.getArbeidsgiver().getIdentifikator() != null)
             .filter(ya -> finnesKorresponderendeBeregningsgrunnlagsandel(arbeidstakerAndeler, ya))
-            .filter(ya -> matchYrkesaktivitetMedInntektsmeldingSomIkkeKommer(manglendeInntektsmeldinger, ya))
+            .filter(ya -> manglerInntektsmelding(inntektsmeldinger, ya))
             .collect(Collectors.toList());
+    }
+
+    private static boolean manglerInntektsmelding(List<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {
+        return inntektsmeldinger.stream().noneMatch(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()));
     }
 
     private static boolean finnesKorresponderendeBeregningsgrunnlagsandel(List<BeregningsgrunnlagPrStatusOgAndelDto> andeler,
@@ -73,11 +77,6 @@ public class LønnsendringTjeneste {
             .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
             .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
             .collect(Collectors.toList());
-    }
-
-    private static boolean matchYrkesaktivitetMedInntektsmeldingSomIkkeKommer(List<InntektsmeldingSomIkkeKommerDto> manglendeInntektsmeldinger, YrkesaktivitetDto yrkesaktivitet) {
-        return manglendeInntektsmeldinger.stream()
-            .anyMatch(im -> yrkesaktivitet.gjelderFor(im));
     }
 
     private static Collection<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIBeregningsperioden(YrkesaktivitetFilterDto filter, LocalDate beregningsperiodeFom, LocalDate beregningsperiodeTom, LocalDate skjæringstidspunkt) {

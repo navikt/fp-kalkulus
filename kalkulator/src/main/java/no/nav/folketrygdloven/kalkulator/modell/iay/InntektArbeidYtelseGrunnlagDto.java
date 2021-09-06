@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class InntektArbeidYtelseGrunnlagDto {
 
@@ -99,18 +98,6 @@ public class InntektArbeidYtelseGrunnlagDto {
 
     void setOppgittOpptjening(OppgittOpptjeningDto oppgittOpptjening) {
         this.oppgittOpptjening = oppgittOpptjening;
-    }
-
-    public List<InntektsmeldingSomIkkeKommerDto> getInntektsmeldingerSomIkkeKommer() {
-        if (arbeidsforholdInformasjon == null) {
-            return Collections.emptyList();
-        } else {
-            var overstyringer = arbeidsforholdInformasjon.getOverstyringer();
-            return overstyringer.stream()
-                .filter(ArbeidsforholdOverstyringDto::kreverIkkeInntektsmelding)
-                .map(ov -> new InntektsmeldingSomIkkeKommerDto(ov.getArbeidsgiver(), ov.getArbeidsforholdRef())) // NOSONAR
-                .collect(Collectors.toList());
-        }
     }
 
     public List<ArbeidsforholdOverstyringDto> getArbeidsforholdOverstyringer() {
