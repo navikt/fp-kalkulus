@@ -50,7 +50,7 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
 
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
-        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
+        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(), beregningAktivitetAggregat);
 
         no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
         MidlertidigInaktivType midlertidigInaktivType = null;

@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -9,6 +8,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
+import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
 
 public class MapBeregningAktiviteterFraRegelTilVL {
 
@@ -40,6 +40,6 @@ public class MapBeregningAktiviteterFraRegelTilVL {
     }
 
     private static Arbeidsgiver mapArbeidsgiver(Arbeidsforhold arbeidsforhold) {
-        return MapArbeidsforholdFraRegelTilVL.map(arbeidsforhold);
+        return MapArbeidsforholdFraRegelTilVL.map(arbeidsforhold.getReferanseType(), arbeidsforhold.getOrgnr(), arbeidsforhold.getAktørId());
     }
 }

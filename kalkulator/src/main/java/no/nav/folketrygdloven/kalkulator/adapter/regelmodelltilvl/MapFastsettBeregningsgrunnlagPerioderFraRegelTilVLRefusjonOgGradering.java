@@ -75,7 +75,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                         .build(beregningsgrunnlagPeriode);
             }
         } else {
-            Arbeidsgiver arbeidsgiver = MapArbeidsforholdFraRegelTilVL.map(nyAndel.getArbeidsforhold());
+            Arbeidsgiver arbeidsgiver = MapArbeidsforholdFraRegelTilVL.map(nyAndel.getArbeidsforhold().getReferanseType(), nyAndel.getArbeidsforhold().getOrgnr(), nyAndel.getArbeidsforhold().getAktørId());
             InternArbeidsforholdRefDto iaRef = InternArbeidsforholdRefDto.ref(nyAndel.getArbeidsforhold().getArbeidsforholdId());
             BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(arbeidsgiver)

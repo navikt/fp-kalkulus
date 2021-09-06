@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
@@ -105,17 +106,13 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
         return alleTOMDatoerHensyntattPermisjon.stream().anyMatch(tom -> !tom.isBefore(skjæringstidspunktOpptjening));
     }
 
-    private long finnAntallAktiviteterPåSTP(Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> relevanteAktiviteter, LocalDate skjæringstidspunktOpptjening) {
-        return relevanteAktiviteter.stream().filter(akt -> akt.getPeriode().inkluderer(skjæringstidspunktOpptjening)).count();
-    }
-
     protected static AktivPeriode lagAktivPeriodeForArbeidstaker(Collection<InntektsmeldingDto> inntektsmeldinger,
                                                                  Periode gjeldendePeriode,
                                                                  Arbeidsgiver arbeidsgiver,
                                                                  InternArbeidsforholdRefDto arbeidsforholdRef,
                                                                  Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
         if (arbeidsgiver.erAktørId()) {
-            return lagAktivePerioderForArbeidstakerHosPrivatperson(arbeidsgiver.getIdentifikator(), gjeldendePeriode);
+            return lagAktivePerioderForArbeidstakerHosPrivatperson(inntektsmeldinger, arbeidsgiver.getIdentifikator(), gjeldendePeriode);
         } else if (arbeidsgiver.getErVirksomhet()) {
             return lagAktivePerioderForArbeidstakerHosVirksomhet(inntektsmeldinger, gjeldendePeriode, arbeidsgiver.getIdentifikator(), arbeidsforholdRef, alleAktiviteter);
         } else {
@@ -151,8 +148,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                 .map(d -> d.minusDays(1));
     }
 
-    private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(String aktørId, Periode gjeldendePeriode) {
-        return AktivPeriode.forArbeidstakerHosPrivatperson(gjeldendePeriode, aktørId);
+    private static AktivPeriode lagAktivePerioderForArbeidstakerHosPrivatperson(Collection<InntektsmeldingDto> inntektsmeldinger, String aktørId, Periode gjeldendePeriode) {
+        boolean harInntektsmelding = harFellesInntektsmeldingForAlleArbeidsforhold(inntektsmeldinger, new AktørId(aktørId));
+        return AktivPeriode.forArbeidstakerHosPrivatperson(gjeldendePeriode, aktørId, harInntektsmelding);
     }
 
     private static AktivPeriode lagAktivePerioderForArbeidstakerHosVirksomhet(Collection<InntektsmeldingDto> inntektsmeldinger,
@@ -160,7 +158,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                                                                               String opptjeningArbeidsgiverOrgnummer,
                                                                               InternArbeidsforholdRefDto arbeidsforholdRef,
                                                                               Collection<OpptjeningAktiviteterDto.OpptjeningPeriodeDto> alleAktiviteter) {
-        if (harInntektsmeldingForArbeidsforhold(inntektsmeldinger, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef)) {
+        if (harSpesifikkInntektsmeldingForArbeidsforhold(inntektsmeldinger, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef)) {
             return AktivPeriode.forArbeidstakerHosVirksomhet(gjeldendePeriode, opptjeningArbeidsgiverOrgnummer, arbeidsforholdRef.getReferanse());
         } else {
             if (harInntektsmeldingForSpesifiktArbeidVedSkjæringstidspunktet(inntektsmeldinger, alleAktiviteter, opptjeningArbeidsgiverOrgnummer)) {
@@ -193,9 +191,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                                 && im.getArbeidsforholdRef().gjelderFor(a.getArbeidsforholdId())));
     }
 
-    private static boolean harInntektsmeldingForArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                               String orgnummer,
-                                                               InternArbeidsforholdRefDto arbeidsforholdRef) {
+    private static boolean harSpesifikkInntektsmeldingForArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                        String orgnummer,
+                                                                        InternArbeidsforholdRefDto arbeidsforholdRef) {
         if (!arbeidsforholdRef.gjelderForSpesifiktArbeidsforhold()) {
             return false;
         } else {
@@ -204,5 +202,12 @@ public class MapBeregningAktiviteterFraVLTilRegelK9 implements MapBeregningAktiv
                             && Objects.equals(im.getArbeidsgiver().getOrgnr(), orgnummer)
                             && Objects.equals(im.getArbeidsforholdRef().getReferanse(), arbeidsforholdRef.getReferanse()));
         }
+    }
+
+    private static boolean harFellesInntektsmeldingForAlleArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                         AktørId aktørId) {
+        return inntektsmeldinger.stream()
+                .anyMatch(im -> !im.gjelderForEtSpesifiktArbeidsforhold()
+                        && Objects.equals(im.getArbeidsgiver().getAktørId(), aktørId));
     }
 }

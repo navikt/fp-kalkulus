@@ -51,7 +51,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
 
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
-        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
+        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(), beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(input, regelmodell);
         if (regelmodell.getSkjæringstidspunktForBeregning() == null) {
             return new BeregningsgrunnlagRegelResultat(null, AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(input, List.of(regelResultatFastsettSkjæringstidspunkt)));

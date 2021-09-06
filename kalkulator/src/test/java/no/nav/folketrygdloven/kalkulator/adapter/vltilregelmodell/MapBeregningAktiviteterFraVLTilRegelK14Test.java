@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -26,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
+import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
 
 public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 

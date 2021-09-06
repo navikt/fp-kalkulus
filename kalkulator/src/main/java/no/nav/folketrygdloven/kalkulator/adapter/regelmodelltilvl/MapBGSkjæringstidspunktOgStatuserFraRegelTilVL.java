@@ -101,7 +101,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
             .filter(bgps -> erATFL(bgps.getAktivitetStatus()))
             .forEach(bgps -> bgps.getArbeidsforholdList()
                 .forEach(af -> {
-                    var arbeidsgiver = MapArbeidsforholdFraRegelTilVL.map(af);
+                    var arbeidsgiver = MapArbeidsforholdFraRegelTilVL.map(af.getReferanseType(), af.getOrgnr(), af.getAktørId());
                     var iaRef = InternArbeidsforholdRefDto.ref(af.getArbeidsforholdId());
                     var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(af.getAktivitet()))

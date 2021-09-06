@@ -46,7 +46,7 @@ public class FastsettSkjæringstidspunktOgStatuserK14 implements FastsettSkjæri
 
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
-        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(beregningAktivitetAggregat);
+        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(), beregningAktivitetAggregat);
         RegelResultat regelResultatFastsettSkjæringstidspunkt = fastsettSkjæringstidspunkt(regelmodell);
         RegelResultat regelResultatFastsettStatus = fastsettStatus(regelmodell);
 
