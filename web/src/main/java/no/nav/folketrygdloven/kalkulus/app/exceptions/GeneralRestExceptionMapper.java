@@ -64,9 +64,6 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
     @Override
     public Response toResponse(Throwable feil) {
         try {
-            if (feil instanceof KalkulatorException) {
-                return handleTomtResultatFeil(getExceptionMelding(feil));
-            }
             if (feil instanceof TomtResultatException) {
                 return handleTomtResultatFeil(getExceptionMelding(feil));
             }
