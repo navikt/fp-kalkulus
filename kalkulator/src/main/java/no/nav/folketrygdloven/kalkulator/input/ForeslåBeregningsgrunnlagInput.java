@@ -17,7 +17,7 @@ public class ForeslåBeregningsgrunnlagInput extends StegProsesseringInput {
     public ForeslåBeregningsgrunnlagInput(StegProsesseringInput input) {
         super(input);
         super.stegTilstand = BeregningsgrunnlagTilstand.FORESLÅTT;
-        super.stegUtTilstand = BeregningsgrunnlagTilstand.FASTSATT_INN;
+        super.stegUtTilstand = BeregningsgrunnlagTilstand.FORESLÅTT_UT;
     }
 
     public List<Grunnbeløp> getGrunnbeløpsatser() {
