@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kopiering.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
@@ -50,6 +52,7 @@ public class BeregningStegTjeneste {
     private RegelsporingRepository regelsporingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
+    private ForlengelseTjeneste forlengelseTjeneste;
 
     BeregningStegTjeneste() {
         // CDI
@@ -58,12 +61,13 @@ public class BeregningStegTjeneste {
     @Inject
     public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository,
                                  RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste,
-                                 AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
+                                 AvklaringsbehovTjeneste avklaringsbehovTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
+        this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
     /**
@@ -103,6 +107,9 @@ public class BeregningStegTjeneste {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
+        if (forlengelseTjeneste.erForlengelse(input, resultat)) {
+            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), resultat);
+        }
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -117,6 +124,9 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
+            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
+        }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -131,6 +141,9 @@ public class BeregningStegTjeneste {
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
+            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
+        }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -167,10 +180,13 @@ public class BeregningStegTjeneste {
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        lagreAvklaringsbehov(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
+        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
+            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
+        }
+        lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
 
     }
@@ -231,6 +247,17 @@ public class BeregningStegTjeneste {
                 resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
         } else {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov);
+        }
+    }
+
+    private TilstandResponse mapTilstandResponseUtenAvklaringsbehov(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
+        if (resultat.getBeregningVilkårResultat() != null) {
+            return new TilstandResponse(koblingReferanse.getKoblingUuid(),
+                    Collections.emptyList(),
+                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
+                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
+        } else {
+            return new TilstandResponse(koblingReferanse.getKoblingUuid(), Collections.emptyList());
         }
     }
 
