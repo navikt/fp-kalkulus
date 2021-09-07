@@ -186,6 +186,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                     .build();
         }
         BesteberegningRegelResultat resultat = foreslåBesteberegning.foreslåBesteberegning(input);
+        BeregningsgrunnlagVerifiserer.verifiserBesteberegnetBeregningsgrunnlag(resultat.getBeregningsgrunnlag());
         return BesteberegningResultat.Builder.fra(input)
                 .medVurderingsgrunnlag(resultat.getBesteberegningVurderingGrunnlag())
                 .medBeregningsgrunnlag(resultat.getBeregningsgrunnlag())

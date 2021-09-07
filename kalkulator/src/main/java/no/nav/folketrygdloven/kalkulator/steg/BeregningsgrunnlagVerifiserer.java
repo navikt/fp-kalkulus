@@ -82,6 +82,17 @@ public final class BeregningsgrunnlagVerifiserer {
         }
     }
 
+    public static void verifiserBesteberegnetBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
+        verifiserForeslåttBeregningsgrunnlag(beregningsgrunnlag);
+        beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserBesteberegnetAndel));
+    }
+
+    private static void verifiserBesteberegnetAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        if (andel.getKilde().equals(AndelKilde.PROSESS_BESTEBEREGNING)) {
+            Objects.requireNonNull(andel.getBesteberegningPrÅr(), "BesteberegnetPrÅr");
+        }
+    }
+
     private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
         verifiserOppdatertBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserFordeltAndel));
@@ -149,7 +160,7 @@ public final class BeregningsgrunnlagVerifiserer {
         Objects.requireNonNull(andel.getInntektskategori(), "Inntektskategori");
         if (!andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE) && !andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
             Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
-            if (andel.getBeregnetPrÅr() == null) {
+            if (andel.getBeregnetPrÅr() == null && erLagtTilIFordeling(andel)) {
                 Objects.requireNonNull(andel.getFordeltPrÅr(), "fordeltPrÅr");
             }
         }
@@ -159,6 +170,10 @@ public final class BeregningsgrunnlagVerifiserer {
                 Objects.requireNonNull(andel.getOrginalDagsatsFraTilstøtendeYtelse(), "originalDagsatsFraTilstøtendeYtelse");
             }
         }
+    }
+
+    private static boolean erLagtTilIFordeling(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getKilde().equals(AndelKilde.PROSESS_OMFORDELING) || andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING);
     }
 
 

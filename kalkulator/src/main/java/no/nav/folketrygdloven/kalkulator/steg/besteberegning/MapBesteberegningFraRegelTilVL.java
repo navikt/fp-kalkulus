@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.besteberegning.modell.output.AktivitetNøkkel;
 import no.nav.folketrygdloven.besteberegning.modell.output.BesteberegnetAndel;
@@ -30,8 +27,6 @@ public class MapBesteberegningFraRegelTilVL {
     private static final List<Aktivitet> YTELSER_FRA_SAMMENLIGNINGSFILTERET = Arrays.asList(Aktivitet.SYKEPENGER_MOTTAKER, Aktivitet.FORELDREPENGER_MOTTAKER,
             Aktivitet.SVANGERSKAPSPENGER_MOTTAKER);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MapBesteberegningFraRegelTilVL.class);
-
     public static BeregningsgrunnlagDto mapTilBeregningsgrunnlag(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
                                                            BesteberegningOutput output) {
         BeregningsgrunnlagDto gammeltGrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
@@ -40,42 +35,15 @@ public class MapBesteberegningFraRegelTilVL {
             fjernSaksbehandlersBesteberegning(nyttGrunnlag);
             oppdaterBeregningForAndelerIBesteberegnetGrunnlag(nyttGrunnlag, output);
             settBesteberegningTilNullForAndreAndeler(nyttGrunnlag);
-            if (harAlleredeBesteberegnet(gammeltGrunnlag)) {
-                loggDiff(gammeltGrunnlag, nyttGrunnlag);
-                return new BeregningsgrunnlagDto(gammeltGrunnlag);
-            }
         }
         return nyttGrunnlag;
     }
 
-    private static void loggDiff(BeregningsgrunnlagDto gammeltGrunnlag, BeregningsgrunnlagDto nyttGrunnlag) {
-        var gammelAndelerFørstePeriode = gammeltGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-        var andelerFørstePeriode = nyttGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-        if (harDiffIBesteberegning(gammelAndelerFørstePeriode, andelerFørstePeriode)) {
-            LOGGER.info("Oppdaget diff i besteberegning. AUTOMATISK BESTEBEREGNING: " + andelerFørstePeriode
-                    + " SAKSBEHANDLERS BESTEBEREGNING: " + gammelAndelerFørstePeriode);
-        }
-    }
-
-    private static boolean harDiffIBesteberegning(List<BeregningsgrunnlagPrStatusOgAndelDto> gammelAndelerFørstePeriode, List<BeregningsgrunnlagPrStatusOgAndelDto> andelerFørstePeriode) {
-        for (int i = 0; i < gammelAndelerFørstePeriode.size(); i++) {
-            var gammelAndel = gammelAndelerFørstePeriode.get(i);
-            var nyAndel = andelerFørstePeriode.get(i);
-            if (gammelAndel.getBesteberegningPrÅr().compareTo(nyAndel.getBesteberegningPrÅr()) != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private static void fjernSaksbehandlersBesteberegning(BeregningsgrunnlagDto nyttGrunnlag) {
         nyttGrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
                 .forEach(a -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(a).medBesteberegningPrÅr(null));
-    }
-
-    private static boolean harAlleredeBesteberegnet(BeregningsgrunnlagDto gammeltGrunnlag) {
-        return gammeltGrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream()).anyMatch(a -> a.getBesteberegningPrÅr() != null);
     }
 
     private static void oppdaterBeregningForAndelerIBesteberegnetGrunnlag(BeregningsgrunnlagDto nyttGrunnlag, BesteberegningOutput output) {
