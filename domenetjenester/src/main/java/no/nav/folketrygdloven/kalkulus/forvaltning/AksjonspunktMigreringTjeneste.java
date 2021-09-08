@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -178,7 +179,10 @@ public class AksjonspunktMigreringTjeneste {
                             .stream()
                             .anyMatch(ab -> ab.getDefinisjon().equals(avklaringsbehovDefinisjon)))
                     .collect(Collectors.toList());
-            LOGGER.info("Følgende koblinger hadde allerede aksjonspunkt " + avklaringsbehovDefinisjon.getKode() + ": " + koblingerMedAksjonspunkt);
+            List<UUID> referanser = koblingerMedAksjonspunkt.stream()
+                    .map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse)
+                    .collect(Collectors.toList());
+            LOGGER.info("Følgende koblinger hadde allerede aksjonspunkt " + avklaringsbehovDefinisjon.getKode() + ": " + referanser);
         }
     }
 
@@ -354,6 +358,11 @@ public class AksjonspunktMigreringTjeneste {
         if (koblinger.isEmpty()) {
             throw new IllegalStateException("Ingen koblinger hadde aksjonspunkt " + avklaringsbehovDefinisjon.getKode() + " for saksnummer " + data.getSaksnummer());
         }
+
+        List<UUID> referanser = koblinger.stream().map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse).collect(Collectors.toList());
+        LOGGER.info("Lagrer ned avklaringsbehov " + avklaringsbehovDefinisjon.getKode()
+                + " for saksnummer " + data.getSaksnummer()
+                + " og koblinger " + referanser);
 
         var avklaringsbehovEntiteter = koblinger.stream()
                 .map(kobling -> avklaringsbehovKontrollTjeneste.opprettForKobling(kobling, avklaringsbehovDefinisjon))
