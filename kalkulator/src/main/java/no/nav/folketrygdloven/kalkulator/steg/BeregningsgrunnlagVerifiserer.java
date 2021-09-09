@@ -87,8 +87,10 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static void verifiserBesteberegnetAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        Objects.requireNonNull(andel.getBesteberegningPrÅr(), "BesteberegnetPrÅr");
         Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
+        if (andel.getBeregnetPrÅr() == null) {
+            Objects.requireNonNull(andel.getBesteberegningPrÅr(), "BesteberegnetPrÅr");
+        }
     }
 
     private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
