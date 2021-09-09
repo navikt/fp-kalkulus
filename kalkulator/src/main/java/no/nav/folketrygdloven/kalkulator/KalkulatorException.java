@@ -6,6 +6,7 @@ public class KalkulatorException extends RuntimeException {
     private String melding;
 
     public KalkulatorException(String kode, String melding) {
+        super("[" + kode + "] " + melding);
         this.kode = kode;
         this.melding = melding;
     }
