@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
@@ -31,8 +32,8 @@ public class MapBesteberegningFraRegelTilVL {
                                                            BesteberegningOutput output) {
         BeregningsgrunnlagDto gammeltGrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
         var nyttGrunnlag = new BeregningsgrunnlagDto(gammeltGrunnlag);
+        validerIngenBesteberegningSatt(nyttGrunnlag);
         if  (output.getSkalBeregnesEtterSeksBesteMåneder()) {
-            fjernSaksbehandlersBesteberegning(nyttGrunnlag);
             oppdaterBeregningForAndelerIBesteberegnetGrunnlag(nyttGrunnlag, output);
             settBesteberegningTilNullForAndreAndeler(nyttGrunnlag);
         }
@@ -40,10 +41,15 @@ public class MapBesteberegningFraRegelTilVL {
     }
 
 
-    private static void fjernSaksbehandlersBesteberegning(BeregningsgrunnlagDto nyttGrunnlag) {
-        nyttGrunnlag.getBeregningsgrunnlagPerioder().stream()
+    private static void validerIngenBesteberegningSatt(BeregningsgrunnlagDto nyttGrunnlag) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedBesteberegningSatt = nyttGrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-                .forEach(a -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(a).medBesteberegningPrÅr(null));
+                .filter(a -> a.getBesteberegningPrÅr() != null)
+                .collect(Collectors.toList());
+        if (!andelerMedBesteberegningSatt.isEmpty()) {
+            throw new IllegalStateException("Feil ved mapping fra regelmodell til domenemodell i besteberegning:" +
+                    " Det finnes andeler med besteberegnet satt, ugyldig tilstand. Andeler: " + andelerMedBesteberegningSatt.toString());
+        }
     }
 
     private static void oppdaterBeregningForAndelerIBesteberegnetGrunnlag(BeregningsgrunnlagDto nyttGrunnlag, BesteberegningOutput output) {
@@ -130,7 +136,9 @@ public class MapBesteberegningFraRegelTilVL {
         } else {
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medKilde(AndelKilde.PROSESS_BESTEBEREGNING)
                     .medBesteberegningPrÅr(a.getBesteberegnetPrÅr())
-                    .medAktivitetStatus(AktivitetStatus.DAGPENGER).build(periode);
+                    .medAktivitetStatus(AktivitetStatus.DAGPENGER)
+                    .medInntektskategori(Inntektskategori.DAGPENGER)
+                    .build(periode);
         }
     }
 

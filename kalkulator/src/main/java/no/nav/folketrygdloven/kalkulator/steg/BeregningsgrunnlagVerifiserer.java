@@ -83,14 +83,12 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     public static void verifiserBesteberegnetBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
-        verifiserForeslåttBeregningsgrunnlag(beregningsgrunnlag);
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(p -> verfiserBeregningsgrunnlagAndeler(p, BeregningsgrunnlagVerifiserer::verifiserBesteberegnetAndel));
     }
 
     private static void verifiserBesteberegnetAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        if (andel.getKilde().equals(AndelKilde.PROSESS_BESTEBEREGNING)) {
-            Objects.requireNonNull(andel.getBesteberegningPrÅr(), "BesteberegnetPrÅr");
-        }
+        Objects.requireNonNull(andel.getBesteberegningPrÅr(), "BesteberegnetPrÅr");
+        Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
     }
 
     private static void verifiserFordeltBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag) {
