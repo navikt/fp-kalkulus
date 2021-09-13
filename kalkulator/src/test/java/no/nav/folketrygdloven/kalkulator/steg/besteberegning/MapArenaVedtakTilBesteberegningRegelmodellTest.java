@@ -35,6 +35,17 @@ class MapArenaVedtakTilBesteberegningRegelmodellTest {
     }
 
     @Test
+    public void meldekort_skal_ikke_starte_før_vedtak() {
+        List<YtelseDto> vedtak = Collections.singletonList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.DAGPENGER,
+                lagMeldekort(STP.plusDays(10), stpPluss(14), 500)));
+
+        List<Periodeinntekt> inntekter = kjørMapping(vedtak);
+
+        assertThat(inntekter).hasSize(1);
+        assertInntekt(inntekter, STP.plusDays(10), stpPluss(14), 500);
+    }
+
+    @Test
     public void skal_mappe_flere_meldekort_ulike_vedtak_aap() {
         List<YtelseDto> vedtak = Arrays.asList(lagVedtak(STP, stpPluss(30), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER,
                 lagMeldekort(STP, stpPluss(14), 500),
