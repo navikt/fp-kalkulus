@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
@@ -34,13 +35,16 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
      * @param startdatoPermisjon Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param inntektsmelding                      inntektsmelding
+     * @param alleAnsattperioderForInntektsmeldingEtterStartAvBeregning
      * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
     @Override
     protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon,
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
-                                                          InntektsmeldingDto inntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag) {
+                                                          InntektsmeldingDto inntektsmelding,
+                                                          List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning,
+                                                          BeregningsgrunnlagDto beregningsgrunnlag) {
         if (inntektsmelding.getRefusjonOpphører() != null && inntektsmelding.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
             // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
             return Collections.emptyList();

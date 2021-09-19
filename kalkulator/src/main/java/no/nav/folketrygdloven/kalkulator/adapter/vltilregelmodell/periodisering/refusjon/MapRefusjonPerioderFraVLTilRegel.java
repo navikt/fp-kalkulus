@@ -111,7 +111,11 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
                 im,
                 startdatoPermisjon,
                 beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer(),
-                finnGyldigeRefusjonPerioder(startdatoPermisjon, beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(), im, beregningsgrunnlag));
+                finnGyldigeRefusjonPerioder(startdatoPermisjon,
+                        beregningsgrunnlagInput.getYtelsespesifiktGrunnlag(),
+                        im,
+                        alleAnsattperioderForInntektsmeldingEtterStartAvBeregning,
+                        beregningsgrunnlag));
 
         mapFristData(beregningsgrunnlagInput, im, builder);
 
@@ -135,10 +139,15 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
      * @param startdatoPermisjon      Startdato permisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param inntektsmelding         Inntektsmelding
+     * @param alleAnsattperioderForInntektsmeldingEtterStartAvBeregning
      * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
-    protected abstract List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto inntektsmelding, BeregningsgrunnlagDto beregningsgrunnlag);
+    protected abstract List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon,
+                                                                   YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
+                                                                   InntektsmeldingDto inntektsmelding,
+                                                                   List<AktivitetsAvtaleDto> alleAnsattperioderForInntektsmeldingEtterStartAvBeregning,
+                                                                   BeregningsgrunnlagDto beregningsgrunnlag);
 
     // Kun relevant for FP og SVP, burde det ligge ein annen stad enn felles implementasjon?
     protected void mapFristData(BeregningsgrunnlagInput input, InntektsmeldingDto inntektsmelding, ArbeidsforholdOgInntektsmelding.Builder builder) {
