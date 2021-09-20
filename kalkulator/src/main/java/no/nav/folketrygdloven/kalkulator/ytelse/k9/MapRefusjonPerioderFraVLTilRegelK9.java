@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapRefusjonPeriode
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 @FagsakYtelseTypeRef("OMP")
 @FagsakYtelseTypeRef("PSB")
@@ -51,36 +52,50 @@ public class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPerioderFraVL
         }
 
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
-            LocalDateTimeline<Object> utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
-            LocalDateTimeline<Object> ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
+            LocalDateTimeline<Boolean> utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
+            LocalDateTimeline<Boolean> ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
             return finnOverlappendeIntervaller(utbetalingTidslinje, ansettelseTidslinje);
         }
         throw new IllegalStateException("Forventet utbetalingsgrader men fant ikke UtbetalingsgradGrunnlag.");
     }
 
-    private List<Intervall> finnOverlappendeIntervaller(LocalDateTimeline<Object> utbetalingTidslinje, LocalDateTimeline<Object> ansettelseTidslinje) {
+    private List<Intervall> finnOverlappendeIntervaller(LocalDateTimeline<Boolean> utbetalingTidslinje, LocalDateTimeline<Boolean> ansettelseTidslinje) {
         return utbetalingTidslinje.intersection(ansettelseTidslinje).getLocalDateIntervals()
                 .stream()
                 .map(i -> Intervall.fraOgMedTilOgMed(i.getFomDato(), i.getTomDato()))
                 .collect(Collectors.toList());
     }
 
-    private LocalDateTimeline<Object> finnAnsettelseTidslinje(List<AktivitetsAvtaleDto> ansattperioder) {
-        List<LocalDateSegment<Object>> segmenterMedAnsettelse = ansattperioder.stream()
+    private LocalDateTimeline<Boolean> finnAnsettelseTidslinje(List<AktivitetsAvtaleDto> ansattperioder) {
+        var segmenterMedAnsettelse = ansattperioder.stream()
                 .map(AktivitetsAvtaleDto::getPeriode)
-                .map(p -> LocalDateSegment.emptySegment(p.getFomDato(), p.getTomDato()))
+                .map(p -> new LocalDateTimeline<>(List.of(new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))))
                 .collect(Collectors.toList());
-        return new LocalDateTimeline<>(segmenterMedAnsettelse);
+
+        var timeline = new LocalDateTimeline<Boolean>(List.of());
+
+        for (LocalDateTimeline<Boolean> localDateSegments : segmenterMedAnsettelse) {
+            timeline = timeline.combine(localDateSegments, StandardCombinators::coalesceRightHandSide, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+        }
+
+        return timeline.compress();
     }
 
-    private LocalDateTimeline<Object> finnUtbetalingTidslinje(UtbetalingsgradGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto im) {
+    private LocalDateTimeline<Boolean> finnUtbetalingTidslinje(UtbetalingsgradGrunnlag ytelsespesifiktGrunnlag, InntektsmeldingDto im) {
         var segmenterMedUtbetaling = ytelsespesifiktGrunnlag.finnUtbetalingsgraderForArbeid(im.getArbeidsgiver(), im.getArbeidsforholdRef())
                 .stream()
                 .filter(p -> p.getUtbetalingsgrad() != null && p.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0)
                 .map(PeriodeMedUtbetalingsgradDto::getPeriode)
-                .map(p -> LocalDateSegment.emptySegment(p.getFomDato(), p.getTomDato()))
+                .map(p -> new LocalDateTimeline<>(List.of(new LocalDateSegment<>(p.getFomDato(), p.getTomDato(), true))))
                 .collect(Collectors.toList());
-        return new LocalDateTimeline<>(segmenterMedUtbetaling);
+
+        var timeline = new LocalDateTimeline<Boolean>(List.of());
+
+        for (LocalDateTimeline<Boolean> localDateSegments : segmenterMedUtbetaling) {
+            timeline = timeline.combine(localDateSegments, StandardCombinators::coalesceRightHandSide, LocalDateTimeline.JoinStyle.CROSS_JOIN);
+        }
+
+        return timeline.compress();
     }
 
     private boolean erMidlertidigInaktiv(BeregningsgrunnlagDto beregningsgrunnlag) {
