@@ -4,9 +4,14 @@ package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
-public class AktivitetStatusMapper {
+public class AktivitetStatusMatcher {
 
-    public static AktivitetStatus mapAktivitetStatus(UttakArbeidType uttakArbeidType) {
+    public static boolean matcherStatusEllerIkkeYrkesaktiv(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
+        return UttakArbeidType.IKKE_YRKESAKTIV.equals(uttakArbeidType) ||
+                mapAktivitetStatus(uttakArbeidType).equals(status);
+    }
+
+    private static AktivitetStatus mapAktivitetStatus(UttakArbeidType uttakArbeidType) {
         if (UttakArbeidType.ORDINÆRT_ARBEID.equals(uttakArbeidType)) {
             return AktivitetStatus.ARBEIDSTAKER;
         }
@@ -30,6 +35,7 @@ public class AktivitetStatusMapper {
         }
         throw new IllegalArgumentException("Ukjent UttakArbeidType '" + uttakArbeidType + "' kan ikke mappe til " + AktivitetStatus.class.getName());
     }
+
 
 
 }

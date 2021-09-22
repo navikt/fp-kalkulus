@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMapper.mapAktivitetStatus;
+import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv;
 
 import java.util.Optional;
 
@@ -9,7 +9,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 class FinnAndelsnrForAktivitetMedUtbgrad {
 
@@ -17,9 +16,8 @@ class FinnAndelsnrForAktivitetMedUtbgrad {
                                                      UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold) {
         Arbeidsgiver tilretteleggingArbeidsgiver = utbetalingsgradArbeidsforhold.getArbeidsgiver().orElse(null);
         InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = utbetalingsgradArbeidsforhold.getInternArbeidsforholdRef();
-        AktivitetStatus tilretteleggingAktivitetStatus = mapAktivitetStatus(utbetalingsgradArbeidsforhold.getUttakArbeidType());
         return vlBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-            .stream().filter(a -> a.getAktivitetStatus().equals(tilretteleggingAktivitetStatus) &&
+            .stream().filter(a -> matcherStatusEllerIkkeYrkesaktiv(a.getAktivitetStatus(), utbetalingsgradArbeidsforhold.getUttakArbeidType()) &&
                 a.getBgAndelArbeidsforhold().map(bgAndelArbeidsforhold -> bgAndelArbeidsforhold.getArbeidsgiver().equals(tilretteleggingArbeidsgiver) &&
                     bgAndelArbeidsforhold.getArbeidsforholdRef().gjelderFor(tilretteleggingArbeidsforholdRef)).orElse(true))
             .findFirst().map(BeregningsgrunnlagPrStatusOgAndelDto::getAndelsnr);

@@ -127,7 +127,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                                       UtbetalingsgradArbeidsforholdDto utbetalingsgradPrAktivitetDto,
                                       YrkesaktivitetFilterDto filter) {
         if (!utbetalingsgradPrAktivitetDto.getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID)) {
-            // Antar SN og FL er aktiv i hele uttaksperioden
+            // Antar SN, FL og IKKE_YREKSAKTIV er aktiv i hele uttaksperioden
             return true;
         }
         if (utbetalingsgradPrAktivitetDto.getArbeidsgiver().isEmpty()) {
@@ -150,9 +150,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
         return mapTilrettelegginger(input.getKoblingReferanse(), utbetalingsgradPrAktivitet, vlBeregningsgrunnlag, filter);
     }
 
-    private AndelGradering mapUttak(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradPrAktivitetDto tilrettelegging, BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    private AndelGradering mapUttak(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradPrAktivitetDto tilrettelegging,
+                                    BeregningsgrunnlagDto vlBeregningsgrunnlag, List<UtbetalingsgradPrAktivitetDto> allePerioder) {
         var tilretteleggingArbeidsforhold = tilrettelegging.getUtbetalingsgradArbeidsforhold();
-        AktivitetStatusV2 tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold.getUttakArbeidType());
+        AktivitetStatusV2 tilretteleggingAktivitetStatus = mapAktivitetStatus(tilretteleggingArbeidsforhold, allePerioder);
 
         AndelGraderingImpl.Builder builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl.builder()
                 .medAktivitetStatus(tilretteleggingAktivitetStatus)
@@ -199,7 +200,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     List<AndelGradering> mapTilrettelegginger(KoblingReferanse ref, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, BeregningsgrunnlagDto vlBeregningsgrunnlag, YrkesaktivitetFilterDto filter) {
         return utbetalingsgradPrAktivitet.stream()
                 .filter(dto -> erAnsattIPerioden(ref, dto.getUtbetalingsgradArbeidsforhold(),filter))
-                .map(a -> mapUttak(ref, filter, a, vlBeregningsgrunnlag)).collect(Collectors.toList());
+                .map(a -> mapUttak(ref, filter, a, vlBeregningsgrunnlag, utbetalingsgradPrAktivitet)).collect(Collectors.toList());
     }
 
 }

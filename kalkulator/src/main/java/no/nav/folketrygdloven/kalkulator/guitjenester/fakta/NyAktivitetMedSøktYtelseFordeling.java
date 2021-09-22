@@ -12,8 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforhol
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingTilfelle;
-import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMapper;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.NyPeriodeDto;
 
@@ -45,8 +44,7 @@ class NyAktivitetMedSøktYtelseFordeling {
     private static boolean matcherAndelAktivitetMedUtbetalingsgrad(BeregningsgrunnlagPrStatusOgAndelDto andel, UtbetalingsgradPrAktivitetDto utbAktivitet) {
         UtbetalingsgradArbeidsforholdDto arbeidsforhold = utbAktivitet.getUtbetalingsgradArbeidsforhold();
         UttakArbeidType uttakArbeidType = arbeidsforhold.getUttakArbeidType();
-        AktivitetStatus aktivitetStatus = AktivitetStatusMapper.mapAktivitetStatus(uttakArbeidType);
-        if (andel.getAktivitetStatus().equals(aktivitetStatus)) {
+        if (AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv(andel.getAktivitetStatus(), uttakArbeidType)) {
             if (andel.getAktivitetStatus().erArbeidstaker()) {
                 return matcherArbeidSøktYtelse(andel, arbeidsforhold);
             }
