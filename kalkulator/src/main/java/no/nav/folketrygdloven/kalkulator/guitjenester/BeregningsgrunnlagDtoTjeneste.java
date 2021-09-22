@@ -30,6 +30,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Sammenligning
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagDto;
@@ -84,7 +85,9 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapAvklaringsbehov(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        dto.setAvklaringsbehov(input.getAvklaringsbehov().stream().map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), a.getBegrunnelse())).collect(Collectors.toList()));
+        dto.setAvklaringsbehov(input.getAvklaringsbehov().stream()
+                .filter(ab -> !ab.getStatus().equals(AvklaringsbehovStatus.AVBRUTT))
+                .map(a -> new AvklaringsbehovDto(a.getDefinisjon(), a.getStatus(), a.getBegrunnelse())).collect(Collectors.toList()));
     }
 
     private void mapFaktaOmRefusjon(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
@@ -129,7 +132,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     private void mapSammenlingingsgrunnlagPrStatus(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
         var beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<SammenligningsgrunnlagDto> sammenligningsgrunnlagDto = lagSammenligningsgrunnlagDtoPrStatus(beregningsgrunnlag);
-        if(sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null){
+        if (sammenligningsgrunnlagDto.isEmpty() && dto.getSammenligningsgrunnlag() != null) {
             dto.getSammenligningsgrunnlag().setSammenligningsgrunnlagType(SammenligningsgrunnlagType.SAMMENLIGNING_ATFL_SN);
             dto.getSammenligningsgrunnlag().setDifferanseBeregnet(finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, dto.getSammenligningsgrunnlag().getRapportertPrAar()));
             dto.setSammenligningsgrunnlagPrStatus(List.of(dto.getSammenligningsgrunnlag()));
@@ -172,7 +175,7 @@ public class BeregningsgrunnlagDtoTjeneste {
         var aktivitetGradering = input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ?
                 ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
         var andelerMedGraderingUtenBG = GraderingUtenBeregningsgrunnlagTjeneste.finnAndelerMedGraderingUtenBG(beregningsgrunnlag,
-            aktivitetGradering);
+                aktivitetGradering);
 
         if (!andelerMedGraderingUtenBG.isEmpty()) {
             dto.setAndelerMedGraderingUtenBG(beregningsgrunnlagPrStatusOgAndelDtoTjeneste.lagBeregningsgrunnlagPrStatusOgAndelDto(input, andelerMedGraderingUtenBG));
@@ -212,9 +215,9 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     }
 
-    private BigDecimal finnDifferanseBeregnetGammeltSammenliningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, BigDecimal rapportertPrÅr){
+    private BigDecimal finnDifferanseBeregnetGammeltSammenliningsgrunnlag(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag, BigDecimal rapportertPrÅr) {
         BigDecimal beregnet;
-        if(finnesAndelMedSN(beregningsgrunnlag)){
+        if (finnesAndelMedSN(beregningsgrunnlag)) {
             beregnet = hentBeregnetSelvstendigNæringsdrivende(beregningsgrunnlag);
         } else {
             beregnet = hentBeregnetSamletArbeidstakerOgFrilanser(beregningsgrunnlag);
@@ -223,13 +226,13 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private BigDecimal finnDifferanseBeregnet(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag,
-                                              SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus){
+                                              SammenligningsgrunnlagPrStatusDto sammenligningsgrunnlagPrStatus) {
         BigDecimal beregnet;
-        if(SammenligningsgrunnlagType.SAMMENLIGNING_AT.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())){
+        if (SammenligningsgrunnlagType.SAMMENLIGNING_AT.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
             beregnet = hentBeregnetArbeidstaker(beregningsgrunnlag);
-        } else if(SammenligningsgrunnlagType.SAMMENLIGNING_FL.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())){
+        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_FL.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
             beregnet = hentBeregnetFrilanser(beregningsgrunnlag);
-        } else if(SammenligningsgrunnlagType.SAMMENLIGNING_SN.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())){
+        } else if (SammenligningsgrunnlagType.SAMMENLIGNING_SN.equals(sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType())) {
             beregnet = hentBeregnetSelvstendigNæringsdrivende(beregningsgrunnlag);
         } else {
             return finnDifferanseBeregnetGammeltSammenliningsgrunnlag(beregningsgrunnlag, sammenligningsgrunnlagPrStatus.getRapportertPrÅr());
@@ -239,39 +242,39 @@ public class BeregningsgrunnlagDtoTjeneste {
 
     private BigDecimal hentBeregnetArbeidstaker(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER))
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
     private BigDecimal hentBeregnetFrilanser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
     private BigDecimal hentBeregnetSelvstendigNæringsdrivende(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getPgiSnitt)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getPgiSnitt)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
     private BigDecimal hentBeregnetSamletArbeidstakerOgFrilanser(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER) || b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+                .filter(b -> b.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSTAKER) || b.getAktivitetStatus().equals(AktivitetStatus.FRILANSER))
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregnetPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
     }
 
-    private boolean finnesAndelMedSN(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag){
+    private boolean finnesAndelMedSN(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .anyMatch(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
+                .anyMatch(b -> b.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE));
     }
 
     private List<BeregningsgrunnlagPeriodeDto> lagBeregningsgrunnlagPeriodeRestDto(BeregningsgrunnlagGUIInput input) {
@@ -293,10 +296,10 @@ public class BeregningsgrunnlagDtoTjeneste {
         dto.setBeregnetPrAar(periode.getBeregnetPrÅr());
         dto.setBruttoPrAar(periode.getBruttoPrÅr());
         BigDecimal bruttoInkludertBortfaltNaturalytelsePrAar = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoInkludertNaturalYtelser)
-            .filter(Objects::nonNull)
-            .reduce(BigDecimal::add)
-            .orElse(null);
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoInkludertNaturalYtelser)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .orElse(null);
         dto.setBruttoInkludertBortfaltNaturalytelsePrAar(bruttoInkludertBortfaltNaturalytelsePrAar);
         dto.setAvkortetPrAar(periode.getAvkortetPrÅr() == null ? null : finnAvkortetUtenGraderingPrÅr(bruttoInkludertBortfaltNaturalytelsePrAar, input.getBeregningsgrunnlag().getGrunnbeløp()));
         dto.setRedusertPrAar(periode.getRedusertPrÅr());
