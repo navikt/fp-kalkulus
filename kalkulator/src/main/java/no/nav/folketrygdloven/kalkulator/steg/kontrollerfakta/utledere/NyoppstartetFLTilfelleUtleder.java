@@ -24,7 +24,7 @@ public class NyoppstartetFLTilfelleUtleder implements TilfelleUtleder {
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return KontrollerFaktaBeregningFrilanserTjeneste.erNyoppstartetFrilanser(beregningsgrunnlag, input.getIayGrunnlag()) ?
+        return KontrollerFaktaBeregningFrilanserTjeneste.erNyoppstartetFrilanser(beregningsgrunnlagGrunnlag, input.getIayGrunnlag()) ?
             Optional.of(FaktaOmBeregningTilfelle.VURDER_NYOPPSTARTET_FL) : Optional.empty();
     }
 

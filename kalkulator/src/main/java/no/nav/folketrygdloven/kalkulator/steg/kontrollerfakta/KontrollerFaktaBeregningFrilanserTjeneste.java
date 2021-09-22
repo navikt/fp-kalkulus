@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_BEGYNNELSE;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -8,8 +10,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansDto;
@@ -17,7 +21,9 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class KontrollerFaktaBeregningFrilanserTjeneste {
 
@@ -25,10 +31,45 @@ public class KontrollerFaktaBeregningFrilanserTjeneste {
         // Skjul
     }
 
-    public static boolean erNyoppstartetFrilanser(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static boolean erNyoppstartetFrilanser(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
+        Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         boolean erFrilanser = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
             .anyMatch(andel -> andel.getAktivitetStatus().erFrilanser());
 
+        return harOppgittNyoppstartetISøknad(iayGrunnlag, erFrilanser) || harOppgittPeriodeSomNyoppstartet(beregningsgrunnlagGrunnlag, erFrilanser);
+    }
+
+    private static boolean harOppgittPeriodeSomNyoppstartet(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag,
+                                                            boolean erFrilanser) {
+
+        if (erFrilanser) {
+            var startAvFrilans = beregningsgrunnlagGrunnlag.getRegisterAktiviteter().getBeregningAktiviteter()
+                    .stream().filter(ba -> ba.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.FRILANS))
+                    .map(BeregningAktivitetDto::getPeriode)
+                    .map(Intervall::getFomDato)
+                    .findFirst()
+                    .orElse(TIDENES_BEGYNNELSE);
+
+            BeregningsgrunnlagDto bg = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag()
+                    .orElseThrow();
+            var startAvBeregningsperiode = bg
+                    .getBeregningsgrunnlagPerioder().stream()
+                    .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                    .filter(andel -> andel.getAktivitetStatus().erFrilanser())
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregningsperiode)
+                    .findFirst()
+                    .map(Intervall::getFomDato)
+                    .orElseThrow(() -> new IllegalStateException("Skal ha beregningsperiode for frilans"));
+
+
+            return startAvFrilans.isAfter(startAvBeregningsperiode) && startAvFrilans.isBefore(bg.getSkjæringstidspunkt());
+
+        }
+        return false;
+    }
+
+    private static boolean harOppgittNyoppstartetISøknad(InntektArbeidYtelseGrunnlagDto iayGrunnlag, boolean erFrilanser) {
         return erFrilanser
             && iayGrunnlag.getOppgittOpptjening()
             .flatMap(OppgittOpptjeningDto::getFrilans)
