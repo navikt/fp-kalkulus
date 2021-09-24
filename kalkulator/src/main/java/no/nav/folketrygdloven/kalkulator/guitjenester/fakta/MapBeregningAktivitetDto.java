@@ -53,12 +53,11 @@ class MapBeregningAktivitetDto {
         if (arbeidsgiver == null) {
             return;
         }
+        beregningAktivitetDto.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
+        beregningAktivitetDto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
 
-        if (arbeidsgiver.getErVirksomhet()) {
-            beregningAktivitetDto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
-        } else if (arbeidsgiver.erAktørId()) {
+        if (arbeidsgiver.erAktørId()) {
             setArbeidsgiverIdForVisning(beregningAktivitetDto, arbeidsgiver, arbeidsgiverOpplysninger);
-            beregningAktivitetDto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
             beregningAktivitetDto.setAktørIdString(arbeidsgiver.getAktørId().getId());
         }
         finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).ifPresent(beregningAktivitetDto::setArbeidsgiverNavn);
