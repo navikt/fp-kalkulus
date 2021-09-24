@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.finnPerioderSomKanKopieres;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,18 +24,20 @@ public final class SpolFramoverTjeneste {
     }
 
 
-    /** Spoler grunnlaget framover en tilstand om dette er mulig.
+    /**
+     * Spoler grunnlaget framover en tilstand om dette er mulig.
      * Spolingen kopierer hele eller deler av grunnlaget som er lagret ved håndtering av aksjonspunkter mellom inneværende og neste steg.
-     * @param avklaringsbehov avklaringsbehov som er utledet i steget
-     * @param nyttGrunnlag nytt grunnlag som er opprettet i steget
-     * @param forrigeGrunnlagFraSteg forrige grunnlag fra steget
+     *
+     * @param avklaringsbehov          avklaringsbehov som er utledet i steget
+     * @param nyttGrunnlag             nytt grunnlag som er opprettet i steget
+     * @param forrigeGrunnlagFraSteg   forrige grunnlag fra steget
      * @param forrigeGrunnlagFraStegUt forrige grunnlag fra steg ut
      * @return Builder for grunnlag som det skal spoles fram til
      */
     public static Optional<BeregningsgrunnlagGrunnlagDtoBuilder> finnGrunnlagDetSkalSpolesTil(List<BeregningAvklaringsbehovResultat> avklaringsbehov,
-                                                                                       BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
-                                                                                       Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
-                                                                                       Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
+                                                                                              BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
+                                                                                              Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
+                                                                                              Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {
 
         boolean kanSpoleFramHeleGrunnlaget = kanKopiereForrigeGrunnlagAvklartIStegUt(
                 avklaringsbehov,
@@ -55,7 +58,10 @@ public final class SpolFramoverTjeneste {
         Set<Intervall> intervallerSomKanKopieres = finnPerioderSomKanKopieres(
                 nyttGrunnlag.getBeregningsgrunnlag(),
                 forrigeGrunnlagFraSteg.getBeregningsgrunnlag());
-        if (intervallerSomKanKopieres.isEmpty()) {
+        int antallPerioderForrigeUt = finnAntallPerioder(forrigeGrunnlagFraStegUt);
+        int antallPerioderForrige = finnAntallPerioder(forrigeGrunnlagFraSteg);
+        // Antar at antall perioder ikkje endres i frontend, sjekk for å unngå at feil fra tidligere saker tas med videre
+        if (intervallerSomKanKopieres.isEmpty() || antallPerioderForrigeUt != antallPerioderForrige) {
             return Optional.empty();
         } else {
             BeregningsgrunnlagDto nyttBg = nyttGrunnlag.getBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag om perioder skal kopieres"));
@@ -68,6 +74,10 @@ public final class SpolFramoverTjeneste {
 
     }
 
+    private static int finnAntallPerioder(BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt) {
+        return forrigeGrunnlagFraStegUt.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder).orElse(Collections.emptyList()).size();
+    }
+
     private static void leggTilPerioder(BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraStegUt, Set<Intervall> intervallerSomKanKopieres, BeregningsgrunnlagDto nyttBg, BeregningsgrunnlagDto.Builder bgBuilder) {
         List<BeregningsgrunnlagPeriodeDto> forrigePerioder = forrigeGrunnlagFraStegUt.getBeregningsgrunnlag()
                 .stream()
@@ -76,7 +86,8 @@ public final class SpolFramoverTjeneste {
 
         nyttBg.getBeregningsgrunnlagPerioder().forEach(periode -> {
             if (intervallerSomKanKopieres.contains(periode.getPeriode())) {
-                BeregningsgrunnlagPeriodeDto forrigePeriode = forrigePerioder.stream().filter(p -> p.getPeriode().equals(periode.getPeriode()))
+                BeregningsgrunnlagPeriodeDto forrigePeriode = forrigePerioder.stream()
+                        .filter(p -> p.getPeriode().equals(periode.getPeriode()))
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException("Fant ikke periode som skulle kopieres i forrige grunnlag"));
                 bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder(forrigePeriode));
