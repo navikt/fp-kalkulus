@@ -52,6 +52,7 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
             .map(arbeidsgiver -> {
                 RefusjonskravSomKommerForSentDto dto = new RefusjonskravSomKommerForSentDto();
                 dto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
+                dto.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
                 ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto = arbeidsgiverOpplysninger.stream().filter(a -> a.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
                         .findFirst().orElse(null);
                 dto.setArbeidsgiverVisningsnavn(arbeidsgiverOpplysningerDto == null ? "Orgnummer " + arbeidsgiver.getIdentifikator() : arbeidsgiverOpplysningerDto.getNavn());

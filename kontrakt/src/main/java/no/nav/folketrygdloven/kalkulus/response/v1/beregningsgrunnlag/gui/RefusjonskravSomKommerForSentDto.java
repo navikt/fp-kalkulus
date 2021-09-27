@@ -21,6 +21,11 @@ public class RefusjonskravSomKommerForSentDto {
     private String arbeidsgiverId;
 
     @Valid
+    @JsonProperty(value = "arbeidsgiverIdent")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    private String arbeidsgiverIdent;
+
+    @Valid
     @JsonProperty(value = "arbeidsgiverVisningsnavn")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverVisningsnavn;
@@ -35,6 +40,14 @@ public class RefusjonskravSomKommerForSentDto {
 
     public void setArbeidsgiverId(String arbeidsgiverId) {
         this.arbeidsgiverId = arbeidsgiverId;
+    }
+
+    public String getArbeidsgiverIdent() {
+        return arbeidsgiverIdent;
+    }
+
+    public void setArbeidsgiverIdent(String arbeidsgiverIdent) {
+        this.arbeidsgiverIdent = arbeidsgiverIdent;
     }
 
     public String getArbeidsgiverVisningsnavn() {
