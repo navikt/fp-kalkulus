@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
+import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningMånedGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Inntekt;
@@ -53,7 +53,7 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
 
     private static BesteberegningInntektDto mapBesteberegningInntekt(Inntekt inntekt) {
         if (inntekt.getArbeidsgiver() != null) {
-            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), inntekt.getInntekt());
+            return new BesteberegningInntektDto(inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsgiver().getIdentifikator(), inntekt.getArbeidsforholdRef().getReferanse(), inntekt.getInntekt());
         }
         return new BesteberegningInntektDto(inntekt.getOpptjeningAktivitetType(), inntekt.getInntekt());
     }

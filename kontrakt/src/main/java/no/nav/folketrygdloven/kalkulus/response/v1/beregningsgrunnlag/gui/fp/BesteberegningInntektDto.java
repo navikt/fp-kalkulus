@@ -30,6 +30,11 @@ public class BesteberegningInntektDto {
     private String arbeidsgiverId;
 
     @Valid
+    @JsonProperty(value = "arbeidsgiverIdent")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    private String arbeidsgiverIdent;
+
+    @Valid
     @JsonProperty(value = "arbeidsforholdId")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsforholdId;
@@ -52,10 +57,11 @@ public class BesteberegningInntektDto {
         this.inntekt = inntekt;
     }
 
-    public BesteberegningInntektDto(String arbeidsgiverId, String arbeidsforholdId, BigDecimal inntekt) {
+    public BesteberegningInntektDto(String arbeidsgiverId, String arbeidsgiverIdent, String arbeidsforholdId, BigDecimal inntekt) {
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId;
         this.inntekt = inntekt;
+        this.arbeidsgiverIdent = arbeidsgiverIdent;
     }
 
     public String getArbeidsgiverId() {
@@ -72,5 +78,9 @@ public class BesteberegningInntektDto {
 
     public BigDecimal getInntekt() {
         return inntekt;
+    }
+
+    public String getArbeidsgiverIdent() {
+        return arbeidsgiverIdent;
     }
 }
