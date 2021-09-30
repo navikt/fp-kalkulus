@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,12 +14,13 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforh
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapAktivitetStatusV2FraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
+import no.nav.fpsak.tidsserie.LocalDateTimeline;
+import no.nav.fpsak.tidsserie.StandardCombinators;
 
 
 public final class MapAndelGradering {
@@ -40,7 +43,7 @@ public final class MapAndelGradering {
 
 
         if (andelGradering.getAktivitetStatus().erFrilanser() || andelGradering.getAktivitetStatus().erSelvstendigNæringsdrivende()){
-            settAndelsnrForStatus(beregningsgrunnlag, builder, andelGradering.getAktivitetStatus());
+            settTidslinjeForNyAktivitetForStatus(beregningsgrunnlag, builder, andelGradering.getAktivitetStatus());
         }
 
         // Finner yrkesaktiviteter inkludert fjernet i overstyring siden vi kun er interessert i å lage nye arbeidsforhold for nye aktiviteter (Disse kan ikke fjernes)
@@ -70,18 +73,23 @@ public final class MapAndelGradering {
     }
 
 
-    private static void settAndelsnrForStatus(BeregningsgrunnlagDto beregningsgrunnlag,
-                                              AndelGraderingImpl.Builder builder,
-                                              no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status) {
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchetAndel = finnAndelIGrunnlag(status, beregningsgrunnlag);
-        matchetAndel.ifPresent(beregningsgrunnlagPrStatusOgAndel -> builder.medAndelsnr(beregningsgrunnlagPrStatusOgAndel.getAndelsnr()));
+    private static void settTidslinjeForNyAktivitetForStatus(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                             AndelGraderingImpl.Builder builder,
+                                                             no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status) {
+        builder.medNyAktivitetTidslinje(finnNyAndelTidslinje(status, beregningsgrunnlag));
     }
 
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelIGrunnlag(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus aktivitetstatus, BeregningsgrunnlagDto beregningsgrunnlag) {
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
-        List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
-        return andeler.stream().filter(andel -> andel.getAktivitetStatus().equals(aktivitetstatus)).findFirst();
+    private static LocalDateTimeline<Boolean> finnNyAndelTidslinje(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus aktivitetstatus, BeregningsgrunnlagDto beregningsgrunnlag) {
+        var eksisterendeAndelSegmenter = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> p.getBeregningsgrunnlagPrStatusOgAndelList()
+                        .stream().anyMatch(andel -> andel.getAktivitetStatus().equals(aktivitetstatus)))
+                .map(p -> new LocalDateSegment<>(p.getBeregningsgrunnlagPeriodeFom(), p.getBeregningsgrunnlagPeriodeTom(), false))
+                .collect(Collectors.toList());
+        LocalDateTimeline<Boolean> eksisterendeAndelTidslinje = new LocalDateTimeline<>(eksisterendeAndelSegmenter);
+        return new LocalDateTimeline<>(beregningsgrunnlag.getSkjæringstidspunkt(), TIDENES_ENDE, true)
+                .crossJoin(eksisterendeAndelTidslinje, StandardCombinators::coalesceRightHandSide);
     }
+
 
 
 }

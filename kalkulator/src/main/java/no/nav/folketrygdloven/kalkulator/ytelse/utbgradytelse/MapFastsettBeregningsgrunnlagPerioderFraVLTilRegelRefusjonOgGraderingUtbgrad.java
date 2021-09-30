@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse;
 
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapUttakArbeidTypeTilAktivitetStatusV2.mapAktivitetStatus;
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FinnAndelsnrForAktivitetMedUtbgrad.finnAndelsnrIFørstePeriode;
+import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.FinnTidslinjeForErNyAktivitet.finnTidslinjeForNyAktivitet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -157,7 +157,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
 
         AndelGraderingImpl.Builder builder = no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl.builder()
                 .medAktivitetStatus(tilretteleggingAktivitetStatus)
-                .medAndelsnr(finnAndelsnrIFørstePeriode(vlBeregningsgrunnlag, tilretteleggingArbeidsforhold).orElse(null));
+                .medNyAktivitetTidslinje(finnTidslinjeForNyAktivitet(vlBeregningsgrunnlag, tilretteleggingArbeidsforhold));
 
         mapArbeidsforholdMedPeriode(ref, filter, tilretteleggingArbeidsforhold)
                 .ifPresent(builder::medArbeidsforhold);

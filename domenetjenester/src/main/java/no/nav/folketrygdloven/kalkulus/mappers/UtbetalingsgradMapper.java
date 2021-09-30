@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
@@ -13,7 +15,26 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDt
 class UtbetalingsgradMapper {
 
     static List<no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto> mapUtbetalingsgrad(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
-        return utbetalingsgradPrAktivitet.stream().map(UtbetalingsgradMapper::mapUtbetalingsgradPrAktivitet).collect(Collectors.toList());
+        return samleArbeidsforhold(utbetalingsgradPrAktivitet).stream().map(e ->
+                        new no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto(
+                                UtbetalingsgradMapper.mapArbeidsforhold(e.getKey()),
+                                UtbetalingsgradMapper.mapPerioderMedUtbetalingsgrad(e.getValue())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Map.Entry<no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto, List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+        return utbetalingsgradPrAktivitet.stream()
+                .collect(Collectors.toMap(
+                        UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto,
+                        UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad,
+                        (e1, e2) -> {
+                            e1.addAll(e2);
+                            return e1;
+                        },
+                        LinkedHashMap::new))
+                .entrySet()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto mapUtbetalingsgradPrAktivitet(UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto) {
