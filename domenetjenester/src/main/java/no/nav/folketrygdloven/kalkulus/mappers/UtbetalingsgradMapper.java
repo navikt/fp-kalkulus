@@ -28,7 +28,7 @@ class UtbetalingsgradMapper {
                         UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto,
                         UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad,
                         (e1, e2) -> {
-                            e1.addAll(e2);
+                            e1.addAll(e2.stream().filter(p -> !e1.contains(p)).collect(Collectors.toList()));
                             return e1;
                         },
                         LinkedHashMap::new))
