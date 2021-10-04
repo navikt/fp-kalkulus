@@ -171,6 +171,8 @@ public class MapFormidlingsdataBeregningsgrunnlag {
             return utbArbeid.getUttakArbeidType().equals(UttakArbeidType.FRILANS);
         } else if (bgAndel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
             return utbArbeid.getUttakArbeidType().equals(UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+        } else if (bgAndel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER)) {
+            return utbArbeid.getUttakArbeidType().equals(UttakArbeidType.DAGPENGER);
         } else if (bgAndel.getAktivitetStatus().erArbeidstaker()) {
             String agBGOrgnr = bgAndel.getArbeidsgiver() == null ? null : bgAndel.getArbeidsgiver().getArbeidsgiverOrgnr();
             String agBGOAktor = bgAndel.getArbeidsgiver() == null ? null : bgAndel.getArbeidsgiver().getArbeidsgiverAktørId();
