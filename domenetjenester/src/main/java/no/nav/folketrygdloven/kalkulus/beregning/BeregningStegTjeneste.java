@@ -79,7 +79,6 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse beregnFor(BeregningSteg stegType, StegProsesseringInput input) {
         kontrollerIngenUløsteAvklaringsbehovFørSteg(stegType, input.getKoblingId());
-        rullTilbakeTjeneste.rullTilbakeTilTilstandFørVedBehov(input.getKoblingId(), input.getStegTilstand());
         if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
         } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {

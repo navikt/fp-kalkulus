@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -98,7 +99,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
         regelsporingRepository.lagre(koblingId, Map.of(BeregningsgrunnlagPeriodeRegelType.FORESLÅ, List.of(RegelSporingPeriodeEntitet.ny().medRegelEvaluering(getTestJSON()).medRegelInput(getTestJSON()).medPeriode(IntervallEntitet.fraOgMed(LocalDate.now())))));
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -124,7 +125,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
-        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingId, BeregningsgrunnlagTilstand.FORESLÅTT_UT);
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.FORESLÅTT_UT);
 
         // Act
         Optional<BeregningsgrunnlagGrunnlagEntitet> aktivtGrunnlag = repository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
@@ -164,6 +165,27 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
 
         Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         assertThat(avklaringsbehovEntitet.isPresent());
+        assertThat(avklaringsbehovEntitet.get().getStatus()).isEqualTo(AvklaringsbehovStatus.AVBRUTT);
+    }
+
+    @Test
+    public void skal_avbryte_avklaringsbehov() {
+        prepareTestData();
+        // Arrange
+        AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
+        avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
+        avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehovDefinisjon, "Begrunnelse");
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+                .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
+                        .medSkjæringstidspunktOpptjening(LocalDate.now())
+                        .build()), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
+
+        // Act
+        rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(Set.of(koblingId), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+
+        // Assert
+        Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
+        assertThat(avklaringsbehovEntitet).isPresent();
         assertThat(avklaringsbehovEntitet.get().getStatus()).isEqualTo(AvklaringsbehovStatus.AVBRUTT);
     }
 

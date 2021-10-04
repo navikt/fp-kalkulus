@@ -78,7 +78,13 @@ public class OperereKalkulusOrkestrerer {
         var koblinger = finnKoblinger(ytelseSomSkalBeregnes, saksnummer, inputPrReferanse.keySet().stream().toList(), aktørId);
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         // Lag input
-        var stegInputPrKobling = lagInput(koblingIder, inputPrReferanse, new InputForStart(koblinger));
+        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
+        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
+        }
+        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder,
+                hentInputResultat.getResultatPrKobling(),
+                new InputForStart(koblinger));
         // Operer
         return opererAlle(koblinger, stegInputPrKobling, new Starter());
     }
@@ -94,7 +100,11 @@ public class OperereKalkulusOrkestrerer {
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         // Lag input
         BeregningSteg beregningSteg = BeregningSteg.fraKode(stegType.getKode());
-        var stegInputPrKobling = lagInput(koblingIder, inputPrReferanse, new InputForSteg(beregningSteg, koblingRelasjon));
+        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
+        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
+        }
+        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder, hentInputResultat.getResultatPrKobling(), new InputForSteg(beregningSteg, koblingRelasjon));
         // Operer
         return opererAlle(koblinger, stegInputPrKobling, new Fortsetter(beregningSteg));
     }
@@ -109,7 +119,11 @@ public class OperereKalkulusOrkestrerer {
         var koblingTilDto = lagDtoMap(håndterBeregningListe, koblinger);
         Set<Long> koblingIder = koblingTilDto.keySet();
         // Lag input
-        var håndterInputPrKobling = lagInput(koblingIder, inputPrReferanse, new InputForHåndtering(koblingTilDto));
+        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
+        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+            return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
+        }
+        var håndterInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder, hentInputResultat.getResultatPrKobling(), new InputForHåndtering(koblingTilDto));
         // Operer
         return opererAlle(koblinger, håndterInputPrKobling, new Håndterer(koblingTilDto));
     }
@@ -132,16 +146,16 @@ public class OperereKalkulusOrkestrerer {
                 .collect(Collectors.toMap(s -> finnKoblingId(koblinger, s), HåndterBeregningRequest::getHåndterBeregning));
     }
 
-    private Resultat<BeregningsgrunnlagInput> lagInput(Set<Long> koblingIder,
-                                                       Map<UUID, KalkulatorInputDto> inputPrReferanse,
-                                                       LagInputTjeneste lagInputTjeneste) {
-        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
-        if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-            return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
-        }
+    private Resultat<BeregningsgrunnlagInput> lagInputOgRullTilbakeVedBehov(Set<Long> koblingIder,
+                                                                            Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling,
+                                                                            LagInputTjeneste lagInputTjeneste) {
         rullTilbakeTjeneste.rullTilbakeTilObligatoriskTilstandFørVedBehov(koblingIder, lagInputTjeneste.getTilstand());
-        return Resultat.forGyldigInputMedData(lagInputTjeneste.utfør(koblingIder, hentInputResultat.getResultatPrKobling()))
-                .medSkjæringstidspunktPrKobling(hentInputResultat.getResultatPrKobling().entrySet().stream()
+        return lagInput(koblingIder, lagInputTjeneste, kalkulatorInputPrKobling);
+    }
+
+    private Resultat<BeregningsgrunnlagInput> lagInput(Set<Long> koblingIder, LagInputTjeneste lagInputTjeneste, Map<Long, KalkulatorInputDto> kalkulatorInputPrKobling) {
+        return Resultat.forGyldigInputMedData(lagInputTjeneste.utfør(koblingIder, kalkulatorInputPrKobling))
+                .medSkjæringstidspunktPrKobling(kalkulatorInputPrKobling.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey,
                                 e -> e.getValue().getSkjæringstidspunkt())));
     }
