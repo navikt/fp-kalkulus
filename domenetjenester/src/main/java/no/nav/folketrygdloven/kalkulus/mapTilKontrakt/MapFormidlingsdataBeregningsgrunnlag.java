@@ -131,6 +131,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         return andeler.stream()
                 .filter(Objects::nonNull)
                 .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
