@@ -64,7 +64,8 @@ public class AndelerForFaktaOmBeregningTjeneste {
                 .ifPresent(dto::setArbeidsforhold);
         finnRefusjonskravFraInntektsmelding(inntektsmeldingForAndel).ifPresent(dto::setRefusjonskrav);
         finnInntektForKunLese(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag,
-                input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller())
+                input.getBeregningsgrunnlag().getFaktaOmBeregningTilfeller(),
+                input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList())
                         .ifPresent(dto::setBelopReadOnly);
         return dto;
     }

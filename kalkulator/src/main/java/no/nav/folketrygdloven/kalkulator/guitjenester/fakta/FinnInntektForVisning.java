@@ -4,14 +4,19 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 public class FinnInntektForVisning {
@@ -33,7 +38,8 @@ public class FinnInntektForVisning {
                                                              BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                              Optional<InntektsmeldingDto> inntektsmeldingForAndel,
                                                              InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
-                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller) {
+                                                             List<FaktaOmBeregningTilfelle> faktaOmBeregningTilfeller,
+                                                             List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndeler) {
         if (faktaOmBeregningTilfeller.contains(FaktaOmBeregningTilfelle.VURDER_AT_OG_FL_I_SAMME_ORGANISASJON)) {
             if (andel.getAktivitetStatus().erFrilanser()) {
                 return Optional.empty();
@@ -45,7 +51,7 @@ public class FinnInntektForVisning {
             }
         }
         if (andel.getAktivitetStatus().erArbeidstaker()) {
-            return finnInntektsbeløpForArbeidstaker(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag);
+            return finnInntektsbeløpForArbeidstaker(ref, andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag, alleAndeler);
         }
         if (andel.getAktivitetStatus().erFrilanser()) {
             return finnMånedsbeløpIBeregningsperiodenForFrilanser(ref, andel, inntektArbeidYtelseGrunnlag);
@@ -59,14 +65,15 @@ public class FinnInntektForVisning {
 
     private static Optional<BigDecimal> finnInntektsbeløpForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                          Optional<InntektsmeldingDto> inntektsmeldingForAndel,
-                                                                         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+                                                                         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                         List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndeler) {
         Optional<BigDecimal> inntektsmeldingBeløp = inntektsmeldingForAndel
             .map(InntektsmeldingDto::getInntektBeløp)
             .map(Beløp::getVerdi);
         if (inntektsmeldingBeløp.isPresent()) {
             return inntektsmeldingBeløp;
         }
-        return finnMånedsbeløpIBeregningsperiodenForArbeidstaker(ref, andel, inntektArbeidYtelseGrunnlag);
+        return finnMånedsbeløpIBeregningsperiodenForArbeidstaker(ref, andel, inntektArbeidYtelseGrunnlag, alleAndeler);
     }
 
     private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForFrilanser(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -76,13 +83,48 @@ public class FinnInntektForVisning {
     }
 
     private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                                          InntektArbeidYtelseGrunnlagDto grunnlag) {
+                                                                                          InntektArbeidYtelseGrunnlagDto grunnlag, List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndeler) {
+        Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Skal ha arbeidsgiver."));
+        List<InntektsmeldingDto> imFraArbeidsgiver = grunnlag.getInntektsmeldinger().stream()
+                .flatMap(i -> i.getInntektsmeldingerSomSkalBrukes().stream())
+                .filter(im -> im.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
+                .filter(im -> im.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold())
+                .collect(Collectors.toList());
+        BigDecimal inntektFraInntektsmedlingForAndreArbeidsforholdISammeOrg = imFraArbeidsgiver.stream()
+                .map(InntektsmeldingDto::getInntektBeløp)
+                .map(Beløp::getVerdi)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+        long antallArbeidsforholdUtenIM = finnAntallArbeidsforholdUtenIM(alleAndeler, arbeidsgiver, imFraArbeidsgiver);
+        Optional<BigDecimal> snittInntektFraAOrdningen = finnSnittinntektForArbeidsgiverPrMåned(ref, andel, grunnlag);
+        return snittInntektFraAOrdningen.map(inntekt -> finnAndelAvInntekt(inntektFraInntektsmedlingForAndreArbeidsforholdISammeOrg, antallArbeidsforholdUtenIM, inntekt));
+    }
+
+    private static BigDecimal finnAndelAvInntekt(BigDecimal inntektFraInntektsmedlingForAndreArbeidsforholdISammeOrg, long antallArbeidsforholdUtenIM, BigDecimal inntekt) {
+        BigDecimal restInntektForArbeidsforholdUtenIM = inntekt.subtract(inntektFraInntektsmedlingForAndreArbeidsforholdISammeOrg);
+        if (restInntektForArbeidsforholdUtenIM.compareTo(BigDecimal.ZERO) < 0 || antallArbeidsforholdUtenIM == 0) {
+            return BigDecimal.ZERO;
+        } else {
+            return restInntektForArbeidsforholdUtenIM.divide(BigDecimal.valueOf(antallArbeidsforholdUtenIM), 10, RoundingMode.HALF_UP);
+        }
+    }
+
+    private static Optional<BigDecimal> finnSnittinntektForArbeidsgiverPrMåned(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto grunnlag) {
         return grunnlag.getAktørInntektFraRegister()
             .map(aktørInntekt -> {
                 var filter = new InntektFilterDto(aktørInntekt).før(ref.getSkjæringstidspunktBeregning());
                 BigDecimal årsbeløp = InntektForAndelTjeneste.finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);
                 return årsbeløp.divide(MND_I_1_ÅR, 10, RoundingMode.HALF_EVEN);
             });
+    }
+
+    private static long finnAntallArbeidsforholdUtenIM(List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndeler, Arbeidsgiver arbeidsgiver, List<InntektsmeldingDto> imFraArbeidsgiver) {
+        return alleAndeler.stream()
+                .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_START))
+                .filter(a -> a.getArbeidsgiver().isPresent() &&
+                a.getArbeidsgiver().get().getIdentifikator().equals(arbeidsgiver.getIdentifikator()) &&
+                imFraArbeidsgiver.stream().noneMatch(im -> im.getArbeidsforholdRef().gjelderFor(a.getArbeidsforholdRef().orElse(InternArbeidsforholdRefDto.nullRef()))
+                )).count();
     }
 
 }
