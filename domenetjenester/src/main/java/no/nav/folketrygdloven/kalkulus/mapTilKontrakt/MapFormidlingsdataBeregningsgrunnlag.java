@@ -58,7 +58,28 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
             return finnInntektstakForNæring(andel, bgPeriode, yg, grenseverdi);
         }
+        if (andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER) || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
+            return finnInntektstakForYtelse(andel, bgPeriode, yg, grenseverdi);
+        }
         return BigDecimal.ZERO;
+    }
+
+    private static BigDecimal finnInntektstakForYtelse(BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                                       BeregningsgrunnlagPeriodeDto inneværendeBGPeriode,
+                                                       UtbetalingsgradGrunnlag yg,
+                                                       BigDecimal grenseverdi) {
+        if (!harSøktUtbetalingForAndel(inneværendeBGPeriode.getPeriode(), andel, yg)) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal inntektIkkeSøktOm = finnInntektIkkeSøktOm(inneværendeBGPeriode, yg);
+        BigDecimal inntektSøktOmAT = finnInntektSøktOm(inneværendeBGPeriode, yg, AktivitetStatus.ARBEIDSTAKER);
+        BigDecimal inntektSøktOmFL = finnInntektSøktOm(inneværendeBGPeriode, yg, AktivitetStatus.FRILANSER);
+        BigDecimal inntektSøktOmSN = finnInntektSøktOm(inneværendeBGPeriode, yg, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        BigDecimal inntektIkkeTilgjengeligForSN = inntektIkkeSøktOm.add(inntektSøktOmAT).add(inntektSøktOmFL).add(inntektSøktOmSN);
+        BigDecimal grenseverdiTruketFraIkkeTilgjengeligInntekt = grenseverdi.subtract(inntektIkkeTilgjengeligForSN);
+        return grenseverdiTruketFraIkkeTilgjengeligInntekt.compareTo(BigDecimal.ZERO) <= 0
+                ? BigDecimal.ZERO
+                : grenseverdiTruketFraIkkeTilgjengeligInntekt.min(andel.getBruttoPrÅr());
     }
 
     private static BigDecimal finnInntektstakForNæring(BeregningsgrunnlagPrStatusOgAndelDto andel,
