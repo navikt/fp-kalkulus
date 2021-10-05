@@ -134,6 +134,9 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "pgi3")
     private BigDecimal pgi3;
 
+    @Column(name = "avkortet_foer_gradering_pr_aar")
+    private BigDecimal avkortetFørGraderingPrÅr;
+
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "aarsbeloep_tilstoetende_ytelse")))
     @ChangeTracked
@@ -253,6 +256,10 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
 
     public BigDecimal getRedusertRefusjonPrÅr() {
         return redusertRefusjonPrÅr;
+    }
+
+    public BigDecimal getAvkortetFørGraderingPrÅr() {
+        return avkortetFørGraderingPrÅr;
     }
 
     public BigDecimal getAvkortetBrukersAndelPrÅr() {
@@ -601,6 +608,13 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medOrginalDagsatsFraTilstøtendeYtelse(Long orginalDagsatsFraTilstøtendeYtelse) {
             verifiserKanModifisere();
             kladd.orginalDagsatsFraTilstøtendeYtelse = orginalDagsatsFraTilstøtendeYtelse;
+            return this;
+        }
+
+
+        public Builder medAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+            verifiserKanModifisere();
+            kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
             return this;
         }
 

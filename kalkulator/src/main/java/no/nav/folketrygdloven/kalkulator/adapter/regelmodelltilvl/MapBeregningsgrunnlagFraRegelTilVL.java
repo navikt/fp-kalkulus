@@ -253,6 +253,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medFastsattAvSaksbehandler(resultatBGPStatus.erFastsattAvSaksbehandler())
                 .medBesteberegningPrÅr(resultatBGPStatus.getBesteberegningPrÅr())
                 .medOrginalDagsatsFraTilstøtendeYtelse(resultatBGPStatus.getOrginalDagsatsFraTilstøtendeYtelse())
+                .medAvkortetFørGraderingPrÅr(resultatBGPStatus.getAndelsmessigFørGraderingPrAar())
                 .build(vlBGPeriode);
     }
 

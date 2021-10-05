@@ -49,6 +49,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
+    private BigDecimal avkortetFørGraderingPrÅr;
 
     public BeregningsgrunnlagPrStatusOgAndelDto() { }
 
@@ -80,6 +81,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.inntektskategori = kopiereFra.inntektskategori;
         this.kilde = kopiereFra.kilde;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
+        this.avkortetFørGraderingPrÅr = kopiereFra.avkortetFørGraderingPrÅr;
         if (kopiereFra.bgAndelArbeidsforhold != null) {
             this.bgAndelArbeidsforhold = BGAndelArbeidsforholdDto.Builder.kopier(kopiereFra.bgAndelArbeidsforhold).build(this);
         }
@@ -256,6 +258,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     public BigDecimal getÅrsbeløpFraTilstøtendeYtelseVerdi() {
         return Optional.ofNullable(getÅrsbeløpFraTilstøtendeYtelse())
                 .map(Beløp::getVerdi).orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getAvkortetFørGraderingPrÅr() {
+        return avkortetFørGraderingPrÅr;
     }
 
     public Long getAndelsnr() {
@@ -526,6 +532,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             kladd.årsbeløpFraTilstøtendeYtelse = new Beløp(årsbeløpFraTilstøtendeYtelse);
             return this;
         }
+
+
+        public Builder medAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+            verifiserKanModifisere();
+            kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
+            return this;
+        }
+
 
         public Builder medInntektskategori(Inntektskategori inntektskategori) {
             verifiserKanModifisere();
