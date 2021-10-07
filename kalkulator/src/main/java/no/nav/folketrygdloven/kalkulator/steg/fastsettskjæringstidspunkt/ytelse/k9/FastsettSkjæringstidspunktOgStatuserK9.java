@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettSkjæringstidspunktOgStatuser;
@@ -50,7 +51,9 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
 
     @Override
     public BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser) {
-        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(), beregningAktivitetAggregat);
+        var ytelseFilter = new YtelseFilterDto(input.getIayGrunnlag().getAktørYtelseFraRegister()).før(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening());
+        AktivitetStatusModell regelmodell = MapBGStatuserFraVLTilRegel.map(input.getInntektsmeldinger(),
+                beregningAktivitetAggregat, ytelseFilter);
 
         no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType midlerTidigInaktivInput = input.getOpptjeningAktiviteter().getMidlertidigInaktivType();
         MidlertidigInaktivType midlertidigInaktivType = null;

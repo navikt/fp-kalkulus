@@ -44,7 +44,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
      * Oppretter og bygger beregningsgrunnlag for behandlingen
      * Oppretter perioder og andeler på beregningsgrunnlag
      * Setter inntektskategori på andeler
-     * Splitter perioder basert på refusjon, gradering og naturalytelse.
+     * Splitter perioder basert på naturalytelse.
      *
      * @param input en {@link BeregningsgrunnlagInput}
      */

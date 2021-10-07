@@ -21,6 +21,7 @@ public class YtelseDto {
     // Brukes til å skille ulike ytelser med samme ytelsetype
     private TemaUnderkategori temaUnderkategori = TemaUnderkategori.UDEFINERT;
     private Set<YtelseAnvistDto> ytelseAnvist = new LinkedHashSet<>();
+    private YtelseGrunnlagDto ytelseGrunnlag;
 
     public YtelseDto() {
         // hibernate
@@ -75,8 +76,12 @@ public class YtelseDto {
 
     }
 
-    void tilbakestillAnvisteYtelser() {
-        ytelseAnvist.clear();
+    public Optional<YtelseGrunnlagDto> getYtelseGrunnlag() {
+        return Optional.ofNullable(ytelseGrunnlag);
+    }
+
+    void setYtelseGrunnlag(YtelseGrunnlagDto ytelseGrunnlag) {
+        this.ytelseGrunnlag = ytelseGrunnlag;
     }
 
     @Override

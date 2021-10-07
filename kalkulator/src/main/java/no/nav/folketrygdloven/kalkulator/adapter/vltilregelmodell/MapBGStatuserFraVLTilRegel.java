@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import static no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger.harSykepengerPåGrunnlagAvDagpenger;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -10,9 +12,9 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOp
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
@@ -24,25 +26,25 @@ public class MapBGStatuserFraVLTilRegel {
         // Skjul
     }
 
-    public static AktivitetStatusModell map(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
+    public static AktivitetStatusModell map(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningAktivitetAggregatDto beregningAktivitetAggregat, YtelseFilterDto ytelseFilter) {
         AktivitetStatusModell regelmodell = new AktivitetStatusModell();
         regelmodell.setSkjæringstidspunktForOpptjening(beregningAktivitetAggregat.getSkjæringstidspunktOpptjening());
-        leggTilAktiviteter(inntektsmeldinger, beregningAktivitetAggregat, regelmodell);
+        leggTilAktiviteter(inntektsmeldinger, beregningAktivitetAggregat, regelmodell, ytelseFilter);
         return regelmodell;
     }
 
     private static void leggTilAktiviteter(Collection<InntektsmeldingDto> inntektsmeldinger,
                                            BeregningAktivitetAggregatDto beregningAktivitetAggregat,
-                                           AktivitetStatusModell modell) {
+                                           AktivitetStatusModell modell, YtelseFilterDto ytelseFilter) {
         List<BeregningAktivitetDto> relevanteAktiviteter = beregningAktivitetAggregat.getBeregningAktiviteter();
         if (relevanteAktiviteter.isEmpty()) {  // For enklere feilsøking når det mangler aktiviteter
             throw new IllegalStateException(INGEN_AKTIVITET_MELDING);
         } else {
-            relevanteAktiviteter.forEach(a -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPerioder(inntektsmeldinger, a)));
+            relevanteAktiviteter.forEach(a -> modell.leggTilEllerOppdaterAktivPeriode(lagAktivPerioder(inntektsmeldinger, a, ytelseFilter)));
         }
     }
 
-    private static AktivPeriode lagAktivPerioder(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningAktivitetDto ba) {
+    private static AktivPeriode lagAktivPerioder(Collection<InntektsmeldingDto> inntektsmeldinger, BeregningAktivitetDto ba, YtelseFilterDto ytelseFilter) {
         Aktivitet aktivitetType = MapOpptjeningAktivitetTypeFraVLTilRegel.map(ba.getOpptjeningAktivitetType());
         Intervall periode = ba.getPeriode();
         Periode regelPeriode = Periode.of(periode.getFomDato(), periode.getTomDato());
@@ -52,6 +54,13 @@ public class MapBGStatuserFraVLTilRegel {
         if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, ba, aktivitetType, regelPeriode);
         }
+        if (Aktivitet.SYKEPENGER_MOTTAKER.equals(aktivitetType)) {
+            Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelseFilter.getFiltrertYtelser(), periode.getTomDato());
+            if (harSPAvDP) {
+                return AktivPeriode.forAndre(Aktivitet.DAGPENGEMOTTAKER, regelPeriode);
+            }
+        }
+
         return AktivPeriode.forAndre(aktivitetType, regelPeriode);
     }
 

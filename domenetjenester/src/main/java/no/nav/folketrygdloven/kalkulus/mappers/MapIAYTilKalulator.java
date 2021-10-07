@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -44,6 +46,7 @@ import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingerDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingDto;
 import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.UtbetalingsPostDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseDto;
+import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseFordelingDto;
 import no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelserDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
@@ -310,7 +313,29 @@ public class MapIAYTilKalulator {
         builder.medBehandlingsTema(ytelse.getTemaUnderkategori());
         builder.medPeriode(mapDatoIntervall(ytelse.getPeriode()));
         builder.medYtelseType(FagsakYtelseType.fraKode(ytelse.getRelatertYtelseType().getKode()));
+        builder.medYtelseGrunnlag(mapYtelseGrunnlag(ytelse.getYtelseGrunnlag()));
         return builder;
+    }
+
+    private static YtelseGrunnlagDto mapYtelseGrunnlag(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto ytelseGrunnlag) {
+        if (ytelseGrunnlag == null) {
+            return null;
+        }
+        return new YtelseGrunnlagDto(ytelseGrunnlag.getArbeidskategori(), mapFordeling(ytelseGrunnlag.getFordeling()));
+    }
+
+    private static List<no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto> mapFordeling(List<YtelseFordelingDto> fordeling) {
+        if (fordeling == null) {
+            return Collections.emptyList();
+        }
+        return fordeling.stream().map(MapIAYTilKalulator::mapUtbetaling).collect(Collectors.toList());
+    }
+
+    private static no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto mapUtbetaling(YtelseFordelingDto f) {
+        return new no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFordelingDto(
+                    MapFraKalkulator.mapArbeidsgiver(f.getArbeidsgiver()),
+                        f.getHyppighet(),
+                        f.getBeløp());
     }
 
     private static YtelseAnvistDto mapYtelseAnvist(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist) {

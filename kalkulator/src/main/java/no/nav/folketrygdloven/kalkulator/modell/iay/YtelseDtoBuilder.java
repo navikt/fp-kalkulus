@@ -41,6 +41,11 @@ public class YtelseDtoBuilder {
         return this;
     }
 
+    public YtelseDtoBuilder medYtelseGrunnlag(YtelseGrunnlagDto ytelseGrunnlag) {
+        ytelse.setYtelseGrunnlag(ytelseGrunnlag);
+        return this;
+    }
+
 
     public YtelseDtoBuilder medVedtaksDagsats(BigDecimal vedtakDagsats) {
         ytelse.setVedtaksDagsats(new Beløp(vedtakDagsats));
@@ -88,10 +93,6 @@ public class YtelseDtoBuilder {
 
     public YtelseAnvistDtoBuilder getAnvistBuilder() {
         return YtelseAnvistDtoBuilder.ny();
-    }
-
-    public void tilbakestillAnvisteYtelser() {
-        ytelse.tilbakestillAnvisteYtelser();
     }
 
 

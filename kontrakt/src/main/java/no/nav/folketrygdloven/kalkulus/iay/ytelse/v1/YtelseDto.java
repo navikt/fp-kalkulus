@@ -47,6 +47,11 @@ public class YtelseDto {
     @Valid
     private TemaUnderkategori temaUnderkategori;
 
+    @JsonProperty(value = "ytelseGrunnlag")
+    @Valid
+    private YtelseGrunnlagDto ytelseGrunnlag;
+
+
     protected YtelseDto() {
         // default ctor
     }
@@ -81,5 +86,9 @@ public class YtelseDto {
 
     public BeløpDto getVedtaksDagsats() {
         return vedtaksDagsats;
+    }
+
+    public YtelseGrunnlagDto getYtelseGrunnlag() {
+        return ytelseGrunnlag;
     }
 }

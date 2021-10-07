@@ -74,3 +74,5 @@ spec:
       value: "true"
     - name: SKAL_VURDERE_FORLENGELSE
       value: "false"
+    - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
+      value: "true"

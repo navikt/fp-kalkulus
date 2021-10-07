@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
+import static no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste.finnBeregningstidspunkt;
+import static no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger.harSykepengerPåGrunnlagAvDagpenger;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,7 +24,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
+import no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -40,7 +45,9 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef()
@@ -158,31 +165,89 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 .map(periode -> !periode.getTom().isBefore(skjæringstidspunktBeregning)).orElse(false));
     }
 
-    private void mapTilstøtendeYtelserDagpengerOgAAP(Inntektsgrunnlag inntektsgrunnlag,
+    private void mapTilstøtendeYtelseAAP(Inntektsgrunnlag inntektsgrunnlag,
                                                      YtelseFilterDto ytelseFilter,
                                                      LocalDate skjæringstidspunkt,
                                                      FagsakYtelseType fagsakYtelseType) {
 
-        Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt,
-            Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+        Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER));
+
         if (nyesteVedtakForDagsats.isEmpty()) {
             return;
         }
 
-        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats.get(),
-            skjæringstidspunkt,
-            Set.of(FagsakYtelseType.DAGPENGER, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER), fagsakYtelseType);
-        BigDecimal dagsats = nyesteVedtakForDagsats.get().getVedtaksDagsats().map(Beløp::getVerdi)
-            .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
-        BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
-            .map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
+        Periodeinntekt aap = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), FagsakYtelseType.ARBEIDSAVKLARINGSPENGER);
+        inntektsgrunnlag.leggTilPeriodeinntekt(aap);
+    }
 
-        inntektsgrunnlag.leggTilPeriodeinntekt(Periodeinntekt.builder()
-            .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
-            .medInntekt(dagsats)
-            .medMåned(skjæringstidspunkt)
-            .medUtbetalingsgrad(utbetalingsgradProsent)
-            .build());
+    private Periodeinntekt mapYtelseFraArenavedtak(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType, YtelseDto nyesteVedtakForDagsats, FagsakYtelseType arbeidsavklaringspenger) {
+        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats,
+                skjæringstidspunkt,
+                Set.of(arbeidsavklaringspenger), fagsakYtelseType);
+        BigDecimal dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
+                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
+                .map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
+
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntekt(dagsats)
+                .medMåned(skjæringstidspunkt)
+                .medUtbetalingsgrad(utbetalingsgradProsent)
+                .build();
+    }
+
+    private void mapTilstøtendeYtelseDagpenger(Inntektsgrunnlag inntektsgrunnlag,
+                                                     YtelseFilterDto ytelseFilter,
+                                                     LocalDate skjæringstidspunkt,
+                                                     FagsakYtelseType fagsakYtelseType) {
+
+        Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
+        LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
+        Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelser, beregningstidspunkt);
+
+        if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, beregningstidspunkt);
+            inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
+        } else {
+            Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.DAGPENGER));
+            if (nyesteVedtakForDagsats.isEmpty()) {
+                return;
+            }
+            Periodeinntekt dagpenger = mapYtelseFraArenavedtak(ytelseFilter, skjæringstidspunkt, fagsakYtelseType, nyesteVedtakForDagsats.get(), FagsakYtelseType.DAGPENGER);
+            inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
+        }
+    }
+
+    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt) {
+        var ytelseGrunnlag = ytelser.stream()
+                .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
+                .filter(y -> y.getRelatertYtelseType().equals(FagsakYtelseType.SYKEPENGER))
+                .flatMap(y -> y.getYtelseGrunnlag().stream())
+                .filter(gr -> Arbeidskategori.DAGPENGER.equals(gr.getArbeidskategori()) ||
+                        Arbeidskategori.KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER.equals(gr.getArbeidskategori()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne et sykepengegrunnlag fra DP"));
+
+        var spAvDP = ytelseGrunnlag.getFordeling().stream().filter(f -> f.getArbeidsgiver() == null)
+                .findFirst();
+
+        var dagsats = spAvDP.map(f -> {
+            var hyppighet = f.getHyppighet();
+            // Antar dagsats ved ingen periodetype
+            if (hyppighet == null || InntektPeriodeType.DAGLIG.equals(hyppighet)) {
+                return f.getBeløp();
+            }
+            throw new IllegalArgumentException("Hånterer foreløpig kun dagsats som periodetype for sykepenger av dagpenger.");
+        }).orElse(BigDecimal.ZERO);
+
+        return Periodeinntekt.builder()
+                .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
+                .medInntekt(dagsats)
+                .medMåned(skjæringstidspunkt)
+                // Antar alltid full utbetaling ved overgang fra dagpenger til sykepenger
+                .medUtbetalingsgrad(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG)
+                .build();
     }
 
     private void lagInntektSammenligning(Inntektsgrunnlag inntektsgrunnlag, InntektFilterDto filter) {
@@ -267,7 +332,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
 
         var ytelseFilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister()).før(skjæringstidspunktBeregning);
         if (!ytelseFilter.getFiltrertYtelser().isEmpty()) {
-            mapTilstøtendeYtelserDagpengerOgAAP(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
+            mapTilstøtendeYtelseAAP(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
+            mapTilstøtendeYtelseDagpenger(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
         }
 
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
