@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapOpptjeningAktivitetTypeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -56,7 +57,7 @@ public class MapBGStatuserFraVLTilRegel {
         }
         if (Aktivitet.SYKEPENGER_MOTTAKER.equals(aktivitetType)) {
             Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelseFilter.getFiltrertYtelser(), periode.getTomDato());
-            if (harSPAvDP) {
+            if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
                 return AktivPeriode.forAndre(Aktivitet.DAGPENGEMOTTAKER, regelPeriode);
             }
         }
