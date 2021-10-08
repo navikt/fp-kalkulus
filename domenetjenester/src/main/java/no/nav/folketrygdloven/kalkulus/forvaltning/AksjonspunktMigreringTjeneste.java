@@ -372,7 +372,7 @@ public class AksjonspunktMigreringTjeneste {
         var status = AvklaringsbehovStatus.fraKode(data.getAvklaringsbehovStatus());
 
         if (status.equals(AvklaringsbehovStatus.UTFØRT)) {
-            avklaringsbehovEntiteter.forEach(ab -> avklaringsbehovKontrollTjeneste.løs(ab, data.getBegrunnelse()));
+            avklaringsbehovEntiteter.forEach(ab -> avklaringsbehovKontrollTjeneste.løsForMigrering(ab, data.getBegrunnelse()));
         } else if (status.equals(AvklaringsbehovStatus.AVBRUTT)) {
             avklaringsbehovEntiteter.forEach(ab -> avklaringsbehovKontrollTjeneste.avbryt(ab));
         }
