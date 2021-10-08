@@ -356,7 +356,8 @@ public class AksjonspunktMigreringTjeneste {
     private void lagAvklaringsbehovForKoblinger(MigrerAksjonspunktRequest data, List<KoblingEntitet> koblinger, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
 
         if (koblinger.isEmpty()) {
-            throw new IllegalStateException("Ingen koblinger hadde aksjonspunkt " + avklaringsbehovDefinisjon.getKode() + " for saksnummer " + data.getSaksnummer());
+            LOGGER.info("Ingen koblinger hadde aksjonspunkt " + avklaringsbehovDefinisjon.getKode() + " for saksnummer " + data.getSaksnummer());
+            return;
         }
 
         List<UUID> referanser = koblinger.stream().map(KoblingEntitet::getKoblingReferanse).map(KoblingReferanse::getReferanse).collect(Collectors.toList());
