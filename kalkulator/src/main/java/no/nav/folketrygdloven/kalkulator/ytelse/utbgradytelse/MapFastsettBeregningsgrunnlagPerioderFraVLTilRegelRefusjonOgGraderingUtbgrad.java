@@ -199,7 +199,6 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
     // TODO: Denne bør vere private
     List<AndelGradering> mapTilrettelegginger(KoblingReferanse ref, List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, BeregningsgrunnlagDto vlBeregningsgrunnlag, YrkesaktivitetFilterDto filter) {
         return utbetalingsgradPrAktivitet.stream()
-                .filter(dto -> !dto.getUtbetalingsgradArbeidsforhold().getUttakArbeidType().equals(UttakArbeidType.BRUKERS_ANDEL))
                 .filter(dto -> erAnsattIPerioden(ref, dto.getUtbetalingsgradArbeidsforhold(),filter))
                 .map(a -> mapUttak(ref, filter, a, vlBeregningsgrunnlag, utbetalingsgradPrAktivitet)).collect(Collectors.toList());
     }
