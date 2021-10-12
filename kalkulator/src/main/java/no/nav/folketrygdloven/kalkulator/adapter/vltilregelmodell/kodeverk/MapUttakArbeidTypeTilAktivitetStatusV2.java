@@ -34,6 +34,9 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
             return AktivitetStatusV2.DP;
         }
+        if (UttakArbeidType.SYKEPENGER_AV_DAGPENGER.equals(uttakArbeidType)) {
+            return AktivitetStatusV2.SP_AV_DP;
+        }
         if (UttakArbeidType.BRUKERS_ANDEL.equals(uttakArbeidType)) {
             return AktivitetStatusV2.BA;
         }

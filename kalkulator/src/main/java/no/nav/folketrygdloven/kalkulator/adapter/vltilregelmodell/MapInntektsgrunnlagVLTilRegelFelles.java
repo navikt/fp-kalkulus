@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
 import static no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste.finnBeregningstidspunkt;
-import static no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger.harSykepengerPåGrunnlagAvDagpenger;
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraSykepengervedtak;
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harSykepengerPåGrunnlagAvDagpenger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,7 +27,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Pe
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
-import no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -45,9 +45,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Arbeidskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef()
@@ -203,11 +201,10 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                                      FagsakYtelseType fagsakYtelseType) {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
-        LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
-        Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelser, beregningstidspunkt);
+        Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt);
 
         if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, beregningstidspunkt);
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         } else {
             Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.DAGPENGER));
@@ -219,27 +216,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         }
     }
 
-    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt) {
-        var ytelseGrunnlag = ytelser.stream()
-                .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
-                .filter(y -> y.getRelatertYtelseType().equals(FagsakYtelseType.SYKEPENGER))
-                .flatMap(y -> y.getYtelseGrunnlag().stream())
-                .filter(gr -> Arbeidskategori.DAGPENGER.equals(gr.getArbeidskategori()) ||
-                        Arbeidskategori.KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER.equals(gr.getArbeidskategori()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Forventer å finne et sykepengegrunnlag fra DP"));
-
-        var spAvDP = ytelseGrunnlag.getFordeling().stream().filter(f -> f.getArbeidsgiver() == null)
-                .findFirst();
-
-        var dagsats = spAvDP.map(f -> {
-            var hyppighet = f.getHyppighet();
-            // Antar dagsats ved ingen periodetype
-            if (hyppighet == null || InntektPeriodeType.DAGLIG.equals(hyppighet)) {
-                return f.getBeløp();
-            }
-            throw new IllegalArgumentException("Hånterer foreløpig kun dagsats som periodetype for sykepenger av dagpenger.");
-        }).orElse(BigDecimal.ZERO);
+    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser) {
+        BigDecimal dagsats = finnDagsatsFraSykepengervedtak(ytelser, skjæringstidspunkt);
 
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)

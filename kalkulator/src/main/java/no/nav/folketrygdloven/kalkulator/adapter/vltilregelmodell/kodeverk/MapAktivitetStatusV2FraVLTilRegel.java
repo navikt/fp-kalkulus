@@ -14,7 +14,8 @@ public class MapAktivitetStatusV2FraVLTilRegel {
             AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE, AktivitetStatusV2.SN,
             AktivitetStatus.MILITÆR_ELLER_SIVIL, AktivitetStatusV2.MS,
             AktivitetStatus.DAGPENGER, AktivitetStatusV2.DP,
-            AktivitetStatus.ARBEIDSAVKLARINGSPENGER, AktivitetStatusV2.AAP
+            AktivitetStatus.ARBEIDSAVKLARINGSPENGER, AktivitetStatusV2.AAP,
+            AktivitetStatus.SYKEPENGER_AV_DAGPENGER, AktivitetStatusV2.SP_AV_DP
         );
 
     private static final Map<Inntektskategori, AktivitetStatusV2> MAP_INNTEKTSKATEGORI = Map.of(

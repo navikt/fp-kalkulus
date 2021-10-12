@@ -60,12 +60,14 @@ public class YtelseDto {
                      @Valid @Size Set<YtelseAnvistDto> ytelseAnvist,
                      @Valid @NotNull RelatertYtelseType relatertYtelseType,
                      @Valid @NotNull Periode periode,
-                     @Valid TemaUnderkategori temaUnderkategori) {
+                     @Valid TemaUnderkategori temaUnderkategori,
+                     @Valid YtelseGrunnlagDto ytelseGrunnlag) {
         this.vedtaksDagsats = vedtaksDagsats;
         this.ytelseAnvist = ytelseAnvist;
         this.relatertYtelseType = relatertYtelseType;
         this.periode = periode;
         this.temaUnderkategori = temaUnderkategori;
+        this.ytelseGrunnlag = ytelseGrunnlag;
     }
 
     public Set<YtelseAnvistDto> getYtelseAnvist() {

@@ -27,6 +27,9 @@ public class AktivitetStatusMatcher {
         if (UttakArbeidType.DAGPENGER.equals(uttakArbeidType)) {
             return AktivitetStatus.DAGPENGER;
         }
+        if (UttakArbeidType.SYKEPENGER_AV_DAGPENGER.equals(uttakArbeidType)) {
+            return AktivitetStatus.SYKEPENGER_AV_DAGPENGER;
+        }
         if (UttakArbeidType.BRUKERS_ANDEL.equals(uttakArbeidType)) {
             return AktivitetStatus.BRUKERS_ANDEL;
         }

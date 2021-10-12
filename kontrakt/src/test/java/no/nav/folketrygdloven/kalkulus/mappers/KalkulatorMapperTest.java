@@ -126,6 +126,6 @@ public class KalkulatorMapperTest {
 
     private List<YtelseDto> byggYtelseDto() {
         YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN);
-        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, TemaUnderkategori.FORELDREPENGER));
+        return List.of(new YtelseDto(beløpDto, Set.of(ytelseAnvistDto), RelatertYtelseType.FORELDREPENGER, periode, TemaUnderkategori.FORELDREPENGER, null));
     }
 }

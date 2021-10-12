@@ -1,16 +1,20 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraSykepengervedtak;
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harSykepengerPåGrunnlagAvDagpenger;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
@@ -30,9 +34,8 @@ class FinnInntektFraYtelse {
 
     static Optional<BigDecimal> finnÅrbeløpFraMeldekortForAndel(KoblingReferanse ref,
                                                                 BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                                InntektArbeidYtelseGrunnlagDto grunnlag) {
+                                                                YtelseFilterDto ytelseFilter) {
         LocalDate skjæringstidspunkt = ref.getSkjæringstidspunktBeregning();
-        var ytelseFilter = new YtelseFilterDto(grunnlag.getAktørYtelseFraRegister()).før(skjæringstidspunkt);
         if (ytelseFilter.isEmpty()) {
             return Optional.empty();
         }
@@ -60,6 +63,20 @@ class FinnInntektFraYtelse {
         }
 
     }
+
+    static Optional<BigDecimal> finnÅrbeløpForDagpenger(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
+                                              YtelseFilterDto ytelseFilter,
+                                              LocalDate skjæringstidspunkt) {
+
+        Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
+        Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt);
+        if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
+            return Optional.of(finnDagsatsFraSykepengervedtak(ytelser, skjæringstidspunkt).multiply(VIRKEDAGER_I_1_ÅR));
+        } else {
+            return finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);
+        }
+    }
+
 
     private static FagsakYtelseType mapTilYtelseType(AktivitetStatus aktivitetStatus) {
         if (AktivitetStatus.DAGPENGER.equals(aktivitetStatus)) {

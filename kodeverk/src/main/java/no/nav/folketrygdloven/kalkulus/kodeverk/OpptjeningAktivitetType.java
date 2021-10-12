@@ -85,6 +85,10 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
             Set.of(),
             Set.of(FagsakYtelseType.SYKEPENGER),
             Set.of()),
+    SYKEPENGER_AV_DAGPENGER("SYKEPENGER_AV_DAGPENGER", "Sykepenger",
+            Set.of(),
+            Set.of(FagsakYtelseType.SYKEPENGER),
+            Set.of()),
     VENTELØNN_VARTPENGER("VENTELØNN_VARTPENGER", "Ventelønn eller vartpenger",
             Set.of(ArbeidType.VENTELØNN_VARTPENGER),
             Set.of(),
@@ -177,13 +181,13 @@ public enum OpptjeningAktivitetType implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
         return KODEVERK;
     }
-    
+
     public String getNavn() {
         return navn;
     }

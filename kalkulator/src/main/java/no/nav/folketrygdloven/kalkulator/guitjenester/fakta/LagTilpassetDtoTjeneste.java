@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDt
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelATDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -110,7 +111,8 @@ class LagTilpassetDtoTjeneste  {
                                                                                InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
                                                                                no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         BeregningsgrunnlagPrStatusOgAndelYtelseDto dtoYtelse = new BeregningsgrunnlagPrStatusOgAndelYtelseDto();
-        Optional<BigDecimal> årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, inntektArbeidYtelseGrunnlag);
+        YtelseFilterDto ytelseFilter = new YtelseFilterDto(inntektArbeidYtelseGrunnlag.getAktørYtelseFraRegister()).før(ref.getSkjæringstidspunktBeregning());
+        Optional<BigDecimal> årsbeløpFraMeldekort = FinnInntektFraYtelse.finnÅrbeløpFraMeldekortForAndel(ref, andel, ytelseFilter);
         if (!årsbeløpFraMeldekort.isPresent()) {
             return dtoYtelse;
         }

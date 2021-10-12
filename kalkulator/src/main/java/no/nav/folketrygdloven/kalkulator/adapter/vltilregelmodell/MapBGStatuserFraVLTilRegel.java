@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.felles.HarYtelseAvDagpenger.harSykepengerPåGrunnlagAvDagpenger;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -55,13 +53,9 @@ public class MapBGStatuserFraVLTilRegel {
         if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, ba, aktivitetType, regelPeriode);
         }
-        if (Aktivitet.SYKEPENGER_MOTTAKER.equals(aktivitetType)) {
-            Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelseFilter.getFiltrertYtelser(), periode.getTomDato());
-            if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-                return AktivPeriode.forAndre(Aktivitet.DAGPENGEMOTTAKER, regelPeriode);
-            }
+        if (Aktivitet.SYKEPENGER_AV_DAGPENGER_MOTTAKER.equals(aktivitetType)) {
+            return AktivPeriode.forAndre(Aktivitet.SYKEPENGER_AV_DAGPENGER_MOTTAKER, regelPeriode);
         }
-
         return AktivPeriode.forAndre(aktivitetType, regelPeriode);
     }
 
