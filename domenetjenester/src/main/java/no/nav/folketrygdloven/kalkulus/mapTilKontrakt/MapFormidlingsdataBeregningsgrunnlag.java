@@ -41,11 +41,12 @@ public class MapFormidlingsdataBeregningsgrunnlag {
     private static void oppdaterAndelerMedFormidlingsfelt(BeregningsgrunnlagPeriodeDto bgPeriode,
                                                           UtbetalingsgradGrunnlag yg, BigDecimal grenseverdi) {
         bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().forEach(andel -> {
+            andel.setAvkortetFørGraderingPrÅr(andel.getAvkortetFørGraderingPrÅr());
             andel.setAvkortetMotInntektstak(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi));
         });
     }
 
-    private static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+    static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                       BeregningsgrunnlagPeriodeDto bgPeriode,
                                                 UtbetalingsgradGrunnlag yg,
                                                 BigDecimal grenseverdi) {

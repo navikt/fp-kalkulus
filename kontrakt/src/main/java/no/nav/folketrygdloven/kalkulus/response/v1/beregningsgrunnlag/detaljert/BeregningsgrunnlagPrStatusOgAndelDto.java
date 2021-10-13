@@ -213,6 +213,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Valid
     private BigDecimal avkortetMotInntektstak;
 
+    // TODO Fjern dette feltet når det er laget en egen brevtjeneste
+    @JsonProperty(value = "avkortetMotInntektstak")
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    @Valid
+    private BigDecimal avkortetFørGraderingPrÅr;
+
     public BeregningsgrunnlagPrStatusOgAndelDto() {
     }
 
@@ -419,5 +427,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public BigDecimal getAvkortetMotInntektstak() {
         return avkortetMotInntektstak;
+    }
+
+    public BigDecimal getAvkortetFørGraderingPrÅr() {
+        return avkortetFørGraderingPrÅr;
+    }
+
+    public void setAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+        this.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
     }
 }

@@ -27,7 +27,7 @@ public class UtbetalingsgradTjeneste {
     }
 
 
-    static BigDecimal finnUtbetalingsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
+    public static BigDecimal finnUtbetalingsgradForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                   Intervall periode,
                                                   YtelsespesifiktGrunnlag ytelsesSpesifiktGrunnlag) {
         if (ytelsesSpesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {

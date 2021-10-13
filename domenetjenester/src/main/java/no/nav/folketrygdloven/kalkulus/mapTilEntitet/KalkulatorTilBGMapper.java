@@ -86,7 +86,8 @@ public class KalkulatorTilBGMapper {
                 .medRedusertRefusjonPrÅr(fraKalkulus.getRedusertRefusjonPrÅr())
                 .medÅrsbeløpFraTilstøtendeYtelse(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
                 .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
-                .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse());
+                .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse())
+                .medAvkortetFørGraderingPrÅr(fraKalkulus.getAvkortetFørGraderingPrÅr());
 
         if (fraKalkulus.getBeregningsperiodeFom() != null) {
             builder.medBeregningsperiode(fraKalkulus.getBeregningsperiodeFom(), fraKalkulus.getBeregningsperiodeTom());

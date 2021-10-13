@@ -51,7 +51,7 @@ public class BGMapperTilKalkulus {
 
         //legg til
         fraFagsystem.getPeriodeÅrsaker().forEach(periodeÅrsak -> builder.leggTilPeriodeÅrsak(PeriodeÅrsak.fraKode(periodeÅrsak.getKode())));
-        fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach( statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
+        fraFagsystem.getBeregningsgrunnlagPrStatusOgAndelList().forEach(statusOgAndel -> builder.leggTilBeregningsgrunnlagPrStatusOgAndel(mapStatusOgAndel(statusOgAndel)));
 
         return builder;
     }
@@ -68,25 +68,26 @@ public class BGMapperTilKalkulus {
 
     private static BeregningsgrunnlagPrStatusOgAndelDto.Builder mapStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel fraFagsystem) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()))
-            .medAndelsnr(fraFagsystem.getAndelsnr())
-            .medArbforholdType(fraFagsystem.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraFagsystem.getArbeidsforholdType().getKode()))
-            .medAvkortetBrukersAndelPrÅr(fraFagsystem.getAvkortetBrukersAndelPrÅr())
-            .medAvkortetPrÅr(fraFagsystem.getAvkortetPrÅr())
-            .medAvkortetRefusjonPrÅr(fraFagsystem.getAvkortetRefusjonPrÅr())
-            .medBeregnetPrÅr(fraFagsystem.getBeregnetPrÅr())
-            .medBesteberegningPrÅr(fraFagsystem.getBesteberegningPrÅr())
-            .medFastsattAvSaksbehandler(fraFagsystem.getFastsattAvSaksbehandler())
-            .medOverstyrtPrÅr(fraFagsystem.getOverstyrtPrÅr())
-            .medFordeltPrÅr(fraFagsystem.getFordeltPrÅr())
-            .medRedusertPrÅr(fraFagsystem.getRedusertPrÅr())
-            .medRedusertBrukersAndelPrÅr(fraFagsystem.getRedusertBrukersAndelPrÅr())
-            .medMaksimalRefusjonPrÅr(fraFagsystem.getMaksimalRefusjonPrÅr())
-            .medRedusertRefusjonPrÅr(fraFagsystem.getRedusertRefusjonPrÅr())
-            .medÅrsbeløpFraTilstøtendeYtelse(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
-            .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
-            .medKilde(AndelKilde.fraKode(fraFagsystem.getKilde().getKode()))
-            .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse());
+                .medAktivitetStatus(AktivitetStatus.fraKode(fraFagsystem.getAktivitetStatus().getKode()))
+                .medAndelsnr(fraFagsystem.getAndelsnr())
+                .medArbforholdType(fraFagsystem.getArbeidsforholdType() == null ? null : OpptjeningAktivitetType.fraKode(fraFagsystem.getArbeidsforholdType().getKode()))
+                .medAvkortetBrukersAndelPrÅr(fraFagsystem.getAvkortetBrukersAndelPrÅr())
+                .medAvkortetPrÅr(fraFagsystem.getAvkortetPrÅr())
+                .medAvkortetRefusjonPrÅr(fraFagsystem.getAvkortetRefusjonPrÅr())
+                .medBeregnetPrÅr(fraFagsystem.getBeregnetPrÅr())
+                .medBesteberegningPrÅr(fraFagsystem.getBesteberegningPrÅr())
+                .medFastsattAvSaksbehandler(fraFagsystem.getFastsattAvSaksbehandler())
+                .medOverstyrtPrÅr(fraFagsystem.getOverstyrtPrÅr())
+                .medFordeltPrÅr(fraFagsystem.getFordeltPrÅr())
+                .medRedusertPrÅr(fraFagsystem.getRedusertPrÅr())
+                .medRedusertBrukersAndelPrÅr(fraFagsystem.getRedusertBrukersAndelPrÅr())
+                .medMaksimalRefusjonPrÅr(fraFagsystem.getMaksimalRefusjonPrÅr())
+                .medRedusertRefusjonPrÅr(fraFagsystem.getRedusertRefusjonPrÅr())
+                .medÅrsbeløpFraTilstøtendeYtelse(fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraFagsystem.getÅrsbeløpFraTilstøtendeYtelse().getVerdi())
+                .medInntektskategori(fraFagsystem.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraFagsystem.getInntektskategori().getKode()))
+                .medKilde(AndelKilde.fraKode(fraFagsystem.getKilde().getKode()))
+                .medOrginalDagsatsFraTilstøtendeYtelse(fraFagsystem.getOrginalDagsatsFraTilstøtendeYtelse())
+                .medAvkortetFørGraderingPrÅr(fraFagsystem.getAvkortetFørGraderingPrÅr());
 
         if (fraFagsystem.getBeregningsperiodeFom() != null) {
             builder.medBeregningsperiode(fraFagsystem.getBeregningsperiodeFom(), fraFagsystem.getBeregningsperiodeTom());

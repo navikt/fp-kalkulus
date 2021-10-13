@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBeregningsgrunnlagFRISINN;
+import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapBrevBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator;
 import no.nav.folketrygdloven.kalkulus.request.v1.HentBeregningsgrunnlagDtoForGUIRequest;
@@ -133,6 +134,34 @@ public class HentKalkulusRestTjeneste {
         }
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(description = "Hent forenklet BeregningsgrunnlagGrunnlag for angitte referanser", summary = ("Returnerer forenklet BeregningsgrunnlagGrunnlag for angitte kobling referanser."), tags = "beregningsgrunnlag")
+    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
+    @Path("/forenklet-grunnlag/bolk")
+    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
+    public Response hentForenkletBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
+        if (spesifikasjon.getRequestPrReferanse().isEmpty()) {
+            return Response.noContent().build();
+        }
+        var ytelseTyper = spesifikasjon.getRequestPrReferanse().stream()
+                .map(HentBeregningsgrunnlagRequest::getYtelseSomSkalBeregnes).collect(Collectors.toSet());
+        if (ytelseTyper.size() != 1) {
+            return Response.status(Status.BAD_REQUEST).entity("Feil input, alle requests må ha samme ytelsetype. Fikk: " + ytelseTyper).build();
+        }
+        var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
+        var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
+                .collect(Collectors.toList());
+        List<Long> koblinger = new ArrayList<>();
+        koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
+        Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger);
+        var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType).stream()
+                .map(gr -> MapBrevBeregningsgrunnlag.mapGrunnlag(gr, input.getResultatPrKobling().get(gr.getKoblingId()).getYtelsespesifiktGrunnlag()))
+                .collect(Collectors.toList());
+        return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
+    }
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
