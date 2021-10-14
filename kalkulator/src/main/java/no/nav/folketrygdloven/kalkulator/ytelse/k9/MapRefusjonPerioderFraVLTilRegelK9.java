@@ -37,20 +37,13 @@ public class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPerioderFraVL
      * @param startdatoPermisjon Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param im inntektsmelding for refusjonskrav
-     * @param beregningsgrunnlag  Beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
     @Override
     protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon,
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto im,
-                                                          List<AktivitetsAvtaleDto> ansattperioder,
-                                                          BeregningsgrunnlagDto beregningsgrunnlag) {
-
-        if (erMidlertidigInaktiv(beregningsgrunnlag)) {
-            return Collections.emptyList();
-        }
-
+                                                          List<AktivitetsAvtaleDto> ansattperioder) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             LocalDateTimeline<Boolean> utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
             LocalDateTimeline<Boolean> ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
