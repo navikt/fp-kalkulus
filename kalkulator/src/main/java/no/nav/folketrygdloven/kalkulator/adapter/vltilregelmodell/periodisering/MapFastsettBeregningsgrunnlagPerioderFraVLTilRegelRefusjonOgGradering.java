@@ -69,7 +69,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
                         im,
                         startdatoPermisjon,
                         refusjonOverstyringer,
-                        finnGyldigeRefusjonPerioder(startdatoPermisjon, ytelsespesifiktGrunnlag, ya, beregningsgrunnlag)))
+                        finnGyldigeRefusjonPerioder(startdatoPermisjon, ytelsespesifiktGrunnlag, ya)))
                 .orElse(Collections.emptyList());
     }
 
@@ -81,10 +81,9 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
      * @param startdatoPermisjon Startdato permisjon
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya Yrkesaktivitet
-     * @param beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya, BeregningsgrunnlagDto beregningsgrunnlag) {
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
         return List.of(Intervall.fraOgMed(startdatoPermisjon));
     }
 

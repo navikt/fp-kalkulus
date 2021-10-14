@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.ytelse.k9;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,16 +35,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderi
      * @param startdatoPermisjon Startdato for permisjonen for ytelse søkt for
      * @param ytelsespesifiktGrunnlag Ytelsesspesifikt grunnlag
      * @param ya                      Yrkesaktivitet
-     * @param beregningsgrunnlag  Beregningsgrunnlag
      * @return Gyldige perioder for refusjon
      */
     @Override
-    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya, BeregningsgrunnlagDto beregningsgrunnlag) {
-
-        if (erMidlertidigInaktiv(beregningsgrunnlag)) {
-            return Collections.emptyList();
-        }
-
+    protected List<Intervall> finnGyldigeRefusjonPerioder(LocalDate startdatoPermisjon, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag, YrkesaktivitetDto ya) {
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             LocalDateTimeline<Object> utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, ya);
             LocalDateTimeline<Object> ansettelseTidslinje = finnAnsettelseTidslinje(ya);
