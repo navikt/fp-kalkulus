@@ -214,7 +214,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal avkortetMotInntektstak;
 
     // TODO Fjern dette feltet når det er laget en egen brevtjeneste
-    @JsonProperty(value = "avkortetMotInntektstak")
+    @JsonProperty(value = "avkortetFørGraderingPrÅr")
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
     @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
     @Digits(integer = 10, fraction = 2)
