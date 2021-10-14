@@ -59,7 +59,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
         if (andel.getAktivitetStatus().erSelvstendigNæringsdrivende()) {
             return finnInntektstakForNæring(andel, bgPeriode, yg, grenseverdi);
         }
-        if (andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER) || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
+        if (andel.getAktivitetStatus().erDagpenger() || andel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
             return finnInntektstakForYtelse(andel, bgPeriode, yg, grenseverdi);
         }
         return BigDecimal.ZERO;
