@@ -429,6 +429,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
+        public Builder medBeregningsperiode(Intervall beregningsperiode) {
+            verifiserKanModifisere();
+            kladd.beregningsperiode = beregningsperiode;
+            return this;
+        }
+
         public Builder medArbforholdType(OpptjeningAktivitetType arbforholdType) {
             verifiserKanModifisere();
             kladd.arbeidsforholdType = arbforholdType;

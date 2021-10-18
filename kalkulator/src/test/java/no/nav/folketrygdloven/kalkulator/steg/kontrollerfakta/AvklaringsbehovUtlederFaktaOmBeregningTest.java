@@ -169,7 +169,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         iayGrunnlag.medOppgittOpptjening(BeregningIAYTestUtil.leggTilOppgittOpptjeningForFL(true, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2)));
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
-                SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, arbeidsgiver, Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2L)), iayGrunnlag);
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId, arbeidsgiver, Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1L)), iayGrunnlag);
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10),
                 SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(10), arbId3, Arbeidsgiver.virksomhet(orgnr3), iayGrunnlag);
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),

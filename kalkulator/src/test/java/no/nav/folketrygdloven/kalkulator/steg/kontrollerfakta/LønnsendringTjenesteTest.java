@@ -46,23 +46,35 @@ public class LønnsendringTjenesteTest {
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
             SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
-            Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(2L)),
+            Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1L)),
             iayGrunnlagBuilder);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build());
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build());
 
         // Assert
         assertThat(brukerHarLønnsendring).isTrue();
     }
 
-    private ArbeidsforholdInformasjonDto brukUtenInntektsmelding(InternArbeidsforholdRefDto arbId, String orgnr) {
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder
-            .oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(Arbeidsgiver.virksomhet(orgnr), arbId);
-        overstyringBuilder.medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING);
-        informasjonBuilder.leggTil(overstyringBuilder);
-        return informasjonBuilder.build();
+
+    @Test
+    public void skalTesteAtAvklaringsbehovIkkeOpprettesNårBrukerHarLønnsendringIFørsteDagISisteMånedUtenInntektsmelding() {
+        // Arrange
+        var arbId = InternArbeidsforholdRefDto.nyRef();
+        String orgnr = "123456780";
+        Intervall periode = Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlagMedArbeid(arbId, orgnr, periode, SKJÆRINGSTIDSPUNKT_OPPTJENING);
+        InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
+        BeregningIAYTestUtil.byggArbeidForBehandling(SKJÆRINGSTIDSPUNKT_OPPTJENING, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1),
+                SKJÆRINGSTIDSPUNKT_OPPTJENING.plusMonths(5).minusDays(2), arbId, Arbeidsgiver.virksomhet(orgnr),
+                Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(1L).withDayOfMonth(1)),
+                iayGrunnlagBuilder);
+
+        // Act
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build());
+
+        // Assert
+        assertThat(brukerHarLønnsendring).isFalse();
     }
 
     @Test
@@ -77,11 +89,10 @@ public class LønnsendringTjenesteTest {
         leggTilAktivitet(arbId, orgnr, periode, aktørArbeidBuilder, Optional.of(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4L)));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(oppdatere)
-            .medInformasjon(brukUtenInntektsmelding(arbId, orgnr))
             .build();
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
 
         // Assert
         assertThat(brukerHarLønnsendring).isFalse();
@@ -109,7 +120,7 @@ public class LønnsendringTjenesteTest {
         medOverstyrtPeriode(arbeidType, arbeidsgiver, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING, iayGrunnlag);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
 
         // Assert
         assertThat(brukerHarLønnsendring).isTrue();
@@ -131,12 +142,11 @@ public class LønnsendringTjenesteTest {
         leggTilAktivitet(arbId, orgnr, periode, aktørArbeidBuilder, lønnsendringsdato);
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
             .medData(oppdatere)
-            .medInformasjon(brukUtenInntektsmelding(arbId, orgnr))
             .build();
         medOverstyrtPeriode(arbeidType, arbeidsgiver, fraOgMed, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), iayGrunnlag);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
 
         // Assert
         assertThat(brukerHarLønnsendring).isFalse();

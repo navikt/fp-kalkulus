@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBGSkjæringstidspunktOgStatuserFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningAktiviteterFraVLTilRegelK14;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -44,6 +42,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.FastsettBeregningAktiviteter;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.ytelse.k14.FastsettSkjæringstidspunktOgStatuserK14;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -60,9 +59,7 @@ import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 public class VerdikjedeTestHjelper {
 
     static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.APRIL, 10);
-    private FastsettSkjæringstidspunktOgStatuserK14 fastsettSkjæringstidspunktOgStatuser = new FastsettSkjæringstidspunktOgStatuserK14(new MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(
-            new UnitTestLookupInstanceImpl<>(new BeregningsperiodeTjeneste())
-    ));
+    private final FastsettSkjæringstidspunktOgStatuserK14 fastsettSkjæringstidspunktOgStatuser = new FastsettSkjæringstidspunktOgStatuserK14();
 
     public VerdikjedeTestHjelper() {
     }
@@ -527,7 +524,8 @@ public class VerdikjedeTestHjelper {
         var newInput = input.medBeregningsgrunnlagGrunnlag(grunnlag);
         var beregningsgrunnlag = beregningTjenesteWrapper.getFastsettBeregningsgrunnlagPerioderTjeneste().fastsettPerioderForNaturalytelse(newInput, regelResultat.getBeregningsgrunnlag()).getBeregningsgrunnlag();
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, input.getIayGrunnlag());
-        return lagGrunnlag(beregningAktivitetAggregat, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
+        var fastsattBeregningsperiode = new FastsettBeregningsperiodeTjeneste().fastsettBeregningsperiode(beregningsgrunnlag, input.getIayGrunnlag());
+        return lagGrunnlag(beregningAktivitetAggregat, fastsattBeregningsperiode, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
     }
 
     private BeregningsgrunnlagGrunnlagDto lagGrunnlag(BeregningAktivitetAggregatDto beregningAktivitetAggregat,

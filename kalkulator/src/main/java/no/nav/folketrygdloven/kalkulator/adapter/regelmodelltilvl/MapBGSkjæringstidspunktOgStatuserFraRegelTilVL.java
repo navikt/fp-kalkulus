@@ -8,18 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapOpptjeningAktivitetFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.util.FinnArbeidsperiode;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
@@ -33,21 +26,11 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 
-@ApplicationScoped
 public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
 
-    private Instance<BeregningsperiodeTjeneste> beregningperiodeTjenester;
+    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL() {}
 
-    public MapBGSkjæringstidspunktOgStatuserFraRegelTilVL() {
-        // CDI
-    }
-
-    @Inject
-    public MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(@Any Instance<BeregningsperiodeTjeneste> beregningperiodeTjenester) {
-        this.beregningperiodeTjenester = beregningperiodeTjenester;
-    }
-
-    public BeregningsgrunnlagDto mapForSkjæringstidspunktOgStatuser(
+    public static BeregningsgrunnlagDto mapForSkjæringstidspunktOgStatuser(
         KoblingReferanse ref,
         AktivitetStatusModell regelModell,
         List<RegelResultat> regelResultater,
@@ -86,16 +69,14 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
 
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
 
-        opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(ref, filter, regelModell, beregningsgrunnlagPeriode);
+        opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(filter, regelModell, beregningsgrunnlagPeriode);
         return beregningsgrunnlag;
     }
 
-    private void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(KoblingReferanse ref,
-                                                                               YrkesaktivitetFilterDto filter,
-                                                                               AktivitetStatusModell regelmodell,
-                                                                               BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
+    private static void opprettBeregningsgrunnlagPrStatusOgAndelForSkjæringstidspunkt(YrkesaktivitetFilterDto filter,
+                                                                                      AktivitetStatusModell regelmodell,
+                                                                                      BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         var skjæringstidspunkt = regelmodell.getSkjæringstidspunktForBeregning();
-        var beregningsperiode = lagBeregningsperiode(ref, skjæringstidspunkt);
         FinnArbeidsperiode finnArbeidsperiodeTjeneste = new FinnArbeidsperiode(filter);
         regelmodell.getBeregningsgrunnlagPrStatusListe().stream()
             .filter(bgps -> erATFL(bgps.getAktivitetStatus()))
@@ -105,8 +86,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                     var iaRef = InternArbeidsforholdRefDto.ref(af.getArbeidsforholdId());
                     var andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                         .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(af.getAktivitet()))
-                        .medAktivitetStatus(af.erFrilanser() ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER)
-                        .medBeregningsperiode(beregningsperiode.getFomDato(), beregningsperiode.getTomDato());
+                        .medAktivitetStatus(af.erFrilanser() ? AktivitetStatus.FRILANSER : AktivitetStatus.ARBEIDSTAKER);
                     if (af.getReferanseType() != null || af.getArbeidsforholdId() != null) {
                         Intervall arbeidsperiode = finnArbeidsperiodeTjeneste.finnArbeidsperiode(arbeidsgiver, iaRef, skjæringstidspunkt);
                         BGAndelArbeidsforholdDto.Builder bgArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
@@ -124,12 +104,6 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
                 .medAktivitetStatus(mapAktivitetStatusfraRegelmodell(regelmodell, bgps.getAktivitetStatus()))
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(bgps.getAktivitetStatus()))
                 .build(beregningsgrunnlagPeriode));
-    }
-
-    protected Intervall lagBeregningsperiode(KoblingReferanse ref, LocalDate skjæringstidspunkt) {
-        var periodeTjeneste = FagsakYtelseTypeRef.Lookup.find(beregningperiodeTjenester, ref.getFagsakYtelseType())
-                .orElseThrow(() -> new IllegalStateException("Finner ikke implementasjon for håndtering av refusjon/gradering for BehandlingReferanse " + ref));
-        return periodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(skjæringstidspunkt);
     }
 
     private static boolean erATFL(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus aktivitetStatus) {

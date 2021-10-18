@@ -24,7 +24,7 @@ public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return LønnsendringTjeneste.brukerHarHattLønnsendringOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
+        return LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
             Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
     }
 

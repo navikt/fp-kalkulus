@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.felles;
+package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -79,12 +79,7 @@ public class BeregningsperiodeTjeneste {
     }
 
     private static LocalDate hentBeregningsperiodeTomForATFL(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-            .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-            .filter(andel -> andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erFrilanser())
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBeregningsperiodeTom)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Beregningsperiode skal være satt for arbeidstaker- og frilansandeler"));
+        return beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
     }
 
     private static boolean alleArbeidsforholdHarInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere) {

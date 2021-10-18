@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
 
@@ -27,6 +28,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
     private Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser;
+    private Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste;
 
     protected OpprettBeregningsgrunnlagTjeneste() {
         // for CDI proxy
@@ -34,9 +36,11 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
     @Inject
     public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
-                                             @Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser) {
+                                             @Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser,
+                                             @Any Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste) {
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
         this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
+        this.fastsettBeregningsperiodeTjeneste = fastsettBeregningsperiodeTjeneste;
     }
 
     /**
@@ -63,8 +67,12 @@ public class OpprettBeregningsgrunnlagTjeneste {
         // Fastsett inntektskategorier
         FastsettInntektskategoriTjeneste.fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
+        // Fastsett beregningsperiode
+        var medFastsattBeregningsperiode = FagsakYtelseTypeRef.Lookup.find(fastsettBeregningsperiodeTjeneste, input.getFagsakYtelseType()).orElseThrow()
+                .fastsettBeregningsperiode(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
+
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
-        var resultatMedNaturalytelse = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, resultatMedAndeler.getBeregningsgrunnlag());
+        var resultatMedNaturalytelse = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
         BeregningsgrunnlagVerifiserer.verifiserOppdatertBeregningsgrunnlag(resultatMedNaturalytelse.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatMedNaturalytelse.getBeregningsgrunnlag(),
                 RegelSporingAggregat.konkatiner(resultatMedAndeler.getRegelsporinger().orElse(null), resultatMedNaturalytelse.getRegelsporinger().orElse(null)));

@@ -114,7 +114,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     /// Arbeidsforhold uten inntektsmelding
     static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                       InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(
                 beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();

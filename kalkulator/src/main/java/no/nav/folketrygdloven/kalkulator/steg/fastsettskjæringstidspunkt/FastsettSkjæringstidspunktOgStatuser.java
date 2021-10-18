@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 
 public interface FastsettSkjæringstidspunktOgStatuser {
 
+    // TODO: Skriv om FastsettSkjæringstidspunktOgStatuser til å ikkje returnere eit beregningsgrunnlag med andeler, men kun aktiviteter og skjæringstidspunkt
     BeregningsgrunnlagRegelResultat fastsett(BeregningsgrunnlagInput input, BeregningAktivitetAggregatDto beregningAktivitetAggregat, InntektArbeidYtelseGrunnlagDto iayGrunnlag, List<Grunnbeløp> grunnbeløpSatser);
 
 }

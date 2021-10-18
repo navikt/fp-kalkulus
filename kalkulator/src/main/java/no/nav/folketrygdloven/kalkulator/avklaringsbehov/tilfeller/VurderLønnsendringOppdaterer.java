@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAlleAktiviteterMedLønnsendringUtenInntektsmelding;
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +33,7 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
                 .collect(Collectors.toList());
 
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAlleAktiviteterMedLønnsendringUtenInntektsmelding(input.getBeregningsgrunnlag(), input.getIayGrunnlag());
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(input.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         arbeidstakerAndeler.stream().filter(a -> a.getBgAndelArbeidsforhold().isPresent())

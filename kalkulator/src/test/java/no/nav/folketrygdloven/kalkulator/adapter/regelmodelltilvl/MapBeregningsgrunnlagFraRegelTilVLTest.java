@@ -33,7 +33,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregnings
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -52,16 +51,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
-import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapBeregningsgrunnlagFraRegelTilVLTest {
 
     private static final String ORGNR = "974761076";
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
-    private MapBGSkjæringstidspunktOgStatuserFraRegelTilVL mapper = new MapBGSkjæringstidspunktOgStatuserFraRegelTilVL(
-            new UnitTestLookupInstanceImpl<>(
-            new BeregningsperiodeTjeneste()));
 
     @Test
     public void testMappingBGForSN() {
@@ -141,7 +136,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         BeregningIAYTestUtil.byggArbeidForBehandling(skjæringstidspunkt, skjæringstidspunkt.minusYears(1), skjæringstidspunkt, null, Arbeidsgiver.person(aktørId), iayGrunnlagBuilder);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = mapper
+        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
             .mapForSkjæringstidspunktOgStatuser(koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), iayGrunnlagBuilder.build(), GRUNNBELØPLISTE);
 
@@ -170,7 +165,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
             Arbeidsgiver.virksomhet(ORGNR), iayGrunnlagBuilder);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = mapper
+        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
             .mapForSkjæringstidspunktOgStatuser(koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), iayGrunnlagBuilder.build(), GRUNNBELØPLISTE);
 
@@ -196,7 +191,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
         AktivitetStatusModell regelmodell = lagRegelModellSN(skjæringstidspunkt);
 
         // Act
-        BeregningsgrunnlagDto beregningsgrunnlag = mapper
+        BeregningsgrunnlagDto beregningsgrunnlag = MapBGSkjæringstidspunktOgStatuserFraRegelTilVL
             .mapForSkjæringstidspunktOgStatuser(koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder().medFørsteUttaksdato(førsteUttaksdag).medSkjæringstidspunktOpptjening(førsteUttaksdag).build()), regelmodell,
                 List.of(regelResultat, regelResultat), InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), GRUNNBELØPLISTE);
 
