@@ -49,7 +49,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private KoblingReferanse ref;
 
-    private BeregningsgrunnlagDto beregningsgrunnlag;
     private AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles apUtleder = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles();
     private boolean erOverstyrt;
 
@@ -66,23 +65,15 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         erOverstyrt = false;
 
         LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
-        LocalDate fom = SKJÆRINGSTIDSPUNKT.minusMonths(3).withDayOfMonth(1);
         tom = SKJÆRINGSTIDSPUNKT.withDayOfMonth(1).minusDays(1);
 
 
         ref = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-        beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(beregningsgrunnlag);
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .medBeregningsperiode(fom, tom)
-            .build(periode);
         beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder().medOpptjeningAktivitetType(OpptjeningAktivitetType.FRILANS)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10)))
+                        .build())
             .build();
         input = new BeregningsgrunnlagInput(ref, null, null, null, null);
         input.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 100000);
@@ -95,7 +86,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         LocalDateTime frist = tom.plusDays(rapporteringsfrist).plusDays(1).atStartOfDay();
 
         //Act
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningAktivitetAggregat);
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         List<BeregningAvklaringsbehovResultat> resultater = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles().utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
@@ -165,7 +156,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         int rapporteringsfrist = 1000;
 
         // Act
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningAktivitetAggregat);
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         List<BeregningAvklaringsbehovResultat> resultater = apUtleder.utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 

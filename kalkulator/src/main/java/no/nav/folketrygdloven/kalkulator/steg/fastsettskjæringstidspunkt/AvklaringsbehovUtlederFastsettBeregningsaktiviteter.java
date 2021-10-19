@@ -8,7 +8,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 
 public interface AvklaringsbehovUtlederFastsettBeregningsaktiviteter {
 
-    List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat beregningsgrunnlag,
+    List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat,
                                                             BeregningsgrunnlagInput input,
                                                             boolean erOverstyrt);
 

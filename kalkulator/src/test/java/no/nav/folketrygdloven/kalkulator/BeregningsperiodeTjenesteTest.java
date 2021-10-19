@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,15 +13,11 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 public class BeregningsperiodeTjenesteTest {
 
@@ -59,10 +54,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårIkkeErATFL() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT;
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1SNAndel();
+        var beregningAktivitetAggregatDto = lagBergningaktivitetAggregat1SNAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -72,10 +67,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårNåtidErEtterFrist() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(7); // 8. januar
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
+        var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -85,10 +80,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårNåtidErLengeEtterFrist() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(45);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
+        var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -98,10 +93,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalAlltidSettesPåVentNårBrukerErFrilanserFørFrist() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(4);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1FrilansAndel();
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat1FrilansAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isPresent();
@@ -112,9 +107,9 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårHarInntektsmeldingFørFrist() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(3);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
+        var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
         // Assert
         assertThat(resultat).isEmpty();
     }
@@ -123,9 +118,9 @@ public class BeregningsperiodeTjenesteTest {
     public void skalSettesPåVentNårFørFristUtenInntektsmelding() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(4);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(false);
+        var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isPresent();
@@ -136,10 +131,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalSettesPåVentNårUtenInntektsmeldingFørFristFlereArbeidsforhold() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(4);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isPresent();
@@ -150,10 +145,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalSettesPåVentNårHarInntektsmeldingFørFristForBareEttAvFlereArbeidsforhold() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isPresent();
@@ -164,10 +159,10 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårAlleHarInntektsmeldingFørFristFlereArbeidsforhold() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -177,9 +172,9 @@ public class BeregningsperiodeTjenesteTest {
     public void skalIkkeSettesPåVentNårArbeidsforholdUtenInntektsmeldingErLagtTilAvSaksbehandler() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag1ArbeidstakerAndel(true);
+        var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
         // Assert
         assertThat(resultat).isEmpty();
     }
@@ -188,92 +183,51 @@ public class BeregningsperiodeTjenesteTest {
     public void skalUtledeRiktigFrist() {
         // Arrange
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
-        BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag2ArbeidstakerAndeler();
+        var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, beregningsgrunnlag, List.of(arbeidsgiverA), dagensdato);
+        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
 
         // Assert
         assertThat(frist).isPresent();
         assertThat(frist).hasValue(SKJÆRINGSTIDSPUNKT.plusDays(7));
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag1FrilansAndel() {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.FRILANSER))
-            .build();
-
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(beregningsgrunnlag);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
-            .medAktivitetStatus(AktivitetStatus.FRILANSER)
-            .build(periode);
-        return beregningsgrunnlag;
+    private BeregningAktivitetAggregatDto lagAktivitetAggregat1FrilansAndel() {
+        return BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.FRILANS)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10))).build()).build();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag1ArbeidstakerAndel(boolean lagtTilAvSaksbehandler) {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(beregningsgrunnlag);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverA))
-            .medKilde(lagtTilAvSaksbehandler ? AndelKilde.SAKSBEHANDLER_KOFAKBER : AndelKilde.PROSESS_START)
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode);
-        return beregningsgrunnlag;
+    private BeregningAktivitetAggregatDto lagBeregningaktiviteter1ArbeidstakerAndel() {
+        return BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medArbeidsgiver(arbeidsgiverA)
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10))).build()).build();
     }
 
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag1SNAndel() {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(beregningsgrunnlag);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
-            .build(periode);
-        return beregningsgrunnlag;
+    private BeregningAktivitetAggregatDto lagBergningaktivitetAggregat1SNAndel() {
+        return BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.NÆRING)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10))).build()).build();
     }
 
-    private BeregningsgrunnlagDto lagBeregningsgrunnlag2ArbeidstakerAndeler() {
-        BeregningsgrunnlagDto beregningsgrunnlag = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(beregningsgrunnlag);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverA))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode);
-
-        BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT.minusMonths(3), SKJÆRINGSTIDSPUNKT.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()))
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(arbeidsgiverB))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .build(periode);
-
-        return beregningsgrunnlag;
+    private BeregningAktivitetAggregatDto lagAktivitetAggregat2ArbeidstakerAndeler() {
+        return BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10)))
+                        .medArbeidsgiver(arbeidsgiverA)
+                        .build())
+                .leggTilAktivitet(BeregningAktivitetDto.builder()
+                        .medOpptjeningAktivitetType(OpptjeningAktivitetType.ARBEID)
+                        .medPeriode(Intervall.fraOgMed(SKJÆRINGSTIDSPUNKT.minusMonths(10)))
+                        .medArbeidsgiver(arbeidsgiverB)
+                        .build()).build();
     }
 
 }

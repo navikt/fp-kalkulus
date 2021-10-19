@@ -10,14 +10,11 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
@@ -27,10 +24,10 @@ public class AvklarAktiviteterTjeneste {
         // Skjul meg
     }
 
-    public static boolean skalAvklareAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+    public static boolean skalAvklareAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
         return harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(beregningAktivitetAggregat)
-                || harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse, fagsakYtelseType)
-                || harFullDPPåStpMedAndreAktiviteter(beregningsgrunnlag, aktørYtelse, fagsakYtelseType);
+                || harFullAAPPåStpMedAndreAktiviteter(beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType)
+                || harFullDPPåStpMedAndreAktiviteter(beregningAktivitetAggregat, aktørYtelse, fagsakYtelseType);
     }
 
     public static boolean harVentelønnEllerVartpengerSomSisteAktivitetIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {
@@ -44,13 +41,14 @@ public class AvklarAktiviteterTjeneste {
                 .anyMatch(aktivitet -> aktivitet.getOpptjeningAktivitetType().equals(OpptjeningAktivitetType.VENTELØNN_VARTPENGER));
     }
 
-    public static boolean harFullAAPPåStpMedAndreAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
-        List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser();
-        if (aktivitetStatuser.stream().noneMatch(as -> as.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))) {
+    public static boolean harFullAAPPåStpMedAndreAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+        LocalDate skjæringstidspunkt = beregningAktivitetAggregat.getSkjæringstidspunktOpptjening();
+        List<OpptjeningAktivitetType> opptjeningsaktivitetTyper = beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).stream()
+                .map(BeregningAktivitetDto::getOpptjeningAktivitetType).collect(Collectors.toList());
+        if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.ARBEIDSAVKLARING))) {
             return false;
         }
-        LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
-        if (aktivitetStatuser.size() <= 1) {
+        if (beregningAktivitetAggregat.getBeregningAktiviteter().size() <= 1) {
             return false;
         }
         return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
@@ -58,13 +56,14 @@ public class AvklarAktiviteterTjeneste {
                 .isPresent();
     }
 
-    public static boolean harFullDPPåStpMedAndreAktiviteter(BeregningsgrunnlagDto beregningsgrunnlag, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
-        List<BeregningsgrunnlagAktivitetStatusDto> aktivitetStatuser = beregningsgrunnlag.getAktivitetStatuser();
-        if (aktivitetStatuser.stream().noneMatch(as -> as.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER))) {
+    public static boolean harFullDPPåStpMedAndreAktiviteter(BeregningAktivitetAggregatDto beregningAktivitetAggregat, Optional<AktørYtelseDto> aktørYtelse, FagsakYtelseType fagsakYtelseType) {
+        LocalDate skjæringstidspunkt = beregningAktivitetAggregat.getSkjæringstidspunktOpptjening();
+        List<OpptjeningAktivitetType> opptjeningsaktivitetTyper = beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).stream()
+                .map(BeregningAktivitetDto::getOpptjeningAktivitetType).collect(Collectors.toList());
+        if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.DAGPENGER))) {
             return false;
         }
-        LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
-        if (aktivitetStatuser.size() <= 1) {
+        if (beregningAktivitetAggregat.getBeregningAktiviteter().size() <= 1) {
             return false;
         }
         return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.DAGPENGER)

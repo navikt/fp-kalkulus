@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -27,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.AvklarAktiviteterTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.utils.Tuple;
@@ -171,10 +168,10 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_false_når_ikke_AAP() {
         //Arrange
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSTAKER);
+        var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(ARBEID);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregat, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -183,10 +180,10 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_false_når_bare_AAP_uten_andre_aktiviteter_på_stp() {
         //Arrange
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
+        var aktivitetAggregat = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregat, Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -195,14 +192,14 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_false_når_AAP_med_andre_aktiviteter_på_stp_med_siste_meldekort_uten_full_utbetaling() {
         //Arrange
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER, AktivitetStatus.ARBEIDSTAKER);
+        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING, ARBEID);
 
         Tuple<Periode, Integer> meldekort1 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(15), 200);
         Tuple<Periode, Integer> meldekort2 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1), 180);
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isFalse();
@@ -211,7 +208,7 @@ public class AvklarAktiviteterTjenesteImplTest {
     @Test
     public void skal_returnere_true_når_AAP_med_andre_aktiviteter_på_stp_med_siste_meldekort_med_full_utbetaling() {
         //Arrange
-        BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagMedStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
+        var aktivitetAggregatDto = lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType.ARBEIDSAVKLARING, OpptjeningAktivitetType.NÆRING);
 
         Tuple<Periode, Integer> meldekort1 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(15), 99);
         Tuple<Periode, Integer> meldekort2 = lagMeldekort(SKJÆRINGSTIDSPUNKT_BEREGNING.minusDays(1), 200);
@@ -219,20 +216,21 @@ public class AvklarAktiviteterTjenesteImplTest {
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = lagAktørYtelse(meldekort1, meldekort2, meldekort3);
 
         //Act
-        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(beregningsgrunnlag, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
+        boolean harFullAAPMedAndreAktiviteter = AvklarAktiviteterTjeneste.harFullAAPPåStpMedAndreAktiviteter(aktivitetAggregatDto, getAktørYtelseFraRegister(iayGrunnlag), FagsakYtelseType.FORELDREPENGER);
 
         //Assert
         assertThat(harFullAAPMedAndreAktiviteter).isTrue();
     }
 
-
-    private BeregningsgrunnlagDto beregningsgrunnlagMedStatus(AktivitetStatus... aktivitetStatus) {
-        BeregningsgrunnlagDto.Builder builder = BeregningsgrunnlagDto.builder();
-        builder.medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING);
-        Stream.of(aktivitetStatus).forEach(status -> builder.leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(status)));
+    private BeregningAktivitetAggregatDto lagBeregningAktivitetAggregatMedType(OpptjeningAktivitetType... typer) {
+        BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_BEREGNING);
+        Stream.of(typer).forEach(type -> builder.leggTilAktivitet(BeregningAktivitetDto.builder()
+                .medArbeidsgiver(type.equals(ARBEID) ? ARBEIDSGIVER : null)
+                .medOpptjeningAktivitetType(type)
+                .medPeriode(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(10), SKJÆRINGSTIDSPUNKT_BEREGNING.plusMonths(10)))
+                .build()));
         return builder.build();
     }
-
 
     private BeregningAktivitetDto lagBeregningAktivitetAggregat(LocalDate fom, LocalDate tom, OpptjeningAktivitetType type) {
         return BeregningAktivitetDto.builder()

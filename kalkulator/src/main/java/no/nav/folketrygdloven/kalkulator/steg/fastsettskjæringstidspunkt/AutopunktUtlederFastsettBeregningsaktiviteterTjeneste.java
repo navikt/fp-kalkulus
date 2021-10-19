@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
@@ -32,19 +31,19 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
      *
      *
      * @param aktørYtelse aktørytelse for søker
-     * @param beregningsgrunnlag beregningsgrunnlaget
      * @param dagensdato Dagens dato/ idag
+     * @param skjæringstidspunkt
      * @return Optional som innholder ventefrist om autopunkt skal opprettes, Optional.empty ellers
      */
-    static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, BeregningsgrunnlagDto beregningsgrunnlag, LocalDate dagensdato) {
-        if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt()))
+    static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, LocalDate dagensdato, LocalDate skjæringstidspunkt) {
+        if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, skjæringstidspunkt))
             return Optional.empty();
 
-        if(erSisteMeldekortMottatt(aktørYtelse, beregningsgrunnlag.getSkjæringstidspunkt())){
+        if(erSisteMeldekortMottatt(aktørYtelse, skjæringstidspunkt)){
             return Optional.empty();
         }
 
-        return utledVenteFrist(beregningsgrunnlag.getSkjæringstidspunkt(), dagensdato);
+        return utledVenteFrist(skjæringstidspunkt, dagensdato);
     }
 
     private static boolean erSisteMeldekortMottatt(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {

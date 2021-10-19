@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class BeregningAktivitetAggregatDto {
 
@@ -27,6 +28,12 @@ public class BeregningAktivitetAggregatDto {
     private void leggTilAktivitet(BeregningAktivitetDto beregningAktivitet) {
         beregningAktivitet.setBeregningAktiviteter(this);
         aktiviteter.add(beregningAktivitet);
+    }
+
+
+    public List<BeregningAktivitetDto> getAktiviteterPåDato(LocalDate dato) {
+        return aktiviteter.stream()
+                .filter(ba -> ba.getPeriode().inkluderer(dato)).toList();
     }
 
     @Override

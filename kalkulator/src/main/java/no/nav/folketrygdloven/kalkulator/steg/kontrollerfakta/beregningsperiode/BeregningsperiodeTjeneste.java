@@ -12,13 +12,11 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.BevegeligeHelligdagerUtil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 @ApplicationScoped
@@ -39,64 +37,72 @@ public class BeregningsperiodeTjeneste {
         return Intervall.fraOgMedTilOgMed(fom, tom);
     }
 
-    public static Optional<LocalDate> skalVentePåInnrapporteringAvInntekt(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere, LocalDate dagensDato) {
-        Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        if (!harAktivitetStatuserSomKanSettesPåVent(beregningsgrunnlag)) {
+    public static Optional<LocalDate> skalVentePåInnrapporteringAvInntekt(BeregningsgrunnlagInput input,
+                                                                          List<Arbeidsgiver> arbeidsgivere,
+                                                                          LocalDate dagensDato,
+                                                                          BeregningAktivitetAggregatDto aktivitetAggregatDto) {
+        if (!harAktivitetStatuserSomKanSettesPåVent(aktivitetAggregatDto, input.getSkjæringstidspunktForBeregning())) {
             return Optional.empty();
         }
-        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(beregningsgrunnlag);
+        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(input.getSkjæringstidspunktForBeregning());
         LocalDate originalFrist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         LocalDate fristMedHelligdagerInkl = BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(originalFrist);
         if (dagensDato.isAfter(fristMedHelligdagerInkl)) {
             return Optional.empty();
         }
 
-        return harMottattInntektsmeldingForAlleArbeidsforhold(beregningsgrunnlag, arbeidsgivere)
+        return harMottattInntektsmeldingForAlleArbeidsforhold(
+                input.getSkjæringstidspunktForBeregning(),
+                aktivitetAggregatDto,
+                arbeidsgivere)
                 ? Optional.empty()
-                : Optional.of(utledBehandlingPåVentFrist(input, beregningsgrunnlag));
+                : Optional.of(utledBehandlingPåVentFrist(input));
     }
 
-    private static boolean harAktivitetStatuserSomKanSettesPåVent(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-            .flatMap(periode -> periode.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getAktivitetStatus)
-            .anyMatch(status -> status.erArbeidstaker() || status.erFrilanser());
+    private static boolean harAktivitetStatuserSomKanSettesPåVent(BeregningAktivitetAggregatDto aktivitetAggregatDto, LocalDate skjæringstidspunkt) {
+        return aktivitetAggregatDto.getBeregningAktiviteter().stream()
+                .filter(ba -> ba.getPeriode().inkluderer(skjæringstidspunkt))
+                .map(BeregningAktivitetDto::getOpptjeningAktivitetType)
+                .anyMatch(type -> type.equals(OpptjeningAktivitetType.ARBEID) || type.equals(OpptjeningAktivitetType.FRILANS));
     }
 
-    private static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(beregningsgrunnlag);
+    private static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input) {
+        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(input.getSkjæringstidspunktForBeregning());
         LocalDate frist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         return BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(frist).plusDays(1);
     }
 
-    private static boolean harMottattInntektsmeldingForAlleArbeidsforhold(BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere) {
-        boolean erFrilanser = beregningsgrunnlag.getAktivitetStatuser().stream()
-            .map(BeregningsgrunnlagAktivitetStatusDto::getAktivitetStatus).anyMatch(AktivitetStatus::erFrilanser);
+    private static boolean harMottattInntektsmeldingForAlleArbeidsforhold(LocalDate skjæringstidspunkt,
+                                                                          BeregningAktivitetAggregatDto aktivitetAggregatDto,
+                                                                          List<Arbeidsgiver> arbeidsgivere) {
+        boolean erFrilanser = aktivitetAggregatDto.getAktiviteterPåDato(skjæringstidspunkt).stream()
+                .map(BeregningAktivitetDto::getOpptjeningAktivitetType)
+                .anyMatch(t -> t.equals(OpptjeningAktivitetType.FRILANS));
         if (erFrilanser) {
             return false;
         }
-        return alleArbeidsforholdHarInntektsmelding(beregningsgrunnlag, arbeidsgivere);
+        return alleArbeidsforholdHarInntektsmelding(aktivitetAggregatDto, arbeidsgivere, skjæringstidspunkt);
     }
 
-    private static LocalDate hentBeregningsperiodeTomForATFL(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+    private static LocalDate hentBeregningsperiodeTomForATFL(LocalDate skjæringstidspunkt) {
+        return skjæringstidspunkt.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
     }
 
-    private static boolean alleArbeidsforholdHarInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, List<Arbeidsgiver> arbeidsgivere) {
-        return hentAlleArbeidsgiverePåGrunnlaget(beregningsgrunnlag)
-            .filter(arbeidsgiver -> !OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) //Arbeidsforhold er ikke lagt til av saksbehandler
-            .allMatch(arbeidsgiver -> arbeidsgivere
+    private static boolean alleArbeidsforholdHarInntektsmelding(BeregningAktivitetAggregatDto aktivitetAggregatDto,
+                                                                List<Arbeidsgiver> arbeidsgivere,
+                                                                LocalDate skjæringstidspunktBeregning) {
+        return hentAlleArbeidsgiverePåSkjæringstidspunktet(aktivitetAggregatDto, skjæringstidspunktBeregning)
+                .filter(arbeidsgiver -> !OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) //Arbeidsforhold er ikke lagt til av saksbehandler
+                .allMatch(arbeidsgiver -> arbeidsgivere
+                        .stream()
+                        .anyMatch(v -> v.equals(arbeidsgiver)));
+    }
+
+    private static Stream<Arbeidsgiver> hentAlleArbeidsgiverePåSkjæringstidspunktet(BeregningAktivitetAggregatDto aktivitetAggregatDto, LocalDate skjæringstidspunktBeregning) {
+        return aktivitetAggregatDto.getAktiviteterPåDato(skjæringstidspunktBeregning)
                 .stream()
-                .anyMatch(v -> v.equals(arbeidsgiver)));
-    }
-
-    private static Stream<Arbeidsgiver> hentAlleArbeidsgiverePåGrunnlaget(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-            .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-            .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(BGAndelArbeidsforholdDto::getArbeidsgiver);
+                .map(BeregningAktivitetDto::getArbeidsgiver)
+                .filter(Objects::nonNull);
     }
 
 
