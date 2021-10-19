@@ -40,11 +40,12 @@ public class BeregningsperiodeTjeneste {
     public static Optional<LocalDate> skalVentePåInnrapporteringAvInntekt(BeregningsgrunnlagInput input,
                                                                           List<Arbeidsgiver> arbeidsgivere,
                                                                           LocalDate dagensDato,
-                                                                          BeregningAktivitetAggregatDto aktivitetAggregatDto) {
-        if (!harAktivitetStatuserSomKanSettesPåVent(aktivitetAggregatDto, input.getSkjæringstidspunktForBeregning())) {
+                                                                          BeregningAktivitetAggregatDto aktivitetAggregatDto,
+                                                                          LocalDate skjæringstidspunktForBeregning) {
+        if (!harAktivitetStatuserSomKanSettesPåVent(aktivitetAggregatDto, skjæringstidspunktForBeregning)) {
             return Optional.empty();
         }
-        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(input.getSkjæringstidspunktForBeregning());
+        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(skjæringstidspunktForBeregning);
         LocalDate originalFrist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         LocalDate fristMedHelligdagerInkl = BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(originalFrist);
         if (dagensDato.isAfter(fristMedHelligdagerInkl)) {
@@ -52,11 +53,11 @@ public class BeregningsperiodeTjeneste {
         }
 
         return harMottattInntektsmeldingForAlleArbeidsforhold(
-                input.getSkjæringstidspunktForBeregning(),
+                skjæringstidspunktForBeregning,
                 aktivitetAggregatDto,
                 arbeidsgivere)
                 ? Optional.empty()
-                : Optional.of(utledBehandlingPåVentFrist(input));
+                : Optional.of(utledBehandlingPåVentFrist(input, skjæringstidspunktForBeregning));
     }
 
     private static boolean harAktivitetStatuserSomKanSettesPåVent(BeregningAktivitetAggregatDto aktivitetAggregatDto, LocalDate skjæringstidspunkt) {
@@ -66,8 +67,8 @@ public class BeregningsperiodeTjeneste {
                 .anyMatch(type -> type.equals(OpptjeningAktivitetType.ARBEID) || type.equals(OpptjeningAktivitetType.FRILANS));
     }
 
-    private static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input) {
-        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(input.getSkjæringstidspunktForBeregning());
+    private static LocalDate utledBehandlingPåVentFrist(BeregningsgrunnlagInput input, LocalDate skjæringstidspunktForBeregning) {
+        LocalDate beregningsperiodeTom = hentBeregningsperiodeTomForATFL(skjæringstidspunktForBeregning);
         LocalDate frist = beregningsperiodeTom.plusDays((Integer) input.getKonfigVerdi(INNTEKT_RAPPORTERING_FRIST_DATO));
         return BevegeligeHelligdagerUtil.hentFørsteVirkedagFraOgMed(frist).plusDays(1);
     }

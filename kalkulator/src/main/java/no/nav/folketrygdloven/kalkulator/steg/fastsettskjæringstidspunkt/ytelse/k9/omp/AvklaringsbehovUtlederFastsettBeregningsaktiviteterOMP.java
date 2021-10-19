@@ -32,11 +32,12 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
 
     private static List<BeregningAvklaringsbehovResultat> utledAvklaringsbehovForOMP(BeregningAktivitetAggregatDto beregningAktivitetAggregat,
                                                                                      BeregningsgrunnlagInput input,
-                                                                                     boolean erOverstyrt) {
+                                                                                     boolean erOverstyrt,
+                                                                                     LocalDate skjæringstidspunktForBeregning) {
         Optional<AktørYtelseDto> aktørYtelse = input.getIayGrunnlag().getAktørYtelseFraRegister();
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
         List<Arbeidsgiver> arbeidsgivere = inntektsmeldinger.stream().map(InntektsmeldingDto::getArbeidsgiver).collect(Collectors.toList());
-        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat);
+        Optional<LocalDate> ventPåRapporteringAvInntektFrist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, arbeidsgivere, LocalDate.now(), beregningAktivitetAggregat, skjæringstidspunktForBeregning);
         if (ventPåRapporteringAvInntektFrist.isPresent()) {
             return List.of(autopunkt(AvklaringsbehovDefinisjon.AUTO_VENT_PÅ_INNTEKT_RAPPORTERINGSFRIST, BeregningVenteårsak.VENT_INNTEKT_RAPPORTERINGSFRIST, ventPåRapporteringAvInntektFrist.get()));
         }
@@ -56,6 +57,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
-        return utledAvklaringsbehovForOMP(registerAktiviteter, input, erOverstyrt);
+        LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
+        return utledAvklaringsbehovForOMP(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
     }
 }

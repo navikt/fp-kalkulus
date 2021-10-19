@@ -58,6 +58,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
     private AktørYtelseDto ay = mock(AktørYtelseDto.class);
     private BeregningsgrunnlagInput input;
     private LocalDate tom;
+    private BeregningsgrunnlagDto beregningsgrunnlag;
 
     @BeforeEach
     public void setUp() {
@@ -68,6 +69,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         tom = SKJÆRINGSTIDSPUNKT.withDayOfMonth(1).minusDays(1);
 
 
+        beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
         ref = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
         beregningAktivitetAggregat = BeregningAktivitetAggregatDto.builder()
             .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT)
@@ -86,7 +88,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         LocalDateTime frist = tom.plusDays(rapporteringsfrist).plusDays(1).atStartOfDay();
 
         //Act
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningAktivitetAggregat);
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = lagRegelresultat();
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         List<BeregningAvklaringsbehovResultat> resultater = new AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles().utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
@@ -105,6 +107,12 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .isAfterOrEqualTo(frist)
                 .isBeforeOrEqualTo(frist.plusDays(2))
                 .isCloseTo(frist, within(2, ChronoUnit.DAYS));
+    }
+
+    private BeregningsgrunnlagRegelResultat lagRegelresultat() {
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningsgrunnlag, Collections.emptyList());
+        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        return beregningsgrunnlagRegelResultat;
     }
 
     @Test
@@ -156,8 +164,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
         int rapporteringsfrist = 1000;
 
         // Act
-        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = new BeregningsgrunnlagRegelResultat(beregningAktivitetAggregat);
-        beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
+        BeregningsgrunnlagRegelResultat beregningsgrunnlagRegelResultat = lagRegelresultat();
         List<BeregningAvklaringsbehovResultat> resultater = apUtleder.utledAvklaringsbehov(beregningsgrunnlagRegelResultat, lagBeregningsgrunnlagInput(rapporteringsfrist), erOverstyrt);
 
         // Assert

@@ -57,7 +57,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagBergningaktivitetAggregat1SNAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -70,7 +70,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -83,7 +83,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -96,7 +96,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagAktivitetAggregat1FrilansAndel();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isPresent();
@@ -109,7 +109,7 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(3);
         var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
         // Assert
         assertThat(resultat).isEmpty();
     }
@@ -120,7 +120,7 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(4);
         var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isPresent();
@@ -134,7 +134,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isPresent();
@@ -148,7 +148,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isPresent();
@@ -162,7 +162,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA, arbeidsgiverB), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(resultat).isEmpty();
@@ -174,7 +174,7 @@ public class BeregningsperiodeTjenesteTest {
         LocalDate dagensdato = SKJÆRINGSTIDSPUNKT.plusDays(2);
         var beregningAktivitetAggregatDto = lagBeregningaktiviteter1ArbeidstakerAndel();
         // Act
-        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> resultat = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
         // Assert
         assertThat(resultat).isEmpty();
     }
@@ -186,7 +186,7 @@ public class BeregningsperiodeTjenesteTest {
         var beregningAktivitetAggregatDto = lagAktivitetAggregat2ArbeidstakerAndeler();
 
         // Act
-        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto);
+        Optional<LocalDate> frist = BeregningsperiodeTjeneste.skalVentePåInnrapporteringAvInntekt(input, List.of(arbeidsgiverA), dagensdato, beregningAktivitetAggregatDto, input.getSkjæringstidspunktForBeregning());
 
         // Assert
         assertThat(frist).isPresent();
