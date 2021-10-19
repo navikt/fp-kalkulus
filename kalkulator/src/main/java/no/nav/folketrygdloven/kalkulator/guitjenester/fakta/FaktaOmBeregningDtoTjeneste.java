@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
+import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.saksopplysninger.SaksopplysningerTjeneste.lagSaksopplysninger;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,8 +44,9 @@ public class FaktaOmBeregningDtoTjeneste {
                 saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
 
         // Denne delen krever Beregningsgrunnlag
-        if (grunnlagEntitet.getBeregningsgrunnlag().isPresent()) {
+        if (grunnlagEntitet.getBeregningsgrunnlag().isPresent() && !grunnlagEntitet.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().isEmpty()) {
             faktaOmBeregningDto.setAndelerForFaktaOmBeregning(AndelerForFaktaOmBeregningTjeneste.lagAndelerForFaktaOmBeregning(input));
+            faktaOmBeregningDto.setSaksopplysninger(lagSaksopplysninger(input));
             BeregningsgrunnlagDto beregningsgrunnlag = grunnlagEntitet.getBeregningsgrunnlag().orElseThrow();
             if (skalVurdereFaktaForATFL(beregningsgrunnlag)) {
                 List<FaktaOmBeregningTilfelle> tilfeller = beregningsgrunnlag.getFaktaOmBeregningTilfeller();

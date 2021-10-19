@@ -135,7 +135,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         return arbeidsforholdMedLønnsendringUtenIMDtoList;
     }
 
-    private static FaktaOmBeregningAndelDto lagArbeidsforholdUtenInntektsmeldingDto(BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    public static FaktaOmBeregningAndelDto lagArbeidsforholdUtenInntektsmeldingDto(BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         FaktaOmBeregningAndelDto dto = new FaktaOmBeregningAndelDto();
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
             .ifPresent(dto::setArbeidsforhold);

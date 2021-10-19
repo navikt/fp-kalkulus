@@ -13,12 +13,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fakta.Saksopplysninger;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class FaktaOmBeregningDto {
 
+    @Valid
+    @JsonProperty(value = "saksopplysninger")
+    @Size
+    private Saksopplysninger saksopplysninger;
 
     @Valid
     @JsonProperty(value = "kortvarigeArbeidsforhold")
@@ -86,6 +91,13 @@ public class FaktaOmBeregningDto {
         this.refusjonskravSomKommerForSentListe = refusjonskravSomKommerForSentListe;
     }
 
+    public Saksopplysninger getSaksopplysninger() {
+        return saksopplysninger;
+    }
+
+    public void setSaksopplysninger(Saksopplysninger saksopplysninger) {
+        this.saksopplysninger = saksopplysninger;
+    }
 
     public List<AndelForFaktaOmBeregningDto> getAndelerForFaktaOmBeregning() {
         return andelerForFaktaOmBeregning;
