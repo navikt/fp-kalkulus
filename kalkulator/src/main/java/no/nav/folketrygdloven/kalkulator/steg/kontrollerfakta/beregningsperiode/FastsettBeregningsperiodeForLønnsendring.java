@@ -1,5 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode;
 
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmelding;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,13 +16,15 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 class FastsettBeregningsperiodeForLønnsendring {
 
     private FastsettBeregningsperiodeForLønnsendring() {}
 
     static BeregningsgrunnlagDto fastsettBeregningsperiodeForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+        Intervall beregningsperiodeATFL = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(beregningsgrunnlag.getSkjæringstidspunkt());
+        List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, beregningsperiodeATFL);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         if (!yrkesaktiviteterMedLønnsendring.isEmpty()) {
             nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
