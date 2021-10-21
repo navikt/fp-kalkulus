@@ -48,7 +48,7 @@ public class AvklarAktiviteterTjeneste {
         if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.ARBEIDSAVKLARING))) {
             return false;
         }
-        if (beregningAktivitetAggregat.getBeregningAktiviteter().size() <= 1) {
+        if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {
             return false;
         }
         return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.ARBEIDSAVKLARINGSPENGER)
@@ -63,7 +63,7 @@ public class AvklarAktiviteterTjeneste {
         if (opptjeningsaktivitetTyper.stream().noneMatch(type -> type.equals(OpptjeningAktivitetType.DAGPENGER))) {
             return false;
         }
-        if (beregningAktivitetAggregat.getBeregningAktiviteter().size() <= 1) {
+        if (beregningAktivitetAggregat.getAktiviteterPåDato(skjæringstidspunkt).size() <= 1) {
             return false;
         }
         return hentUtbetalingsprosent(aktørYtelse, skjæringstidspunkt, fagsakYtelseType, FagsakYtelseType.DAGPENGER)
