@@ -25,7 +25,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 
 @Entity(name = "AvklaringsbehovEntitet")
 @Table(name = "AVKLARINGSBEHOV")
-public class AvklaringsbehovEntitet {
+public class AvklaringsbehovEntitet implements Comparable<AvklaringsbehovEntitet> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_AVKLARINGSBEHOV")
@@ -142,6 +142,17 @@ public class AvklaringsbehovEntitet {
 
     public BeregningSteg getStegFunnet() {
         return definisjon.getStegFunnet();
+    }
+
+    @Override
+    public int compareTo(AvklaringsbehovEntitet o) {
+        if (this.getStegFunnet().erFør(o.getStegFunnet())) {
+            return -1;
+        }
+        if (this.getStegFunnet().erEtter(o.getStegFunnet())) {
+            return 1;
+        }
+        return 0;
     }
 
     static class Builder {

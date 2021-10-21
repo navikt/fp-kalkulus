@@ -3,8 +3,10 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov;
 import static no.nav.folketrygdloven.kalkulus.felles.verktøy.HibernateVerktøy.hentUniktResultat;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,13 +46,17 @@ public class AvklaringsbehovRepository {
         TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab " +
                 "WHERE ab.kobling.id in :koblinger", AvklaringsbehovEntitet.class);
         query.setParameter("koblinger", koblingIder);
-        return query.getResultList();
+        return query.getResultList().stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
     }
 
     public List<AvklaringsbehovEntitet> hentAvklaringsbehovForKobling(KoblingEntitet kobling) {
         TypedQuery<AvklaringsbehovEntitet> query = entityManager.createQuery("FROM AvklaringsbehovEntitet ab WHERE kobling = :kobling", AvklaringsbehovEntitet.class);
         query.setParameter("kobling", kobling);
-        return query.getResultList();
+        return query.getResultList().stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
     }
 
     public void lagre(AvklaringsbehovEntitet avklaringsbehov) {
