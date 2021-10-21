@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -24,8 +25,13 @@ public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
                                                     BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
-            Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
+        if (KonfigurasjonVerdi.get("AUTOMATISK_BERGNE_LØNNENDRING",false)) {
+            return LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
+                    Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
+        } else {
+            return LønnsendringTjeneste.brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
+                    Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
+        }
     }
 
 }

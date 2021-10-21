@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -114,8 +115,12 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     /// Arbeidsforhold uten inntektsmelding
     static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                       InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(
-                beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendring;
+        if (KonfigurasjonVerdi.get("AUTOMATISK_BERGNE_LØNNENDRING", false)) {
+            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+        } else {
+            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+        }
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }

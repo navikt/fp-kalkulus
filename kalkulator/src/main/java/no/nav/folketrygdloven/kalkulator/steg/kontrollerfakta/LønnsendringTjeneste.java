@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 
@@ -29,6 +30,12 @@ public class LønnsendringTjeneste {
     public static boolean brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         List<YrkesaktivitetDto> aktiviteterMedLønnsendringUtenIM = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, iayGrunnlag);
         return !aktiviteterMedLønnsendringUtenIM.isEmpty();
+    }
+
+    public static boolean brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        List<YrkesaktivitetDto> aktiviteter = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag);
+        return !aktiviteter.isEmpty();
+
     }
 
     /**
@@ -45,6 +52,19 @@ public class LønnsendringTjeneste {
         return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, sisteMåned);
     }
 
+    /**
+     * Finner aktiviteter som har lønnsendring i beregningsperioden
+     *
+     * @param beregningsgrunnlag Beregningsgrunnlag
+     * @param iayGrunnlag        InntektArbeidYtelseGrunnlag
+     * @return Liste med aktiviteter som har lønnsendring
+     */
+    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
+        Intervall beregningsperiode = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(stpBeregning);
+        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, beregningsperiode);
+    }
+
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                             Intervall beregningsperiode) {
@@ -59,7 +79,7 @@ public class LønnsendringTjeneste {
         }
 
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunkt);
-        Collection<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIBeregningsperioden(filter, beregningsperiode, skjæringstidspunkt);
+        Collection<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIPerioden(filter, beregningsperiode, skjæringstidspunkt);
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }
@@ -90,14 +110,14 @@ public class LønnsendringTjeneste {
                 .collect(Collectors.toList());
     }
 
-    private static Collection<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIBeregningsperioden(YrkesaktivitetFilterDto filter, Intervall beregningsperiode, LocalDate skjæringstidspunkt) {
+    private static Collection<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIPerioden(YrkesaktivitetFilterDto filter, Intervall periode, LocalDate skjæringstidspunkt) {
         return filter.getYrkesaktiviteterForBeregning()
                 .stream()
                 .filter(ya -> !ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER.equals(ya.getArbeidType())
                         && !ArbeidType.FRILANSER.equals(ya.getArbeidType()))
                 .filter(ya -> filter.getAnsettelsesPerioder(ya).stream()
                         .anyMatch(ap -> ap.getPeriode().inkluderer(skjæringstidspunkt)))
-                .filter(ya -> harAvtalerMedLønnsendringIPerioden(filter.getAktivitetsAvtalerForArbeid(ya), beregningsperiode))
+                .filter(ya -> harAvtalerMedLønnsendringIPerioden(filter.getAktivitetsAvtalerForArbeid(ya), periode))
                 .collect(Collectors.toList());
     }
 
