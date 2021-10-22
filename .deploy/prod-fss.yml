@@ -75,5 +75,5 @@ spec:
       value: "false"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
       value: "false"
-    - name: AUTOMATISK_BERGNE_LØNNENDRING
+    - name: AUTOMATISK_BEREGNE_LONNSENDRING
       value: "false"

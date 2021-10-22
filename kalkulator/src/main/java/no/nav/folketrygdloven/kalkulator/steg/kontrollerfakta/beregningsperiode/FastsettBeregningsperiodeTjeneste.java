@@ -26,7 +26,7 @@ public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperi
         // Fastsetter først for alle ATFL-andeler
         var fastsattForATFL = fastsettBeregningsperiodeForATFL(beregningsgrunnlag, beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(beregningsgrunnlag.getSkjæringstidspunkt()));
         // Fastsetter for arbeidsforhold med lønnsendring innenfor siste 3 måneder før skjæringstidspunktet
-        if (KonfigurasjonVerdi.get("AUTOMATISK_BERGNE_LØNNENDRING", false)) {
+        if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
             var fastsattForLønnsendring = fastsettBeregningsperiodeForLønnsendring(fastsattForATFL, inntektArbeidYtelseGrunnlag);
             return fastsattForLønnsendring;
 

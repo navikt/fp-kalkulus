@@ -116,7 +116,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
     static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                       InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         List<YrkesaktivitetDto> aktiviteterMedLønnsendring;
-        if (KonfigurasjonVerdi.get("AUTOMATISK_BERGNE_LØNNENDRING", false)) {
+        if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
             aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
         } else {
             aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
