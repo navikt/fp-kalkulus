@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
+package no.nav.folketrygdloven.kalkulus.håndtering;
 
 
 import static org.assertj.core.api.Assertions.assertThat;

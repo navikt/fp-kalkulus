@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonskravGyld
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.ToggleEndring;
 import no.nav.folketrygdloven.kalkulus.typer.OrganisasjonsNummerValidator;
 
-class UtledFaktaOmBeregningVurderinger {
+public class UtledFaktaOmBeregningVurderinger {
 
     private UtledFaktaOmBeregningVurderinger() {
         // Skjul

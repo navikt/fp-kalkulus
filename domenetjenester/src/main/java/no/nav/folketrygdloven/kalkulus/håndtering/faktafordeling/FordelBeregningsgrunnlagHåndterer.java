@@ -10,8 +10,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
+import no.nav.folketrygdloven.kalkulus.håndtering.UtledEndring;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling.FaktaOmFordelingHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = FaktaOmFordelingHåndteringDto.class, adapter = BeregningHåndterer.class)
@@ -20,7 +20,8 @@ public class FordelBeregningsgrunnlagHåndterer implements BeregningHåndterer<F
     @Override
     public HåndteringResultat håndter(FaktaOmFordelingHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FordelBeregningsgrunnlagHåndterer.håndter(mapFordelBeregningsgrunnlagDto(dto.getFordelBeregningsgrunnlagDto()), beregningsgrunnlagInput);
-        var endring = UtledEndring.utled(nyttGrunnlag, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand());
+        BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
+        var endring = UtledEndring.utled(nyttGrunnlag,  grunnlagFraSteg, beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand(), dto);
         return new HåndteringResultat(nyttGrunnlag, endring);
     }
 

@@ -13,8 +13,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
+import no.nav.folketrygdloven.kalkulus.håndtering.UtledEndring;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta.FaktaOmBeregningHåndteringDto;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 
 @ApplicationScoped
 @DtoTilServiceAdapter(dto = FaktaOmBeregningHåndteringDto.class, adapter = BeregningHåndterer.class)

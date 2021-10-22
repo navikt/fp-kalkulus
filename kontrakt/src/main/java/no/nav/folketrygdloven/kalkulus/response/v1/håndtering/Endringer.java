@@ -7,20 +7,14 @@ public class Endringer {
 
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
+    private VarigEndretNæringEndring varigEndretNæringEndring;
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
 
-    public Endringer(BeregningsgrunnlagEndring beregningsgrunnlagEndring,
-                     FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
-        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
-        this.faktaOmBeregningVurderinger = faktaOmBeregningVurderinger;
+    private Endringer() {
     }
 
     public Endringer(RefusjonoverstyringEndring refusjonoverstyringEndring) {
         this.refusjonoverstyringEndring = refusjonoverstyringEndring;
-    }
-
-    public Endringer(BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
-        this.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
     }
 
     public BeregningsgrunnlagEndring getBeregningsgrunnlagEndring() {
@@ -33,6 +27,44 @@ public class Endringer {
 
     public RefusjonoverstyringEndring getRefusjonoverstyringEndring() {
         return refusjonoverstyringEndring;
+    }
+
+    public VarigEndretNæringEndring getVarigEndretNæringEndring() {
+        return varigEndretNæringEndring;
+    }
+
+    public static Builder ny() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private Endringer kladd;
+
+        private Builder() {
+            this.kladd = new Endringer();
+        }
+
+        public Builder medBeregningsgrunnlagEndring(BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
+            this.kladd.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+            return this;
+        }
+
+        public Builder medFaktaOmBeregningVurderinger(FaktaOmBeregningVurderinger faktaOmBeregningVurderinger) {
+            this.kladd.faktaOmBeregningVurderinger = faktaOmBeregningVurderinger;
+            return this;
+        }
+
+        public Builder medVarigEndretNæringEndring(VarigEndretNæringEndring varigEndretNæringEndring) {
+            this.kladd.varigEndretNæringEndring = varigEndretNæringEndring;
+            return this;
+        }
+
+
+        public Endringer build() {
+            return kladd;
+        }
+
     }
 
 }

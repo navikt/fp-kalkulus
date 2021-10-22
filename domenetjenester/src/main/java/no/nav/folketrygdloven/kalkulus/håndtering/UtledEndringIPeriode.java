@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
+package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import java.util.Collections;
 import java.util.List;

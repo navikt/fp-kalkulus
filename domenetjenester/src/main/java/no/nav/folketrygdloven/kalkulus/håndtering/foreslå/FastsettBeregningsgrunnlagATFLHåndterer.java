@@ -1,7 +1,9 @@
-package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
+package no.nav.folketrygdloven.kalkulus.håndtering.foreslå;
 
 
 import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapFastsettBeregningsgrunnlagATFLDto;
+
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -10,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.håndtering.BeregningHåndterer;
 import no.nav.folketrygdloven.kalkulus.håndtering.DtoTilServiceAdapter;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndteringResultat;
+import no.nav.folketrygdloven.kalkulus.håndtering.UtledEndring;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.foreslå.FastsettBeregningsgrunnlagATFLHåndteringDto;
 
 @ApplicationScoped
@@ -19,8 +22,10 @@ public class FastsettBeregningsgrunnlagATFLHåndterer implements BeregningHåndt
     @Override
     public HåndteringResultat håndter(FastsettBeregningsgrunnlagATFLHåndteringDto dto, HåndterBeregningsgrunnlagInput beregningsgrunnlagInput) {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBeregningsgrunnlagATFLHåndterer.håndter(beregningsgrunnlagInput, mapFastsettBeregningsgrunnlagATFLDto(dto));
-        // TODO Lag endringresultat
-        return new HåndteringResultat(nyttGrunnlag, null);
+        Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag = beregningsgrunnlagInput.getForrigeGrunnlagFraHåndteringTilstand();
+        BeregningsgrunnlagGrunnlagDto grunnlagFraSteg = beregningsgrunnlagInput.getBeregningsgrunnlagGrunnlag();
+        var endring = UtledEndring.utled(nyttGrunnlag, grunnlagFraSteg, forrigeGrunnlag, dto);
+        return new HåndteringResultat(nyttGrunnlag, endring);
     }
 
 }
