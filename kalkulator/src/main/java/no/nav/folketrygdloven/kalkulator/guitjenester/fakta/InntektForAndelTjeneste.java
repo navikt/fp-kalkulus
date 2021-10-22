@@ -51,16 +51,19 @@ class InntektForAndelTjeneste {
         return totalBeløp.get();
     }
 
-    static BigDecimal finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
+    static Optional<BigDecimal> finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(InntektFilterDto filter, no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel) {
         if (filter.isEmpty()) {
-            return BigDecimal.ZERO;
+            return Optional.of(BigDecimal.ZERO);
         }
         LocalDate fraDato = andel.getBeregningsperiodeFom();
         LocalDate tilDato = andel.getBeregningsperiodeTom();
         long beregningsperiodeLengdeIMnd = ChronoUnit.MONTHS.between(fraDato, tilDato.plusDays(1));
+        if (beregningsperiodeLengdeIMnd == 0) {
+            return Optional.empty();
+        }
         BigDecimal totalBeløp = finnTotalbeløpIBeregningsperioden(filter, andel, tilDato, beregningsperiodeLengdeIMnd);
         BigDecimal faktor = BigDecimal.valueOf(MND_I_1_ÅR).divide(BigDecimal.valueOf(beregningsperiodeLengdeIMnd), 10, RoundingMode.HALF_EVEN);
-        return totalBeløp.multiply(faktor);
+        return Optional.of(totalBeløp.multiply(faktor));
     }
 
     private static InntektFilterDto finnInntekterForAndel(no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto andel, InntektFilterDto filter) {

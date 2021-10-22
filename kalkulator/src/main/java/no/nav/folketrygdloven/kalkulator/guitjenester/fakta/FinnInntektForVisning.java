@@ -117,10 +117,10 @@ public class FinnInntektForVisning {
 
     private static Optional<BigDecimal> finnSnittinntektForArbeidsgiverPrMåned(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel, InntektArbeidYtelseGrunnlagDto grunnlag) {
         return grunnlag.getAktørInntektFraRegister()
-            .map(aktørInntekt -> {
+            .flatMap(aktørInntekt -> {
                 var filter = new InntektFilterDto(aktørInntekt).før(ref.getSkjæringstidspunktBeregning());
-                BigDecimal årsbeløp = InntektForAndelTjeneste.finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);
-                return årsbeløp.divide(MND_I_1_ÅR, 10, RoundingMode.HALF_EVEN);
+                var årsbeløp = InntektForAndelTjeneste.finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);
+                return årsbeløp.map(b -> b.divide(MND_I_1_ÅR, 10, RoundingMode.HALF_EVEN));
             });
     }
 

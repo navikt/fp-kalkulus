@@ -318,14 +318,6 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
     }
 
-    public BigDecimal getBelopPrMndEtterAOrdningen() {
-        return belopPrMndEtterAOrdningen;
-    }
-
-    public void setBelopPrMndEtterAOrdningen(BigDecimal belopPrMndEtterAOrdningen) {
-        this.belopPrMndEtterAOrdningen = belopPrMndEtterAOrdningen;
-    }
-
     public Long getDagsats() {
         return dagsats;
     }
@@ -340,14 +332,6 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public void setOriginalDagsatsFraTilstøtendeYtelse(Long originalDagsatsFraTilstøtendeYtelse) {
         this.originalDagsatsFraTilstøtendeYtelse = originalDagsatsFraTilstøtendeYtelse;
-    }
-
-    public BigDecimal getBelopPrAarEtterAOrdningen() {
-        return belopPrAarEtterAOrdningen;
-    }
-
-    public void setBelopPrAarEtterAOrdningen(BigDecimal belopPrAarEtterAOrdningen) {
-        this.belopPrAarEtterAOrdningen = belopPrAarEtterAOrdningen;
     }
 
     public Boolean getErTilkommetAndel() {

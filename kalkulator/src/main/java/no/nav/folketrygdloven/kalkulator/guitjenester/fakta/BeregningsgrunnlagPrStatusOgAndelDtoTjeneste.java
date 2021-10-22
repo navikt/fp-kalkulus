@@ -2,8 +2,6 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static java.util.stream.Collectors.toList;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,14 +13,13 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAktørDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
@@ -99,21 +96,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setErTilkommetAndel(!andel.getKilde().equals(AndelKilde.PROSESS_START));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){
             dto.setSkalFastsetteGrunnlag(skalGrunnlagFastsettesForYtelse(input, andel));
-        }
-        if (andel.getAktivitetStatus().erArbeidstaker()) {
-            iayGrunnlag.getAktørInntektFraRegister()
-                .ifPresent(aktørInntekt -> {
-                    var filter = new InntektFilterDto(aktørInntekt).før(skjæringstidspunktForBeregning);
-                    BigDecimal årsbeløp = InntektForAndelTjeneste
-                        .finnSnittinntektPrÅrForArbeidstakerIBeregningsperioden(filter, andel);
-                    BigDecimal månedsbeløp = årsbeløp.divide(BigDecimal.valueOf(MND_I_ÅR), 10, RoundingMode.HALF_EVEN);
-                    dto.setBelopPrMndEtterAOrdningen(månedsbeløp);
-                    dto.setBelopPrAarEtterAOrdningen(årsbeløp);
-                });
-        } else if (andel.getAktivitetStatus().erFrilanser()) {
-            InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(
-                    iayGrunnlag, andel, skjæringstidspunktForBeregning)
-                .ifPresent(dto::setBelopPrMndEtterAOrdningen);
         }
         return dto;
     }
