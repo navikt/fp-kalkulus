@@ -74,6 +74,6 @@ spec:
     - name: SKAL_VURDERE_FORLENGELSE
       value: "false"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
-      value: "false"
+      value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING
       value: "false"
