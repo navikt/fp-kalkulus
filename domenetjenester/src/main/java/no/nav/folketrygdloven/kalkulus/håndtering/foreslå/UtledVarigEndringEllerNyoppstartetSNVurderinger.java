@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.foreslå;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -19,19 +18,18 @@ public class UtledVarigEndringEllerNyoppstartetSNVurderinger {
     public static VarigEndretNæringEndring utled(BeregningsgrunnlagDto nyttBeregningsgrunnlag, Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt) {
         var bgPeriode = nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         Optional<BeregningsgrunnlagPeriodeDto> forrigePeriode = forrigeBeregningsgrunnlagOpt.map(bg -> bg.getBeregningsgrunnlagPerioder().get(0));
-        BigDecimal fastsattBeløp = finnFastsattVerdiForNæring(bgPeriode)
+        var næringAndel = finnNæring(bgPeriode)
                 .orElseThrow(() -> new IllegalStateException("Forventer å finne andel for næring ved vurdering av varig endret næring."));
-        Optional<BigDecimal> forrigeFastsattBeløp = forrigePeriode.flatMap(UtledVarigEndringEllerNyoppstartetSNVurderinger::finnFastsattVerdiForNæring);
-        boolean tilVerdi = fastsattBeløp != null;
-        Boolean fraVerdi = forrigeFastsattBeløp.map(obj -> true).orElse(null);
+        var forrigeNæring = forrigePeriode.flatMap(UtledVarigEndringEllerNyoppstartetSNVurderinger::finnNæring);
+        boolean tilVerdi = næringAndel.getOverstyrtPrÅr() != null;
+        Boolean fraVerdi = forrigeNæring.isPresent() && forrigeNæring.get().getOverstyrtPrÅr() != null ? true : null;
         return new VarigEndretNæringEndring(new ToggleEndring(fraVerdi, tilVerdi));
     }
 
-    private static Optional<BigDecimal> finnFastsattVerdiForNæring(BeregningsgrunnlagPeriodeDto bgPeriode) {
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnNæring(BeregningsgrunnlagPeriodeDto bgPeriode) {
         return bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
-                .findFirst()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getOverstyrtPrÅr);
+                .findFirst();
     }
 
 }
