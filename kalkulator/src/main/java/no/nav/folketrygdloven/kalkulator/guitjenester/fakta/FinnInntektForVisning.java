@@ -90,11 +90,11 @@ public class FinnInntektForVisning {
 
     private static Optional<BigDecimal> finnMånedsbeløpIBeregningsperiodenForArbeidstaker(KoblingReferanse ref, BeregningsgrunnlagPrStatusOgAndelDto andel,
                                                                                           InntektArbeidYtelseGrunnlagDto grunnlag, List<BeregningsgrunnlagPrStatusOgAndelDto> alleAndeler) {
-        Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Skal ha arbeidsgiver."));
         if (andel.getArbeidsgiver().isEmpty()) {
             // For arbeidstakerandeler uten arbeidsgiver, som etterlønn / sluttpakke.
             return Optional.empty();
         }
+        Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().get();
         List<InntektsmeldingDto> imFraArbeidsgiver = grunnlag.getInntektsmeldinger().stream()
                 .flatMap(i -> i.getInntektsmeldingerSomSkalBrukes().stream())
                 .filter(im -> im.getArbeidsgiver().getIdentifikator().equals(arbeidsgiver.getIdentifikator()))

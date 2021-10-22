@@ -30,7 +30,7 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
     @Override
     public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         VurderLønnsendringDto lønnsendringDto = dto.getVurdertLonnsendring();
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
+        BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
         List<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerAndeler = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
                 .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList).flatMap(Collection::stream)
                 .filter(bpsa -> bpsa.getAktivitetStatus().erArbeidstaker())
