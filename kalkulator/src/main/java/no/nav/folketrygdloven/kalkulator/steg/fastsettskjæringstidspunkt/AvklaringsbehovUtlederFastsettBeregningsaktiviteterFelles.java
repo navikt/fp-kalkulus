@@ -46,7 +46,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterFelles implement
         if (erOverstyrt) {
             return emptyList();
         }
-
         if (AvklarAktiviteterTjeneste.skalAvklareAktiviteter(beregningAktivitetAggregat, aktørYtelse, input.getFagsakYtelseType())) {
             return List.of(BeregningAvklaringsbehovResultat.opprettFor(AvklaringsbehovDefinisjon.AVKLAR_AKTIVITETER));
         }

@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktørYtelseDto;
@@ -35,7 +34,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
      * @param skjæringstidspunkt
      * @return Optional som innholder ventefrist om autopunkt skal opprettes, Optional.empty ellers
      */
-    static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, LocalDate dagensdato, LocalDate skjæringstidspunkt) {
+    public static Optional<LocalDate> skalVenteTilDatoPåMeldekortAAPellerDP(Optional<AktørYtelseDto> aktørYtelse, LocalDate dagensdato, LocalDate skjæringstidspunkt) {
         if (!harLøpendeVedtakOgSendtInnMeldekortNylig(aktørYtelse, skjæringstidspunkt))
             return Optional.empty();
 
