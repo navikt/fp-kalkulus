@@ -25,6 +25,8 @@ public class FastsettBeregningsperiodeForLønnsendring {
     static BeregningsgrunnlagDto fastsettBeregningsperiodeForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
         Intervall beregningsperiodeATFL = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(beregningsgrunnlag.getSkjæringstidspunkt());
         Intervall toFørsteMåneder = Intervall.fraOgMedTilOgMed(beregningsperiodeATFL.getFomDato().plusDays(1), beregningsperiodeATFL.getTomDato().withDayOfMonth(1));
+        Intervall sisteMåned = Intervall.fraOgMedTilOgMed(beregningsperiodeATFL.getTomDato().withDayOfMonth(2), beregningsperiodeATFL.getTomDato());
+
         List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, toFørsteMåneder);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         if (!yrkesaktiviteterMedLønnsendring.isEmpty()) {
@@ -32,10 +34,12 @@ public class FastsettBeregningsperiodeForLønnsendring {
                 Map<BeregningsgrunnlagPrStatusOgAndelDto, List<YrkesaktivitetDto>> andelLønnsendringMap = finnAndelAktivitetMap(yrkesaktiviteterMedLønnsendring, periode);
                 andelLønnsendringMap.forEach((andel, yrkesaktiviteter) -> {
                     LocalDate sisteLønnsendring = finnSisteLønnsendringIBeregningsperioden(yrkesaktiviteter, beregningsgrunnlag.getSkjæringstidspunkt());
-                    LocalDate beregningsperiodeTom = andel.getBeregningsperiodeTom();
-                    LocalDate beregningsperiodeFom = andel.getBeregningsperiodeFom();
-                    LocalDate nyFom = sisteLønnsendring.isBefore(beregningsperiodeFom) ? beregningsperiodeFom : sisteLønnsendring;
-                    BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBeregningsperiode(nyFom, beregningsperiodeTom);
+                    if (!sisteMåned.inkluderer(sisteLønnsendring)) {
+                        LocalDate beregningsperiodeTom = andel.getBeregningsperiodeTom();
+                        LocalDate beregningsperiodeFom = andel.getBeregningsperiodeFom();
+                        LocalDate nyFom = sisteLønnsendring.isBefore(beregningsperiodeFom) ? beregningsperiodeFom : sisteLønnsendring;
+                        BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBeregningsperiode(nyFom, beregningsperiodeTom);
+                    }
                 });
             });
         }
