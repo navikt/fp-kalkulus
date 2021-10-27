@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -32,8 +33,10 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
         UtbetalingsgradGrunnlag yg = input.getYtelsespesifiktGrunnlag();
 
-        dto.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
-                .forEach(periodeDto -> oppdaterAndelerMedFormidlingsfelt(periodeDto, yg, grenseverdi));
+        if (!dto.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.FORESLÅTT)) {
+            dto.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder()
+                    .forEach(periodeDto -> oppdaterAndelerMedFormidlingsfelt(periodeDto, yg, grenseverdi));
+        }
 
         return dto;
     }

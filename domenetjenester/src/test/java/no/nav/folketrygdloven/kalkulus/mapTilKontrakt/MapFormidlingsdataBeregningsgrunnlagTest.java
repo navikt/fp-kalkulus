@@ -32,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.BGAndelArbeidsforhold;
@@ -298,7 +299,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
                 null, null, false, GRUNNBELØP);
 
         BeregningsgrunnlagGrunnlagDto gr = new BeregningsgrunnlagGrunnlagDto(bg, null, null, null,
-                null, null, null, null);
+                null, null, null, BeregningsgrunnlagTilstand.FASTSATT);
 
         return MapFormidlingsdataBeregningsgrunnlag.mapMedBrevfelt(gr, input);
     }
