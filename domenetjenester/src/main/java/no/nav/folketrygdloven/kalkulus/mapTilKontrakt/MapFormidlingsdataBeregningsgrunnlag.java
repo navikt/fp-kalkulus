@@ -43,16 +43,18 @@ public class MapFormidlingsdataBeregningsgrunnlag {
 
     private static void oppdaterAndelerMedFormidlingsfelt(BeregningsgrunnlagPeriodeDto bgPeriode,
                                                           UtbetalingsgradGrunnlag yg, BigDecimal grenseverdi) {
-        bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList().forEach(andel -> {
-            andel.setAvkortetFørGraderingPrÅr(andel.getAvkortetFørGraderingPrÅr());
-            andel.setAvkortetMotInntektstak(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi));
-        });
+        bgPeriode.getBeregningsgrunnlagPrStatusOgAndelList()
+                .stream().filter(a -> a.getBruttoPrÅr() != null)
+                .forEach(andel -> {
+                    andel.setAvkortetFørGraderingPrÅr(andel.getAvkortetFørGraderingPrÅr());
+                    andel.setAvkortetMotInntektstak(finnInntektstakForAndel(andel, bgPeriode, yg, grenseverdi));
+                });
     }
 
     static BigDecimal finnInntektstakForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel,
-                                                      BeregningsgrunnlagPeriodeDto bgPeriode,
-                                                UtbetalingsgradGrunnlag yg,
-                                                BigDecimal grenseverdi) {
+                                              BeregningsgrunnlagPeriodeDto bgPeriode,
+                                              UtbetalingsgradGrunnlag yg,
+                                              BigDecimal grenseverdi) {
         if (andel.getAktivitetStatus().erArbeidstaker()) {
             return finnInntektstakForArbeidstaker(andel, bgPeriode, yg, grenseverdi);
         }
@@ -194,6 +196,6 @@ public class MapFormidlingsdataBeregningsgrunnlag {
     private static boolean harSøktUtbetalingIPeriode(List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad, Periode periode) {
         return periodeMedUtbetalingsgrad.stream()
                 .filter(utbPeriode -> utbPeriode.getPeriode().overlapper(Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom())))
-                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) >  0);
+                .anyMatch(utbPeriode -> utbPeriode.getUtbetalingsgrad().compareTo(BigDecimal.ZERO) > 0);
     }
 }
