@@ -69,7 +69,7 @@ class AnvistAndelMapper {
                 .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
         return new AnvistAndel(MapFraKalkulator.mapArbeidsgiver(f.getArbeidsgiver()),
                 utbetaling,
-                f.getErRefusjon() ? new Stillingsprosent(100) : Stillingsprosent.ZERO,
+                f.getErRefusjon() != null && f.getErRefusjon() ? new Stillingsprosent(100) : Stillingsprosent.ZERO,
                 Inntektskategori.ARBEIDSTAKER);
     }
 
