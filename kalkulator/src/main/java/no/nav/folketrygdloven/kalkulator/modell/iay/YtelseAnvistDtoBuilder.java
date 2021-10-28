@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
@@ -35,6 +36,12 @@ public class YtelseAnvistDtoBuilder {
         this.ytelseAnvist.setAnvistPeriode(intervallEntitet);
         return this;
     }
+
+    public YtelseAnvistDtoBuilder medAnvisteAndeler(List<AnvistAndel> anvisteAndeler){
+        this.ytelseAnvist.setAnvisteAndeler(anvisteAndeler);
+        return this;
+    }
+
 
     public YtelseAnvistDtoBuilder medUtbetalingsgradProsent(BigDecimal utbetalingsgradProsent) {
         if (utbetalingsgradProsent != null) {

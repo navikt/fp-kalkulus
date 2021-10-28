@@ -21,15 +21,16 @@ public class YtelseFordelingDto {
     private BigDecimal beløp;
     private InntektPeriodeType inntektPeriodeType;
     private Arbeidsgiver arbeidsgiver;
+    private Boolean erRefusjon;
 
     protected YtelseFordelingDto() {
     }
 
-    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp) {
-        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp));
+    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp, Boolean erRefusjon) {
+        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp), erRefusjon);
     }
 
-    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp) {
+    public YtelseFordelingDto(Arbeidsgiver arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp, Boolean erRefusjon) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektPeriodeType = inntektPeriodeType;
         this.beløp = beløp == null ? null : beløp.setScale(2, RoundingMode.HALF_UP);
@@ -47,4 +48,7 @@ public class YtelseFordelingDto {
         return inntektPeriodeType;
     }
 
+    public Boolean getErRefusjon() {
+        return erRefusjon;
+    }
 }

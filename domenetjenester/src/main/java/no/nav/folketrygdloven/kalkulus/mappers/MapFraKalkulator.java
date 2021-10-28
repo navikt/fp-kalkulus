@@ -278,7 +278,7 @@ public class MapFraKalkulator {
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag);
+        return new MapIAYTilKalulator(iayGrunnlag).mapGrunnlag(iayGrunnlag);
     }
 
 }

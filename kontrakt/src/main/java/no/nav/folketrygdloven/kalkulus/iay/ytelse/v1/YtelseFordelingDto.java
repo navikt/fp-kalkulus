@@ -41,17 +41,23 @@ public class YtelseFordelingDto {
     @Valid
     private Aktør arbeidsgiver;
 
+    /** Kan være null. */
+    @JsonProperty(value = "erRefusjon")
+    @Valid
+    private Boolean erRefusjon;
+
     protected YtelseFordelingDto() {
     }
 
-    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp) {
-        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp));
+    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, int beløp, Boolean erRefusjon) {
+        this(arbeidsgiver, inntektPeriodeType, BigDecimal.valueOf(beløp), erRefusjon);
     }
 
-    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp) {
+    public YtelseFordelingDto(Aktør arbeidsgiver, InntektPeriodeType inntektPeriodeType, BigDecimal beløp, Boolean erRefusjon) {
         this.arbeidsgiver = arbeidsgiver;
         this.inntektPeriodeType = inntektPeriodeType;
         this.beløp = beløp == null ? null : beløp.setScale(2, RoundingMode.HALF_UP);
+        this.erRefusjon = erRefusjon;
     }
 
     public Aktør getArbeidsgiver() {
@@ -66,4 +72,7 @@ public class YtelseFordelingDto {
         return inntektPeriodeType;
     }
 
+    public Boolean getErRefusjon() {
+        return erRefusjon;
+    }
 }

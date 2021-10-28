@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ public class YtelseAnvistDto {
     private Beløp beløp;
     private Beløp dagsats;
     private Stillingsprosent utbetalingsgradProsent;
+    private List<AnvistAndel> anvisteAndeler;
 
     public YtelseAnvistDto() {
         // hibernate
@@ -24,6 +26,12 @@ public class YtelseAnvistDto {
         this.beløp = ytelseAnvist.getBeløp().orElse(null);
         this.dagsats = ytelseAnvist.getDagsats().orElse(null);
         this.utbetalingsgradProsent = ytelseAnvist.getUtbetalingsgradProsent().orElse(null);
+        this.utbetalingsgradProsent = ytelseAnvist.getUtbetalingsgradProsent().orElse(null);
+
+    }
+
+    public Intervall getAnvistPeriode() {
+        return anvistPeriode;
     }
 
     public LocalDate getAnvistFOM() {
@@ -60,6 +68,14 @@ public class YtelseAnvistDto {
 
     void setAnvistPeriode(Intervall periode) {
         this.anvistPeriode = periode;
+    }
+
+    public List<AnvistAndel> getAnvisteAndeler() {
+        return anvisteAndeler;
+    }
+
+    public void setAnvisteAndeler(List<AnvistAndel> anvisteAndeler) {
+        this.anvisteAndeler = anvisteAndeler;
     }
 
     @Override

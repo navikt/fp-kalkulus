@@ -73,6 +73,7 @@ public class ForeslåBeregningsgrunnlag {
         BeregningsgrunnlagDto foreslåttBeregningsgrunnlag = mapBeregningsgrunnlagFraRegelTilVL.mapForeslåBeregningsgrunnlag(regelmodellBeregningsgrunnlag, beregningsgrunnlag);
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = utledAvklaringsbehov(input, regelResultater);
         verifiserBeregningsgrunnlag(foreslåttBeregningsgrunnlag);
+        BeregneFraYtelse.sjekkBeregningFraYtelse(input, foreslåttBeregningsgrunnlag, regelmodellBeregningsgrunnlag);
         List<RegelSporingPeriode> regelsporinger = MapRegelSporingFraRegelTilVL.mapRegelsporingPerioder(
                 regelResultater,
                 foreslåttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).collect(Collectors.toList()), BeregningsgrunnlagPeriodeRegelType.FORESLÅ);

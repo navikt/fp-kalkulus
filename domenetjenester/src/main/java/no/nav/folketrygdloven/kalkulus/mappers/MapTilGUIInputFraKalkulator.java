@@ -29,7 +29,8 @@ public class MapTilGUIInputFraKalkulator {
                 Optional.empty(),
                 skjæringstidspunkt);
         var refusjonskravDatoer = input.getRefusjonskravDatoer();
-        var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
+        var iayGrunnlagMappet = new MapIAYTilKalulator(input.getIayGrunnlag())
+                .mapGrunnlag(input.getIayGrunnlag());
         return new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,

@@ -150,7 +150,7 @@ class ErArbeidsgiverInaktivTest {
 
     private void lagYtelse(Arbeidsgiver ag, LocalDate fom, LocalDate tom, FagsakYtelseType ytelse) {
         YtelseDtoBuilder builder = ytelseBuilder.getYtelselseBuilderForType(ytelse, Intervall.fraOgMedTilOgMed(fom, tom));
-        YtelseFordelingDto yf = new YtelseFordelingDto(ag, InntektPeriodeType.DAGLIG, 100);
+        YtelseFordelingDto yf = new YtelseFordelingDto(ag, InntektPeriodeType.DAGLIG, 100, true);
         YtelseGrunnlagDto yg = new YtelseGrunnlagDto(Arbeidskategori.ARBEIDSTAKER, Collections.singletonList(yf));
         builder.medYtelseGrunnlag(yg);
         ytelseBuilder.leggTilYtelse(builder);
