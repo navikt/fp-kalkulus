@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -35,24 +36,30 @@ public class RullTilbakeTjeneste {
 
     public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
         List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
-        if (skalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand)) {
-            beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(beregningsgrunnlagGrunnlagEntiteter);
-            regelsporingRepository.ryddRegelsporingerForTilstand(koblingIder, tilstand);
-            Optional<BeregningsgrunnlagTilstand> forrigeObligatoriskTilstand = tilstand.erObligatoriskTilstand() ? Optional.of(tilstand) : BeregningsgrunnlagTilstand.finnForrigeObligatoriskTilstand(tilstand);
-            if (forrigeObligatoriskTilstand.isPresent()) {
-                beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(koblingIder, forrigeObligatoriskTilstand.get());
-            } else {
-                BeregningsgrunnlagTilstand første = BeregningsgrunnlagTilstand.finnFørste();
-                beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(koblingIder, første);
-            }
+        var rullTilbakeListe = finnGrunnlagSomSkalRullesTilbake(beregningsgrunnlagGrunnlagEntiteter, tilstand);
+        if (!rullTilbakeListe.isEmpty()) {
+            rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand));
     }
 
-    private boolean skalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, BeregningsgrunnlagTilstand tilstand) {
+    private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
+        Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
+        beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
+        regelsporingRepository.ryddRegelsporingerForTilstand(rullTilbakeKoblinger, tilstand);
+        Optional<BeregningsgrunnlagTilstand> forrigeObligatoriskTilstand = tilstand.erObligatoriskTilstand() ? Optional.of(tilstand) : BeregningsgrunnlagTilstand.finnForrigeObligatoriskTilstand(tilstand);
+        if (forrigeObligatoriskTilstand.isPresent()) {
+            beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeKoblinger, forrigeObligatoriskTilstand.get());
+        } else {
+            BeregningsgrunnlagTilstand første = BeregningsgrunnlagTilstand.finnFørste();
+            beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeKoblinger, første);
+        }
+    }
+
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalRullesTilbake(List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, BeregningsgrunnlagTilstand tilstand) {
         return beregningsgrunnlagGrunnlagEntitet.stream()
-                .map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
-                .anyMatch(aktivTilstand ->  !aktivTilstand.erFør(tilstand));
+                .filter(gr -> !gr.getBeregningsgrunnlagTilstand().erFør(tilstand))
+                .collect(Collectors.toList());
     }
 
     public void deaktiverAllKoblingdata(Long koblingId) {
