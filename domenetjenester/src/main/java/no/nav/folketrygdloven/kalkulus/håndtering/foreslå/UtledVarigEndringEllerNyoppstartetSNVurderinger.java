@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.foreslå;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
