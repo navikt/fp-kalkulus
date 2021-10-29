@@ -27,6 +27,7 @@
     <sequence-generator name="SEQ_FAKTA_AGGREGAT" allocation-size="50" sequence-name="SEQ_FAKTA_AGGREGAT"/>
     <sequence-generator name="SEQ_FAKTA_ARBEIDSFORHOLD" allocation-size="50" sequence-name="SEQ_FAKTA_ARBEIDSFORHOLD"/>
     <sequence-generator name="SEQ_FAKTA_AKTOER" allocation-size="50" sequence-name="SEQ_FAKTA_AKTOER"/>
+    <sequence-generator name="SEQ_FAKTA_VURDERING" allocation-size="50" sequence-name="SEQ_FAKTA_VURDERING"/>
     <sequence-generator name="SEQ_AVKLARINGSBEHOV" allocation-size="50" sequence-name="SEQ_AVKLARINGSBEHOV"/>
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet" />
@@ -50,6 +51,7 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet" />
+    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaVurderingEntitet" />
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />

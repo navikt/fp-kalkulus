@@ -35,20 +35,41 @@ public class FaktaAktørEntitet extends BaseEntitet {
     @Column(name = "ER_NY_I_ARBEIDSLIVET_SN")
     private Boolean erNyIArbeidslivetSN;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_ER_NY_I_ARBEIDSLIVET_SN", updatable = false)
+    private FaktaVurderingEntitet erNyIArbeidslivetSNVurdering;
+
     @Column(name = "ER_NYOPPSTARTET_FL")
     private Boolean erNyoppstartetFL;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_ER_NYOPPSTARTET_FL", updatable = false)
+    private FaktaVurderingEntitet erNyoppstartetFLVurdering;
 
     @Column(name = "HAR_FL_MOTTATT_YTELSE")
     private Boolean harFLMottattYtelse;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_HAR_FL_MOTTATT_YTELSE", updatable = false)
+    private FaktaVurderingEntitet harFLMottattYtelseVurdering;
+
     @Column(name = "SKAL_BESTEBEREGNES")
+    @Deprecated(forRemoval = true)
     private Boolean skalBesteberegnes;
 
     @Column(name = "MOTTAR_ETTERLONN_SLUTTPAKKE")
     private Boolean mottarEtterlønnSluttpakke;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_MOTTAR_ETTERLONN_SLUTTPAKKE", updatable = false)
+    private FaktaVurderingEntitet mottarEtterlønnSluttpakkeVurdering;
+
     @Column(name = "SKAL_BEREGNES_SOM_MILITAER")
     private Boolean skalBeregnesSomMilitær;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_SKAL_BEREGNES_SOM_MILITAER", updatable = false)
+    private FaktaVurderingEntitet skalBeregnesSomMilitærVurdering;
 
 
     public FaktaAktørEntitet() {
@@ -81,6 +102,7 @@ public class FaktaAktørEntitet extends BaseEntitet {
         return harFLMottattYtelse;
     }
 
+    @Deprecated
     public Boolean getSkalBesteberegnes() {
         return skalBesteberegnes;
     }

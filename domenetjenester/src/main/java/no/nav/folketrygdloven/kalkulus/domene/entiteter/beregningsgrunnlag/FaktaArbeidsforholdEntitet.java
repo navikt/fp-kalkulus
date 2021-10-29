@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -47,12 +48,23 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     @Column(name = "ER_TIDSBEGRENSET")
     private Boolean erTidsbegrenset;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_ER_TIDSBEGRENSET", updatable = false)
+    private FaktaVurderingEntitet erTidsbegrensetVurdering;
+
     @Column(name = "HAR_MOTTATT_YTELSE")
     private Boolean harMottattYtelse;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_HAR_MOTTATT_YTELSE", updatable = false)
+    private FaktaVurderingEntitet harMottattYtelseVurdering;
 
     @Column(name = "HAR_LONNSENDRING_I_BEREGNINGSPERIODEN")
     private Boolean harLønnsendringIBeregningsperioden;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FK_HAR_LONNSENDRING_I_BEREGNINGSPERIODEN", updatable = false)
+    private FaktaVurderingEntitet harLønnsendringIBeregningsperiodenVurdering;
 
     public FaktaArbeidsforholdEntitet() {
         // hibernate
