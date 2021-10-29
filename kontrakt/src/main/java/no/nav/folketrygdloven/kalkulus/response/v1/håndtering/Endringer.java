@@ -7,7 +7,7 @@ public class Endringer {
 
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
-    private VarigEndretNæringEndring varigEndretNæringEndring;
+    private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
 
     private Endringer() {
@@ -29,8 +29,8 @@ public class Endringer {
         return refusjonoverstyringEndring;
     }
 
-    public VarigEndretNæringEndring getVarigEndretNæringEndring() {
-        return varigEndretNæringEndring;
+    public VarigEndretEllerNyoppstartetNæringEndring getVarigEndretNæringEndring() {
+        return varigEndretEllerNyoppstartetNæringEndring;
     }
 
     public static Builder ny() {
@@ -55,8 +55,8 @@ public class Endringer {
             return this;
         }
 
-        public Builder medVarigEndretNæringEndring(VarigEndretNæringEndring varigEndretNæringEndring) {
-            this.kladd.varigEndretNæringEndring = varigEndretNæringEndring;
+        public Builder medVarigEndretNæringEndring(VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring) {
+            this.kladd.varigEndretEllerNyoppstartetNæringEndring = varigEndretEllerNyoppstartetNæringEndring;
             return this;
         }
 

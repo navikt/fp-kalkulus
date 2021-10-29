@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning.UtledFaktaOmBeregningVurderinger;
 import no.nav.folketrygdloven.kalkulus.håndtering.foreslå.UtledVarigEndringEllerNyoppstartetSNVurderinger;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
@@ -18,7 +19,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Beregningsgrunnla
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningsgrunnlagPeriodeEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.FaktaOmBeregningVurderinger;
-import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.VarigEndretNæringEndring;
+import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.VarigEndretEllerNyoppstartetNæringEndring;
 
 public class UtledEndring {
 
@@ -26,7 +27,11 @@ public class UtledEndring {
         // skjul
     }
 
-    public static Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto, BeregningsgrunnlagGrunnlagDto grunnlagFraSteg, Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto) {
+    public static Endringer utled(BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagDto,
+                                  BeregningsgrunnlagGrunnlagDto grunnlagFraSteg,
+                                  Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag,
+                                  HåndterBeregningDto dto,
+                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var endringBuilder = Endringer.ny();
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha beregningsgrunnlag her"));
@@ -37,16 +42,17 @@ public class UtledEndring {
         endringBuilder.medBeregningsgrunnlagEndring(beregningsgrunnlagEndring);
         mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto, endringBuilder)
                 .map(endringBuilder::medFaktaOmBeregningVurderinger);
-        mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto)
+        mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
                 .map(endringBuilder::medVarigEndretNæringEndring);
         return endringBuilder.build();
     }
 
-    private static Optional<VarigEndretNæringEndring> mapVarigEndretNæringEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto) {
+    private static Optional<VarigEndretEllerNyoppstartetNæringEndring> mapVarigEndretNæringEndring(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag, HåndterBeregningDto dto, Endringer.Builder endringBuilder, BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         if (dto instanceof VurderVarigEndringEllerNyoppstartetSNHåndteringDto) {
             return Optional.of(UtledVarigEndringEllerNyoppstartetSNVurderinger.utled(
                     beregningsgrunnlagDto,
-                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)));
+                    forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag),
+                    iayGrunnlag));
         }
         return Optional.empty();
     }
