@@ -25,17 +25,9 @@ public class VarigEndretEllerNyoppstartetNæringEndring {
     public VarigEndretEllerNyoppstartetNæringEndring() {
     }
 
-    private VarigEndretEllerNyoppstartetNæringEndring(ToggleEndring erVarigEndretNaeringEndring, ToggleEndring erNyoppstartetNaeringEndring) {
+    public VarigEndretEllerNyoppstartetNæringEndring(ToggleEndring erVarigEndretNaeringEndring, ToggleEndring erNyoppstartetNaeringEndring) {
         this.erVarigEndretNaeringEndring = erVarigEndretNaeringEndring;
         this.erNyoppstartetNaeringEndring = erNyoppstartetNaeringEndring;
-    }
-
-    public static VarigEndretEllerNyoppstartetNæringEndring forVarigEndretNæring(ToggleEndring erVarigEndretNaeringEndring) {
-        return new VarigEndretEllerNyoppstartetNæringEndring(erVarigEndretNaeringEndring, null);
-    }
-
-    public static VarigEndretEllerNyoppstartetNæringEndring forNyoppstartetNæring(ToggleEndring erNyoppstartetNaeringEndring) {
-        return new VarigEndretEllerNyoppstartetNæringEndring(null, erNyoppstartetNaeringEndring);
     }
 
     public ToggleEndring getErVarigEndretNaeringEndring() {

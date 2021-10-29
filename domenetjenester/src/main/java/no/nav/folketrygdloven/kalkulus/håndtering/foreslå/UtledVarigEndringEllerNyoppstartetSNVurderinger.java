@@ -31,8 +31,12 @@ public class UtledVarigEndringEllerNyoppstartetSNVurderinger {
         boolean harOppgittVarigEndring = iayGrunnlag.getOppgittOpptjening().stream()
                 .flatMap(o -> o.getEgenNæring().stream())
                 .anyMatch(OppgittEgenNæringDto::getVarigEndring);
-        return harOppgittVarigEndring ? VarigEndretEllerNyoppstartetNæringEndring.forVarigEndretNæring(endring)
-                : VarigEndretEllerNyoppstartetNæringEndring.forNyoppstartetNæring(endring);
+        boolean harOppgittNyoppstartet = iayGrunnlag.getOppgittOpptjening().stream()
+                .flatMap(o -> o.getEgenNæring().stream())
+                .anyMatch(OppgittEgenNæringDto::getNyoppstartet);
+        return new VarigEndretEllerNyoppstartetNæringEndring(
+                harOppgittVarigEndring ? endring : null,
+                harOppgittNyoppstartet ? endring : null);
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnNæring(BeregningsgrunnlagPeriodeDto bgPeriode) {
