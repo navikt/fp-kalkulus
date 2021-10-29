@@ -33,7 +33,7 @@ public class FastsettBeregningsperiodeForLønnsendring {
             nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {
                 Map<BeregningsgrunnlagPrStatusOgAndelDto, List<YrkesaktivitetDto>> andelLønnsendringMap = finnAndelAktivitetMap(yrkesaktiviteterMedLønnsendring, periode);
                 andelLønnsendringMap.forEach((andel, yrkesaktiviteter) -> {
-                    LocalDate sisteLønnsendring = finnSisteLønnsendringIBeregningsperioden(yrkesaktiviteter, beregningsgrunnlag.getSkjæringstidspunkt());
+                    LocalDate sisteLønnsendring = finnSisteLønnsendringIBeregningsperioden(yrkesaktiviteter, beregningsperiodeATFL);
                     if (!sisteMåned.inkluderer(sisteLønnsendring)) {
                         LocalDate beregningsperiodeTom = andel.getBeregningsperiodeTom();
                         LocalDate beregningsperiodeFom = andel.getBeregningsperiodeFom();
@@ -53,13 +53,13 @@ public class FastsettBeregningsperiodeForLønnsendring {
         return andelLønnsendringMap;
     }
 
-    public static LocalDate finnSisteLønnsendringIBeregningsperioden(List<YrkesaktivitetDto> yrkesaktiviteter, LocalDate skjæringstidspunkt) {
+    public static LocalDate finnSisteLønnsendringIBeregningsperioden(List<YrkesaktivitetDto> yrkesaktiviteter, Intervall beregningsperiode) {
         return yrkesaktiviteter.stream().flatMap(y -> y.getAlleAktivitetsAvtaler().stream())
                 .map(AktivitetsAvtaleDto::getSisteLønnsendringsdato)
                 .filter(Objects::nonNull)
-                .filter(d -> d.isBefore(skjæringstidspunkt))
+                .filter(beregningsperiode::inkluderer)
                 .max(Comparator.naturalOrder())
-                .orElse(skjæringstidspunkt.minusMonths(4).withDayOfMonth(1));
+                .orElse(beregningsperiode.getFomDato());
     }
 
     private static boolean harLønnsendring(List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring, BeregningsgrunnlagPrStatusOgAndelDto a) {

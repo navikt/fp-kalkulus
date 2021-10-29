@@ -28,7 +28,7 @@ class ArbeidMedLønnsendringTjeneste {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, List<YrkesaktivitetDto>> andelAktivitetMap = finnAndelAktivitetMap(aktiviteterMedLønnsendring, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0));
         List<ArbeidsforholdMedLønnsendring> arbeidsforholdMedLønnsendringList = andelAktivitetMap.entrySet().stream().map(e -> {
             var faktaAndel = FaktaOmBeregningAndelDtoTjeneste.lagArbeidsforholdUtenInntektsmeldingDto(e.getKey(), input.getIayGrunnlag());
-            return new ArbeidsforholdMedLønnsendring(faktaAndel, finnSisteLønnsendringIBeregningsperioden(e.getValue(), input.getSkjæringstidspunktForBeregning()));
+            return new ArbeidsforholdMedLønnsendring(faktaAndel, finnSisteLønnsendringIBeregningsperioden(e.getValue(), beregningsperiode));
         }).collect(Collectors.toList());
         return arbeidsforholdMedLønnsendringList;
     }
