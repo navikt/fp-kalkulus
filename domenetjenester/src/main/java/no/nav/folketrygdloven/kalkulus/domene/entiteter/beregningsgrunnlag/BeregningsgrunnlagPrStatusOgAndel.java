@@ -83,38 +83,49 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name="arbeidsforhold_type", nullable = false)
     private OpptjeningAktivitetType arbeidsforholdType;
 
-    @Column(name = "brutto_pr_aar")
-    private BigDecimal bruttoPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
+    private Beløp bruttoPrÅr;
 
-    @Column(name = "overstyrt_pr_aar")
-    private BigDecimal overstyrtPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "overstyrt_pr_aar")))
+    private Beløp overstyrtPrÅr;
 
-    @Column(name = "avkortet_pr_aar")
-    private BigDecimal avkortetPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar")))
+    private Beløp avkortetPrÅr;
 
-    @Column(name = "redusert_pr_aar")
-    private BigDecimal redusertPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar")))
+    private Beløp redusertPrÅr;
 
-    @Column(name = "beregnet_pr_aar")
-    private BigDecimal beregnetPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "beregnet_pr_aar")))
+    private Beløp beregnetPrÅr;
 
-    @Column(name = "fordelt_pr_aar")
-    private BigDecimal fordeltPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_pr_aar")))
+    private Beløp fordeltPrÅr;
 
-    @Column(name = "maksimal_refusjon_pr_aar")
-    private BigDecimal maksimalRefusjonPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "maksimal_refusjon_pr_aar")))
+    private Beløp maksimalRefusjonPrÅr;
 
-    @Column(name = "avkortet_refusjon_pr_aar")
-    private BigDecimal avkortetRefusjonPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_refusjon_pr_aar")))
+    private Beløp avkortetRefusjonPrÅr;
 
-    @Column(name = "redusert_refusjon_pr_aar")
-    private BigDecimal redusertRefusjonPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_refusjon_pr_aar")))
+    private Beløp redusertRefusjonPrÅr;
 
-    @Column(name = "avkortet_brukers_andel_pr_aar")
-    private BigDecimal avkortetBrukersAndelPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_brukers_andel_pr_aar")))
+    private Beløp avkortetBrukersAndelPrÅr;
 
-    @Column(name = "redusert_brukers_andel_pr_aar")
-    private BigDecimal redusertBrukersAndelPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_brukers_andel_pr_aar")))
+    private Beløp redusertBrukersAndelPrÅr;
 
     @Column(name = "dagsats_bruker")
     private Long dagsatsBruker;
@@ -122,31 +133,36 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "dagsats_arbeidsgiver")
     private Long dagsatsArbeidsgiver;
 
-    @Column(name = "pgi_snitt")
-    private BigDecimal pgiSnitt;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi_snitt")))
+    private Beløp pgiSnitt;
 
-    @Column(name = "pgi1")
-    private BigDecimal pgi1;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi1")))
+    private Beløp pgi1;
 
-    @Column(name = "pgi2")
-    private BigDecimal pgi2;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi2")))
+    private Beløp pgi2;
 
-    @Column(name = "pgi3")
-    private BigDecimal pgi3;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "pgi3")))
+    private Beløp pgi3;
 
-    @Column(name = "avkortet_foer_gradering_pr_aar")
-    private BigDecimal avkortetFørGraderingPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_foer_gradering_pr_aar")))
+    private Beløp avkortetFørGraderingPrÅr;
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "aarsbeloep_tilstoetende_ytelse")))
-    @ChangeTracked
     private Beløp årsbeløpFraTilstøtendeYtelse;
 
     @Column(name = "fastsatt_av_saksbehandler", nullable = false)
     private Boolean fastsattAvSaksbehandler = false;
 
-    @Column(name = "besteberegning_pr_aar")
-    private BigDecimal besteberegningPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "besteberegning_pr_aar")))
+    private Beløp besteberegningPrÅr;
 
     @Convert(converter= InntektskategoriKodeverdiConverter.class)
     @Column(name="inntektskategori", nullable = false)
@@ -222,51 +238,51 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return arbeidsforholdType;
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getOverstyrtPrÅr() {
+    public Beløp getOverstyrtPrÅr() {
         return overstyrtPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
-    public BigDecimal getBeregnetPrÅr() {
+    public Beløp getBeregnetPrÅr() {
         return beregnetPrÅr;
     }
 
-    public BigDecimal getFordeltPrÅr() {
+    public Beløp getFordeltPrÅr() {
         return fordeltPrÅr;
     }
 
-    public BigDecimal getMaksimalRefusjonPrÅr() {
+    public Beløp getMaksimalRefusjonPrÅr() {
         return maksimalRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetRefusjonPrÅr() {
+    public Beløp getAvkortetRefusjonPrÅr() {
         return avkortetRefusjonPrÅr;
     }
 
-    public BigDecimal getRedusertRefusjonPrÅr() {
+    public Beløp getRedusertRefusjonPrÅr() {
         return redusertRefusjonPrÅr;
     }
 
-    public BigDecimal getAvkortetFørGraderingPrÅr() {
+    public Beløp getAvkortetFørGraderingPrÅr() {
         return avkortetFørGraderingPrÅr;
     }
 
-    public BigDecimal getAvkortetBrukersAndelPrÅr() {
+    public Beløp getAvkortetBrukersAndelPrÅr() {
         return avkortetBrukersAndelPrÅr;
     }
 
-    public BigDecimal getRedusertBrukersAndelPrÅr() {
+    public Beløp getRedusertBrukersAndelPrÅr() {
         return redusertBrukersAndelPrÅr;
     }
 
@@ -296,19 +312,19 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return dagsatsBruker + dagsatsArbeidsgiver;
     }
 
-    public BigDecimal getPgiSnitt() {
+    public Beløp getPgiSnitt() {
         return pgiSnitt;
     }
 
-    public BigDecimal getPgi1() {
+    public Beløp getPgi1() {
         return pgi1;
     }
 
-    public BigDecimal getPgi2() {
+    public Beløp getPgi2() {
         return pgi2;
     }
 
-    public BigDecimal getPgi3() {
+    public Beløp getPgi3() {
         return pgi3;
     }
 
@@ -320,7 +336,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         return andelsnr;
     }
 
-    public BigDecimal getBesteberegningPrÅr() {
+    public Beløp getBesteberegningPrÅr() {
         return besteberegningPrÅr;
     }
 
@@ -465,7 +481,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
+        public Builder medOverstyrtPrÅr(Beløp overstyrtPrÅr) {
             verifiserKanModifisere();
             kladd.overstyrtPrÅr = overstyrtPrÅr;
             if (overstyrtPrÅr != null && kladd.fordeltPrÅr == null && kladd.besteberegningPrÅr == null) {
@@ -477,7 +493,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medFordeltPrÅr(BigDecimal fordeltPrÅr) {
+        public Builder medFordeltPrÅr(Beløp fordeltPrÅr) {
             verifiserKanModifisere();
             kladd.fordeltPrÅr = fordeltPrÅr;
             if (fordeltPrÅr != null) {
@@ -490,53 +506,53 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         }
 
 
-        public Builder medAvkortetPrÅr(BigDecimal avkortetPrÅr) {
+        public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetPrÅr = avkortetPrÅr;
             return this;
         }
 
-        public Builder medRedusertPrÅr(BigDecimal redusertPrÅr) {
+        public Builder medRedusertPrÅr(Beløp redusertPrÅr) {
             verifiserKanModifisere();
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
         }
 
-        public Builder medMaksimalRefusjonPrÅr(BigDecimal maksimalRefusjonPrÅr) {
+        public Builder medMaksimalRefusjonPrÅr(Beløp maksimalRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.maksimalRefusjonPrÅr = maksimalRefusjonPrÅr;
             return this;
         }
 
-        public Builder medAvkortetRefusjonPrÅr(BigDecimal avkortetRefusjonPrÅr) {
+        public Builder medAvkortetRefusjonPrÅr(Beløp avkortetRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetRefusjonPrÅr = avkortetRefusjonPrÅr;
             return this;
         }
 
-        public Builder medRedusertRefusjonPrÅr(BigDecimal redusertRefusjonPrÅr) {
+        public Builder medRedusertRefusjonPrÅr(Beløp redusertRefusjonPrÅr) {
             verifiserKanModifisere();
             kladd.redusertRefusjonPrÅr = redusertRefusjonPrÅr;
             kladd.dagsatsArbeidsgiver = redusertRefusjonPrÅr == null ?
-                null : redusertRefusjonPrÅr.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+                null : redusertRefusjonPrÅr.getVerdi().divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
             return this;
         }
 
-        public Builder medAvkortetBrukersAndelPrÅr(BigDecimal avkortetBrukersAndelPrÅr) {
+        public Builder medAvkortetBrukersAndelPrÅr(Beløp avkortetBrukersAndelPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetBrukersAndelPrÅr = avkortetBrukersAndelPrÅr;
             return this;
         }
 
-        public Builder medRedusertBrukersAndelPrÅr(BigDecimal redusertBrukersAndelPrÅr) {
+        public Builder medRedusertBrukersAndelPrÅr(Beløp redusertBrukersAndelPrÅr) {
             verifiserKanModifisere();
             kladd.redusertBrukersAndelPrÅr = redusertBrukersAndelPrÅr;
             kladd.dagsatsBruker = redusertBrukersAndelPrÅr == null ?
-                null : redusertBrukersAndelPrÅr.divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
+                null : redusertBrukersAndelPrÅr.getVerdi().divide(BigDecimal.valueOf(260), 0, RoundingMode.HALF_UP).longValue();
             return this;
         }
 
-        public Builder medBeregnetPrÅr(BigDecimal beregnetPrÅr) {
+        public Builder medBeregnetPrÅr(Beløp beregnetPrÅr) {
             verifiserKanModifisere();
             kladd.beregnetPrÅr = beregnetPrÅr;
             if (kladd.fordeltPrÅr == null && kladd.overstyrtPrÅr == null && kladd.besteberegningPrÅr == null) {
@@ -548,7 +564,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medPgi(BigDecimal pgiSnitt, List<BigDecimal> pgiListe) {
+        public Builder medPgi(Beløp pgiSnitt, List<Beløp> pgiListe) {
             verifiserKanModifisere();
             kladd.pgiSnitt = pgiSnitt;
             kladd.pgi1 = pgiListe.isEmpty() ? null : pgiListe.get(0);
@@ -557,9 +573,9 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medÅrsbeløpFraTilstøtendeYtelse(BigDecimal årsbeløpFraTilstøtendeYtelse) {
+        public Builder medÅrsbeløpFraTilstøtendeYtelse(Beløp årsbeløpFraTilstøtendeYtelse) {
             verifiserKanModifisere();
-            kladd.årsbeløpFraTilstøtendeYtelse = new Beløp(årsbeløpFraTilstøtendeYtelse);
+            kladd.årsbeløpFraTilstøtendeYtelse = årsbeløpFraTilstøtendeYtelse;
             return this;
         }
 
@@ -581,7 +597,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
+        public Builder medBesteberegningPrÅr(Beløp besteberegningPrÅr) {
             verifiserKanModifisere();
             kladd.besteberegningPrÅr = besteberegningPrÅr;
             if (kladd.besteberegningPrÅr != null && kladd.fordeltPrÅr == null) {
@@ -612,7 +628,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         }
 
 
-        public Builder medAvkortetFørGraderingPrÅr(BigDecimal avkortetFørGraderingPrÅr) {
+        public Builder medAvkortetFørGraderingPrÅr(Beløp avkortetFørGraderingPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
             return this;

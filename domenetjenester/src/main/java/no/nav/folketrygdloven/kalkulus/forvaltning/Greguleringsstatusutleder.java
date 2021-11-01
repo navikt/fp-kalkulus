@@ -62,13 +62,13 @@ public class Greguleringsstatusutleder {
     }
 
     private static boolean harGrunnlagSomBleAvkortet(BeregningsgrunnlagEntitet bg, Konfigverdier konfigverdier, BigDecimal grunnbeløpBenyttetIBeregningen) {
-        BigDecimal størsteBrutto = bg.getBeregningsgrunnlagPerioder().stream()
+        Beløp størsteBrutto = bg.getBeregningsgrunnlagPerioder().stream()
                 .map(BeregningsgrunnlagPeriode::getBruttoPrÅr)
                 .max(Comparator.naturalOrder())
-                .orElse(BigDecimal.ZERO);
+                .orElse(Beløp.ZERO);
         BigDecimal antallGØvreGrenseverdi = konfigverdier.getAntallGØvreGrenseverdi();
         BigDecimal grenseverdi = antallGØvreGrenseverdi.multiply(grunnbeløpBenyttetIBeregningen);
-        return størsteBrutto.compareTo(grenseverdi) > 0;
+        return størsteBrutto.compareTo(new Beløp(grenseverdi)) > 0;
 
     }
 
@@ -76,7 +76,7 @@ public class Greguleringsstatusutleder {
         return bg.getBeregningsgrunnlagPerioder().stream()
                 .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
                 .anyMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.MILITÆR_ELLER_SIVIL)
-                        && (a.getBeregningsgrunnlagPeriode().getBruttoPrÅr()
+                        && (a.getBeregningsgrunnlagPeriode().getBruttoPrÅr().getVerdi()
                         .compareTo(konfigverdier.getAntallGMilitærHarKravPå().multiply(nyG))) < 0);
     }
 

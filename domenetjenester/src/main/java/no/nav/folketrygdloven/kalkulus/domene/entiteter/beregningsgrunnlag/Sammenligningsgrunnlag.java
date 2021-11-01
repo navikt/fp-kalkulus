@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -19,6 +18,8 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 
@@ -41,11 +42,13 @@ public class Sammenligningsgrunnlag extends BaseEntitet {
     })
     private IntervallEntitet sammenligningsperiode;
 
-    @Column(name = "rapportert_pr_aar", nullable = false)
-    private BigDecimal rapportertPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "rapportert_pr_aar", nullable = false)))
+    private Beløp rapportertPrÅr;
 
-    @Column(name = "avvik_promille_ny", nullable = false)
-    private BigDecimal avvikPromilleNy = BigDecimal.ZERO;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avvik_promille_ny", nullable = false)))
+    private Promille avvikPromilleNy = Promille.ZERO;
 
     @JsonBackReference
     @OneToOne(optional = false)
@@ -73,11 +76,11 @@ public class Sammenligningsgrunnlag extends BaseEntitet {
         return sammenligningsperiode.getTomDato();
     }
 
-    public BigDecimal getRapportertPrÅr() {
+    public Beløp getRapportertPrÅr() {
         return rapportertPrÅr;
     }
 
-    public BigDecimal getAvvikPromilleNy() {
+    public Promille getAvvikPromilleNy() {
         return avvikPromilleNy;
     }
 
@@ -140,12 +143,12 @@ public class Sammenligningsgrunnlag extends BaseEntitet {
             return this;
         }
 
-        public Builder medRapportertPrÅr(BigDecimal rapportertPrÅr) {
+        public Builder medRapportertPrÅr(Beløp rapportertPrÅr) {
             sammenligningsgrunnlagMal.rapportertPrÅr = rapportertPrÅr;
             return this;
         }
 
-        public Builder medAvvikPromilleNy(BigDecimal avvikPromille) {
+        public Builder medAvvikPromilleNy(Promille avvikPromille) {
             if(avvikPromille != null) {
                 sammenligningsgrunnlagMal.avvikPromilleNy = avvikPromille;
             }

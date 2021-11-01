@@ -20,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.EffektivÅrsinntektTjenesteFRISINN;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.frisinn.Avslagsårsak;
@@ -31,7 +32,7 @@ public class MapTilAvslagsårsakerFRISINN {
                                              FrisinnGrunnlag frisinnGrunnlag,
                                              OppgittOpptjeningDto oppgittOpptjening,
                                              BigDecimal grunnbeløp) {
-        if (andel.getRedusertPrÅr() == null || andel.getRedusertPrÅr().compareTo(BigDecimal.ZERO) != 0) {
+        if (andel.getRedusertPrÅr() == null || andel.getRedusertPrÅr().compareTo(Beløp.ZERO) != 0) {
             return Optional.empty();
         }
         LocalDate fomDato = andel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPeriodeFom();
@@ -61,14 +62,14 @@ public class MapTilAvslagsårsakerFRISINN {
         if (førsteSøknadsdato.isAfter(periode.getFomDato()) || sisteSøknadsdato.isBefore(periode.getFomDato())) {
             return Optional.empty();
         }
-        if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getBeregnetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return Optional.of(INGEN_FRILANS_I_PERIODE_UTEN_YTELSE);
         }
-        if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
-            BigDecimal grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
+            Beløp grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
             BigDecimal seksG = grunnbeløp.multiply(antallGØvreGrenseverdi);
-            if (grunnlagFraArbeid.compareTo(seksG) >= 0) {
+            if (grunnlagFraArbeid.compareTo(new Beløp(seksG)) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
             return Optional.of(AVKORTET_GRUNNET_LØPENDE_INNTEKT);
@@ -98,24 +99,24 @@ public class MapTilAvslagsårsakerFRISINN {
         if (førsteSøknadsdato.isAfter(periode.getFomDato()) || sisteSøknadsdato.isBefore(periode.getFomDato())) {
             return Optional.empty();
         }
-        if (andel.getBeregnetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getBeregnetPrÅr().compareTo(Beløp.ZERO) == 0) {
             return Optional.empty();
         }
-        if (andel.getAvkortetPrÅr().compareTo(BigDecimal.ZERO) == 0) {
+        if (andel.getAvkortetPrÅr().compareTo(Beløp.ZERO) == 0) {
             BigDecimal antallGØvreGrenseverdi = KonfigTjeneste.forYtelse(FagsakYtelseType.FRISINN).getAntallGØvreGrenseverdi();
-            BigDecimal grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
+            Beløp grunnlagFraArbeid = finnGrunnlagFraArbeid(andelerISammePeriode);
 
-            BigDecimal seksG = grunnbeløp.multiply(antallGØvreGrenseverdi);
+            Beløp seksG = new Beløp(grunnbeløp.multiply(antallGØvreGrenseverdi));
             if (grunnlagFraArbeid.compareTo(seksG) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
-            BigDecimal løpendeInntektFrilans = finnLøpendeFrilansInntekt(andel, oppgittOpptjening);
-            BigDecimal grunnlagMedLøpendeFrilans = grunnlagFraArbeid.add(løpendeInntektFrilans);
+            Beløp løpendeInntektFrilans = finnLøpendeFrilansInntekt(andel, oppgittOpptjening);
+            Beløp grunnlagMedLøpendeFrilans = grunnlagFraArbeid.adder(løpendeInntektFrilans);
             if (!frisinnGrunnlag.getSøkerYtelseForFrilans(bgPeriode.getBeregningsgrunnlagPeriodeFom()) && grunnlagMedLøpendeFrilans.compareTo(seksG) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
-            BigDecimal grunnlagFraFrilans = finnKompensasjonsgrunnlagFrilans(andelerISammePeriode);
-            BigDecimal grunnlagMedKompensertFrilans = grunnlagFraArbeid.add(grunnlagFraFrilans);
+            Beløp grunnlagFraFrilans = finnKompensasjonsgrunnlagFrilans(andelerISammePeriode);
+            Beløp grunnlagMedKompensertFrilans = grunnlagFraArbeid.adder(grunnlagFraFrilans);
             if (frisinnGrunnlag.getSøkerYtelseForFrilans(bgPeriode.getBeregningsgrunnlagPeriodeFom()) && grunnlagMedKompensertFrilans.compareTo(seksG) >= 0) {
                 return Optional.of(AVKORTET_GRUNNET_ANNEN_INNTEKT);
             }
@@ -124,23 +125,23 @@ public class MapTilAvslagsårsakerFRISINN {
         return Optional.empty();
     }
 
-    private static BigDecimal finnKompensasjonsgrunnlagFrilans(List<BeregningsgrunnlagPrStatusOgAndel> andelerISammePeriode) {
+    private static Beløp finnKompensasjonsgrunnlagFrilans(List<BeregningsgrunnlagPrStatusOgAndel> andelerISammePeriode) {
         return andelerISammePeriode.stream()
                 .filter(a -> a.getAktivitetStatus().erFrilanser())
                 .map(BeregningsgrunnlagPrStatusOgAndel::getBeregnetPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    private static BigDecimal finnGrunnlagFraArbeid(List<BeregningsgrunnlagPrStatusOgAndel> andelerISammePeriode) {
+    private static Beløp finnGrunnlagFraArbeid(List<BeregningsgrunnlagPrStatusOgAndel> andelerISammePeriode) {
         return andelerISammePeriode.stream()
                 .filter(a -> a.getAktivitetStatus().erArbeidstaker())
                 .map(BeregningsgrunnlagPrStatusOgAndel::getBeregnetPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    private static BigDecimal finnLøpendeFrilansInntekt(BeregningsgrunnlagPrStatusOgAndel andel,
+    private static Beløp finnLøpendeFrilansInntekt(BeregningsgrunnlagPrStatusOgAndel andel,
                                                         OppgittOpptjeningDto oppgittOpptjening) {
         List<OppgittPeriodeInntekt> oppgittInntektFrilans = finnPeriodeinntekterFrilans(oppgittOpptjening);
         return finnInntektIPeriode(oppgittInntektFrilans, andel.getBeregningsgrunnlagPeriode().getPeriode());
@@ -162,11 +163,12 @@ public class MapTilAvslagsårsakerFRISINN {
     }
 
 
-    private static BigDecimal finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
+    private static Beløp finnInntektIPeriode(List<OppgittPeriodeInntekt> periodeInntekter, IntervallEntitet periode) {
         return periodeInntekter.stream()
                 .filter(i -> i.getPeriode().getFomDato().equals(periode.getFomDato()))
                 .map(EffektivÅrsinntektTjenesteFRISINN::finnEffektivÅrsinntektForLøpenedeInntekt)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .map(Beløp::new)
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 }

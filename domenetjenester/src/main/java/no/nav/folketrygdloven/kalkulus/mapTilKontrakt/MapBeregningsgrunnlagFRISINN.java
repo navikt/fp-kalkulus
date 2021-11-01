@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -64,9 +65,9 @@ public class MapBeregningsgrunnlagFRISINN {
         return new BeregningsgrunnlagPeriodeFRISINNDto(
                 andeler,
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
-                beregningsgrunnlagPeriode.getRedusertPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
                 inntektstak,
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker());
@@ -89,9 +90,9 @@ public class MapBeregningsgrunnlagFRISINN {
                 MapTilAvslagsårsakerFRISINN.map(beregningsgrunnlagPrStatusOgAndel, andelerSammePeriode, frisinnGrunnlag, oo, gbeløp));
         return new BeregningsgrunnlagPrStatusOgAndelFRISINNDto(
                 AktivitetStatus.fraKode(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
-                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()),
                 finnLøpendeInntekt(beregningsgrunnlagPrStatusOgAndel, oppgittOpptjening),
                 inntektstak,
                 beregningsgrunnlagPrStatusOgAndel.getDagsats(),
@@ -141,5 +142,10 @@ public class MapBeregningsgrunnlagFRISINN {
         return beregningsgrunnlagEntitet.getAktivitetStatuser().stream().map(a -> AktivitetStatus.fraKode(a.getAktivitetStatus().getKode()))
                 .collect(Collectors.toList());
     }
+
+    private static BigDecimal mapFraBeløp(Beløp beløp) {
+        return beløp == null ? null : beløp.getVerdi();
+    }
+
 
 }

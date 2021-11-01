@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
@@ -373,7 +374,7 @@ class MapBeregningsgrunnlagFRISINNTest {
                 .medAndelsnr(andelsnr)
                 .medAktivitetStatus(status)
                 .medFastsattAvSaksbehandler(true)
-                .medBeregnetPrÅr(brutto)
+                .medBeregnetPrÅr(new Beløp(brutto))
                 .medBeregningsperiode(LocalDate.now().minusMonths(3), LocalDate.now());
         if (status.erArbeidstaker()) {
             builder.medBGAndelArbeidsforhold(lagArbfor());

@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -169,16 +171,16 @@ public class MapDetaljertBeregningsgrunnlag {
         return new SammenligningsgrunnlagPrStatusDto(
                 new Periode(sammenligningsgrunnlagPrStatus.getSammenligningsperiodeFom(), sammenligningsgrunnlagPrStatus.getSammenligningsperiodeTom()),
                 sammenligningsgrunnlagPrStatus.getSammenligningsgrunnlagType(),
-                sammenligningsgrunnlagPrStatus.getRapportertPrÅr(),
-                sammenligningsgrunnlagPrStatus.getAvvikPromilleNy());
+                mapFraBeløp(sammenligningsgrunnlagPrStatus.getRapportertPrÅr()),
+                sammenligningsgrunnlagPrStatus.getAvvikPromilleNy().getVerdi());
     }
 
     private static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
                 new Sammenligningsgrunnlag(
                         new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),
-                        sg.getRapportertPrÅr(),
-                        sg.getAvvikPromilleNy())).orElse(null);
+                        mapFraBeløp(sg.getRapportertPrÅr()),
+                        sg.getAvvikPromilleNy().getVerdi())).orElse(null);
     }
 
     private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
@@ -189,9 +191,9 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
-                beregningsgrunnlagPeriode.getRedusertPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPeriode.getRedusertPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats(),
                 beregningsgrunnlagPeriode.getPeriodeÅrsaker());
     }
@@ -206,27 +208,27 @@ public class MapDetaljertBeregningsgrunnlag {
                 AktivitetStatus.fraKode(beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus().getKode()),
                 mapBeregningsperiode(beregningsgrunnlagPrStatusOgAndel),
                 beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType(),
-                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertRefusjonPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertBrukersAndelPrÅr()),
                 beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker(),
                 beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver(),
                 Inntektskategori.fraKode(beregningsgrunnlagPrStatusOgAndel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(beregningsgrunnlagPrStatusOgAndel),
-                beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr(),
-                beregningsgrunnlagPrStatusOgAndel.getPgiSnitt(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi1(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi2(),
-                beregningsgrunnlagPrStatusOgAndel.getPgi3(),
-                beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getRedusertPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgiSnitt()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi1()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi2()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getPgi3()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr()),
                 beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler(),
                 beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_KOFAKBER) || beregningsgrunnlagPrStatusOgAndel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING),
                 beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse());
@@ -245,9 +247,9 @@ public class MapDetaljertBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr(),
-                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null),
-                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null),
+                mapFraBeløp(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()),
+                bgAndelArbeidsforhold.getNaturalytelseBortfaltPrÅr().map(Beløp::getVerdi).orElse(null),
+                bgAndelArbeidsforhold.getNaturalytelseTilkommetPrÅr().map(Beløp::getVerdi).orElse(null),
                 bgAndelArbeidsforhold.getArbeidsperiodeFom(),
                 bgAndelArbeidsforhold.getArbeidsperiodeTom().orElse(null));
     }
@@ -260,4 +262,9 @@ public class MapDetaljertBeregningsgrunnlag {
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {
         return new Arbeidsgiver(a.getOrgnr(), a.getAktørId() != null ? a.getAktørId().getId() : null);
     }
+
+    private static BigDecimal mapFraBeløp(Beløp beløp) {
+        return beløp == null ? null : beløp.getVerdi();
+    }
+
 }

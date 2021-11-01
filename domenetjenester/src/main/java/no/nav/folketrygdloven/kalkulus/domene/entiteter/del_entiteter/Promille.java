@@ -13,33 +13,33 @@ import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseValue;
 
 /**
- * Beløp representerer kombinasjon av kroner og øre på standardisert format
+ * Promille representerer en promillesats på standarisert format
  */
 @Embeddable
-public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable<Beløp> {
-    public static final Beløp ZERO = new Beløp(BigDecimal.ZERO);
+public class Promille implements Serializable, IndexKey, TraverseValue {
+    public static final Promille ZERO = new Promille(BigDecimal.ZERO);
     private static final RoundingMode AVRUNDINGSMODUS = RoundingMode.HALF_EVEN;
 
-    @Column(name = "beloep", scale = 2)
+    @Column(name = "promille", scale = 10)
     @ChangeTracked
     private BigDecimal verdi;
 
-    protected Beløp() {
+    protected Promille() {
         // for hibernate
     }
 
-    public Beløp(BigDecimal verdi) {
+    public Promille(BigDecimal verdi) {
         this.verdi = verdi;
     }
 
 
     // Beleilig å kunne opprette gjennom int
-    public Beløp(Integer verdi) {
+    public Promille(Integer verdi) {
         this.verdi = verdi == null ? null : new BigDecimal(verdi);
     }
 
     // Beleilig å kunne opprette gjennom string
-    public Beløp(String verdi) {
+    public Promille(String verdi) {
         this.verdi = verdi == null ? null : new BigDecimal(verdi);
     }
 
@@ -64,7 +64,7 @@ public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable
         } else if (obj == null || !getClass().equals(obj.getClass())) {
             return false;
         }
-        Beløp other = (Beløp) obj;
+        Promille other = (Promille) obj;
         return Objects.equals(skalertVerdi(), other.skalertVerdi());
     }
 
@@ -81,8 +81,7 @@ public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable
             '}';
     }
 
-    @Override
-    public int compareTo(Beløp annetBeløp) {
+    public int compareTo(Promille annetBeløp) {
         return verdi.compareTo(annetBeløp.getVerdi());
     }
 
@@ -91,14 +90,8 @@ public class Beløp implements Serializable, IndexKey, TraverseValue, Comparable
     }
 
     public boolean erNulltall() {
-        return verdi != null && compareTo(Beløp.ZERO) == 0;
+        return verdi != null && compareTo(Promille.ZERO) == 0;
     }
 
-    public Beløp multipliser(int multiplicand) {
-        return new Beløp(this.verdi.multiply(BigDecimal.valueOf(multiplicand)));
-    }
 
-    public Beløp adder(Beløp augend) {
-        return new Beløp(this.verdi.add(augend.getVerdi()));
-    }
 }

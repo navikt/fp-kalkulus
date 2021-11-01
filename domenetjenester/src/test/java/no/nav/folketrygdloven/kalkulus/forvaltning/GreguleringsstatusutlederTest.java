@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
@@ -39,7 +40,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(BigDecimal.valueOf(800000)))
+                        .medBeregnetPrÅr(new Beløp(800000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -65,7 +66,7 @@ class GreguleringsstatusutlederTest {
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medBeregnetPrÅr(BigDecimal.valueOf(400000)))
+                        .medBeregnetPrÅr(new Beløp(400000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -91,7 +92,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(BigDecimal.valueOf(200000)))
+                        .medBeregnetPrÅr(new Beløp(200000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -117,7 +118,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(BigDecimal.valueOf(200000)))
+                        .medBeregnetPrÅr(new Beløp(200000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -143,7 +144,7 @@ class GreguleringsstatusutlederTest {
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medBeregnetPrÅr(BigDecimal.valueOf(610000)))
+                        .medBeregnetPrÅr(new Beløp(610000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()

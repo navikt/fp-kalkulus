@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -12,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittFrilansInntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
@@ -57,8 +59,9 @@ public class MapInntektstakFRISINN {
             BigDecimal inntektstak = seksG.subtract(atBrutto);
             if (!frisinnGrunnlag.getSøkerYtelseForFrilans(fom)) {
                 BigDecimal flBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erFrilanser())
-                        .filter(a -> a.getBruttoPrÅr() != null)
                         .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                        .filter(Objects::nonNull)
+                        .map(Beløp::getVerdi)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);
                 inntektstak = inntektstak.subtract(flBrutto);
@@ -67,7 +70,7 @@ public class MapInntektstakFRISINN {
                 inntektstak = inntektstak.subtract(inntektstakFL);
             }
             inntektstak = inntektstak.max(BigDecimal.ZERO);
-            return inntektstak.min(snAndel.getBruttoPrÅr());
+            return inntektstak.min(snAndel.getBruttoPrÅr().getVerdi());
         }
         return BigDecimal.ZERO;
     }
@@ -96,14 +99,15 @@ public class MapInntektstakFRISINN {
             BigDecimal inntektstak = seksG.subtract(atBrutto);
             if (!frisinnGrunnlag.getSøkerYtelseForNæring(fom)) {
                 BigDecimal snBrutto = andeler.stream().filter(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())
-                        .filter(a -> a.getBruttoPrÅr() != null)
                         .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                        .filter(Objects::nonNull)
+                        .map(Beløp::getVerdi)
                         .reduce(BigDecimal::add)
                         .orElse(BigDecimal.ZERO);
                 inntektstak = inntektstak.subtract(snBrutto);
             }
             inntektstak = inntektstak.max(BigDecimal.ZERO);
-            return inntektstak.min(flAndel.getBruttoPrÅr());
+            return inntektstak.min(flAndel.getBruttoPrÅr().getVerdi());
         }
         return BigDecimal.ZERO;
     }
@@ -118,8 +122,9 @@ public class MapInntektstakFRISINN {
 
     private static BigDecimal bruttoArbeidsforhold(List<BeregningsgrunnlagPrStatusOgAndel> andeler) {
         return andeler.stream().filter(a -> a.getAktivitetStatus().erArbeidstaker())
-                .filter(bga -> bga.getBruttoPrÅr() != null)
                 .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
+                .filter(Objects::nonNull)
+                .map(Beløp::getVerdi)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }

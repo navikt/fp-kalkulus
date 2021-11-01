@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -51,8 +52,8 @@ public class MapBrevBeregningsgrunnlag {
         return new BeregningsgrunnlagPeriodeDto(
                 mapAndeler(finnAndelerSomHarSøkt(beregningsgrunnlagPeriode, utbetalingsgradGrunnlag)),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
-                beregningsgrunnlagPeriode.getBruttoPrÅr(),
-                beregningsgrunnlagPeriode.getAvkortetPrÅr(),
+                mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats());
     }
 
@@ -77,15 +78,16 @@ public class MapBrevBeregningsgrunnlag {
                 AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
                 andel.getArbeidsforholdType(),
                 andel.getBeregningsperiodeFom() == null ? null : new Periode(andel.getBeregningsperiodeFom(), andel.getBeregningsperiodeTom()),
-                andel.getBruttoPrÅr(),
+                mapFraBeløp(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
-                andel.getAvkortetFørGraderingPrÅr(),
-                andel.getAvkortetPrÅr(),
-                andel.getOverstyrtPrÅr(), andel.getRedusertPrÅr(),
-                andel.getBeregnetPrÅr(),
+                mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
+                mapFraBeløp(andel.getAvkortetPrÅr()),
+                mapFraBeløp(andel.getOverstyrtPrÅr()),
+                mapFraBeløp(andel.getRedusertPrÅr()),
+                mapFraBeløp(andel.getBeregnetPrÅr()),
                 andel.getFastsattAvSaksbehandler());
     }
 
@@ -97,7 +99,7 @@ public class MapBrevBeregningsgrunnlag {
         return new BGAndelArbeidsforhold(
                 mapArbeidsgiver(bgAndelArbeidsforhold.getArbeidsgiver()),
                 bgAndelArbeidsforhold.getArbeidsforholdRef().getReferanse(),
-                bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr());
+                mapFraBeløp(bgAndelArbeidsforhold.getGjeldendeRefusjonPrÅr()));
     }
 
     private static List<AktivitetStatus> mapAktivitetstatuser(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
@@ -165,5 +167,8 @@ public class MapBrevBeregningsgrunnlag {
                 .orElse(false);
     }
 
+    private static BigDecimal mapFraBeløp(Beløp beløp) {
+        return beløp == null ? null : beløp.getVerdi();
+    }
 
 }

@@ -43,6 +43,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Fakta
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
@@ -337,7 +338,7 @@ public class AksjonspunktMigreringTjeneste {
 
     private boolean harAvvik(BeregningsgrunnlagGrunnlagEntitet gr) {
         Optional<Sammenligningsgrunnlag> sammenligningsgrunnlag = gr.getBeregningsgrunnlag().flatMap(BeregningsgrunnlagEntitet::getSammenligningsgrunnlag);
-        return sammenligningsgrunnlag.filter(sg -> sg.getAvvikPromilleNy().compareTo(BigDecimal.valueOf(250)) > 0).isPresent();
+        return sammenligningsgrunnlag.filter(sg -> sg.getAvvikPromilleNy().compareTo(new Promille(250)) > 0).isPresent();
     }
 
     private boolean skalAvviksvurdere(Map<Long, BeregningsgrunnlagGUIInput> guiInputMap, BeregningsgrunnlagGrunnlagEntitet gr) {

@@ -1,10 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -22,6 +23,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -51,20 +53,25 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
-    @Column(name = "refusjonskrav_pr_aar")
-    private BigDecimal refusjonskravPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "refusjonskrav_pr_aar")))
+    private Beløp refusjonskravPrÅr;
 
-    @Column(name = "saksbehandlet_refusjon_pr_aar")
-    private BigDecimal saksbehandletRefusjonPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "saksbehandlet_refusjon_pr_aar")))
+    private Beløp saksbehandletRefusjonPrÅr;
 
-    @Column(name = "fordelt_refusjon_pr_aar")
-    private BigDecimal fordeltRefusjonPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_refusjon_pr_aar")))
+    private Beløp fordeltRefusjonPrÅr;
 
-    @Column(name = "naturalytelse_bortfalt_pr_aar")
-    private BigDecimal naturalytelseBortfaltPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_bortfalt_pr_aar")))
+    private Beløp naturalytelseBortfaltPrÅr;
 
-    @Column(name = "naturalytelse_tilkommet_pr_aar")
-    private BigDecimal naturalytelseTilkommetPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_tilkommet_pr_aar")))
+    private Beløp naturalytelseTilkommetPrÅr;
 
     @Column(name = "arbeidsperiode_fom")
     private LocalDate arbeidsperiodeFom;
@@ -98,23 +105,23 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         return arbeidsforholdRef != null ? arbeidsforholdRef : InternArbeidsforholdRef.nullRef();
     }
 
-    public BigDecimal getRefusjonskravPrÅr() {
+    public Beløp getRefusjonskravPrÅr() {
         return refusjonskravPrÅr;
     }
 
-    public BigDecimal getSaksbehandletRefusjonPrÅr() {
+    public Beløp getSaksbehandletRefusjonPrÅr() {
         return saksbehandletRefusjonPrÅr;
     }
 
-    public BigDecimal getFordeltRefusjonPrÅr() {
+    public Beløp getFordeltRefusjonPrÅr() {
         return fordeltRefusjonPrÅr;
     }
 
-    public Optional<BigDecimal> getNaturalytelseBortfaltPrÅr() {
+    public Optional<Beløp> getNaturalytelseBortfaltPrÅr() {
         return Optional.ofNullable(naturalytelseBortfaltPrÅr);
     }
 
-    public Optional<BigDecimal> getNaturalytelseTilkommetPrÅr() {
+    public Optional<Beløp> getNaturalytelseTilkommetPrÅr() {
         return Optional.ofNullable(naturalytelseTilkommetPrÅr);
     }
 
@@ -144,7 +151,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
      * Det er det sist avklarte beløpet som til en hver tid skal være gjeldende.
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
-    public BigDecimal getGjeldendeRefusjonPrÅr() {
+    public Beløp getGjeldendeRefusjonPrÅr() {
         if (fordeltRefusjonPrÅr != null) {
             return fordeltRefusjonPrÅr;
         } else if (saksbehandletRefusjonPrÅr != null) {
@@ -224,27 +231,27 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
             return this;
         }
 
-        public Builder medNaturalytelseBortfaltPrÅr(BigDecimal naturalytelseBortfaltPrÅr) {
+        public Builder medNaturalytelseBortfaltPrÅr(Beløp naturalytelseBortfaltPrÅr) {
             bgAndelArbeidsforhold.naturalytelseBortfaltPrÅr = naturalytelseBortfaltPrÅr;
             return this;
         }
 
-        public Builder medNaturalytelseTilkommetPrÅr(BigDecimal naturalytelseTilkommetPrÅr) {
+        public Builder medNaturalytelseTilkommetPrÅr(Beløp naturalytelseTilkommetPrÅr) {
             bgAndelArbeidsforhold.naturalytelseTilkommetPrÅr = naturalytelseTilkommetPrÅr;
             return this;
         }
 
-        public Builder medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr) {
+        public Builder medRefusjonskravPrÅr(Beløp refusjonskravPrÅr) {
             bgAndelArbeidsforhold.refusjonskravPrÅr = refusjonskravPrÅr;
             return this;
         }
 
-        public Builder medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
+        public Builder medSaksbehandletRefusjonPrÅr(Beløp saksbehandletRefusjonPrÅr) {
             bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
             return this;
         }
 
-        public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
+        public Builder medFordeltRefusjonPrÅr(Beløp fordeltRefusjonPrÅr) {
             bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
             return this;
         }

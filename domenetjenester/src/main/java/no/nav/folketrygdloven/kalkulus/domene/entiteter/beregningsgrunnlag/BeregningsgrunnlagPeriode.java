@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +30,7 @@ import org.hibernate.annotations.BatchSize;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -63,14 +63,17 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
     })
     private IntervallEntitet periode;
 
-    @Column(name = "brutto_pr_aar")
-    private BigDecimal bruttoPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
+    private Beløp bruttoPrÅr;
 
-    @Column(name = "avkortet_pr_aar")
-    private BigDecimal avkortetPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar")))
+    private Beløp avkortetPrÅr;
 
-    @Column(name = "redusert_pr_aar")
-    private BigDecimal redusertPrÅr;
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar")))
+    private Beløp redusertPrÅr;
 
     @Column(name = "dagsats")
     private Long dagsats;
@@ -126,19 +129,19 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
         bruttoPrÅr = beregningsgrunnlagPrStatusOgAndelList.stream()
                 .filter(bgpsa -> bgpsa.getBruttoPrÅr() != null)
                 .map(BeregningsgrunnlagPrStatusOgAndel::getBruttoPrÅr)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO);
+                .reduce(Beløp::adder)
+                .orElse(Beløp.ZERO);
     }
 
-    public BigDecimal getBruttoPrÅr() {
+    public Beløp getBruttoPrÅr() {
         return bruttoPrÅr;
     }
 
-    public BigDecimal getAvkortetPrÅr() {
+    public Beløp getAvkortetPrÅr() {
         return avkortetPrÅr;
     }
 
-    public BigDecimal getRedusertPrÅr() {
+    public Beløp getRedusertPrÅr() {
         return redusertPrÅr;
     }
 
@@ -247,19 +250,19 @@ public class BeregningsgrunnlagPeriode extends BaseEntitet {
             return this;
         }
 
-        public Builder medBruttoPrÅr(BigDecimal bruttoPrÅr) {
+        public Builder medBruttoPrÅr(Beløp bruttoPrÅr) {
             verifiserKanModifisere();
             kladd.bruttoPrÅr = bruttoPrÅr;
             return this;
         }
 
-        public Builder medAvkortetPrÅr(BigDecimal avkortetPrÅr) {
+        public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             verifiserKanModifisere();
             kladd.avkortetPrÅr = avkortetPrÅr;
             return this;
         }
 
-        public Builder medRedusertPrÅr(BigDecimal redusertPrÅr) {
+        public Builder medRedusertPrÅr(Beløp redusertPrÅr) {
             verifiserKanModifisere();
             kladd.redusertPrÅr = redusertPrÅr;
             return this;
