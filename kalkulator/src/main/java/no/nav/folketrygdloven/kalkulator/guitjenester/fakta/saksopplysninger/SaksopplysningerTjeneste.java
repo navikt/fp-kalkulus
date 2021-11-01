@@ -11,7 +11,8 @@ public class SaksopplysningerTjeneste {
 
     public static Saksopplysninger lagSaksopplysninger(BeregningsgrunnlagGUIInput input) {
         Saksopplysninger saksopplysninger = new Saksopplysninger();
-        saksopplysninger.setArbeidsforholdMedLønnsendring(lagArbeidsforholdMedLønnsendring(input));
+        // Kommenterer ut til vi får prodsatt k9-sak 01.11.2021 (brukes ikkje frontend enda)
+//        saksopplysninger.setArbeidsforholdMedLønnsendring(lagArbeidsforholdMedLønnsendring(input));
         return saksopplysninger;
     }
 
