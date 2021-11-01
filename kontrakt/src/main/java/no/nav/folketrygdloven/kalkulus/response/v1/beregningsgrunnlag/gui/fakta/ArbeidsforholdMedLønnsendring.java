@@ -24,6 +24,9 @@ public class ArbeidsforholdMedLønnsendring extends FaktaOmBeregningAndelDto {
     @Size
     private LocalDate sisteLønnsendring;
 
+    public ArbeidsforholdMedLønnsendring() {
+    }
+
     public ArbeidsforholdMedLønnsendring(FaktaOmBeregningAndelDto faktaAndel, LocalDate sisteLønnsendring) {
         super(faktaAndel.getAndelsnr(), faktaAndel.getArbeidsforhold(), faktaAndel.getInntektskategori(), faktaAndel.getAktivitetStatus(), faktaAndel.getLagtTilAvSaksbehandler(), faktaAndel.getFastsattAvSaksbehandler(), faktaAndel.getAndelIArbeid(), faktaAndel.getKilde());
         this.sisteLønnsendring = sisteLønnsendring;
