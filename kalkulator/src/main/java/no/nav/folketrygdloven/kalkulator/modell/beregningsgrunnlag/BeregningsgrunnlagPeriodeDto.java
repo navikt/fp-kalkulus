@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -188,6 +189,13 @@ public class BeregningsgrunnlagPeriodeDto {
 
         public static Builder kopier(BeregningsgrunnlagPeriodeDto p) {
             return new Builder(p);
+        }
+
+        public Optional<BeregningsgrunnlagPrStatusOgAndelDto.Builder> getBuilderForAndel(Long andelsnr) {
+            return this.kladd.getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                    .filter(a -> a.getAndelsnr().equals(andelsnr))
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto.Builder::oppdatere)
+                    .findFirst();
         }
 
         public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {
