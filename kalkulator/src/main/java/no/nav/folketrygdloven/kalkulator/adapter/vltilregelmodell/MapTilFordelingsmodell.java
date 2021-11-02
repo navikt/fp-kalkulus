@@ -53,11 +53,18 @@ public class MapTilFordelingsmodell {
         bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).ifPresent(regelBuilder::medNaturalytelseTilkommerPrÅr);
         if (bgAndel.getBruttoPrÅr() != null) {
             regelBuilder.medForeslåttPrÅr(bgAndel.getBruttoPrÅr());
-        } else if (bgAndel.getAktivitetStatus().erArbeidstaker()){
-            // Andel er opprettet eller foreslå steget, henter inntekt fra IM for bruk ved andelsmessig fordeling
+        } else if (erArbeidsandelMedSøktRefusjon(bgAndel)){
+            // Andel er opprettet etter foreslå steget, henter inntekt fra IM for bruk ved andelsmessig fordeling
             regelBuilder.medInntektFraInnektsmelding(finnInntektFraIM(bgAndel, input));
         }
         return regelBuilder.build();
+    }
+
+    private static boolean erArbeidsandelMedSøktRefusjon(BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
+        var gjeldendeRefusjon = bgAndel.getBgAndelArbeidsforhold()
+                .map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
+                .orElse(BigDecimal.ZERO);
+        return bgAndel.getAktivitetStatus().erArbeidstaker() && gjeldendeRefusjon.compareTo(BigDecimal.ZERO) > 0;
     }
 
     private static BigDecimal finnInntektFraIM(BeregningsgrunnlagPrStatusOgAndelDto bgAndel, BeregningsgrunnlagInput input) {
