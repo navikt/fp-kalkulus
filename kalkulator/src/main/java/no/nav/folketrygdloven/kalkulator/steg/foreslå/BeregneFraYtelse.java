@@ -49,7 +49,7 @@ class BeregneFraYtelse {
             var atflStatus = regelmodell.getBeregningsgrunnlagPerioder().get(0)
                     .getBeregningsgrunnlagPrStatus(AktivitetStatus.ATFL);
 
-            boolean harAnvisteAndeler = anvisninger.stream().anyMatch(a -> !a.getAnvisteAndeler().isEmpty());
+            boolean harAnvisteAndeler = anvisninger.stream().anyMatch(a -> a.getAnvisteAndeler() != null && !a.getAnvisteAndeler().isEmpty());
 
             if (atflStatus == null || !harAnvisteAndeler) {
                 return;
