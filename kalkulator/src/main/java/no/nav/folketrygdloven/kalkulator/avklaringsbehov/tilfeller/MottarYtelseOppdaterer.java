@@ -43,7 +43,7 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
 
     private void settMottarYtelseForFrilans(MottarYtelseDto mottarYtelseDto, FaktaAggregatDto.Builder faktaBuilder) {
         FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medHarFLMottattYtelse(mottarYtelseDto.getFrilansMottarYtelse());
+        faktaAktørBuilder.medHarFLMottattYtelseFastsattAvSaksbehandler(mottarYtelseDto.getFrilansMottarYtelse());
         faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
     }
 
@@ -57,7 +57,7 @@ public class MottarYtelseOppdaterer implements FaktaOmBeregningTilfelleOppdatere
 
     private void settMottarYtelseForArbeidsforhold(FaktaAggregatDto.Builder faktaBuilder, ArbeidstakerandelUtenIMMottarYtelseDto arbMottarYtelse, BGAndelArbeidsforholdDto arb) {
         FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaBuilder.getFaktaArbeidsforholdBuilderFor(arb.getArbeidsgiver(), arb.getArbeidsforholdRef())
-                .medHarMottattYtelse(arbMottarYtelse.getMottarYtelse());
+                .medHarMottattYtelseFastsattAvSaksbehandler(arbMottarYtelse.getMottarYtelse());
         faktaBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());
     }
 

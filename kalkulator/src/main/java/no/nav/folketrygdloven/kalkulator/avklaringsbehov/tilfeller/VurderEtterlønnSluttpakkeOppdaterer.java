@@ -35,7 +35,7 @@ public class VurderEtterlønnSluttpakkeOppdaterer implements FaktaOmBeregningTil
         // Setter fakta aggregat
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medMottarEtterlønnSluttpakke(vurderDto.erEtterlønnSluttpakke());
+        faktaAktørBuilder.medMottarEtterlønnSluttpakkeFastsattAvSaksbehandler(vurderDto.erEtterlønnSluttpakke());
         faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
         grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }

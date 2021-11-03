@@ -39,7 +39,7 @@ public class VurderMilitærOppdaterer implements FaktaOmBeregningTilfelleOppdate
         // Setter fakta aggregat
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medErMilitærSiviltjeneste(militærDto.getHarMilitaer());
+        faktaAktørBuilder.medErMilitærSiviltjenesteFastsattAvSaksbehandler(militærDto.getHarMilitaer());
         faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
         grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }

@@ -67,7 +67,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
             BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag).ifPresent(dto::setArbeidsforhold);
             Optional<FaktaArbeidsforholdDto> faktaArbeidsforholdDto = andelUtenIM.getBgAndelArbeidsforhold()
                     .flatMap(arb -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(arb)));
-            faktaArbeidsforholdDto.map(FaktaArbeidsforholdDto::getHarMottattYtelse).ifPresent(dto::setMottarYtelse);
+            faktaArbeidsforholdDto.map(FaktaArbeidsforholdDto::getHarMottattYtelseVurdering).ifPresent(dto::setMottarYtelse);
             vurderMottarYtelseDto.leggTilArbeidstakerAndelUtenInntektsmelding(dto);
         });
     }
@@ -93,7 +93,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
         beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(andel -> andel.getAktivitetStatus().erFrilanser()).findFirst()
                 .ifPresent(frilansAndel -> {
-                    vurderMottarYtelseDto.setFrilansMottarYtelse(faktaAktør.map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null));
+                    vurderMottarYtelseDto.setFrilansMottarYtelse(faktaAktør.map(FaktaAktørDto::getHarFLMottattYtelseVurdering).orElse(null));
                     InntektForAndelTjeneste.finnSnittAvFrilansinntektIBeregningsperioden(inntektArbeidYtelseGrunnlag, frilansAndel, skjæringstidspunkt)
                             .ifPresent(vurderMottarYtelseDto::setFrilansInntektPrMnd);
                 });

@@ -23,10 +23,10 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
         // Arrange
 
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medErTidsbegrenset(true).build())
+                .medErTidsbegrensetFastsattAvSaksbehandler(true).build())
                 .build();
         FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medErTidsbegrenset(false).build())
+                .medErTidsbegrensetFastsattAvSaksbehandler(false).build())
                 .build();
 
         // Act
@@ -43,7 +43,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringerTest {
     public void utled_for_arbeid_med_tidsbegrenset() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medErTidsbegrenset(true).build())
+                .medErTidsbegrensetFastsattAvSaksbehandler(true).build())
                 .build();
 
         // Act

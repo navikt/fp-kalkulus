@@ -54,7 +54,7 @@ public final class FinnÅrsinntektvisningstall {
     }
 
     private static Boolean erNyIArbeidslivet(Optional<FaktaAktørDto> faktaAktør) {
-        return faktaAktør.map(FaktaAktørDto::getErNyIArbeidslivetSN).orElse(false);
+        return faktaAktør.map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).orElse(false);
     }
 
     private static boolean harBesteberegningtilfelle(BeregningsgrunnlagDto beregningsgrunnlag) {

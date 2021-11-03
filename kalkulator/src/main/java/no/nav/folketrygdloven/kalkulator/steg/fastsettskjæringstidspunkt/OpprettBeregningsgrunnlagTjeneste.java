@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
@@ -14,10 +16,13 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFakta;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaTjenestePSB;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
@@ -29,6 +34,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
     private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
     private Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser;
     private Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste;
+    private Instance<FastsettFakta> fastsettFaktaTjeneste;
 
     protected OpprettBeregningsgrunnlagTjeneste() {
         // for CDI proxy
@@ -37,10 +43,12 @@ public class OpprettBeregningsgrunnlagTjeneste {
     @Inject
     public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
                                              @Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser,
-                                             @Any Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste) {
+                                             @Any Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste,
+                                             @Any Instance<FastsettFakta> fastsettFaktaTjeneste) {
         this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
         this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
         this.fastsettBeregningsperiodeTjeneste = fastsettBeregningsperiodeTjeneste;
+        this.fastsettFaktaTjeneste = fastsettFaktaTjeneste;
     }
 
     /**
@@ -71,11 +79,17 @@ public class OpprettBeregningsgrunnlagTjeneste {
         var medFastsattBeregningsperiode = FagsakYtelseTypeRef.Lookup.find(fastsettBeregningsperiodeTjeneste, input.getFagsakYtelseType()).orElseThrow()
                 .fastsettBeregningsperiode(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
+        // Fastsett fakta
+        Optional<FaktaAggregatDto> faktaAggregatDto = FagsakYtelseTypeRef.Lookup.find(fastsettFaktaTjeneste, input.getFagsakYtelseType())
+                .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag()));
+
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
         var resultatMedNaturalytelse = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
         BeregningsgrunnlagVerifiserer.verifiserOppdatertBeregningsgrunnlag(resultatMedNaturalytelse.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatMedNaturalytelse.getBeregningsgrunnlag(),
-                RegelSporingAggregat.konkatiner(resultatMedAndeler.getRegelsporinger().orElse(null), resultatMedNaturalytelse.getRegelsporinger().orElse(null)));
+                faktaAggregatDto.orElse(null),
+                RegelSporingAggregat.konkatiner(resultatMedAndeler.getRegelsporinger().orElse(null),
+                        resultatMedNaturalytelse.getRegelsporinger().orElse(null)));
     }
 
 

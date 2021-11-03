@@ -146,20 +146,20 @@ public class KalkulatorTilEntitetMapper {
         return FaktaArbeidsforholdEntitet.builder()
                 .medArbeidsgiver(mapArbeidsgiver(faktaArbeidsforholdDto.getArbeidsgiver()))
                 .medArbeidsforholdRef(mapArbeidsforholdRef(faktaArbeidsforholdDto.getArbeidsforholdRef()))
-                .medErTidsbegrenset(faktaArbeidsforholdDto.getErTidsbegrenset())
-                .medHarMottattYtelse(faktaArbeidsforholdDto.getHarMottattYtelse())
-                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdDto.getHarLønnsendringIBeregningsperioden())
+                .medErTidsbegrenset(faktaArbeidsforholdDto.getErTidsbegrensetVurdering())
+                .medHarMottattYtelse(faktaArbeidsforholdDto.getHarMottattYtelseVurdering())
+                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdDto.getHarLønnsendringIBeregningsperiodenVurdering())
                 .build();
     }
 
     private static FaktaAktørEntitet mapFaktaAktør(FaktaAktørDto faktaAktørDto) {
         return FaktaAktørEntitet.builder()
-                .medSkalBesteberegnes(faktaAktørDto.getSkalBesteberegnes())
-                .medMottarEtterlønnSluttpakke(faktaAktørDto.getMottarEtterlønnSluttpakke())
-                .medErNyIArbeidslivetSN(faktaAktørDto.getErNyIArbeidslivetSN())
-                .medErNyoppstartetFL(faktaAktørDto.getErNyoppstartetFL())
-                .medHarFLMottattYtelse(faktaAktørDto.getHarFLMottattYtelse())
-                .medSkalBeregnesSomMilitær(faktaAktørDto.getSkalBeregnesSomMilitær())
+                .medSkalBesteberegnes(faktaAktørDto.getSkalBesteberegnesVurdering())
+                .medMottarEtterlønnSluttpakke(faktaAktørDto.getMottarEtterlønnSluttpakkeVurdering())
+                .medErNyIArbeidslivetSN(faktaAktørDto.getErNyIArbeidslivetSNVurdering())
+                .medErNyoppstartetFL(faktaAktørDto.getErNyoppstartetFLVurdering())
+                .medHarFLMottattYtelse(faktaAktørDto.getHarFLMottattYtelseVurdering())
+                .medSkalBeregnesSomMilitær(faktaAktørDto.getSkalBeregnesSomMilitærVurdering())
                 .build();
     }
 

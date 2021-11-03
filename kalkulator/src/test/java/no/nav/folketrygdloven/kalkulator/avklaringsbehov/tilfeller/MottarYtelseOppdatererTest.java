@@ -71,7 +71,7 @@ public class MottarYtelseOppdatererTest {
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelse()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelseVurdering()).isTrue();
         assertThat(faktaAggregat.get().getFaktaArbeidsforhold(arbeidsforholdAndel)).isNotPresent();
     }
 
@@ -97,8 +97,8 @@ public class MottarYtelseOppdatererTest {
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelse()).isFalse();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(oppdatertArbeidsforholdAndel).get().getHarMottattYtelse()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getHarFLMottattYtelseVurdering()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(oppdatertArbeidsforholdAndel).get().getHarMottattYtelseVurdering()).isTrue();
     }
 
     private void byggFrilansAndel() {

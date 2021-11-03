@@ -22,7 +22,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdaterer implemen
         VurderSelvstendigNæringsdrivendeNyIArbeidslivetDto nyIArbeidslivetDto = dto.getVurderNyIArbeidslivet();
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medErNyIArbeidslivetSN(nyIArbeidslivetDto.erNyIArbeidslivet());
+        faktaAktørBuilder.medErNyIArbeidslivetSNFastsattAvSaksbehandler(nyIArbeidslivetDto.erNyIArbeidslivet());
         faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
         grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }

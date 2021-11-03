@@ -76,7 +76,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         var faktaAktør = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().flatMap(FaktaAggregatDto::getFaktaAktør);
 
         // Assert
-        assertThat(faktaAktør.get().getErNyIArbeidslivetSN()).isTrue();
+        assertThat(faktaAktør.get().getErNyIArbeidslivetSNVurdering()).isTrue();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class VurderSelvstendigNæringsdrivendeNyIArbeidslivetOppdatererTest {
         FaktaAktørDto faktaAktørDto = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat().get().getFaktaAktør().get();
 
         // Assert
-        assertThat(faktaAktørDto.getErNyIArbeidslivetSN()).isFalse();
+        assertThat(faktaAktørDto.getErNyIArbeidslivetSNVurdering()).isFalse();
     }
 
 }

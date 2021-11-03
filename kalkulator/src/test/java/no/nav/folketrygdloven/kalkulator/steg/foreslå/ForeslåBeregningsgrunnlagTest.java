@@ -882,9 +882,9 @@ public class ForeslåBeregningsgrunnlagTest {
 
     private FaktaAggregatDto lagFakta(Arbeidsgiver virksomhet, boolean erTidsbegrenset, Boolean erNyIArbeidslivet) {
         return FaktaAggregatDto.builder()
-                .medFaktaAktør(erNyIArbeidslivet == null ? null : FaktaAktørDto.builder().medErNyIArbeidslivetSN(erNyIArbeidslivet).build())
+                .medFaktaAktør(erNyIArbeidslivet == null ? null : FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(erNyIArbeidslivet).build())
                 .erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(virksomhet, NULL_REF)
-                        .medErTidsbegrenset(erTidsbegrenset)
+                        .medErTidsbegrensetFastsattAvSaksbehandler(erTidsbegrenset)
                         .build()).build();
     }
 

@@ -23,7 +23,7 @@ public class VurderNyoppstartetFLOppdaterer implements FaktaOmBeregningTilfelleO
         VurderNyoppstartetFLDto nyoppstartetDto = dto.getVurderNyoppstartetFL();
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         FaktaAktørDto.Builder faktaAktørBuilder = faktaAggregatBuilder.getFaktaAktørBuilder();
-        faktaAktørBuilder.medErNyoppstartetFL(nyoppstartetDto.erErNyoppstartetFL());
+        faktaAktørBuilder.medErNyoppstartetFLFastsattAvSaksbehandler(nyoppstartetDto.erErNyoppstartetFL());
         faktaAggregatBuilder.medFaktaAktør(faktaAktørBuilder.build());
         grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
     }

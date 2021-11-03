@@ -369,7 +369,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
         return FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(
                 eksisterendeAndel.getBgAndelArbeidsforhold().get().getArbeidsgiver(),
                 eksisterendeAndel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef())
-                .medErTidsbegrenset(true)
+                .medErTidsbegrensetFastsattAvSaksbehandler(true)
                 .build()).build();
     }
 
@@ -503,10 +503,10 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
     private FaktaAggregatDto lagFakta(Arbeidsgiver virksomhet, boolean erTidsbegrenset, Boolean erNyIArbeidslivet) {
         return FaktaAggregatDto.builder()
                 .medFaktaAktør(erNyIArbeidslivet == null ? null : FaktaAktørDto.builder()
-                        .medErNyIArbeidslivetSN(erNyIArbeidslivet)
+                        .medErNyIArbeidslivetSNFastsattAvSaksbehandler(erNyIArbeidslivet)
                         .build())
                 .erstattEksisterendeEllerLeggTil(new FaktaArbeidsforholdDto.Builder(virksomhet, NULL_REF)
-                        .medErTidsbegrenset(erTidsbegrenset)
+                        .medErTidsbegrensetFastsattAvSaksbehandler(erTidsbegrenset)
                         .build()).build();
     }
 

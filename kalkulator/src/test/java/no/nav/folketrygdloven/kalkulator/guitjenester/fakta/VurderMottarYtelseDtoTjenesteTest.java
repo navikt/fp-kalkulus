@@ -120,9 +120,9 @@ public class VurderMottarYtelseDtoTjenesteTest {
 
         // Act
         FaktaAggregatDto fakta = FaktaAggregatDto.builder()
-                .medFaktaAktør(FaktaAktørDto.builder().medHarFLMottattYtelse(false).build())
+                .medFaktaAktør(FaktaAktørDto.builder().medHarFLMottattYtelseFastsattAvSaksbehandler(false).build())
                 .erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(arbeidsgiver, InternArbeidsforholdRefDto.nullRef())
-                        .medHarMottattYtelse(true)
+                        .medHarMottattYtelseFastsattAvSaksbehandler(true)
                         .build()).build();
         var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)

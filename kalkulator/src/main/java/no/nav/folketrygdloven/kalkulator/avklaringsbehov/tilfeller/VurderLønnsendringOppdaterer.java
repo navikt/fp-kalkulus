@@ -49,7 +49,7 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                         ya.getArbeidsforholdRef().gjelderFor(arb.getArbeidsforholdRef())))
                 .forEach(arb -> {
                     FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaAggregatBuilder.getFaktaArbeidsforholdBuilderFor(arb.getArbeidsgiver(), arb.getArbeidsforholdRef())
-                            .medHarLønnsendringIBeregningsperioden(lønnsendringDto.erLønnsendringIBeregningsperioden());
+                            .medHarLønnsendringIBeregningsperiodenFastsattAvSaksbehandler(lønnsendringDto.erLønnsendringIBeregningsperioden());
                     faktaAggregatBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());
                 });
         grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());

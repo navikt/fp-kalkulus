@@ -52,7 +52,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi= BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false);
-        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(false).build();
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(false).medSkalBesteberegnesFastsattAvSaksbehandler(false).build();
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
@@ -65,7 +65,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal pgi = BigDecimal.valueOf(987595);
         BigDecimal brutto = BigDecimal.valueOf(766663);
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, false);
-        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(true).medSkalBesteberegnes(false).build();
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(true).medSkalBesteberegnesFastsattAvSaksbehandler(false).build();
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
@@ -78,7 +78,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true);
-        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(true).build();
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(false).medSkalBesteberegnesFastsattAvSaksbehandler(true).build();
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
@@ -92,7 +92,7 @@ public class FinnÅrsinntektvisningstallTest {
         BigDecimal brutto = BigDecimal.valueOf(766663);
 
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(pgi, brutto, true);
-        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(true).medSkalBesteberegnes(true).build();
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(true).medSkalBesteberegnesFastsattAvSaksbehandler(true).build();
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 
@@ -103,7 +103,7 @@ public class FinnÅrsinntektvisningstallTest {
     @Test
     public void skal_håndtere_nullverdier() {
         BeregningsgrunnlagDto grunnlag = lagBeregningsgrunnlagSN(null, null, false);
-        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSN(false).medSkalBesteberegnes(false).build();
+        FaktaAktørDto faktaAktør = FaktaAktørDto.builder().medErNyIArbeidslivetSNFastsattAvSaksbehandler(false).medSkalBesteberegnesFastsattAvSaksbehandler(false).build();
 
         Optional<BigDecimal> visningstall = FinnÅrsinntektvisningstall.finn(grunnlag, Optional.of(faktaAktør));
 

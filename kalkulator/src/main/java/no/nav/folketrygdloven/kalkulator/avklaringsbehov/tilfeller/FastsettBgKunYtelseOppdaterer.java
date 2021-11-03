@@ -54,7 +54,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
         if (skalBrukeBesteberegning != null) {
             FaktaAggregatDto.Builder faktaBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
             FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
-            faktaAktørBuilder.medSkalBesteberegnes(skalBrukeBesteberegning);
+            faktaAktørBuilder.medSkalBesteberegnesFastsattAvSaksbehandler(skalBrukeBesteberegning);
             faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
             grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
         }

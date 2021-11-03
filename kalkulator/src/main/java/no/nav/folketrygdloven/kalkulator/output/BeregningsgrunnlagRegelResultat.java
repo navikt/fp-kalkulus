@@ -6,10 +6,12 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 
 public class BeregningsgrunnlagRegelResultat {
     private BeregningsgrunnlagDto beregningsgrunnlag;
     private BeregningAktivitetAggregatDto registerAktiviteter;
+    private FaktaAggregatDto faktaAggregatDto;
     private List<BeregningAvklaringsbehovResultat> avklaringsbehov = new ArrayList<>();
     private List<BeregningVilkårResultat> vilkårsresultat = new ArrayList<>();
     private RegelSporingAggregat regelsporinger;
@@ -25,6 +27,14 @@ public class BeregningsgrunnlagRegelResultat {
     }
 
     public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag, RegelSporingAggregat regelsporinger) {
+        this.beregningsgrunnlag = beregningsgrunnlag;
+        this.regelsporinger = regelsporinger;
+    }
+
+    public BeregningsgrunnlagRegelResultat(BeregningsgrunnlagDto beregningsgrunnlag,
+                                           FaktaAggregatDto faktaAggregatDto,
+                                           RegelSporingAggregat regelsporinger) {
+        this.faktaAggregatDto = faktaAggregatDto;
         this.beregningsgrunnlag = beregningsgrunnlag;
         this.regelsporinger = regelsporinger;
     }
@@ -77,5 +87,9 @@ public class BeregningsgrunnlagRegelResultat {
 
     public Optional<RegelSporingAggregat> getRegelsporinger() {
         return Optional.ofNullable(regelsporinger);
+    }
+
+    public FaktaAggregatDto getFaktaAggregatDto() {
+        return faktaAggregatDto;
     }
 }

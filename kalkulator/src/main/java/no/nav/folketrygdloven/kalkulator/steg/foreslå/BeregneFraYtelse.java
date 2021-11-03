@@ -124,7 +124,7 @@ class BeregneFraYtelse {
         List<FaktaArbeidsforholdDto> fakta = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         Boolean harMottattYtelse = fakta.stream().filter(f -> f.getArbeidsgiver().getIdentifikator().equals(beregnetAndel.getArbeidsgiverId()))
                 .findFirst()
-                .map(FaktaArbeidsforholdDto::getHarMottattYtelse)
+                .map(FaktaArbeidsforholdDto::getHarMottattYtelseVurdering)
                 .orElse(null);
         boolean harMottattYtelseRegister = direkteUtbetalingForAndel.compareTo(BigDecimal.ZERO) > 0;
         Long koblingId = input.getKoblingReferanse().getKoblingId();

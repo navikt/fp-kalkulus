@@ -3,16 +3,18 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 
 public class FaktaArbeidsforholdDto {
 
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
-    private Boolean erTidsbegrenset;
-    private Boolean harMottattYtelse;
-    private Boolean harLønnsendringIBeregningsperioden;
+    private FaktaVurdering erTidsbegrenset;
+    private FaktaVurdering harMottattYtelse;
+    private FaktaVurdering harLønnsendringIBeregningsperioden;
 
     public FaktaArbeidsforholdDto(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRefDto) {
         this.arbeidsgiver = arbeidsgiver;
@@ -40,15 +42,31 @@ public class FaktaArbeidsforholdDto {
                 this.getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
     }
 
-    public Boolean getErTidsbegrenset() {
+    public Boolean getErTidsbegrensetVurdering() {
+        return finnVurdering(erTidsbegrenset);
+    }
+
+    public Boolean getHarMottattYtelseVurdering() {
+        return finnVurdering(harMottattYtelse);
+    }
+
+    public Boolean getHarLønnsendringIBeregningsperiodenVurdering() {
+        return finnVurdering(harLønnsendringIBeregningsperioden);
+    }
+
+    private Boolean finnVurdering(FaktaVurdering vurdering) {
+        return vurdering == null ? null : vurdering.getVurdering();
+    }
+
+    public FaktaVurdering getErTidsbegrenset() {
         return erTidsbegrenset;
     }
 
-    public Boolean getHarMottattYtelse() {
+    public FaktaVurdering getHarMottattYtelse() {
         return harMottattYtelse;
     }
 
-    public Boolean getHarLønnsendringIBeregningsperioden() {
+    public FaktaVurdering getHarLønnsendringIBeregningsperioden() {
         return harLønnsendringIBeregningsperioden;
     }
 
@@ -95,18 +113,33 @@ public class FaktaArbeidsforholdDto {
             return this;
         }
 
-        public Builder medHarMottattYtelse(Boolean harMottattYtelse) {
+        public Builder medHarMottattYtelse(FaktaVurdering harMottattYtelse) {
             mal.harMottattYtelse = harMottattYtelse;
             return this;
         }
 
-        public Builder medErTidsbegrenset(Boolean erTidsbegrenset) {
+        public Builder medErTidsbegrenset(FaktaVurdering erTidsbegrenset) {
             mal.erTidsbegrenset = erTidsbegrenset;
             return this;
         }
 
-        public Builder medHarLønnsendringIBeregningsperioden(Boolean harLønnsendringIBeregningsperioden) {
+        public Builder medHarLønnsendringIBeregningsperioden(FaktaVurdering harLønnsendringIBeregningsperioden) {
             mal.harLønnsendringIBeregningsperioden = harLønnsendringIBeregningsperioden;
+            return this;
+        }
+
+        public Builder medHarMottattYtelseFastsattAvSaksbehandler(Boolean harMottattYtelse) {
+            mal.harMottattYtelse = new FaktaVurdering(harMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medErTidsbegrensetFastsattAvSaksbehandler(Boolean erTidsbegrenset) {
+            mal.erTidsbegrenset = new FaktaVurdering(erTidsbegrenset, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medHarLønnsendringIBeregningsperiodenFastsattAvSaksbehandler(Boolean harLønnsendringIBeregningsperioden) {
+            mal.harLønnsendringIBeregningsperioden = new FaktaVurdering(harLønnsendringIBeregningsperioden, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 

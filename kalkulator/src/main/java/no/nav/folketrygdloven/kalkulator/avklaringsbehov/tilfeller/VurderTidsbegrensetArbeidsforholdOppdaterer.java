@@ -39,7 +39,7 @@ public class VurderTidsbegrensetArbeidsforholdOppdaterer implements FaktaOmBereg
             BGAndelArbeidsforholdDto arbeidsforholdDto = korrektAndel.getBgAndelArbeidsforhold()
                     .orElseThrow(() -> new KalkulatorException("FT-238176", "Finner ikke arbeidsforhold for eksisterende andel"));
             FaktaArbeidsforholdDto.Builder faktaArbBuilder = faktaAggregatBuilder.getFaktaArbeidsforholdBuilderFor(arbeidsforholdDto.getArbeidsgiver(), arbeidsforholdDto.getArbeidsforholdRef())
-                    .medErTidsbegrenset(arbeidsforhold.isTidsbegrensetArbeidsforhold());
+                    .medErTidsbegrensetFastsattAvSaksbehandler(arbeidsforhold.isTidsbegrensetArbeidsforhold());
             faktaAggregatBuilder.erstattEksisterendeEllerLeggTil(faktaArbBuilder.build());
             grunnlagBuilder.medFaktaAggregat(faktaAggregatBuilder.build());
         }

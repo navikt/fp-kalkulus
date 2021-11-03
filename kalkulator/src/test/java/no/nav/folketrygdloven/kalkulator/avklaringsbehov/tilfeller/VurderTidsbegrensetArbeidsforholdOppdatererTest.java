@@ -107,9 +107,9 @@ public class VurderTidsbegrensetArbeidsforholdOppdatererTest {
         //Assert
         assertThat(faktaAggregat).isPresent();
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = oppdatere.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(0)).get().getErTidsbegrenset()).isTrue();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(1)).get().getErTidsbegrenset()).isFalse();
-        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(2)).get().getErTidsbegrenset()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(0)).get().getErTidsbegrensetVurdering()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(1)).get().getErTidsbegrensetVurdering()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaArbeidsforhold(andeler.get(2)).get().getErTidsbegrensetVurdering()).isTrue();
     }
 
     private void buildBgPrStatusOgAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, Arbeidsgiver virksomhet) {

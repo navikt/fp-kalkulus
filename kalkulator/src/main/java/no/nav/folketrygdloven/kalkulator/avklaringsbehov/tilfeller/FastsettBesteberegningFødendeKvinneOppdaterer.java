@@ -55,7 +55,7 @@ public class FastsettBesteberegningFødendeKvinneOppdaterer implements FaktaOmBe
         FaktaAggregatDto.Builder faktaBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         FaktaAktørDto.Builder faktaAktørBuilder = faktaBuilder.getFaktaAktørBuilder();
         boolean skalBesteberegnes = besteberegningDto.getBesteberegningAndelListe().stream().anyMatch(a -> a.getFastsatteVerdier().getSkalHaBesteberegning());
-        faktaAktørBuilder.medSkalBesteberegnes(skalBesteberegnes);
+        faktaAktørBuilder.medSkalBesteberegnesFastsattAvSaksbehandler(skalBesteberegnes);
         faktaBuilder.medFaktaAktør(faktaAktørBuilder.build());
         grunnlagBuilder.medFaktaAggregat(faktaBuilder.build());
     }

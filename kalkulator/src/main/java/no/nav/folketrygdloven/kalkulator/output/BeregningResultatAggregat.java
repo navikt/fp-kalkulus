@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAkti
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 
@@ -76,6 +77,14 @@ public class BeregningResultatAggregat {
         public Builder medBeregningsgrunnlag(BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand tilstand) {
             grunnlagBuilder.medBeregningsgrunnlag(beregningsgrunnlag);
             this.tilstand = tilstand;
+            return this;
+        }
+
+        public Builder medFaktaAggregat(FaktaAggregatDto faktaAggregatDto, BeregningsgrunnlagTilstand tilstand) {
+            if (faktaAggregatDto != null) {
+                grunnlagBuilder.medFaktaAggregat(faktaAggregatDto);
+                this.tilstand = tilstand;
+            }
             return this;
         }
 

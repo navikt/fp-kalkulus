@@ -1,13 +1,16 @@
 package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 
+import no.nav.folketrygdloven.kalkulator.modell.typer.FaktaVurdering;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
+
 public class FaktaAktørDto {
 
-    private Boolean erNyIArbeidslivetSN;
-    private Boolean erNyoppstartetFL;
-    private Boolean harFLMottattYtelse;
-    private Boolean skalBeregnesSomMilitær;
-    private Boolean skalBesteberegnes;
-    private Boolean mottarEtterlønnSluttpakke;
+    private FaktaVurdering erNyIArbeidslivetSN;
+    private FaktaVurdering erNyoppstartetFL;
+    private FaktaVurdering harFLMottattYtelse;
+    private FaktaVurdering skalBeregnesSomMilitær;
+    private FaktaVurdering skalBesteberegnes;
+    private FaktaVurdering mottarEtterlønnSluttpakke;
 
     public FaktaAktørDto() { }
 
@@ -15,33 +18,61 @@ public class FaktaAktørDto {
         this.erNyIArbeidslivetSN = original.getErNyIArbeidslivetSN();
         this.erNyoppstartetFL = original.getErNyoppstartetFL();
         this.harFLMottattYtelse = original.getHarFLMottattYtelse();
-        this.skalBesteberegnes = original.getSkalBesteberegnes();
+        this.skalBesteberegnes = original.getSkalBesteberegnes()    ;
         this.mottarEtterlønnSluttpakke = original.getMottarEtterlønnSluttpakke();
         this.skalBeregnesSomMilitær = original.getSkalBeregnesSomMilitær();
     }
 
-    public Boolean getErNyIArbeidslivetSN() {
+    public Boolean getErNyIArbeidslivetSNVurdering() {
+        return finnVurdering(erNyIArbeidslivetSN);
+    }
+
+    public Boolean getErNyoppstartetFLVurdering() {
+        return finnVurdering(erNyoppstartetFL);
+    }
+
+    public Boolean getHarFLMottattYtelseVurdering() {
+        return finnVurdering(harFLMottattYtelse);
+    }
+
+    public Boolean getSkalBesteberegnesVurdering() {
+        return finnVurdering(skalBesteberegnes);
+    }
+
+    public Boolean getMottarEtterlønnSluttpakkeVurdering() {
+        return finnVurdering(mottarEtterlønnSluttpakke);
+    }
+
+    public Boolean getSkalBeregnesSomMilitærVurdering() {
+        return finnVurdering(skalBeregnesSomMilitær);
+    }
+
+    public FaktaVurdering getErNyIArbeidslivetSN() {
         return erNyIArbeidslivetSN;
     }
 
-    public Boolean getErNyoppstartetFL() {
+    public FaktaVurdering getErNyoppstartetFL() {
         return erNyoppstartetFL;
     }
 
-    public Boolean getHarFLMottattYtelse() {
+    public FaktaVurdering getHarFLMottattYtelse() {
         return harFLMottattYtelse;
     }
 
-    public Boolean getSkalBesteberegnes() {
+    public FaktaVurdering getSkalBeregnesSomMilitær() {
+        return skalBeregnesSomMilitær;
+    }
+
+    public FaktaVurdering getSkalBesteberegnes() {
         return skalBesteberegnes;
     }
 
-    public Boolean getMottarEtterlønnSluttpakke() {
+    public FaktaVurdering getMottarEtterlønnSluttpakke() {
         return mottarEtterlønnSluttpakke;
     }
 
-    public Boolean getSkalBeregnesSomMilitær() {
-        return skalBeregnesSomMilitær;
+    private Boolean finnVurdering(FaktaVurdering vurdering) {
+        return vurdering == null ? null : vurdering.getVurdering();
     }
 
     @Override
@@ -78,34 +109,65 @@ public class FaktaAktørDto {
             return faktaAktørDto == null ? new Builder() : new Builder(faktaAktørDto);
         }
 
-        public Builder medErNyIArbeidslivetSN(Boolean erNyIArbeidslivetSN) {
+        public Builder medErNyIArbeidslivetSN(FaktaVurdering erNyIArbeidslivetSN) {
             mal.erNyIArbeidslivetSN = erNyIArbeidslivetSN;
             return this;
         }
 
-        public Builder medErNyoppstartetFL(Boolean erNyoppstartetFL) {
+        public Builder medErNyoppstartetFL(FaktaVurdering erNyoppstartetFL) {
             mal.erNyoppstartetFL = erNyoppstartetFL;
             return this;
         }
 
-        public Builder medHarFLMottattYtelse(Boolean harFLMottattYtelse) {
+        public Builder medHarFLMottattYtelse(FaktaVurdering harFLMottattYtelse) {
             mal.harFLMottattYtelse = harFLMottattYtelse;
             return this;
         }
 
-        public Builder medSkalBesteberegnes(Boolean skalBesteberegnes) {
+        public Builder medSkalBesteberegnes(FaktaVurdering skalBesteberegnes) {
             mal.skalBesteberegnes = skalBesteberegnes;
             return this;
         }
 
-        public Builder medErMilitærSiviltjeneste(Boolean skalBeregnesSomMilitær) {
+        public Builder medErMilitærSiviltjeneste(FaktaVurdering skalBeregnesSomMilitær) {
             mal.skalBeregnesSomMilitær = skalBeregnesSomMilitær;
             return this;
         }
 
 
-        public Builder medMottarEtterlønnSluttpakke(Boolean mottarEtterlønnSluttpakke) {
+        public Builder medMottarEtterlønnSluttpakke(FaktaVurdering mottarEtterlønnSluttpakke) {
             mal.mottarEtterlønnSluttpakke = mottarEtterlønnSluttpakke;
+            return this;
+        }
+
+        public Builder medErNyIArbeidslivetSNFastsattAvSaksbehandler(Boolean erNyIArbeidslivetSN) {
+            mal.erNyIArbeidslivetSN = new FaktaVurdering(erNyIArbeidslivetSN, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medErNyoppstartetFLFastsattAvSaksbehandler(Boolean erNyoppstartetFL) {
+            mal.erNyoppstartetFL = new FaktaVurdering(erNyoppstartetFL, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medHarFLMottattYtelseFastsattAvSaksbehandler(Boolean harFLMottattYtelse) {
+            mal.harFLMottattYtelse = new FaktaVurdering(harFLMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medSkalBesteberegnesFastsattAvSaksbehandler(Boolean skalBesteberegnes) {
+            mal.skalBesteberegnes = new FaktaVurdering(skalBesteberegnes, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+        public Builder medErMilitærSiviltjenesteFastsattAvSaksbehandler(Boolean skalBeregnesSomMilitær) {
+            mal.skalBeregnesSomMilitær = new FaktaVurdering(skalBeregnesSomMilitær, FaktaVurderingKilde.SAKSBEHANDLER);
+            return this;
+        }
+
+
+        public Builder medMottarEtterlønnSluttpakkeFastsattAvSaksbehandler(Boolean mottarEtterlønnSluttpakke) {
+            mal.mottarEtterlønnSluttpakke = new FaktaVurdering(mottarEtterlønnSluttpakke, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 

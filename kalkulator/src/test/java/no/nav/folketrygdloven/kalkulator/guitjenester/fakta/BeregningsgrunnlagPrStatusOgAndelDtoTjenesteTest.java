@@ -112,7 +112,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         byggAndelSn(bgPeriode, arbeidsgiver, 3L);
         var fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medErNyIArbeidslivetSN(true)
+                .medErNyIArbeidslivetSNFastsattAvSaksbehandler(true)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
@@ -136,7 +136,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         BeregningsgrunnlagPeriodeDto bgPeriode = buildBeregningsgrunnlagPeriode(Beregningsgrunnlag);
         byggAndelSn(bgPeriode, arbeidsgiver, 1L);
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medErNyIArbeidslivetSN(false)
+                .medErNyIArbeidslivetSNFastsattAvSaksbehandler(false)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
@@ -219,7 +219,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
         byggAndelFl(bgPeriode, arbeidsgiver, 2L);
         byggAndelSn(bgPeriode, arbeidsgiver, 3L);
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medErNyIArbeidslivetSN(false)
+                .medErNyIArbeidslivetSNFastsattAvSaksbehandler(false)
                 .build()).build();
         lagBehandling(Beregningsgrunnlag, arbeidsgiver, fakta);
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);

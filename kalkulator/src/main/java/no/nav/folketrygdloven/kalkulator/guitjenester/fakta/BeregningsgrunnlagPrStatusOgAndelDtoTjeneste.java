@@ -88,10 +88,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
-                .map(FaktaArbeidsforholdDto::getErTidsbegrenset).ifPresent(dto::setErTidsbegrensetArbeidsforhold);
-        faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør).map(FaktaAktørDto::getErNyIArbeidslivetSN).ifPresent(dto::setErNyIArbeidslivet);
+                .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering).ifPresent(dto::setErTidsbegrensetArbeidsforhold);
+        faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør).map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).ifPresent(dto::setErNyIArbeidslivet);
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))
-                .map(FaktaArbeidsforholdDto::getHarLønnsendringIBeregningsperioden).ifPresent(dto::setLonnsendringIBeregningsperioden);
+                .map(FaktaArbeidsforholdDto::getHarLønnsendringIBeregningsperiodenVurdering).ifPresent(dto::setLonnsendringIBeregningsperioden);
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         dto.setErTilkommetAndel(!andel.getKilde().equals(AndelKilde.PROSESS_START));
         if(andel.getAktivitetStatus().erFrilanser() || andel.getAktivitetStatus().erArbeidstaker() || andel.getAktivitetStatus().erSelvstendigNæringsdrivende()){

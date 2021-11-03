@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.felles;
+package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta;
 
 import java.time.LocalDate;
 import java.time.Period;

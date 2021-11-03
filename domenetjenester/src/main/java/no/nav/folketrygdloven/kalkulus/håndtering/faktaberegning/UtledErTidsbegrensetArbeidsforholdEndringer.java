@@ -22,7 +22,7 @@ class UtledErTidsbegrensetArbeidsforholdEndringer {
     public static List<ErTidsbegrensetArbeidsforholdEndring> utled(FaktaAggregatDto fakta, Optional<FaktaAggregatDto> forrigeFakta) {
 
         List<FaktaArbeidsforholdDto> arbeidMedTidsbegrensetAvklaring = fakta.getFaktaArbeidsforhold().stream()
-                .filter(fa -> fa.getErTidsbegrenset() != null)
+                .filter(fa -> fa.getErTidsbegrensetVurdering() != null)
                 .collect(Collectors.toList());
         List<FaktaArbeidsforholdDto> forrigeArbeidFakta = forrigeFakta.map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         return arbeidMedTidsbegrensetAvklaring.stream()
@@ -44,8 +44,8 @@ class UtledErTidsbegrensetArbeidsforholdEndringer {
     }
 
     private static ToggleEndring utledErTidsbegrensetEndring(FaktaArbeidsforholdDto fakta, Optional<FaktaArbeidsforholdDto> forrigeFakta) {
-        Boolean fraVerdi = forrigeFakta.map(FaktaArbeidsforholdDto::getErTidsbegrenset).orElse(null);
-        Boolean tilVerdi = fakta.getErTidsbegrenset();
+        Boolean fraVerdi = forrigeFakta.map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering).orElse(null);
+        Boolean tilVerdi = fakta.getErTidsbegrensetVurdering();
         return new ToggleEndring(fraVerdi, tilVerdi);
     }
 

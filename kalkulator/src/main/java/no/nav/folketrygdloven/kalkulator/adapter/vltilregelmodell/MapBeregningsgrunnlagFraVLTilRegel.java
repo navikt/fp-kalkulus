@@ -301,7 +301,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medGjennomsnittligPGI(vlBGPStatus.getPgiSnitt())
                 .medPGI(pgi)
                 .medÅrsbeløpFraTilstøtendeYtelse(vlBGPStatus.getÅrsbeløpFraTilstøtendeYtelseVerdi())
-                .medErNyIArbeidslivet(faktaAktørDto.map(FaktaAktørDto::getErNyIArbeidslivetSN).orElse(null))
+                .medErNyIArbeidslivet(faktaAktørDto.map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).orElse(null))
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getInntektskategori()))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
@@ -357,7 +357,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()));
         Optional<Boolean> erTidsbegrenset = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().flatMap(fa -> fa.getFaktaArbeidsforhold(vlBGPStatus))
-                .map(FaktaArbeidsforholdDto::getErTidsbegrenset);
+                .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering);
         vlBGPStatus.getBgAndelArbeidsforhold().ifPresent(bga ->
                 builder
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))

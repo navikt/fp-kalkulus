@@ -225,6 +225,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
 
         return BeregningResultatAggregat.Builder.fra(input)
                 .medBeregningsgrunnlag(grunnlagMedTilfeller, input.getStegTilstand())
+                .medFaktaAggregat(resultat.getFaktaAggregatDto(), input.getStegTilstand())
                 .medAvklaringsbehov(avklaringsbehovresultat.getBeregningAvklaringsbehovResultatList())
                 .medRegelSporingAggregat(resultat.getRegelsporinger().orElse(null))
                 .build();

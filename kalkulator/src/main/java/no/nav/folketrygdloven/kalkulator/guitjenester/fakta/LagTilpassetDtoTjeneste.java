@@ -103,7 +103,7 @@ class LagTilpassetDtoTjeneste  {
 
     private static BeregningsgrunnlagPrStatusOgAndelFLDto opprettFLDto(Optional<FaktaAktørDto> faktaAktør) {
         BeregningsgrunnlagPrStatusOgAndelFLDto dtoFL = new BeregningsgrunnlagPrStatusOgAndelFLDto();
-        dtoFL.setErNyoppstartet(faktaAktør.map(FaktaAktørDto::getErNyoppstartetFL).orElse(null));
+        dtoFL.setErNyoppstartet(faktaAktør.map(FaktaAktørDto::getErNyoppstartetFLVurdering).orElse(null));
         return dtoFL;
     }
 

@@ -35,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
@@ -65,21 +66,25 @@ public class BehandlingslagerTilKalkulusMapper {
 
     private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforholdEntitet) {
         return new FaktaArbeidsforholdDto.Builder(mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()), mapArbeidsforholdRef(faktaArbeidsforholdEntitet.getArbeidsforholdRef()))
-                .medErTidsbegrenset(faktaArbeidsforholdEntitet.getErTidsbegrensetVurdering())
-                .medHarMottattYtelse(faktaArbeidsforholdEntitet.getHarMottattYtelseVurdering())
-                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperiodenVurdering())
+                .medErTidsbegrenset(mapFaktaVurdering(faktaArbeidsforholdEntitet.getErTidsbegrenset()))
+                .medHarMottattYtelse(mapFaktaVurdering(faktaArbeidsforholdEntitet.getHarMottattYtelse()))
+                .medHarLønnsendringIBeregningsperioden(mapFaktaVurdering(faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperioden()))
                 .build();
     }
 
     private static FaktaAktørDto mapFaktaAktør(FaktaAktørEntitet faktaAktørEntitet) {
         return FaktaAktørDto.builder()
-                .medErNyoppstartetFL(faktaAktørEntitet.getErNyoppstartetFLVurdering())
-                .medErNyIArbeidslivetSN(faktaAktørEntitet.getErNyIArbeidslivetSNVurdering())
-                .medMottarEtterlønnSluttpakke(faktaAktørEntitet.getMottarEtterlønnSluttpakkeVurdering())
-                .medHarFLMottattYtelse(faktaAktørEntitet.getHarFLMottattYtelseVurdering())
-                .medSkalBesteberegnes(faktaAktørEntitet.getSkalBesteberegnesVurdering())
-                .medErMilitærSiviltjeneste(faktaAktørEntitet.getSkalBeregnesSomMilitærVurdering())
+                .medErNyoppstartetFL(mapFaktaVurdering(faktaAktørEntitet.getErNyoppstartetFL()))
+                .medErNyIArbeidslivetSN(mapFaktaVurdering(faktaAktørEntitet.getErNyIArbeidslivetSN()))
+                .medMottarEtterlønnSluttpakke(mapFaktaVurdering(faktaAktørEntitet.getMottarEtterlønnSluttpakke()))
+                .medHarFLMottattYtelse(mapFaktaVurdering(faktaAktørEntitet.getHarFLMottattYtelse()))
+                .medSkalBesteberegnes(mapFaktaVurdering(faktaAktørEntitet.getSkalBesteberegnes()))
+                .medErMilitærSiviltjeneste(mapFaktaVurdering(faktaAktørEntitet.getSkalBeregnesSomMilitær()))
                 .build();
+    }
+
+    private static no.nav.folketrygdloven.kalkulator.modell.typer.FaktaVurdering mapFaktaVurdering(FaktaVurdering vurdering) {
+        return vurdering == null ? null : new no.nav.folketrygdloven.kalkulator.modell.typer.FaktaVurdering(vurdering.getVurdering(), vurdering.getKilde());
     }
 
 

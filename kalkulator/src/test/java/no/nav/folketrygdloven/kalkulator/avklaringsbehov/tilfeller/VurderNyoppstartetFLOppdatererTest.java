@@ -75,7 +75,7 @@ public class VurderNyoppstartetFLOppdatererTest {
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFL()).isTrue();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFLVurdering()).isTrue();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class VurderNyoppstartetFLOppdatererTest {
         Optional<FaktaAggregatDto> faktaAggregat = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT).getFaktaAggregat();
 
         // Assert
-        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFL()).isFalse();
+        assertThat(faktaAggregat.get().getFaktaAktør().get().getErNyoppstartetFLVurdering()).isFalse();
     }
 
 }

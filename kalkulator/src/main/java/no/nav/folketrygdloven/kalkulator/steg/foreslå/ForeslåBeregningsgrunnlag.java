@@ -21,7 +21,7 @@ import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.felles.KortvarigArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -116,7 +116,7 @@ public class ForeslåBeregningsgrunnlag {
         kortvarigeAktiviteter.entrySet().stream()
                 .filter(entry -> entry.getKey().getBgAndelArbeidsforhold()
                         .filter(a -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(a))
-                                .map(FaktaArbeidsforholdDto::getErTidsbegrenset)
+                                .map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering)
                                 .orElse(false)).isPresent())
                 .map(Map.Entry::getValue)
                 .forEach(ya -> SplittBGPerioder.splitt(regelBeregningsgrunnlag, finnAnsettelsesperioder(filter, ya), PeriodeÅrsak.ARBEIDSFORHOLD_AVSLUTTET));

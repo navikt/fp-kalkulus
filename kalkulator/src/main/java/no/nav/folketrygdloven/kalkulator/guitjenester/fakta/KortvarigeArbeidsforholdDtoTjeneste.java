@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import no.nav.folketrygdloven.kalkulator.felles.KortvarigArbeidsforholdTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -59,7 +59,7 @@ public class KortvarigeArbeidsforholdDtoTjeneste implements FaktaOmBeregningTilf
         KortvarigeArbeidsforholdDto beregningArbeidsforhold = new KortvarigeArbeidsforholdDto();
         Optional<BGAndelArbeidsforholdDto> bgAndelArbeidsforhold = prStatusOgAndel.getBgAndelArbeidsforhold();
         var faktaArbeidsforholdDto = bgAndelArbeidsforhold.flatMap(arbeidsforhold -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(arbeidsforhold)));
-        beregningArbeidsforhold.setErTidsbegrensetArbeidsforhold(faktaArbeidsforholdDto.map(FaktaArbeidsforholdDto::getErTidsbegrenset).orElse(null));
+        beregningArbeidsforhold.setErTidsbegrensetArbeidsforhold(faktaArbeidsforholdDto.map(FaktaArbeidsforholdDto::getErTidsbegrensetVurdering).orElse(null));
         beregningArbeidsforhold.setAndelsnr(prStatusOgAndel.getAndelsnr());
         Optional<BeregningsgrunnlagArbeidsforholdDto> arbDto = BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(prStatusOgAndel, Optional.empty(), inntektArbeidYtelseGrunnlag);
         arbDto.ifPresent(beregningArbeidsforhold::setArbeidsforhold);

@@ -22,7 +22,7 @@ class UtledErMottattYtelseEndringerTest {
     public void skal_returnere_endring_i_mottatt_ytelse_for_frilans() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medHarFLMottattYtelse(true)
+                .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
                 .build())
                 .build();
 
@@ -40,12 +40,12 @@ class UtledErMottattYtelseEndringerTest {
     public void skal_returnere_endring_i_mottatt_ytelse_for_frilans_med_forrige() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medHarFLMottattYtelse(true)
+                .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
                 .build())
                 .build();
 
         FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medHarFLMottattYtelse(false)
+                .medHarFLMottattYtelseFastsattAvSaksbehandler(false)
                 .build())
                 .build();
 
@@ -63,11 +63,11 @@ class UtledErMottattYtelseEndringerTest {
     public void skal_ikkje_returnere_endring_i_mottatt_ytelse_for_frilans_uten_endring() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medHarFLMottattYtelse(true)
+                .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
                 .build())
                 .build();
         FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().medFaktaAktør(FaktaAktørDto.builder()
-                .medHarFLMottattYtelse(true)
+                .medHarFLMottattYtelseFastsattAvSaksbehandler(true)
                 .build())
                 .build();
 
@@ -82,7 +82,7 @@ class UtledErMottattYtelseEndringerTest {
     public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medHarMottattYtelse(true)
+                .medHarMottattYtelseFastsattAvSaksbehandler(true)
                 .build()).build();
 
         // Act
@@ -100,11 +100,11 @@ class UtledErMottattYtelseEndringerTest {
     public void skal_returnere_endring_i_mottatt_ytelse_for_arbeidstaker_med_forrige() {
         // Arrange
         FaktaAggregatDto fakta = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medHarMottattYtelse(true)
+                .medHarMottattYtelseFastsattAvSaksbehandler(true)
                 .build()).build();
 
         FaktaAggregatDto fakta2 = FaktaAggregatDto.builder().erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR), InternArbeidsforholdRefDto.nullRef())
-                .medHarMottattYtelse(false)
+                .medHarMottattYtelseFastsattAvSaksbehandler(false)
                 .build()).build();
 
         // Act

@@ -91,7 +91,7 @@ public class FastsettGrunnlagGenerell {
 
     private static Boolean finnErNyIArbeidslivet(BeregningsgrunnlagGUIInput input) {
         Optional<FaktaAggregatDto> faktaAggregat = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat();
-        return faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør).map(FaktaAktørDto::getErNyIArbeidslivetSN).orElse(null);
+        return faktaAggregat.flatMap(FaktaAggregatDto::getFaktaAktør).map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).orElse(null);
     }
 
     private static boolean finnesSammenligningsgrunnlagOgErAvvikStørreEnn25Prosent(SammenligningsgrunnlagDto sammenligningsgrunnlag){

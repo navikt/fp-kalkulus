@@ -36,10 +36,10 @@ class UtledErMottattYtelseEndringer {
     }
 
     private static Optional<ErMottattYtelseEndring> utledFLMottarYtelseEndring(FaktaAggregatDto fakta, Optional<FaktaAggregatDto> forrigeFakta) {
-        Boolean flMottarYtelse = fakta.getFaktaAktør().map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null);
+        Boolean flMottarYtelse = fakta.getFaktaAktør().map(FaktaAktørDto::getHarFLMottattYtelseVurdering).orElse(null);
         if (flMottarYtelse != null) {
             var forrigeFlMottarYtelse = forrigeFakta.flatMap(FaktaAggregatDto::getFaktaAktør)
-                    .map(FaktaAktørDto::getHarFLMottattYtelse).orElse(null);
+                    .map(FaktaAktørDto::getHarFLMottattYtelseVurdering).orElse(null);
             if (forrigeFlMottarYtelse == null || !forrigeFlMottarYtelse.equals(flMottarYtelse)) {
                 return Optional.of(ErMottattYtelseEndring.lagErMottattYtelseEndringForFrilans(new ToggleEndring(forrigeFlMottarYtelse, flMottarYtelse)));
             }
@@ -61,8 +61,8 @@ class UtledErMottattYtelseEndringer {
     }
 
     private static ToggleEndring utledErMottattYtelseEndring(FaktaArbeidsforholdDto fakta, Optional<FaktaArbeidsforholdDto> forrigeFakta) {
-        if (fakta.getHarMottattYtelse() != null && harEndringIMottarYtelse(forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelse), fakta.getHarMottattYtelse())) {
-            return initMottarYtelseEndring(forrigeFakta, fakta.getHarMottattYtelse());
+        if (fakta.getHarMottattYtelseVurdering() != null && harEndringIMottarYtelse(forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelseVurdering), fakta.getHarMottattYtelseVurdering())) {
+            return initMottarYtelseEndring(forrigeFakta, fakta.getHarMottattYtelseVurdering());
         }
         return null;
     }
@@ -72,7 +72,7 @@ class UtledErMottattYtelseEndringer {
     }
 
     private static Boolean finnMottarYtelse(Optional<FaktaArbeidsforholdDto> forrigeFakta) {
-        return forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelse).orElse(null);
+        return forrigeFakta.map(FaktaArbeidsforholdDto::getHarMottattYtelseVurdering).orElse(null);
     }
 
     private static Boolean harEndringIMottarYtelse(Optional<Boolean> forrigeMottarYtelse, Boolean mottarYtelse) {
