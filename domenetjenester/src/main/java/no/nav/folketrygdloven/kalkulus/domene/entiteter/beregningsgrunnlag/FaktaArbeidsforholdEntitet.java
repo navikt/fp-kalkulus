@@ -102,16 +102,23 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     }
 
     public Boolean getErTidsbegrensetVurdering() {
-        return erTidsbegrenset.getVurdering();
+        return finnVurdering(erTidsbegrenset);
     }
 
 
     public Boolean getHarMottattYtelseVurdering() {
-        return harMottattYtelse.getVurdering();
+        return finnVurdering(harMottattYtelse);
     }
 
     public Boolean getHarLønnsendringIBeregningsperiodenVurdering() {
-        return harLønnsendringIBeregningsperioden.getVurdering();
+        return finnVurdering(harLønnsendringIBeregningsperioden);
+    }
+
+    private Boolean finnVurdering(FaktaVurdering faktaVurdering) {
+        if (faktaVurdering == null) {
+            return null;
+        }
+        return faktaVurdering.getVurdering();
     }
 
     public FaktaVurdering getErTidsbegrenset() {

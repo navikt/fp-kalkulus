@@ -98,27 +98,34 @@ public class FaktaAktørEntitet extends BaseEntitet {
     }
 
     public Boolean getErNyIArbeidslivetSNVurdering() {
-        return erNyIArbeidslivetSN.getVurdering();
+        return finnVurdering(erNyIArbeidslivetSN);
     }
 
     public Boolean getErNyoppstartetFLVurdering() {
-        return erNyoppstartetFL.getVurdering();
+        return finnVurdering(erNyoppstartetFL);
     }
 
     public Boolean getHarFLMottattYtelseVurdering() {
-        return harFLMottattYtelse.getVurdering();
+        return finnVurdering(harFLMottattYtelse);
     }
 
     public Boolean getSkalBesteberegnesVurdering() {
-        return skalBesteberegnes.getVurdering();
+        return finnVurdering(skalBesteberegnes);
     }
 
     public Boolean getMottarEtterlønnSluttpakkeVurdering() {
-        return mottarEtterlønnSluttpakke.getVurdering();
+        return finnVurdering(mottarEtterlønnSluttpakke);
     }
 
     public Boolean getSkalBeregnesSomMilitærVurdering() {
-        return skalBeregnesSomMilitær.getVurdering();
+        return finnVurdering(skalBeregnesSomMilitær);
+    }
+
+    private Boolean finnVurdering(FaktaVurdering faktaVurdering) {
+        if (faktaVurdering == null) {
+            return null;
+        }
+        return faktaVurdering.getVurdering();
     }
 
     public FaktaVurdering getErNyIArbeidslivetSN() {
