@@ -41,27 +41,20 @@ jobs:
         with:
           java-version: '16'
           distribution: 'adopt'
+          cache: 'maven'
 
-      - name: Set cache key
+      - name: Generer tag
         run: |
-          echo "CACHE_KEY=$(expr $(date +%V) - 1 + 1)" >> $GITHUB_ENV
-          echo "TIMESTAMP=$(expr $(date +%Y%m%d%H%M%S))" >> $GITHUB_ENV
-      - uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ env.CACHE_KEY }}
+          echo "TAG=$(expr $(date +%Y%m%d%H%M%S))-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build artifacts & deploy
         shell: bash
         run: |
           echo "Building artifacts $(echo $GITHUB_SHA | cut -c1-7)"
-          echo "TAG=$TIMESTAMP-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
-          mvn verify --quiet -e  --settings ./.m2/settings.xml --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TIMESTAMP-$(echo $GITHUB_SHA | cut -c1-7) -Dfile.encoding=UTF-8
+          mvn verify --quiet -e  --settings ./.m2/settings.xml --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TAG -Dfile.encoding=UTF-8
 
         env:
           TZ: "Europe/Oslo"
-          GITHUB_USERNAME: x-access-token
-          GITHUB_PASSWORD: ${{ secrets.GH_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           DATASOURCE_HOST: localhost
@@ -112,8 +105,8 @@ jobs:
                  owner: context.issue.owner,
                  repo: context.issue.repo,
                  labels: ['deployment'],
-                 body: 'Kommenter enten "/promote dev-fss" eller "/promote prod-fss"',
-                 title: 'Deploy av ${{ env.TAG }}'})
+                 title: 'Deploy av ${{ env.TAG }}',
+                 body: '${{ github.sha }}'})
                .then(response => {
                        core.setOutput('number', response.data.number);
                 });
