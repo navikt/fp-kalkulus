@@ -65,20 +65,20 @@ public class BehandlingslagerTilKalkulusMapper {
 
     private static FaktaArbeidsforholdDto mapFaktaArbeidsforhold(FaktaArbeidsforholdEntitet faktaArbeidsforholdEntitet) {
         return new FaktaArbeidsforholdDto.Builder(mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()), mapArbeidsforholdRef(faktaArbeidsforholdEntitet.getArbeidsforholdRef()))
-                .medErTidsbegrenset(faktaArbeidsforholdEntitet.getErTidsbegrenset())
-                .medHarMottattYtelse(faktaArbeidsforholdEntitet.getHarMottattYtelse())
-                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperioden())
+                .medErTidsbegrenset(faktaArbeidsforholdEntitet.getErTidsbegrensetVurdering())
+                .medHarMottattYtelse(faktaArbeidsforholdEntitet.getHarMottattYtelseVurdering())
+                .medHarLønnsendringIBeregningsperioden(faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperiodenVurdering())
                 .build();
     }
 
     private static FaktaAktørDto mapFaktaAktør(FaktaAktørEntitet faktaAktørEntitet) {
         return FaktaAktørDto.builder()
-                .medErNyoppstartetFL(faktaAktørEntitet.getErNyoppstartetFL())
-                .medErNyIArbeidslivetSN(faktaAktørEntitet.getErNyIArbeidslivetSN())
-                .medMottarEtterlønnSluttpakke(faktaAktørEntitet.getMottarEtterlønnSluttpakke())
-                .medHarFLMottattYtelse(faktaAktørEntitet.getHarFLMottattYtelse())
-                .medSkalBesteberegnes(faktaAktørEntitet.getSkalBesteberegnes())
-                .medErMilitærSiviltjeneste(faktaAktørEntitet.getSkalBeregnesSomMilitær())
+                .medErNyoppstartetFL(faktaAktørEntitet.getErNyoppstartetFLVurdering())
+                .medErNyIArbeidslivetSN(faktaAktørEntitet.getErNyIArbeidslivetSNVurdering())
+                .medMottarEtterlønnSluttpakke(faktaAktørEntitet.getMottarEtterlønnSluttpakkeVurdering())
+                .medHarFLMottattYtelse(faktaAktørEntitet.getHarFLMottattYtelseVurdering())
+                .medSkalBesteberegnes(faktaAktørEntitet.getSkalBesteberegnesVurdering())
+                .medErMilitærSiviltjeneste(faktaAktørEntitet.getSkalBeregnesSomMilitærVurdering())
                 .build();
     }
 

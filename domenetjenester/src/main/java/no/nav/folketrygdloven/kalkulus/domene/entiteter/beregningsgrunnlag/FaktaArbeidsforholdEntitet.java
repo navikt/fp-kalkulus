@@ -2,6 +2,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
 import java.util.Objects;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -11,16 +13,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 @Entity(name = "FaktaArbeidsforholdEntitet")
 @Table(name = "FAKTA_ARBEIDSFORHOLD")
@@ -45,26 +48,27 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
     @Embedded
     private InternArbeidsforholdRef arbeidsforholdRef;
 
-    @Column(name = "ER_TIDSBEGRENSET")
-    private Boolean erTidsbegrenset;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "er_tidsbegrenset")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "er_tidsbegrenset_kilde"))
+    })
+    private FaktaVurdering erTidsbegrenset;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_ER_TIDSBEGRENSET", updatable = false)
-    private FaktaVurderingEntitet erTidsbegrensetVurdering;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "har_mottatt_ytelse")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "har_mottatt_ytelse_kilde"))
+    })
+    private FaktaVurdering harMottattYtelse;
 
-    @Column(name = "HAR_MOTTATT_YTELSE")
-    private Boolean harMottattYtelse;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "har_lonnsendring_i_beregningsperioden")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "har_lonnsendring_i_beregningsperioden_kilde"))
+    })
+    private FaktaVurdering harLønnsendringIBeregningsperioden;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_HAR_MOTTATT_YTELSE", updatable = false)
-    private FaktaVurderingEntitet harMottattYtelseVurdering;
-
-    @Column(name = "HAR_LONNSENDRING_I_BEREGNINGSPERIODEN")
-    private Boolean harLønnsendringIBeregningsperioden;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_HAR_LONNSENDRING_I_BEREGNINGSPERIODEN", updatable = false)
-    private FaktaVurderingEntitet harLønnsendringIBeregningsperiodenVurdering;
 
     public FaktaArbeidsforholdEntitet() {
         // hibernate
@@ -97,15 +101,28 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
                 this.getArbeidsforholdRef().gjelderFor(arbeidsforholdRef);
     }
 
-    public Boolean getErTidsbegrenset() {
+    public Boolean getErTidsbegrensetVurdering() {
+        return erTidsbegrenset.getVurdering();
+    }
+
+
+    public Boolean getHarMottattYtelseVurdering() {
+        return harMottattYtelse.getVurdering();
+    }
+
+    public Boolean getHarLønnsendringIBeregningsperiodenVurdering() {
+        return harLønnsendringIBeregningsperioden.getVurdering();
+    }
+
+    public FaktaVurdering getErTidsbegrenset() {
         return erTidsbegrenset;
     }
 
-    public Boolean getHarMottattYtelse() {
+    public FaktaVurdering getHarMottattYtelse() {
         return harMottattYtelse;
     }
 
-    public Boolean getHarLønnsendringIBeregningsperioden() {
+    public FaktaVurdering getHarLønnsendringIBeregningsperioden() {
         return harLønnsendringIBeregningsperioden;
     }
 
@@ -144,17 +161,17 @@ public class FaktaArbeidsforholdEntitet extends BaseEntitet implements IndexKey 
         }
 
         public Builder medHarMottattYtelse(Boolean harMottattYtelse) {
-            mal.harMottattYtelse = harMottattYtelse;
+            mal.harMottattYtelse = new FaktaVurdering(harMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medErTidsbegrenset(Boolean erTidsbegrenset) {
-            mal.erTidsbegrenset = erTidsbegrenset;
+            mal.erTidsbegrenset = new FaktaVurdering(erTidsbegrenset, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medHarLønnsendringIBeregningsperioden(Boolean harLønnsendringIBeregningsperioden) {
-            mal.harLønnsendringIBeregningsperioden = harLønnsendringIBeregningsperioden;
+            mal.harLønnsendringIBeregningsperioden = new FaktaVurdering(harLønnsendringIBeregningsperioden, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 

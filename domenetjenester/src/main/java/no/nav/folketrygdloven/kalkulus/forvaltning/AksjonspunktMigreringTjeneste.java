@@ -304,7 +304,7 @@ public class AksjonspunktMigreringTjeneste {
 
     private Boolean erTidsbegrenset(BeregningsgrunnlagGrunnlagEntitet gr) {
         return gr.getFaktaAggregat().stream().flatMap(fa -> fa.getFaktaArbeidsforhold().stream())
-                .anyMatch(FaktaArbeidsforholdEntitet::getErTidsbegrenset);
+                .anyMatch(FaktaArbeidsforholdEntitet::getErTidsbegrensetVurdering);
     }
 
     private List<KoblingEntitet> finnKoblingerMedAvklarAktiveterAksjonspunkt(MigrerAksjonspunktRequest data, List<KoblingEntitet> koblinger) {
@@ -328,7 +328,7 @@ public class AksjonspunktMigreringTjeneste {
 
     private Boolean erNyIArbeidslivet(BeregningsgrunnlagGrunnlagEntitet gr) {
         return gr.getFaktaAggregat().flatMap(FaktaAggregatEntitet::getFaktaAktør)
-                .map(FaktaAktørEntitet::getErNyIArbeidslivetSN).orElse(false);
+                .map(FaktaAktørEntitet::getErNyIArbeidslivetSNVurdering).orElse(false);
     }
 
     private List<KoblingReferanse> getKoblingReferanser(MigrerAksjonspunktRequest data) {

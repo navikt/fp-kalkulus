@@ -80,19 +80,19 @@ public class MapDetaljertBeregningsgrunnlag {
                 mapArbeidsgiver(faktaArbeidsforholdEntitet.getArbeidsgiver()),
                 faktaArbeidsforholdEntitet.getArbeidsforholdRef() == null || faktaArbeidsforholdEntitet.getArbeidsforholdRef().getReferanse() == null ? null
                         : new InternArbeidsforholdRefDto(faktaArbeidsforholdEntitet.getArbeidsforholdRef().getReferanse()),
-                faktaArbeidsforholdEntitet.getErTidsbegrenset(),
-                faktaArbeidsforholdEntitet.getHarMottattYtelse(),
-                faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperioden()
+                faktaArbeidsforholdEntitet.getErTidsbegrensetVurdering(),
+                faktaArbeidsforholdEntitet.getHarMottattYtelseVurdering(),
+                faktaArbeidsforholdEntitet.getHarLønnsendringIBeregningsperiodenVurdering()
         );
     }
 
     private static FaktaAktørDto mapFaktaAktør(FaktaAktørEntitet faktaAktørEntitet) {
-        return new FaktaAktørDto(faktaAktørEntitet.getErNyIArbeidslivetSN(),
-                faktaAktørEntitet.getErNyoppstartetFL(),
-                faktaAktørEntitet.getHarFLMottattYtelse(),
-                faktaAktørEntitet.getSkalBeregnesSomMilitær(),
-                faktaAktørEntitet.getSkalBesteberegnes(),
-                faktaAktørEntitet.getMottarEtterlønnSluttpakke());
+        return new FaktaAktørDto(faktaAktørEntitet.getErNyIArbeidslivetSNVurdering(),
+                faktaAktørEntitet.getErNyoppstartetFLVurdering(),
+                faktaAktørEntitet.getHarFLMottattYtelseVurdering(),
+                faktaAktørEntitet.getSkalBeregnesSomMilitærVurdering(),
+                faktaAktørEntitet.getSkalBesteberegnesVurdering(),
+                faktaAktørEntitet.getMottarEtterlønnSluttpakkeVurdering());
     }
 
     private static BeregningRefusjonOverstyringerDto mapRefusjonOverstyringAggregat(BeregningRefusjonOverstyringerEntitet beregningRefusjonOverstyringerEntitet) {

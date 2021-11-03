@@ -1,6 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,7 +16,9 @@ import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 @Entity(name = "FaktaAktørEntitet")
 @Table(name = "FAKTA_AKTOER")
@@ -32,45 +37,47 @@ public class FaktaAktørEntitet extends BaseEntitet {
     @JoinColumn(name = "FAKTA_AGGREGAT_ID", nullable = false, updatable = false)
     private FaktaAggregatEntitet faktaAggregat;
 
-    @Column(name = "ER_NY_I_ARBEIDSLIVET_SN")
-    private Boolean erNyIArbeidslivetSN;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "er_ny_i_arbeidslivet_sn")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "er_ny_i_arbeidslivet_sn_kilde"))
+    })
+    private FaktaVurdering erNyIArbeidslivetSN;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_ER_NY_I_ARBEIDSLIVET_SN", updatable = false)
-    private FaktaVurderingEntitet erNyIArbeidslivetSNVurdering;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "er_nyoppstartet_fl")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "er_nyoppstartet_fl_kilde"))
+    })
+    private FaktaVurdering erNyoppstartetFL;
 
-    @Column(name = "ER_NYOPPSTARTET_FL")
-    private Boolean erNyoppstartetFL;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "har_fl_mottatt_ytelse")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "har_fl_mottatt_ytelse_kilde"))
+    })
+    private FaktaVurdering harFLMottattYtelse;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_ER_NYOPPSTARTET_FL", updatable = false)
-    private FaktaVurderingEntitet erNyoppstartetFLVurdering;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "skal_besteberegnes")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "skal_besteberegnes_kilde"))
+    })
+    private FaktaVurdering skalBesteberegnes;
 
-    @Column(name = "HAR_FL_MOTTATT_YTELSE")
-    private Boolean harFLMottattYtelse;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "mottar_etterlonn_sluttpakke")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "mottar_etterlonn_sluttpakke_kilde"))
+    })
+    private FaktaVurdering mottarEtterlønnSluttpakke;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_HAR_FL_MOTTATT_YTELSE", updatable = false)
-    private FaktaVurderingEntitet harFLMottattYtelseVurdering;
-
-    @Column(name = "SKAL_BESTEBEREGNES")
-    @Deprecated(forRemoval = true)
-    private Boolean skalBesteberegnes;
-
-    @Column(name = "MOTTAR_ETTERLONN_SLUTTPAKKE")
-    private Boolean mottarEtterlønnSluttpakke;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_MOTTAR_ETTERLONN_SLUTTPAKKE", updatable = false)
-    private FaktaVurderingEntitet mottarEtterlønnSluttpakkeVurdering;
-
-    @Column(name = "SKAL_BEREGNES_SOM_MILITAER")
-    private Boolean skalBeregnesSomMilitær;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FK_SKAL_BEREGNES_SOM_MILITAER", updatable = false)
-    private FaktaVurderingEntitet skalBeregnesSomMilitærVurdering;
-
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "vurdering", column = @Column(name = "skal_beregnes_som_militaer")),
+            @AttributeOverride(name = "kilde", column = @Column(name = "skal_beregnes_som_militaer_kilde"))
+    })
+    private FaktaVurdering skalBeregnesSomMilitær;
 
     public FaktaAktørEntitet() {
         // hibernate
@@ -90,28 +97,51 @@ public class FaktaAktørEntitet extends BaseEntitet {
         this.faktaAggregat = faktaAggregat;
     }
 
-    public Boolean getErNyIArbeidslivetSN() {
+    public Boolean getErNyIArbeidslivetSNVurdering() {
+        return erNyIArbeidslivetSN.getVurdering();
+    }
+
+    public Boolean getErNyoppstartetFLVurdering() {
+        return erNyoppstartetFL.getVurdering();
+    }
+
+    public Boolean getHarFLMottattYtelseVurdering() {
+        return harFLMottattYtelse.getVurdering();
+    }
+
+    public Boolean getSkalBesteberegnesVurdering() {
+        return skalBesteberegnes.getVurdering();
+    }
+
+    public Boolean getMottarEtterlønnSluttpakkeVurdering() {
+        return mottarEtterlønnSluttpakke.getVurdering();
+    }
+
+    public Boolean getSkalBeregnesSomMilitærVurdering() {
+        return skalBeregnesSomMilitær.getVurdering();
+    }
+
+    public FaktaVurdering getErNyIArbeidslivetSN() {
         return erNyIArbeidslivetSN;
     }
 
-    public Boolean getErNyoppstartetFL() {
+    public FaktaVurdering getErNyoppstartetFL() {
         return erNyoppstartetFL;
     }
 
-    public Boolean getHarFLMottattYtelse() {
+    public FaktaVurdering getHarFLMottattYtelse() {
         return harFLMottattYtelse;
     }
 
-    @Deprecated
-    public Boolean getSkalBesteberegnes() {
+    public FaktaVurdering getSkalBesteberegnes() {
         return skalBesteberegnes;
     }
 
-    public Boolean getMottarEtterlønnSluttpakke() {
+    public FaktaVurdering getMottarEtterlønnSluttpakke() {
         return mottarEtterlønnSluttpakke;
     }
 
-    public Boolean getSkalBeregnesSomMilitær() {
+    public FaktaVurdering getSkalBeregnesSomMilitær() {
         return skalBeregnesSomMilitær;
     }
 
@@ -135,32 +165,32 @@ public class FaktaAktørEntitet extends BaseEntitet {
         }
 
         public Builder medErNyIArbeidslivetSN(Boolean erNyIArbeidslivetSN) {
-            mal.erNyIArbeidslivetSN = erNyIArbeidslivetSN;
+            mal.erNyIArbeidslivetSN = new FaktaVurdering(erNyIArbeidslivetSN, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medErNyoppstartetFL(Boolean erNyoppstartetFL) {
-            mal.erNyoppstartetFL = erNyoppstartetFL;
+            mal.erNyoppstartetFL = new FaktaVurdering(erNyoppstartetFL, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medHarFLMottattYtelse(Boolean harFLMottattYtelse) {
-            mal.harFLMottattYtelse = harFLMottattYtelse;
+            mal.harFLMottattYtelse = new FaktaVurdering(harFLMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medSkalBesteberegnes(Boolean skalBesteberegnes) {
-            mal.skalBesteberegnes = skalBesteberegnes;
+            mal.skalBesteberegnes = new FaktaVurdering(skalBesteberegnes, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medMottarEtterlønnSluttpakke(Boolean mottarEtterlønnSluttpakke) {
-            mal.mottarEtterlønnSluttpakke = mottarEtterlønnSluttpakke;
+            mal.mottarEtterlønnSluttpakke = new FaktaVurdering(mottarEtterlønnSluttpakke, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medSkalBeregnesSomMilitær(Boolean skalBeregnesSomMilitær) {
-            mal.skalBeregnesSomMilitær = skalBeregnesSomMilitær;
+            mal.skalBeregnesSomMilitær = new FaktaVurdering(skalBeregnesSomMilitær, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
