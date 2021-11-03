@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: |
           echo "Building artifacts $(echo $GITHUB_SHA | cut -c1-7)"
-          mvn verify --quiet -e  --settings ./.m2/settings.xml --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TAG -Dfile.encoding=UTF-8
+          mvn verify --quiet -e --settings .github/.m2/settings.xml --batch-mode -DtrimStackTrace=false --file pom.xml -Drevision= -Dchangelist= -Dsha1=$TAG -Dfile.encoding=UTF-8
 
         env:
           TZ: "Europe/Oslo"
