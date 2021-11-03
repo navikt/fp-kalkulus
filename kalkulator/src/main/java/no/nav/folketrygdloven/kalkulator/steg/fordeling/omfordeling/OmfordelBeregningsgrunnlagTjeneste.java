@@ -79,7 +79,7 @@ public class OmfordelBeregningsgrunnlagTjeneste {
         var outputPerioder = new ArrayList<FordelPeriodeModell>();
         for (FordelPeriodeModell inputPeriode : inputPerioder) {
             List<FordelAndelModell> outputAndeler = new ArrayList<>();
-            RegelFordelBeregningsgrunnlag regel = new RegelFordelBeregningsgrunnlag(inputPeriode);
+            RegelFordelBeregningsgrunnlag regel = new RegelFordelBeregningsgrunnlag();
             Evaluation evaluation = regel.evaluer(inputPeriode, outputAndeler);
             outputPerioder.add(new FordelPeriodeModell(inputPeriode.getBgPeriode(), outputAndeler));
             regelResultater.add(RegelmodellOversetter.getRegelResultat(evaluation, regelinput));
