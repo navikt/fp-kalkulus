@@ -8,7 +8,6 @@ import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelpe
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.MINUS_YEARS_2;
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.NOW;
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGAktivitetStatus;
-import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGAktivitetStatusFL;
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGPStatus;
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGPStatusForSN;
 import static no.nav.folketrygdloven.kalkulator.adapter.RegelMapperTestDataHelper.buildVLBGPeriode;
@@ -213,7 +212,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
         buildVLSammenligningsgrunnlag(beregningsgrunnlag);
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_SN);
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         var aktørInntektBuilder = leggTilInntekterFraSigrun();
         Optional<InntektArbeidYtelseAggregatDto> registerVersjon = iayGrunnlagBuilder.getKladd().getRegisterVersjon();
         InntektArbeidYtelseAggregatBuilder.oppdatere(registerVersjon, VersjonTypeDto.REGISTER)
@@ -293,7 +292,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_2, MINUS_YEARS_1, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetB), OpptjeningAktivitetType.ARBEID);
@@ -327,7 +326,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.person(aktørId), OpptjeningAktivitetType.ARBEID);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_2, MINUS_YEARS_1, Arbeidsgiver.virksomhet(virksomhetB), OpptjeningAktivitetType.ARBEID);
@@ -360,7 +359,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatusForSN(bgPeriode);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
@@ -389,7 +388,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
 
@@ -417,7 +416,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         lagIAYforTilstøtendeYtelser(iayGrunnlagBuilder, beregningsgrunnlag);
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.DAGPENGER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.DAGPENGER, Inntektskategori.DAGPENGER, MINUS_DAYS_10, NOW);
 
@@ -440,7 +439,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         koblingReferanse = lagIAYforTilstøtendeYtelserForMarginalTilfelle(iayGrunnlagBuilder, beregningsgrunnlag);
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.DAGPENGER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.DAGPENGER, Inntektskategori.DAGPENGER, MINUS_DAYS_10, NOW);
 
@@ -464,7 +463,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
         // Act
@@ -482,7 +481,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         buildVLBGPeriode(beregningsgrunnlag);
         buildVLSammenligningsgrunnlag(beregningsgrunnlag);
 
@@ -505,7 +504,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         buildVLBGPeriode(beregningsgrunnlag);
 
         // Act
@@ -522,7 +521,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatusFL(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.FRILANSER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.FRILANSER, Inntektskategori.FRILANSER, MINUS_YEARS_2, MINUS_YEARS_1, null, OpptjeningAktivitetType.FRILANS);
         buildVLSammenligningsgrunnlagPrStatus(beregningsgrunnlag, SammenligningsgrunnlagType.SAMMENLIGNING_FL);
@@ -552,7 +551,7 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         InntektArbeidYtelseAggregatBuilder register = opprettForBehandling(iayGrunnlagBuilder);
         iayGrunnlagBuilder.medData(register);
         BeregningsgrunnlagDto beregningsgrunnlag = buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(beregningsgrunnlag);
+        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
         BeregningsgrunnlagPeriodeDto bgPeriode = buildVLBGPeriode(beregningsgrunnlag);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_2, MINUS_YEARS_1, Arbeidsgiver.virksomhet(virksomhetA), OpptjeningAktivitetType.ARBEID);
         buildVLBGPStatus(bgPeriode, AktivitetStatus.ARBEIDSTAKER, Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_1, NOW, Arbeidsgiver.virksomhet(virksomhetB), OpptjeningAktivitetType.ARBEID);

@@ -61,14 +61,6 @@ public class RegelMapperTestDataHelper {
             .build();
     }
 
-    public static void buildVLBGAktivitetStatus(BeregningsgrunnlagDto beregningsgrunnlag) {
-        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
-    }
-
-    public static void buildVLBGAktivitetStatusFL(BeregningsgrunnlagDto beregningsgrunnlag) {
-        buildVLBGAktivitetStatus(beregningsgrunnlag, AktivitetStatus.FRILANSER);
-    }
-
     public static void buildVLBGAktivitetStatus(BeregningsgrunnlagDto beregningsgrunnlag, AktivitetStatus aktivitetStatus) {
         BeregningsgrunnlagAktivitetStatusDto.builder()
             .medAktivitetStatus(aktivitetStatus)

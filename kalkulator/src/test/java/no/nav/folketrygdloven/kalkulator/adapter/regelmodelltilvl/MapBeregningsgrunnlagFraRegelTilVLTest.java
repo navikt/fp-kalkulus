@@ -289,7 +289,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private BeregningsgrunnlagDto buildVLBG() {
         final BeregningsgrunnlagDto vlBG = RegelMapperTestDataHelper
             .buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(vlBG);
+        buildVLBGAktivitetStatus(vlBG, AktivitetStatus.ARBEIDSTAKER);
         buildVLBGPStatusForSN(buildVLBGPeriode(vlBG));
         return vlBG;
     }
@@ -297,7 +297,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private BeregningsgrunnlagDto buildVLBGForATOgFL() {
         final BeregningsgrunnlagDto vlBG = RegelMapperTestDataHelper
             .buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(vlBG);
+        buildVLBGAktivitetStatus(vlBG, AktivitetStatus.ARBEIDSTAKER);
         final BeregningsgrunnlagPeriodeDto vlBGPeriode = buildVLBGPeriode(vlBG);
         buildVLBGPStatus(vlBGPeriode, AktivitetStatus.ARBEIDSTAKER,
             Inntektskategori.ARBEIDSTAKER, MINUS_YEARS_2,
@@ -310,7 +310,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private BeregningsgrunnlagDto buildVLBGForATFLogSN() {
         final BeregningsgrunnlagDto vlBG = RegelMapperTestDataHelper
             .buildVLBeregningsgrunnlag();
-        buildVLBGAktivitetStatus(vlBG);
+        buildVLBGAktivitetStatus(vlBG, AktivitetStatus.ARBEIDSTAKER);
         final BeregningsgrunnlagPeriodeDto vlBGPeriode = buildVLBGPeriode(vlBG);
         buildVLBGPStatusForSN(vlBGPeriode);
         buildVLBGPStatus(vlBGPeriode, AktivitetStatus.ARBEIDSTAKER,
