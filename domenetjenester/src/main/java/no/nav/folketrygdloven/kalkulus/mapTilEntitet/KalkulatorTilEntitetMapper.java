@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilEntitet;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.*;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilIAYMapper.mapArbeidsgiver;
 
@@ -53,7 +54,8 @@ public class KalkulatorTilEntitetMapper {
         beregningsgrunnlagFraKalkulus.getSaksbehandletAktiviteter().ifPresent(beregningAktivitetAggregatDto -> oppdatere.medSaksbehandletAktiviteter(mapSaksbehandletAktivitet(beregningAktivitetAggregatDto)));
         beregningsgrunnlagFraKalkulus.getRefusjonOverstyringer().ifPresent(beregningRefusjonOverstyringerDto -> oppdatere.medRefusjonOverstyring(mapRefusjonOverstyring(beregningRefusjonOverstyringerDto)));
 
-        if (beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
+        BeregningsgrunnlagTilstand tilstand = beregningsgrunnlagFraKalkulus.getBeregningsgrunnlagTilstand();
+        if (KOFAKBER_UT.equals(tilstand) || OPPDATERT_MED_ANDELER.equals(tilstand)) {
             beregningsgrunnlagFraKalkulus.getFaktaAggregat().ifPresent(fakta -> oppdatere.medFaktaAggregat(mapFakta(fakta)));
         }
 

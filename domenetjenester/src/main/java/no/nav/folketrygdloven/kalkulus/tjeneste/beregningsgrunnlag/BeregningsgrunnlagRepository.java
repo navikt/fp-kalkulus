@@ -315,7 +315,7 @@ public class BeregningsgrunnlagRepository {
     }
 
     private BeregningsgrunnlagGrunnlagEntitet settFaktaFraTidligere(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag, Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat) {
-        if (!nyttGrunnlag.getBeregningsgrunnlagTilstand().erFør(BeregningsgrunnlagTilstand.KOFAKBER_UT) && !nyttGrunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)) {
+        if (nyttGrunnlag.getFaktaAggregat().isEmpty()) {
             nyttGrunnlag = BeregningsgrunnlagGrunnlagBuilder.oppdatere(nyttGrunnlag)
                     .medFaktaAggregat(tidligereAggregat.get().getFaktaAggregat().orElse(null))
                     .build(koblingId, nyttGrunnlag.getBeregningsgrunnlagTilstand());
