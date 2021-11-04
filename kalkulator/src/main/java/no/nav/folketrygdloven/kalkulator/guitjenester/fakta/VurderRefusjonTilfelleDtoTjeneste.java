@@ -11,10 +11,10 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.felles.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
@@ -46,16 +46,11 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
                 input.getBeregningsgrunnlagGrunnlag(),
                 input.getRefusjonskravDatoer()
         );
-        List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = input.getIayGrunnlag().getArbeidsgiverOpplysninger();
         return arbeidsgivere
             .stream()
             .map(arbeidsgiver -> {
                 RefusjonskravSomKommerForSentDto dto = new RefusjonskravSomKommerForSentDto();
-                dto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
                 dto.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-                ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto = arbeidsgiverOpplysninger.stream().filter(a -> a.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-                        .findFirst().orElse(null);
-                dto.setArbeidsgiverVisningsnavn(arbeidsgiverOpplysningerDto == null ? "Orgnummer " + arbeidsgiver.getIdentifikator() : arbeidsgiverOpplysningerDto.getNavn());
                 LocalDate skjæringstidspunkt = beregnGrunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt).orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag med skjæringstidspunkt"));
                 dto.setErRefusjonskravGyldig(sjekkStatusPåRefusjon(arbeidsgiver.getIdentifikator(), refusjonOverstyringer, skjæringstidspunkt));
 

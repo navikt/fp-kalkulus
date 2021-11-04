@@ -4,7 +4,6 @@ import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
@@ -102,7 +100,7 @@ public class BeregningsgrunnlagDtoUtil {
             arbeidsforhold.setNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null));
             arbeidsforhold.setNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null));
             inntektsmelding.ifPresent(im -> arbeidsforhold.setBelopFraInntektsmeldingPrMnd(im.getInntektBeløp().getVerdi()));
-            mapArbeidsgiver(arbeidsforhold, arbeidsgiver, inntektArbeidYtelseGrunnlag);
+            mapArbeidsgiver(arbeidsforhold, arbeidsgiver);
             finnEksternArbeidsforholdId(andel, inntektArbeidYtelseGrunnlag).ifPresent(ref -> arbeidsforhold.setEksternArbeidsforholdId(ref.getReferanse()));
         });
     }
@@ -117,33 +115,11 @@ public class BeregningsgrunnlagDtoUtil {
                 .map(d -> d.finnEkstern(agOpt.get(), refOpt.get()));
     }
 
-    private static void mapArbeidsgiver(BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, Arbeidsgiver arbeidsgiver, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
-        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = inntektArbeidYtelseGrunnlag.getArbeidsgiverOpplysninger()
-                .stream().filter(arbeidsgiverOpplysningerDto -> arbeidsgiver.getIdentifikator().equals(arbeidsgiverOpplysningerDto.getIdentifikator()))
-                .findFirst();
+    private static void mapArbeidsgiver(BeregningsgrunnlagArbeidsforholdDto arbeidsforhold, Arbeidsgiver arbeidsgiver) {
         if (arbeidsgiver != null) {
             arbeidsforhold.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-            arbeidsforhold.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
             if (OrgNummer.erKunstig(arbeidsgiver.getOrgnr())) {
                 arbeidsforhold.setOrganisasjonstype(Organisasjonstype.KUNSTIG);
-            }
-            if (!arbeidsgiver.getErVirksomhet()) {
-                arbeidsforhold.setAktørId(new AktørId(arbeidsgiver.getAktørId().getId()));
-                arbeidsforhold.setAktørIdPersonIdent(new AktørIdPersonident(arbeidsgiver.getAktørId().getId()));
-            }
-        }
-        if (opplysningerDto.isPresent()) {
-            if (arbeidsgiver.getErVirksomhet()) {
-                arbeidsforhold.setArbeidsgiverIdVisning(opplysningerDto.get().getIdentifikator());
-                arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
-            } else if (arbeidsgiver.erAktørId()) {
-                LocalDate fødselsdato = opplysningerDto.get().getFødselsdato();
-                if (fødselsdato != null) {
-                    String formatertDato = fødselsdato.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                    arbeidsforhold.setArbeidsgiverId(formatertDato);
-                    arbeidsforhold.setArbeidsgiverIdVisning(formatertDato);
-                }
-                arbeidsforhold.setArbeidsgiverNavn(opplysningerDto.get().getNavn());
             }
         }
     }

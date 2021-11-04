@@ -279,9 +279,7 @@ public class HentKalkulusRestTjeneste {
     private BeregningsgrunnlagDto mapTilDto(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagGUIInput input) {
         var spesifikasjon = spesifikasjoner.stream().filter(s -> s.getKoblingReferanse().equals(input.getKoblingReferanse().getKoblingUuid()))
             .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
-        input.oppdaterArbeidsgiverinformasjon(
-            MapIAYTilKalulator.mapArbeidsgiverOpplysninger(spesifikasjon.getArbeidsgiverOpplysninger()),
-            MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
+        input.oppdaterArbeidsgiverinformasjon(MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
         beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
         return beregningsgrunnlagDto;

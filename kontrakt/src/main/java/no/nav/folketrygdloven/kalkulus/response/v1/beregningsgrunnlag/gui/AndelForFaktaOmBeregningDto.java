@@ -55,11 +55,6 @@ public class AndelForFaktaOmBeregningDto {
     private BigDecimal refusjonskrav;
 
     @Valid
-    @JsonProperty(value = "visningsnavn")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String visningsnavn;
-
-    @Valid
     @JsonProperty(value = "arbeidsforhold")
     private BeregningsgrunnlagArbeidsforholdDto arbeidsforhold;
 
@@ -99,14 +94,6 @@ public class AndelForFaktaOmBeregningDto {
 
     public void setAndelsnr(Long andelsnr) {
         this.andelsnr = andelsnr;
-    }
-
-    public String getVisningsnavn() {
-        return visningsnavn;
-    }
-
-    public void setVisningsnavn(String visningsnavn) {
-        this.visningsnavn = visningsnavn;
     }
 
     public BigDecimal getRefusjonskrav() {

@@ -85,17 +85,7 @@ public class BeregningAktivitetDto {
         this.arbeidsforholdId = arbeidsforholdId;
     }
 
-    public String getArbeidsgiverNavn() {
-        return arbeidsgiverNavn;
-    }
 
-    public void setArbeidsgiverNavn(String arbeidsgiverNavn) {
-        this.arbeidsgiverNavn = arbeidsgiverNavn;
-    }
-
-    public String getArbeidsgiverIdVisning() {
-        return arbeidsgiverIdVisning;
-    }
 
     public void setArbeidsgiverIdVisning(String arbeidsgiverIdVisning) {
         this.arbeidsgiverIdVisning = arbeidsgiverIdVisning;

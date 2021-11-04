@@ -147,11 +147,10 @@ public class BeregningsgrunnlagDtoUtilTest {
             .build(periode);
 
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
 
         Optional<BeregningsgrunnlagArbeidsforholdDto> arbeidsforhold = BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), builder.build());
         assertThat(arbeidsforhold.isPresent()).isTrue();
-        assertThat(arbeidsforhold.get().getArbeidsgiverId()).isEqualTo(orgnr);
+        assertThat(arbeidsforhold.get().getArbeidsgiverIdent()).isEqualTo(orgnr);
     }
 
     @Test
@@ -164,7 +163,8 @@ public class BeregningsgrunnlagDtoUtilTest {
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(bg);
 
-        Arbeidsgiver person = Arbeidsgiver.person(AktørId.dummy());
+        AktørId aktørId = AktørId.dummy();
+        Arbeidsgiver person = Arbeidsgiver.person(aktørId);
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAndelsnr(andelsnr)
             .medKilde(AndelKilde.SAKSBEHANDLER_KOFAKBER)
@@ -173,11 +173,9 @@ public class BeregningsgrunnlagDtoUtilTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(person))
             .build(periode);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1)));
 
         Optional<BeregningsgrunnlagArbeidsforholdDto> arbeidsforhold = BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), builder.build());
         assertThat(arbeidsforhold.isPresent()).isTrue();
-        assertThat(arbeidsforhold.get().getArbeidsgiverId()).isEqualTo("01.01.2000");
-        assertThat(arbeidsforhold.get().getArbeidsgiverNavn()).isEqualTo(PRIVATPERSON_NAVN);
+        assertThat(arbeidsforhold.get().getArbeidsgiverIdent()).isEqualTo(aktørId.getAktørId());
     }
 }

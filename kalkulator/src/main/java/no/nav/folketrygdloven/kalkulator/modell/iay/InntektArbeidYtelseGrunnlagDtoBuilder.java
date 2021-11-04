@@ -95,16 +95,6 @@ public class InntektArbeidYtelseGrunnlagDtoBuilder {
         return this;
     }
 
-    public InntektArbeidYtelseGrunnlagDtoBuilder medArbeidsgiverOpplysninger(List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        kladd.setArbeidsgiverOpplysninger(arbeidsgiverOpplysninger);
-        return this;
-    }
-
-    public InntektArbeidYtelseGrunnlagDtoBuilder leggTilArbeidsgiverOpplysninger(ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto) {
-        kladd.leggTilArbeidsgiverOpplysninger(arbeidsgiverOpplysningerDto);
-        return this;
-    }
-
     public Optional<ArbeidsforholdInformasjonDto> getArbeidsforholdInformasjon() {
         return kladd.getArbeidsforholdInformasjon();
     }

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -106,7 +105,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isNull();
-        assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverId()).isEqualTo(ORGNR);
+        assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
         assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
     }
@@ -138,7 +137,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         assertThat(mottarYtelseDto.getArbeidstakerAndelerUtenIM()).hasSize(1);
         ArbeidstakerUtenInntektsmeldingAndelDto andelUtenIM = mottarYtelseDto.getArbeidstakerAndelerUtenIM().get(0);
         assertThat(andelUtenIM.getMottarYtelse()).isTrue();
-        assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverId()).isEqualTo(ORGNR);
+        assertThat(andelUtenIM.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
         assertThat(andelUtenIM.getAndelsnr()).isEqualTo(arbeidsforholdAndel.getAndelsnr());
         assertThat(andelUtenIM.getInntektPrMnd()).isEqualByComparingTo(INNTEKT_SNITT);
     }
@@ -196,7 +195,6 @@ public class VurderMottarYtelseDtoTjenesteTest {
         inntektArbeidYtelseGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(inntektArbeidYtelseGrunnlag)
                 .medData(oppdatere)
                 .medInformasjon(ArbeidsforholdInformasjonDtoBuilder.oppdatere(Optional.empty()).leggTil(arbeidsforholdOverstyringDtoBuilder).build())
-                .leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(ORGNR, "Arbeidsgiveren", null))
                 .build();
 
         return BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()

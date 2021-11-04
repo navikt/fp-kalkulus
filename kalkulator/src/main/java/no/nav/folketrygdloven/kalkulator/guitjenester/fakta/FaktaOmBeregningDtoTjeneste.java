@@ -41,7 +41,7 @@ public class FaktaOmBeregningDtoTjeneste {
         Optional<BeregningAktivitetAggregatDto> saksbehandletAktivitetAggregat = grunnlagEntitet.getOverstyrteEllerSaksbehandletAktiviteter();
         Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon = input.getIayGrunnlag().getArbeidsforholdInformasjon();
         AvklarAktiviteterDtoTjeneste.lagAvklarAktiviteterDto(registerAktivitetAggregat,
-                saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto, input.getIayGrunnlag().getArbeidsgiverOpplysninger());
+                saksbehandletAktivitetAggregat, arbeidsforholdInformasjon, faktaOmBeregningDto);
 
         // Denne delen krever Beregningsgrunnlag
         if (grunnlagEntitet.getBeregningsgrunnlag().isPresent() && !grunnlagEntitet.getBeregningsgrunnlag().get().getBeregningsgrunnlagPerioder().isEmpty()) {

@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel;
-import static no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste.lagVisningsnavn;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForKunLese;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForPreutfylling;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.SkalKunneEndreAktivitet.skalKunneEndreAktivitet;
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoUtil;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
@@ -35,10 +35,9 @@ public class AndelerForFaktaOmBeregningTjeneste {
                 .orElse(input.getBeregningsgrunnlagGrunnlag())
                 .getBeregningsgrunnlag()
                 .map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
-                .filter(Objects::nonNull)
                 .filter(c -> !c.isEmpty())
                 .map(b -> b.get(0))
-                .map(g -> g.getBeregningsgrunnlagPrStatusOgAndelList())
+                .map(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPrStatusOgAndelList)
                 .orElseThrow()
                 .stream()
                 .filter(a -> a.getKilde().equals(PROSESS_START) || a.getKilde().equals(SAKSBEHANDLER_KOFAKBER))
@@ -57,7 +56,6 @@ public class AndelerForFaktaOmBeregningTjeneste {
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();
-        dto.setVisningsnavn(lagVisningsnavn(ref, inntektArbeidYtelseGrunnlag, andel));
         dto.setSkalKunneEndreAktivitet(skalKunneEndreAktivitet(andel, input.getBeregningsgrunnlag().isOverstyrt()));
         dto.setLagtTilAvSaksbehandler(andel.erLagtTilAvSaksbehandler());
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, inntektsmeldingForAndel, inntektArbeidYtelseGrunnlag)

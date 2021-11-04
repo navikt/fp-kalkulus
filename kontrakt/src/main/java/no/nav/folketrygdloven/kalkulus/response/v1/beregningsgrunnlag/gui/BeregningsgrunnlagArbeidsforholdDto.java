@@ -17,36 +17,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Organisasjonstype;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class BeregningsgrunnlagArbeidsforholdDto {
 
-    @Valid
-    @JsonProperty(value = "arbeidsgiverNavn")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverNavn;
 
-    @Valid
-    @JsonProperty(value = "arbeidsgiverId")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverId;
-
-    // TODO Fjern arbeidsgiverId, arbeidsgiverIdVisning, arbeidsgiverNavn, aktørId og aktørIdPersonIdent når frontend har tatt i bruk arbeidsgiverIdent
     @Valid
     @JsonProperty(value = "arbeidsgiverIdent")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverIdent;
-
-    @Valid
-    @JsonProperty(value = "arbeidsgiverIdVisning")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverIdVisning;
 
     @Valid
     @JsonProperty(value = "startdato")
@@ -58,25 +41,17 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     @Valid
     @JsonProperty(value = "arbeidsforholdId")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsforholdId;
 
     @Valid
     @JsonProperty(value = "eksternArbeidsforholdId")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
+    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String eksternArbeidsforholdId;
 
     @Valid
     @JsonProperty(value = "arbeidsforholdType")
     private OpptjeningAktivitetType arbeidsforholdType;
-
-    @Valid
-    @JsonProperty(value = "aktørId")
-    private AktørId aktørId;
-
-    @Valid
-    @JsonProperty(value = "aktørIdPersonIdent")
-    private AktørIdPersonident aktørIdPersonIdent;
 
     @Valid
     @JsonProperty(value = "refusjonPrAar")
@@ -122,30 +97,6 @@ public class BeregningsgrunnlagArbeidsforholdDto {
         this.arbeidsforholdId = arbeidsforholdId;
     }
 
-    public String getArbeidsgiverNavn() {
-        return arbeidsgiverNavn;
-    }
-
-    public void setArbeidsgiverNavn(String arbeidsgiverNavn) {
-        this.arbeidsgiverNavn = arbeidsgiverNavn;
-    }
-
-    public String getArbeidsgiverId() {
-        return arbeidsgiverId;
-    }
-
-    public void setArbeidsgiverId(String arbeidsgiverId) {
-        this.arbeidsgiverId = arbeidsgiverId;
-    }
-
-    public String getArbeidsgiverIdVisning() {
-        return arbeidsgiverIdVisning;
-    }
-
-    public void setArbeidsgiverIdVisning(String arbeidsgiverIdVisning) {
-        this.arbeidsgiverIdVisning = arbeidsgiverIdVisning;
-    }
-
     public LocalDate getStartdato() {
         return startdato;
     }
@@ -176,22 +127,6 @@ public class BeregningsgrunnlagArbeidsforholdDto {
 
     public void setArbeidsgiverIdent(String arbeidsgiverIdent) {
         this.arbeidsgiverIdent = arbeidsgiverIdent;
-    }
-
-    public void setAktørId(AktørId aktørId) {
-        this.aktørId = aktørId;
-    }
-
-    public AktørId getAktørId() {
-        return aktørId;
-    }
-
-    public AktørIdPersonident getAktørIdPersonIdent() {
-        return aktørIdPersonIdent;
-    }
-
-    public void setAktørIdPersonIdent(AktørIdPersonident aktørIdPersonIdent) {
-        this.aktørIdPersonIdent = aktørIdPersonIdent;
     }
 
     public BigDecimal getRefusjonPrAar() {
@@ -235,19 +170,17 @@ public class BeregningsgrunnlagArbeidsforholdDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BeregningsgrunnlagArbeidsforholdDto that = (BeregningsgrunnlagArbeidsforholdDto) o;
-        return Objects.equals(arbeidsgiverNavn, that.arbeidsgiverNavn) &&
-            Objects.equals(arbeidsgiverId, that.arbeidsgiverId) &&
-            Objects.equals(startdato, that.startdato) &&
-            Objects.equals(opphoersdato, that.opphoersdato) &&
-            Objects.equals(arbeidsforholdId, that.arbeidsforholdId) &&
-            Objects.equals(eksternArbeidsforholdId, that.eksternArbeidsforholdId) &&
-            Objects.equals(arbeidsforholdType, that.arbeidsforholdType) &&
-            Objects.equals(aktørId, that.aktørId);
+        return Objects.equals(startdato, that.startdato) &&
+                Objects.equals(opphoersdato, that.opphoersdato) &&
+                Objects.equals(arbeidsforholdId, that.arbeidsforholdId) &&
+                Objects.equals(arbeidsgiverIdent, that.arbeidsgiverIdent) &&
+                Objects.equals(eksternArbeidsforholdId, that.eksternArbeidsforholdId) &&
+                Objects.equals(arbeidsforholdType, that.arbeidsforholdType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(arbeidsgiverNavn, arbeidsgiverId, startdato, opphoersdato, arbeidsforholdId, eksternArbeidsforholdId, arbeidsforholdType, aktørId);
+        return Objects.hash(arbeidsgiverIdent, startdato, opphoersdato, arbeidsforholdId, eksternArbeidsforholdId, arbeidsforholdType);
     }
 
     public BigDecimal getBelopFraInntektsmeldingPrMnd() {

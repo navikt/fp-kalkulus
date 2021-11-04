@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsforholdReferanseDto;
-import no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 
@@ -39,11 +37,6 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
-    @JsonProperty(value = "arbeidsgiverOpplysninger", required = true)
-    @NotNull
-    @Valid
-    private List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger;
-
     @JsonProperty(value = "referanser")
     @Valid
     private Set<ArbeidsforholdReferanseDto> referanser;
@@ -58,23 +51,19 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
 
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
                                                   @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                  @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,
                                                   @Valid Set<ArbeidsforholdReferanseDto> referanser,
                                                   @Valid LocalDate vilkårsperiodeFom) {
         this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
-        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
         this.referanser = referanser;
         this.vilkårsperiodeFom = vilkårsperiodeFom;
     }
 
     public HentBeregningsgrunnlagDtoForGUIRequest(@Valid @NotNull UUID eksternReferanse,
                                                   @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                  @NotNull @Valid List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger,
                                                   @Valid Set<ArbeidsforholdReferanseDto> referanser) {
         this.eksternReferanse = eksternReferanse;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
-        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
         this.referanser = referanser;
     }
 
@@ -84,10 +73,6 @@ public class HentBeregningsgrunnlagDtoForGUIRequest {
 
     public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {
         return ytelseSomSkalBeregnes;
-    }
-
-    public List<ArbeidsgiverOpplysningerDto> getArbeidsgiverOpplysninger() {
-        return arbeidsgiverOpplysninger;
     }
 
     public Set<ArbeidsforholdReferanseDto> getReferanser() {

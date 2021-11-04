@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +13,6 @@ public class InntektArbeidYtelseGrunnlagDto {
     private InntektsmeldingAggregatDto inntektsmeldinger;
     private ArbeidsforholdInformasjonDto arbeidsforholdInformasjon;
     private boolean aktiv = true;
-    private List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger = new ArrayList<>();
 
     InntektArbeidYtelseGrunnlagDto() {
         // for hibernate
@@ -132,14 +130,6 @@ public class InntektArbeidYtelseGrunnlagDto {
         Optional.ofNullable(inntektsmeldinger).ifPresent(it -> it.taHensynTilBetraktninger(this.arbeidsforholdInformasjon));
     }
 
-    void setArbeidsgiverOpplysninger(List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        this.arbeidsgiverOpplysninger = arbeidsgiverOpplysninger;
-    }
-
-    void leggTilArbeidsgiverOpplysninger(ArbeidsgiverOpplysningerDto arbeidsgiverOpplysningerDto) {
-        arbeidsgiverOpplysninger.add(arbeidsgiverOpplysningerDto);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -157,11 +147,4 @@ public class InntektArbeidYtelseGrunnlagDto {
         return Objects.hash(register, saksbehandlet);
     }
 
-    public void fjernSaksbehandlet() {
-        saksbehandlet = null;
-    }
-
-    public List<ArbeidsgiverOpplysningerDto> getArbeidsgiverOpplysninger() {
-        return arbeidsgiverOpplysninger;
-    }
 }

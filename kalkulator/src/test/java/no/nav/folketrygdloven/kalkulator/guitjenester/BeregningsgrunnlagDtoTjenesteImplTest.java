@@ -150,7 +150,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(andel).medBeregnetPrÅr(beregnetEtterFastsattSteg);
 
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
 
         // Act
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
@@ -163,7 +162,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
     public void skal_teste_at_beregningsgrunnlagDto_beregningsgrunnlagperiode_får_korrekte_verdier() {
         lagBehandlingMedBgOgOpprettFagsakRelasjon(virksomhet);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(virksomhet.getIdentifikator(), virksomhet.getNavn(), LocalDate.of(2000, 1, 1)));
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
 
         // Assert
@@ -183,17 +181,16 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(andelDto.getBeregningsgrunnlagFom()).isEqualTo(ANDEL_FOM);
         assertThat(andelDto.getBeregningsgrunnlagTom()).isEqualTo(ANDEL_TOM);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
-        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverNavn()).isEqualTo(VIRKSOMHET_NAVN);
-        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverId()).isEqualTo(ORGNR);
+        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
     }
 
     @Test
     public void skal_teste_at_beregningsgrunnlagDto_beregningsgrunnlagperiode_får_korrekte_verdier_ved_arbeidsgiver_privatperson() {
         // Arrange
-        Arbeidsgiver person = Arbeidsgiver.person(AktørId.dummy());
+        AktørId aktørId = AktørId.dummy();
+        Arbeidsgiver person = Arbeidsgiver.person(aktørId);
         lagBehandlingMedBgOgOpprettFagsakRelasjon(person);
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        builder.leggTilArbeidsgiverOpplysninger(new ArbeidsgiverOpplysningerDto(person.getIdentifikator(), PRIVATPERSON_NAVN, LocalDate.of(2000, 1, 1)));
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlagDto(lagReferanseMedStp(koblingReferanse), grunnlag, builder.build());
 
         // Assert
@@ -213,8 +210,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(andelDto.getBeregningsgrunnlagFom()).isEqualTo(ANDEL_FOM);
         assertThat(andelDto.getBeregningsgrunnlagTom()).isEqualTo(ANDEL_TOM);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
-        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverNavn()).isEqualTo(PRIVATPERSON_NAVN);
-        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverId()).isEqualTo("01.01.2000");
+        assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(aktørId.getAktørId());
     }
 
     @Test

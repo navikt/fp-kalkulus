@@ -260,7 +260,7 @@ public class RefusjonDtoTjenesteImplTest {
 
     private List<FordelBeregningsgrunnlagAndelDto> lagAndeler(List<Tuple<Boolean, Integer>> refusjonskrav, Integer refusjonFraInntektsmelding) {
         BeregningsgrunnlagArbeidsforholdDto arbeidsforholdDto = new BeregningsgrunnlagArbeidsforholdDto();
-        arbeidsforholdDto.setArbeidsgiverId("432423423");
+        arbeidsforholdDto.setArbeidsgiverIdent("432423423");
         return refusjonskrav.stream().map(tuple -> {
             FordelBeregningsgrunnlagAndelDto andel = new FordelBeregningsgrunnlagAndelDto(new FaktaOmBeregningAndelDto());
             andel.setArbeidsforhold(arbeidsforholdDto);

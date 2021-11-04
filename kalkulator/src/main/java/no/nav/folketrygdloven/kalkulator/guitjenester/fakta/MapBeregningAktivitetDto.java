@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.guitjenester.VisningsnavnForAktivitetTjeneste.finnArbeidsgiverNavn;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,11 +19,12 @@ class MapBeregningAktivitetDto {
 
     static no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto mapBeregningAktivitet(BeregningAktivitetDto beregningAktivitet,
                                                                                                                           List<BeregningAktivitetDto> saksbehandletAktiviteter,
-                                                                                                                          Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon,
-                                                                                                                          List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
+                                                                                                                          Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon) {
         var dto = new no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto();
         if (beregningAktivitet.getArbeidsgiver() != null) {
-            mapArbeidsgiver(dto, beregningAktivitet.getArbeidsgiver(), arbeidsgiverOpplysninger);
+            if (beregningAktivitet.getArbeidsgiver() != null) {
+                dto.setArbeidsgiverIdent(beregningAktivitet.getArbeidsgiver().getIdentifikator());
+            }
             dto.setArbeidsforholdId(beregningAktivitet.getArbeidsforholdRef().getReferanse());
             arbeidsforholdInformasjon.ifPresent(info -> {
                 var eksternArbeidsforholdId = info.finnEkstern(beregningAktivitet.getArbeidsgiver(), beregningAktivitet.getArbeidsforholdRef());
@@ -47,31 +47,4 @@ class MapBeregningAktivitetDto {
         return dto;
     }
 
-    private static void mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto beregningAktivitetDto,
-                                        Arbeidsgiver arbeidsgiver,
-                                        List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        if (arbeidsgiver == null) {
-            return;
-        }
-        beregningAktivitetDto.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-        beregningAktivitetDto.setArbeidsgiverId(arbeidsgiver.getIdentifikator());
-
-        if (arbeidsgiver.erAktørId()) {
-            setArbeidsgiverIdForVisning(beregningAktivitetDto, arbeidsgiver, arbeidsgiverOpplysninger);
-            beregningAktivitetDto.setAktørIdString(arbeidsgiver.getAktørId().getId());
-        }
-        finnArbeidsgiverNavn(arbeidsgiver, arbeidsgiverOpplysninger).ifPresent(beregningAktivitetDto::setArbeidsgiverNavn);
-    }
-
-    private static void setArbeidsgiverIdForVisning(no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto beregningAktivitetDto,
-                                                    Arbeidsgiver arbeidsgiver, List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        Optional<ArbeidsgiverOpplysningerDto> opplysningerDto = arbeidsgiverOpplysninger.stream()
-            .filter(aOppl -> aOppl.getIdentifikator().equals(arbeidsgiver.getIdentifikator()))
-            .findFirst();
-        Optional<LocalDate> fødselsdato = opplysningerDto.map(ArbeidsgiverOpplysningerDto::getFødselsdato);
-        if (fødselsdato.isPresent()) {
-            String formatertDato = fødselsdato.get().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            beregningAktivitetDto.setArbeidsgiverIdVisning(formatertDato);
-        }
-    }
 }

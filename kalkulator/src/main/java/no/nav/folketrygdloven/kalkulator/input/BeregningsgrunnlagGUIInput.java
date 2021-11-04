@@ -159,12 +159,10 @@ public class BeregningsgrunnlagGUIInput {
     /**
      * Oppdaterer iaygrunnlag med informasjon om arbeidsgiver og referanser for visning
      *
-     * @param arbeidsgiverOpplysninger arbeidsgiveropplysninger (fra abakus og ereg)
      * @param referanser Referanser
      */
-    public void oppdaterArbeidsgiverinformasjon(List<ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger, Set<ArbeidsforholdReferanseDto> referanser) {
+    public void oppdaterArbeidsgiverinformasjon(Set<ArbeidsforholdReferanseDto> referanser) {
         InntektArbeidYtelseGrunnlagDtoBuilder oppdatere = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(iayGrunnlag);
-        arbeidsgiverOpplysninger.forEach(oppdatere::leggTilArbeidsgiverOpplysninger);
         ArbeidsforholdInformasjonDtoBuilder arbeidsforholdInformasjonDtoBuilder = ArbeidsforholdInformasjonDtoBuilder.builder(Optional.ofNullable(oppdatere.getInformasjon()));
         referanser.forEach(arbeidsforholdInformasjonDtoBuilder::leggTilNyReferanse);
         oppdatere.medInformasjon(arbeidsforholdInformasjonDtoBuilder.build());

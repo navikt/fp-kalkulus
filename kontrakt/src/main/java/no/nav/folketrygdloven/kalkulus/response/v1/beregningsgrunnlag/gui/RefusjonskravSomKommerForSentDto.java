@@ -16,31 +16,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RefusjonskravSomKommerForSentDto {
 
     @Valid
-    @JsonProperty(value = "arbeidsgiverId")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverId;
-
-    @Valid
     @JsonProperty(value = "arbeidsgiverIdent")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     private String arbeidsgiverIdent;
 
     @Valid
-    @JsonProperty(value = "arbeidsgiverVisningsnavn")
-    @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message="'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
-    private String arbeidsgiverVisningsnavn;
-
-    @Valid
     @JsonProperty(value = "erRefusjonskravGyldig")
     private Boolean erRefusjonskravGyldig;
-
-    public String getArbeidsgiverId() {
-        return arbeidsgiverId;
-    }
-
-    public void setArbeidsgiverId(String arbeidsgiverId) {
-        this.arbeidsgiverId = arbeidsgiverId;
-    }
 
     public String getArbeidsgiverIdent() {
         return arbeidsgiverIdent;
@@ -48,14 +30,6 @@ public class RefusjonskravSomKommerForSentDto {
 
     public void setArbeidsgiverIdent(String arbeidsgiverIdent) {
         this.arbeidsgiverIdent = arbeidsgiverIdent;
-    }
-
-    public String getArbeidsgiverVisningsnavn() {
-        return arbeidsgiverVisningsnavn;
-    }
-
-    public void setArbeidsgiverVisningsnavn(String arbeidsgiverVisningsnavn) {
-        this.arbeidsgiverVisningsnavn = arbeidsgiverVisningsnavn;
     }
 
     public Boolean getErRefusjonskravGyldig() {

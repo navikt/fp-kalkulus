@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -79,13 +77,9 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         InntektsmeldingDto im2 = BeregningInntektsmeldingTestUtil.opprettInntektsmelding(ORGNR2, SKJÆRINGSTIDSPUNKT, BigDecimal.TEN, BigDecimal.TEN);
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
-        List<ArbeidsgiverOpplysningerDto> arbeidsgiverArbeidsgiverOpplysningerDtoList = new ArrayList<>();
-        arbeidsgiverArbeidsgiverOpplysningerDtoList.add(new ArbeidsgiverOpplysningerDto(arbeidsgiver.getIdentifikator(), ARBEIDSGIVER_NAVN));
-        arbeidsgiverArbeidsgiverOpplysningerDtoList.add(new ArbeidsgiverOpplysningerDto(arbeidsgiver2.getIdentifikator(), ARBEIDSGIVER_NAVN2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medData(registerBuilder)
-                .medInntektsmeldinger(List.of(im1, im2))
-                .medArbeidsgiverOpplysninger(arbeidsgiverArbeidsgiverOpplysningerDtoList).build();
+                .medInntektsmeldinger(List.of(im1, im2)).build();
         BeregningsgrunnlagGUIInput input = lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
@@ -94,9 +88,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
 
         // Assert
         assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe()).hasSize(1);
-        assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().iterator().next().getArbeidsgiverId()).isEqualTo(arbeidsgiver.getIdentifikator());
-        assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().iterator().next().getArbeidsgiverVisningsnavn()).isEqualTo(arbeidsgiverNavnMap.get(ORGNR));
-
+        assertThat(faktaOmBeregningDto.getRefusjonskravSomKommerForSentListe().iterator().next().getArbeidsgiverIdent()).isEqualTo(arbeidsgiver.getIdentifikator());
     }
 
     private BeregningsgrunnlagGrunnlagDtoBuilder byggGrunnlag(BeregningAktivitetAggregatDto aktivitetAggregat, List<Arbeidsgiver> arbeidsgivere) {

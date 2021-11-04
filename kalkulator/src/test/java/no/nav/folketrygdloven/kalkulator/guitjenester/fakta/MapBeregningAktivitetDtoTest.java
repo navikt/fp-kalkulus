@@ -26,7 +26,7 @@ public class MapBeregningAktivitetDtoTest {
 
         // Act
         no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty(), List.of());
+            Optional.empty());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isNull();
@@ -40,7 +40,7 @@ public class MapBeregningAktivitetDtoTest {
 
         // Act
         no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty(), List.of());
+            Optional.empty());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isNull();
@@ -54,7 +54,7 @@ public class MapBeregningAktivitetDtoTest {
 
         // Act
         no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningAktivitetDto dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter,
-            Optional.empty(), List.of());
+            Optional.empty());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isTrue();
@@ -67,7 +67,7 @@ public class MapBeregningAktivitetDtoTest {
         List<BeregningAktivitetDto> saksbehandledeAktiviteter = List.of(lagAktivitet(AKTØRID_2));
 
         // Act
-        var dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter, Optional.empty(), List.of());
+        var dto = MapBeregningAktivitetDto.mapBeregningAktivitet(beregningAktivitet, saksbehandledeAktiviteter, Optional.empty());
 
         // Assert
         assertThat(dto.getSkalBrukes()).isFalse();
