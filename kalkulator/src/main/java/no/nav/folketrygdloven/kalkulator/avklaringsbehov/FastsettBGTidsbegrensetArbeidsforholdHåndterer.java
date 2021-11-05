@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,10 @@ public class FastsettBGTidsbegrensetArbeidsforholdHåndterer {
     public static BeregningsgrunnlagGrunnlagDto håndter(BeregningsgrunnlagInput input, FastsettBGTidsbegrensetArbeidsforholdDto dto) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         List<BeregningsgrunnlagPeriodeDto> perioder = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag().getBeregningsgrunnlagPerioder();
-        List<FastsattePerioderTidsbegrensetDto> fastsattePerioder = dto.getFastsatteTidsbegrensedePerioder();
+        List<FastsattePerioderTidsbegrensetDto> fastsattePerioder = dto.getFastsatteTidsbegrensedePerioder()
+                .stream()
+                .sorted(Comparator.comparing(FastsattePerioderTidsbegrensetDto::getPeriodeFom))
+                .toList();
         if (dto.getFrilansInntekt() != null) {
             for (BeregningsgrunnlagPeriodeDto periode : perioder) {
                 BeregningsgrunnlagPrStatusOgAndelDto frilansAndel = finnFrilansAndel(periode)
