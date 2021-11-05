@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 
 @Entity(name = "BeregningRefusjonOverstyring")
 @Table(name = "BG_REFUSJON_OVERSTYRING")
@@ -42,6 +43,9 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     @Column(name = "fom")
     private LocalDate førsteMuligeRefusjonFom;
 
+    @OneToMany(mappedBy = "refusjonOverstyring")
+    private List<RefusjonGyldighetsperiodeEntitet> bekreftetGyldighetsperioder = new ArrayList<>();
+
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "br_overstyringer_id", nullable = false, updatable = false)
@@ -57,7 +61,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
                 .forEach(this::leggTilBeregningRefusjonPeriode);
     }
 
-    private BeregningRefusjonOverstyringEntitet() {
+    protected BeregningRefusjonOverstyringEntitet() {
         // Hibernate
     }
 
@@ -77,12 +81,24 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
         return refusjonPerioder;
     }
 
+    public List<RefusjonGyldighetsperiodeEntitet> getBekreftetGyldighetsperioder() {
+        return bekreftetGyldighetsperioder;
+    }
+
     void leggTilBeregningRefusjonPeriode(BeregningRefusjonPeriodeEntitet beregningRefusjonPeriodeEntitet) {
         if (!refusjonPerioder.contains(beregningRefusjonPeriodeEntitet)) {
             beregningRefusjonPeriodeEntitet.setRefusjonOverstyringEntitet(this);
             refusjonPerioder.add(beregningRefusjonPeriodeEntitet);
         }
     }
+
+    void leggTilBekreftetGyldighetsperiode(RefusjonGyldighetsperiodeEntitet refusjonGyldighetsperiodeEntitet) {
+        if (!bekreftetGyldighetsperioder.contains(refusjonGyldighetsperiodeEntitet)) {
+            refusjonGyldighetsperiodeEntitet.setRefusjonOverstyring(this);
+            bekreftetGyldighetsperioder.add(refusjonGyldighetsperiodeEntitet);
+        }
+    }
+
 
     public static BeregningRefusjonOverstyringEntitet.Builder builder() {
         return new BeregningRefusjonOverstyringEntitet.Builder();
@@ -97,6 +113,11 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
         public BeregningRefusjonOverstyringEntitet.Builder leggTilRefusjonPeriode(BeregningRefusjonPeriodeEntitet beregningRefusjonStart) {
             kladd.leggTilBeregningRefusjonPeriode(beregningRefusjonStart);
+            return this;
+        }
+
+        public BeregningRefusjonOverstyringEntitet.Builder leggTilBekreftetGyldighetsperiode(RefusjonGyldighetsperiodeEntitet refusjonGyldighetsperiodeEntitet) {
+            kladd.leggTilBekreftetGyldighetsperiode(refusjonGyldighetsperiodeEntitet);
             return this;
         }
 
