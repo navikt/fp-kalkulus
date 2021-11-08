@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +18,8 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonGyldighetsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -109,9 +106,7 @@ public class MapDetaljertBeregningsgrunnlag {
     private static BeregningRefusjonOverstyringDto mapRefusjonOverstyring(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         return new BeregningRefusjonOverstyringDto(
                 mapArbeidsgiver(beregningRefusjonOverstyringEntitet.getArbeidsgiver()),
-                beregningRefusjonOverstyringEntitet.getBekreftetGyldighetsperioder().stream()
-                        .map(RefusjonGyldighetsperiodeEntitet::getPeriode)
-                        .map(IntervallEntitet::getFomDato).min(Comparator.naturalOrder()).orElse(null));
+                beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null));
     }
 
     private static BeregningAktivitetOverstyringerDto mapOverstyrteAktiviteterAggregat(BeregningAktivitetOverstyringerEntitet beregningAktivitetOverstyringerEntitet) {
@@ -129,8 +124,8 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningAktivitetOverstyringEntitet.getArbeidsforholdRef() == null
                         || beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse() == null ? null
                         : new InternArbeidsforholdRefDto(beregningAktivitetOverstyringEntitet.getArbeidsforholdRef().getReferanse()),
-                beregningAktivitetOverstyringEntitet.getOpptjeningAktivitetType(),
-                beregningAktivitetOverstyringEntitet.getHandling());
+                        beregningAktivitetOverstyringEntitet.getOpptjeningAktivitetType(),
+                        beregningAktivitetOverstyringEntitet.getHandling());
     }
 
     private static BeregningAktivitetAggregatDto mapBeregningAktivitetAggregat(BeregningAktivitetAggregatEntitet aktivitetAggregatEntitet) {
@@ -149,7 +144,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 beregningAktivitetEntitet.getArbeidsgiver() == null ? null : mapArbeidsgiver(beregningAktivitetEntitet.getArbeidsgiver()),
                 beregningAktivitetEntitet.getArbeidsforholdRef() == null || beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse() == null ? null
                         : new InternArbeidsforholdRefDto(beregningAktivitetEntitet.getArbeidsforholdRef().getReferanse()),
-                beregningAktivitetEntitet.getOpptjeningAktivitetType());
+                        beregningAktivitetEntitet.getOpptjeningAktivitetType());
     }
 
     public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {

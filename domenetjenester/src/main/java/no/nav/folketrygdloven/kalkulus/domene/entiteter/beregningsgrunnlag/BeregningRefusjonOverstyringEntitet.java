@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -21,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 
 @Entity(name = "BeregningRefusjonOverstyring")
 @Table(name = "BG_REFUSJON_OVERSTYRING")
@@ -37,9 +40,9 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     @Embedded
     private Arbeidsgiver arbeidsgiver;
 
-    /**
-     * Perioden der refusjonskrav fra arbeidsgiver skal anses som gyldige (overstyring av frist).
-     */
+    @Column(name = "fom")
+    private LocalDate førsteMuligeRefusjonFom;
+
     @OneToMany(mappedBy = "refusjonOverstyring")
     private List<RefusjonGyldighetsperiodeEntitet> bekreftetGyldighetsperioder = new ArrayList<>();
 
@@ -48,14 +51,12 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     @JoinColumn(name = "br_overstyringer_id", nullable = false, updatable = false)
     private BeregningRefusjonOverstyringerEntitet refusjonOverstyringer;
 
-    /**
-     * Overstyring av startdato for refusjon pr arbeidsforhold.
-     */
     @OneToMany(mappedBy = "refusjonOverstyring")
     private List<BeregningRefusjonPeriodeEntitet> refusjonPerioder = new ArrayList<>();
 
     public BeregningRefusjonOverstyringEntitet(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         this.arbeidsgiver = beregningRefusjonOverstyringEntitet.getArbeidsgiver();
+        this.førsteMuligeRefusjonFom = beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null);
         beregningRefusjonOverstyringEntitet.getBekreftetGyldighetsperioder().stream().map(RefusjonGyldighetsperiodeEntitet::new)
                 .forEach(this::leggTilBekreftetGyldighetsperiode);
         beregningRefusjonOverstyringEntitet.getRefusjonPerioder().stream().map(BeregningRefusjonPeriodeEntitet::new)
@@ -74,6 +75,9 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
         return arbeidsgiver;
     }
 
+    public Optional<LocalDate> getFørsteMuligeRefusjonFom() {
+        return Optional.ofNullable(førsteMuligeRefusjonFom);
+    }
 
     public List<BeregningRefusjonPeriodeEntitet> getRefusjonPerioder() {
         return refusjonPerioder;
@@ -124,6 +128,13 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
             return this;
         }
 
+
+        public BeregningRefusjonOverstyringEntitet.Builder medFørsteMuligeRefusjonFom(LocalDate førsteMuligeRefusjonFom) {
+            kladd.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
+            return this;
+        }
+
+
         public BeregningRefusjonOverstyringEntitet build() {
             kladd.verifiserTilstand();
             return kladd;
@@ -132,7 +143,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
     private void verifiserTilstand() {
         Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
-        if (bekreftetGyldighetsperioder.isEmpty() && refusjonPerioder.isEmpty()) {
+        if (førsteMuligeRefusjonFom == null && refusjonPerioder.isEmpty()) {
             throw new IllegalStateException("Objektet inneholder ingen informasjon om refusjon, ugyldig tilstand");
         }
     }
