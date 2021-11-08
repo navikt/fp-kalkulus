@@ -16,6 +16,10 @@ public class BeregningRefusjonOverstyringDto {
 
     private Arbeidsgiver arbeidsgiver;
     private LocalDate førsteMuligeRefusjonFom;
+    /**
+     * Perioder der refusjonskravet skal anses å ha kommet inn i tide (overstyring av frist).
+     * Tom liste betyr at alle perioder er gyldige.
+     */
     private List<Intervall> refusjonGyldighetsperioder = new ArrayList<>();
     private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
     private List<BeregningRefusjonPeriodeDto> refusjonPerioder = new ArrayList<>();

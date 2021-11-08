@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.IAYMapperTilKalkulus.mapArbeidsgiver;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -122,7 +123,8 @@ public class BehandlingslagerTilKalkulusMapper {
                     .map(BehandlingslagerTilKalkulusMapper::mapRefusjonPeriode)
                     .collect(Collectors.toList());
             BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()),
-                    beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), mapRefusjonGyldighetsperiode(beregningRefusjonOverstyring)
+                    mapRefusjonGyldighetsperiode(beregningRefusjonOverstyring).map(Intervall::getFomDato).min(Comparator.naturalOrder()).orElse(null),
+                    mapRefusjonGyldighetsperiode(beregningRefusjonOverstyring)
                     .collect(Collectors.toList()), refusjonPerioder);
             dtoBuilder.leggTilOverstyring(dto);
         });

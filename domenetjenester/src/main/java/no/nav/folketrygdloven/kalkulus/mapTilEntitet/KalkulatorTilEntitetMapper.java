@@ -88,8 +88,7 @@ public class KalkulatorTilEntitetMapper {
 
         refusjonOverstyringerFraKalkulus.getRefusjonOverstyringer().forEach(beregningRefusjonOverstyring -> {
             BeregningRefusjonOverstyringEntitet.Builder builder = BeregningRefusjonOverstyringEntitet.builder()
-                    .medArbeidsgiver(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()))
-                    .medFørsteMuligeRefusjonFom(beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null));
+                    .medArbeidsgiver(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()));
             beregningRefusjonOverstyring.getRefusjonGyldighetsperioder()
                     .stream()
                     .map(KalkulatorTilEntitetMapper::mapTilRefusjonGyldighetsperiode)
