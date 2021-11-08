@@ -24,7 +24,7 @@ class UtledEndringIRefusjonsperiodeTest {
         LocalDate refusjonFom = LocalDate.of(2020,1,1);
         Arbeidsgiver ag = Arbeidsgiver.virksomhet("99999999");
         BeregningRefusjonPeriodeDto periode = new BeregningRefusjonPeriodeDto(InternArbeidsforholdRefDto.nullRef(), refusjonFom);
-        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(periode));
+        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periode));
         BeregningRefusjonOverstyringerDto aggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refusjonOverstyring).build();
 
         // Act
@@ -49,8 +49,8 @@ class UtledEndringIRefusjonsperiodeTest {
         Arbeidsgiver ikkeMatchendeAG = Arbeidsgiver.virksomhet("99999998");
 
         BeregningRefusjonPeriodeDto periode = new BeregningRefusjonPeriodeDto(InternArbeidsforholdRefDto.nullRef(), refusjonFom);
-        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(periode));
-        BeregningRefusjonOverstyringDto ikkeMatchendeRefusjonOverstyring = new BeregningRefusjonOverstyringDto(ikkeMatchendeAG, null, Collections.emptyList(), Collections.singletonList(periode));
+        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periode));
+        BeregningRefusjonOverstyringDto ikkeMatchendeRefusjonOverstyring = new BeregningRefusjonOverstyringDto(ikkeMatchendeAG, null, Collections.singletonList(periode));
 
         BeregningRefusjonOverstyringerDto aggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refusjonOverstyring).build();
         BeregningRefusjonOverstyringerDto forrigeAggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(ikkeMatchendeRefusjonOverstyring).build();
@@ -79,8 +79,8 @@ class UtledEndringIRefusjonsperiodeTest {
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
         BeregningRefusjonPeriodeDto periode = new BeregningRefusjonPeriodeDto(ref, refusjonFom);
         BeregningRefusjonPeriodeDto ikkeMatchendePeriode = new BeregningRefusjonPeriodeDto(InternArbeidsforholdRefDto.nyRef(), refusjonFom);
-        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(periode));
-        BeregningRefusjonOverstyringDto ikkeMatchendeRefusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(ikkeMatchendePeriode));
+        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periode));
+        BeregningRefusjonOverstyringDto ikkeMatchendeRefusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(ikkeMatchendePeriode));
 
         BeregningRefusjonOverstyringerDto aggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refusjonOverstyring).build();
         BeregningRefusjonOverstyringerDto forrigeAggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(ikkeMatchendeRefusjonOverstyring).build();
@@ -110,8 +110,8 @@ class UtledEndringIRefusjonsperiodeTest {
         InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nyRef();
         BeregningRefusjonPeriodeDto periode = new BeregningRefusjonPeriodeDto(ref, nyFom);
         BeregningRefusjonPeriodeDto forrigePeriode = new BeregningRefusjonPeriodeDto(ref, forrigeFom);
-        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(periode));
-        BeregningRefusjonOverstyringDto forrigeOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), Collections.singletonList(forrigePeriode));
+        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periode));
+        BeregningRefusjonOverstyringDto forrigeOverstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(forrigePeriode));
 
         BeregningRefusjonOverstyringerDto aggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refusjonOverstyring).build();
         BeregningRefusjonOverstyringerDto forrigeAggregat = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(forrigeOverstyring).build();

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import no.nav.folketrygdloven.kalkulator.modell.avklaringsbehov.AvklaringsbehovDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -29,7 +28,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.Avklarin
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetOverstyringerEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonOverstyringerEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningRefusjonPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
@@ -37,7 +35,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonGyldighetsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningAktivitetHandlingType;
@@ -121,18 +118,10 @@ public class BehandlingslagerTilKalkulusMapper {
                     : beregningRefusjonOverstyring.getRefusjonPerioder().stream()
                     .map(BehandlingslagerTilKalkulusMapper::mapRefusjonPeriode)
                     .collect(Collectors.toList());
-            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()),
-                    beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), mapRefusjonGyldighetsperiode(beregningRefusjonOverstyring)
-                    .collect(Collectors.toList()), refusjonPerioder);
+            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), refusjonPerioder);
             dtoBuilder.leggTilOverstyring(dto);
         });
         return dtoBuilder.build();
-    }
-
-    private static Stream<Intervall> mapRefusjonGyldighetsperiode(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyring) {
-        return beregningRefusjonOverstyring.getBekreftetGyldighetsperioder().stream()
-                .map(RefusjonGyldighetsperiodeEntitet::getPeriode)
-                .map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato()));
     }
 
     private static BeregningRefusjonPeriodeDto mapRefusjonPeriode(BeregningRefusjonPeriodeEntitet ro) {

@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -11,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -37,6 +41,7 @@ public class RefusjonGyldighetsperiodeEntitet extends BaseEntitet {
             @AttributeOverride(name = "tomDato", column = @Column(name = "tom"))
     })
     private IntervallEntitet periode;
+
 
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

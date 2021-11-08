@@ -57,8 +57,6 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     public BeregningRefusjonOverstyringEntitet(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         this.arbeidsgiver = beregningRefusjonOverstyringEntitet.getArbeidsgiver();
         this.førsteMuligeRefusjonFom = beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null);
-        beregningRefusjonOverstyringEntitet.getBekreftetGyldighetsperioder().stream().map(RefusjonGyldighetsperiodeEntitet::new)
-                .forEach(this::leggTilBekreftetGyldighetsperiode);
         beregningRefusjonOverstyringEntitet.getRefusjonPerioder().stream().map(BeregningRefusjonPeriodeEntitet::new)
                 .forEach(this::leggTilBeregningRefusjonPeriode);
     }

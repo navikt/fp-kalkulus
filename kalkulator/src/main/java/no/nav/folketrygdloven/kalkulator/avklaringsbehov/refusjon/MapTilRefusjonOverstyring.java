@@ -52,7 +52,7 @@ public final class MapTilRefusjonOverstyring {
                 List<BeregningRefusjonPeriodeDto> nyeRefusjonsperioder = lagListeMedRefusjonsperioder(entry.getValue());
 
                 BeregningRefusjonOverstyringDto oppdatertOverstyring = new BeregningRefusjonOverstyringDto(ag,
-                        eksisterendeOverstyring.getFørsteMuligeRefusjonFom().orElse(null), Collections.emptyList(), nyeRefusjonsperioder);
+                        eksisterendeOverstyring.getFørsteMuligeRefusjonFom().orElse(null), nyeRefusjonsperioder);
                 liste.add(oppdatertOverstyring);
             } else {
                 BeregningRefusjonOverstyringDto nyRefusjonOverstyring = lagNyOverstyring(ag, entry.getValue());
@@ -75,7 +75,7 @@ public final class MapTilRefusjonOverstyring {
 
     private static BeregningRefusjonOverstyringDto lagNyOverstyring(Arbeidsgiver ag, List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsatteAndeler) {
         List<BeregningRefusjonPeriodeDto> refusjonsperioder = lagListeMedRefusjonsperioder(fastsatteAndeler);
-        return new BeregningRefusjonOverstyringDto(ag, null, Collections.emptyList(), refusjonsperioder);
+        return new BeregningRefusjonOverstyringDto(ag, null, refusjonsperioder);
     }
 
     private static List<BeregningRefusjonPeriodeDto> lagListeMedRefusjonsperioder(List<VurderRefusjonAndelBeregningsgrunnlagDto> fastsattAndel) {
