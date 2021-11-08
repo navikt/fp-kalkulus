@@ -30,6 +30,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.RefusjonGyldighetsperiodeEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -89,10 +90,18 @@ public class KalkulatorTilEntitetMapper {
             BeregningRefusjonOverstyringEntitet.Builder builder = BeregningRefusjonOverstyringEntitet.builder()
                     .medArbeidsgiver(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()))
                     .medFørsteMuligeRefusjonFom(beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null));
+            beregningRefusjonOverstyring.getRefusjonGyldighetsperioder()
+                    .stream()
+                    .map(KalkulatorTilEntitetMapper::mapTilRefusjonGyldighetsperiode)
+                    .forEach(builder::leggTilBekreftetGyldighetsperiode);
             beregningRefusjonOverstyring.getRefusjonPerioder().forEach(periode -> builder.leggTilRefusjonPeriode(mapRefusjonsperiode(periode)));
             entitetBuilder.leggTilOverstyring(builder.build());
         });
         return entitetBuilder.build();
+    }
+
+    private static RefusjonGyldighetsperiodeEntitet mapTilRefusjonGyldighetsperiode(Intervall p) {
+        return new RefusjonGyldighetsperiodeEntitet(IntervallEntitet.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato()));
     }
 
     private static BeregningRefusjonPeriodeEntitet mapRefusjonsperiode(BeregningRefusjonPeriodeDto periode) {
