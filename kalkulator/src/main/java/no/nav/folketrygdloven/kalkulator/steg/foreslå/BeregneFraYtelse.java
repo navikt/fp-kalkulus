@@ -61,7 +61,9 @@ class BeregneFraYtelse {
                 BigDecimal direkteUtbetalingForAndel = finnSumDirekteUtbetaltYtelseIPeriodeForAndel(beregningsperiode, anvisninger, beregnetAndel);
                 BigDecimal andelLønnOgYtelse = finnLønnOgDirekteUtbetaltYtelseForAndel(regelmodell, beregningsperiode, atflStatus, arbeidsforholdUtenInntektsmelding, beregnetAndel, direkteUtbetalingForAndel);
                 if (beregnetAndel.getBeregnetPrÅr().compareTo(andelLønnOgYtelse) != 0) {
-                    loggDifferanse(input, beregnetAndel, direkteUtbetalingForAndel, andelLønnOgYtelse);
+                    loggBeregning(input, beregnetAndel, direkteUtbetalingForAndel, andelLønnOgYtelse, "Fant differanse i beregning");
+                } else {
+                    loggBeregning(input, beregnetAndel, direkteUtbetalingForAndel, andelLønnOgYtelse, "Fant ingen differanse i beregning");
                 }
             }
         }
@@ -120,7 +122,7 @@ class BeregneFraYtelse {
         return snittFraBeregningsperiodenPrÅr;
     }
 
-    private static void loggDifferanse(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, BigDecimal direkteUtbetalingForAndel, BigDecimal andelLønnOgYtelse) {
+    private static void loggBeregning(ForeslåBeregningsgrunnlagInput input, BeregningsgrunnlagPrArbeidsforhold beregnetAndel, BigDecimal direkteUtbetalingForAndel, BigDecimal andelLønnOgYtelse, String startMelding) {
         List<FaktaArbeidsforholdDto> fakta = input.getBeregningsgrunnlagGrunnlag().getFaktaAggregat().map(FaktaAggregatDto::getFaktaArbeidsforhold).orElse(Collections.emptyList());
         Boolean harMottattYtelse = fakta.stream().filter(f -> f.getArbeidsgiver().getIdentifikator().equals(beregnetAndel.getArbeidsgiverId()))
                 .findFirst()
@@ -128,7 +130,15 @@ class BeregneFraYtelse {
                 .orElse(null);
         boolean harMottattYtelseRegister = direkteUtbetalingForAndel.compareTo(BigDecimal.ZERO) > 0;
         Long koblingId = input.getKoblingReferanse().getKoblingId();
-        log.info("Fant differanse i beregning for kobling {}: " +
+        lagLoggmelding(beregnetAndel, andelLønnOgYtelse, harMottattYtelse, harMottattYtelseRegister,
+                koblingId, startMelding);
+    }
+
+
+    private static void lagLoggmelding(BeregningsgrunnlagPrArbeidsforhold beregnetAndel,
+                                       BigDecimal andelLønnOgYtelse, Boolean harMottattYtelse,
+                                       boolean harMottattYtelseRegister, Long koblingId, final String fantMelding) {
+        log.info(fantMelding + " for kobling {}: " +
                         "Beregnet: {}, " +
                         "BeregnetMedDirekteUtbetaling: {}, " +
                         "HarMottattYtelseSaksbehandler: {}, " +

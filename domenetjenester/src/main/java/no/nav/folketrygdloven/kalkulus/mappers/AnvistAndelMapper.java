@@ -85,7 +85,7 @@ class AnvistAndelMapper {
 
     private static BigDecimal mapGrunnlagsbeløpTilÅrsbeløp(YtelseFordelingDto f) {
         return switch (f.getHyppighet()) {
-            case ÅRLIG -> f.getBeløp();
+            case FASTSATT25PAVVIK, ÅRLIG -> f.getBeløp();
             case MÅNEDLIG -> f.getBeløp().multiply(BigDecimal.valueOf(12));
             case DAGLIG -> f.getBeløp().multiply(BigDecimal.valueOf(260));
             case UKENTLIG -> f.getBeløp().multiply(BigDecimal.valueOf(52));
