@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +13,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
@@ -39,7 +37,6 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
             .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
             .orElse(Collections.emptyList());
 
-        var beregnGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         Set<Arbeidsgiver> arbeidsgivere = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 input.getKoblingReferanse(),
                 input.getIayGrunnlag(),
@@ -51,16 +48,14 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
             .map(arbeidsgiver -> {
                 RefusjonskravSomKommerForSentDto dto = new RefusjonskravSomKommerForSentDto();
                 dto.setArbeidsgiverIdent(arbeidsgiver.getIdentifikator());
-                LocalDate skjæringstidspunkt = beregnGrunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt).orElseThrow(() -> new IllegalStateException("Skal ha beregningsgrunnlag med skjæringstidspunkt"));
-                dto.setErRefusjonskravGyldig(sjekkStatusPåRefusjon(arbeidsgiver.getIdentifikator(), refusjonOverstyringer, skjæringstidspunkt));
+                dto.setErRefusjonskravGyldig(sjekkStatusPåRefusjon(arbeidsgiver.getIdentifikator(), refusjonOverstyringer));
 
                 return dto;
             }).collect(Collectors.toList());
     }
 
     private Boolean sjekkStatusPåRefusjon(String identifikator,
-                                          List<BeregningRefusjonOverstyringDto> refusjonOverstyringer,
-                                          LocalDate skjæringstidspunkt) {
+                                          List<BeregningRefusjonOverstyringDto> refusjonOverstyringer) {
         Optional<BeregningRefusjonOverstyringDto> statusOpt = refusjonOverstyringer
             .stream()
             .filter(refusjonOverstyring -> refusjonOverstyring.getArbeidsgiver().getIdentifikator().equals(identifikator))
@@ -68,7 +63,7 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
         if (statusOpt.isEmpty() && refusjonOverstyringer.isEmpty()) {
             return null;
         }
-        Optional<LocalDate> førsteRefusjonsdato = statusOpt.flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
-        return førsteRefusjonsdato.isPresent() && førsteRefusjonsdato.get().isEqual(skjæringstidspunkt);
+        Optional<Boolean> erFristUtvidet = statusOpt.flatMap(BeregningRefusjonOverstyringDto::getErFristUtvidet);
+        return erFristUtvidet.orElse(false);
     }
 }

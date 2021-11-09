@@ -42,6 +42,9 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     @Column(name = "fom")
     private LocalDate førsteMuligeRefusjonFom;
 
+    @Column(name = "er_frist_utvidet")
+    private Boolean erFristUtvidet;
+
     @JsonBackReference
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "br_overstyringer_id", nullable = false, updatable = false)
@@ -71,6 +74,10 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
     public Optional<LocalDate> getFørsteMuligeRefusjonFom() {
         return Optional.ofNullable(førsteMuligeRefusjonFom);
+    }
+
+    public Boolean getErFristUtvidet() {
+        return erFristUtvidet;
     }
 
     public List<BeregningRefusjonPeriodeEntitet> getRefusjonPerioder() {
@@ -108,6 +115,11 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
         public BeregningRefusjonOverstyringEntitet.Builder medFørsteMuligeRefusjonFom(LocalDate førsteMuligeRefusjonFom) {
             kladd.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
+            return this;
+        }
+
+        public BeregningRefusjonOverstyringEntitet.Builder medErFristUtvidet(Boolean erFristUtvidet) {
+            kladd.erFristUtvidet = erFristUtvidet;
             return this;
         }
 

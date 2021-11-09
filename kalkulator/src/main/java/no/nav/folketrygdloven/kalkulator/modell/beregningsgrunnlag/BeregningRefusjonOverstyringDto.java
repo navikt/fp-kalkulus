@@ -14,6 +14,7 @@ public class BeregningRefusjonOverstyringDto {
 
     private Arbeidsgiver arbeidsgiver;
     private LocalDate førsteMuligeRefusjonFom;
+    private Boolean erFristUtvidet;
     private BeregningRefusjonOverstyringerDto refusjonOverstyringer;
     private List<BeregningRefusjonPeriodeDto> refusjonPerioder = new ArrayList<>();
 
@@ -21,7 +22,15 @@ public class BeregningRefusjonOverstyringDto {
         // Hibernate
     }
 
-    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver, LocalDate førsteMuligeRefusjonFom) {
+    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver,
+                                           boolean erFristUtvidet) {
+        Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
+        this.erFristUtvidet = erFristUtvidet;
+        this.arbeidsgiver = arbeidsgiver;
+    }
+
+    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver,
+                                           LocalDate førsteMuligeRefusjonFom, boolean erFristUtvidet) {
         Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
         this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
         this.arbeidsgiver = arbeidsgiver;
@@ -44,6 +53,10 @@ public class BeregningRefusjonOverstyringDto {
 
     public Optional<LocalDate> getFørsteMuligeRefusjonFom() {
         return Optional.ofNullable(førsteMuligeRefusjonFom);
+    }
+
+    public Optional<Boolean> getErFristUtvidet() {
+        return Optional.ofNullable(erFristUtvidet);
     }
 
     public List<BeregningRefusjonPeriodeDto> getRefusjonPerioder() {

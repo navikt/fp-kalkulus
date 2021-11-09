@@ -134,7 +134,7 @@ class MapTilRefusjonOverstyringTest {
     }
 
     private void lagTidligereOverstyringBeregningsgrunnlag(Arbeidsgiver ag) {
-        BeregningRefusjonOverstyringDto refOS = new BeregningRefusjonOverstyringDto(ag, LocalDate.of(2020,4,1));
+        BeregningRefusjonOverstyringDto refOS = new BeregningRefusjonOverstyringDto(ag, LocalDate.of(2020,4,1), false);
         eksisterendeOverstyringer = BeregningRefusjonOverstyringerDto.builder().leggTilOverstyring(refOS).build();
     }
 

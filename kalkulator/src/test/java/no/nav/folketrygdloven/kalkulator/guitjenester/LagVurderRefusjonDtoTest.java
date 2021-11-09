@@ -136,7 +136,7 @@ class LagVurderRefusjonDtoTest {
         byggRefusjonAndel(ag, internRef);
         byggBGAndelOrginal(ag, internRef, 0, 500000);
         LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
-        byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom);
+        byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom, false);
         ferdigstillInput();
 
         Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
@@ -159,7 +159,7 @@ class LagVurderRefusjonDtoTest {
         byggBGAndelOrginal(ag, internRef, 0, 500000);
         LocalDate refusjonFom = eldrePeriode.getFomDato();
         LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
-        byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom);
+        byggTidligereRefusjonoverstyring(ag, tidligsteRefusjonFom, false);
         ferdigstillInput();
 
         Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
@@ -180,7 +180,7 @@ class LagVurderRefusjonDtoTest {
         byggRefusjonAndel(ag, internRef);
         byggBGAndelOrginal(ag, internRef, 0, 500000);
         LocalDate tidligsteRefusjonFom = refusjonFom.plusMonths(1);
-        byggTidligereRefusjonoverstyring(Arbeidsgiver.virksomhet("99999998"), tidligsteRefusjonFom);
+        byggTidligereRefusjonoverstyring(Arbeidsgiver.virksomhet("99999998"), tidligsteRefusjonFom, false);
         ferdigstillInput();
 
         Optional<RefusjonTilVurderingDto> resultat = LagVurderRefusjonDto.lagDto(andelMap, input);
@@ -191,8 +191,8 @@ class LagVurderRefusjonDtoTest {
     }
 
 
-    private void byggTidligereRefusjonoverstyring (Arbeidsgiver arbeidsgiver, LocalDate tidligsteRefusjonsstart) {
-        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(arbeidsgiver, tidligsteRefusjonsstart);
+    private void byggTidligereRefusjonoverstyring(Arbeidsgiver arbeidsgiver, LocalDate tidligsteRefusjonsstart, boolean erFristUtvidet) {
+        BeregningRefusjonOverstyringDto refusjonOverstyring = new BeregningRefusjonOverstyringDto(arbeidsgiver, tidligsteRefusjonsstart, erFristUtvidet);
         if (refusjonOverstyringerBuilder == null) {
             refusjonOverstyringerBuilder = BeregningRefusjonOverstyringerDto.builder();
         }

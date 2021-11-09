@@ -37,10 +37,10 @@ public class VurderRefusjonTilfelleOppdaterer implements FaktaOmBeregningTilfell
         for (RefusjonskravPrArbeidsgiverVurderingDto vurderingDto : dto) {
             Arbeidsgiver arbeidsgiver = finnArbeidsgiver(vurderingDto.getArbeidsgiverId());
             if (vurderingDto.isSkalUtvideGyldighet()) {
-                builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, frist));
+                builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, frist, true));
             } else {
                 Optional<LocalDate> førsteLovligeDato = InntektsmeldingMedRefusjonTjeneste.finnFørsteLovligeDatoForRefusjonFørOverstyring(input, arbeidsgiver);
-                førsteLovligeDato.ifPresent(dato -> builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, dato)));
+                førsteLovligeDato.ifPresent(dato -> builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, dato, false)));
             }
         }
         return builder.build();
