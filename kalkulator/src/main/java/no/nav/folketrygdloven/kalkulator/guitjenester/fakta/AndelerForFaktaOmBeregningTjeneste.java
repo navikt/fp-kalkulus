@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel;
+import static no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel.finnInntektsmelding;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForKunLese;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.FinnInntektForVisning.finnInntektForPreutfylling;
 import static no.nav.folketrygdloven.kalkulator.guitjenester.fakta.SkalKunneEndreAktivitet.skalKunneEndreAktivitet;
@@ -9,7 +9,6 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde.SAKSBEHANDLER_
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
             BeregningsgrunnlagPrStatusOgAndelDto andel) {
         var ref = input.getKoblingReferanse();
         var inntektsmeldinger = input.getInntektsmeldinger();
-        var inntektsmeldingForAndel = finnInntektsmeldingForAndel(andel, inntektsmeldinger);
+        var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
         dto.setFastsattBelop(finnInntektForPreutfylling(andel));
         dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));

@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
@@ -27,7 +26,7 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static List<AndelGradering.Gradering> hentGraderingerForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering) {
-        Optional<AndelGradering> graderingOpt = BeregningInntektsmeldingTjeneste.finnGraderingForAndel(andel, aktivitetGradering);
+        Optional<AndelGradering> graderingOpt = finnGraderingForAndel(andel, aktivitetGradering);
         if (graderingOpt.isPresent()) {
             AndelGradering gradering = graderingOpt.get();
             return gradering.getGraderinger();
@@ -40,7 +39,7 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static List<AndelGradering.Gradering> hentGraderingerForAndelIPeriode(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering, Intervall periode) {
-        Optional<AndelGradering> graderingOpt = BeregningInntektsmeldingTjeneste.finnGraderingForAndel(andel, aktivitetGradering);
+        Optional<AndelGradering> graderingOpt = finnGraderingForAndel(andel, aktivitetGradering);
         if (graderingOpt.isPresent()) {
             AndelGradering andelGradering = graderingOpt.get();
             return andelGradering.getGraderinger().stream()
@@ -48,6 +47,15 @@ public final class FordelingGraderingTjeneste {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private static Optional<AndelGradering> finnGraderingForAndel(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetGradering aktivitetGradering) {
+        if (aktivitetGradering == null) {
+            return Optional.empty();
+        }
+        return aktivitetGradering.getAndelGradering().stream()
+                .filter(andelGradering -> andelGradering.matcher(andel))
+                .findFirst();
     }
 
     public static boolean skalGraderePåAndelUtenBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto andel, boolean harGraderingIBGPeriode) {

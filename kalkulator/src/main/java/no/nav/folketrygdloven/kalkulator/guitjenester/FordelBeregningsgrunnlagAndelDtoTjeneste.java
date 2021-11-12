@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.FinnInntektsmeldingForAndel;
 import no.nav.folketrygdloven.kalkulator.felles.MatchBeregningsgrunnlagTjeneste;
 import no.nav.folketrygdloven.kalkulator.guitjenester.fakta.RefusjonDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -35,9 +35,9 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                                                                         BeregningsgrunnlagPeriodeDto periode) {
         List<FordelBeregningsgrunnlagAndelDto> endringAndeler = new ArrayList<>();
         for (var andel : periode.getBeregningsgrunnlagPrStatusOgAndelList()) {
-            var inntektsmelding = BeregningInntektsmeldingTjeneste.finnInntektsmeldingForAndel(andel, input.getInntektsmeldinger());
+            var inntektsmelding = FinnInntektsmeldingForAndel.finnInntektsmelding(andel, input.getInntektsmeldinger());
             FordelBeregningsgrunnlagAndelDto endringAndel = lagEndretBGAndel(input, andel, inntektsmelding, periode);
-            RefusjonDtoTjeneste.settRefusjonskrav(andel, periode.getPeriode(), endringAndel, input.getInntektsmeldinger());
+            RefusjonDtoTjeneste.settRefusjonskrav(andel, endringAndel);
             endringAndel.setNyttArbeidsforhold(FordelTilkommetArbeidsforholdTjeneste.erAktivitetLagtTilIPeriodisering(andel));
             endringAndel.setArbeidsforholdType(andel.getArbeidsforholdType());
             endringAndeler.add(endringAndel);

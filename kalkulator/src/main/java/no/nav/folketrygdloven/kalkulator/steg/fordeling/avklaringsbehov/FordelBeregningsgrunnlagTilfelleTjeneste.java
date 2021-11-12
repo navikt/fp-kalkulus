@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import no.nav.folketrygdloven.kalkulator.felles.BeregningInntektsmeldingTjeneste;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -49,8 +50,7 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
             return Optional.of(FordelingTilfelle.NY_AKTIVITET);
         }
 
-        BigDecimal refusjonForAndelIPeriode = BeregningInntektsmeldingTjeneste.finnRefusjonskravPrÅrIPeriodeForAndel(andel, periode.getPeriode(), input.getInntektsmeldinger()).orElse(BigDecimal.ZERO);
-        boolean andelHarRefusjonIPerioden = refusjonForAndelIPeriode.compareTo(BigDecimal.ZERO) > 0;
+        boolean andelHarRefusjonIPerioden = harInnvilgetRefusjon(andel);
         boolean harGraderingIBGPeriode = FordelingGraderingTjeneste.harGraderingForAndelIPeriode(andel, input.getAktivitetGradering(), periode.getPeriode());
         if (!harGraderingIBGPeriode && !andelHarRefusjonIPerioden) {
             return Optional.empty();
@@ -62,15 +62,28 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
         if (harGraderingIBGPeriode && !andelHarRefusjonIPerioden) {
             Beløp grunnbeløp = input.getBeregningsgrunnlag().getGrunnbeløp();
-            boolean refusjonForPeriodeOverstiger6G = BeregningInntektsmeldingTjeneste.erTotaltRefusjonskravStørreEnnEllerLikSeksG(periode, input.getInntektsmeldinger(), grunnbeløp);
-            if (refusjonForPeriodeOverstiger6G) {
-                return Optional.of(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
-            }
             if (FordelingGraderingTjeneste.gradertAndelVilleBlittAvkortet(andel, grunnbeløp, periode)) {
                 return Optional.of(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0);
             }
+            boolean refusjonForPeriodeOverstiger6G = grunnbeløp.multipliser(6).getVerdi().compareTo(finnTotalRefusjonPrÅr(periode)) <= 0;
+            if (refusjonForPeriodeOverstiger6G) {
+                return Optional.of(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
+            }
         }
         return Optional.empty();
+    }
+
+    private static Boolean harInnvilgetRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                .map(r -> r.compareTo(BigDecimal.ZERO) > 0).orElse(false);
+    }
+
+    private static BigDecimal finnTotalRefusjonPrÅr(BeregningsgrunnlagPeriodeDto periode) {
+        return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().flatMap(a -> a.getBgAndelArbeidsforhold().stream())
+                .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
     }
 
     private static boolean erAutomatiskFordelt(BeregningsgrunnlagPrStatusOgAndelDto andel) {

@@ -67,7 +67,7 @@ public class RefusjonDtoTjenesteImplTest {
             .build());
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, inntektsmeldinger, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -106,7 +106,7 @@ public class RefusjonDtoTjenesteImplTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, inntektsmeldinger, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -144,7 +144,7 @@ public class RefusjonDtoTjenesteImplTest {
         List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
         // Act
-        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, inntektsmeldinger, new Beløp(GRUNNBELØP));
+        boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel, periode, AktivitetGradering.INGEN_GRADERING, new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isFalse();
@@ -178,20 +178,10 @@ public class RefusjonDtoTjenesteImplTest {
             .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, BigDecimal.TEN))
             .build();
 
-        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(ARBEIDSGIVER)
-            .build();
-        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(SEKS_G)
-            .medArbeidsgiver(ARBEIDSGIVER2)
-            .build();
-        List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
-
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), inntektsmeldinger, new Beløp(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();
@@ -225,19 +215,10 @@ public class RefusjonDtoTjenesteImplTest {
             .leggTilGradering(new AndelGradering.Gradering(SKJÆRINGSTIDSPUNKT_OPPTJENING, TIDENES_ENDE, BigDecimal.TEN))
             .build();
 
-        InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(BigDecimal.ZERO)
-            .medArbeidsgiver(ARBEIDSGIVER)
-            .build();
-        InntektsmeldingDto im2 = InntektsmeldingDtoBuilder.builder()
-            .medRefusjon(SEKS_G.add(BigDecimal.valueOf(100)))
-            .medArbeidsgiver(ARBEIDSGIVER2)
-            .build();
-        List<InntektsmeldingDto> inntektsmeldinger = List.of(im, im2);
 
         // Act
         boolean skalKunneEndreRefusjon = RefusjonDtoTjeneste.skalKunneEndreRefusjon(andel,
-                periode, new AktivitetGradering(andelGradering), inntektsmeldinger, new Beløp(GRUNNBELØP));
+                periode, new AktivitetGradering(andelGradering), new Beløp(GRUNNBELØP));
 
         // Assert
         assertThat(skalKunneEndreRefusjon).isTrue();
