@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
@@ -87,6 +88,10 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     private static boolean erAutomatiskFordelt(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getInntektskategori() != null && andel.getFordeltPrÅr() != null;
+        return erInntektskategoriSatt(andel) && andel.getFordeltPrÅr() != null;
+    }
+
+    private static boolean erInntektskategoriSatt(BeregningsgrunnlagPrStatusOgAndelDto andel) {
+        return andel.getInntektskategori() != null && !andel.getInntektskategori().equals(Inntektskategori.UDEFINERT);
     }
 }
