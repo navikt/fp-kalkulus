@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class MapBrevBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(finnAndelerSomHarSøkt(beregningsgrunnlagPeriode, utbetalingsgradGrunnlag)),
+                mapAndeler(finnAndelerSomHarSøkt(beregningsgrunnlagPeriode, utbetalingsgradGrunnlag), utbetalingsgradGrunnlag, beregningsgrunnlagPeriode.getPeriode()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
@@ -68,11 +69,12 @@ public class MapBrevBeregningsgrunnlag {
         return finnUtbetalingsgradForAndel(a, beregningsgrunnlagPeriode.getPeriode(), utbetalingsgradGrunnlag).compareTo(BigDecimal.ZERO) > 0;
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList) {
-        return beregningsgrunnlagPrStatusOgAndelList.stream().map(MapBrevBeregningsgrunnlag::mapAndel).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList,
+                                                                         UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, utbetalingsgradGrunnlag, periode)).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
                 AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
@@ -81,6 +83,8 @@ public class MapBrevBeregningsgrunnlag {
                 mapFraBeløp(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
+                finnUgradertDagsatsBruker(andel, utbetalingsgradGrunnlag, periode),
+                finnUgradertDagsatsArbeidsgiver(andel, utbetalingsgradGrunnlag, periode),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
                 mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
@@ -89,6 +93,26 @@ public class MapBrevBeregningsgrunnlag {
                 mapFraBeløp(andel.getRedusertPrÅr()),
                 mapFraBeløp(andel.getBeregnetPrÅr()),
                 andel.getFastsattAvSaksbehandler());
+    }
+
+    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+        if (andel.getDagsatsBruker() == null) {
+            return null;
+        }
+        BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
+        return BigDecimal.valueOf(andel.getDagsatsBruker()).multiply(BigDecimal.valueOf(100))
+                .divide(utbetalingsgradForAndel, RoundingMode.HALF_UP).longValue();
+
+    }
+
+    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+        if (andel.getDagsatsBruker() == null) {
+            return null;
+        }
+        BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
+        return BigDecimal.valueOf(andel.getDagsatsArbeidsgiver()).multiply(BigDecimal.valueOf(100))
+                .divide(utbetalingsgradForAndel, RoundingMode.HALF_UP).longValue();
+
     }
 
     private static BGAndelArbeidsforhold mapBgAndelArbeidsforhold(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {

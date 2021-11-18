@@ -74,6 +74,22 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @NotNull
     private Long dagsatsArbeidsgiver;
 
+
+    @JsonProperty(value = "ugradertDagsatsBruker")
+    @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @NotNull
+    private Long ugradertDagsatsBruker;
+
+    @JsonProperty(value = "ugradertDagsatsArbeidsgiver")
+    @Valid
+    @Min(0)
+    @Max(Long.MAX_VALUE)
+    @NotNull
+    private Long ugradertDagsatsArbeidsgiver;
+
+
     @JsonProperty(value = "inntektskategori")
     @NotNull
     @Valid
@@ -133,7 +149,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                                                 OpptjeningAktivitetType arbeidsforholdType, Periode beregningsperiode, BigDecimal bruttoPrÅr,
                                                 Long dagsatsBruker,
                                                 Long dagsatsArbeidsgiver,
-                                                Inntektskategori inntektskategori,
+                                                Long ugradertDagsatsBruker, Long ugradertDagsatsArbeidsgiver, Inntektskategori inntektskategori,
                                                 BGAndelArbeidsforhold bgAndelArbeidsforhold,
                                                 BigDecimal avkortetFørGraderingPrÅr,
                                                 BigDecimal avkortetPrÅr,
@@ -148,6 +164,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.bruttoPrÅr = bruttoPrÅr;
         this.dagsatsBruker = dagsatsBruker;
         this.dagsatsArbeidsgiver = dagsatsArbeidsgiver;
+        this.ugradertDagsatsBruker = ugradertDagsatsBruker;
+        this.ugradertDagsatsArbeidsgiver = ugradertDagsatsArbeidsgiver;
         this.inntektskategori = inntektskategori;
         this.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
         this.avkortetFørGraderingPrÅr = avkortetFørGraderingPrÅr;
@@ -180,6 +198,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public Long getDagsatsArbeidsgiver() {
         return dagsatsArbeidsgiver;
+    }
+
+    public Long getUgradertDagsatsBruker() {
+        return ugradertDagsatsBruker;
+    }
+
+    public Long getUgradertDagsatsArbeidsgiver() {
+        return ugradertDagsatsArbeidsgiver;
     }
 
     public Long getDagsats() {
