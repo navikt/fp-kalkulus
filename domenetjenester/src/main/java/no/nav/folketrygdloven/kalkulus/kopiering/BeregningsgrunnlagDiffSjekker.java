@@ -228,6 +228,9 @@ class BeregningsgrunnlagDiffSjekker {
         if (!erLike(aktivArbeidsforhold.getRefusjonskravPrÅr(), forrigeArbeidsforhold.getRefusjonskravPrÅr())) {
             return true;
         }
+        if (!erLike(aktivArbeidsforhold.getInnvilgetRefusjonskravPrÅr(), forrigeArbeidsforhold.getInnvilgetRefusjonskravPrÅr())) {
+            return true;
+        }
         if (!erLike(aktivArbeidsforhold.getSaksbehandletRefusjonPrÅr(), forrigeArbeidsforhold.getSaksbehandletRefusjonPrÅr())) {
             return true;
         }

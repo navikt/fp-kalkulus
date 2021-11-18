@@ -35,6 +35,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class FordelBeregningsgrunnlagHåndtererTest {
@@ -327,7 +328,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         return BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                         .medArbeidsgiver(Arbeidsgiver.virksomhet(ORG_NUMMER))
-                        .medArbeidsforholdRef(arbId2).medRefusjonskravPrÅr(refusjonskravPrÅr)
+                        .medArbeidsforholdRef(arbId2).medRefusjonskravPrÅr(refusjonskravPrÅr, Utfall.GODKJENT)
                         .medNaturalytelseBortfaltPrÅr(naturalytelseBortfaltPrÅr))
                 .medAndelsnr(andelsnr2)
                 .medBeregningsperiode(LocalDate.of(2019, 7, 1), LocalDate.of(2019, 10, 1))

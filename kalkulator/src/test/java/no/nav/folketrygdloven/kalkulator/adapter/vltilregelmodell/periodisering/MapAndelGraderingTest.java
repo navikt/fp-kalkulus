@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.gradering.MapAndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -58,8 +59,8 @@ public class MapAndelGraderingTest {
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                 .build(bgperiode);
         // Act
-        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGraderingForFLSN(bg, ref,
-            vlAndelGradering, filter);
+        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapGraderingForFLSN(bg,
+                vlAndelGradering, filter, ref.getSkjæringstidspunktBeregning());
 
         // Assert
         assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2.SN);
@@ -72,7 +73,6 @@ public class MapAndelGraderingTest {
             assertThat(periode.getFom()).isEqualTo(fom2);
             assertThat(periode.getTom()).isEqualTo(tom2);
         });
-        assertThat(regelAndelGradering.getGyldigeRefusjonskrav()).isEmpty();
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MapAndelGraderingTest {
                 .build(bgperiode);
 
         // Act
-        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapTilRegelAndelGraderingForFLSN(bg, ref, vlAndelGradering, filter);
+        AndelGraderingImpl regelAndelGradering = MapAndelGradering.mapGraderingForFLSN(bg, vlAndelGradering, filter, ref.getSkjæringstidspunktBeregning());
 
         // Assert
         assertThat(regelAndelGradering.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2.FL);
@@ -113,7 +113,6 @@ public class MapAndelGraderingTest {
             assertThat(periode.getFom()).isEqualTo(fom2);
             assertThat(periode.getTom()).isEqualTo(tom2);
         });
-        assertThat(regelAndelGradering.getGyldigeRefusjonskrav()).isEmpty();
     }
 
 }

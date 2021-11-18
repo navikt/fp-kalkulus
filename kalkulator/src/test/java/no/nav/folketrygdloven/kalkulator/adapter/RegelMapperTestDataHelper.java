@@ -36,6 +36,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 public class RegelMapperTestDataHelper {
     public static final LocalDate NOW = LocalDate.now();
@@ -126,7 +127,7 @@ public class RegelMapperTestDataHelper {
             BGAndelArbeidsforholdDto.Builder bga = BGAndelArbeidsforholdDto
                 .builder()
                 .medArbeidsgiver(arbeidsgiver)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(42.00))
+                .medRefusjonskravPrÅr(BigDecimal.valueOf(42.00), Utfall.GODKJENT)
                 .medNaturalytelseBortfaltPrÅr(BigDecimal.valueOf(3232.32))
                 .medArbeidsperiodeFom(LocalDate.now().minusYears(1))
                 .medArbeidsperiodeTom(LocalDate.now().plusYears(2))

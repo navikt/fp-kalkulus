@@ -17,18 +17,18 @@ public class SplittBGPerioder {
         // skjul public constructor
     }
 
-    static void splitt(Beregningsgrunnlag regelBeregningsgrunnlag, Collection<Intervall> perioder, PeriodeÅrsak periodeårsak) {
+    public static void splitt(Beregningsgrunnlag regelBeregningsgrunnlag, Collection<Intervall> perioder, PeriodeÅrsak periodeårsak) {
         perioder.forEach(periode -> {
-            LocalDate kortvarigArbeidsforholdTom = periode.getTomDato();
+            LocalDate periodeTomDato = periode.getTomDato();
             List<BeregningsgrunnlagPeriode> eksisterendePerioder = regelBeregningsgrunnlag.getBeregningsgrunnlagPerioder();
             ListIterator<BeregningsgrunnlagPeriode> periodeIterator = eksisterendePerioder.listIterator();
             while (periodeIterator.hasNext()) {
                 BeregningsgrunnlagPeriode beregningsgrunnlagPeriode = periodeIterator.next();
                 Periode bgPeriode = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriode();
-                if (bgPeriode.getTom().equals(kortvarigArbeidsforholdTom)) {
+                if (bgPeriode.getTom().equals(periodeTomDato)) {
                     oppdaterPeriodeÅrsakForNestePeriode(eksisterendePerioder, periodeIterator, periodeårsak);
-                } else if (bgPeriode.inneholder(kortvarigArbeidsforholdTom)) {
-                    splitBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, kortvarigArbeidsforholdTom, periodeårsak);
+                } else if (bgPeriode.inneholder(periodeTomDato)) {
+                    splitBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode, periodeTomDato, periodeårsak);
                 }
             }
         });

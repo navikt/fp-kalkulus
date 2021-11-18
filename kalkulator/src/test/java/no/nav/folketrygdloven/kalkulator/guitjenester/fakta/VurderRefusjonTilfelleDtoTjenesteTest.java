@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
+import static no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger.opprett;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -154,7 +154,7 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
                                                                                 InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                 Map<Arbeidsgiver, LocalDate> førsteInnsendingAvRefusjonMap) {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag,
-                opprett(koblingReferanse, iayGrunnlag, førsteInnsendingAvRefusjonMap), null);
+                List.of(), opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning(), førsteInnsendingAvRefusjonMap), null);
         BeregningsgrunnlagGrunnlagDto grunnlag = beregningsgrunnlagGrunnlagBuilder.build(tilstand);
         return input.medBeregningsgrunnlagGrunnlag(grunnlag);
     }

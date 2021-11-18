@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 
 public class BGAndelArbeidsforholdDto {
@@ -16,15 +18,11 @@ public class BGAndelArbeidsforholdDto {
     private BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel;
     private Arbeidsgiver arbeidsgiver;
     private InternArbeidsforholdRefDto arbeidsforholdRef;
-    private BigDecimal refusjonskravPrÅr;
-    private BigDecimal saksbehandletRefusjonPrÅr;
-    private BigDecimal fordeltRefusjonPrÅr;
+    private Refusjon refusjon;
     private BigDecimal naturalytelseBortfaltPrÅr;
     private BigDecimal naturalytelseTilkommetPrÅr;
-    private Boolean erTidsbegrensetArbeidsforhold;
     private LocalDate arbeidsperiodeFom;
     private LocalDate arbeidsperiodeTom;
-    private Hjemmel hjemmelForRefusjonskravfrist;
 
     private BGAndelArbeidsforholdDto() {
     }
@@ -32,22 +30,23 @@ public class BGAndelArbeidsforholdDto {
     public BGAndelArbeidsforholdDto(BGAndelArbeidsforholdDto eksisterendeBGAndelArbeidsforhold) {
         this.arbeidsgiver = eksisterendeBGAndelArbeidsforhold.arbeidsgiver;
         this.arbeidsforholdRef = eksisterendeBGAndelArbeidsforhold.arbeidsforholdRef;
-        this.refusjonskravPrÅr = eksisterendeBGAndelArbeidsforhold.refusjonskravPrÅr;
         this.naturalytelseBortfaltPrÅr = eksisterendeBGAndelArbeidsforhold.naturalytelseBortfaltPrÅr;
         this.naturalytelseTilkommetPrÅr = eksisterendeBGAndelArbeidsforhold.naturalytelseTilkommetPrÅr;
-        this.erTidsbegrensetArbeidsforhold = eksisterendeBGAndelArbeidsforhold.erTidsbegrensetArbeidsforhold;
         this.arbeidsperiodeFom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeFom;
         this.arbeidsperiodeTom = eksisterendeBGAndelArbeidsforhold.arbeidsperiodeTom;
-        this.saksbehandletRefusjonPrÅr = eksisterendeBGAndelArbeidsforhold.saksbehandletRefusjonPrÅr;
-        this.fordeltRefusjonPrÅr = eksisterendeBGAndelArbeidsforhold.fordeltRefusjonPrÅr;
+        this.refusjon = eksisterendeBGAndelArbeidsforhold.refusjon != null ? new Refusjon(eksisterendeBGAndelArbeidsforhold.refusjon) : null;
     }
 
     public InternArbeidsforholdRefDto getArbeidsforholdRef() {
         return arbeidsforholdRef != null ? arbeidsforholdRef : InternArbeidsforholdRefDto.nullRef();
     }
 
+    public Optional<Refusjon> getRefusjon() {
+        return Optional.ofNullable(refusjon);
+    }
+
     public BigDecimal getRefusjonskravPrÅr() {
-        return refusjonskravPrÅr;
+        return refusjon != null ? refusjon.getRefusjonskravPrÅr() : null;
     }
 
     public Optional<BigDecimal> getNaturalytelseBortfaltPrÅr() {
@@ -56,14 +55,6 @@ public class BGAndelArbeidsforholdDto {
 
     public Optional<BigDecimal> getNaturalytelseTilkommetPrÅr() {
         return Optional.ofNullable(naturalytelseTilkommetPrÅr);
-    }
-
-    public Boolean getErTidsbegrensetArbeidsforhold() {
-        return erTidsbegrensetArbeidsforhold;
-    }
-
-    public Boolean erLønnsendringIBeregningsperioden() {
-        return null;
     }
 
     public LocalDate getArbeidsperiodeFom() {
@@ -90,15 +81,15 @@ public class BGAndelArbeidsforholdDto {
     }
 
     public Hjemmel getHjemmelForRefusjonskravfrist() {
-        return hjemmelForRefusjonskravfrist;
+        return refusjon != null ? refusjon.getHjemmelForRefusjonskravfrist() : null;
     }
 
     public BigDecimal getSaksbehandletRefusjonPrÅr() {
-        return saksbehandletRefusjonPrÅr;
+        return refusjon != null ? refusjon.getSaksbehandletRefusjonPrÅr() : null;
     }
 
     public BigDecimal getFordeltRefusjonPrÅr() {
-        return fordeltRefusjonPrÅr;
+        return refusjon != null ? refusjon.getFordeltRefusjonPrÅr() : null;
     }
 
     /**
@@ -108,12 +99,49 @@ public class BGAndelArbeidsforholdDto {
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
     public BigDecimal getGjeldendeRefusjonPrÅr() {
-        if (fordeltRefusjonPrÅr != null) {
-            return fordeltRefusjonPrÅr;
-        } else if (saksbehandletRefusjonPrÅr != null) {
-            return saksbehandletRefusjonPrÅr;
+        return refusjon != null ? refusjon.getGjeldendeRefusjonPrÅr() : null;
+    }
+
+    /** Returnerer refusjonskrav fra inntektsmelding om fristvilkåret er godkjent
+     *
+     * @return Innvilget refusjonskrav
+     */
+    public BigDecimal getInnvilgetRefusjonskravPrÅr() {
+        return refusjon != null ? refusjon.getInnvilgetRefusjonskravPrÅr() : null;
+    }
+
+
+    private void medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr, Hjemmel hjemmel, Utfall refusjonskravFristUtfall) {
+        if (refusjonskravPrÅr == null) {
+            return;
         }
-        return refusjonskravPrÅr;
+        if (this.refusjon == null) {
+            this.refusjon = Refusjon.medRefusjonskravPrÅr(refusjonskravPrÅr, hjemmel, refusjonskravFristUtfall);
+        } else {
+            this.refusjon.setRefusjonskravPrÅr(refusjonskravPrÅr);
+        }
+    }
+
+    private void medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
+        if (saksbehandletRefusjonPrÅr == null) {
+            return;
+        }
+        if (refusjon == null) {
+            refusjon = Refusjon.medSaksbehandletRefusjonPrÅr(saksbehandletRefusjonPrÅr);
+        } else {
+            refusjon.setSaksbehandletRefusjonPrÅr(saksbehandletRefusjonPrÅr);
+        }
+    }
+
+    private void medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
+        if (fordeltRefusjonPrÅr == null) {
+            return;
+        }
+        if (refusjon == null) {
+            refusjon = Refusjon.medFordeltRefusjonPrÅr(fordeltRefusjonPrÅr);
+        } else {
+            refusjon.setFordeltRefusjonPrÅr(fordeltRefusjonPrÅr);
+        }
     }
 
     @Override
@@ -141,7 +169,7 @@ public class BGAndelArbeidsforholdDto {
                 + "arbeidsforholdRef=" + arbeidsforholdRef + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "naturalytelseBortfaltPrÅr=" + naturalytelseBortfaltPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "naturalytelseTilkommetPrÅr=" + naturalytelseTilkommetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "refusjonskravPrÅr=" + refusjonskravPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
+                + "refusjon=" + refusjon + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "arbeidsperiodeFom=" + arbeidsperiodeFom //$NON-NLS-1$
                 + "arbeidsperiodeTom=" + arbeidsperiodeTom //$NON-NLS-1$
                 + ">"; //$NON-NLS-1$
@@ -212,18 +240,27 @@ public class BGAndelArbeidsforholdDto {
             return this;
         }
 
-        public Builder medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr) {
-            bgAndelArbeidsforhold.refusjonskravPrÅr = refusjonskravPrÅr;
+        public Builder medRefusjon(Refusjon refusjon) {
+            bgAndelArbeidsforhold.refusjon = refusjon;
+            return this;
+        }
+
+        public Builder medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr, Utfall refusjonskravFristUtfall) {
+            return medRefusjonskravPrÅr(refusjonskravPrÅr, Hjemmel.F_22_13_6, refusjonskravFristUtfall);
+        }
+
+        public Builder medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr, Hjemmel hjemmel, Utfall refusjonskravFristUtfall) {
+            bgAndelArbeidsforhold.medRefusjonskravPrÅr(refusjonskravPrÅr, hjemmel, refusjonskravFristUtfall);
             return this;
         }
 
         public Builder medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
-            bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
+            bgAndelArbeidsforhold.medSaksbehandletRefusjonPrÅr(saksbehandletRefusjonPrÅr);
             return this;
         }
 
         public Builder medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
-            bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
+            bgAndelArbeidsforhold.medFordeltRefusjonPrÅr(fordeltRefusjonPrÅr);
             return this;
         }
 
@@ -238,7 +275,14 @@ public class BGAndelArbeidsforholdDto {
         }
 
         public Builder medHjemmel(Hjemmel hjemmel) {
-            bgAndelArbeidsforhold.hjemmelForRefusjonskravfrist = hjemmel;
+            if (hjemmel == null || hjemmel == Hjemmel.UDEFINERT) {
+                return this;
+            }
+            if (bgAndelArbeidsforhold.refusjon == null) {
+                bgAndelArbeidsforhold.refusjon = Refusjon.medRefusjonskravPrÅr(null, hjemmel, null);
+            } else {
+                bgAndelArbeidsforhold.refusjon.setHjemmelForRefusjonskravfrist(hjemmel);
+            }
             return this;
         }
 

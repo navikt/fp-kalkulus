@@ -9,6 +9,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
@@ -112,15 +113,26 @@ public class BGMapperTilKalkulus {
         builder.medArbeidsforholdRef(IAYMapperTilKalkulus.mapArbeidsforholdRef(fraFagsystem.getArbeidsforholdRef()));
         builder.medArbeidsgiver(IAYMapperTilKalkulus.mapArbeidsgiver(fraFagsystem.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraFagsystem.getArbeidsperiodeFom());
-        builder.medRefusjonskravPrÅr(mapFraBeløp(fraFagsystem.getRefusjonskravPrÅr()));
+        builder.medRefusjon(mapRefusjon(fraFagsystem.getRefusjon()));
         builder.medSaksbehandletRefusjonPrÅr(mapFraBeløp(fraFagsystem.getSaksbehandletRefusjonPrÅr()));
         builder.medFordeltRefusjonPrÅr(mapFraBeløp(fraFagsystem.getFordeltRefusjonPrÅr()));
-        builder.medHjemmel(fraFagsystem.getHjemmelForRefusjonskravfrist() == null ? Hjemmel.UDEFINERT : Hjemmel.fraKode(fraFagsystem.getHjemmelForRefusjonskravfrist().getKode()));
 
         fraFagsystem.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
         fraFagsystem.getNaturalytelseBortfaltPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
         fraFagsystem.getNaturalytelseTilkommetPrÅr().map(Beløp::getVerdi).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
+    }
+
+    private static Refusjon mapRefusjon(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon refusjon) {
+        if (refusjon == null) {
+            return null;
+        }
+        return new Refusjon(
+                mapFraBeløp(refusjon.getRefusjonskravPrÅr()),
+                mapFraBeløp(refusjon.getSaksbehandletRefusjonPrÅr()),
+                mapFraBeløp(refusjon.getFordeltRefusjonPrÅr()),
+                refusjon.getHjemmelForRefusjonskravfrist(),
+                refusjon.getRefusjonskravFristUtfall());
     }
 
     private static BigDecimal mapFraBeløp(Beløp beløp) {

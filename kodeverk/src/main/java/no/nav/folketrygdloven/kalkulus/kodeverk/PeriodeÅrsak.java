@@ -27,7 +27,7 @@ public enum PeriodeÅrsak implements Kodeverdi {
     GRADERING_OPPHØRER("GRADERING_OPPHØRER", "Gradering opphører"),
     ENDRING_I_AKTIVITETER_SØKT_FOR("ENDRING_I_AKTIVITETER_SØKT_FOR", "Endring i aktiviteter søkt for"),
     TILKOMMET_INNTEKT("TILKOMMET_INNTEKT", "Tilkommet inntekt"),
-
+    REFUSJON_AVSLÅTT("REFUSJON_AVSLÅTT", "Refusjon avslått"),
     UDEFINERT("-", "Ikke definert"),
     ;
 

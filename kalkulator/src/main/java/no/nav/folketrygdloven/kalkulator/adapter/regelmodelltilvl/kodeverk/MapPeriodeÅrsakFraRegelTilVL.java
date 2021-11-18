@@ -20,6 +20,7 @@ public class MapPeriodeÅrsakFraRegelTilVL {
         PERIODE_ÅRSAK_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.GRADERING_OPPHØRER, PeriodeÅrsak.GRADERING_OPPHØRER);
         PERIODE_ÅRSAK_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR, PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
         PERIODE_ÅRSAK_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.TILKOMMET_INNTEKT, PeriodeÅrsak.TILKOMMET_INNTEKT);
+        PERIODE_ÅRSAK_MAP.put(no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.REFUSJON_AVSLÅTT, PeriodeÅrsak.REFUSJON_AVSLÅTT);
     }
 
     private MapPeriodeÅrsakFraRegelTilVL() {

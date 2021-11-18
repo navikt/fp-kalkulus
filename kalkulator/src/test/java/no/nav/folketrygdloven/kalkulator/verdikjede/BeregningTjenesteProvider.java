@@ -1,11 +1,11 @@
 package no.nav.folketrygdloven.kalkulator.verdikjede;
 
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPerioderForGraderingOgUtbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.FordelBeregningsgrunnlagTjenesteImpl;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBeregningsgrunnlagTjeneste;
@@ -27,13 +27,12 @@ class BeregningTjenesteProvider {
                 TilfelleUtlederMockTjeneste.getUtlederInstances());
         AvklaringsbehovUtlederFaktaOmBeregning avklaringsbehovUtlederFaktaOmBeregning = new AvklaringsbehovUtlederFaktaOmBeregning(faktaOmBeregningTilfelleTjeneste);
 
-        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
+        var oversetterTilRegelRefusjonOgGradering = new MapPerioderForGraderingOgUtbetalingsgrad();
         var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
-        var oversetterFraRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+        var oversetterFraRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
         var fordelPerioderTjeneste = new FordelPerioderTjeneste(
-                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering),
-                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon),
-                oversetterFraRegelRefusjonOgGradering);
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
+        );
         var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste();
 
         MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
@@ -41,8 +40,7 @@ class BeregningTjenesteProvider {
         MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
         var fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjenesteImpl(new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
         var fullføreBeregningsgrunnlagTjeneste = new FullføreBeregningsgrunnlagFPImpl(mapBeregningsgrunnlagFraVLTilRegel);
-        var vurderRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlag(fordelPerioderTjeneste,
-                new UnitTestLookupInstanceImpl<>(new AvklaringsbehovutledertjenesteVurderRefusjonFP()));
+        var vurderRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlag(fordelPerioderTjeneste, new UnitTestLookupInstanceImpl<>(new AvklaringsbehovutledertjenesteVurderRefusjonFP()));
         return new BeregningTjenesteWrapper(fullføreBeregningsgrunnlagTjeneste, fordelBeregningsgrunnlagTjeneste, avklaringsbehovUtlederFaktaOmBeregning, fastsettBeregningsgrunnlagPerioderTjeneste, vurderRefusjonBeregningsgrunnlag);
     }
 

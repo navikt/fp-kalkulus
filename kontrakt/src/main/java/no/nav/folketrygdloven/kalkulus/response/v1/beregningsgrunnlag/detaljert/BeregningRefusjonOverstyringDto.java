@@ -31,6 +31,11 @@ public class BeregningRefusjonOverstyringDto {
     @Valid
     private LocalDate førsteMuligeRefusjonFom;
 
+    @JsonProperty(value = "erFristUtvidet")
+    @Valid
+    private Boolean erFristUtvidet;
+
+
     @JsonProperty(value = "refusjonPerioder")
     @Valid
     @Size(min = 1)
@@ -39,9 +44,10 @@ public class BeregningRefusjonOverstyringDto {
     public BeregningRefusjonOverstyringDto() {
     }
 
-    public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver, @Valid LocalDate førsteMuligeRefusjonFom) {
+    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver, LocalDate førsteMuligeRefusjonFom, Boolean erFristUtvidet) {
         this.arbeidsgiver = arbeidsgiver;
         this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
+        this.erFristUtvidet = erFristUtvidet;
     }
 
     public BeregningRefusjonOverstyringDto(@Valid @NotNull Arbeidsgiver arbeidsgiver,
@@ -59,5 +65,9 @@ public class BeregningRefusjonOverstyringDto {
 
     public LocalDate getFørsteMuligeRefusjonFom() {
         return førsteMuligeRefusjonFom;
+    }
+
+    public Boolean getErFristUtvidet() {
+        return erFristUtvidet;
     }
 }

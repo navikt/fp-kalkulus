@@ -13,7 +13,7 @@ public class SplittBGPerioder {
         // skjul public constructor
     }
 
-    static BeregningsgrunnlagDto splitt(BeregningsgrunnlagDto beregningsgrunnlag,
+    public static BeregningsgrunnlagDto splitt(BeregningsgrunnlagDto beregningsgrunnlag,
                        PeriodeÅrsak periodeårsak,
                        LocalDate tilkommetInntektDato) {
 

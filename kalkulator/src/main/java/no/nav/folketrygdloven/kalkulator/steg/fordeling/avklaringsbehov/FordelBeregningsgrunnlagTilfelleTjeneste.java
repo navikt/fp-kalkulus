@@ -75,13 +75,13 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
     }
 
     private static Boolean harInnvilgetRefusjon(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr)
                 .map(r -> r.compareTo(BigDecimal.ZERO) > 0).orElse(false);
     }
 
     private static BigDecimal finnTotalRefusjonPrÅr(BeregningsgrunnlagPeriodeDto periode) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().flatMap(a -> a.getBgAndelArbeidsforhold().stream())
-                .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                .map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);

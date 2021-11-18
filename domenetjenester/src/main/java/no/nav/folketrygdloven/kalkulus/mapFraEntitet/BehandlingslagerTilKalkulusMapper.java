@@ -118,7 +118,8 @@ public class BehandlingslagerTilKalkulusMapper {
                     : beregningRefusjonOverstyring.getRefusjonPerioder().stream()
                     .map(BehandlingslagerTilKalkulusMapper::mapRefusjonPeriode)
                     .collect(Collectors.toList());
-            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()), beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), refusjonPerioder);
+            BeregningRefusjonOverstyringDto dto = new BeregningRefusjonOverstyringDto(mapArbeidsgiver(beregningRefusjonOverstyring.getArbeidsgiver()),
+                    beregningRefusjonOverstyring.getFørsteMuligeRefusjonFom().orElse(null), refusjonPerioder, beregningRefusjonOverstyring.getErFristUtvidet());
             dtoBuilder.leggTilOverstyring(dto);
         });
         return dtoBuilder.build();

@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelTy
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -156,7 +157,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
                 .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12))
                 .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING)
                 .medArbeidsgiver(Arbeidsgiver.virksomhet("1234"))
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(inntekt)))
+                .medRefusjonskravPrÅr(BigDecimal.valueOf(inntekt), Utfall.GODKJENT))
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
             .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))

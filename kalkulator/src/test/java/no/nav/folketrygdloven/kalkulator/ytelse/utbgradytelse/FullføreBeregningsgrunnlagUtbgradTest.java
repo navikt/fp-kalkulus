@@ -59,6 +59,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.utils.Tuple;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
@@ -163,7 +164,7 @@ public class FullføreBeregningsgrunnlagUtbgradTest {
             .medArbeidsperiodeTom(ARBEIDSPERIODE_TOM)
             .medArbeidsforholdRef(arbRefId != null ? arbRefId.toString() : null)
             .medArbeidsgiver(arbeidsgiver)
-            .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjon));
+            .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjon), Utfall.GODKJENT);
     }
 
     @Test

@@ -56,6 +56,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
     public BeregningRefusjonOverstyringEntitet(BeregningRefusjonOverstyringEntitet beregningRefusjonOverstyringEntitet) {
         this.arbeidsgiver = beregningRefusjonOverstyringEntitet.getArbeidsgiver();
         this.førsteMuligeRefusjonFom = beregningRefusjonOverstyringEntitet.getFørsteMuligeRefusjonFom().orElse(null);
+        this.erFristUtvidet =  beregningRefusjonOverstyringEntitet.getErFristUtvidet();
         beregningRefusjonOverstyringEntitet.getRefusjonPerioder().stream().map(BeregningRefusjonPeriodeEntitet::new)
                 .forEach(this::leggTilBeregningRefusjonPeriode);
     }
@@ -132,7 +133,7 @@ public class BeregningRefusjonOverstyringEntitet extends BaseEntitet {
 
     private void verifiserTilstand() {
         Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
-        if (førsteMuligeRefusjonFom == null && refusjonPerioder.isEmpty()) {
+        if (førsteMuligeRefusjonFom == null && erFristUtvidet == null && refusjonPerioder.isEmpty()) {
             throw new IllegalStateException("Objektet inneholder ingen informasjon om refusjon, ugyldig tilstand");
         }
     }

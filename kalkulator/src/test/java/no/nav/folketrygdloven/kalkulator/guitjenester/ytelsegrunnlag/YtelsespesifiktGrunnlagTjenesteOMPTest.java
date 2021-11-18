@@ -95,7 +95,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
 
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse),
-                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
+                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), List.of(), List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);
@@ -149,7 +149,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
         var input = new BeregningsgrunnlagGUIInput(lagReferanseMedStp(koblingReferanse),
-                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
+                InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(List.of(inntektsmelding)).build(), List.of(), List.of(), omsorgspengeGrunnlagDto).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);
@@ -190,7 +190,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, null, List.of(), List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);
@@ -231,7 +231,7 @@ public class YtelsespesifiktGrunnlagTjenesteOMPTest {
         Skjæringstidspunkt skjæringstidspunkt = Skjæringstidspunkt.builder().medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT)
                 .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT).build();
         KoblingReferanse koblingReferanse = KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(), Optional.empty(), skjæringstidspunkt);
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, null, List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(koblingReferanse, null, List.of(), List.of(), null).medBeregningsgrunnlagGrunnlag(grunnlag);
         YtelsespesifiktGrunnlagTjenesteOMP ytelsespesifiktGrunnlagTjenesteOMP = new YtelsespesifiktGrunnlagTjenesteOMP();
         // Act
         Optional<YtelsespesifiktGrunnlagDto> resultat = ytelsespesifiktGrunnlagTjenesteOMP.map(input);

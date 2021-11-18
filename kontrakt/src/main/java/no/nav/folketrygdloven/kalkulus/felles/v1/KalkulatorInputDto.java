@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
@@ -27,7 +28,13 @@ public class KalkulatorInputDto {
     @JsonProperty(value = "refusjonskravDatoer")
     @Valid
     @Size()
+    @Deprecated(forRemoval = true)
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
+
+    @JsonProperty(value = "refusjonskravPrArbeidsgiver")
+    @Valid
+    @Size()
+    private List<KravperioderPrArbeidsforhold> refusjonskravPrArbeidsforhold;
 
     @JsonProperty(value = "iayGrunnlag", required = true)
     @NotNull
@@ -64,6 +71,10 @@ public class KalkulatorInputDto {
         return refusjonskravDatoer;
     }
 
+    public List<KravperioderPrArbeidsforhold> getRefusjonskravPrArbeidsforhold() {
+        return refusjonskravPrArbeidsforhold;
+    }
+
     public InntektArbeidYtelseGrunnlagDto getIayGrunnlag() {
         return iayGrunnlag;
     }
@@ -78,6 +89,11 @@ public class KalkulatorInputDto {
 
     public KalkulatorInputDto medRefusjonskravDatoer(List<RefusjonskravDatoDto> refusjonskravDatoer) {
         this.refusjonskravDatoer = refusjonskravDatoer;
+        return this;
+    }
+
+    public KalkulatorInputDto medRefusjonsperioderPrInntektsmelding(List<KravperioderPrArbeidsforhold> refusjonsperioderPrInntektsmelding) {
+        this.refusjonskravPrArbeidsforhold = refusjonsperioderPrInntektsmelding;
         return this;
     }
 

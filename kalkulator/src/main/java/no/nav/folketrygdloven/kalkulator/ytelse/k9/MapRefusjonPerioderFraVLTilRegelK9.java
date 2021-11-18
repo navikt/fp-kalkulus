@@ -91,19 +91,5 @@ public class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPerioderFraVL
         return timeline.compress();
     }
 
-    private boolean erMidlertidigInaktiv(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return beregningsgrunnlag.getAktivitetStatuser().stream().anyMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.MIDLERTIDIG_INAKTIV));
-    }
-
-
-    @Override
-    protected List<Gradering> mapUtbetalingsgrader(InntektsmeldingDto im, BeregningsgrunnlagInput beregningsgrunnlagInput) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected void mapFristData(BeregningsgrunnlagInput input, InntektsmeldingDto inntektsmelding, ArbeidsforholdOgInntektsmelding.Builder builder) {
-        // Skal ikkje vurdere frist for k9
-    }
 
 }

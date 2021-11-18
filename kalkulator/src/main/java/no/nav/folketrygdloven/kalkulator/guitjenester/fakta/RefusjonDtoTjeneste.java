@@ -46,7 +46,7 @@ public class RefusjonDtoTjeneste {
 
     private static BigDecimal finnTotalRefusjonPrÅr(BeregningsgrunnlagPeriodeDto periode) {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().flatMap(a -> a.getBgAndelArbeidsforhold().stream())
-                .map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr)
+                .map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);

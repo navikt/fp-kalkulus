@@ -27,6 +27,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
 
 
@@ -251,7 +252,7 @@ public class BeregningsgrunnlagTestUtil {
             .medArbeidsgiver(arbeidsgiver)
             .medArbeidsforholdRef(arbId)
             .medRefusjonskravPrÅr(refusjonPrÅr.get(identifikator) != null ?
-                BigDecimal.valueOf(refusjonPrÅr.get(identifikator)) : null)
+                BigDecimal.valueOf(refusjonPrÅr.get(identifikator)) : null, Utfall.GODKJENT)
             .medArbeidsperiodeFom(arbeidsperiode.getFomDato())
             .medArbeidsperiodeTom(arbeidsperiode.getTomDato());
     }

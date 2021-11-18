@@ -293,7 +293,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
 
     private BeregningsgrunnlagGrunnlagDto map(UtbetalingsgradGrunnlag grunnlag) {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(),
-                Optional.empty(), STP), null, null, (YtelsespesifiktGrunnlag) grunnlag);
+                Optional.empty(), STP), null, null, null, (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder, null,
                 null, null, false, GRUNNBELØP);

@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingT
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 public class RefusjonOgGraderingTjenesteTest {
 
@@ -413,7 +414,7 @@ public class RefusjonOgGraderingTjenesteTest {
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                 .medArbeidsgiver(arbeidsgiver)
                 .medArbeidsforholdRef(arbeidsforholdRef)
-                .medRefusjonskravPrÅr(refusjon2 == null ? null : BigDecimal.valueOf(refusjon2))
+                .medRefusjonskravPrÅr(refusjon2 == null ? null : BigDecimal.valueOf(refusjon2), Utfall.GODKJENT)
                 .medArbeidsperiodeFom(tilkomEtter ? periode1.getBeregningsgrunnlagPeriodeFom() : SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12)))
             .build(periode1);
     }

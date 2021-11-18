@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling;
 
-import static no.nav.folketrygdloven.kalkulator.OpprettRefusjondatoerFraInntektsmeldinger.opprett;
+import static no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger.opprett;
 import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest.GRUNNBELØP;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,12 +18,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -48,6 +47,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fordeling.omfordeling.OmfordelBere
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.gradering.MapPerioderForGraderingFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
@@ -112,11 +112,11 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         var inntektsmeldinger = List.of(im1, im2, im3);
 
         var iayGrunnlag = iayGrunnlagBuilder.medInntektsmeldinger(inntektsmeldinger).build();
-        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(koblingReferanse, iayGrunnlag), null)
+        var input = new BeregningsgrunnlagInput(koblingReferanse, iayGrunnlag, null, opprett(iayGrunnlag, koblingReferanse.getSkjæringstidspunktBeregning()), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag);
+        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForRefusjon(input, beregningsgrunnlag);
         BeregningsgrunnlagGrunnlagDto periodisertGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                 .medBeregningsgrunnlag(periodisertBG.getBeregningsgrunnlag())
                 .build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
@@ -142,13 +142,11 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGradering();
+        var oversetterTilRegelRefusjonOgGradering = new MapPerioderForGraderingFraVLTilRegel();
         var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
-        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
         return new FordelPerioderTjeneste(
-                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering),
-                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon),
-                oversetterFraRegelTilVLRefusjonOgGradering
+                new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
         );
     }
 

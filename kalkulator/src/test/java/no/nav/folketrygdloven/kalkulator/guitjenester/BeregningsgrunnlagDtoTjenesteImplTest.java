@@ -315,7 +315,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagDto(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        var input = new BeregningsgrunnlagGUIInput(ref, iayGrunnlag, List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagGUIInput(ref, iayGrunnlag, List.of(), List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         return beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
     }
 

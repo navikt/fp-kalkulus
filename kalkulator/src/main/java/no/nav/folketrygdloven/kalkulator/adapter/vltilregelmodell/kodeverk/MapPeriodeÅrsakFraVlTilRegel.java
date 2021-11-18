@@ -24,6 +24,7 @@ public class MapPeriodeÅrsakFraVlTilRegel {
         mapPeriodeÅrsak.put(PeriodeÅrsak.GRADERING_OPPHØRER, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.GRADERING_OPPHØRER);
         mapPeriodeÅrsak.put(PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.ENDRING_I_AKTIVITETER_SØKT_FOR);
         mapPeriodeÅrsak.put(PeriodeÅrsak.TILKOMMET_INNTEKT, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.TILKOMMET_INNTEKT);
+        mapPeriodeÅrsak.put(PeriodeÅrsak.REFUSJON_AVSLÅTT, no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak.REFUSJON_AVSLÅTT);
 
         PERIODE_ÅRSAK_MAP = Collections.unmodifiableMap(mapPeriodeÅrsak);
 

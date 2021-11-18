@@ -234,7 +234,7 @@ class LagVurderRefusjonDtoTest {
             grunnlag.medRefusjonOverstyring(refusjonOverstyringerBuilder.build());
         }
         BeregningsgrunnlagGrunnlagDto byggetGrunnlag = grunnlag.build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
-        input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, List.of(), null)
+        input = new BeregningsgrunnlagGUIInput(koblingReferanse, iay, List.of(), List.of(), null)
                 .medBeregningsgrunnlagGrunnlag(byggetGrunnlag)
                 .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(grunnlagOrginal);
     }

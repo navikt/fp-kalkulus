@@ -18,10 +18,10 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -50,6 +50,9 @@ public class BeregningsgrunnlagGUIInput {
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
+    /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere */
+    private List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver;
+
     /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
     private BeregningsgrunnlagGrunnlagDto faktaOmBeregningBeregningsgrunnlagGrunnlag;
 
@@ -63,15 +66,19 @@ public class BeregningsgrunnlagGUIInput {
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                       List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                      List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
                                       YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
         this.refusjonskravDatoer = refusjonskravDatoer;
+        this.kravperioderPrArbeidsgiver = kravperioderPrArbeidsgiver;
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
     private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getRefusjonskravDatoer(), input.getYtelsespesifiktGrunnlag());
+        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getRefusjonskravDatoer(),
+                input.getKravperioderPrArbeidsgiver(),
+                input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
@@ -140,6 +147,10 @@ public class BeregningsgrunnlagGUIInput {
 
     public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
         return refusjonskravDatoer;
+    }
+
+    public List<KravperioderPrArbeidsforholdDto> getKravperioderPrArbeidsgiver() {
+        return kravperioderPrArbeidsgiver;
     }
 
     public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningBeregningsgrunnlagGrunnlag() {

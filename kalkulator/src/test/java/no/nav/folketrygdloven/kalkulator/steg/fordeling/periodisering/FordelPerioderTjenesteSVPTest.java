@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering;
+import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -46,10 +46,11 @@ import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.svp.MapRefusjonPerioderFraVLTilRegelSVP;
-import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad;
+import no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.MapPerioderForUtbetalingsgradFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
@@ -71,7 +72,7 @@ public class FordelPerioderTjenesteSVPTest {
 
     private FordelPerioderTjeneste tjeneste;
 
-    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
+    private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, FagsakYtelseType.SVANGERSKAPSPENGER);
 
 
     @BeforeEach
@@ -137,7 +138,7 @@ public class FordelPerioderTjenesteSVPTest {
         PeriodeMedUtbetalingsgradDto periode3 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(3),
             BigDecimal.ZERO);
 
-        UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
+        UtbetalingsgradPrAktivitetDto tilrette1 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER),
             periode1, periode2, periode3);
 
         PeriodeMedUtbetalingsgradDto periode4 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusDays(14), SKJÆRINGSTIDSPUNKT.plusMonths(1),
@@ -145,7 +146,7 @@ public class FordelPerioderTjenesteSVPTest {
         PeriodeMedUtbetalingsgradDto periode5 = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT.plusMonths(1).plusDays(1), SKJÆRINGSTIDSPUNKT.plusMonths(2),
             BigDecimal.valueOf(40));
 
-        UtbetalingsgradPrAktivitetDto tilrette2 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2),
+        UtbetalingsgradPrAktivitetDto tilrette2 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER_2),
             periode4, periode5);
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2));
@@ -182,7 +183,7 @@ public class FordelPerioderTjenesteSVPTest {
         // Arrange
         PeriodeMedUtbetalingsgradDto periode = lagPeriodeMedUtbetaling(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(1), BigDecimal.valueOf(50));
 
-        UtbetalingsgradPrAktivitetDto tilrette1 = lagTilretteleggingMedUtbelingsgrad(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER), periode);
+        UtbetalingsgradPrAktivitetDto tilrette1 = lagUtbetalingsgradPrAktivitet(UttakArbeidType.ORDINÆRT_ARBEID, Arbeidsgiver.virksomhet(ORG_NUMMER), periode);
 
         InntektArbeidYtelseAggregatBuilder iayAggregatBuilder = leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER, ORG_NUMMER_2)
         );
@@ -223,7 +224,7 @@ public class FordelPerioderTjenesteSVPTest {
         KoblingReferanse refMeStp = koblingReferanse.medSkjæringstidspunkt(skjæringstidspunkt);
         var input = new BeregningsgrunnlagInput(refMeStp, iayGrunnlag, null, List.of(), svangerskapspengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
-        return tjeneste.fastsettPerioderForGraderingOgUtbetalingsgrad(input, beregningsgrunnlag).getBeregningsgrunnlag();
+        return tjeneste.fastsettPerioderForUtbetalingsgradEllerGradering(input, beregningsgrunnlag).getBeregningsgrunnlag();
     }
 
     private void assertBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate expectedFom, LocalDate expectedTom,
@@ -263,8 +264,8 @@ public class FordelPerioderTjenesteSVPTest {
             .medBeregningsgrunnlagPeriode(fom, tom);
     }
 
-    private UtbetalingsgradPrAktivitetDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver,
-                                                                             PeriodeMedUtbetalingsgradDto... perioder) {
+    private UtbetalingsgradPrAktivitetDto lagUtbetalingsgradPrAktivitet(UttakArbeidType uttakArbeidType, Arbeidsgiver arbeidsgiver,
+                                                                        PeriodeMedUtbetalingsgradDto... perioder) {
         var tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.nyRef(), uttakArbeidType);
         return new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(perioder));
     }
@@ -274,10 +275,10 @@ public class FordelPerioderTjenesteSVPTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraVLTilRegelRefusjonOgGraderingUtbgrad();
+        var oversetterTilRegelRefusjonOgGradering = new MapPerioderForUtbetalingsgradFraVLTilRegel();
         var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelSVP();
-        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
-        return new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjonOgGradering), new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon), oversetterFraRegelTilVLRefusjonOgGradering
+        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
+        return new FordelPerioderTjeneste(new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
         );
     }
 }

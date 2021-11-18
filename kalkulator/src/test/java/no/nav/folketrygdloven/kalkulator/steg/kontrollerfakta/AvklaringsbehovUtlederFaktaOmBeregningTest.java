@@ -49,6 +49,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 @EnableWeld
 public class AvklaringsbehovUtlederFaktaOmBeregningTest {
@@ -268,7 +269,7 @@ public class AvklaringsbehovUtlederFaktaOmBeregningTest {
         if (orgnr != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(Arbeidsgiver.virksomhet(orgnr))
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr));
+                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr), Utfall.GODKJENT);
             andelBuilder
                     .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(4).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_OPPTJENING.withDayOfMonth(1).minusDays(1))
                     .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);

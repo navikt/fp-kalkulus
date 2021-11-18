@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -28,15 +28,13 @@ public class MapTilGUIInputFraKalkulator {
                 kobling.getKoblingReferanse().getReferanse(),
                 Optional.empty(),
                 skjæringstidspunkt);
-        var refusjonskravDatoer = input.getRefusjonskravDatoer();
         var iayGrunnlagMappet = new MapIAYTilKalulator(input.getIayGrunnlag())
                 .mapGrunnlag(input.getIayGrunnlag());
         return new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,
-                MapFraKalkulator.mapFraDto(refusjonskravDatoer,
-                        input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
-                        input.getSkjæringstidspunkt()),
+                List.of(),
+                MapFraKalkulator.mapFraDto(input.getRefusjonskravPrArbeidsforhold(), input.getRefusjonskravDatoer(), input.getIayGrunnlag(), input.getSkjæringstidspunkt()),
                 MapFraKalkulator.mapFraDto(kobling.getYtelseTyperKalkulusStøtter(), input, iayGrunnlagMappet, beregningsgrunnlagGrunnlagEntitet));
     }
 

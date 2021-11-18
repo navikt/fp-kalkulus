@@ -8,7 +8,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.ErFjernetIOverstyrt;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
-import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -23,12 +22,11 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
         // Skjul
     }
 
-    public static Collection<YrkesaktivitetDto> finnYrkesaktiviteter(KoblingReferanse koblingReferanse,
-                                                                     InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                     BeregningsgrunnlagGrunnlagDto grunnlag) {
+    public static Collection<YrkesaktivitetDto> finnYrkesaktiviteter(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                     BeregningsgrunnlagGrunnlagDto grunnlag,
+                                                                     LocalDate skjæringstidspunktBeregning) {
         YrkesaktivitetFilterDto filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
-        LocalDate skjæringstidspunktBeregning = koblingReferanse.getSkjæringstidspunktBeregning();
         BeregningAktivitetAggregatDto overstyrtEllerRegisterAktiviteter = grunnlag.getOverstyrteEllerRegisterAktiviteter();
         return yrkesaktiviteterForBeregning.stream()
             .filter(yrkesaktivitet ->
@@ -46,14 +44,13 @@ public class FinnYrkesaktiviteterForBeregningTjeneste {
      *
      * Skal kun brukes i tilfeller der man også skal hente ut fjernede aktiviteter eller der disse ikke er relevante (f.eks om man kun ser på aktiviteter etter stp)
      *
-     * @param koblingReferanse Referanse
      * @param filter Yrkesaktivitetfilter
+     * @param skjæringstidspunktBeregning
      * @return Yrkesaktiviteter inkludert fjernede i overstyring av beregningaktiviteter
      */
-    public static Collection<YrkesaktivitetDto> finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(KoblingReferanse koblingReferanse,
-                                                                                                     YrkesaktivitetFilterDto filter) {
+    public static Collection<YrkesaktivitetDto> finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(YrkesaktivitetFilterDto filter,
+                                                                                                     LocalDate skjæringstidspunktBeregning) {
         Collection<YrkesaktivitetDto> yrkesaktiviteterForBeregning = filter.getYrkesaktiviteterForBeregning();
-        LocalDate skjæringstidspunktBeregning = koblingReferanse.getSkjæringstidspunktBeregning();
         return yrkesaktiviteterForBeregning.stream()
             .filter(ya -> FinnAnsettelsesPeriode.finnMinMaksPeriode(filter.getAnsettelsesPerioder(ya), skjæringstidspunktBeregning).isPresent())
             .collect(Collectors.toList());

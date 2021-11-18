@@ -6,7 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.felles.InntektsmeldingMedRefusjonTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
@@ -25,7 +25,7 @@ public class VurderRefusjonskravTilfelleUtleder implements TilfelleUtleder {
             input.getKoblingReferanse(),
             input.getIayGrunnlag(),
             beregningsgrunnlagGrunnlag,
-            input.getRefusjonskravDatoer()).isEmpty()) {
+            input.getKravPrArbeidsgiver()).isEmpty()) {
             return Optional.of(FaktaOmBeregningTilfelle.VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT);
         }
         return Optional.empty();

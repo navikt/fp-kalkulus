@@ -1,20 +1,17 @@
 package no.nav.folketrygdloven.kalkulus.mappers;
 
+import static no.nav.folketrygdloven.kalkulus.mappers.MapIAYTilKalulator.mapArbeidsforholdRef;
 import static no.nav.folketrygdloven.kalkulus.mappers.OmsorgspengeGrunnlagMapper.mapOmsorgspengegrunnlag;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
@@ -27,25 +24,31 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Builder;
+import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonsperiodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelseandel;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelsegrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelseperiode;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetGraderingDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.KravperioderPrArbeidsforhold;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.OmsorgspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.PerioderForKrav;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.iay.inntekt.v1.RefusjonDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -88,15 +91,13 @@ public class MapFraKalkulator {
 
         var iayGrunnlag = input.getIayGrunnlag();
         var opptjeningAktiviteter = input.getOpptjeningAktiviteter();
-        var refusjonskravDatoer = input.getRefusjonskravDatoer();
+        var kravPrArbeidsforhold = input.getRefusjonskravPrArbeidsforhold();
 
         var iayGrunnlagMappet = mapFraDto(iayGrunnlag);
         BeregningsgrunnlagInput utenGrunnbeløp = new BeregningsgrunnlagInput(ref,
                 iayGrunnlagMappet,
                 mapFraDto(opptjeningAktiviteter),
-                mapFraDto(refusjonskravDatoer,
-                        input.getIayGrunnlag().getInntektsmeldingDto() == null ? Collections.emptyList() : input.getIayGrunnlag().getInntektsmeldingDto().getInntektsmeldinger(),
-                        input.getSkjæringstidspunkt()),
+                mapFraDto(kravPrArbeidsforhold, input.getRefusjonskravDatoer(), iayGrunnlag, input.getSkjæringstidspunkt()),
                 mapFraDto(kobling.getYtelseTyperKalkulusStøtter(),
                         input,
                         iayGrunnlagMappet,
@@ -110,6 +111,36 @@ public class MapFraKalkulator {
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
+    }
+
+    public static List<KravperioderPrArbeidsforholdDto> mapFraDto(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {
+        if (kravPrArbeidsforhold == null) {
+            // TODO: Fjern når alle konsumenter har tatt i bruk ny struktur
+            kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
+        };
+        return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).collect(Collectors.toList());
+    }
+
+    private static KravperioderPrArbeidsforholdDto mapKravPerioder(KravperioderPrArbeidsforhold kravperioderPrArbeidsforhold) {
+        return new KravperioderPrArbeidsforholdDto(mapArbeidsgiver(kravperioderPrArbeidsforhold.getArbeidsgiver()),
+                mapArbeidsforholdRef(kravperioderPrArbeidsforhold.getInternreferanse()),
+                kravperioderPrArbeidsforhold.getAlleSøktePerioder()
+                        .stream().map(MapFraKalkulator::mapSøktPeriode)
+                        .collect(Collectors.toList()),
+                kravperioderPrArbeidsforhold.getSisteSøktePerioder().getRefusjonsperioder().stream()
+                        .map(Refusjonsperiode::getPeriode)
+                        .map(MapFraKalkulator::mapPeriode)
+                        .collect(Collectors.toList()));
+    }
+
+    private static PerioderForKravDto mapSøktPeriode(PerioderForKrav p) {
+        return new PerioderForKravDto(p.getInnsendingsdato(), p.getRefusjonsperioder()
+                .stream().map(MapFraKalkulator::mapRefusjonsperiode)
+                .collect(Collectors.toList()));
+    }
+
+    private static RefusjonsperiodeDto mapRefusjonsperiode(Refusjonsperiode rp) {
+        return new RefusjonsperiodeDto(mapPeriode(rp.getPeriode()), rp.getBeløp());
     }
 
     public static YtelsespesifiktGrunnlag mapFraDto(YtelseTyperKalkulusStøtterKontrakt ytelseType,
@@ -185,8 +216,12 @@ public class MapFraKalkulator {
 
     private static List<Ytelseperiode> mapYtelseperioder(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseperiode> perioder) {
         return perioder.stream()
-                .map(p -> new Ytelseperiode(Intervall.fraOgMedTilOgMed(p.getPeriode().getFom(), p.getPeriode().getTom()), mapYtelseandeler(p.getAndeler())))
+                .map(p -> new Ytelseperiode(mapPeriode(p.getPeriode()), mapYtelseandeler(p.getAndeler())))
                 .collect(Collectors.toList());
+    }
+
+    private static Intervall mapPeriode(Periode periode) {
+        return Intervall.fraOgMedTilOgMed(periode.getFom(), periode.getTom());
     }
 
     private static List<Ytelseandel> mapYtelseandeler(List<no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning.Ytelseandel> andeler) {
@@ -209,36 +244,9 @@ public class MapFraKalkulator {
         }
 
         return frisinnGrunnlag.getPerioderMedSøkerInfo().stream()
-                .map(p -> new FrisinnPeriode(Intervall.fraOgMedTilOgMed(p.getPeriode().getFom(), p.getPeriode().getTom()), p.getSøkerFrilansIPeriode(),
+                .map(p -> new FrisinnPeriode(mapPeriode(p.getPeriode()), p.getSøkerFrilansIPeriode(),
                         p.getSøkerNæringIPeriode()))
                 .collect(Collectors.toList());
-    }
-
-    public static List<no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto> mapFraDto(Collection<RefusjonskravDatoDto> refusjonskravDatoer,
-                                                                                                    List<InntektsmeldingDto> inntektsmeldinger,
-                                                                                                    LocalDate skjæringstidspunktOpptjening) {
-        if (refusjonskravDatoer == null) {
-            return Collections.emptyList();
-        }
-        return refusjonskravDatoer.stream().map(ref -> new no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto(
-                mapArbeidsgiver(ref.getArbeidsgiver()),
-                finnFørsteDagMedRefusjonskrav(inntektsmeldinger, skjæringstidspunktOpptjening),
-                ref.getFørsteInnsendingAvRefusjonskrav(),
-                ref.harRefusjonFraStart()))
-                .collect(Collectors.toList());
-    }
-
-    private static LocalDate finnFørsteDagMedRefusjonskrav(List<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunktOpptjening) {
-        boolean harRefusjonFraStp = inntektsmeldinger.stream().anyMatch(im -> im.getRefusjonBeløpPerMnd() != null && im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) > 0);
-        if (harRefusjonFraStp) {
-            return skjæringstidspunktOpptjening;
-        }
-        LocalDate førsteDatoForEndring = inntektsmeldinger.stream().flatMap(im -> im.getEndringerRefusjon().stream())
-                .filter(e -> e.getRefusjonsbeløpMnd() != null && e.getRefusjonsbeløpMnd().getVerdi().compareTo(BigDecimal.ZERO) > 0)
-                .map(RefusjonDto::getFom)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-        return førsteDatoForEndring != null && førsteDatoForEndring.isBefore(skjæringstidspunktOpptjening) ? skjæringstidspunktOpptjening : førsteDatoForEndring;
     }
 
     public static AktivitetGradering mapFraDto(AktivitetGraderingDto aktivitetGradering) {
@@ -264,7 +272,7 @@ public class MapFraKalkulator {
                 opptjeningAktiviteter.getPerioder().stream()
                         .map(opptjeningPeriodeDto -> no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.nyPeriode(
                                 OpptjeningAktivitetType.fraKode(opptjeningPeriodeDto.getOpptjeningAktivitetType().getKode()),
-                                Intervall.fraOgMedTilOgMed(opptjeningPeriodeDto.getPeriode().getFom(), opptjeningPeriodeDto.getPeriode().getTom()),
+                                mapPeriode(opptjeningPeriodeDto.getPeriode()),
                                 opptjeningPeriodeDto.getArbeidsgiver() != null && opptjeningPeriodeDto.getArbeidsgiver().getErOrganisasjon()
                                         ? opptjeningPeriodeDto.getArbeidsgiver().getIdent()
                                         : null,

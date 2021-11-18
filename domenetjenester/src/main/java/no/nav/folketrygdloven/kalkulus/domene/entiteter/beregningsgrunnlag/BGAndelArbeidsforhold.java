@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
 
@@ -54,16 +55,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     private InternArbeidsforholdRef arbeidsforholdRef;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "refusjonskrav_pr_aar")))
-    private Beløp refusjonskravPrÅr;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "saksbehandlet_refusjon_pr_aar")))
-    private Beløp saksbehandletRefusjonPrÅr;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_refusjon_pr_aar")))
-    private Beløp fordeltRefusjonPrÅr;
+    private Refusjon refusjon;
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "naturalytelse_bortfalt_pr_aar")))
@@ -79,18 +71,13 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     @Column(name = "arbeidsperiode_tom")
     private LocalDate arbeidsperiodeTom;
 
-    @Column(name = "hjemmel_for_refusjonskravfrist")
-    private Hjemmel hjemmelForRefusjonskravfrist;
-
     public BGAndelArbeidsforhold(BGAndelArbeidsforhold bgAndelArbeidsforhold) {
         this.arbeidsforholdRef = bgAndelArbeidsforhold.arbeidsforholdRef;
         this.arbeidsgiver = bgAndelArbeidsforhold.arbeidsgiver;
         this.arbeidsperiodeFom = bgAndelArbeidsforhold.arbeidsperiodeFom;
         this.arbeidsperiodeTom = bgAndelArbeidsforhold.arbeidsperiodeTom;
-        this.fordeltRefusjonPrÅr = bgAndelArbeidsforhold.fordeltRefusjonPrÅr;
+        this.refusjon = bgAndelArbeidsforhold.refusjon == null ? null : new Refusjon(bgAndelArbeidsforhold.refusjon);
         this.naturalytelseBortfaltPrÅr = bgAndelArbeidsforhold.naturalytelseBortfaltPrÅr;
-        this.refusjonskravPrÅr = bgAndelArbeidsforhold.refusjonskravPrÅr;
-        this.saksbehandletRefusjonPrÅr = bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr;
         this.naturalytelseTilkommetPrÅr = bgAndelArbeidsforhold.naturalytelseTilkommetPrÅr;
     }
 
@@ -105,16 +92,20 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         return arbeidsforholdRef != null ? arbeidsforholdRef : InternArbeidsforholdRef.nullRef();
     }
 
+    public Refusjon getRefusjon() {
+        return refusjon;
+    }
+
     public Beløp getRefusjonskravPrÅr() {
-        return refusjonskravPrÅr;
+        return refusjon != null ? refusjon.getRefusjonskravPrÅr() : null;
     }
 
     public Beløp getSaksbehandletRefusjonPrÅr() {
-        return saksbehandletRefusjonPrÅr;
+        return refusjon != null ? refusjon.getSaksbehandletRefusjonPrÅr() : null;
     }
 
     public Beløp getFordeltRefusjonPrÅr() {
-        return fordeltRefusjonPrÅr;
+        return refusjon != null ? refusjon.getFordeltRefusjonPrÅr() : null;
     }
 
     public Optional<Beløp> getNaturalytelseBortfaltPrÅr() {
@@ -142,22 +133,11 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
     }
 
     public Hjemmel getHjemmelForRefusjonskravfrist() {
-        return hjemmelForRefusjonskravfrist;
+        return refusjon != null ? refusjon.getHjemmelForRefusjonskravfrist() : null;
     }
 
-    /**
-     * Refusjonskrav settes på forskjellige steder i beregning dersom avklaringsbehov oppstår.
-     * Først settes refusjonskravPrÅr, deretter saksbehandletRefusjonPrÅr og til slutt fordeltRefusjonPrÅr.
-     * Det er det sist avklarte beløpet som til en hver tid skal være gjeldende.
-     * @return returnerer det refusjonskravet som skal være gjeldende
-     */
     public Beløp getGjeldendeRefusjonPrÅr() {
-        if (fordeltRefusjonPrÅr != null) {
-            return fordeltRefusjonPrÅr;
-        } else if (saksbehandletRefusjonPrÅr != null) {
-            return saksbehandletRefusjonPrÅr;
-        }
-        return refusjonskravPrÅr;
+        return refusjon == null ? null : refusjon.getGjeldendeRefusjonPrÅr();
     }
 
     void setBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
@@ -190,9 +170,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
                 + "arbeidsforholdRef=" + arbeidsforholdRef + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "naturalytelseBortfaltPrÅr=" + naturalytelseBortfaltPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "naturalytelseTilkommetPrÅr=" + naturalytelseTilkommetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "refusjonskravPrÅr=" + refusjonskravPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "saksbehandletRefusjonPrÅr=" + saksbehandletRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "fordeltRefusjonPrÅr=" + fordeltRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
+                + "refusjon=" + refusjon + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "arbeidsperiodeFom=" + arbeidsperiodeFom //$NON-NLS-1$
                 + "arbeidsperiodeTom=" + arbeidsperiodeTom //$NON-NLS-1$
                 + ">"; //$NON-NLS-1$
@@ -223,7 +201,7 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
         }
 
         public Builder medArbeidsforholdRef(String arbeidsforholdRef) {
-            return medArbeidsforholdRef(arbeidsforholdRef==null?null:InternArbeidsforholdRef.ref(arbeidsforholdRef));
+            return medArbeidsforholdRef(arbeidsforholdRef == null ? null : InternArbeidsforholdRef.ref(arbeidsforholdRef));
         }
 
         public Builder medArbeidsforholdRef(InternArbeidsforholdRef arbeidsforholdRef) {
@@ -241,18 +219,8 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
             return this;
         }
 
-        public Builder medRefusjonskravPrÅr(Beløp refusjonskravPrÅr) {
-            bgAndelArbeidsforhold.refusjonskravPrÅr = refusjonskravPrÅr;
-            return this;
-        }
-
-        public Builder medSaksbehandletRefusjonPrÅr(Beløp saksbehandletRefusjonPrÅr) {
-            bgAndelArbeidsforhold.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
-            return this;
-        }
-
-        public Builder medFordeltRefusjonPrÅr(Beløp fordeltRefusjonPrÅr) {
-            bgAndelArbeidsforhold.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
+        public Builder medRefusjon(Refusjon refusjon) {
+            bgAndelArbeidsforhold.refusjon = refusjon;
             return this;
         }
 
@@ -263,11 +231,6 @@ public class BGAndelArbeidsforhold extends BaseEntitet {
 
         public Builder medArbeidsperiodeTom(LocalDate arbeidsperiodeTom) {
             bgAndelArbeidsforhold.arbeidsperiodeTom = arbeidsperiodeTom;
-            return this;
-        }
-
-        public Builder medHjemmel(Hjemmel hjemmel) {
-            bgAndelArbeidsforhold.hjemmelForRefusjonskravfrist = hjemmel;
             return this;
         }
 

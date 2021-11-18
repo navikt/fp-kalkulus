@@ -30,6 +30,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.utils.Tuple;
 
 public class FordelRefusjonTjenesteTest {
@@ -61,7 +62,7 @@ public class FordelRefusjonTjenesteTest {
     private final FordelFastsatteVerdierDto REFUSJON_LIK_0_FASTSATT_STØRRE_ENN_0 = FordelFastsatteVerdierDto.Builder.ny().medRefusjonPrÅr(0).medFastsattBeløpPrMnd(FASTSATT).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
     private final FordelFastsatteVerdierDto REFUSJON_LIK_NULL_FASTSATT_LIK_0 = FordelFastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(0).medInntektskategori(Inntektskategori.ARBEIDSTAKER).build();
 
-    private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(BigDecimal.ZERO);
+    private BGAndelArbeidsforholdDto.Builder afBuilder1 = BGAndelArbeidsforholdDto.builder().medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)).medArbeidsforholdRef(ARB_ID1).medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT);
 
     private BeregningsgrunnlagPeriodeDto periode;
     private FordelBeregningsgrunnlagPeriodeDto endretPeriode;
@@ -137,7 +138,7 @@ public class FordelRefusjonTjenesteTest {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_STØRRE_ENN_0, FORRIGE_INNTEKTSKATEGORI,
                 REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
@@ -153,7 +154,7 @@ public class FordelRefusjonTjenesteTest {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_STØRRE_ENN_0_FASTSATT_LIK_0,
                 Inntektskategori.ARBEIDSTAKER, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
@@ -168,7 +169,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_ikkje_endre_refusjon_for_en_andel_uten_refusjon_fastsatt_lik_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_NULL_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         lagArbeidstakerAndel();
 
@@ -183,7 +184,7 @@ public class FordelRefusjonTjenesteTest {
     public void skal_sette_refusjon_lik_0_en_andel_med_refusjon_og_fastsatt_lik_0() {
         // Arrange
         FordelBeregningsgrunnlagAndelDto fordeltAndel = new FordelBeregningsgrunnlagAndelDto(ANDEL_FRA_OPPRETTET_INFO, REFUSJON_LIK_0_FASTSATT_LIK_0, FORRIGE_INNTEKTSKATEGORI, REFUSJONPRÅR - 12, FORRIGE_ARBEIDSTINNTEKT);
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf(REFUSJONPRÅR - 12), Utfall.GODKJENT);
         andelListe.add(fordeltAndel);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
@@ -206,7 +207,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR - 12)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR - 12)), Utfall.GODKJENT);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.valueOf(FORRIGE_ARBEIDSTINNTEKT))
@@ -241,7 +242,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
@@ -275,7 +276,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel);
         andelListe.add(fordeltAndel2);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -313,7 +314,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
@@ -348,7 +349,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((54654)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav(BigDecimal.valueOf((5465)));
@@ -385,7 +386,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -425,7 +426,7 @@ public class FordelRefusjonTjenesteTest {
         andelListe.add(fordeltAndel2);
         andelListe.add(fordeltAndel3);
 
-        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)));
+        afBuilder1.medRefusjonskravPrÅr(BigDecimal.valueOf((2 * REFUSJONPRÅR)), Utfall.GODKJENT);
         lagArbeidstakerAndel();
 
         BGAndelArbeidsforholdDto.Builder afBuilder2 = lagArbeidsforholdMedRefusjonskrav();
@@ -457,14 +458,14 @@ public class FordelRefusjonTjenesteTest {
         return BGAndelArbeidsforholdDto.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
                 .medArbeidsforholdRef(ARB_ID1)
-                .medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR)));
+                .medRefusjonskravPrÅr(BigDecimal.valueOf((REFUSJONPRÅR)), Utfall.GODKJENT);
     }
 
     private BGAndelArbeidsforholdDto.Builder lagArbeidsforholdMedRefusjonskrav(BigDecimal refusjonskrav) {
         return BGAndelArbeidsforholdDto.builder()
                 .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR))
                 .medArbeidsforholdRef(ARB_ID1)
-                .medRefusjonskravPrÅr(refusjonskrav);
+                .medRefusjonskravPrÅr(refusjonskrav, Utfall.GODKJENT);
     }
 
     private void lagArbeidstakerAndel() {

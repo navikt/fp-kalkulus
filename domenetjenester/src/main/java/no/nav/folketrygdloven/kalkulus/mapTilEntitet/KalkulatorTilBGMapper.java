@@ -17,6 +17,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Samme
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -117,17 +118,31 @@ public class KalkulatorTilBGMapper {
         builder.medArbeidsforholdRef(KalkulatorTilIAYMapper.mapArbeidsforholdRef(fraKalkulus.getArbeidsforholdRef()));
         builder.medArbeidsgiver(KalkulatorTilIAYMapper.mapArbeidsgiver(fraKalkulus.getArbeidsgiver()));
         builder.medArbeidsperiodeFom(fraKalkulus.getArbeidsperiodeFom());
-        builder.medRefusjonskravPrÅr(mapTilBeløp(fraKalkulus.getRefusjonskravPrÅr()));
-        builder.medSaksbehandletRefusjonPrÅr(mapTilBeløp(fraKalkulus.getSaksbehandletRefusjonPrÅr()));
-        builder.medFordeltRefusjonPrÅr(mapTilBeløp(fraKalkulus.getFordeltRefusjonPrÅr()));
-        builder.medHjemmel(fraKalkulus.getHjemmelForRefusjonskravfrist() == null
-                || fraKalkulus.getHjemmelForRefusjonskravfrist().equals(Hjemmel.UDEFINERT) ?
-                null : fraKalkulus.getHjemmelForRefusjonskravfrist());
-
+        builder.medRefusjon(fraKalkulus.getRefusjon().map(KalkulatorTilBGMapper::mapRefusjon).orElse(null));
         fraKalkulus.getArbeidsperiodeTom().ifPresent(builder::medArbeidsperiodeTom);
         fraKalkulus.getNaturalytelseBortfaltPrÅr().map(KalkulatorTilBGMapper::mapTilBeløp).ifPresent(builder::medNaturalytelseBortfaltPrÅr);
         fraKalkulus.getNaturalytelseTilkommetPrÅr().map(KalkulatorTilBGMapper::mapTilBeløp).ifPresent(builder::medNaturalytelseTilkommetPrÅr);
         return builder;
+    }
+
+    private static Refusjon mapRefusjon(no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon refusjon) {
+        if (!harRefusjon(refusjon)) {
+            return null;
+        }
+        return new Refusjon(
+                mapTilBeløp(refusjon.getRefusjonskravPrÅr()),
+                mapTilBeløp(refusjon.getSaksbehandletRefusjonPrÅr()),
+                mapTilBeløp(refusjon.getFordeltRefusjonPrÅr()),
+                refusjon.getHjemmelForRefusjonskravfrist(),
+                refusjon.getRefusjonskravFristUtfall()
+                );
+    }
+
+    private static boolean harRefusjon(no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon refusjon) {
+        if (refusjon == null) {
+            return false;
+        }
+        return refusjon.getGjeldendeRefusjonPrÅr() != null;
     }
 
 

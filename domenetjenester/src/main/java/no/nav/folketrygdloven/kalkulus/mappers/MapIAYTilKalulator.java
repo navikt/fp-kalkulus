@@ -78,7 +78,7 @@ public class MapIAYTilKalulator {
 
     public static InternArbeidsforholdRefDto mapArbeidsforholdRef(no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef) {
         if (arbeidsforholdRef == null) {
-            return null;
+            return InternArbeidsforholdRefDto.nullRef();
         }
         return InternArbeidsforholdRefDto.ref(arbeidsforholdRef.getAbakusReferanse());
     }
@@ -94,11 +94,6 @@ public class MapIAYTilKalulator {
     private static EksternArbeidsforholdRef mapEksternReferanse(no.nav.folketrygdloven.kalkulus.felles.v1.EksternArbeidsforholdRef eksternReferanse) {
         return eksternReferanse == null || eksternReferanse.getReferanse() == null ?
                 EksternArbeidsforholdRef.nullRef() : EksternArbeidsforholdRef.ref(eksternReferanse.getReferanse());
-    }
-
-    public static List<ArbeidsgiverOpplysningerDto> mapArbeidsgiverOpplysninger(List<no.nav.folketrygdloven.kalkulus.iay.arbeid.v1.ArbeidsgiverOpplysningerDto> arbeidsgiverOpplysninger) {
-        return arbeidsgiverOpplysninger.stream().map(a -> new ArbeidsgiverOpplysningerDto(a.getAktør().getIdent(), a.getNavn(), a.getFødselsdato()))
-                .collect(Collectors.toList());
     }
 
     public InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag) {

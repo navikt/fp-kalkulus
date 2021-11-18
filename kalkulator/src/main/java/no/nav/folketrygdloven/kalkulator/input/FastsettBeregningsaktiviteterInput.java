@@ -6,7 +6,7 @@ import java.util.List;
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
@@ -28,9 +28,9 @@ public class FastsettBeregningsaktiviteterInput extends StegProsesseringInput {
     public FastsettBeregningsaktiviteterInput(KoblingReferanse koblingReferanse,
                                               InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                               OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                              List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                              List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, kravperioderPrArbeidsgiver, ytelsespesifiktGrunnlag);
     }
 
     protected FastsettBeregningsaktiviteterInput(FastsettBeregningsaktiviteterInput input) {

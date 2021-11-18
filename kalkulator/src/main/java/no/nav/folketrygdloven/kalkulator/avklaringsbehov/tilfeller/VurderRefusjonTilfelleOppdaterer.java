@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
-import no.nav.folketrygdloven.kalkulator.felles.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.RefusjonskravPrArbeidsgiverVurderingDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -28,19 +27,18 @@ public class VurderRefusjonTilfelleOppdaterer implements FaktaOmBeregningTilfell
     public void oppdater(FaktaBeregningLagreDto dto, Optional<BeregningsgrunnlagDto> forrigeBg, BeregningsgrunnlagInput input, BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder) {
         List<RefusjonskravPrArbeidsgiverVurderingDto> gyldighetPrArbeidsgiver = dto.getRefusjonskravGyldighet();
         LocalDate frist = input.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        BeregningRefusjonOverstyringerDto beregningRefusjonOverstyringer = map(gyldighetPrArbeidsgiver, frist, input);
+        BeregningRefusjonOverstyringerDto beregningRefusjonOverstyringer = map(gyldighetPrArbeidsgiver, frist);
         grunnlagBuilder.medRefusjonOverstyring(beregningRefusjonOverstyringer);
     }
 
-    private BeregningRefusjonOverstyringerDto map(List<RefusjonskravPrArbeidsgiverVurderingDto> dto, LocalDate frist, BeregningsgrunnlagInput input) {
+    private BeregningRefusjonOverstyringerDto map(List<RefusjonskravPrArbeidsgiverVurderingDto> dto, LocalDate frist) {
         BeregningRefusjonOverstyringerDto.Builder builder = BeregningRefusjonOverstyringerDto.builder();
         for (RefusjonskravPrArbeidsgiverVurderingDto vurderingDto : dto) {
             Arbeidsgiver arbeidsgiver = finnArbeidsgiver(vurderingDto.getArbeidsgiverId());
             if (vurderingDto.isSkalUtvideGyldighet()) {
                 builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, frist, true));
             } else {
-                Optional<LocalDate> førsteLovligeDato = InntektsmeldingMedRefusjonTjeneste.finnFørsteLovligeDatoForRefusjonFørOverstyring(input, arbeidsgiver);
-                førsteLovligeDato.ifPresent(dato -> builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver, dato, false)));
+                builder.leggTilOverstyring(new BeregningRefusjonOverstyringDto(arbeidsgiver,false));
             }
         }
         return builder.build();

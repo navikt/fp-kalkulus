@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.felles.InntektsmeldingMedRefusjonTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -76,7 +76,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
-                input.getRefusjonskravDatoer());
+                input.getKravPrArbeidsgiver());
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
@@ -107,7 +107,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 koblingReferanse,
             input.getIayGrunnlag(),
             input.getBeregningsgrunnlagGrunnlag(),
-            input.getRefusjonskravDatoer());
+            input.getKravPrArbeidsgiver());
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
@@ -133,7 +133,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 koblingReferanse,
             input.getIayGrunnlag(),
             input.getBeregningsgrunnlagGrunnlag(),
-            input.getRefusjonskravDatoer()
+            input.getKravPrArbeidsgiver()
             );
 
         // Assert
@@ -164,7 +164,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 koblingReferanse,
             input.getIayGrunnlag(),
             input.getBeregningsgrunnlagGrunnlag(),
-            input.getRefusjonskravDatoer()
+            input.getKravPrArbeidsgiver()
         );
 
         // Assert

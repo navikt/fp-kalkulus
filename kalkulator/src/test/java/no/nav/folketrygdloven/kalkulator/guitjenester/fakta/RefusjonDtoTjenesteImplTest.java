@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.BeregningsgrunnlagArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningAndelDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FordelBeregningsgrunnlagAndelDto;
@@ -58,7 +59,7 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-            .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
+            .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
         .build(periode);
 
         List<InntektsmeldingDto> inntektsmeldinger = List.of(InntektsmeldingDtoBuilder.builder()
@@ -87,12 +88,12 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(refPrMnd.multiply(BigDecimal.valueOf(12))))
+                .medRefusjonskravPrÅr(refPrMnd.multiply(BigDecimal.valueOf(12)), Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
+                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
@@ -125,12 +126,12 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO))
+                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.subtract(BigDecimal.valueOf(100))))
+                .medRefusjonskravPrÅr(SEKS_G.subtract(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
 
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder()
@@ -163,12 +164,12 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO))
+                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G))
+                .medRefusjonskravPrÅr(SEKS_G, Utfall.GODKJENT))
             .build(periode);
 
         AndelGradering andelGradering = AndelGradering.builder()
@@ -200,12 +201,12 @@ public class RefusjonDtoTjenesteImplTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER)
-                .medRefusjonskravPrÅr(BigDecimal.ZERO))
+                .medRefusjonskravPrÅr(BigDecimal.ZERO, Utfall.GODKJENT))
             .build(periode);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER2)
-                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100))))
+                .medRefusjonskravPrÅr(SEKS_G.add(BigDecimal.valueOf(100)), Utfall.GODKJENT))
             .build(periode);
 
         AndelGradering andelGradering = AndelGradering.builder()

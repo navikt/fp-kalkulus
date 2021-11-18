@@ -31,6 +31,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
@@ -162,7 +163,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
     private void leggTilArbeidstakerOver6GOgNæring(BeregningsgrunnlagPeriodeDto periode) {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7), Utfall.GODKJENT))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.valueOf(3*GRUNNBELØP))
@@ -197,7 +198,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
                 .build();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(bg, SKJÆRINGSTIDSPUNKT_OPPTJENING, null);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7)))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ARBEIDSGIVER).medRefusjonskravPrÅr(BigDecimal.valueOf(GRUNNBELØP * 7), Utfall.GODKJENT))
                 .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
                 .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                 .medBeregnetPrÅr(BigDecimal.TEN)

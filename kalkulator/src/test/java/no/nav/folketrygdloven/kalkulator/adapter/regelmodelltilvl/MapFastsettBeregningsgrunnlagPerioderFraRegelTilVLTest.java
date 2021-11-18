@@ -39,7 +39,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     private static final BigDecimal NATURALYTELSE_TILKOMMET_PR_ÅR = BigDecimal.valueOf(2000);
     private static final BigDecimal BEREGNET_PR_ÅR = BigDecimal.valueOf(1000);
     private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
-    private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering();
+    private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL mapTilVlRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
 
 
     @Test

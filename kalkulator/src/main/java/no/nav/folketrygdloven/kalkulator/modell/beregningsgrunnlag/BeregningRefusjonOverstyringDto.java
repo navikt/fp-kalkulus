@@ -32,15 +32,19 @@ public class BeregningRefusjonOverstyringDto {
     public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver,
                                            LocalDate førsteMuligeRefusjonFom, boolean erFristUtvidet) {
         Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
+        this.erFristUtvidet = erFristUtvidet;
         this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
         this.arbeidsgiver = arbeidsgiver;
     }
 
-    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver, LocalDate førsteMuligeRefusjonFom, List<BeregningRefusjonPeriodeDto> refusjonPerioder) {
+    public BeregningRefusjonOverstyringDto(Arbeidsgiver arbeidsgiver, LocalDate førsteMuligeRefusjonFom,
+                                           List<BeregningRefusjonPeriodeDto> refusjonPerioder,
+                                           Boolean erFristUtvidet) {
         Objects.requireNonNull(arbeidsgiver, "arbeidsgiver");
-        this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
         this.refusjonPerioder = refusjonPerioder;
+        this.førsteMuligeRefusjonFom = førsteMuligeRefusjonFom;
         this.arbeidsgiver = arbeidsgiver;
+        this.erFristUtvidet = erFristUtvidet;
     }
 
     void setRefusjonOverstyringerEntitet(BeregningRefusjonOverstyringerDto refusjonOverstyringer) {

@@ -28,6 +28,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 class BeregningRefusjonTjenesteTest {
     private static final Arbeidsgiver AG1 = Arbeidsgiver.virksomhet("999999999");
@@ -563,7 +564,7 @@ class BeregningRefusjonTjenesteTest {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
                     .medArbeidsgiver(ag)
                     .medArbeidsforholdRef(ref)
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr));
+                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonskravPrÅr), Utfall.GODKJENT);
             andelBuilder.medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder);
         }
         andelBuilder.build(beregningsgrunnlagPeriode);

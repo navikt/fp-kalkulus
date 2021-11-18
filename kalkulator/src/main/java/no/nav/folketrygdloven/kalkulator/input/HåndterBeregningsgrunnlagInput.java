@@ -5,9 +5,8 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
@@ -31,10 +30,9 @@ public class HåndterBeregningsgrunnlagInput extends BeregningsgrunnlagInput {
     public HåndterBeregningsgrunnlagInput(KoblingReferanse koblingReferanse,
                                           InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                           OpptjeningAktiviteterDto opptjeningAktiviteter,
-                                          AktivitetGradering aktivitetGradering,
-                                          List<RefusjonskravDatoDto> refusjonskravDatoer,
+                                          List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, refusjonskravDatoer, ytelsespesifiktGrunnlag);
+        super(koblingReferanse, iayGrunnlag, opptjeningAktiviteter, kravperioderPrArbeidsgiver, ytelsespesifiktGrunnlag);
     }
 
     protected HåndterBeregningsgrunnlagInput(HåndterBeregningsgrunnlagInput input) {

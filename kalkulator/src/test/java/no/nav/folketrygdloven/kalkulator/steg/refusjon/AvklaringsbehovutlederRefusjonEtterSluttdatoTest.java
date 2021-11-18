@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
     private static final UUID REFERANSE = UUID.randomUUID();
@@ -136,7 +137,7 @@ class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
                 .medAktivitetStatus(ag == null ? AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE : AktivitetStatus.ARBEIDSTAKER);
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder arbforBuilder = BGAndelArbeidsforholdDto.builder()
-                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonPrÅr))
+                    .medRefusjonskravPrÅr(BigDecimal.valueOf(refusjonPrÅr), Utfall.GODKJENT)
                     .medArbeidsforholdRef(ref)
                     .medArbeidsgiver(ag);
             andelBuilder.medBGAndelArbeidsforhold(arbforBuilder);

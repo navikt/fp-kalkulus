@@ -35,7 +35,7 @@ public class KoblingTjeneste {
 
     public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
         var eksisterendeKoblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
-        var alleKoblinger = new ArrayList<KoblingEntitet>(eksisterendeKoblinger);
+        var alleKoblinger = new ArrayList<>(eksisterendeKoblinger);
         if (eksisterendeKoblinger.size() != referanser.size()) {
             List<KoblingEntitet> nyeKoblinger = referanser.stream()
                     .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)

@@ -228,7 +228,7 @@ public class MapRefusjonskravFraVLTilRegelTest {
 
     private void lagRefusjonoverstyring(Arbeidsgiver ag, InternArbeidsforholdRefDto ref, LocalDate dato) {
         BeregningRefusjonPeriodeDto periodeOverstyring = new BeregningRefusjonPeriodeDto(ref, dato);
-        BeregningRefusjonOverstyringDto overstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periodeOverstyring));
+        BeregningRefusjonOverstyringDto overstyring = new BeregningRefusjonOverstyringDto(ag, null, Collections.singletonList(periodeOverstyring), null);
         refusjonOverstyringer.leggTilOverstyring(overstyring);
     }
 

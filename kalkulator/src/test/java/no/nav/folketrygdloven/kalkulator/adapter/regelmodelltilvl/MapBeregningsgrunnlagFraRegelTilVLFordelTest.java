@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
 
@@ -66,7 +67,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER)
                 .medAndelsnr(1L)
-                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medRefusjonskravPrÅr(BigDecimal.valueOf(100_000))
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medRefusjonskravPrÅr(BigDecimal.valueOf(100_000), Utfall.GODKJENT)
                         .medArbeidsforholdRef(ARBEIDSFORHOLD_REF)
                         .medArbeidsgiver(Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR)))
                 .medBeregnetPrÅr(BigDecimal.valueOf(50_000))

@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +24,13 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonsperiodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
@@ -49,7 +55,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         LocalDate førsteInnsendingAvRefusjonskrav = SKJÆRINGSTIDSPUNKT.plusMonths(4);
         LocalDate førsteMuligDatoMedRefusjonFørAvklaringsbehov = førsteInnsendingAvRefusjonskrav.minusMonths(3).withDayOfMonth(1);
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
-        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
+        var refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
@@ -62,7 +68,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Assert
-        assertOverstyringAvRefusjon(nyttGrunnlag, førsteMuligDatoMedRefusjonFørAvklaringsbehov);
+        assertOverstyringAvRefusjon(nyttGrunnlag, null, false);
     }
 
     @Test
@@ -70,7 +76,7 @@ public class VurderRefusjonTilfelleOppdatererTest {
         // Arrange
         LocalDate førsteInnsendingAvRefusjonskrav = SKJÆRINGSTIDSPUNKT.plusMonths(4);
         LocalDate førsteDatoMedRefusjonskrav = SKJÆRINGSTIDSPUNKT;
-        RefusjonskravDatoDto refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
+        var refusjonskravDatoDto = lagArbeidsgiverSøktForSent(førsteDatoMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, true);
         BeregningsgrunnlagDto beregningsgrunnlagDto = lagBeregningsgrunnlag();
         BeregningsgrunnlagInput input = new BeregningsgrunnlagInput(referanse, null, null, List.of(refusjonskravDatoDto), null);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty()).medBeregningsgrunnlag(beregningsgrunnlagDto).build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
@@ -83,17 +89,19 @@ public class VurderRefusjonTilfelleOppdatererTest {
         BeregningsgrunnlagGrunnlagDto nyttGrunnlag = oppdatere.build(BeregningsgrunnlagTilstand.KOFAKBER_UT);
 
         // Assert
-        assertOverstyringAvRefusjon(nyttGrunnlag, førsteDatoMedRefusjonskrav);
+        assertOverstyringAvRefusjon(nyttGrunnlag, førsteDatoMedRefusjonskrav, true);
     }
 
 
-    private void assertOverstyringAvRefusjon(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, LocalDate førsteMuligeDato) {
+    private void assertOverstyringAvRefusjon(BeregningsgrunnlagGrunnlagDto nyttGrunnlag, LocalDate førsteMuligeDato, Boolean skalUtvideGydlighet) {
         assertThat(nyttGrunnlag.getRefusjonOverstyringer()).isPresent();
         BeregningRefusjonOverstyringerDto beregningRefusjonOverstyringer = nyttGrunnlag.getRefusjonOverstyringer().get();
         List<BeregningRefusjonOverstyringDto> overstyringer = beregningRefusjonOverstyringer.getRefusjonOverstyringer();
         assertThat(overstyringer).hasSize(1);
         assertThat(overstyringer.get(0).getArbeidsgiver()).isEqualTo(VIRKSOMHET);
         assertThat(overstyringer.get(0).getFørsteMuligeRefusjonFom().orElse(null)).isEqualTo(førsteMuligeDato);
+        assertThat(overstyringer.get(0).getErFristUtvidet().orElse(null)).isEqualTo(skalUtvideGydlighet);
+
     }
 
     private FaktaBeregningLagreDto lagDto(boolean skalUtvideGyldighet) {
@@ -104,8 +112,12 @@ public class VurderRefusjonTilfelleOppdatererTest {
         return dto;
     }
 
-    private RefusjonskravDatoDto lagArbeidsgiverSøktForSent(LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav, boolean harRefusjonFraStart) {
-        return new RefusjonskravDatoDto(VIRKSOMHET, førsteDagMedRefusjonskrav, førsteInnsendingAvRefusjonskrav, harRefusjonFraStart);
+    private KravperioderPrArbeidsforholdDto lagArbeidsgiverSøktForSent(LocalDate førsteDagMedRefusjonskrav, LocalDate førsteInnsendingAvRefusjonskrav, boolean harRefusjonFraStart) {
+        return new KravperioderPrArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(),
+                List.of(new PerioderForKravDto(førsteInnsendingAvRefusjonskrav, List.of(new RefusjonsperiodeDto(
+                        Intervall.fraOgMedTilOgMed(førsteDagMedRefusjonskrav, TIDENES_ENDE),
+                        BigDecimal.TEN)))),
+                List.of(Intervall.fraOgMedTilOgMed(førsteDagMedRefusjonskrav, TIDENES_ENDE)));
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag() {

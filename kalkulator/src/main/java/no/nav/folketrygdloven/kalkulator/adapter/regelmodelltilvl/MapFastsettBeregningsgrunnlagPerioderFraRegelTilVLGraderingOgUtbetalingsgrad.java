@@ -1,37 +1,33 @@
 package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.EksisterendeAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetAndel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapHjemmelFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 @ApplicationScoped
-public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGradering extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
+public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad extends MapFastsettBeregningsgrunnlagPerioderFraRegelTilVL {
 
-    private static Map<AktivitetStatusV2, AktivitetStatus> statusMap = new EnumMap<>(AktivitetStatusV2.class);
-    private static Map<AktivitetStatus, OpptjeningAktivitetType> aktivitetTypeMap = new HashMap<>();
+    private static final Map<AktivitetStatusV2, AktivitetStatus> statusMap = new EnumMap<>(AktivitetStatusV2.class);
+    private static final Map<AktivitetStatus, OpptjeningAktivitetType> aktivitetTypeMap = new HashMap<>();
 
     static {
         statusMap.put(AktivitetStatusV2.SN, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -44,9 +40,8 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
     @Override
     protected void mapAndeler(BeregningsgrunnlagDto nyttBeregningsgrunnlag, SplittetPeriode splittetPeriode,
                               List<BeregningsgrunnlagPrStatusOgAndelDto> andelListe, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
-        andelListe.forEach(eksisterendeAndel -> mapEksisterendeAndel(splittetPeriode, beregningsgrunnlagPeriode, eksisterendeAndel));
-        splittetPeriode.getNyeAndeler()
-                .forEach(nyAndel -> mapNyAndel(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
+        andelListe.forEach(eksisterendeAndel -> leggTilEksisterende(beregningsgrunnlagPeriode, eksisterendeAndel));
+        splittetPeriode.getNyeAndeler().forEach(nyAndel -> mapNyAndel(beregningsgrunnlagPeriode, nyttBeregningsgrunnlag.getSkjæringstidspunkt(), nyAndel));
     }
 
     private void mapNyAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, LocalDate skjæringstidspunkt, SplittetAndel nyAndel) {
@@ -81,9 +76,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                     .medArbeidsgiver(arbeidsgiver)
                     .medArbeidsforholdRef(iaRef)
                     .medArbeidsperiodeFom(nyAndel.getArbeidsperiodeFom())
-                    .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom())
-                    .medRefusjonskravPrÅr(nyAndel.getRefusjonskravPrÅr())
-                    .medHjemmel(MapHjemmelFraRegelTilVL.map(nyAndel.getAnvendtRefusjonskravfristHjemmel()));
+                    .medArbeidsperiodeTom(nyAndel.getArbeidsperiodeTom());
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medKilde(AndelKilde.PROSESS_PERIODISERING)
                     .medBGAndelArbeidsforhold(andelArbeidsforholdBuilder)
@@ -113,20 +106,10 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLRefusjonOgGraderi
                 || nyAndel.getAktivitetStatus().equals(AktivitetStatusV2.DP));
     }
 
-    private void mapEksisterendeAndel(SplittetPeriode splittetPeriode, BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
-                                      BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
+    private void leggTilEksisterende(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode,
+                                     BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.kopier(eksisterendeAndel);
-        Optional<EksisterendeAndel> regelMatchOpt = finnEksisterendeAndelFraRegel(splittetPeriode, eksisterendeAndel);
-        regelMatchOpt.ifPresent(regelAndel -> {
-            BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdDtoBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder();
-            BGAndelArbeidsforholdDto.Builder andelArbeidsforholdBuilder = bgAndelArbeidsforholdDtoBuilder
-                    .medRefusjonskravPrÅr(regelAndel.getRefusjonskravPrÅr().orElse(BigDecimal.ZERO))
-                    .medHjemmel(MapHjemmelFraRegelTilVL.map(regelAndel.getAnvendtRefusjonskravfristHjemmel()));
-            andelBuilder.medBGAndelArbeidsforhold(andelArbeidsforholdBuilder);
-        });
-
-        andelBuilder
-                .build(beregningsgrunnlagPeriode);
+        andelBuilder.build(beregningsgrunnlagPeriode);
     }
 
 }

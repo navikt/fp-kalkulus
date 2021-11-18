@@ -58,24 +58,4 @@ public class MapRefusjonPerioderFraVLTilRegelSVP extends MapRefusjonPerioderFraV
         return List.of();
     }
 
-    @Override
-    protected List<Gradering> mapUtbetalingsgrader(InntektsmeldingDto im, BeregningsgrunnlagInput input) {
-        List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = ((UtbetalingsgradGrunnlag) input.getYtelsespesifiktGrunnlag()).getUtbetalingsgradPrAktivitet();
-        List<PeriodeMedUtbetalingsgradDto> utbetalinger = utbetalingsgradPrAktivitet.stream()
-                .filter(utb -> matcherArbeidsforhold(im, utb))
-                .findFirst().map(UtbetalingsgradPrAktivitetDto::getPeriodeMedUtbetalingsgrad)
-                .orElse(Collections.emptyList());
-        return utbetalinger.stream()
-                .map(utb -> new Gradering(Periode.of(utb.getPeriode().getFomDato(), utb.getPeriode().getTomDato()), utb.getUtbetalingsgrad()))
-                .collect(Collectors.toList());
-    }
-
-    private boolean matcherArbeidsforhold(InntektsmeldingDto im, UtbetalingsgradPrAktivitetDto utb) {
-        Arbeidsgiver utbAG = utb.getUtbetalingsgradArbeidsforhold().getArbeidsgiver().orElse(null);
-        InternArbeidsforholdRefDto utbRef = utb.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef() != null
-                ? utb.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef()
-                : InternArbeidsforholdRefDto.nullRef();
-        boolean gjelderSammeAG = Objects.equals(im.getArbeidsgiver(), utbAG);
-        return gjelderSammeAG && im.getArbeidsforholdRef().gjelderFor(utbRef);
-    }
 }
