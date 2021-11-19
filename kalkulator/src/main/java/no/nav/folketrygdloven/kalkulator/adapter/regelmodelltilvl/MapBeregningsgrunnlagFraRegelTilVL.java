@@ -171,7 +171,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medRedusertBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getRedusertBrukersAndelPrÅr()))
                 .medFastsattAvSaksbehandler(arbeidsforhold.getFastsattAvSaksbehandler())
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(arbeidsforhold.getArbeidsforhold().getAktivitet()))
-                .medInntektskategori(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()));
+                .medInntektskategori(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()))
+                .medAvkortetFørGraderingPrÅr(verifisertBeløp(arbeidsforhold.getAndelsmessigFørGraderingPrAar()));
     }
 
     private static boolean skalByggeBGArbeidsforhold(BeregningsgrunnlagPrArbeidsforhold arbeidsforhold, BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel) {
