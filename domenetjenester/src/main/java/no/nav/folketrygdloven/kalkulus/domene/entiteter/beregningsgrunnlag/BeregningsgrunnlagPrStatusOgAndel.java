@@ -186,6 +186,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         this.avkortetBrukersAndelPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr();
         this.avkortetPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr();
         this.avkortetRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr();
+        this.avkortetFørGraderingPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetFørGraderingPrÅr();
         this.beregningsperiode = beregningsgrunnlagPrStatusOgAndel.beregningsperiode;
         this.besteberegningPrÅr = beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr();
         this.bruttoPrÅr = beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr();
