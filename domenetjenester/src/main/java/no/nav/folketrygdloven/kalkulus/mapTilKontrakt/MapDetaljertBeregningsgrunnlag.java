@@ -176,7 +176,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 sammenligningsgrunnlagPrStatus.getAvvikPromilleNy().getVerdi());
     }
 
-    private static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+    public static Sammenligningsgrunnlag mapSammenligningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return beregningsgrunnlagEntitet.getSammenligningsgrunnlag().map(sg ->
                 new Sammenligningsgrunnlag(
                         new Periode(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom()),

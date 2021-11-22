@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
+import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.Sammenligningsgrunnlag;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
@@ -47,6 +47,10 @@ public class BeregningsgrunnlagDto {
     @Valid
     private List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder;
 
+    @JsonProperty(value = "sammenligningsgrunnlag")
+    @Valid
+    private Sammenligningsgrunnlag sammenligningsgrunnlag;
+
     @JsonProperty(value = "grunnbeløp")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -57,13 +61,14 @@ public class BeregningsgrunnlagDto {
     public BeregningsgrunnlagDto() {
     }
 
-    public BeregningsgrunnlagDto(@NotNull @Valid LocalDate skjæringstidspunkt,
-                                 @NotNull @Size(min = 1, max = 20) @Valid List<AktivitetStatus> aktivitetStatuser,
-                                 @NotNull @Size(min = 1, max = 100) @Valid List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
-                                 @Valid BigDecimal grunnbeløp) {
+    public BeregningsgrunnlagDto(LocalDate skjæringstidspunkt,
+                                 List<AktivitetStatus> aktivitetStatuser,
+                                 List<BeregningsgrunnlagPeriodeDto> beregningsgrunnlagPerioder,
+                                 Sammenligningsgrunnlag sammenligningsgrunnlag, BigDecimal grunnbeløp) {
         this.skjæringstidspunkt = skjæringstidspunkt;
         this.aktivitetStatuser = aktivitetStatuser;
         this.beregningsgrunnlagPerioder = beregningsgrunnlagPerioder;
+        this.sammenligningsgrunnlag = sammenligningsgrunnlag;
         this.grunnbeløp = grunnbeløp;
     }
 
@@ -77,9 +82,12 @@ public class BeregningsgrunnlagDto {
 
     public List<BeregningsgrunnlagPeriodeDto> getBeregningsgrunnlagPerioder() {
         return beregningsgrunnlagPerioder
-            .stream()
-            .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom))
-            .collect(Collectors.toUnmodifiableList());
+                .stream()
+                .sorted(Comparator.comparing(BeregningsgrunnlagPeriodeDto::getBeregningsgrunnlagPeriodeFom)).toList();
+    }
+
+    public Sammenligningsgrunnlag getSammenligningsgrunnlag() {
+        return sammenligningsgrunnlag;
     }
 
     public BigDecimal getGrunnbeløp() {
