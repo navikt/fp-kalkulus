@@ -17,12 +17,13 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Type;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 
 @Entity(name = "RegelSporingPeriodeEntitet")
 @Table(name = "REGEL_SPORING_PERIODE")
-public class RegelSporingPeriodeEntitet {
+public class RegelSporingPeriodeEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_REGEL_SPORING_PERIODE")

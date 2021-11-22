@@ -14,11 +14,12 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Type;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 
 @Entity(name = "RegelSporingGrunnlagEntitet")
 @Table(name = "REGEL_SPORING_GRUNNLAG")
-public class RegelSporingGrunnlagEntitet {
+public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_REGEL_SPORING_GRUNNLAG")
