@@ -75,7 +75,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medInntektsmeldinger(regelInntektsmeldinger)
                 .medEksisterendePerioder(eksisterendePerioder)
-                .medUtfallPrArbeidsgiver(mapRefusjonVurderingUtfallPrArbeidsgiver(input, beregningsgrunnlag))
+                .medUtfallPrArbeidsgiver(mapRefusjonVurderingUtfallPrArbeidsgiver(input))
                 .build();
     }
 
@@ -113,7 +113,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         return !harIngenOverlapp;
     }
 
-    private Map<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.Arbeidsgiver, LocalDateTimeline<Utfall>> mapRefusjonVurderingUtfallPrArbeidsgiver(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+    protected Map<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.Arbeidsgiver, LocalDateTimeline<Utfall>> mapRefusjonVurderingUtfallPrArbeidsgiver(BeregningsgrunnlagInput input) {
 
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = input.getIayGrunnlag();
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
