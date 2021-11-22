@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class UtledFaktaOmBeregningVurderinger {
 
     private static List<RefusjonskravGyldighetEndring> utledUtvidRefusjonskravGyldighetEndringer(FaktaOmBeregningHåndteringDto dto) {
         if (dto.getFakta().getRefusjonskravGyldighet() == null) {
-            return null;
+            return Collections.emptyList();
         }
         return dto.getFakta().getRefusjonskravGyldighet().stream().map(UtledFaktaOmBeregningVurderinger::utledRefusjonskravGyldighetEndring)
                 .collect(Collectors.toList());
