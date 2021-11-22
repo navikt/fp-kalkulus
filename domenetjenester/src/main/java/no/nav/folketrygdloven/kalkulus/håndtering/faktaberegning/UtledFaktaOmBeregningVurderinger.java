@@ -57,6 +57,7 @@ public class UtledFaktaOmBeregningVurderinger {
                 faktaOmBeregningVurderinger.getHarLønnsendringIBeregningsperiodenEndring() != null ||
                 faktaOmBeregningVurderinger.getHarMilitærSiviltjenesteEndring() != null ||
                 !faktaOmBeregningVurderinger.getErMottattYtelseEndringer().isEmpty() ||
+                !faktaOmBeregningVurderinger.getVurderRefusjonskravGyldighetEndringer().isEmpty() ||
                 !faktaOmBeregningVurderinger.getErTidsbegrensetArbeidsforholdEndringer().isEmpty();
     }
 
