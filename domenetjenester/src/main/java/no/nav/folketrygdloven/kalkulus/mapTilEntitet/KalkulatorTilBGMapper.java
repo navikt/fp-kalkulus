@@ -18,6 +18,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Samme
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -78,12 +79,9 @@ public class KalkulatorTilBGMapper {
                 .medAvkortetBrukersAndelPrÅr(mapTilBeløp(fraKalkulus.getAvkortetBrukersAndelPrÅr()))
                 .medAvkortetPrÅr(mapTilBeløp(fraKalkulus.getAvkortetPrÅr()))
                 .medAvkortetRefusjonPrÅr(mapTilBeløp(fraKalkulus.getAvkortetRefusjonPrÅr()))
-                .medBeregnetPrÅr(mapTilBeløp(fraKalkulus.getBeregnetPrÅr()))
-                .medBesteberegningPrÅr(mapTilBeløp(fraKalkulus.getBesteberegningPrÅr()))
                 .medFastsattAvSaksbehandler(fraKalkulus.getFastsattAvSaksbehandler())
                 .medKilde(AndelKilde.fraKode(fraKalkulus.getKilde().getKode()))
-                .medOverstyrtPrÅr(mapTilBeløp(fraKalkulus.getOverstyrtPrÅr()))
-                .medFordeltPrÅr(mapTilBeløp(fraKalkulus.getFordeltPrÅr()))
+                .medGrunnlagPrÅr(map(fraKalkulus.getGrunnlagPrÅr()))
                 .medRedusertPrÅr(mapTilBeløp(fraKalkulus.getRedusertPrÅr()))
                 .medRedusertBrukersAndelPrÅr(mapTilBeløp(fraKalkulus.getRedusertBrukersAndelPrÅr()))
                 .medMaksimalRefusjonPrÅr(mapTilBeløp(fraKalkulus.getMaksimalRefusjonPrÅr()))
@@ -103,6 +101,17 @@ public class KalkulatorTilBGMapper {
 
         fraKalkulus.getBgAndelArbeidsforhold().ifPresent(bgAndelArbeidsforhold -> builder.medBGAndelArbeidsforhold(KalkulatorTilBGMapper.mapBGAndelArbeidsforhold(bgAndelArbeidsforhold)));
         return builder;
+    }
+
+    private static Årsgrunnlag map(no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag grunnlagPrÅr) {
+        return grunnlagPrÅr == null || !grunnlagPrÅr.erSatt() ?
+                new Årsgrunnlag() : new Årsgrunnlag(
+                mapTilBeløp(grunnlagPrÅr.getBeregnetPrÅr()),
+                mapTilBeløp(grunnlagPrÅr.getFordeltPrÅr()),
+                mapTilBeløp(grunnlagPrÅr.getOverstyrtPrÅr()),
+                mapTilBeløp(grunnlagPrÅr.getBesteberegningPrÅr()),
+                mapTilBeløp(grunnlagPrÅr.getBruttoPrÅr())
+        );
     }
 
     private static Beløp mapTilBeløp(BigDecimal beløp) {
@@ -135,7 +144,7 @@ public class KalkulatorTilBGMapper {
                 mapTilBeløp(refusjon.getFordeltRefusjonPrÅr()),
                 refusjon.getHjemmelForRefusjonskravfrist(),
                 refusjon.getRefusjonskravFristUtfall()
-                );
+        );
     }
 
     private static boolean harRefusjon(no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon refusjon) {

@@ -19,13 +19,14 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.GrunnbeløpReguleringStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 class GreguleringsstatusutlederTest {
-    private static final LocalDate STP = LocalDate.of(2021,1,1);
+    private static final LocalDate STP = LocalDate.of(2021, 1, 1);
     private static final BigDecimal GAMMEL_G = BigDecimal.valueOf(100000);
     private static final BigDecimal NY_G = BigDecimal.valueOf(105000);
 
@@ -40,7 +41,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(new Beløp(800000)))
+                        .medGrunnlagPrÅr(lagBeregnet(800000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -52,6 +53,10 @@ class GreguleringsstatusutlederTest {
         GrunnbeløpReguleringStatus resultat = Greguleringsstatusutleder.utledStatus(gr, NY_G, YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER);
 
         assertThat(resultat).isEqualTo(GrunnbeløpReguleringStatus.IKKE_VURDERT);
+    }
+
+    private Årsgrunnlag lagBeregnet(int verdi) {
+        return new Årsgrunnlag(new Beløp(verdi), null, null, null, new Beløp(verdi));
     }
 
     @Test
@@ -66,7 +71,7 @@ class GreguleringsstatusutlederTest {
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medBeregnetPrÅr(new Beløp(400000)))
+                        .medGrunnlagPrÅr(lagBeregnet(400000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -92,7 +97,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(new Beløp(200000)))
+                        .medGrunnlagPrÅr(lagBeregnet(200000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -118,7 +123,7 @@ class GreguleringsstatusutlederTest {
                 .leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel.builder()
                         .medAktivitetStatus(AktivitetStatus.MILITÆR_ELLER_SIVIL)
                         .medAndelsnr(1L)
-                        .medBeregnetPrÅr(new Beløp(200000)))
+                        .medGrunnlagPrÅr(lagBeregnet(200000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
@@ -144,7 +149,7 @@ class GreguleringsstatusutlederTest {
                         .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
                         .medAndelsnr(1L)
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
-                        .medBeregnetPrÅr(new Beløp(610000)))
+                        .medGrunnlagPrÅr(lagBeregnet(610000)))
                 .build(bg);
         Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()

@@ -12,6 +12,7 @@ import java.util.Set;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
@@ -25,12 +26,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private AktivitetStatus aktivitetStatus;
     private Intervall beregningsperiode;
     private OpptjeningAktivitetType arbeidsforholdType;
-    private BigDecimal bruttoPrÅr;
-    private BigDecimal overstyrtPrÅr;
+    private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
     private BigDecimal avkortetPrÅr;
     private BigDecimal redusertPrÅr;
-    private BigDecimal beregnetPrÅr;
-    private BigDecimal fordeltPrÅr;
     private BigDecimal maksimalRefusjonPrÅr;
     private BigDecimal avkortetRefusjonPrÅr;
     private BigDecimal redusertRefusjonPrÅr;
@@ -44,7 +42,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal pgi3;
     private Beløp årsbeløpFraTilstøtendeYtelse;
     private Boolean fastsattAvSaksbehandler = false;
-    private BigDecimal besteberegningPrÅr;
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
@@ -58,12 +55,9 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.aktivitetStatus = kopiereFra.aktivitetStatus;
         this.beregningsperiode = kopiereFra.beregningsperiode;
         this.arbeidsforholdType = kopiereFra.arbeidsforholdType;
-        this.bruttoPrÅr = kopiereFra.bruttoPrÅr;
-        this.overstyrtPrÅr = kopiereFra.overstyrtPrÅr;
+        this.grunnlagPrÅr = new Årsgrunnlag(kopiereFra.grunnlagPrÅr);
         this.avkortetPrÅr = kopiereFra.avkortetPrÅr;
         this.redusertPrÅr = kopiereFra.redusertPrÅr;
-        this.beregnetPrÅr = kopiereFra.beregnetPrÅr;
-        this.fordeltPrÅr = kopiereFra.fordeltPrÅr;
         this.maksimalRefusjonPrÅr = kopiereFra.maksimalRefusjonPrÅr;
         this.avkortetRefusjonPrÅr = kopiereFra.avkortetRefusjonPrÅr;
         this.redusertRefusjonPrÅr = kopiereFra.redusertRefusjonPrÅr;
@@ -77,7 +71,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.pgi3 = kopiereFra.pgi3;
         this.årsbeløpFraTilstøtendeYtelse = kopiereFra.årsbeløpFraTilstøtendeYtelse;
         this.fastsattAvSaksbehandler = kopiereFra.fastsattAvSaksbehandler;
-        this.besteberegningPrÅr = kopiereFra.besteberegningPrÅr;
         this.inntektskategori = kopiereFra.inntektskategori;
         this.kilde = kopiereFra.kilde;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
@@ -159,11 +152,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
     public BigDecimal getBruttoPrÅr() {
-        return bruttoPrÅr;
+        return grunnlagPrÅr.getBruttoPrÅr();
     }
 
     public BigDecimal getOverstyrtPrÅr() {
-        return overstyrtPrÅr;
+        return grunnlagPrÅr.getOverstyrtPrÅr();
     }
 
     public BigDecimal getAvkortetPrÅr() {
@@ -175,11 +168,11 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
     public BigDecimal getBeregnetPrÅr() {
-        return beregnetPrÅr;
+        return grunnlagPrÅr.getBeregnetPrÅr();
     }
 
     public BigDecimal getFordeltPrÅr() {
-        return fordeltPrÅr;
+        return grunnlagPrÅr.getFordeltPrÅr();
     }
 
     public BigDecimal getMaksimalRefusjonPrÅr() {
@@ -210,10 +203,14 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return inntektskategori;
     }
 
+    public Årsgrunnlag getGrunnlagPrÅr() {
+        return grunnlagPrÅr;
+    }
+
     public BigDecimal getBruttoInkludertNaturalYtelser() {
         BigDecimal naturalytelseBortfalt = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).orElse(BigDecimal.ZERO);
         BigDecimal naturalYtelseTilkommet = getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseTilkommetPrÅr).orElse(BigDecimal.ZERO);
-        BigDecimal brutto = bruttoPrÅr != null ? bruttoPrÅr : BigDecimal.ZERO;
+        BigDecimal brutto = grunnlagPrÅr.getBruttoPrÅr() != null ? grunnlagPrÅr.getBruttoPrÅr() : BigDecimal.ZERO;
         return brutto.add(naturalytelseBortfalt).subtract(naturalYtelseTilkommet);
     }
 
@@ -269,7 +266,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     }
 
     public BigDecimal getBesteberegningPrÅr() {
-        return besteberegningPrÅr;
+        return grunnlagPrÅr.getBesteberegningPrÅr();
     }
 
     public AndelKilde getKilde() {
@@ -338,10 +335,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                 + "redusertRefusjonPrÅr=" + redusertRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "avkortetBrukersAndelPrÅr=" + avkortetBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "redusertBrukersAndelPrÅr=" + redusertBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "beregnetPrÅr=" + beregnetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "fordeltPrÅr=" + fordeltPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "overstyrtPrÅr=" + overstyrtPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "bruttoPrÅr=" + bruttoPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "dagsatsBruker=" + dagsatsBruker + ", " //$NON-NLS-1$ //$NON-NLS-2$
@@ -351,8 +344,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
                 + "pgi2=" + pgi2 + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "pgi3=" + pgi3 + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "årsbeløpFraTilstøtendeYtelse=" + årsbeløpFraTilstøtendeYtelse //$NON-NLS-1$
-                + "besteberegningPrÅr=" + besteberegningPrÅr //$NON-NLS-1$
                 + "bgAndelArbeidsforhold=" + bgAndelArbeidsforhold //$NON-NLS-1$
+                + "grunnlagPrÅr=" + grunnlagPrÅr //$NON-NLS-1$
                 + ">"; //$NON-NLS-1$
     }
 
@@ -443,25 +436,21 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
         public Builder medOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
             verifiserKanModifisere();
-            kladd.overstyrtPrÅr = overstyrtPrÅr;
-            if (overstyrtPrÅr != null && kladd.fordeltPrÅr == null && kladd.besteberegningPrÅr == null) {
-                kladd.bruttoPrÅr = overstyrtPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
+            kladd.grunnlagPrÅr.setOverstyrtPrÅr(overstyrtPrÅr);
+            oppdaterPeriodebrutto();
             return this;
+        }
+
+        private void oppdaterPeriodebrutto() {
+            if (kladd.getBeregningsgrunnlagPeriode() != null && kladd.grunnlagPrÅr.getBruttoPrÅr() != null) {
+                kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
+            }
         }
 
         public Builder medFordeltPrÅr(BigDecimal fordeltPrÅr) {
             verifiserKanModifisere();
-            kladd.fordeltPrÅr = fordeltPrÅr;
-            if (fordeltPrÅr != null) {
-                kladd.bruttoPrÅr = fordeltPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
+            kladd.grunnlagPrÅr.setFordeltPrÅr(fordeltPrÅr);
+            oppdaterPeriodebrutto();
             return this;
         }
 
@@ -514,13 +503,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
         public Builder medBeregnetPrÅr(BigDecimal beregnetPrÅr) {
             verifiserKanModifisere();
-            kladd.beregnetPrÅr = beregnetPrÅr;
-            if (kladd.fordeltPrÅr == null && kladd.overstyrtPrÅr == null && kladd.besteberegningPrÅr == null) {
-                kladd.bruttoPrÅr = beregnetPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
+            kladd.grunnlagPrÅr.setBeregnetPrÅr(beregnetPrÅr);
+            oppdaterPeriodebrutto();
             return this;
         }
 
@@ -561,17 +545,8 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
         public Builder medBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
             verifiserKanModifisere();
-            kladd.besteberegningPrÅr = besteberegningPrÅr;
-            if (kladd.fordeltPrÅr == null) {
-                if (besteberegningPrÅr == null) {
-                    kladd.bruttoPrÅr = kladd.overstyrtPrÅr == null ? kladd.beregnetPrÅr : kladd.overstyrtPrÅr;
-                } else {
-                    kladd.bruttoPrÅr = kladd.besteberegningPrÅr;
-                }
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
+            kladd.grunnlagPrÅr.setBesteberegningPrÅr(besteberegningPrÅr);
+            oppdaterPeriodebrutto();
             return this;
         }
 

@@ -33,11 +33,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AndelKildeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.InntektskategoriKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -84,12 +84,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     private OpptjeningAktivitetType arbeidsforholdType;
 
     @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
-    private Beløp bruttoPrÅr;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "overstyrt_pr_aar")))
-    private Beløp overstyrtPrÅr;
+    private Årsgrunnlag grunnlagPrÅr = new Årsgrunnlag();
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "avkortet_pr_aar")))
@@ -98,14 +93,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "redusert_pr_aar")))
     private Beløp redusertPrÅr;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "beregnet_pr_aar")))
-    private Beløp beregnetPrÅr;
-
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_pr_aar")))
-    private Beløp fordeltPrÅr;
 
     @Embedded
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "maksimal_refusjon_pr_aar")))
@@ -160,10 +147,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "fastsatt_av_saksbehandler", nullable = false)
     private Boolean fastsattAvSaksbehandler = false;
 
-    @Embedded
-    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "besteberegning_pr_aar")))
-    private Beløp besteberegningPrÅr;
-
     @Convert(converter= InntektskategoriKodeverdiConverter.class)
     @Column(name="inntektskategori", nullable = false)
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
@@ -179,26 +162,22 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     private Long orginalDagsatsFraTilstøtendeYtelse;
 
     public BeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndel beregningsgrunnlagPrStatusOgAndel) {
-        this.beregnetPrÅr = beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr();
         this.aktivitetStatus = beregningsgrunnlagPrStatusOgAndel.getAktivitetStatus();
         this.andelsnr = beregningsgrunnlagPrStatusOgAndel.getAndelsnr();
         this.arbeidsforholdType = beregningsgrunnlagPrStatusOgAndel.getArbeidsforholdType();
+        this.grunnlagPrÅr = new Årsgrunnlag(beregningsgrunnlagPrStatusOgAndel.grunnlagPrÅr);
         this.avkortetBrukersAndelPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr();
         this.avkortetPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetPrÅr();
         this.avkortetRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr();
         this.avkortetFørGraderingPrÅr = beregningsgrunnlagPrStatusOgAndel.getAvkortetFørGraderingPrÅr();
         this.beregningsperiode = beregningsgrunnlagPrStatusOgAndel.beregningsperiode;
-        this.besteberegningPrÅr = beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr();
-        this.bruttoPrÅr = beregningsgrunnlagPrStatusOgAndel.getBruttoPrÅr();
         this.dagsatsArbeidsgiver = beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver();
         this.dagsatsBruker = beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker();
         this.fastsattAvSaksbehandler = beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler();
-        this.fordeltPrÅr = beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr();
         this.inntektskategori = beregningsgrunnlagPrStatusOgAndel.getInntektskategori();
         this.kilde = beregningsgrunnlagPrStatusOgAndel.getKilde();
         this.maksimalRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr();
         this.orginalDagsatsFraTilstøtendeYtelse = beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse();
-        this.overstyrtPrÅr = beregningsgrunnlagPrStatusOgAndel.getOverstyrtPrÅr();
         this.pgi1 = beregningsgrunnlagPrStatusOgAndel.getPgi1();
         this.pgi2 = beregningsgrunnlagPrStatusOgAndel.getPgi2();
         this.pgi3 = beregningsgrunnlagPrStatusOgAndel.getPgi3();
@@ -240,11 +219,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBruttoPrÅr() {
-        return bruttoPrÅr;
+        return grunnlagPrÅr.getBruttoPrÅr();
     }
 
     public Beløp getOverstyrtPrÅr() {
-        return overstyrtPrÅr;
+        return grunnlagPrÅr.getOverstyrtPrÅr();
     }
 
     public Beløp getAvkortetPrÅr() {
@@ -256,11 +235,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBeregnetPrÅr() {
-        return beregnetPrÅr;
+        return grunnlagPrÅr.getBeregnetPrÅr();
     }
 
     public Beløp getFordeltPrÅr() {
-        return fordeltPrÅr;
+        return grunnlagPrÅr.getFordeltPrÅr();
     }
 
     public Beløp getMaksimalRefusjonPrÅr() {
@@ -338,7 +317,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBesteberegningPrÅr() {
-        return besteberegningPrÅr;
+        return grunnlagPrÅr.getBesteberegningPrÅr();
     }
 
     public AndelKilde getKilde() {
@@ -414,10 +393,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
                 + "redusertRefusjonPrÅr=" + redusertRefusjonPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "avkortetBrukersAndelPrÅr=" + avkortetBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "redusertBrukersAndelPrÅr=" + redusertBrukersAndelPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "beregnetPrÅr=" + beregnetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "fordeltPrÅr=" + fordeltPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "overstyrtPrÅr=" + overstyrtPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
-                + "bruttoPrÅr=" + bruttoPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "avkortetPrÅr=" + avkortetPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "redusertPrÅr=" + redusertPrÅr + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "dagsatsBruker=" + dagsatsBruker + ", " //$NON-NLS-1$ //$NON-NLS-2$
@@ -427,7 +402,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
                 + "pgi2=" + pgi2 + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "pgi3=" + pgi3 + ", " //$NON-NLS-1$ //$NON-NLS-2$
                 + "årsbeløpFraTilstøtendeYtelse=" + årsbeløpFraTilstøtendeYtelse //$NON-NLS-1$
-                + "besteberegningPrÅr=" + besteberegningPrÅr //$NON-NLS-1$
+                + "grunnlagPrÅr=" + grunnlagPrÅr //$NON-NLS-1$
                 + ">"; //$NON-NLS-1$
     }
 
@@ -482,30 +457,18 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medOverstyrtPrÅr(Beløp overstyrtPrÅr) {
+        public Builder medGrunnlagPrÅr(Årsgrunnlag årsgrunnlag) {
             verifiserKanModifisere();
-            kladd.overstyrtPrÅr = overstyrtPrÅr;
-            if (overstyrtPrÅr != null && kladd.fordeltPrÅr == null && kladd.besteberegningPrÅr == null) {
-                kladd.bruttoPrÅr = overstyrtPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
+            kladd.grunnlagPrÅr = årsgrunnlag;
+            oppdaterBruttoForPeriode();
             return this;
         }
 
-        public Builder medFordeltPrÅr(Beløp fordeltPrÅr) {
-            verifiserKanModifisere();
-            kladd.fordeltPrÅr = fordeltPrÅr;
-            if (fordeltPrÅr != null) {
-                kladd.bruttoPrÅr = fordeltPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
+        private void oppdaterBruttoForPeriode() {
+            if (kladd.getBeregningsgrunnlagPeriode() != null && kladd.grunnlagPrÅr.getBruttoPrÅr() != null) {
+                kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
             }
-            return this;
         }
-
 
         public Builder medAvkortetPrÅr(Beløp avkortetPrÅr) {
             verifiserKanModifisere();
@@ -553,18 +516,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medBeregnetPrÅr(Beløp beregnetPrÅr) {
-            verifiserKanModifisere();
-            kladd.beregnetPrÅr = beregnetPrÅr;
-            if (kladd.fordeltPrÅr == null && kladd.overstyrtPrÅr == null && kladd.besteberegningPrÅr == null) {
-                kladd.bruttoPrÅr = beregnetPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
-            return this;
-        }
-
         public Builder medPgi(Beløp pgiSnitt, List<Beløp> pgiListe) {
             verifiserKanModifisere();
             kladd.pgiSnitt = pgiSnitt;
@@ -595,18 +546,6 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         public Builder medKilde(AndelKilde kilde) {
             verifiserKanModifisere();
             kladd.kilde = kilde;
-            return this;
-        }
-
-        public Builder medBesteberegningPrÅr(Beløp besteberegningPrÅr) {
-            verifiserKanModifisere();
-            kladd.besteberegningPrÅr = besteberegningPrÅr;
-            if (kladd.besteberegningPrÅr != null && kladd.fordeltPrÅr == null) {
-                kladd.bruttoPrÅr = besteberegningPrÅr;
-                if (kladd.getBeregningsgrunnlagPeriode() != null) {
-                    kladd.beregningsgrunnlagPeriode.updateBruttoPrÅr();
-                }
-            }
             return this;
         }
 
