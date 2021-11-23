@@ -219,11 +219,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBruttoPrÅr() {
-        return grunnlagPrÅr.getBruttoPrÅr();
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getBruttoPrÅr();
     }
 
     public Beløp getOverstyrtPrÅr() {
-        return grunnlagPrÅr.getOverstyrtPrÅr();
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getOverstyrtPrÅr();
     }
 
     public Beløp getAvkortetPrÅr() {
@@ -235,11 +235,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBeregnetPrÅr() {
-        return grunnlagPrÅr.getBeregnetPrÅr();
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getBeregnetPrÅr();
     }
 
     public Beløp getFordeltPrÅr() {
-        return grunnlagPrÅr.getFordeltPrÅr();
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getFordeltPrÅr();
     }
 
     public Beløp getMaksimalRefusjonPrÅr() {
@@ -317,7 +317,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Beløp getBesteberegningPrÅr() {
-        return grunnlagPrÅr.getBesteberegningPrÅr();
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getBesteberegningPrÅr();
     }
 
     public AndelKilde getKilde() {
