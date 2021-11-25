@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -19,7 +21,7 @@ public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput
     private Beløp uregulertGrunnbeløp;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
-    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
+    private List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling = new ArrayList<>();
 
 
     public VurderRefusjonBeregningsgrunnlagInput(StegProsesseringInput input) {
@@ -28,7 +30,7 @@ public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput
         super.stegUtTilstand = BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT;
         if (input instanceof VurderRefusjonBeregningsgrunnlagInput) {
             VurderRefusjonBeregningsgrunnlagInput vurderRefInput = (VurderRefusjonBeregningsgrunnlagInput) input;
-            beregningsgrunnlagGrunnlagFraForrigeBehandling = vurderRefInput.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().orElse(null);
+            beregningsgrunnlagGrunnlagFraForrigeBehandling = vurderRefInput.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
         }
     }
 
@@ -47,14 +49,18 @@ public class VurderRefusjonBeregningsgrunnlagInput extends StegProsesseringInput
     // Brukes av fp-sak
     public VurderRefusjonBeregningsgrunnlagInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
         var newInput = new VurderRefusjonBeregningsgrunnlagInput(this);
-        newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
+        newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = List.of(grunnlag);
         return newInput;
     }
 
-
-    public Optional<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
-        return Optional.ofNullable(beregningsgrunnlagGrunnlagFraForrigeBehandling);
+    public VurderRefusjonBeregningsgrunnlagInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling) {
+        var newInput = new VurderRefusjonBeregningsgrunnlagInput(this);
+        newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = beregningsgrunnlagGrunnlagFraForrigeBehandling;
+        return newInput;
     }
 
+    public List<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
+        return beregningsgrunnlagGrunnlagFraForrigeBehandling;
+    }
 
 }

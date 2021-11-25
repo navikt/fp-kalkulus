@@ -2,10 +2,10 @@ package no.nav.folketrygdloven.kalkulator.steg.refusjon;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -25,7 +25,10 @@ public final class AndelerMedØktRefusjonTjeneste {
         if (beregningsgrunnlag == null || originaltGrunnlag == null) {
             return Collections.emptyMap();
         }
-        LocalDate alleredeUtbetaltTOM = FinnAlleredeUtbetaltTom.finn();
-        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(beregningsgrunnlag, originaltGrunnlag, alleredeUtbetaltTOM, grenseverdi);
+        var alleredeUtbetaltTOM = FinnAlleredeUtbetaltTom.finn(originaltGrunnlag);
+        if (alleredeUtbetaltTOM.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(beregningsgrunnlag, originaltGrunnlag, alleredeUtbetaltTOM.get(), grenseverdi);
     }
 }

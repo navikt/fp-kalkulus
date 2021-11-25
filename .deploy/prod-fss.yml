@@ -77,3 +77,5 @@ spec:
       value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING
       value: "true"
+    - name: VURDER_REFUSJON_PSB
+      value: "false"

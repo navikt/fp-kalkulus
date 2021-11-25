@@ -147,10 +147,8 @@ public class StegProsessInputTjeneste {
                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
                                                          List<UUID> originaleKoblinger) {
         var vurderVilkårOgRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlagInput(stegProsesseringInput);
-        Optional<BeregningsgrunnlagGrunnlagDto> originaltGrunnlag = finnOriginaltGrunnlag(originaleKoblinger);
-        if (originaltGrunnlag.isPresent()) {
-            vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag.get());
-        }
+        List<BeregningsgrunnlagGrunnlagDto> originaltGrunnlag = finnOriginaltGrunnlag(originaleKoblinger);
+        vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag);
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             vurderVilkårOgRefusjonBeregningsgrunnlag = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
                     .map(BeregningsgrunnlagEntitet::getGrunnbeløp)
@@ -161,18 +159,15 @@ public class StegProsessInputTjeneste {
         return vurderVilkårOgRefusjonBeregningsgrunnlag;
     }
 
-    private Optional<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<UUID> originaleKoblinger) {
-        if (originaleKoblinger.isEmpty()) {
-            return Optional.empty();
-        }
-        if (originaleKoblinger.size() > 1) {
-            log.info("Fikk inn flere originale kobliner, støtter ikke mapping om til et enkelt grunnlag av disse, returnerer empty");
-            return Optional.empty();
-        }
-        Long koblingId = koblingRepository.hentKoblingIdForKoblingReferanse(new KoblingReferanse(originaleKoblinger.get(0)));
+    private List<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<UUID> originaleKoblinger) {
+        return originaleKoblinger.stream().flatMap(k -> finnGrunnlagForKobling(k).stream()).collect(Collectors.toList());
+
+    }
+
+    private Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagForKobling(UUID referanse) {
+        Long koblingId = koblingRepository.hentKoblingIdForKoblingReferanse(new KoblingReferanse(referanse));
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         return entitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
-
     }
 
     private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, BeregningSteg stegType) {

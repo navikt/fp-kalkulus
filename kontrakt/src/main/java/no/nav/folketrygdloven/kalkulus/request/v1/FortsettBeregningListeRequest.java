@@ -113,6 +113,21 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
     }
 
+    @JsonCreator
+    public FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                         @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
+                                         @JsonProperty(value = "kalkulatorInput") Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                         @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType,
+                                         @Valid Map<UUID, List<UUID>> koblingRelasjon) {
+        this.eksternReferanser = new LinkedHashSet<>(Objects.requireNonNull(eksternReferanser, "eksterneReferanser"));
+        this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
+        this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
+        this.stegType = Objects.requireNonNull(stegType, "stegType");
+        this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
+        this.koblingRelasjon = koblingRelasjon;
+    }
+
     public List<UUID> getEksternReferanser() {
         return List.copyOf(new LinkedHashSet<>(eksternReferanser));
     }
