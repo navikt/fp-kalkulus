@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapRefusjonskravFraVLTilRegel.finnGradertRefusjonskravPåSkjæringstidspunktet;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -35,10 +37,14 @@ public class OmsorgspengerGrunnlagMapper implements YtelsesspesifikkRegelMapper 
                     .filter(this::erFrilansEllerNæring)
                     .anyMatch(this::harUtbetaling);
             BigDecimal gradertRefusjonVedSkjæringstidspunkt = finnGradertRefusjonskravPåSkjæringstidspunktet(input.getInntektsmeldinger(), beregningsgrunnlagDto.getSkjæringstidspunkt(), input.getYtelsespesifiktGrunnlag());
-            return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt, harSøktFLEllerSN, finnesArbeidsandelIkkeSøktOm(utbetalingsgradPrAktivitet, beregningsgrunnlagDto));
+            return new OmsorgspengerGrunnlag(gradertRefusjonVedSkjæringstidspunkt, harSøktFLEllerSN, finnesArbeidsandelIkkeSøktOm(utbetalingsgradPrAktivitet, beregningsgrunnlagDto), harRefusjonskrav(input.getInntektsmeldinger()));
         }
 
         throw new IllegalStateException("Forventer OmsorgspengerGrunnlag for OMP");
+    }
+
+    private boolean harRefusjonskrav(Collection<InntektsmeldingDto> inntektsmeldinger) {
+        return inntektsmeldinger.stream().anyMatch(im -> im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall());
     }
 
     private boolean harUtbetaling(UtbetalingsgradPrAktivitetDto aktivitet) {
