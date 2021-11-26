@@ -102,18 +102,18 @@ public class MapBrevBeregningsgrunnlag {
             return null;
         }
         BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
-        return BigDecimal.valueOf(andel.getDagsatsBruker()).multiply(BigDecimal.valueOf(100))
-                .divide(utbetalingsgradForAndel, RoundingMode.HALF_UP).longValue();
+        return andel.getAvkortetBrukersAndelPrÅr().getVerdi().multiply(BigDecimal.valueOf(100))
+                .divide(utbetalingsgradForAndel.multiply(BigDecimal.valueOf(260)), RoundingMode.HALF_UP).longValue();
 
     }
 
     private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
-        if (andel.getDagsatsBruker() == null) {
+        if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
         BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
-        return BigDecimal.valueOf(andel.getDagsatsArbeidsgiver()).multiply(BigDecimal.valueOf(100))
-                .divide(utbetalingsgradForAndel, RoundingMode.HALF_UP).longValue();
+        return andel.getAvkortetRefusjonPrÅr().getVerdi().multiply(BigDecimal.valueOf(100))
+                .divide(utbetalingsgradForAndel.multiply(BigDecimal.valueOf(260)), RoundingMode.HALF_UP).longValue();
 
     }
 
