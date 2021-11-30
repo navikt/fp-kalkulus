@@ -132,6 +132,7 @@ public class StegProsessInputTjeneste {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
+            log.info("Kaller VURDER_REF_BERGRUNN med originale koblinger " + originaleKoblinger);
             return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
         } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
