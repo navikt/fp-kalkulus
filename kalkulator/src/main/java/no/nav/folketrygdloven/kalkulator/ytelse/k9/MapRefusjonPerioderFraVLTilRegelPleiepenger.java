@@ -5,8 +5,9 @@ import javax.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
 @ApplicationScoped
-public class MapRefusjonPerioderFraVLTilRegelPSB extends MapRefusjonPerioderFraVLTilRegelK9 {
+public class MapRefusjonPerioderFraVLTilRegelPleiepenger extends MapRefusjonPerioderFraVLTilRegelK9 {
 
 
 }

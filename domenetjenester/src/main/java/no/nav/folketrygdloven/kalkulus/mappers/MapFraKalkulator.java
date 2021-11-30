@@ -15,6 +15,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.Aktiv
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.PleiepengerNærståendeGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StandardGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
@@ -177,6 +178,14 @@ public class MapFraKalkulator {
                 pleiepengerSyktBarnGrunnlag
                         .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_SYKT_BARN).getAntallGMilitærHarKravPå().intValue());
                 return pleiepengerSyktBarnGrunnlag;
+            case PLEIEPENGER_NÆRSTÅENDE:
+                no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag ppnYtelsesGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.PleiepengerNærståendeGrunnlag) ytelsespesifiktGrunnlag;
+                validerForMidlertidigInaktivTypeA(ppnYtelsesGrunnlag.getUtbetalingsgradPrAktivitet());
+                var pleiepengerNærståendeGrunnlag = new PleiepengerNærståendeGrunnlag(
+                        UtbetalingsgradMapper.mapUtbetalingsgrad(ppnYtelsesGrunnlag.getUtbetalingsgradPrAktivitet()));
+                pleiepengerNærståendeGrunnlag
+                        .setGrunnbeløpMilitærHarKravPå(KonfigTjeneste.forYtelse(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE).getAntallGMilitærHarKravPå().intValue());
+                return pleiepengerNærståendeGrunnlag;
             case FRISINN:
                 no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag frisinnGrunnlag = (no.nav.folketrygdloven.kalkulus.beregning.v1.FrisinnGrunnlag) ytelsespesifiktGrunnlag;
                 List<FrisinnPeriode> frisinnPerioder = mapFraKontrakt(frisinnGrunnlag, iayGrunnlag.getOppgittOpptjening());

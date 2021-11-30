@@ -29,6 +29,7 @@ import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -220,7 +221,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlag(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), List.of(), null)
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
         return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }
@@ -466,7 +467,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjenesteTest {
     private BeregningsgrunnlagGUIInput lagInputMedGrunnlagOgGradering(AndelGradering andelGradering, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
         foreldrepengerGrunnlag.setAktivitetGradering(new AktivitetGradering(andelGradering));
-        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), List.of(), foreldrepengerGrunnlag)
+        BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(referanse, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), foreldrepengerGrunnlag)
                 .medBeregningsgrunnlagGrunnlag(grunnlagEntitet);
         return input.medBeregningsgrunnlagGrunnlagFraFordel(grunnlagEntitet);
     }

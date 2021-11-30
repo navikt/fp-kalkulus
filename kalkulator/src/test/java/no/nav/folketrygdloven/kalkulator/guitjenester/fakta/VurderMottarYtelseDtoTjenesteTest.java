@@ -32,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -92,7 +93,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
         BeregningsgrunnlagPrStatusOgAndelDto arbeidsforholdAndel = byggArbeidsforholdMedBgAndel();
 
         // Act
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         dtoTjeneste.lagDto(input, dto);
@@ -123,7 +124,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto.builder(arbeidsgiver, InternArbeidsforholdRefDto.nullRef())
                         .medHarMottattYtelseFastsattAvSaksbehandler(true)
                         .build()).build();
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), List.of(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, inntektArbeidYtelseGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                         .medFaktaAggregat(fakta)
                         .build(BeregningsgrunnlagTilstand.KOFAKBER_UT));

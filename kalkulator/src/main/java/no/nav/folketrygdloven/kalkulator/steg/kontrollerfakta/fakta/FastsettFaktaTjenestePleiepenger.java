@@ -15,7 +15,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("PSB")
-public class FastsettFaktaTjenestePSB implements FastsettFakta {
+@FagsakYtelseTypeRef("PPN")
+public class FastsettFaktaTjenestePleiepenger implements FastsettFakta {
 
     public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         List<FaktaArbeidsforholdDto> faktaArbeidsforholdDtos = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);

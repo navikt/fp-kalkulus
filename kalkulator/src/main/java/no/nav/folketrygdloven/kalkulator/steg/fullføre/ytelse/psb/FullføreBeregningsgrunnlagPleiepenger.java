@@ -8,15 +8,16 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsg
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.utbgrad.FullføreBeregningsgrunnlagUtbgrad;
 
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
 @ApplicationScoped
-public class FullføreBeregningsgrunnlagPSB extends FullføreBeregningsgrunnlagUtbgrad {
+public class FullføreBeregningsgrunnlagPleiepenger extends FullføreBeregningsgrunnlagUtbgrad {
 
-    public FullføreBeregningsgrunnlagPSB() {
+    public FullføreBeregningsgrunnlagPleiepenger() {
         // CDI
     }
 
     @Inject
-    public FullføreBeregningsgrunnlagPSB(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
+    public FullføreBeregningsgrunnlagPleiepenger(MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel) {
         super(mapBeregningsgrunnlagFraVLTilRegel);
     }
 

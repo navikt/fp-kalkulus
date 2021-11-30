@@ -16,6 +16,7 @@ public class KonfigTjeneste {
         STØTTEDE_YTELSER.add(FagsakYtelseType.FORELDREPENGER);
         STØTTEDE_YTELSER.add(FagsakYtelseType.SVANGERSKAPSPENGER);
         STØTTEDE_YTELSER.add(FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
+        STØTTEDE_YTELSER.add(FagsakYtelseType.PLEIEPENGER_NÆRSTÅENDE);
         STØTTEDE_YTELSER.add(FagsakYtelseType.OMSORGSPENGER);
         STØTTEDE_YTELSER.add(FagsakYtelseType.FRISINN);
     }

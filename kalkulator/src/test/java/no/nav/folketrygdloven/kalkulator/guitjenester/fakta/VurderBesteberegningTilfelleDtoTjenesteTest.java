@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -59,7 +60,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), List.of(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 
@@ -89,7 +90,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         // Act
         var faktaOmBeregningDto = new FaktaOmBeregningDto();
 
-         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), List.of(), null)
+         var input = new BeregningsgrunnlagGUIInput(lagReferanse(), null, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
         dtoTjeneste.lagDto(input, faktaOmBeregningDto);
 

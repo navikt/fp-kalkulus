@@ -16,6 +16,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 @FagsakYtelseTypeRef("FP")
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
 @FaktaOmBeregningTilfelleRef("VURDER_REFUSJONSKRAV_SOM_HAR_KOMMET_FOR_SENT")
 public class VurderRefusjonskravTilfelleUtleder implements TilfelleUtleder {
 

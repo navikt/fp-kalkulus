@@ -7,13 +7,13 @@ import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteter
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.MidlertidigInaktivType;
 
-public class PleiepengerSyktBarnGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
+public class PleiepengerNærståendeGrunnlag extends UtbetalingsgradGrunnlag implements YtelsespesifiktGrunnlag {
 
     private Integer grunnbeløpMilitærHarKravPå;
     protected final int dekningsgrad = 100;
     protected final int dekningsgrad_inaktiv = 65;
 
-    public PleiepengerSyktBarnGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
+    public PleiepengerNærståendeGrunnlag(List<UtbetalingsgradPrAktivitetDto> tilretteleggingMedUtbelingsgrad) {
         super(tilretteleggingMedUtbelingsgrad);
     }
 

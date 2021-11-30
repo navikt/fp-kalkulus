@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.gradering.AktivitetGradering;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.BesteberegningVurderingGrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.besteberegning.Ytelsegrunnlag;
 
@@ -53,7 +54,7 @@ public class ForeldrepengerGrunnlag implements YtelsespesifiktGrunnlag {
     }
 
     @Override
-    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
         return dekningsgrad;
     }
 

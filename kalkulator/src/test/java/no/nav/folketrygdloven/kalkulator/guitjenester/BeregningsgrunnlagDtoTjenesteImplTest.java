@@ -29,9 +29,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
@@ -315,7 +315,7 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlagDto(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         var ytelsespesifiktGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        var input = new BeregningsgrunnlagGUIInput(ref, iayGrunnlag, List.of(), List.of(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
+        var input = new BeregningsgrunnlagGUIInput(ref, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), ytelsespesifiktGrunnlag).medBeregningsgrunnlagGrunnlag(grunnlag);
         return beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
     }
 

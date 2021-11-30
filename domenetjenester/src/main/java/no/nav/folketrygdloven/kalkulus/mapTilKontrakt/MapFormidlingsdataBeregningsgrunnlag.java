@@ -6,8 +6,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
-import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
@@ -24,7 +22,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert.
 public class MapFormidlingsdataBeregningsgrunnlag {
 
     public static BeregningsgrunnlagGrunnlagDto mapMedBrevfelt(BeregningsgrunnlagGrunnlagDto dto, BeregningsgrunnlagGUIInput input) {
-        if (!(input.getYtelsespesifiktGrunnlag() instanceof OmsorgspengerGrunnlag || input.getYtelsespesifiktGrunnlag() instanceof PleiepengerSyktBarnGrunnlag)) {
+        if (!(input.getYtelsespesifiktGrunnlag() instanceof UtbetalingsgradGrunnlag)) {
             return dto;
         }
         BigDecimal grenseverdi = dto.getBeregningsgrunnlag().getGrunnbeløp() == null

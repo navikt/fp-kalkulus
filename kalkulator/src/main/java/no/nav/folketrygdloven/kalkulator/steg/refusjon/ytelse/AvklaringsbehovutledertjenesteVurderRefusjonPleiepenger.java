@@ -19,10 +19,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("PSB")
-public class AvklaringsbehovutledertjenesteVurderRefusjonPSB implements AvklaringsbehovutledertjenesteVurderRefusjon {
+@FagsakYtelseTypeRef("PPN")
+public class AvklaringsbehovutledertjenesteVurderRefusjonPleiepenger implements AvklaringsbehovutledertjenesteVurderRefusjon {
 
     @Inject
-    public AvklaringsbehovutledertjenesteVurderRefusjonPSB() {
+    public AvklaringsbehovutledertjenesteVurderRefusjonPleiepenger() {
     }
 
     @Override

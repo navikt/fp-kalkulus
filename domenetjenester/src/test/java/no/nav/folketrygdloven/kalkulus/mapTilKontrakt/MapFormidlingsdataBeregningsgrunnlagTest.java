@@ -23,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
@@ -293,7 +294,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
 
     private BeregningsgrunnlagGrunnlagDto map(UtbetalingsgradGrunnlag grunnlag) {
         BeregningsgrunnlagGUIInput input = new BeregningsgrunnlagGUIInput(KoblingReferanse.fra(FagsakYtelseType.OMSORGSPENGER, AktørId.dummy(), 1L, UUID.randomUUID(),
-                Optional.empty(), STP), null, null, null, (YtelsespesifiktGrunnlag) grunnlag);
+                Optional.empty(), STP), null, null, null, new OpptjeningAktiviteterDto(), (YtelsespesifiktGrunnlag) grunnlag);
 
         BeregningsgrunnlagDto bg = new BeregningsgrunnlagDto(null, null, bgPerioder, null,
                 null, null, false, GRUNNBELØP);

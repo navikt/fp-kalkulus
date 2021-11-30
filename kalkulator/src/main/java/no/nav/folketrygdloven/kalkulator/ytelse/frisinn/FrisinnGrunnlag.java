@@ -6,6 +6,7 @@ import java.util.List;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FrisinnBehandlingType;
 
@@ -26,7 +27,7 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
     }
 
     @Override
-    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
+    public int getDekningsgrad(BeregningsgrunnlagDto vlBeregningsgrunnlag, OpptjeningAktiviteterDto opptjeningAktiviteterDto) {
         return DEKNINGSGRAD_80;
     }
 

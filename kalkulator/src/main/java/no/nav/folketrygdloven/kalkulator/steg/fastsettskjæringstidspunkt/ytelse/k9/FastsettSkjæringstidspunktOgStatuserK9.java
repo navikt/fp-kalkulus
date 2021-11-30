@@ -34,6 +34,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
 @FagsakYtelseTypeRef("OMP")
 public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjæringstidspunktOgStatuser {
 

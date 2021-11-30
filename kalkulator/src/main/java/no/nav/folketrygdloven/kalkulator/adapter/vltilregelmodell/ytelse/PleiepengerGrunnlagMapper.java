@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.YtelsesSpesifiktGrunnlag;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.psb.PleiepengerSyktBarnGrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ytelse.psb.PleiepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -11,11 +11,12 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("PSB")
-public class PleiepengerSyktBarnGrunnlagMapper implements YtelsesspesifikkRegelMapper {
+@FagsakYtelseTypeRef("PPN")
+public class PleiepengerGrunnlagMapper implements YtelsesspesifikkRegelMapper {
 
     @Override
     public YtelsesSpesifiktGrunnlag map(BeregningsgrunnlagDto beregningsgrunnlagDto, BeregningsgrunnlagInput input) {
-        return new PleiepengerSyktBarnGrunnlag();
+        return new PleiepengerGrunnlag(input.getFagsakYtelseType().getKode());
     }
 
 }

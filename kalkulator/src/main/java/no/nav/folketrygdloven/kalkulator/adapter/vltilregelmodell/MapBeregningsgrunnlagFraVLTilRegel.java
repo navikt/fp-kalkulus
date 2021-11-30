@@ -38,7 +38,6 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -182,12 +181,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
             return Dekningsgrad.fra(frisinngrunnlag.getDekningsgradForDato(periodeFom));
         }
 
-        if (ytelsespesifiktGrunnlag instanceof PleiepengerSyktBarnGrunnlag) {
-            PleiepengerSyktBarnGrunnlag pleiepengerGrunnlag = (PleiepengerSyktBarnGrunnlag) ytelsespesifiktGrunnlag;
-            return Dekningsgrad.fra(pleiepengerGrunnlag.getDekningsgradForMidlertidigInaktiv(vlBeregningsgrunnlag, dto));
-        }
-
-        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad(vlBeregningsgrunnlag));
+        return Dekningsgrad.fra(ytelsespesifiktGrunnlag.getDekningsgrad(vlBeregningsgrunnlag, dto));
     }
 
     private AktivitetStatusMedHjemmel mapVLAktivitetStatusMedHjemmel(final BeregningsgrunnlagAktivitetStatusDto vlBGAktivitetStatus) {

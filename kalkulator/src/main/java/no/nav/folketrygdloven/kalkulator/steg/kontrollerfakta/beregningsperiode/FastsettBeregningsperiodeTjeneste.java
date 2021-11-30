@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 @FagsakYtelseTypeRef("FP")
 @FagsakYtelseTypeRef("SVP")
 @FagsakYtelseTypeRef("PSB")
+@FagsakYtelseTypeRef("PPN")
 @FagsakYtelseTypeRef("OMP")
 public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperiode {
 
@@ -38,3 +39,4 @@ public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperi
 
 
 }
+

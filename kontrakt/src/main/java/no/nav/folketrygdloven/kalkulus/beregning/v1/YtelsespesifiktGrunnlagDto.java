@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "ytelseType", defaultImpl = Void.class)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = PleiepengerNærståendeGrunnlag.class, name = PleiepengerNærståendeGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = PleiepengerSyktBarnGrunnlag.class, name = PleiepengerSyktBarnGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = OmsorgspengerGrunnlag.class, name = OmsorgspengerGrunnlag.YTELSE_TYPE),
         @JsonSubTypes.Type(value = ForeldrepengerGrunnlag.class, name = ForeldrepengerGrunnlag.YTELSE_TYPE),
