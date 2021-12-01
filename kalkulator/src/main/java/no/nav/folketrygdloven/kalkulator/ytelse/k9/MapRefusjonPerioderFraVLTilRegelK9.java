@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.ytelse.k9;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,10 @@ public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPeri
                                                           YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag,
                                                           InntektsmeldingDto im,
                                                           List<AktivitetsAvtaleDto> ansattperioder) {
+        if (im.getRefusjonOpphører() != null && im.getRefusjonOpphører().isBefore(startdatoPermisjon)) {
+            // Refusjon opphører før det utledede startpunktet, blir aldri refusjon
+            return Collections.emptyList();
+        }
         if (ytelsespesifiktGrunnlag instanceof UtbetalingsgradGrunnlag) {
             LocalDateTimeline<Boolean> utbetalingTidslinje = finnUtbetalingTidslinje((UtbetalingsgradGrunnlag) ytelsespesifiktGrunnlag, im);
             LocalDateTimeline<Boolean> ansettelseTidslinje = finnAnsettelseTidslinje(ansattperioder);
