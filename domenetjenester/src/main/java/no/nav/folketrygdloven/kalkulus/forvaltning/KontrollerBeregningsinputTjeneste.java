@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.forvaltning;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class KontrollerBeregningsinputTjeneste {
 
     public Optional<DiffResultatDto> kontrollerInputForKobling(KoblingEntitet kobling) {
         Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Set.of(kobling.getId()),
-                BeregningSteg.FORS_BERGRUNN, Collections.emptyMap()); // Bruker dette steget fordi det er her inntekt fastsettes
+                BeregningSteg.FORS_BERGRUNN); // Bruker dette steget fordi det er her inntekt fastsettes
         ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.getResultatPrKobling().get(kobling.getId());
         BeregningsgrunnlagGrunnlagEntitet sisteGrunnlagFraKofak = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER).orElseThrow();
         BeregningsgrunnlagGrunnlagDto bgDto = BehandlingslagerTilKalkulusMapper.mapGrunnlag(sisteGrunnlagFraKofak);

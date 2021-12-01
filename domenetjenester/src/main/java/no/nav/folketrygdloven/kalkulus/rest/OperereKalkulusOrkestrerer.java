@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.HåndtererApplikasjonTjeneste;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
@@ -73,9 +74,14 @@ public class OperereKalkulusOrkestrerer {
 
     public Resultat<KalkulusRespons> lagInputOgStartBeregning(Map<UUID, KalkulatorInputDto> inputPrReferanse,
                                                               YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                              Map<UUID, List<UUID>> koblingRelasjon,
                                                               Saksnummer saksnummer, AktørId aktørId) {
         // Finn koblinger
-        var koblinger = finnKoblinger(ytelseSomSkalBeregnes, saksnummer, inputPrReferanse.keySet().stream().toList(), aktørId);
+        var koblinger = finnKoblinger(ytelseSomSkalBeregnes,
+                saksnummer,
+                inputPrReferanse.keySet().stream().toList(),
+                aktørId);
+        koblingTjeneste.opprettKoblingRelasjoner(koblingRelasjon);
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         // Lag input
         var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
@@ -91,20 +97,22 @@ public class OperereKalkulusOrkestrerer {
 
     public Resultat<KalkulusRespons> lagInputOgBeregnVidere(Map<UUID, KalkulatorInputDto> inputPrReferanse,
                                                             List<UUID> eksternReferanser,
-                                                            Map<UUID, List<UUID>> koblingRelasjon,
                                                             YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                             Saksnummer saksnummer,
                                                             StegType stegType) {
         // Finn koblinger
         var koblinger = finnKoblinger(ytelseSomSkalBeregnes, saksnummer, eksternReferanser, null);
         Set<Long> koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var koblingRelasjoner = koblingTjeneste.hentKoblingRelasjoner(koblingIder);
         // Lag input
         BeregningSteg beregningSteg = BeregningSteg.fraKode(stegType.getKode());
         var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
         if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
         }
-        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder, hentInputResultat.getResultatPrKobling(), new InputForSteg(beregningSteg, koblingRelasjon));
+        var stegInputPrKobling = lagInputOgRullTilbakeVedBehov(koblingIder,
+                hentInputResultat.getResultatPrKobling(),
+                new InputForSteg(beregningSteg, koblingRelasjoner));
         // Operer
         return opererAlle(koblinger, stegInputPrKobling, new Fortsetter(beregningSteg));
     }
@@ -162,7 +170,8 @@ public class OperereKalkulusOrkestrerer {
 
     private List<KoblingEntitet> finnKoblinger(YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                Saksnummer saksnummer,
-                                               List<UUID> refranser, AktørId aktørId) {
+                                               List<UUID> refranser,
+                                               AktørId aktørId) {
         List<KoblingReferanse> referanser = refranser.stream().map(KoblingReferanse::new).collect(Collectors.toList());
         if (ytelseSomSkalBeregnes == null) {
             var koblinger = koblingTjeneste.hentKoblinger(referanser);
@@ -226,17 +235,17 @@ public class OperereKalkulusOrkestrerer {
     private class InputForSteg implements LagInputTjeneste {
 
         private final BeregningSteg steg;
-        private final Map<UUID, List<UUID>> koblingRelasjon;
+        private final List<KoblingRelasjon> koblingRelasjoner;
 
 
-        private InputForSteg(BeregningSteg steg, Map<UUID, List<UUID>> koblingRelasjon) {
+        private InputForSteg(BeregningSteg steg, List<KoblingRelasjon> koblingRelasjoner) {
             this.steg = steg;
-            this.koblingRelasjon = koblingRelasjon;
+            this.koblingRelasjoner = koblingRelasjoner;
         }
 
         @Override
         public Map<Long, BeregningsgrunnlagInput> utfør(Set<Long> koblingIder, Map<Long, KalkulatorInputDto> inputPrKobling) {
-            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingIder, inputPrKobling, steg, koblingRelasjon)
+            return stegInputTjeneste.lagBeregningsgrunnlagInput(koblingIder, inputPrKobling, steg, koblingRelasjoner)
                     .entrySet().stream()
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,

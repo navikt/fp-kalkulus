@@ -226,6 +226,8 @@ class LagVurderRefusjonDtoTest {
 
 
     private void ferdigstillInput() {
+        BeregningsgrunnlagPeriodeDto.oppdater(bgPeriodeOrginal).build();
+        BeregningsgrunnlagPeriodeDto.oppdater(bgPeriode).build();
         BeregningsgrunnlagGrunnlagDto grunnlagOrginal = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medBeregningsgrunnlag(beregningsgrunnlagOrginal).build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
 

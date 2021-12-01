@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -59,6 +61,16 @@ public class StartBeregningListeRequest implements KalkulusRequest {
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
+    /**
+     * Relasjonsmap mellom nye koblingId'er og gamle. F.eks hvis en behandling hadde to beregningsgrunnlag med referanse a og b,
+     * mens revurderingen nå har samlet begge i en referanse c vil mappet se slik ut:
+     * c: [a,b]
+     * Ikke obligatorisk
+     */
+    @JsonProperty(value = "koblingRelasjon")
+    @Valid
+    private Map<UUID, List<UUID>> koblingRelasjon;
+
     protected StartBeregningListeRequest() {
     }
 
@@ -66,12 +78,14 @@ public class StartBeregningListeRequest implements KalkulusRequest {
     public StartBeregningListeRequest(@JsonProperty(value = "kalkulatorInput", required = true) @Valid @NotNull Map<UUID, KalkulatorInputDto> kalkulatorInput,
                                       @JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
                                       @JsonProperty(value = "aktør", required = true) @NotNull @Valid PersonIdent aktør,
-                                      @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
+                                      @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                      @JsonProperty(value = "koblingRelasjon") @Valid Map<UUID, List<UUID>> koblingRelasjon) {
 
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
         this.aktør = Objects.requireNonNull(aktør, "aktør");
         this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
         this.kalkulatorInputPerKoblingReferanse = Map.copyOf(Objects.requireNonNull(kalkulatorInput, "kalkulatorInput"));
+        this.koblingRelasjon = koblingRelasjon;
     }
 
     @Override
@@ -96,4 +110,7 @@ public class StartBeregningListeRequest implements KalkulusRequest {
         return map;
     }
 
+    public Map<UUID, List<UUID>> getKoblingRelasjon() {
+        return koblingRelasjon == null ? Collections.emptyMap() : koblingRelasjon;
+    }
 }

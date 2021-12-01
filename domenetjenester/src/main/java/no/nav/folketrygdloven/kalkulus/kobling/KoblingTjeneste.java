@@ -3,12 +3,15 @@ package no.nav.folketrygdloven.kalkulus.kobling;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
@@ -49,6 +52,28 @@ public class KoblingTjeneste {
         return alleKoblinger;
     }
 
+    public void opprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {
+        var referanser = koblingrelasjoner.keySet().stream().map(KoblingReferanse::new)
+                .collect(Collectors.toCollection(ArrayList::new));
+        referanser.addAll(koblingrelasjoner.values().stream().flatMap(Collection::stream).map(KoblingReferanse::new).collect(Collectors.toList()));
+        var alleKoblinger = hentKoblinger(referanser);
+        var koblingRelasjoner = koblingrelasjoner.entrySet().stream()
+                .flatMap(e -> {
+                    var koblingId = finnIdFraListe(e.getKey(), alleKoblinger);
+                    return e.getValue().stream().map(v -> new KoblingRelasjon(koblingId, finnIdFraListe(v, alleKoblinger)));
+                })
+                .collect(Collectors.toList());
+        koblingRelasjoner.forEach(repository::lagre);
+    }
+
+    private Long finnIdFraListe(UUID referanse, List<KoblingEntitet> alleKoblinger) {
+        return alleKoblinger.stream()
+                .filter(k -> k.getKoblingReferanse().getReferanse().equals(referanse))
+                .map(KoblingEntitet::getId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne kobling"));
+    }
+
     public Optional<KoblingEntitet> hentFor(KoblingReferanse referanse) {
         return repository.hentForKoblingReferanse(referanse);
     }
@@ -65,6 +90,9 @@ public class KoblingTjeneste {
         return repository.hentKoblingIdForKoblingReferanser(koblingReferanser);
     }
 
+    public List<KoblingRelasjon> hentKoblingRelasjoner(Collection<Long> koblingIder) {
+        return repository.hentRelasjonerFor(koblingIder);
+    }
 
     // Burde ta i bruk skrivelås?
     public KoblingLås taSkrivesLås(KoblingReferanse referanse) {

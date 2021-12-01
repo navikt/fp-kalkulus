@@ -14,7 +14,6 @@ import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.AndelerMedØktRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -29,12 +28,16 @@ public final class VurderRefusjonDtoTjeneste {
 
     public static Optional<RefusjonTilVurderingDto> lagDto(BeregningsgrunnlagGUIInput input) {
         Optional<BeregningsgrunnlagDto> beregningsgrunnlag = input.getVurderRefusjonBeregningsgrunnlagGrunnlag().orElse(input.getBeregningsgrunnlagGrunnlag()).getBeregningsgrunnlag();
-        Optional<BeregningsgrunnlagDto> orginaltBG = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
-        if (orginaltBG.isEmpty() || beregningsgrunnlag.isEmpty()) {
+        List<BeregningsgrunnlagDto> originaleGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().stream()
+                .flatMap(gr -> gr.getBeregningsgrunnlag().stream()).collect(Collectors.toList());
+        if (originaleGrunnlag.isEmpty() || beregningsgrunnlag.isEmpty()) {
             return Optional.empty();
         }
         BigDecimal grenseverdi = KonfigTjeneste.forYtelse(input.getFagsakYtelseType()).getAntallGØvreGrenseverdi().multiply(beregningsgrunnlag.get().getGrunnbeløp().getVerdi());
-        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), orginaltBG.get(), grenseverdi);
+
+        Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon = originaleGrunnlag.stream()
+                .flatMap(originaltBg -> AndelerMedØktRefusjonTjeneste.finnAndelerMedØktRefusjon(beregningsgrunnlag.get(), originaltBg, grenseverdi).entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         if (!andelerMedØktRefusjon.isEmpty()) {
             return LagVurderRefusjonDto.lagDto(andelerMedØktRefusjon, input);
         }

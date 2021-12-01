@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.input;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class BeregningsgrunnlagGUIInput {
     private BeregningsgrunnlagGrunnlagDto vurderRefusjonBeregningsgrunnlagGrunnlag;
 
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
-    private BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlagFraForrigeBehandling;
+    private List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling = new ArrayList<>();
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
     private List<RefusjonskravDatoDto> refusjonskravDatoer;
@@ -116,8 +117,8 @@ public class BeregningsgrunnlagGUIInput {
         return beregningsgrunnlagGrunnlag == null ? null : beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElseThrow();
     }
 
-    public Optional<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
-        return Optional.ofNullable(beregningsgrunnlagGrunnlagFraForrigeBehandling);
+    public List<BeregningsgrunnlagGrunnlagDto> getBeregningsgrunnlagGrunnlagFraForrigeBehandling() {
+        return beregningsgrunnlagGrunnlagFraForrigeBehandling;
     }
 
     public FagsakYtelseType getFagsakYtelseType() {
@@ -220,6 +221,12 @@ public class BeregningsgrunnlagGUIInput {
     }
 
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(BeregningsgrunnlagGrunnlagDto grunnlag) {
+        var newInput = new BeregningsgrunnlagGUIInput(this);
+        newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = new ArrayList<>(List.of(grunnlag));
+        return newInput;
+    }
+
+    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(List<BeregningsgrunnlagGrunnlagDto> grunnlag) {
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
         return newInput;

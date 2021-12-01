@@ -102,6 +102,7 @@ public class OperereKalkulusRestTjeneste {
         Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgStartBeregning(
                 spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
+                spesifikasjon.getKoblingRelasjon(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
                 new AktørId(spesifikasjon.getAktør().getIdent())
         );
@@ -125,7 +126,6 @@ public class OperereKalkulusRestTjeneste {
         Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgBeregnVidere(
                 spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
                 spesifikasjon.getEksternReferanser(),
-                spesifikasjon.getKoblingRelasjon().orElse(Map.of()),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),
                 spesifikasjon.getStegType()
@@ -209,8 +209,9 @@ public class OperereKalkulusRestTjeneste {
         }
 
         public StartBeregningListeRequestAbacDto(Map<UUID, KalkulatorInputDto> kalkulatorInput, String saksnummer, PersonIdent aktør,
-                                                 YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(kalkulatorInput, saksnummer, aktør, ytelseSomSkalBeregnes);
+                                                 YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                 Map<UUID, List<UUID>> koblingRelasjoner) {
+            super(kalkulatorInput, saksnummer, aktør, ytelseSomSkalBeregnes, koblingRelasjoner);
         }
 
         @Override

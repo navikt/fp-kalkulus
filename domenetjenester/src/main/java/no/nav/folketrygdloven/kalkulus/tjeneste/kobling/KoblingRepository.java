@@ -101,6 +101,13 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
+    public List<KoblingRelasjon> hentRelasjonerFor(Collection<Long> ider) {
+        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
+                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId IN (:ider)", KoblingRelasjon.class);
+        query.setParameter("ider", ider);
+        return query.getResultList();
+    }
+
     public Optional<KoblingRelasjon> hentRelasjon(Long koblingId, Long originalKoblingId) {
         TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
                 "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId and k.originalKoblingId :=originalKoblingId", KoblingRelasjon.class);

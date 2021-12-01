@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -23,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.EksternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
@@ -43,11 +43,12 @@ public final class LagVurderRefusjonDto {
 
     public static Optional<RefusjonTilVurderingDto> lagDto(Map<Intervall, List<RefusjonAndel>> andelerMedØktRefusjon,
                                                            BeregningsgrunnlagGUIInput input) {
-        Optional<BeregningsgrunnlagGrunnlagDto> orginaltGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
-        if (orginaltGrunnlag.isEmpty() || orginaltGrunnlag.get().getBeregningsgrunnlag().isEmpty()) {
+        List<BeregningsgrunnlagGrunnlagDto> originaleGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling();
+        if (originaleGrunnlag.isEmpty() || originaleGrunnlag.stream().anyMatch(bg -> bg.getBeregningsgrunnlag().isEmpty())) {
             return Optional.empty();
         }
-        BeregningsgrunnlagDto orginaltBG = orginaltGrunnlag.get().getBeregningsgrunnlag().get();
+        var originaleBg = originaleGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream()).collect(Collectors.toList());
+
         List<BeregningRefusjonOverstyringDto> gjeldendeOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer()
                 .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
                 .orElse(Collections.emptyList());
@@ -61,13 +62,13 @@ public final class LagVurderRefusjonDto {
             if (forrigeEntry == null) {
                 // Første periode, alle andeler skal legges til
                 List<RefusjonAndelTilVurderingDto> andeler = e.getValue().stream()
-                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, gjeldendeOverstyringer, arbeidsforholdInformasjon))
+                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, originaleBg, gjeldendeOverstyringer, arbeidsforholdInformasjon))
                         .collect(Collectors.toList());
                 dtoer.addAll(andeler);
             } else {
                 // Senere perioden, kun legg til andeler som ikke var i forrige periode (vi vet periodene er sammenhengende)
                 List<RefusjonAndelTilVurderingDto> andeler = e.getValue().stream().filter(a -> !forrigeEntry.getValue().contains(a))
-                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, orginaltBG, gjeldendeOverstyringer, arbeidsforholdInformasjon))
+                        .map(andel -> lagAndel(e.getKey(), andel, gjeldendeBeregningsgrunnlag, originaleBg, gjeldendeOverstyringer, arbeidsforholdInformasjon))
                         .collect(Collectors.toList());
                 dtoer.addAll(andeler);
             }
@@ -78,7 +79,7 @@ public final class LagVurderRefusjonDto {
     private static RefusjonAndelTilVurderingDto lagAndel(Intervall periode,
                                                          RefusjonAndel andel,
                                                          BeregningsgrunnlagDto gjeldendeBeregningsgrunnlag,
-                                                         BeregningsgrunnlagDto orginalBG,
+                                                         List<BeregningsgrunnlagDto> orginalBG,
                                                          List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer,
                                                          Optional<ArbeidsforholdInformasjonDto> arbeidsforholdInformasjon) {
         RefusjonAndelTilVurderingDto dto = new RefusjonAndelTilVurderingDto();
@@ -149,7 +150,7 @@ public final class LagVurderRefusjonDto {
         return tidligereRefusjonForAndelIPeriode.compareTo(BigDecimal.ZERO) > 0 && andel.getRefusjon().compareTo(tidligereRefusjonForAndelIPeriode) > 0;
     }
 
-    private static BigDecimal finnTidligereUtbetaltRefusjonForAndelIPeriode(Intervall periode, RefusjonAndel refusjonAndel, BeregningsgrunnlagDto orginalBG) {
+    private static BigDecimal finnTidligereUtbetaltRefusjonForAndelIPeriode(Intervall periode, RefusjonAndel refusjonAndel, List<BeregningsgrunnlagDto> orginalBG) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelerIOrginalPeriode = finnOrginalBGPeriode(periode.getFomDato(), orginalBG).getBeregningsgrunnlagPrStatusOgAndelList();
         List<BeregningsgrunnlagPrStatusOgAndelDto> matchedeAndeler = andelerIOrginalPeriode.stream()
                 .filter(bga -> {
@@ -165,14 +166,36 @@ public final class LagVurderRefusjonDto {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private static BeregningsgrunnlagPeriodeDto finnOrginalBGPeriode(LocalDate fomDato, BeregningsgrunnlagDto orginalBG) {
-        if (fomDato.isBefore(orginalBG.getSkjæringstidspunkt())) {
-            return orginalBG.getBeregningsgrunnlagPerioder().get(0);
+    private static BeregningsgrunnlagPeriodeDto finnOrginalBGPeriode(LocalDate fomDato, List<BeregningsgrunnlagDto> orginalBG) {
+        var alleOriginalePerioderMedUtbetaling = orginalBG.stream()
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> p.getDagsats() != null && p.getDagsats() > 0)
+                .collect(Collectors.toList());
+        if (harIngenOverlappMedUtbetaling(fomDato, alleOriginalePerioderMedUtbetaling)) {
+            return finnSistePeriodeSomOverlapperEllerFørste(fomDato, orginalBG);
         }
-        return orginalBG.getBeregningsgrunnlagPerioder().stream()
+        return alleOriginalePerioderMedUtbetaling.stream()
                 .filter(bgp -> bgp.getPeriode().inkluderer(fomDato))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    private static boolean harIngenOverlappMedUtbetaling(LocalDate fomDato, List<BeregningsgrunnlagPeriodeDto> alleOriginalePerioderMedUtbetaling) {
+        return alleOriginalePerioderMedUtbetaling.stream().map(BeregningsgrunnlagPeriodeDto::getPeriode).noneMatch(p -> p.inkluderer(fomDato));
+    }
+
+    private static BeregningsgrunnlagPeriodeDto finnSistePeriodeSomOverlapperEllerFørste(LocalDate fomDato, List<BeregningsgrunnlagDto> orginalBG) {
+        return orginalBG.stream()
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> p.getPeriode().inkluderer(fomDato))
+                .max(Comparator.comparing(p -> p.getPeriode().getFomDato()))
+                .orElse(finnFørstePeriode(orginalBG));
+    }
+
+    private static BeregningsgrunnlagPeriodeDto finnFørstePeriode(List<BeregningsgrunnlagDto> orginalBG) {
+        return orginalBG.stream()
+                .min(Comparator.comparing(BeregningsgrunnlagDto::getSkjæringstidspunkt))
+                .orElseThrow().getBeregningsgrunnlagPerioder().get(0);
     }
 
     private static Optional<LocalDate> getTidligsteMuligeRefusjonsdato(RefusjonAndel andel, List<BeregningRefusjonOverstyringDto> gjeldendeOvertyringer) {
@@ -182,21 +205,17 @@ public final class LagVurderRefusjonDto {
                 .flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
     }
 
-    private static Optional<ArbeidsgiverOpplysningerDto> mapArbeidsgivernavn(RefusjonAndel andel, List<ArbeidsgiverOpplysningerDto> agOpplysninger) {
-        return agOpplysninger.stream()
-                .filter(ago -> ago.getIdentifikator().equals(andel.getArbeidsgiver().getIdentifikator()))
-                .findFirst();
-    }
-
     private static Arbeidsgiver mapArbeidsgiver(RefusjonAndel andel) {
         return andel.getArbeidsgiver().erAktørId()
                 ? new Arbeidsgiver(null, andel.getArbeidsgiver().getAktørId().getId())
                 : new Arbeidsgiver(andel.getArbeidsgiver().getOrgnr(), null);
     }
 
-    private static List<TidligereUtbetalingDto> finnTidligereUtbetalinger(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver ag, BeregningsgrunnlagDto orginaltBG) {
+    private static List<TidligereUtbetalingDto> finnTidligereUtbetalinger(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver ag, List<BeregningsgrunnlagDto> orginaltBG) {
         List<TidligereUtbetalingDto> tidligereUtbetalinger = new ArrayList<>();
-        List<BeregningsgrunnlagPeriodeDto> alleOrginalePerioder = orginaltBG.getBeregningsgrunnlagPerioder();
+        List<BeregningsgrunnlagPeriodeDto> alleOrginalePerioder = orginaltBG.stream().flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> p.getDagsats() != null && p.getDagsats() > 0)
+                .collect(Collectors.toList());
         alleOrginalePerioder.forEach(p -> {
             List<BeregningsgrunnlagPrStatusOgAndelDto> andelerMedSammeAG = p.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(andel -> andel.getArbeidsgiver().isPresent())

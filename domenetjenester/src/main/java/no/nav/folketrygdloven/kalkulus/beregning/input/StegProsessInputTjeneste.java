@@ -6,7 +6,6 @@ import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKal
 
 import java.time.LocalDate;
 import java.time.MonthDay;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,8 +34,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -83,19 +82,20 @@ public class StegProsessInputTjeneste {
 
     @Deprecated // Bruk kalkulatorInputTjeneste og lagBeregningsgrunnlagInput separat (sjå OperereKalkulusOrkestrerer)
     public Resultat<StegProsesseringInput> lagFortsettInput(Set<Long> koblingId,
-                                                            BeregningSteg stegType,
-                                                            Map<UUID, List<UUID>> koblingRelasjon) {
+                                                            BeregningSteg stegType) {
         Objects.requireNonNull(koblingId, "koblingId");
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
         if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return new Resultat<>(inputRespons.getKode());
         }
 
-        return Resultat.forGyldigInputMedData(lagBeregningsgrunnlagInput(koblingId, inputRespons.getResultatPrKobling(), stegType, koblingRelasjon));
+        return Resultat.forGyldigInputMedData(lagBeregningsgrunnlagInput(koblingId, inputRespons.getResultatPrKobling(), stegType, List.of()));
     }
 
-    public Map<Long, StegProsesseringInput> lagBeregningsgrunnlagInput(Set<Long> koblingId, Map<Long, KalkulatorInputDto> inputPrKobling, BeregningSteg stegType,
-                                                                       Map<UUID, List<UUID>> koblingRelasjon) {
+    public Map<Long, StegProsesseringInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,
+                                                                       Map<Long, KalkulatorInputDto> inputPrKobling,
+                                                                       BeregningSteg stegType,
+                                                                       List<KoblingRelasjon> koblingRelasjoner) {
         var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
@@ -108,13 +108,16 @@ public class StegProsessInputTjeneste {
         Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
                 .collect(Collectors.toMap(
                         KoblingEntitet::getId,
-                        id -> mapStegInput(id, inputPrKobling.get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjon))
+                        id -> mapStegInput(id, inputPrKobling.get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjoner))
                         ));
         return koblingStegInputMap;
     }
 
-    private List<UUID> finnOriginalKobling(KoblingEntitet kobling, Map<UUID, List<UUID>> koblingRelasjon) {
-        return koblingRelasjon.getOrDefault(kobling.getKoblingReferanse().getReferanse(), Collections.emptyList());
+    private List<Long> finnOriginalKobling(KoblingEntitet kobling, List<KoblingRelasjon> koblingRelasjoner) {
+        return koblingRelasjoner.stream()
+                .filter(r -> r.getKoblingId().equals(kobling.getId()))
+                .map(KoblingRelasjon::getOriginalKoblingId)
+                .collect(Collectors.toList());
     }
 
 
@@ -122,7 +125,7 @@ public class StegProsessInputTjeneste {
                                               KalkulatorInputDto input,
                                               BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet,
                                               BeregningSteg stegType,
-                                              List<UUID> originaleKoblinger) {
+                                              List<Long> originaleKoblinger) {
         StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
         if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
@@ -132,7 +135,6 @@ public class StegProsessInputTjeneste {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
-            log.info("Kaller VURDER_REF_BERGRUNN med originale koblinger " + originaleKoblinger);
             return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
         } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
             Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
@@ -146,7 +148,7 @@ public class StegProsessInputTjeneste {
 
     private StegProsesseringInput lagInputVurderRefusjon(StegProsesseringInput stegProsesseringInput,
                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet,
-                                                         List<UUID> originaleKoblinger) {
+                                                         List<Long> originaleKoblinger) {
         var vurderVilkårOgRefusjonBeregningsgrunnlag = new VurderRefusjonBeregningsgrunnlagInput(stegProsesseringInput);
         List<BeregningsgrunnlagGrunnlagDto> originaltGrunnlag = finnOriginaltGrunnlag(originaleKoblinger);
         vurderVilkårOgRefusjonBeregningsgrunnlag = vurderVilkårOgRefusjonBeregningsgrunnlag.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(originaltGrunnlag);
@@ -160,13 +162,12 @@ public class StegProsessInputTjeneste {
         return vurderVilkårOgRefusjonBeregningsgrunnlag;
     }
 
-    private List<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<UUID> originaleKoblinger) {
+    private List<BeregningsgrunnlagGrunnlagDto> finnOriginaltGrunnlag(List<Long> originaleKoblinger) {
         return originaleKoblinger.stream().flatMap(k -> finnGrunnlagForKobling(k).stream()).collect(Collectors.toList());
 
     }
 
-    private Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagForKobling(UUID referanse) {
-        Long koblingId = koblingRepository.hentKoblingIdForKoblingReferanse(new KoblingReferanse(referanse));
+    private Optional<BeregningsgrunnlagGrunnlagDto> finnGrunnlagForKobling(Long koblingId) {
         Optional<BeregningsgrunnlagGrunnlagEntitet> entitet = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(koblingId);
         return entitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
     }

@@ -72,7 +72,9 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
             endringAndel.setFordelingForrigeBehandling(null);
             return;
         }
-        Optional<BeregningsgrunnlagDto> bgForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
+        Optional<BeregningsgrunnlagDto> bgForrigeBehandling = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling()
+                .stream().findFirst()
+                .flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         if (bgForrigeBehandling.isEmpty()) {
             return;
         }
@@ -86,8 +88,6 @@ class FordelBeregningsgrunnlagAndelDtoTjeneste {
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
-        if (fastsattForrigeBehandling != null) {
-            endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP));
-        }
+        endringAndel.setFordelingForrigeBehandling(fastsattForrigeBehandling.divide(BigDecimal.valueOf(MÅNEDER_I_1_ÅR), 0, RoundingMode.HALF_UP));
     }
 }

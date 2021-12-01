@@ -118,7 +118,7 @@ public class HentKalkulusRestTjeneste {
         if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType) || YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
             List<Long> koblinger = new ArrayList<>();
             koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
-            Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger);
+            Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger, List.of());
             List<BeregningsgrunnlagGrunnlagEntitet> grunnlag = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType);
             dtoer = new ArrayList<>();
             input.getResultatPrKobling().forEach((key, value) -> {
@@ -155,7 +155,8 @@ public class HentKalkulusRestTjeneste {
                 .collect(Collectors.toList());
         List<Long> koblinger = new ArrayList<>();
         koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
-        Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger);
+        // TODO Ikkje bruk gui-input til henting av brevfelter
+        Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger, List.of());
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType).stream()
                 .map(gr -> MapBrevBeregningsgrunnlag.mapGrunnlag(gr, input.getResultatPrKobling().get(gr.getKoblingId()).getYtelsespesifiktGrunnlag()))
                 .collect(Collectors.toList());
@@ -211,11 +212,11 @@ public class HentKalkulusRestTjeneste {
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
             .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        Resultat<BeregningsgrunnlagGUIInput> resultatInput = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()));
+        Resultat<BeregningsgrunnlagGUIInput> resultatInput = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of());
         if (resultatInput.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
             throw new IllegalStateException("Kan ikke hente ny input for kall til frisinnGrunnlag");
         } else {
-            BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get())).getResultatPrKobling().values().iterator().next();
+            BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of()).getResultatPrKobling().values().iterator().next();
             final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
                     .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
                     .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
@@ -271,8 +272,9 @@ public class HentKalkulusRestTjeneste {
         var ytelseType = ytelseSomSkalBeregnes.iterator().next();
         var koblinger = koblingTjeneste.hentKoblinger(koblingReferanser, ytelseType);
         var koblingIds = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
+        var koblingRelasjoner = koblingTjeneste.hentKoblingRelasjoner(koblingIds);
 
-        Resultat<BeregningsgrunnlagGUIInput> inputResultat = guiInputTjeneste.lagInputForKoblinger(koblingIds);
+        Resultat<BeregningsgrunnlagGUIInput> inputResultat = guiInputTjeneste.lagInputForKoblinger(koblingIds, koblingRelasjoner);
         return inputResultat;
     }
 

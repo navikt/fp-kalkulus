@@ -85,7 +85,8 @@ public class KalkulatorMapperTest {
         StartBeregningListeRequest spesifikasjon = new StartBeregningListeRequest(
                 Map.of(koblingReferanse.toUuidReferanse(), kalkulatorInputDto),
                 saksnummer, dummy,
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN);
+                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                Map.of(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID())));
 
         String json = WRITER_JSON.writeValueAsString(spesifikasjon);
         System.out.println(json);
