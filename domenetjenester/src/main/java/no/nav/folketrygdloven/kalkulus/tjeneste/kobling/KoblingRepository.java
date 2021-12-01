@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbe
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffEntity;
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffResult;
 import no.nav.folketrygdloven.kalkulus.felles.diff.TraverseGraph;
@@ -93,6 +94,22 @@ public class KoblingRepository {
         return HibernateVerktøy.hentUniktResultat(query);
     }
 
+    public List<KoblingRelasjon> hentRelasjonerForId(Long koblingId) {
+        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
+                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId", KoblingRelasjon.class);
+        query.setParameter("koblingId", koblingId);
+        return query.getResultList();
+    }
+
+    public Optional<KoblingRelasjon> hentRelasjon(Long koblingId, Long originalKoblingId) {
+        TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
+                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId and k.originalKoblingId :=originalKoblingId", KoblingRelasjon.class);
+        query.setParameter("koblingId", koblingId);
+        query.setParameter("originalKoblingId", originalKoblingId);
+        return HibernateVerktøy.hentUniktResultat(query);
+    }
+
+
     public void lagre(KoblingEntitet nyKobling) {
         Optional<KoblingEntitet> eksisterendeKobling = hentForKoblingReferanse(nyKobling.getKoblingReferanse());
 
@@ -101,6 +118,14 @@ public class KoblingRepository {
         if (!diff.isEmpty()) {
             log.info("Detekterte endringer på kobling med referanse={}, endringer={}", nyKobling.getId(), diff.getLeafDifferences());
             entityManager.persist(nyKobling);
+            entityManager.flush();
+        }
+    }
+
+    public void lagre(KoblingRelasjon koblingRelasjon) {
+        var eksisterendeRelasjon = hentRelasjon(koblingRelasjon.getKoblingId(), koblingRelasjon.getOriginalKoblingId());
+        if (eksisterendeRelasjon.isEmpty()) {
+            entityManager.persist(koblingRelasjon);
             entityManager.flush();
         }
     }

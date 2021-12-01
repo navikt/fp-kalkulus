@@ -20,12 +20,13 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.YtelseTyperKalkulusStøtterKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @Entity(name = "Kobling")
 @Table(name = "KOBLING")
-public class KoblingEntitet implements IndexKey {
+public class KoblingEntitet extends BaseEntitet implements IndexKey {
 
     /**
      * Kalkulus intern kobling_id.

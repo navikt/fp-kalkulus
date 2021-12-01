@@ -20,7 +20,6 @@
     <sequence-generator name="SEQ_BG_AKTIVITET_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_AKTIVITET_OVERSTYRING"/>
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRINGER" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRINGER"/>
     <sequence-generator name="SEQ_BG_REFUSJON_OVERSTYRING" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_OVERSTYRING"/>
-    <sequence-generator name="SEQ_KALKULATOR_INPUT" allocation-size="50" sequence-name="SEQ_KALKULATOR_INPUT"/>
     <sequence-generator name="SEQ_BG_REFUSJON_PERIODE" allocation-size="50" sequence-name="SEQ_BG_REFUSJON_PERIODE"/>
     <sequence-generator name="SEQ_REGEL_SPORING_GRUNNLAG" allocation-size="50" sequence-name="SEQ_REGEL_SPORING_GRUNNLAG"/>
     <sequence-generator name="SEQ_REGEL_SPORING_PERIODE" allocation-size="50" sequence-name="SEQ_REGEL_SPORING_PERIODE"/>
@@ -51,11 +50,7 @@
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAktørEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaArbeidsforholdEntitet" />
 
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet" />
-    <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet" />
-
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet" />
-
 
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet" />
     <entity class="no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet" />
