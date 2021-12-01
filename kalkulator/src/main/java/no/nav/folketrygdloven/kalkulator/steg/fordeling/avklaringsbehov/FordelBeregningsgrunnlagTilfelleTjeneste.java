@@ -14,6 +14,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
+/**
+ * Tjeneste som utleder FordelingTilfelle for å manuelt fordele beregningsgrunnlaget
+ */
 public final class FordelBeregningsgrunnlagTilfelleTjeneste {
 
     private FordelBeregningsgrunnlagTilfelleTjeneste() {
