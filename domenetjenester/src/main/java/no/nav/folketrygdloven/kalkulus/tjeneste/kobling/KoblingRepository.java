@@ -110,7 +110,7 @@ public class KoblingRepository {
 
     public Optional<KoblingRelasjon> hentRelasjon(Long koblingId, Long originalKoblingId) {
         TypedQuery<KoblingRelasjon> query = entityManager.createQuery(
-                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId and k.originalKoblingId :=originalKoblingId", KoblingRelasjon.class);
+                "SELECT k FROM KoblingRelasjon k WHERE k.koblingId = :koblingId and k.originalKoblingId = :originalKoblingId", KoblingRelasjon.class);
         query.setParameter("koblingId", koblingId);
         query.setParameter("originalKoblingId", originalKoblingId);
         return HibernateVerktøy.hentUniktResultat(query);
