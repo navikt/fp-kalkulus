@@ -48,7 +48,14 @@ public class FastsettGrunnlagOmsorgspenger extends FastsettGrunnlagGenerell {
         if (finnesAtAndelIkkeSøktOm) {
             return false;
         }
+        if (harIngenKrav(input)) {
+            return false;
+        }
         return !girDirekteUtbetalingTilBruker(input, input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().get(0));
+    }
+
+    private static boolean harIngenKrav(BeregningsgrunnlagGUIInput input) {
+        return input.getInntektsmeldinger().stream().noneMatch(im -> im.getRefusjonBeløpPerMnd() != null && !im.getRefusjonBeløpPerMnd().erNullEllerNulltall());
     }
 
     private boolean erBlittFastsattFør(BeregningsgrunnlagPrStatusOgAndelDto andel) {
