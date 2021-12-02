@@ -32,6 +32,9 @@ public class TidligereUtbetalingDto {
     @NotNull
     private Boolean erTildeltRefusjon;
 
+    public TidligereUtbetalingDto() {
+    }
+
     public TidligereUtbetalingDto(@Valid @NotNull LocalDate fom,
                                   @Valid LocalDate tom,
                                   @Valid @NotNull Boolean erTildeltRefusjon) {

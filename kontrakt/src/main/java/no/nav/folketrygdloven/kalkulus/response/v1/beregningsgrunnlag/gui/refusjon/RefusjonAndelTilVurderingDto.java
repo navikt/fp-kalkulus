@@ -82,6 +82,9 @@ public class RefusjonAndelTilVurderingDto {
     @DecimalMax("10000000.00")
     private BigDecimal maksTillattDelvisRefusjonPrMnd;
 
+    public RefusjonAndelTilVurderingDto() {
+    }
+
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
     }

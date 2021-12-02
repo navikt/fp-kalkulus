@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +25,9 @@ public class RefusjonTilVurderingDto {
     @Size(min = 1)
     @NotNull
     private List<RefusjonAndelTilVurderingDto> andeler;
+
+    public RefusjonTilVurderingDto() {
+    }
 
     public RefusjonTilVurderingDto(@Valid @Size(min = 1) @NotNull List<RefusjonAndelTilVurderingDto> andeler) {
         this.andeler = andeler;
