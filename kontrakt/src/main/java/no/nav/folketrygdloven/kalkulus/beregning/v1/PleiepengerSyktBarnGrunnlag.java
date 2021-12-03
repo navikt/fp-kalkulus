@@ -22,7 +22,7 @@ public class PleiepengerSyktBarnGrunnlag extends YtelsespesifiktGrunnlagDto {
     public static final String YTELSE_TYPE = "PSB";
 
     @JsonProperty(value = "utbetalingsgradPrAktivitet", required = true)
-    @Size(min = 1)
+    @Size()
     @Valid
     private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
