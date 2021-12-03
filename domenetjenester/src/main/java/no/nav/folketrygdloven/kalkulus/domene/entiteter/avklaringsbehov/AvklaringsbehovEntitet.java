@@ -19,13 +19,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AvklaringsbehovDefinisjonKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AvklaringsbehovStatusDefinisjonKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 
 @Entity(name = "AvklaringsbehovEntitet")
 @Table(name = "AVKLARINGSBEHOV")
-public class AvklaringsbehovEntitet implements Comparable<AvklaringsbehovEntitet> {
+public class AvklaringsbehovEntitet extends BaseEntitet implements Comparable<AvklaringsbehovEntitet> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_AVKLARINGSBEHOV")
