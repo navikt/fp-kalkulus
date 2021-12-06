@@ -38,7 +38,7 @@ public class FrisinnGrunnlag extends YtelsespesifiktGrunnlagDto {
 
     @Valid
     @JsonProperty("perioderMedSøkerInfo")
-    @Size(max = 20)
+    @Size(max = 40)
     private List<PeriodeMedSøkerInfoDto> perioderMedSøkerInfo;
 
     @JsonProperty(value = "frisinnBehandlingType")
