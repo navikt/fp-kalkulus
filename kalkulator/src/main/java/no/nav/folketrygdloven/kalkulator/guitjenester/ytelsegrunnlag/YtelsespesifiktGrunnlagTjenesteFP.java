@@ -42,7 +42,7 @@ public class YtelsespesifiktGrunnlagTjenesteFP implements YtelsespesifiktGrunnla
         List<BesteberegningMånedGrunnlagDto> besteMåneder = besteberegningVurderingGrunnlag.getSeksBesteMåneder().stream()
                 .map(YtelsespesifiktGrunnlagTjenesteFP::mapMånedsgrunnlag)
                 .collect(Collectors.toList());
-        return new BesteberegninggrunnlagDto(besteMåneder);
+        return new BesteberegninggrunnlagDto(besteMåneder, besteberegningVurderingGrunnlag.getAvvikFraFørsteLedd());
     }
 
     private static BesteberegningMånedGrunnlagDto mapMånedsgrunnlag(BesteberegningMånedGrunnlag besteberegningMånedGrunnlag) {

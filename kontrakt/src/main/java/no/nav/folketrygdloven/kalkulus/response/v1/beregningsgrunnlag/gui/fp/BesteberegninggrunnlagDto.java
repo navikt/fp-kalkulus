@@ -3,9 +3,13 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.fp;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,12 +27,24 @@ public class BesteberegninggrunnlagDto {
     @Size(min = 6, max = 6)
     private final List<BesteberegningMånedGrunnlagDto> besteMåneder;
 
-    public BesteberegninggrunnlagDto(List<BesteberegningMånedGrunnlagDto> besteMåneder) {
+    @Valid
+    @JsonProperty("avvik")
+    @Digits(integer = 8, fraction = 2)
+    @DecimalMin("0.00")
+    @DecimalMax("10000000.00")
+    private BigDecimal avvik;
+
+    public BesteberegninggrunnlagDto(List<BesteberegningMånedGrunnlagDto> besteMåneder, BigDecimal avvik) {
         this.besteMåneder = besteMåneder;
+        this.avvik = avvik;
     }
 
     public List<BesteberegningMånedGrunnlagDto> getBesteMåneder() {
         return besteMåneder;
+    }
+
+    public BigDecimal getAvvik() {
+        return avvik;
     }
 }
 
