@@ -11,15 +11,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
@@ -47,7 +43,6 @@ import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
 public class StegProsessInputTjeneste {
-    private static final Logger log = LoggerFactory.getLogger(StegProsessInputTjeneste.class);
 
     public static final MonthDay ENDRING_AV_GRUNNBELØP = MonthDay.of(5, 1);
 
@@ -134,13 +129,13 @@ public class StegProsessInputTjeneste {
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return lagInputForeslå(stegProsesseringInput);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputVurderRefusjon(stegProsesseringInput, førsteFastsatteGrunnlagEntitet, originaleKoblinger);
         } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputFordel(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         } else if (stegType.equals(BeregningSteg.FAST_BERGRUNN)) {
-            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning(), stegProsesseringInput.getSkjæringstidspunktOpptjening());
+            Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet = finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(kobling, stegProsesseringInput.getSkjæringstidspunktForBeregning());
             return lagInputFullføre(stegProsesseringInput, førsteFastsatteGrunnlagEntitet);
         }
         return stegProsesseringInput;
@@ -225,16 +220,11 @@ public class StegProsessInputTjeneste {
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnFørsteFastsatteGrunnlagEtterEndringAvGrunnbeløpForVilkårsperiode(KoblingEntitet koblingEntitet,
-                                                                                                                             LocalDate skjæringstidspunktBeregning,
-                                                                                                                             LocalDate skjæringstidspunktOpptjening) {
+                                                                                                                             LocalDate skjæringstidspunktBeregning) {
         if (MonthDay.from(skjæringstidspunktBeregning).isBefore(ENDRING_AV_GRUNNBELØP)) {
             return Optional.empty();
         }
-        return beregningsgrunnlagRepository.hentSisteGrunnlagForSkjæringstidspunktOgTilstand(
-                koblingEntitet.getSaksnummer(),
-                koblingEntitet.getAktørId(),
-                koblingEntitet.getYtelseTyperKalkulusStøtter(),
-                skjæringstidspunktOpptjening, BeregningsgrunnlagTilstand.FASTSATT);
+        return beregningsgrunnlagRepository.hentOriginalGrunnlagForTilstand(koblingEntitet.getId(), BeregningsgrunnlagTilstand.FASTSATT);
     }
 
     private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklartGrunnlagHvisFinnes(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg,

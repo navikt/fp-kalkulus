@@ -81,12 +81,9 @@ public class BeregningsgrunnlagRepository {
         Optional<BeregningsgrunnlagGrunnlagEntitet> sisteBg = hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), beregningsgrunnlagTilstand);
         if (!sisteBg.isPresent()) {
             // Henter siste grunnlaget som ble lagret med samme skjæringstidspunkt (tilsvarer original kobling)
-            return hentSisteGrunnlagForSkjæringstidspunktOgTilstand(
-                    kobling.getSaksnummer(),
-                    kobling.getAktørId(),
-                    kobling.getYtelseTyperKalkulusStøtter(),
-                    skjæringstidspunktOpptjening,
-                    beregningsgrunnlagTilstand);
+            // TOODO Lag støtte for fleire originale grunnlag
+            var originalGrunnlag = hentOriginalGrunnlagForTilstand(kobling.getId(), beregningsgrunnlagTilstand);
+            return originalGrunnlag;
         }
         return sisteBg;
     }
@@ -143,44 +140,28 @@ public class BeregningsgrunnlagRepository {
         return hentUniktResultat(query);
     }
 
-
     /**
-     * Henter siste fastsatte grunnlag for saksnummer med gitt skjæringstidspunkt
+     * Henter originalt grunnlag for kobling med gitt tilstand
      *
-     * @param saksnummer         saksnummer
-     * @param aktørId            aktørid
-     * @param ytelsetype         ytelsetype
-     * @param skjæringstidspunkt skjæringstidspunkt
-     * @param tilstand
-     * @return
+     * @param koblingId         koblingId
+     * @param tilstand          Tilstand for grunnlag
+     * @return  Originalt grunnlag med gitt tilstand
      */
     @SuppressWarnings("unchecked")
-    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentSisteGrunnlagForSkjæringstidspunktOgTilstand(Saksnummer saksnummer,
-                                                                                                        AktørId aktørId,
-                                                                                                        YtelseTyperKalkulusStøtterKontrakt ytelsetype,
-                                                                                                        LocalDate skjæringstidspunkt,
-                                                                                                        BeregningsgrunnlagTilstand tilstand) {
+    public Optional<BeregningsgrunnlagGrunnlagEntitet> hentOriginalGrunnlagForTilstand(Long koblingId,
+                                                                                      BeregningsgrunnlagTilstand tilstand) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
-                        "WHERE exists (SELECT 1 FROM KOBLING " +
-                        "WHERE SAKSNUMMER = :saksnummer " +
-                        "AND YTELSE_TYPE = :ytelsetype " +
-                        "AND BRUKER_AKTOER_ID = :aktørId " +
-                        "AND ID = GR.KOBLING_ID) " +
-                        "AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
-                        "AND exists (SELECT 1 FROM BG_AKTIVITETER " +
-                        "WHERE SKJARINGSTIDSPUNKT_OPPTJENING = :skjæringstidspunkt " +
-                        "AND ID = GR.REGISTER_AKTIVITETER_ID) " +
-                        "order by OPPRETTET_TID desc, id desc", //$NON-NLS-1$
+                        "INNER JOIN KOBLING_RELASJON KR ON KR.ORIGINAL_KOBLING_ID = GR.KOBLING_ID " +
+                        "WHERE KR.KOBLING_ID = :koblingId AND STEG_OPPRETTET = :beregningsgrunnlagTilstand " +
+                        "order by GR.OPPRETTET_TID desc, GR.ID desc", //$NON-NLS-1$
                 BeregningsgrunnlagGrunnlagEntitet.class);
-        query.setParameter("saksnummer", saksnummer.getVerdi()); // $NON-NLS-1$
-        query.setParameter("ytelsetype", ytelsetype.getKode()); // $NON-NLS-1$
-        query.setParameter("aktørId", aktørId.getId()); // $NON-NLS-1$
-        query.setParameter("skjæringstidspunkt", skjæringstidspunkt); // $NON-NLS-1$
+        query.setParameter("koblingId", koblingId); // $NON-NLS-1$
         query.setParameter("beregningsgrunnlagTilstand", tilstand.getKode()); // $NON-NLS-1$
         query.setMaxResults(1);
         return query.getResultStream().findFirst();
     }
+
 
     /**
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.

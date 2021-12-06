@@ -17,22 +17,22 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public class RefusjonTidslinjeTjeneste {
 
-    public static LocalDateTimeline<RefusjonPeriode> lagTidslinje(BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static LocalDateTimeline<RefusjonPeriode> lagTidslinje(BeregningsgrunnlagDto beregningsgrunnlag, boolean utbetalt) {
         List<LocalDateSegment<RefusjonPeriode>> periodeSegmenter = beregningsgrunnlag.getBeregningsgrunnlagPerioder()
                 .stream()
-                .map(periode -> new LocalDateSegment<>(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), lagRefusjonsperiode(periode)))
+                .map(periode -> new LocalDateSegment<>(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), lagRefusjonsperiode(periode, utbetalt)))
                 .collect(Collectors.toList());
         return new LocalDateTimeline<>(periodeSegmenter).compress();
     }
 
-    private static RefusjonPeriode lagRefusjonsperiode(BeregningsgrunnlagPeriodeDto periode) {
-        List<RefusjonAndel> andeler = lagAndelsliste(periode.getBeregningsgrunnlagPrStatusOgAndelList());
+    private static RefusjonPeriode lagRefusjonsperiode(BeregningsgrunnlagPeriodeDto periode, boolean utbetalt) {
+        List<RefusjonAndel> andeler = lagAndelsliste(periode.getBeregningsgrunnlagPrStatusOgAndelList(), utbetalt);
         return new RefusjonPeriode(periode.getBeregningsgrunnlagPeriodeFom(), periode.getBeregningsgrunnlagPeriodeTom(), andeler);
     }
 
-    private static List<RefusjonAndel> lagAndelsliste(List<BeregningsgrunnlagPrStatusOgAndelDto> bgAndeler) {
+    private static List<RefusjonAndel> lagAndelsliste(List<BeregningsgrunnlagPrStatusOgAndelDto> bgAndeler, boolean utbetalt) {
         return bgAndeler.stream()
-                .map(a -> new RefusjonAndel(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null), a.getArbeidsforholdRef().orElse(null), getBrutto(a), getRefusjonskravPrÅr(a)))
+                .map(a -> new RefusjonAndel(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null), a.getArbeidsforholdRef().orElse(null), getBrutto(a), getRefusjonskravPrÅr(a, utbetalt)))
                 .collect(Collectors.toList());
     }
 
@@ -40,9 +40,13 @@ public class RefusjonTidslinjeTjeneste {
         return a.getBruttoPrÅr() == null ? BigDecimal.ZERO : a.getBruttoPrÅr();
     }
 
-    private static BigDecimal getRefusjonskravPrÅr(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO);
+    private static BigDecimal getRefusjonskravPrÅr(BeregningsgrunnlagPrStatusOgAndelDto andel, boolean utbetalt) {
+        if (utbetalt) {
+            return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO);
+        }
+        return andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getInnvilgetRefusjonskravPrÅr).orElse(BigDecimal.ZERO);
     }
+
 
     public static LocalDateTimeline<RefusjonPeriodeEndring> kombinerTidslinjer(LocalDateTimeline<RefusjonPeriode> originalePerioder, LocalDateTimeline<RefusjonPeriode> revurderingPerioder) {
         return originalePerioder.intersection(revurderingPerioder, (dateInterval, segment1, segment2) ->

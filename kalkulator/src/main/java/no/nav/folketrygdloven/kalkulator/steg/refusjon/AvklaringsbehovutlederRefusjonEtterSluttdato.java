@@ -45,7 +45,7 @@ public final class AvklaringsbehovutlederRefusjonEtterSluttdato {
         if (yrkesaktiviteter.isEmpty() || sisteSøkteUttaksdag.isEmpty() || behandlingstidspunkt.isEmpty()) {
             return false;
         }
-        LocalDateTimeline<RefusjonPeriode> allePerioder = RefusjonTidslinjeTjeneste.lagTidslinje(periodisertMedRefusjonOgGradering);
+        LocalDateTimeline<RefusjonPeriode> allePerioder = RefusjonTidslinjeTjeneste.lagTidslinje(periodisertMedRefusjonOgGradering, false);
         LocalDateTimeline<RefusjonPeriode> perioderMedPotensieltUttak = allePerioder.intersection(finnPeriodeFremTilSisteUttak(sisteSøkteUttaksdag.get()));
 
         List<RefusjonAndel> andelerSomMåSjekkes = perioderMedPotensieltUttak.toSegments()

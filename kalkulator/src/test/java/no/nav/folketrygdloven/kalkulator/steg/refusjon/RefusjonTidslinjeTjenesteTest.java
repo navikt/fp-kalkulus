@@ -79,8 +79,8 @@ class RefusjonTidslinjeTjenesteTest {
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE)
                 .build(revurderingBG);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 400000);
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG);
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG, true);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG, false);
         LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
         assertThat(tidslinje.toSegments()).hasSize(1);
     }
@@ -98,8 +98,8 @@ class RefusjonTidslinjeTjenesteTest {
                 .build(revurderingBG);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, InternArbeidsforholdRefDto.nullRef(), 100000, 400000);
 
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG);
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG, true);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG, false);
         LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
         assertThat(tidslinje.toSegments()).hasSize(1);
         LocalDateSegment<RefusjonPeriodeEndring> segment = tidslinje.getSegment(new LocalDateInterval(beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeTom()));
@@ -125,8 +125,8 @@ class RefusjonTidslinjeTjenesteTest {
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, InternArbeidsforholdRefDto.nullRef(), 100000, 400000);
         leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG2, InternArbeidsforholdRefDto.nullRef(), 200000, 200000);
 
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG);
-        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBG, true);
+        LocalDateTimeline<RefusjonPeriode> refusjonsdataLocalDateTimeline1 = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBG, false);
         LocalDateTimeline<RefusjonPeriodeEndring> tidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(refusjonsdataLocalDateTimeline, refusjonsdataLocalDateTimeline1);
         assertThat(tidslinje.toSegments()).hasSize(1);
         LocalDateSegment<RefusjonPeriodeEndring> segment = tidslinje.getSegment(new LocalDateInterval(beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode1.getBeregningsgrunnlagPeriodeTom()));
