@@ -4,10 +4,6 @@ import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRege
 import static no.nav.folketrygdloven.kalkulator.steg.besteberegning.MapBesteberegningFraRegelTilVL.mapTilBeregningsgrunnlag;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
@@ -23,9 +19,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 public class ForeslåBesteberegning {
-    private static final Logger LOG = LoggerFactory.getLogger(ForeslåBesteberegning.class);
-
-
     /** Foreslår besteberegning
      *
      * @param input Input til foreslå besteberegning
@@ -37,20 +30,27 @@ public class ForeslåBesteberegning {
         RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluering, toJson(regelmodell));
         BesteberegningOutput output = regelmodell.getOutput();
         var besteberegnetGrunnlag = mapTilBeregningsgrunnlag(input.getBeregningsgrunnlagGrunnlag(), output);
-        if (regelmodell.getOutput().getSkalBeregnesEtterSeksBesteMåneder()) {
-            loggAvvik(regelmodell, besteberegnetGrunnlag);
-        }
+        var seksBesteMåneder = MapBesteberegningFraRegelTilVL.mapSeksBesteMåneder(output);
+
+        // Bryr oss kun om avvik om beregning etter tredje ledd (seks beste måneder) blir brukt
+        var avvikFraFørsteLedd = regelmodell.getOutput().getSkalBeregnesEtterSeksBesteMåneder()
+                ? finnAvvik(regelmodell, besteberegnetGrunnlag)
+                : null;
+
+        var besteberegningVurderingsgrunnlag = new BesteberegningVurderingGrunnlag(seksBesteMåneder, avvikFraFørsteLedd);
         return new BesteberegningRegelResultat(besteberegnetGrunnlag,
                 new RegelSporingAggregat(mapRegelSporingGrunnlag(regelResultat, BeregningsgrunnlagRegelType.BESTEBEREGNING)),
-                MapBesteberegningFraRegelTilVL.mapSeksBesteMåneder(output));
+                besteberegningVurderingsgrunnlag);
     }
 
-    private void loggAvvik(BesteberegningRegelmodell regelmodell, BeregningsgrunnlagDto besteberegnetGrunnlag) {
+    private BigDecimal finnAvvik(BesteberegningRegelmodell regelmodell, BeregningsgrunnlagDto besteberegnetGrunnlag) {
         var beregningEtter1ledd = regelmodell.getInput().getBeregnetGrunnlag();
         var beregningEtter3ledd = besteberegnetGrunnlag.getBeregningsgrunnlagPerioder().get(0).getBruttoPrÅr();
-        var avvikIKroner = beregningEtter3ledd.subtract(beregningEtter1ledd).abs();
-        var avvikIProsent = avvikIKroner.divide(beregningEtter1ledd, 1, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
-        LOG.info("FT-984394: Avvik i kroner {}. Avvik i prosent {}", avvikIKroner, avvikIProsent);
+        var avvik = beregningEtter3ledd.subtract(beregningEtter1ledd);
+        if (avvik.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalStateException("Avvik kan ikke være mindre enn 0 kr når sak skal besteberegnes");
+        }
+        return avvik;
     }
 
     private static String toJson(BesteberegningRegelmodell regelmodell) {

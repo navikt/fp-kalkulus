@@ -142,12 +142,12 @@ public class MapBesteberegningFraRegelTilVL {
         }
     }
 
-    public static BesteberegningVurderingGrunnlag mapSeksBesteMåneder(BesteberegningOutput output) {
-        return new BesteberegningVurderingGrunnlag(output.getBesteMåneder().stream()
+    public static List<BesteberegningMånedGrunnlag> mapSeksBesteMåneder(BesteberegningOutput output) {
+        return output.getBesteMåneder().stream()
                 .map(beregnetMånedsgrunnlag -> new BesteberegningMånedGrunnlag(
                         beregnetMånedsgrunnlag.getInntekter().stream().map(MapBesteberegningFraRegelTilVL::mapInntekt).collect(Collectors.toList()),
                         beregnetMånedsgrunnlag.getMåned()
-                )).collect(Collectors.toList()));
+                )).collect(Collectors.toList());
 
     }
 

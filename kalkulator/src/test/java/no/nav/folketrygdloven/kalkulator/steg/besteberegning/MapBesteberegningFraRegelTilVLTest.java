@@ -149,10 +149,10 @@ class MapBesteberegningFraRegelTilVLTest {
             bbMåneder.add(bbMåned);
         }
         bbOutput.setBesteMåneder(bbMåneder);
-        var bbGrunnlag = MapBesteberegningFraRegelTilVL.mapSeksBesteMåneder(bbOutput);
-        assertThat(bbGrunnlag).isNotNull();
-        assertThat(bbGrunnlag.getSeksBesteMåneder()).hasSize(6);
-        bbGrunnlag.getSeksBesteMåneder().forEach(måned -> {
+        var besteMåneder = MapBesteberegningFraRegelTilVL.mapSeksBesteMåneder(bbOutput);
+        assertThat(besteMåneder).isNotNull();
+        assertThat(besteMåneder).hasSize(6);
+        besteMåneder.forEach(måned -> {
             assertThat(måned.getInntekter()).hasSize(2);
             var arbeidsandel = måned.getInntekter().stream().filter(innt -> innt.getArbeidsgiver().getIdentifikator().equals("123")).findFirst();
             assertThat(arbeidsandel).isPresent();
