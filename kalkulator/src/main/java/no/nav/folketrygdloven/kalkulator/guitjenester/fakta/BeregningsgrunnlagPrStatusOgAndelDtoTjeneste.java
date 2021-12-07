@@ -84,7 +84,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjeneste {
         dto.setRedusertPrAar(andel.getRedusertPrÅr());
         dto.setOverstyrtPrAar(andel.getOverstyrtPrÅr());
         dto.setBeregnetPrAar(andel.getBeregnetPrÅr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
         dto.setBesteberegningPrAar(andel.getBesteberegningPrÅr());
         dto.setFastsattAvSaksbehandler(andel.getFastsattAvSaksbehandler());
         faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(andel))

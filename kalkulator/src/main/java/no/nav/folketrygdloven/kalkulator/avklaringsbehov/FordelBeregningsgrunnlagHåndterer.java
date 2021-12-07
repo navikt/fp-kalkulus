@@ -25,7 +25,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
@@ -80,16 +79,18 @@ public class FordelBeregningsgrunnlagHåndterer {
                 mapFelterForYtelse(korrektAndel.get(), andelBuilder);
             }
             if (!endretAndel.getNyAndel()) {
-                mapBeregnetOgOverstyrt(korrektAndel.get(), andelBuilder);
+                mapFelterForEksisterendeAndel(korrektAndel.get(), andelBuilder);
                 andelBuilder.medKilde(korrektAndel.get().getKilde());
             }
         }
         return andelBuilder;
     }
 
-    private static void mapBeregnetOgOverstyrt(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        andelBuilder.medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr());
-        andelBuilder.medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
+    private static void mapFelterForEksisterendeAndel(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
+        andelBuilder.medInntektskategori(korrektAndel.getGjeldendeInntektskategori())
+                .medInntektskategoriFordeling(korrektAndel.getFastsattInntektskategori().getInntektskategoriAutomatiskFordeling())
+                .medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr())
+                .medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
         if (korrektAndel.getPgiSnitt() != null) {
             andelBuilder.medPgi(korrektAndel.getPgiSnitt(),
                     Arrays.asList(korrektAndel.getPgi1(), korrektAndel.getPgi2(), korrektAndel.getPgi3()));
@@ -123,8 +124,8 @@ public class FordelBeregningsgrunnlagHåndterer {
         return builder
                 .medAndelsnr(endretAndel.getNyAndel() ? null : endretAndel.getAndelsnr()) // Opprettholder andelsnr som andel ble lagret med forrige gang
                 .medAktivitetStatus(endretAndel.getAktivitetStatus())
-                .medInntektskategori(endretAndel.getFastsatteVerdier().getInntektskategori())
-                .medFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
+                .medInntektskategoriManuellFordeling(endretAndel.getFastsatteVerdier().getInntektskategori())
+                .medManueltFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
                 .medKilde(endretAndel.getKilde() == null ? AndelKilde.PROSESS_START : endretAndel.getKilde())
                 .medArbforholdType(endretAndel.getArbeidsforholdType())
                 .medFastsattAvSaksbehandler(true);
@@ -140,7 +141,7 @@ public class FordelBeregningsgrunnlagHåndterer {
             var arbeidsforhold = arbeidsforholdOpt.get();
             BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder().medArbeidsgiver(arbeidsgiver)
                     .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
-                    .medFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : null)
+                    .medManueltFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : null)
                     .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
                     .medSaksbehandletRefusjonPrÅr(arbeidsforhold.getSaksbehandletRefusjonPrÅr())
                     .medRefusjonskravPrÅr(arbeidsforhold.getRefusjonskravPrÅr(), arbeidsforhold.getRefusjon().map(Refusjon::getRefusjonskravFristUtfall).orElse(null))

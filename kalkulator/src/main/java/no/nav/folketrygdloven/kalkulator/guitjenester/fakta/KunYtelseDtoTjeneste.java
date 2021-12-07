@@ -80,7 +80,7 @@ public class KunYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste
         andelDto.setKilde(andel.getKilde());
         andelDto.setFastsattAvSaksbehandler(Boolean.TRUE.equals(andel.getFastsattAvSaksbehandler()));
         andelDto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
-        andelDto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
+        andelDto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
         return andelDto;
     }
 

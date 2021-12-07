@@ -32,11 +32,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.InternArbeidsforholdRef;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AktivitetStatusKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.AndelKildeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.InntektskategoriKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.OpptjeningAktivitetTypeKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
@@ -147,9 +147,8 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Column(name = "fastsatt_av_saksbehandler", nullable = false)
     private Boolean fastsattAvSaksbehandler = false;
 
-    @Convert(converter= InntektskategoriKodeverdiConverter.class)
-    @Column(name="inntektskategori", nullable = false)
-    private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
+    @Embedded
+    private FastsattInntektskategori fastsattInntektskategori;
 
     @Convert(converter= AndelKildeKodeverdiConverter.class)
     @Column(name = "kilde", nullable = false)
@@ -174,7 +173,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         this.dagsatsArbeidsgiver = beregningsgrunnlagPrStatusOgAndel.getDagsatsArbeidsgiver();
         this.dagsatsBruker = beregningsgrunnlagPrStatusOgAndel.getDagsatsBruker();
         this.fastsattAvSaksbehandler = beregningsgrunnlagPrStatusOgAndel.getFastsattAvSaksbehandler();
-        this.inntektskategori = beregningsgrunnlagPrStatusOgAndel.getInntektskategori();
+        this.fastsattInntektskategori = beregningsgrunnlagPrStatusOgAndel.getFastsattInntektskategori();
         this.kilde = beregningsgrunnlagPrStatusOgAndel.getKilde();
         this.maksimalRefusjonPrÅr = beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr();
         this.orginalDagsatsFraTilstøtendeYtelse = beregningsgrunnlagPrStatusOgAndel.getOrginalDagsatsFraTilstøtendeYtelse();
@@ -271,7 +270,11 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     }
 
     public Inntektskategori getInntektskategori() {
-        return inntektskategori;
+        return fastsattInntektskategori == null ? Inntektskategori.UDEFINERT : fastsattInntektskategori.getGjeldendeInntektskategori();
+    }
+
+    public FastsattInntektskategori getFastsattInntektskategori() {
+        return fastsattInntektskategori;
     }
 
     public Long getDagsatsBruker() {
@@ -362,7 +365,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
         // Resultat av endringer må testes manuelt
         BeregningsgrunnlagPrStatusOgAndel other = (BeregningsgrunnlagPrStatusOgAndel) obj;
         return Objects.equals(this.getAktivitetStatus(), other.getAktivitetStatus())
-                && Objects.equals(this.getInntektskategori(), other.getInntektskategori())
+                && Objects.equals(this.getFastsattInntektskategori(), other.getFastsattInntektskategori())
                 && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver),
                     other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver))
                 && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsforholdRef),
@@ -374,7 +377,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     @Override
     public int hashCode() {
         return Objects.hash(aktivitetStatus,
-            inntektskategori,
+            getFastsattInntektskategori(),
             getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsgiver),
             getBgAndelArbeidsforhold().map(BGAndelArbeidsforhold::getArbeidsforholdRef),
             arbeidsforholdType);
@@ -531,9 +534,9 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
             return this;
         }
 
-        public Builder medInntektskategori(Inntektskategori inntektskategori) {
+        public Builder medFastsattInntektskategori(FastsattInntektskategori inntektskategori) {
             verifiserKanModifisere();
-            kladd.inntektskategori = inntektskategori;
+            kladd.fastsattInntektskategori = inntektskategori;
             return this;
         }
 

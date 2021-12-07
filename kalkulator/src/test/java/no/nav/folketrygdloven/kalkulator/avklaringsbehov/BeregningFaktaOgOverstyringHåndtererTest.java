@@ -155,7 +155,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getBeregnetPrÅr().intValue()).isEqualTo(fastsattBeløp * 12);
         assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getFastsattAvSaksbehandler()).isTrue();
-        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
+        assertThat(p1.getBeregningsgrunnlagPrStatusOgAndelList().get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
     }
 
     private List<FastsettBeregningsgrunnlagAndelDto> lagFastsattAndeler(Long andelsnr, int fastsattBeløp1) {

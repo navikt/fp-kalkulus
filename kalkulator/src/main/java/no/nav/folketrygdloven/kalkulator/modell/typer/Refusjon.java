@@ -14,19 +14,22 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
     private BigDecimal refusjonskravPrÅr;
     private BigDecimal saksbehandletRefusjonPrÅr;
     private BigDecimal fordeltRefusjonPrÅr;
+    private BigDecimal manueltFordeltRefusjonPrÅr;
     private Hjemmel hjemmelForRefusjonskravfrist;
     private final Utfall refusjonskravFristUtfall;
 
     public Refusjon(BigDecimal refusjonskravPrÅr,
                     BigDecimal saksbehandletRefusjonPrÅr,
                     BigDecimal fordeltRefusjonPrÅr,
+                    BigDecimal manueltFordeltRefusjonPrÅr,
                     Hjemmel hjemmelForRefusjonskravfrist, Utfall refusjonskravFristUtfall) {
-        if (refusjonskravPrÅr == null && saksbehandletRefusjonPrÅr == null && fordeltRefusjonPrÅr == null && hjemmelForRefusjonskravfrist == null) {
+        if (refusjonskravPrÅr == null && saksbehandletRefusjonPrÅr == null && fordeltRefusjonPrÅr == null && hjemmelForRefusjonskravfrist == null && manueltFordeltRefusjonPrÅr == null) {
             throw new IllegalStateException("refusjonskrav må Være satt");
         }
         this.refusjonskravPrÅr = refusjonskravPrÅr;
         this.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
         this.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
+        this.manueltFordeltRefusjonPrÅr = manueltFordeltRefusjonPrÅr;
         this.hjemmelForRefusjonskravfrist = hjemmelForRefusjonskravfrist;
         this.refusjonskravFristUtfall = refusjonskravFristUtfall;
     }
@@ -35,22 +38,30 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
         this.refusjonskravPrÅr = refusjon.getRefusjonskravPrÅr();
         this.saksbehandletRefusjonPrÅr = refusjon.getSaksbehandletRefusjonPrÅr();
         this.fordeltRefusjonPrÅr = refusjon.getFordeltRefusjonPrÅr();
+        this.manueltFordeltRefusjonPrÅr = refusjon.getManueltFordeltRefusjonPrÅr();
         this.hjemmelForRefusjonskravfrist = refusjon.getHjemmelForRefusjonskravfrist();
         this.refusjonskravFristUtfall = refusjon.getRefusjonskravFristUtfall();
     }
 
     public static Refusjon medRefusjonskravPrÅr(BigDecimal refusjonskravPrÅr, Hjemmel hjemmel, Utfall refusjonskravFristUtfall) {
-        return new Refusjon(refusjonskravPrÅr, null, null, hjemmel, refusjonskravFristUtfall);
+        return new Refusjon(refusjonskravPrÅr, null, null, null, hjemmel, refusjonskravFristUtfall);
     }
 
     public static Refusjon medSaksbehandletRefusjonPrÅr(BigDecimal saksbehandletRefusjonPrÅr) {
-        return new Refusjon(null, saksbehandletRefusjonPrÅr, null, null, null);
+        return new Refusjon(null, saksbehandletRefusjonPrÅr, null, null, null, null);
     }
 
     public static Refusjon medFordeltRefusjonPrÅr(BigDecimal fordeltRefusjonPrÅr) {
-        return new Refusjon(null, null, fordeltRefusjonPrÅr, null, null);
+        return new Refusjon(null, null, fordeltRefusjonPrÅr, null, null, null);
     }
 
+    public static Refusjon medManueltFordeltRefusjonPrÅr(BigDecimal manueltFordeltRefusjonPrÅr) {
+        return new Refusjon(null, null, null, manueltFordeltRefusjonPrÅr, null, null);
+    }
+
+    public BigDecimal getManueltFordeltRefusjonPrÅr() {
+        return manueltFordeltRefusjonPrÅr;
+    }
 
     public BigDecimal getRefusjonskravPrÅr() {
         return refusjonskravPrÅr;
@@ -84,6 +95,10 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
         this.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
     }
 
+    public void setManueltFordeltRefusjonPrÅr(BigDecimal manueltFordeltRefusjonPrÅr) {
+        this.manueltFordeltRefusjonPrÅr = manueltFordeltRefusjonPrÅr;
+    }
+
     public void setHjemmelForRefusjonskravfrist(Hjemmel hjemmelForRefusjonskravfrist) {
         this.hjemmelForRefusjonskravfrist = hjemmelForRefusjonskravfrist;
     }
@@ -95,7 +110,9 @@ public class Refusjon implements Serializable, Comparable<Refusjon> {
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
     public BigDecimal getGjeldendeRefusjonPrÅr() {
-        if (fordeltRefusjonPrÅr != null) {
+        if (manueltFordeltRefusjonPrÅr != null) {
+            return manueltFordeltRefusjonPrÅr;
+        } if (fordeltRefusjonPrÅr != null) {
             return fordeltRefusjonPrÅr;
         } else if (saksbehandletRefusjonPrÅr != null) {
             return saksbehandletRefusjonPrÅr;

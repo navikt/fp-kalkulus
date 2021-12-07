@@ -740,7 +740,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
     private void verifiserBGAT(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, double årsinntekt,
                                Double naturalytelseBortfaltPrÅr, Double naturalytelseTilkommerPrÅr) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
+        assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
                 .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
         assertThat(bgpsa.getBgAndelArbeidsforhold()
@@ -769,7 +769,7 @@ public class ForeslåBeregningsgrunnlagMedTogglePåTest {
 
     private void verifiserBGFL(BeregningsgrunnlagPrStatusOgAndelDto bgpsa, Arbeidsgiver arbeidsgiver, double årsinntekt) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
-        assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
+        assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
                 .hasValueSatisfying(virk -> assertThat(virk).isEqualTo(arbeidsgiver));
         assertThat(bgpsa.getBgAndelArbeidsforhold()

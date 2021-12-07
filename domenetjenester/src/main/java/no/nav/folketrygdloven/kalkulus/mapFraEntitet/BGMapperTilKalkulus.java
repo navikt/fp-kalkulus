@@ -131,6 +131,7 @@ public class BGMapperTilKalkulus {
                 mapFraBeløp(refusjon.getRefusjonskravPrÅr()),
                 mapFraBeløp(refusjon.getSaksbehandletRefusjonPrÅr()),
                 mapFraBeløp(refusjon.getFordeltRefusjonPrÅr()),
+                mapFraBeløp(refusjon.getManueltFordeltRefusjonPrÅr()),
                 refusjon.getHjemmelForRefusjonskravfrist(),
                 refusjon.getRefusjonskravFristUtfall());
     }

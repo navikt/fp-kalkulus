@@ -56,7 +56,7 @@ class GreguleringsstatusutlederTest {
     }
 
     private Årsgrunnlag lagBeregnet(int verdi) {
-        return new Årsgrunnlag(new Beløp(verdi), null, null, null, new Beløp(verdi));
+        return new Årsgrunnlag(new Beløp(verdi), null, null, null, null, new Beløp(verdi));
     }
 
     @Test

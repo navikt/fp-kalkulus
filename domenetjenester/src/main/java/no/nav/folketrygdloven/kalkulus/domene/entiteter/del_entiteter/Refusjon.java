@@ -33,6 +33,10 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "fordelt_refusjon_pr_aar")))
     private Beløp fordeltRefusjonPrÅr;
 
+    @Embedded
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_refusjon_pr_aar")))
+    private Beløp manueltFordeltRefusjonPrÅr;
+
     @Column(name = "hjemmel_for_refusjonskravfrist")
     private Hjemmel hjemmelForRefusjonskravfrist;
 
@@ -48,14 +52,15 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
     public Refusjon(Beløp refusjonskravPrÅr,
                     Beløp saksbehandletRefusjonPrÅr,
                     Beløp fordeltRefusjonPrÅr,
-                    Hjemmel hjemmelForRefusjonskravfrist,
+                    Beløp manueltFordeltRefusjonPrÅr, Hjemmel hjemmelForRefusjonskravfrist,
                     Utfall refusjonskravFristUtfall) {
-        if (refusjonskravPrÅr == null && saksbehandletRefusjonPrÅr == null && fordeltRefusjonPrÅr == null && refusjonskravFristUtfall == null) {
+        if (refusjonskravPrÅr == null && saksbehandletRefusjonPrÅr == null && fordeltRefusjonPrÅr == null && refusjonskravFristUtfall == null && manueltFordeltRefusjonPrÅr == null) {
             throw new IllegalStateException("refusjonskrav må Være satt");
         }
         this.refusjonskravPrÅr = refusjonskravPrÅr;
         this.saksbehandletRefusjonPrÅr = saksbehandletRefusjonPrÅr;
         this.fordeltRefusjonPrÅr = fordeltRefusjonPrÅr;
+        this.manueltFordeltRefusjonPrÅr = manueltFordeltRefusjonPrÅr;
         this.hjemmelForRefusjonskravfrist = hjemmelForRefusjonskravfrist;
         this.refusjonskravFristUtfall = refusjonskravFristUtfall;
     }
@@ -64,6 +69,7 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
         this.refusjonskravPrÅr = refusjon.getRefusjonskravPrÅr();
         this.saksbehandletRefusjonPrÅr = refusjon.getSaksbehandletRefusjonPrÅr();
         this.fordeltRefusjonPrÅr = refusjon.getFordeltRefusjonPrÅr();
+        this.manueltFordeltRefusjonPrÅr = refusjon.getManueltFordeltRefusjonPrÅr();
         this.hjemmelForRefusjonskravfrist = refusjon.getHjemmelForRefusjonskravfrist();
         this.refusjonskravFristUtfall = refusjon.getRefusjonskravFristUtfall();
     }
@@ -79,6 +85,10 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
 
     public Beløp getFordeltRefusjonPrÅr() {
         return fordeltRefusjonPrÅr;
+    }
+
+    public Beløp getManueltFordeltRefusjonPrÅr() {
+        return manueltFordeltRefusjonPrÅr;
     }
 
     public Hjemmel getHjemmelForRefusjonskravfrist() {
@@ -116,7 +126,9 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
      * @return returnerer det refusjonskravet som skal være gjeldende
      */
     public Beløp getGjeldendeRefusjonPrÅr() {
-        if (fordeltRefusjonPrÅr != null) {
+        if (manueltFordeltRefusjonPrÅr != null) {
+            return manueltFordeltRefusjonPrÅr;
+        } else if (fordeltRefusjonPrÅr != null) {
             return fordeltRefusjonPrÅr;
         } else if (saksbehandletRefusjonPrÅr != null) {
             return saksbehandletRefusjonPrÅr;
@@ -129,7 +141,7 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
 
     @Override
     public String getIndexKey() {
-        return IndexKey.createKey(refusjonskravPrÅr, saksbehandletRefusjonPrÅr, fordeltRefusjonPrÅr, hjemmelForRefusjonskravfrist);
+        return IndexKey.createKey(refusjonskravPrÅr, saksbehandletRefusjonPrÅr, fordeltRefusjonPrÅr, manueltFordeltRefusjonPrÅr, hjemmelForRefusjonskravfrist);
     }
 
 
@@ -139,12 +151,16 @@ public class Refusjon implements Serializable, IndexKey, TraverseValue, Comparab
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Refusjon refusjon = (Refusjon) o;
-        return Objects.equals(refusjonskravPrÅr, refusjon.refusjonskravPrÅr) && Objects.equals(saksbehandletRefusjonPrÅr, refusjon.saksbehandletRefusjonPrÅr) && Objects.equals(fordeltRefusjonPrÅr, refusjon.fordeltRefusjonPrÅr) && hjemmelForRefusjonskravfrist == refusjon.hjemmelForRefusjonskravfrist;
+        return Objects.equals(refusjonskravPrÅr, refusjon.refusjonskravPrÅr) &&
+                Objects.equals(saksbehandletRefusjonPrÅr, refusjon.saksbehandletRefusjonPrÅr) &&
+                Objects.equals(fordeltRefusjonPrÅr, refusjon.fordeltRefusjonPrÅr) &&
+                Objects.equals(manueltFordeltRefusjonPrÅr, refusjon.manueltFordeltRefusjonPrÅr) &&
+                hjemmelForRefusjonskravfrist == refusjon.hjemmelForRefusjonskravfrist;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(refusjonskravPrÅr, saksbehandletRefusjonPrÅr, fordeltRefusjonPrÅr, hjemmelForRefusjonskravfrist);
+        return Objects.hash(refusjonskravPrÅr, saksbehandletRefusjonPrÅr, fordeltRefusjonPrÅr, manueltFordeltRefusjonPrÅr, hjemmelForRefusjonskravfrist);
     }
 
     @Override

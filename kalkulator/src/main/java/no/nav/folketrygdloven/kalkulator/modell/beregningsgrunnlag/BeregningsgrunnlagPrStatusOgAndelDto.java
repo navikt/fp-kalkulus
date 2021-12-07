@@ -11,6 +11,7 @@ import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -42,7 +43,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal pgi3;
     private Beløp årsbeløpFraTilstøtendeYtelse;
     private Boolean fastsattAvSaksbehandler = false;
-    private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
+    private FastsattInntektskategori fastsattInntektskategori;
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
@@ -71,7 +72,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.pgi3 = kopiereFra.pgi3;
         this.årsbeløpFraTilstøtendeYtelse = kopiereFra.årsbeløpFraTilstøtendeYtelse;
         this.fastsattAvSaksbehandler = kopiereFra.fastsattAvSaksbehandler;
-        this.inntektskategori = kopiereFra.inntektskategori;
+        this.fastsattInntektskategori = kopiereFra.fastsattInntektskategori;
         this.kilde = kopiereFra.kilde;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
         this.avkortetFørGraderingPrÅr = kopiereFra.avkortetFørGraderingPrÅr;
@@ -175,6 +176,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return grunnlagPrÅr.getFordeltPrÅr();
     }
 
+    public BigDecimal getManueltFordeltPrÅr() {
+        return grunnlagPrÅr.getManueltFordeltPrÅr();
+    }
+
     public BigDecimal getMaksimalRefusjonPrÅr() {
         return maksimalRefusjonPrÅr;
     }
@@ -199,8 +204,12 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return fastsattAvSaksbehandler;
     }
 
-    public Inntektskategori getInntektskategori() {
-        return inntektskategori;
+    public Inntektskategori getGjeldendeInntektskategori() {
+        return fastsattInntektskategori == null ? Inntektskategori.UDEFINERT : fastsattInntektskategori.getGjeldendeInntektskategori();
+    }
+
+    public FastsattInntektskategori getFastsattInntektskategori() {
+        return fastsattInntektskategori;
     }
 
     public Årsgrunnlag getGrunnlagPrÅr() {
@@ -306,7 +315,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         // Resultat av endringer må testes manuelt
         BeregningsgrunnlagPrStatusOgAndelDto other = (BeregningsgrunnlagPrStatusOgAndelDto) obj;
         return Objects.equals(this.getAktivitetStatus(), other.getAktivitetStatus())
-                && Objects.equals(this.getInntektskategori(), other.getInntektskategori())
+                && Objects.equals(this.getGjeldendeInntektskategori(), other.getGjeldendeInntektskategori())
                 && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver),
                     other.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
                 && Objects.equals(this.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef),
@@ -318,7 +327,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Override
     public int hashCode() {
         return Objects.hash(aktivitetStatus,
-            inntektskategori,
+                fastsattInntektskategori,
             getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver),
             getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef),
             arbeidsforholdType);
@@ -399,10 +408,6 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return oppdatere.map(Builder::oppdatere).orElseGet(Builder::ny);
         }
 
-        static Builder kopier(BeregningsgrunnlagPrStatusOgAndelDto a) {
-            return new Builder(a, false);
-        }
-
         public Builder medAktivitetStatus(AktivitetStatus aktivitetStatus) {
             verifiserKanModifisere();
             kladd.aktivitetStatus = Objects.requireNonNull(aktivitetStatus, "aktivitetStatus");
@@ -450,6 +455,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         public Builder medFordeltPrÅr(BigDecimal fordeltPrÅr) {
             verifiserKanModifisere();
             kladd.grunnlagPrÅr.setFordeltPrÅr(fordeltPrÅr);
+            oppdaterPeriodebrutto();
+            return this;
+        }
+
+        public Builder medManueltFordeltPrÅr(BigDecimal fordeltPrÅr) {
+            verifiserKanModifisere();
+            kladd.grunnlagPrÅr.setManueltFordeltPrÅr(fordeltPrÅr);
             oppdaterPeriodebrutto();
             return this;
         }
@@ -530,10 +542,39 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-
         public Builder medInntektskategori(Inntektskategori inntektskategori) {
             verifiserKanModifisere();
-            kladd.inntektskategori = inntektskategori;
+            if (kladd.fastsattInntektskategori != null) {
+                kladd.fastsattInntektskategori.setInntektskategori(inntektskategori);
+            } else {
+                kladd.fastsattInntektskategori = new FastsattInntektskategori(inntektskategori, null, null);
+            }
+            return this;
+        }
+
+        public Builder medInntektskategoriFordeling(Inntektskategori inntektskategori) {
+            verifiserKanModifisere();
+            if (kladd.fastsattInntektskategori != null) {
+                kladd.fastsattInntektskategori.setInntektskategoriAutomatiskFordeling(inntektskategori);
+            } else {
+                kladd.fastsattInntektskategori = new FastsattInntektskategori(null, inntektskategori, null);
+            }
+            return this;
+        }
+
+        public Builder medInntektskategoriManuellFordeling(Inntektskategori inntektskategori) {
+            verifiserKanModifisere();
+            if (kladd.fastsattInntektskategori != null) {
+                kladd.fastsattInntektskategori.setInntektskategoriManuellFordeling(inntektskategori);
+            } else {
+                kladd.fastsattInntektskategori = new FastsattInntektskategori(null, null, inntektskategori);
+            }
+            return this;
+        }
+
+        public Builder medInntektskategori(FastsattInntektskategori inntektskategori) {
+            verifiserKanModifisere();
+            kladd.fastsattInntektskategori = inntektskategori;
             return this;
         }
 

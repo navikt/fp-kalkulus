@@ -11,6 +11,7 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
 
     private BigDecimal beregnetPrÅr;
     private BigDecimal fordeltPrÅr;
+    private BigDecimal manueltFordeltPrÅr;
     private BigDecimal overstyrtPrÅr;
     private BigDecimal besteberegningPrÅr;
     private BigDecimal bruttoPrÅr;
@@ -21,6 +22,7 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
     public Årsgrunnlag(Årsgrunnlag årsgrunnlag) {
         this.bruttoPrÅr = årsgrunnlag.bruttoPrÅr;
         this.fordeltPrÅr = årsgrunnlag.fordeltPrÅr;
+        this.manueltFordeltPrÅr = årsgrunnlag.manueltFordeltPrÅr;
         this.overstyrtPrÅr = årsgrunnlag.overstyrtPrÅr;
         this.besteberegningPrÅr = årsgrunnlag.besteberegningPrÅr;
         this.beregnetPrÅr = årsgrunnlag.beregnetPrÅr;
@@ -32,6 +34,10 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
 
     public BigDecimal getFordeltPrÅr() {
         return fordeltPrÅr;
+    }
+
+    public BigDecimal getManueltFordeltPrÅr() {
+        return manueltFordeltPrÅr;
     }
 
     public BigDecimal getOverstyrtPrÅr() {
@@ -47,7 +53,7 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
     }
 
     public void setBeregnetPrÅr(BigDecimal beregnetPrÅr) {
-        if (beregnetPrÅr != null && fordeltPrÅr == null && overstyrtPrÅr == null && besteberegningPrÅr == null) {
+        if (beregnetPrÅr != null && fordeltPrÅr == null && overstyrtPrÅr == null && besteberegningPrÅr == null && manueltFordeltPrÅr == null) {
             bruttoPrÅr = beregnetPrÅr;
         }
         this.beregnetPrÅr = beregnetPrÅr;
@@ -55,27 +61,34 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
 
     public void setFordeltPrÅr(BigDecimal fordeltPrÅr) {
         this.fordeltPrÅr = fordeltPrÅr;
-        if (fordeltPrÅr != null) {
+        if (fordeltPrÅr != null && manueltFordeltPrÅr == null) {
             this.bruttoPrÅr = fordeltPrÅr;
+        }
+    }
+
+    public void setManueltFordeltPrÅr(BigDecimal manueltFordeltPrÅr) {
+        this.manueltFordeltPrÅr = manueltFordeltPrÅr;
+        if (manueltFordeltPrÅr != null) {
+            this.bruttoPrÅr = manueltFordeltPrÅr;
         }
     }
 
     public void setOverstyrtPrÅr(BigDecimal overstyrtPrÅr) {
         this.overstyrtPrÅr = overstyrtPrÅr;
-        if (overstyrtPrÅr != null && fordeltPrÅr == null && besteberegningPrÅr == null) {
+        if (overstyrtPrÅr != null && fordeltPrÅr == null && manueltFordeltPrÅr == null && besteberegningPrÅr == null) {
             bruttoPrÅr = overstyrtPrÅr;
         }
     }
 
     public void setBesteberegningPrÅr(BigDecimal besteberegningPrÅr) {
         this.besteberegningPrÅr = besteberegningPrÅr;
-        if (besteberegningPrÅr != null && fordeltPrÅr == null) {
+        if (besteberegningPrÅr != null && fordeltPrÅr == null && manueltFordeltPrÅr == null) {
             bruttoPrÅr = besteberegningPrÅr;
         }
     }
 
     public boolean erSatt() {
-        return beregnetPrÅr != null || overstyrtPrÅr != null || fordeltPrÅr != null || bruttoPrÅr != null;
+        return beregnetPrÅr != null || overstyrtPrÅr != null || fordeltPrÅr != null || bruttoPrÅr != null || manueltFordeltPrÅr != null;
     }
 
 
@@ -84,12 +97,12 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Årsgrunnlag that = (Årsgrunnlag) o;
-        return Objects.equals(beregnetPrÅr, that.beregnetPrÅr) && Objects.equals(fordeltPrÅr, that.fordeltPrÅr) && Objects.equals(overstyrtPrÅr, that.overstyrtPrÅr) && Objects.equals(bruttoPrÅr, that.bruttoPrÅr);
+        return Objects.equals(beregnetPrÅr, that.beregnetPrÅr) && Objects.equals(fordeltPrÅr, that.fordeltPrÅr) && Objects.equals(manueltFordeltPrÅr, that.manueltFordeltPrÅr) && Objects.equals(overstyrtPrÅr, that.overstyrtPrÅr) && Objects.equals(bruttoPrÅr, that.bruttoPrÅr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beregnetPrÅr, fordeltPrÅr, overstyrtPrÅr, bruttoPrÅr);
+        return Objects.hash(beregnetPrÅr, fordeltPrÅr, manueltFordeltPrÅr, overstyrtPrÅr, bruttoPrÅr);
     }
 
     @Override
@@ -97,6 +110,7 @@ public class Årsgrunnlag implements Serializable, Comparable<Årsgrunnlag> {
         return "Årsgrunnlag{" +
                 "beregnetPrÅr=" + beregnetPrÅr +
                 ", fordeltPrÅr=" + fordeltPrÅr +
+                ", manueltFordeltPrÅr=" + manueltFordeltPrÅr +
                 ", overstyrtPrÅr=" + overstyrtPrÅr +
                 ", bruttoPrÅr=" + bruttoPrÅr +
                 '}';

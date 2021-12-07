@@ -74,7 +74,7 @@ public class MapFraFordelingsmodell {
 
     private static void settFelterFraRegelPåBuilder(FordelAndelModell regelAndel,
                                                     BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        andelBuilder.medInntektskategori(MapInntektskategoriRegelTilVL.map(regelAndel.getInntektskategori()));
+        andelBuilder.medInntektskategoriFordeling(MapInntektskategoriRegelTilVL.map(regelAndel.getInntektskategori()));
         regelAndel.getFordeltPrÅr().ifPresent(andelBuilder::medFordeltPrÅr);
         settFelterPåArbeidsforhold(regelAndel, andelBuilder).ifPresent(andelBuilder::medBGAndelArbeidsforhold);
     }

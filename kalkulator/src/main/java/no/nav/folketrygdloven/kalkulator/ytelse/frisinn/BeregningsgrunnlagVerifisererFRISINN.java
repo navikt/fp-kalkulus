@@ -77,7 +77,7 @@ public final class BeregningsgrunnlagVerifisererFRISINN {
 
     private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> lagVerifiserForeslåttAndelConsumer(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         return (BeregningsgrunnlagPrStatusOgAndelDto andel) -> {
-            Objects.requireNonNull(andel.getInntektskategori(), "Inntektskategori");
+            Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
             LocalDate bgPeriodeFom = beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom();
             String andelBeskrivelse = "andel" + andel.getAktivitetStatus() + " i perioden fom " + bgPeriodeFom;
             Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr er null for " + andelBeskrivelse);

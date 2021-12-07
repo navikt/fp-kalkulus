@@ -83,7 +83,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         BeregningsgrunnlagPrStatusOgAndelDto oppdatert1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(oppdatert1.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(oppdatert1.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(oppdatert1.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(oppdatert1.getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
     }
 
@@ -110,7 +110,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         BeregningsgrunnlagPrStatusOgAndelDto oppdatert1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(oppdatert1.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
         assertThat(oppdatert1.getBesteberegningPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(oppdatert1.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(oppdatert1.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(oppdatert1.getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
     }
 
@@ -137,7 +137,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         BeregningsgrunnlagPrStatusOgAndelDto oppdatert1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(oppdatert1.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
         assertThat(oppdatert1.getBesteberegningPrÅr()).isNull();
-        assertThat(oppdatert1.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(oppdatert1.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(oppdatert1.getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
     }
 
@@ -166,7 +166,7 @@ public class FastsettBgKunYtelseOppdatererTest {
         assertThat(beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(1);
         BeregningsgrunnlagPrStatusOgAndelDto oppdatert1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(oppdatert1.getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(oppdatert1.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(oppdatert1.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(oppdatert1.getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
     }
 
@@ -193,7 +193,7 @@ public class FastsettBgKunYtelseOppdatererTest {
             .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(BeregningsgrunnlagPrStatusOgAndelDto::erLagtTilAvSaksbehandler).collect(Collectors.toList());
         Assertions.assertThat(lagtTil1).hasSize(1);
         assertThat(lagtTil1.get(0).getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(lagtTil1.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(lagtTil1.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(lagtTil1.get(0).getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
         List<BeregningsgrunnlagPrStatusOgAndelDto> fastsattAvSaksbehandler1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> Boolean.TRUE.equals(a.getFastsattAvSaksbehandler())).collect(Collectors.toList());
@@ -231,7 +231,7 @@ public class FastsettBgKunYtelseOppdatererTest {
             .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(BeregningsgrunnlagPrStatusOgAndelDto::erLagtTilAvSaksbehandler).collect(Collectors.toList());
         Assertions.assertThat(lagtTil1).hasSize(1);
         assertThat(lagtTil1.get(0).getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(lagtTil1.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(lagtTil1.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(lagtTil1.get(0).getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> fastsattAvSaksbehandler1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
@@ -281,7 +281,7 @@ public class FastsettBgKunYtelseOppdatererTest {
             .filter(BeregningsgrunnlagPrStatusOgAndelDto::erLagtTilAvSaksbehandler).collect(Collectors.toList());
         Assertions.assertThat(lagtTil1).hasSize(1);
         assertThat(lagtTil1.get(0).getBeregnetPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt*12));
-        assertThat(lagtTil1.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(lagtTil1.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(lagtTil1.get(0).getAktivitetStatus()).isEqualTo(BRUKERS_ANDEL);
         List<BeregningsgrunnlagPrStatusOgAndelDto> fastsattAvSaksbehandler1 = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0)
             .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> Boolean.TRUE.equals(a.getFastsattAvSaksbehandler())).collect(Collectors.toList());

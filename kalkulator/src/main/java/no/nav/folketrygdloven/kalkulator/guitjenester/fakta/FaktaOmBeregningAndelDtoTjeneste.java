@@ -48,7 +48,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
             FaktaOmBeregningAndelDto dto = new FaktaOmBeregningAndelDto();
             BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(frilansAndel, Optional.empty(), inntektArbeidYtelseGrunnlag)
                 .ifPresent(dto::setArbeidsforhold);
-            dto.setInntektskategori(Inntektskategori.fraKode(frilansAndel.getInntektskategori().getKode()));
+            dto.setInntektskategori(Inntektskategori.fraKode(frilansAndel.getGjeldendeInntektskategori().getKode()));
             dto.setAndelsnr(frilansAndel.getAndelsnr());
             return Optional.of(dto);
         }
@@ -97,7 +97,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
             .ifPresent(dto::setArbeidsforhold);
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
 
         // Privapersoner sender ikke inntektsmelding, disse må alltid fastsettes
         if (andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver).map(Arbeidsgiver::getErVirksomhet).orElse(false)) {
@@ -145,7 +145,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag)
             .ifPresent(dto::setArbeidsforhold);
         dto.setAndelsnr(andel.getAndelsnr());
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
         return dto;
     }
 

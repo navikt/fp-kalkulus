@@ -29,6 +29,11 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
     @Embedded
     private Beløp fordeltPrÅr;
 
+    @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "manuelt_fordelt_pr_aar")))
+    @ChangeTracked
+    @Embedded
+    private Beløp manueltFordeltPrÅr;
+
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "overstyrt_pr_aar")))
     @ChangeTracked
     @Embedded
@@ -39,6 +44,7 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
     @Embedded
     private Beløp besteberegningPrÅr;
 
+
     @AttributeOverrides(@AttributeOverride(name = "verdi", column = @Column(name = "brutto_pr_aar")))
     @ChangeTracked
     @Embedded
@@ -48,9 +54,10 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
     public Årsgrunnlag() {
     }
 
-    public Årsgrunnlag(Beløp beregnetPrÅr, Beløp fordeltPrÅr, Beløp overstyrtPrÅr, Beløp besteberegningPrÅr, Beløp bruttoPrÅr) {
+    public Årsgrunnlag(Beløp beregnetPrÅr, Beløp fordeltPrÅr, Beløp manueltFordeltPrÅr, Beløp overstyrtPrÅr, Beløp besteberegningPrÅr, Beløp bruttoPrÅr) {
         this.beregnetPrÅr = beregnetPrÅr;
         this.fordeltPrÅr = fordeltPrÅr;
+        this.manueltFordeltPrÅr = manueltFordeltPrÅr;
         this.overstyrtPrÅr = overstyrtPrÅr;
         this.besteberegningPrÅr = besteberegningPrÅr;
         this.bruttoPrÅr = bruttoPrÅr;
@@ -59,6 +66,7 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
     public Årsgrunnlag(Årsgrunnlag årsgrunnlag) {
         this.bruttoPrÅr = årsgrunnlag.bruttoPrÅr;
         this.fordeltPrÅr = årsgrunnlag.fordeltPrÅr;
+        this.manueltFordeltPrÅr = årsgrunnlag.manueltFordeltPrÅr;
         this.overstyrtPrÅr = årsgrunnlag.overstyrtPrÅr;
         this.besteberegningPrÅr = årsgrunnlag.besteberegningPrÅr;
         this.beregnetPrÅr = årsgrunnlag.beregnetPrÅr;
@@ -77,6 +85,10 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
         return fordeltPrÅr;
     }
 
+    public Beløp getManueltFordeltPrÅr() {
+        return manueltFordeltPrÅr;
+    }
+
     public Beløp getOverstyrtPrÅr() {
         return overstyrtPrÅr;
     }
@@ -90,7 +102,7 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
     }
 
     public boolean erSatt() {
-        return beregnetPrÅr != null || overstyrtPrÅr != null || fordeltPrÅr != null || bruttoPrÅr != null;
+        return beregnetPrÅr != null || overstyrtPrÅr != null || fordeltPrÅr != null || manueltFordeltPrÅr != null || bruttoPrÅr != null;
     }
 
 
@@ -99,12 +111,12 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Årsgrunnlag that = (Årsgrunnlag) o;
-        return Objects.equals(beregnetPrÅr, that.beregnetPrÅr) && Objects.equals(fordeltPrÅr, that.fordeltPrÅr) && Objects.equals(overstyrtPrÅr, that.overstyrtPrÅr) && Objects.equals(bruttoPrÅr, that.bruttoPrÅr);
+        return Objects.equals(beregnetPrÅr, that.beregnetPrÅr) && Objects.equals(fordeltPrÅr, that.fordeltPrÅr) && Objects.equals(manueltFordeltPrÅr, that.manueltFordeltPrÅr) && Objects.equals(overstyrtPrÅr, that.overstyrtPrÅr) && Objects.equals(bruttoPrÅr, that.bruttoPrÅr);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beregnetPrÅr, fordeltPrÅr, overstyrtPrÅr, bruttoPrÅr);
+        return Objects.hash(beregnetPrÅr, fordeltPrÅr, manueltFordeltPrÅr, overstyrtPrÅr, bruttoPrÅr);
     }
 
     @Override
@@ -112,6 +124,7 @@ public class Årsgrunnlag implements Serializable, IndexKey, TraverseValue, Comp
         return "Årsgrunnlag{" +
                 "beregnetPrÅr=" + beregnetPrÅr +
                 ", fordeltPrÅr=" + fordeltPrÅr +
+                ", manueltFordeltPrÅr=" + manueltFordeltPrÅr +
                 ", overstyrtPrÅr=" + overstyrtPrÅr +
                 ", bruttoPrÅr=" + bruttoPrÅr +
                 '}';

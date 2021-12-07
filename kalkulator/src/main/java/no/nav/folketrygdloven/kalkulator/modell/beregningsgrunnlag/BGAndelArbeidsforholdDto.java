@@ -144,6 +144,18 @@ public class BGAndelArbeidsforholdDto {
         }
     }
 
+    private void medManueltFordeltRefusjon(BigDecimal manueltFordeltRefusjonPrÅr) {
+        if (manueltFordeltRefusjonPrÅr == null) {
+            return;
+        }
+        if (refusjon == null) {
+            refusjon = Refusjon.medManueltFordeltRefusjonPrÅr(manueltFordeltRefusjonPrÅr);
+        } else {
+            refusjon.setManueltFordeltRefusjonPrÅr(manueltFordeltRefusjonPrÅr);
+        }
+    }
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -263,6 +275,12 @@ public class BGAndelArbeidsforholdDto {
             bgAndelArbeidsforhold.medFordeltRefusjonPrÅr(fordeltRefusjonPrÅr);
             return this;
         }
+
+        public Builder medManueltFordeltRefusjonPrÅr(BigDecimal manueltFordeltRefusjonPrÅr) {
+            bgAndelArbeidsforhold.medManueltFordeltRefusjon(manueltFordeltRefusjonPrÅr);
+            return this;
+        }
+
 
         public Builder medArbeidsperiodeFom(LocalDate arbeidsperiodeFom) {
             bgAndelArbeidsforhold.arbeidsperiodeFom = arbeidsperiodeFom;

@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Sammenligning
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 
@@ -66,7 +67,8 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         return nyttBeregningsgrunnlag;
     }
 
-    protected void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg, List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
+    protected void mapPerioder(BeregningsgrunnlagDto eksisterendeVLGrunnlag, Steg steg,
+                               List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> beregningsgrunnlagPerioder) {
 
         int vlBGnummer = 0;
         for (var resultatBGPeriode : beregningsgrunnlagPerioder) {
@@ -135,7 +137,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         for (BeregningsgrunnlagPrArbeidsforhold arbeidsforhold : resultatBGPStatus.getArbeidsforhold()) {
             if (gjelderSammeAndel(vlBGPAndel, arbeidsforhold)) {
                 BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(vlBGPAndel));
-                andelBuilder = settFasteVerdier(andelBuilder, arbeidsforhold);
+                andelBuilder = settFasteVerdier(andelBuilder, arbeidsforhold, Optional.of(vlBGPAndel));
                 if (skalByggeBGArbeidsforhold(arbeidsforhold, vlBGPAndel)) {
                     BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforhold = mapArbeidsforhold(vlBGPAndel, arbeidsforhold);
                     andelBuilder.medBGAndelArbeidsforhold(bgAndelArbeidsforhold);
@@ -154,11 +156,13 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null));
     }
 
-    protected static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold) {
+    protected static BeregningsgrunnlagPrStatusOgAndelDto.Builder settFasteVerdier(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder,
+                                                                                   BeregningsgrunnlagPrArbeidsforhold arbeidsforhold,
+                                                                                   Optional<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel) {
         if (arbeidsforhold.getBeregningsperiode() != null && arbeidsforhold.getBeregningsperiode().getFom() != null) {
             builder.medBeregningsperiode(arbeidsforhold.getBeregningsperiode().getFom(), arbeidsforhold.getBeregningsperiode().getTom());
         }
-        return builder
+        builder
                 .medBeregnetPrÅr(verifisertBeløp(arbeidsforhold.getBeregnetPrÅr()))
                 .medOverstyrtPrÅr(verifisertBeløp(arbeidsforhold.getOverstyrtPrÅr()))
                 .medFordeltPrÅr(verifisertBeløp(arbeidsforhold.getFordeltPrÅr()))
@@ -171,8 +175,16 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                 .medRedusertBrukersAndelPrÅr(verifisertBeløp(arbeidsforhold.getRedusertBrukersAndelPrÅr()))
                 .medFastsattAvSaksbehandler(arbeidsforhold.getFastsattAvSaksbehandler())
                 .medArbforholdType(MapOpptjeningAktivitetFraRegelTilVL.map(arbeidsforhold.getArbeidsforhold().getAktivitet()))
-                .medInntektskategori(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()))
                 .medAvkortetFørGraderingPrÅr(verifisertBeløp(arbeidsforhold.getAndelsmessigFørGraderingPrAar()));
+        mapInntektskategoriOmEndret(builder, arbeidsforhold, eksisterendeAndel);
+        return builder;
+    }
+
+    private static void mapInntektskategoriOmEndret(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold, Optional<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel) {
+        Inntektskategori inntektskategoriFraRegel = MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori());
+        if (eksisterendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getGjeldendeInntektskategori).map(i -> !i.equals(inntektskategoriFraRegel)).orElse(true)) {
+            builder.medInntektskategoriFordeling(inntektskategoriFraRegel);
+        }
     }
 
     private static boolean skalByggeBGArbeidsforhold(BeregningsgrunnlagPrArbeidsforhold arbeidsforhold, BeregningsgrunnlagPrStatusOgAndelDto vlBGPAndel) {
@@ -196,7 +208,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
         if (arbeidsforhold.erFrilanser()) {
             return false;
         }
-        if (!vlBGPAndel.getInntektskategori().equals(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()))) {
+        if (!vlBGPAndel.getGjeldendeInntektskategori().equals(MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori()))) {
             return false;
         }
         if (!matcherArbeidsgivere(vlBGPAndel, arbeidsforhold)) {
@@ -293,7 +305,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                     .medAndelsnr(bgpsa.getAndelsnr())
                     .medArbforholdType(bgpsa.getArbeidsforholdType())
                     .medAktivitetStatus(bgpsa.getAktivitetStatus())
-                    .medInntektskategori(bgpsa.getInntektskategori());
+                    .medInntektskategori(bgpsa.getGjeldendeInntektskategori());
             Optional<Arbeidsgiver> arbeidsgiver = bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver);
             Optional<InternArbeidsforholdRefDto> arbeidsforholdRef = bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsforholdRef);
             if (arbeidsgiver.isPresent() || arbeidsforholdRef.isPresent()) {

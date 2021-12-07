@@ -122,7 +122,7 @@ public final class BeregningsgrunnlagVerifiserer {
 
     private static Consumer<BeregningsgrunnlagPrStatusOgAndelDto> lagVerifiserForeslåttAndelConsumer(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode) {
         return (BeregningsgrunnlagPrStatusOgAndelDto andel) -> {
-            Objects.requireNonNull(andel.getInntektskategori(), "Inntektskategori");
+            Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
             if (andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)) {
                 if (!periodeOppståttGrunnetGradering(beregningsgrunnlagPeriode.getPeriodeÅrsaker())) {
                     Objects.requireNonNull(andel.getPgiSnitt(), "PgiSnitt");
@@ -157,7 +157,7 @@ public final class BeregningsgrunnlagVerifiserer {
     }
 
     private static void verifiserFordeltAndel(BeregningsgrunnlagPrStatusOgAndelDto andel) {
-        Objects.requireNonNull(andel.getInntektskategori(), "Inntektskategori");
+        Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
         if (!andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE) && !andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
             Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
             if (andel.getBeregnetPrÅr() == null && erLagtTilIFordeling(andel)) {

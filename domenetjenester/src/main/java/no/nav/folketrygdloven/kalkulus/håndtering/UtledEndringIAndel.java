@@ -65,19 +65,19 @@ public class UtledEndringIAndel {
     }
 
     private static InntektskategoriEndring initInntektskategoriEndring(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
-        return new InntektskategoriEndring(finnInntektskategori(forrigeAndel), andel.getInntektskategori());
+        return new InntektskategoriEndring(finnInntektskategori(forrigeAndel), andel.getGjeldendeInntektskategori());
     }
 
     private static Boolean harEndringIInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto andel, Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelFraSteg, Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         if (forrigeAndel.isEmpty()) {
-            return andelFraSteg.map(a -> !Objects.equals(a.getInntektskategori(), andel.getInntektskategori())).orElse(true);
+            return andelFraSteg.map(a -> !Objects.equals(a.getGjeldendeInntektskategori(), andel.getGjeldendeInntektskategori())).orElse(true);
         }
-        return forrigeAndel.map(a -> !a.getInntektskategori().equals(andel.getInntektskategori())).orElse(true);
+        return forrigeAndel.map(a -> !a.getGjeldendeInntektskategori().equals(andel.getGjeldendeInntektskategori())).orElse(true);
     }
 
     private static no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori finnInntektskategori(Optional<BeregningsgrunnlagPrStatusOgAndelDto> forrigeAndel) {
         return forrigeAndel
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getInntektskategori)
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getGjeldendeInntektskategori)
                 .orElse(null);
     }
 

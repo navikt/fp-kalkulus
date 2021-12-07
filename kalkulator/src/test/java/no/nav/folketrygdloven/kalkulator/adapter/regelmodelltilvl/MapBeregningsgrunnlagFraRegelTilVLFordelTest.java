@@ -44,7 +44,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
         assertThat(periode.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
         BeregningsgrunnlagPrStatusOgAndelDto andel1 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(andel1.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
-        assertThat(andel1.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER);
+        assertThat(andel1.getGjeldendeInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.ARBEIDSTAKER);
         assertThat(andel1.getBeregnetPrÅr()).isEqualTo(BigDecimal.valueOf(50_000));
         assertThat(andel1.getFordeltPrÅr()).isNull();
         assertThat(andel1.getAndelsnr()).isEqualTo(1L);
@@ -54,7 +54,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
 
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = periode.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertThat(andel2.getAktivitetStatus()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER);
-        assertThat(andel2.getInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(andel2.getGjeldendeInntektskategori()).isEqualTo(no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertThat(andel2.getFordeltPrÅr()).isEqualTo(BigDecimal.valueOf(25_000));
         assertThat(andel2.getBeregnetPrÅr()).isNull();
         assertThat(andel2.getAndelsnr()).isEqualTo(2L);

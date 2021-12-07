@@ -297,7 +297,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medÅrsbeløpFraTilstøtendeYtelse(vlBGPStatus.getÅrsbeløpFraTilstøtendeYtelseVerdi())
                 .medErNyIArbeidslivet(faktaAktørDto.map(FaktaAktørDto::getErNyIArbeidslivetSNVurdering).orElse(null))
                 .medAndelNr(vlBGPStatus.getAndelsnr())
-                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getInntektskategori()))
+                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())
                 .medLagtTilAvSaksbehandler(vlBGPStatus.erLagtTilAvSaksbehandler())
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
@@ -339,7 +339,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                                                          BeregningsgrunnlagInput input) {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
-                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getInntektskategori()))
+                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
                 .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr())
                 .medBeregningsperiode(beregningsperiodeFor(vlBGPStatus))
                 .medFastsattAvSaksbehandler(vlBGPStatus.getFastsattAvSaksbehandler())

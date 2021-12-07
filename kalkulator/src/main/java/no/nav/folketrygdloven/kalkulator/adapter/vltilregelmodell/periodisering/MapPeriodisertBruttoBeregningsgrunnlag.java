@@ -42,7 +42,7 @@ public final class MapPeriodisertBruttoBeregningsgrunnlag {
     private static BruttoBeregningsgrunnlag mapBruttoBG(BeregningsgrunnlagPrStatusOgAndelDto a) {
         AktivitetStatusV2 regelAktivitetStatus = MapAktivitetStatusV2FraVLTilRegel.map(
                 a.getAktivitetStatus(),
-                a.getInntektskategori());
+                a.getGjeldendeInntektskategori());
 
         Optional<Arbeidsforhold> arbeidsforhold = a.getBgAndelArbeidsforhold()
                 .map(bga ->

@@ -63,7 +63,7 @@ public class VurderMottarYtelseDtoTjeneste implements FaktaOmBeregningTilfelleDt
             BeregningsgrunnlagPrStatusOgAndelDto andel = finnRestAndel(andelUtenIM, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList());
             beregnOgSettInntektPrMnd(filter, andel, dto);
             dto.setAndelsnr(andelUtenIM.getAndelsnr());
-            dto.setInntektskategori(Inntektskategori.fraKode(andelUtenIM.getInntektskategori().getKode()));
+            dto.setInntektskategori(Inntektskategori.fraKode(andelUtenIM.getGjeldendeInntektskategori().getKode()));
             BeregningsgrunnlagDtoUtil.lagArbeidsforholdDto(andel, Optional.empty(), inntektArbeidYtelseGrunnlag).ifPresent(dto::setArbeidsforhold);
             Optional<FaktaArbeidsforholdDto> faktaArbeidsforholdDto = andelUtenIM.getBgAndelArbeidsforhold()
                     .flatMap(arb -> faktaAggregat.flatMap(fa -> fa.getFaktaArbeidsforhold(arb)));

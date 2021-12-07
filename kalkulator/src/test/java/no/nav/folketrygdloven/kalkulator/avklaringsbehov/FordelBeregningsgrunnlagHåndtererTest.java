@@ -102,17 +102,17 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
 
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert1 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(inntektskategori)).findFirst().get();
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert2 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel2) && a.getInntektskategori().equals(inntektskategori)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert1 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(inntektskategori)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert2 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel2) && a.getGjeldendeInntektskategori().equals(inntektskategori)).findFirst().get();
 
         // Assert
         assertThat(andelOppdatert1.getAndelsnr()).isEqualByComparingTo(andelsnr);
         assertThat(andelOppdatert1.getBgAndelArbeidsforhold().get().getNaturalytelseBortfaltPrÅr()).isNotPresent();
-        assertThat(andelOppdatert1.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(andelOppdatert1.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.ZERO);
 
         assertThat(andelOppdatert2.getAndelsnr()).isEqualByComparingTo(andelsnr2);
         assertThat(andelOppdatert2.getBgAndelArbeidsforhold().get().getNaturalytelseBortfaltPrÅr()).isNotPresent();
-        assertThat(andelOppdatert2.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(210_000));
+        assertThat(andelOppdatert2.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(210_000));
     }
 
     @Test
@@ -148,10 +148,10 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
 
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert1 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(inntektskategori)).findFirst().get();
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert2 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel2) && a.getInntektskategori().equals(inntektskategori)).findFirst().get();
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert3 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel3) && a.getInntektskategori().equals(inntektskategori2)).findFirst().get();
-        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert4 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(inntektskategori2)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert1 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(inntektskategori)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert2 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel2) && a.getGjeldendeInntektskategori().equals(inntektskategori)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert3 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel3) && a.getGjeldendeInntektskategori().equals(inntektskategori2)).findFirst().get();
+        BeregningsgrunnlagPrStatusOgAndelDto andelOppdatert4 = andeler.stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(inntektskategori2)).findFirst().get();
 
         // Assert
         assertThat(andelOppdatert1.getAndelsnr()).isEqualByComparingTo(andelsnr);
@@ -182,8 +182,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagDto grunnlagEtterOppdatering = grunnlag.getBeregningsgrunnlag().orElseThrow();
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
-        assertThat(andelEtterOppdatering.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(andelEtterOppdatering.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(andelEtterOppdatering.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(andelEtterOppdatering.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
     }
 
@@ -213,8 +213,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = grunnlagEtterOppdatering.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
         assertThat(andelEtterOppdatering.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(BigDecimal.ZERO)).isEqualByComparingTo(BigDecimal.ZERO);
-        assertThat(andelEtterOppdatering.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(andelEtterOppdatering.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(andelEtterOppdatering.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(andelEtterOppdatering.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
     }
 
@@ -257,15 +257,15 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.getAndelsnr().equals(andelsnr2)).findFirst().get();
         BeregningsgrunnlagPrStatusOgAndelDto andel3 = perioder.get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(BeregningsgrunnlagPrStatusOgAndelDto::erLagtTilAvSaksbehandler).findFirst().get();
         assertThat(andel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).get()).isEqualByComparingTo(refusjonskravPrÅr);
-        assertThat(andel.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(andel.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(andel.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(andel.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         BigDecimal halvRefusjon = refusjonskravPrÅr.divide(BigDecimal.valueOf(2), 10, RoundingMode.HALF_UP);
         assertThat(andel2.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).get()).isEqualByComparingTo(halvRefusjon);
-        assertThat(andel2.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
-        assertThat(andel2.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(andel2.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
+        assertThat(andel2.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
         assertThat(andel3.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).get()).isEqualByComparingTo(halvRefusjon);
-        assertThat(andel3.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
-        assertThat(andel3.getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
+        assertThat(andel3.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
+        assertThat(andel3.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
     }
 
     private FordelBeregningsgrunnlagAndelDto lagFordeltAndelInklNaturalytelse(BeregningsgrunnlagPrStatusOgAndelDto andel,
@@ -382,8 +382,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andelEtterOppdatering = nyttBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         // Assert
         assertThat(andelEtterOppdatering.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null)).isEqualByComparingTo(BigDecimal.valueOf(refusjon * 12));
-        assertThat(andelEtterOppdatering.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(andelEtterOppdatering.getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(andelEtterOppdatering.getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(andelEtterOppdatering.getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
     }
 
 
@@ -426,14 +426,14 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(nyttBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel = nyttBG.getBeregningsgrunnlagPerioder().get(0)
-                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(inntektskategori)).collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(inntektskategori)).collect(Collectors.toList());
 
         Assertions.assertThat(eksisterendeAndel).hasSize(1);
         assertThat(eksisterendeAndel.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr)
                 .orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf((fastsatt / totalFastsatt) * totalRefusjon * 12));
-        assertThat(eksisterendeAndel.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil = nyttBG.getBeregningsgrunnlagPerioder().get(0)
@@ -443,8 +443,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(andelLagtTil.get(0).getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(andelLagtTil.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf((fastsatt2 / totalFastsatt) * totalRefusjon * 12));
-        assertThat(andelLagtTil.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
-        assertThat(andelLagtTil.get(0).getInntektskategori()).isEqualTo(inntektskategori2);
+        assertThat(andelLagtTil.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
+        assertThat(andelLagtTil.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori2);
         assertThat(andelLagtTil.get(0).getBeregningsperiodeFom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeFom());
         assertThat(andelLagtTil.get(0).getBeregningsperiodeTom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeTom());
     }
@@ -499,13 +499,13 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(nyttBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(2);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel = nyttBG.getBeregningsgrunnlagPerioder().get(0)
-                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(inntektskategori)).collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(inntektskategori)).collect(Collectors.toList());
 
         Assertions.assertThat(eksisterendeAndel).hasSize(1);
         assertThat(eksisterendeAndel.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt / totalFastsatt * totalRefusjon * 12));
-        assertThat(eksisterendeAndel.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil = nyttBG.getBeregningsgrunnlagPerioder().get(0)
@@ -515,8 +515,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(andelLagtTil.get(0).getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(andelLagtTil.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 / totalFastsatt * totalRefusjon * 12));
-        assertThat(andelLagtTil.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
-        assertThat(andelLagtTil.get(0).getInntektskategori()).isEqualTo(inntektskategori2);
+        assertThat(andelLagtTil.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
+        assertThat(andelLagtTil.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori2);
         assertThat(andelLagtTil.get(0).getBeregningsperiodeFom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeFom());
         assertThat(andelLagtTil.get(0).getBeregningsperiodeTom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeTom());
 
@@ -578,8 +578,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Assertions.assertThat(eksisterendeAndel).hasSize(1);
         assertThat(eksisterendeAndel.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt / totalFastsatt * totalRefusjon * 12));
-        assertThat(eksisterendeAndel.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil = nyttBG.getBeregningsgrunnlagPerioder().get(0)
@@ -589,8 +589,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(andelLagtTil.get(0).getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(andelLagtTil.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 / totalFastsatt * totalRefusjon * 12));
-        assertThat(andelLagtTil.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
-        assertThat(andelLagtTil.get(0).getInntektskategori()).isEqualTo(inntektskategori2);
+        assertThat(andelLagtTil.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
+        assertThat(andelLagtTil.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori2);
         assertThat(andelLagtTil.get(0).getBeregningsperiodeFom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeFom());
         assertThat(andelLagtTil.get(0).getBeregningsperiodeTom()).isEqualTo(eksisterendeAndel.get(0).getBeregningsperiodeTom());
     }
@@ -641,8 +641,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         Assertions.assertThat(eksisterendeAndel).hasSize(1);
         assertThat(eksisterendeAndel.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(refusjon * 12));
-        assertThat(eksisterendeAndel.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil = nyttBG.getBeregningsgrunnlagPerioder().get(0)
@@ -741,52 +741,52 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         assertThat(periode1Oppdatert.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(3);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel = periode1Oppdatert
-                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(fordeltAndel.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(fordeltAndel.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
 
         Assertions.assertThat(eksisterendeAndel).hasSize(1);
         assertThat(eksisterendeAndel.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt / totalFastsatt1 * totalRefusjon1 * 12));
-        assertThat(eksisterendeAndel.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil = periode1Oppdatert
                 .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(BeregningsgrunnlagPrStatusOgAndelDto::erLagtTilAvSaksbehandler).collect(Collectors.toList());
 
         Assertions.assertThat(andelLagtTil).hasSize(2);
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> fraForrige = andelLagtTil.stream().filter(lagtTil -> lagtTil.getInntektskategori().equals(inntektskategori2)).findFirst();
+        Optional<BeregningsgrunnlagPrStatusOgAndelDto> fraForrige = andelLagtTil.stream().filter(lagtTil -> lagtTil.getGjeldendeInntektskategori().equals(inntektskategori2)).findFirst();
         Assertions.assertThat(fraForrige.isPresent()).isTrue();
         assertThat(fraForrige.get().getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(fraForrige.get().getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 / totalFastsatt1 * totalRefusjon1 * 12));
-        assertThat(fraForrige.get().getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
-        assertThat(fraForrige.get().getInntektskategori()).isEqualTo(inntektskategori2);
+        assertThat(fraForrige.get().getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt2 * 12));
+        assertThat(fraForrige.get().getGjeldendeInntektskategori()).isEqualTo(inntektskategori2);
 
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> ny = andelLagtTil.stream().filter(lagtTil -> lagtTil.getInntektskategori().equals(inntektskategori3)).findFirst();
+        Optional<BeregningsgrunnlagPrStatusOgAndelDto> ny = andelLagtTil.stream().filter(lagtTil -> lagtTil.getGjeldendeInntektskategori().equals(inntektskategori3)).findFirst();
         Assertions.assertThat(ny.isPresent()).isTrue();
         assertThat(ny.get().getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(ny.get().getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 / totalFastsatt1 * totalRefusjon1 * 12));
-        assertThat(ny.get().getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
-        assertThat(ny.get().getInntektskategori()).isEqualTo(inntektskategori3);
+        assertThat(ny.get().getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
+        assertThat(ny.get().getGjeldendeInntektskategori()).isEqualTo(inntektskategori3);
 
         assertThat(periode2Oppdatert.getBeregningsgrunnlagPrStatusOgAndelList()).hasSize(3);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel2 = periode2Oppdatert
-                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getInntektskategori().equals(fordeltAndel.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel) && a.getGjeldendeInntektskategori().equals(fordeltAndel.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
         Assertions.assertThat(eksisterendeAndel2).hasSize(1);
         assertThat(eksisterendeAndel2.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt / totalFastsatt2 * totalRefusjon2 * 12));
-        assertThat(eksisterendeAndel2.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
-        assertThat(eksisterendeAndel2.get(0).getInntektskategori()).isEqualTo(inntektskategori);
+        assertThat(eksisterendeAndel2.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt * 12));
+        assertThat(eksisterendeAndel2.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori);
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel3 = periode2Oppdatert
-                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel3) && a.getInntektskategori().equals(fordeltAndel4.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
+                .getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(a -> a.matchUtenInntektskategori(andel3) && a.getGjeldendeInntektskategori().equals(fordeltAndel4.getFastsatteVerdier().getInntektskategori())).collect(Collectors.toList());
         Assertions.assertThat(eksisterendeAndel3).hasSize(1);
         assertThat(eksisterendeAndel3.get(0).getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(refusjon4 * 12));
-        assertThat(eksisterendeAndel3.get(0).getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt4 * 12));
-        assertThat(eksisterendeAndel3.get(0).getInntektskategori()).isEqualTo(inntektskategori4);
+        assertThat(eksisterendeAndel3.get(0).getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt4 * 12));
+        assertThat(eksisterendeAndel3.get(0).getGjeldendeInntektskategori()).isEqualTo(inntektskategori4);
 
 
         List<BeregningsgrunnlagPrStatusOgAndelDto> andelLagtTil2 = periode2Oppdatert
@@ -794,16 +794,16 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
         Assertions.assertThat(andelLagtTil2).hasSize(1);
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> fraForrige2 = andelLagtTil2.stream()
-                .filter(lagtTil -> lagtTil.getInntektskategori().equals(inntektskategori2)).findFirst();
+                .filter(lagtTil -> lagtTil.getGjeldendeInntektskategori().equals(inntektskategori2)).findFirst();
         Assertions.assertThat(fraForrige2.isPresent()).isFalse();
 
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> ny2 = andelLagtTil2.stream().filter(lagtTil -> lagtTil.getInntektskategori().equals(inntektskategori3)).findFirst();
+        Optional<BeregningsgrunnlagPrStatusOgAndelDto> ny2 = andelLagtTil2.stream().filter(lagtTil -> lagtTil.getGjeldendeInntektskategori().equals(inntektskategori3)).findFirst();
         Assertions.assertThat(ny2.isPresent()).isTrue();
         assertThat(ny2.get().getAndelsnr()).isNotEqualTo(eksisterendeAndel.get(0).getAndelsnr());
         assertThat(ny2.get().getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getGjeldendeRefusjonPrÅr).orElse(null))
                 .isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 / totalFastsatt2 * totalRefusjon2 * 12));
-        assertThat(ny2.get().getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
-        assertThat(ny2.get().getInntektskategori()).isEqualTo(inntektskategori3);
+        assertThat(ny2.get().getManueltFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fastsatt3 * 12));
+        assertThat(ny2.get().getGjeldendeInntektskategori()).isEqualTo(inntektskategori3);
     }
 
 }

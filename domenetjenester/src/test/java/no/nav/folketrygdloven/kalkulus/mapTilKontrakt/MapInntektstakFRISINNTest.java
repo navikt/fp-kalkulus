@@ -448,7 +448,7 @@ class MapInntektstakFRISINNTest {
                 .medAndelsnr(andelsnr)
                 .medAktivitetStatus(status)
                 .medFastsattAvSaksbehandler(true)
-                .medGrunnlagPrÅr(new Årsgrunnlag(new Beløp(brutto), null, null, null, new Beløp(brutto)))
+                .medGrunnlagPrÅr(new Årsgrunnlag(new Beløp(brutto), null, null, null, null, new Beløp(brutto)))
                 .medBeregningsperiode(LocalDate.now().minusMonths(3), LocalDate.now());
         if (status.erArbeidstaker()) {
             builder.medBGAndelArbeidsforhold(lagArbfor());

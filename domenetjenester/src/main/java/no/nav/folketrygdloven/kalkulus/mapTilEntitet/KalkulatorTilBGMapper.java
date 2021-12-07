@@ -16,13 +16,13 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Sammenligningsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.FastsattInntektskategori;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Promille;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Refusjon;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Årsgrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
-import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
@@ -87,7 +87,7 @@ public class KalkulatorTilBGMapper {
                 .medMaksimalRefusjonPrÅr(mapTilBeløp(fraKalkulus.getMaksimalRefusjonPrÅr()))
                 .medRedusertRefusjonPrÅr(mapTilBeløp(fraKalkulus.getRedusertRefusjonPrÅr()))
                 .medÅrsbeløpFraTilstøtendeYtelse(mapTilBeløp(fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse() == null ? null : fraKalkulus.getÅrsbeløpFraTilstøtendeYtelse().getVerdi()))
-                .medInntektskategori(fraKalkulus.getInntektskategori() == null ? null : Inntektskategori.fraKode(fraKalkulus.getInntektskategori().getKode()))
+                .medFastsattInntektskategori(mapTilInntektskategori(fraKalkulus))
                 .medOrginalDagsatsFraTilstøtendeYtelse(fraKalkulus.getOrginalDagsatsFraTilstøtendeYtelse())
                 .medAvkortetFørGraderingPrÅr(mapTilBeløp(fraKalkulus.getAvkortetFørGraderingPrÅr()));
 
@@ -103,11 +103,23 @@ public class KalkulatorTilBGMapper {
         return builder;
     }
 
+    private static FastsattInntektskategori mapTilInntektskategori(BeregningsgrunnlagPrStatusOgAndelDto fraKalkulus) {
+        no.nav.folketrygdloven.kalkulator.modell.typer.FastsattInntektskategori inntektskategori = fraKalkulus.getFastsattInntektskategori();
+        if (inntektskategori == null) {
+            return null;
+        }
+        return new FastsattInntektskategori(
+                inntektskategori.getInntektskategori(),
+                inntektskategori.getInntektskategoriAutomatiskFordeling(),
+                inntektskategori.getInntektskategoriManuellFordeling());
+    }
+
     private static Årsgrunnlag map(no.nav.folketrygdloven.kalkulator.modell.typer.Årsgrunnlag grunnlagPrÅr) {
         return grunnlagPrÅr == null || !grunnlagPrÅr.erSatt() ?
                 new Årsgrunnlag() : new Årsgrunnlag(
                 mapTilBeløp(grunnlagPrÅr.getBeregnetPrÅr()),
                 mapTilBeløp(grunnlagPrÅr.getFordeltPrÅr()),
+                mapTilBeløp(grunnlagPrÅr.getManueltFordeltPrÅr()),
                 mapTilBeløp(grunnlagPrÅr.getOverstyrtPrÅr()),
                 mapTilBeløp(grunnlagPrÅr.getBesteberegningPrÅr()),
                 mapTilBeløp(grunnlagPrÅr.getBruttoPrÅr())
@@ -142,6 +154,7 @@ public class KalkulatorTilBGMapper {
                 mapTilBeløp(refusjon.getRefusjonskravPrÅr()),
                 mapTilBeløp(refusjon.getSaksbehandletRefusjonPrÅr()),
                 mapTilBeløp(refusjon.getFordeltRefusjonPrÅr()),
+                mapTilBeløp(refusjon.getManueltFordeltRefusjonPrÅr()),
                 refusjon.getHjemmelForRefusjonskravfrist(),
                 refusjon.getRefusjonskravFristUtfall()
         );

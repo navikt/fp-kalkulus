@@ -239,7 +239,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
     private void assertVLBGPStatusSN(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
         assertThat(vlBGPStatus.getAktivitetStatus())
             .isEqualTo(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
-        assertThat(vlBGPStatus.getInntektskategori()).isEqualTo(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(vlBGPStatus.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertThat(vlBGPStatus.getBeregnetPrÅr().doubleValue()).isEqualTo(400000.42, within(0.01));
         assertThat(vlBGPStatus.getBruttoPrÅr().doubleValue()).isEqualTo(400000.42, within(0.01));
         assertThat(vlBGPStatus.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getRefusjonskravPrÅr).orElse(null)).isNull();
@@ -251,7 +251,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
 
     private void assertVLBGPStatusFL(BeregningsgrunnlagPrStatusOgAndelDto bgpsa) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.FRILANSER);
-        assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
+        assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver)).isEmpty();
         assertThat(bgpsa.getBgAndelArbeidsforhold()
             .map(BGAndelArbeidsforholdDto::getArbeidsforholdRef)
@@ -268,7 +268,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLTest {
 
     private void assertVLBGPStatusAT(BeregningsgrunnlagPrStatusOgAndelDto bgpsa) {
         assertThat(bgpsa.getAktivitetStatus()).isEqualTo(AktivitetStatus.ARBEIDSTAKER);
-        assertThat(bgpsa.getInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
+        assertThat(bgpsa.getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
         assertThat(bgpsa.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getArbeidsgiver))
             .hasValueSatisfying(arbeidsgiver -> assertThat(arbeidsgiver.getOrgnr()).isEqualTo(ORGNR));
         assertThat(bgpsa.getBgAndelArbeidsforhold()

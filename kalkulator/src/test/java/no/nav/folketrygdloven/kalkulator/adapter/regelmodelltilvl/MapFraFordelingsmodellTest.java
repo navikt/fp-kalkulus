@@ -122,7 +122,7 @@ class MapFraFordelingsmodellTest {
             assertThat(matchendeAndel.getBgAndelArbeidsforhold().map(BGAndelArbeidsforholdDto::getFordeltRefusjonPrÅr).orElse(BigDecimal.ZERO))
                     .isEqualByComparingTo(BigDecimal.valueOf(fordeltRefPrÅr));
         }
-        assertThat(matchendeAndel.getInntektskategori()).isEqualTo(ik);
+        assertThat(matchendeAndel.getGjeldendeInntektskategori()).isEqualTo(ik);
         assertThat(matchendeAndel.getFordeltPrÅr()).isEqualByComparingTo(BigDecimal.valueOf(fordeltPrÅr));
     }
 

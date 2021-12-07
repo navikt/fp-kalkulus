@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPrArbeidsforhold;
@@ -56,7 +57,7 @@ public class MapBeregningsgrunnlagFraRegelTilVLFordel extends MapBeregningsgrunn
             if (andelOpt.get().getBeregningsperiodeFom() != null) {
                 nyAndelBuilder.medBeregningsperiode(andelOpt.get().getBeregningsperiodeFom(), andelOpt.get().getBeregningsperiodeTom());
             }
-            settFasteVerdier(nyAndelBuilder, regelAndelForArbeidsforhold);
+            settFasteVerdier(nyAndelBuilder, regelAndelForArbeidsforhold, Optional.empty());
             nyAndelBuilder.medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(andelOpt.get().getBgAndelArbeidsforhold().get())
             .medNaturalytelseBortfaltPrÅr(null)
             .medNaturalytelseTilkommetPrÅr(null)

@@ -51,7 +51,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
         var inntektsmeldingForAndel = finnInntektsmelding(andel, inntektsmeldinger);
         var dto = new AndelForFaktaOmBeregningDto();
         dto.setFastsattBelop(finnInntektForPreutfylling(andel));
-        dto.setInntektskategori(Inntektskategori.fraKode(andel.getInntektskategori().getKode()));
+        dto.setInntektskategori(Inntektskategori.fraKode(andel.getGjeldendeInntektskategori().getKode()));
         dto.setAndelsnr(andel.getAndelsnr());
         dto.setAktivitetStatus(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         var inntektArbeidYtelseGrunnlag = input.getIayGrunnlag();

@@ -46,7 +46,7 @@ public class MapTilFordelingsmodell {
                 .medAktivitetStatus(regelstatus)
                 .medAndelNr(bgAndel.getAndelsnr())
                 .erSøktYtelseFor(erSøktYtelseFor(bgAndel, input))
-                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getInntektskategori()));
+                .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(bgAndel.getGjeldendeInntektskategori()));
         mapArbeidsforhold(bgAndel).ifPresent(regelBuilder::medArbeidsforhold);
         bgAndel.getBgAndelArbeidsforhold().ifPresent(arb -> regelBuilder.medGjeldendeRefusjonPrÅr(arb.getGjeldendeRefusjonPrÅr()));
         bgAndel.getBgAndelArbeidsforhold().flatMap(BGAndelArbeidsforholdDto::getNaturalytelseBortfaltPrÅr).ifPresent(regelBuilder::medNaturalytelseBortfaltPrÅr);

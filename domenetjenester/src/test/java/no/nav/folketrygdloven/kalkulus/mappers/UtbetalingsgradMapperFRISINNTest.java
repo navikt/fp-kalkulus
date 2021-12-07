@@ -324,7 +324,7 @@ class UtbetalingsgradMapperFRISINNTest {
     }
 
     private Årsgrunnlag lagÅrsgrunnlag(BigDecimal beregnetPrÅr) {
-        return new Årsgrunnlag(new Beløp(beregnetPrÅr), null, null, null, new Beløp(beregnetPrÅr));
+        return new Årsgrunnlag(new Beløp(beregnetPrÅr), null, null, null, null, new Beløp(beregnetPrÅr));
     }
 
     private FrisinnPeriode lagFrisinnperiode(Intervall periode, AktivitetStatus... statuser) {
