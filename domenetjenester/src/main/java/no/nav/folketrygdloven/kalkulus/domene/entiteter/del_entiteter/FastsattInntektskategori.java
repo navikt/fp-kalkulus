@@ -23,11 +23,11 @@ public class FastsattInntektskategori implements Serializable, IndexKey, Travers
     private Inntektskategori inntektskategori = Inntektskategori.UDEFINERT;
 
     @Convert(converter= InntektskategoriKodeverdiConverter.class)
-    @Column(name="inntektskategori_fordeling", nullable = false)
+    @Column(name="inntektskategori_fordeling")
     private Inntektskategori inntektskategoriAutomatiskFordeling;
 
     @Convert(converter= InntektskategoriKodeverdiConverter.class)
-    @Column(name="inntektskategori_manuell_fordeling", nullable = false)
+    @Column(name="inntektskategori_manuell_fordeling")
     private Inntektskategori inntektskategoriManuellFordeling;
 
     public FastsattInntektskategori() {

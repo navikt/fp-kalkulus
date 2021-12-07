@@ -43,7 +43,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     private BigDecimal pgi3;
     private Beløp årsbeløpFraTilstøtendeYtelse;
     private Boolean fastsattAvSaksbehandler = false;
-    private FastsattInntektskategori fastsattInntektskategori;
+    private FastsattInntektskategori fastsattInntektskategori = new FastsattInntektskategori();
     private AndelKilde kilde = AndelKilde.PROSESS_START;
     private BGAndelArbeidsforholdDto bgAndelArbeidsforhold;
     private Long orginalDagsatsFraTilstøtendeYtelse;
@@ -552,7 +552,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
             return this;
         }
 
-        public Builder medInntektskategoriFordeling(Inntektskategori inntektskategori) {
+        public Builder medInntektskategoriAutomatiskFordeling(Inntektskategori inntektskategori) {
             verifiserKanModifisere();
             if (kladd.fastsattInntektskategori != null) {
                 kladd.fastsattInntektskategori.setInntektskategoriAutomatiskFordeling(inntektskategori);

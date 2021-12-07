@@ -222,6 +222,7 @@ public class MapDetaljertBeregningsgrunnlag {
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBeregnetPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getBesteberegningPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getFordeltPrÅr()),
+                mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getManueltFordeltPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getMaksimalRefusjonPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetRefusjonPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPrStatusOgAndel.getAvkortetBrukersAndelPrÅr()),

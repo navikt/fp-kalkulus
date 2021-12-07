@@ -148,7 +148,7 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     private Boolean fastsattAvSaksbehandler = false;
 
     @Embedded
-    private FastsattInntektskategori fastsattInntektskategori;
+    private FastsattInntektskategori fastsattInntektskategori = new FastsattInntektskategori();
 
     @Convert(converter= AndelKildeKodeverdiConverter.class)
     @Column(name = "kilde", nullable = false)
@@ -240,6 +240,12 @@ public class BeregningsgrunnlagPrStatusOgAndel extends BaseEntitet {
     public Beløp getFordeltPrÅr() {
         return grunnlagPrÅr == null ? null : grunnlagPrÅr.getFordeltPrÅr();
     }
+
+    public Beløp getManueltFordeltPrÅr() {
+        return grunnlagPrÅr == null ? null : grunnlagPrÅr.getManueltFordeltPrÅr();
+    }
+
+
 
     public Beløp getMaksimalRefusjonPrÅr() {
         return maksimalRefusjonPrÅr;

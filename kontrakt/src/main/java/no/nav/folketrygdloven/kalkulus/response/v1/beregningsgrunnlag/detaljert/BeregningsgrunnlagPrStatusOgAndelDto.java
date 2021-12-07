@@ -135,6 +135,13 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal fordeltPrÅr;
 
+    @JsonProperty(value = "manueltFordeltPrÅr")
+    @Valid
+    @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
+    @DecimalMax(value = "1000000000.00", message = "verdien ${validatedValue} må være <= {value}")
+    @Digits(integer = 10, fraction = 2)
+    private BigDecimal manueltFordeltPrÅr;
+
     @JsonProperty(value = "maksimalRefusjonPrÅr")
     @Valid
     @DecimalMin(value = "0.00", message = "verdien ${validatedValue} må være >= {value}")
@@ -232,23 +239,23 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.bgAndelArbeidsforhold = bgAndelArbeidsforhold;
     }
 
-    public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr, @NotNull @Valid AktivitetStatus aktivitetStatus,
-                                                @NotNull @Valid Periode beregningsperiode,
-                                                @NotNull @Valid OpptjeningAktivitetType arbeidsforholdType,
-                                                @NotNull @Valid BigDecimal bruttoPrÅr,
-                                                @NotNull @Valid BigDecimal redusertRefusjonPrÅr,
-                                                @NotNull @Valid BigDecimal redusertBrukersAndelPrÅr,
-                                                @NotNull @Valid Long dagsatsBruker,
-                                                @Valid Long dagsatsArbeidsgiver,
-                                                @NotNull @Valid Inntektskategori inntektskategori,
-                                                @Valid BGAndelArbeidsforhold bgAndelArbeidsforhold,
+    public BeregningsgrunnlagPrStatusOgAndelDto(Long andelsnr, AktivitetStatus aktivitetStatus,
+                                                Periode beregningsperiode,
+                                                OpptjeningAktivitetType arbeidsforholdType,
+                                                BigDecimal bruttoPrÅr,
+                                                BigDecimal redusertRefusjonPrÅr,
+                                                BigDecimal redusertBrukersAndelPrÅr,
+                                                Long dagsatsBruker,
+                                                Long dagsatsArbeidsgiver,
+                                                Inntektskategori inntektskategori,
+                                                BGAndelArbeidsforhold bgAndelArbeidsforhold,
                                                 BigDecimal overstyrtPrÅr,
                                                 BigDecimal avkortetPrÅr,
                                                 BigDecimal redusertPrÅr,
                                                 BigDecimal beregnetPrÅr,
                                                 BigDecimal besteberegningPrÅr,
                                                 BigDecimal fordeltPrÅr,
-                                                BigDecimal maksimalRefusjonPrÅr,
+                                                BigDecimal manueltFordeltPrÅr, BigDecimal maksimalRefusjonPrÅr,
                                                 BigDecimal avkortetRefusjonPrÅr,
                                                 BigDecimal avkortetBrukersAndelPrÅr,
                                                 BigDecimal pgiSnitt,
@@ -276,6 +283,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.beregnetPrÅr = beregnetPrÅr;
         this.besteberegningPrÅr = besteberegningPrÅr;
         this.fordeltPrÅr = fordeltPrÅr;
+        this.manueltFordeltPrÅr = manueltFordeltPrÅr;
         this.maksimalRefusjonPrÅr = maksimalRefusjonPrÅr;
         this.avkortetRefusjonPrÅr = avkortetRefusjonPrÅr;
         this.avkortetBrukersAndelPrÅr = avkortetBrukersAndelPrÅr;
@@ -367,6 +375,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
 
     public BigDecimal getFordeltPrÅr() {
         return fordeltPrÅr;
+    }
+
+    public BigDecimal getManueltFordeltPrÅr() {
+        return manueltFordeltPrÅr;
     }
 
     public BigDecimal getMaksimalRefusjonPrÅr() {

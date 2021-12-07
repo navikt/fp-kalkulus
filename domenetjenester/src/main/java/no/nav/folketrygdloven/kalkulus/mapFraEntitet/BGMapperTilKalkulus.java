@@ -83,6 +83,7 @@ public class BGMapperTilKalkulus {
                 .medFastsattAvSaksbehandler(fraFagsystem.getFastsattAvSaksbehandler())
                 .medOverstyrtPrÅr(mapFraBeløp(fraFagsystem.getOverstyrtPrÅr()))
                 .medFordeltPrÅr(mapFraBeløp(fraFagsystem.getFordeltPrÅr()))
+                .medManueltFordeltPrÅr(mapFraBeløp(fraFagsystem.getManueltFordeltPrÅr()))
                 .medRedusertPrÅr(mapFraBeløp(fraFagsystem.getRedusertPrÅr()))
                 .medRedusertBrukersAndelPrÅr(mapFraBeløp(fraFagsystem.getRedusertBrukersAndelPrÅr()))
                 .medMaksimalRefusjonPrÅr(mapFraBeløp(fraFagsystem.getMaksimalRefusjonPrÅr()))

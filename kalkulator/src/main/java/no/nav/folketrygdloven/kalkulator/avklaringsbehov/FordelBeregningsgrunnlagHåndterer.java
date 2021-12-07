@@ -87,8 +87,8 @@ public class FordelBeregningsgrunnlagHåndterer {
     }
 
     private static void mapFelterForEksisterendeAndel(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        andelBuilder.medInntektskategori(korrektAndel.getGjeldendeInntektskategori())
-                .medInntektskategoriFordeling(korrektAndel.getFastsattInntektskategori().getInntektskategoriAutomatiskFordeling())
+        andelBuilder.medInntektskategori(korrektAndel.getFastsattInntektskategori().getInntektskategori())
+                .medInntektskategoriAutomatiskFordeling(korrektAndel.getFastsattInntektskategori().getInntektskategoriAutomatiskFordeling())
                 .medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr())
                 .medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
         if (korrektAndel.getPgiSnitt() != null) {

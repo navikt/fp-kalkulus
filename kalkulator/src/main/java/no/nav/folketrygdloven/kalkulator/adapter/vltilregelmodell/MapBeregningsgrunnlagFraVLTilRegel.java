@@ -290,7 +290,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medBeregningsperiode(beregningsperiodeFor(vlBGPStatus))
                 .medBeregnetPrÅr(vlBGPStatus.getBeregnetPrÅr())
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
-                .medFordeltPrÅr(vlBGPStatus.getFordeltPrÅr())
+                .medFordeltPrÅr(vlBGPStatus.getManueltFordeltPrÅr() != null ? vlBGPStatus.getManueltFordeltPrÅr() : vlBGPStatus.getFordeltPrÅr()) // Midlertidig løsning til vi lager egen mapping for fastsett vl til regel
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medGjennomsnittligPGI(vlBGPStatus.getPgiSnitt())
                 .medPGI(pgi)
@@ -346,7 +346,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medLagtTilAvSaksbehandler(vlBGPStatus.erLagtTilAvSaksbehandler())
                 .medAndelNr(vlBGPStatus.getAndelsnr())
                 .medOverstyrtPrÅr(vlBGPStatus.getOverstyrtPrÅr())
-                .medFordeltPrÅr(vlBGPStatus.getFordeltPrÅr())
+                .medFordeltPrÅr(vlBGPStatus.getManueltFordeltPrÅr() != null ? vlBGPStatus.getManueltFordeltPrÅr() : vlBGPStatus.getFordeltPrÅr()) // Midlertidig løsning til vi lager egen mapping for fastsettsteget vl til regel
                 .medBesteberegningPrÅr(vlBGPStatus.getBesteberegningPrÅr())
                 .medArbeidsforhold(MapArbeidsforholdFraVLTilRegel.arbeidsforholdFor(vlBGPStatus))
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()));

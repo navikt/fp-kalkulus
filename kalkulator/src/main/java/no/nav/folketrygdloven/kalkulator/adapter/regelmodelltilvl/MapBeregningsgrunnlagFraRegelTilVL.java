@@ -183,7 +183,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
     private static void mapInntektskategoriOmEndret(BeregningsgrunnlagPrStatusOgAndelDto.Builder builder, BeregningsgrunnlagPrArbeidsforhold arbeidsforhold, Optional<BeregningsgrunnlagPrStatusOgAndelDto> eksisterendeAndel) {
         Inntektskategori inntektskategoriFraRegel = MapInntektskategoriRegelTilVL.map(arbeidsforhold.getInntektskategori());
         if (eksisterendeAndel.map(BeregningsgrunnlagPrStatusOgAndelDto::getGjeldendeInntektskategori).map(i -> !i.equals(inntektskategoriFraRegel)).orElse(true)) {
-            builder.medInntektskategoriFordeling(inntektskategoriFraRegel);
+            builder.medInntektskategoriAutomatiskFordeling(inntektskategoriFraRegel);
         }
     }
 

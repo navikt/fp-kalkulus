@@ -70,7 +70,7 @@ class OpprettPerioderOgAndelerForTilkommetInntekt {
 
             BeregningsgrunnlagPrStatusOgAndelDto.ny()
                     .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-                    .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                    .medInntektskategoriAutomatiskFordeling(Inntektskategori.ARBEIDSTAKER)
                     .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
                             .medArbeidsperiodeFom(periode.get().getFom())
                             .medArbeidsperiodeTom(periode.get().getTom())

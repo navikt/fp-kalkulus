@@ -33,7 +33,7 @@ public class FastsattInntektskategori implements Comparable<FastsattInntektskate
 
 
     public Inntektskategori getInntektskategori() {
-        return inntektskategori;
+        return inntektskategori == null ? Inntektskategori.UDEFINERT : inntektskategori;
     }
 
     public Inntektskategori getInntektskategoriAutomatiskFordeling() {
