@@ -99,7 +99,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent aktive BeregningsgrunnlagGrunnlag for angitte referanser", summary = ("Returnerer aktive BeregningsgrunnlagGrunnlag for angitte kobling referanser."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/grunnlag/bolk")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
+    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentAktiveBeregningsgrunnlagGrunnlag(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
         if (spesifikasjon.getRequestPrReferanse().isEmpty()) {
             return Response.noContent().build();
@@ -140,7 +140,7 @@ public class HentKalkulusRestTjeneste {
     @Operation(description = "Hent forenklet BeregningsgrunnlagGrunnlag for angitte referanser", summary = ("Returnerer forenklet BeregningsgrunnlagGrunnlag for angitte kobling referanser."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/forenklet-grunnlag/bolk")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
+    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentForenkletBeregningsgrunnlag(@NotNull @Valid HentBeregningsgrunnlagListeRequestAbacDto spesifikasjon) {
         if (spesifikasjon.getRequestPrReferanse().isEmpty()) {
             return Response.noContent().build();
@@ -153,12 +153,8 @@ public class HentKalkulusRestTjeneste {
         var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
         var koblingReferanser = spesifikasjon.getRequestPrReferanse().stream().map(v -> new KoblingReferanse(v.getKoblingReferanse()))
                 .collect(Collectors.toList());
-        List<Long> koblinger = new ArrayList<>();
-        koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
-        // TODO Ikkje bruk gui-input til henting av brevfelter
-        Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger, List.of());
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType).stream()
-                .map(gr -> MapBrevBeregningsgrunnlag.mapGrunnlag(gr, input.getResultatPrKobling().get(gr.getKoblingId()).getYtelsespesifiktGrunnlag()))
+                .map(MapBrevBeregningsgrunnlag::mapGrunnlag)
                 .collect(Collectors.toList());
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
     }
@@ -193,25 +189,27 @@ public class HentKalkulusRestTjeneste {
         }
     }
 
-    /** @deprecated fjernes når frisinn ikke er mer. */
-    @Deprecated(forRemoval = true, since="1.1")
+    /**
+     * @deprecated fjernes når frisinn ikke er mer.
+     */
+    @Deprecated(forRemoval = true, since = "1.1")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnlag for frisinn", summary = ("Returnerer frisinngrunnlag for behandling."), tags = "beregningsgrunnlag")
     @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
     @Path("/frisinnGrunnlag")
-    @SuppressWarnings({ "findsecbugs:JAXRS_ENDPOINT", "resource" })
+    @SuppressWarnings({"findsecbugs:JAXRS_ENDPOINT", "resource"})
     public Response hentFrisinnGrunnlag(@NotNull @Valid HentBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         var koblingReferanse = new KoblingReferanse(spesifikasjon.getKoblingReferanse());
         koblingTjeneste.hentFor(koblingReferanse).map(KoblingEntitet::getSaksnummer)
-            .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
+                .ifPresent(saksnummer -> MDC.put("prosess_saksnummer", saksnummer.getVerdi()));
         var ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.fraKode(spesifikasjon.getYtelseSomSkalBeregnes().getKode());
         Optional<Long> koblingId = koblingTjeneste.hentKoblingHvisFinnes(koblingReferanse, ytelseTyperKalkulusStøtter);
         if (koblingId.isEmpty() || !harKalkulatorInput(koblingId)) {
             return Response.noContent().build();
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
-            .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
+                .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
         Resultat<BeregningsgrunnlagGUIInput> resultatInput = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of());
         if (resultatInput.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
             throw new IllegalStateException("Kan ikke hente ny input for kall til frisinnGrunnlag");
@@ -251,18 +249,18 @@ public class HentKalkulusRestTjeneste {
 
     private Map<UUID, BeregningsgrunnlagDto> hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(Map<Long, BeregningsgrunnlagGUIInput> inputPrKobling, List<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
         return inputPrKobling.values()
-            .stream().collect(Collectors.toMap(input -> input.getKoblingReferanse().getKoblingUuid(), input -> mapTilDto(spesifikasjoner, input)));
+                .stream().collect(Collectors.toMap(input -> input.getKoblingReferanse().getKoblingUuid(), input -> mapTilDto(spesifikasjoner, input)));
     }
 
     private Resultat<BeregningsgrunnlagGUIInput> finnInputForGenereringAvDtoTilGUI(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
         var koblingReferanser = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getKoblingReferanse)
-            .map(KoblingReferanse::new)
-            .collect(Collectors.toSet());
+                .map(KoblingReferanse::new)
+                .collect(Collectors.toSet());
 
         var ytelseSomSkalBeregnes = spesifikasjoner.stream()
-            .map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes)
-            .map(y -> YtelseTyperKalkulusStøtterKontrakt.fraKode(y.getKode()))
-            .collect(Collectors.toSet());
+                .map(HentBeregningsgrunnlagDtoForGUIRequest::getYtelseSomSkalBeregnes)
+                .map(y -> YtelseTyperKalkulusStøtterKontrakt.fraKode(y.getKode()))
+                .collect(Collectors.toSet());
 
         if (ytelseSomSkalBeregnes.isEmpty()) {
             return Resultat.forGyldigInputMedData(Map.of());
@@ -280,7 +278,7 @@ public class HentKalkulusRestTjeneste {
 
     private BeregningsgrunnlagDto mapTilDto(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagGUIInput input) {
         var spesifikasjon = spesifikasjoner.stream().filter(s -> s.getKoblingReferanse().equals(input.getKoblingReferanse().getKoblingUuid()))
-            .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
+                .findFirst().orElseThrow(() -> new IllegalStateException("Ingen match blant koblinger"));
         input.oppdaterArbeidsgiverinformasjon(MapIAYTilKalulator.mapArbeidsgiverReferanser(spesifikasjon.getReferanser()));
         BeregningsgrunnlagDto beregningsgrunnlagDto = beregningsgrunnlagDtoTjeneste.lagBeregningsgrunnlagDto(input);
         beregningsgrunnlagDto.setVilkårsperiodeFom(spesifikasjon.getVilkårsperiodeFom());
@@ -291,14 +289,16 @@ public class HentKalkulusRestTjeneste {
         return koblingId.map(id -> beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(id)).orElse(false);
     }
 
-    /** returner de av angitte koblinger som har kalkulatorinput. */
+    /**
+     * returner de av angitte koblinger som har kalkulatorinput.
+     */
     private List<KoblingEntitet> hentKoblingerMedKalkulatorInput(List<KoblingEntitet> koblinger) {
         var koblingIder = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         NavigableSet<Long> koblingIderMedKalkulatorInput = beregningsgrunnlagRepository.hvisEksistererKalkulatorInput(koblingIder);
 
         return koblinger.stream()
-            .filter(k -> koblingIderMedKalkulatorInput.contains(k.getId()))
-            .collect(Collectors.toList());
+                .filter(k -> koblingIderMedKalkulatorInput.contains(k.getId()))
+                .collect(Collectors.toList());
 
     }
 
@@ -320,7 +320,7 @@ public class HentKalkulusRestTjeneste {
         }
     }
 
-    @Deprecated(forRemoval=true, since="1.0")
+    @Deprecated(forRemoval = true, since = "1.0")
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)

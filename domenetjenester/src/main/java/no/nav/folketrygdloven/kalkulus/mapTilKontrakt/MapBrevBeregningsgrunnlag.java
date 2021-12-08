@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
-import static no.nav.folketrygdloven.kalkulator.ytelse.utbgradytelse.AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv;
 import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag.mapSammenligningsgrunnlag;
 
 import java.math.BigDecimal;
@@ -8,16 +7,11 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
-import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
-import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -31,41 +25,39 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 public class MapBrevBeregningsgrunnlag {
 
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet,
-                                                            UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
-                .map(bg -> map(bg, utbetalingsgradGrunnlag)).orElse(null);
+                .map(MapBrevBeregningsgrunnlag::map).orElse(null);
         return new BeregningsgrunnlagGrunnlagDto(beregningsgrunnlag);
     }
 
-    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+    public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
         return new BeregningsgrunnlagDto(
                 beregningsgrunnlagEntitet.getSkjæringstidspunkt(),
                 mapAktivitetstatuser(beregningsgrunnlagEntitet),
-                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet, utbetalingsgradGrunnlag),
+                mapBeregningsgrunnlagPerioder(beregningsgrunnlagEntitet),
                 mapSammenligningsgrunnlag(beregningsgrunnlagEntitet),
                 beregningsgrunnlagEntitet.getGrunnbeløp() == null ? null : beregningsgrunnlagEntitet.getGrunnbeløp().getVerdi());
     }
 
-    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(p -> mapPeriode(p, utbetalingsgradGrunnlag)).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPeriodeDto> mapBeregningsgrunnlagPerioder(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
+        return beregningsgrunnlagEntitet.getBeregningsgrunnlagPerioder().stream().map(MapBrevBeregningsgrunnlag::mapPeriode).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
+    private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), utbetalingsgradGrunnlag, beregningsgrunnlagPeriode.getPeriode()),
+                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats());
     }
-    
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList,
-                                                                         UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
-        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, utbetalingsgradGrunnlag, periode)).collect(Collectors.toList());
+
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList) {
+        return beregningsgrunnlagPrStatusOgAndelList.stream().map(MapBrevBeregningsgrunnlag::mapAndel).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
                 AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
@@ -74,8 +66,8 @@ public class MapBrevBeregningsgrunnlag {
                 mapFraBeløp(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
-                finnUgradertDagsatsBruker(andel, utbetalingsgradGrunnlag, periode),
-                finnUgradertDagsatsArbeidsgiver(andel, utbetalingsgradGrunnlag, periode),
+                finnUgradertDagsatsBruker(andel),
+                finnUgradertDagsatsArbeidsgiver(andel),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
                 mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
@@ -86,23 +78,28 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getFastsattAvSaksbehandler());
     }
 
-    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel) {
         if (andel.getDagsatsBruker() == null) {
             return null;
         }
-        BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
-        return andel.getAvkortetBrukersAndelPrÅr().getVerdi().multiply(BigDecimal.valueOf(100))
-                .divide(utbetalingsgradForAndel.multiply(BigDecimal.valueOf(260)), RoundingMode.HALF_UP).longValue();
-
+        if (andel.getAvkortetPrÅr().getVerdi().compareTo(BigDecimal.ZERO) == 0) {
+            return 0L;
+        }
+        var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
+        return andel.getAvkortetFørGraderingPrÅr().getVerdi().multiply(andelTilBruker)
+                .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
     }
 
-    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
+    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel) {
         if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
-        BigDecimal utbetalingsgradForAndel = finnUtbetalingsgradForAndel(andel, periode, utbetalingsgradGrunnlag);
-        return andel.getAvkortetRefusjonPrÅr().getVerdi().multiply(BigDecimal.valueOf(100))
-                .divide(utbetalingsgradForAndel.multiply(BigDecimal.valueOf(260)), RoundingMode.HALF_UP).longValue();
+        if (andel.getAvkortetPrÅr().getVerdi().compareTo(BigDecimal.ZERO) == 0) {
+            return 0L;
+        }
+        var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
+        return andel.getAvkortetFørGraderingPrÅr().getVerdi().multiply(andelTilArbeidsgiver)
+                .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
 
     }
 
@@ -124,62 +121,6 @@ public class MapBrevBeregningsgrunnlag {
 
     private static Arbeidsgiver mapArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Arbeidsgiver a) {
         return new Arbeidsgiver(a.getOrgnr(), a.getAktørId() != null ? a.getAktørId().getId() : null);
-    }
-
-    private static BigDecimal finnUtbetalingsgradForAndel(BeregningsgrunnlagPrStatusOgAndel andel,
-                                                          IntervallEntitet periode,
-                                                          UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        if (andel.getAktivitetStatus().erArbeidstaker() && andel.getBgAndelArbeidsforhold().isPresent()) {
-            return mapUtbetalingsgradForArbeid(andel.getBgAndelArbeidsforhold().get(), periode, utbetalingsgradGrunnlag);
-        } else {
-            return finnUtbetalingsgradForStatus(andel.getAktivitetStatus(), periode, utbetalingsgradGrunnlag);
-        }
-    }
-
-
-    private static BigDecimal finnUtbetalingsgradForStatus(AktivitetStatus status,
-                                                           IntervallEntitet periode,
-                                                           UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        if (status.erArbeidstaker()) {
-            throw new IllegalStateException("Bruk Arbeidsforhold-mapper");
-        }
-        return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                .filter(ubtGrad -> matcherStatusEllerIkkeYrkesaktiv(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
-                .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
-                .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                .findFirst()
-                .orElse(BigDecimal.ZERO);
-    }
-
-
-    static BigDecimal mapUtbetalingsgradForArbeid(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold arbeidsforhold,
-                                                  IntervallEntitet periode,
-                                                  UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                .filter(MapBrevBeregningsgrunnlag::erArbeidstakerEllerIkkeYrkesaktiv)
-                .filter(utbGrad -> matcherArbeidsgiver(arbeidsforhold, utbGrad)
-                        && matcherArbeidsforholdReferanse(arbeidsforhold, utbGrad))
-                .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
-                .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
-                .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)
-                .findFirst()
-                .orElse(BigDecimal.ZERO);
-    }
-
-    private static boolean erArbeidstakerEllerIkkeYrkesaktiv(UtbetalingsgradPrAktivitetDto ubtGrad) {
-        return matcherStatusEllerIkkeYrkesaktiv(AktivitetStatus.ARBEIDSTAKER, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType());
-    }
-
-    private static boolean matcherArbeidsforholdReferanse(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold arbeidsforhold, UtbetalingsgradPrAktivitetDto utbGrad) {
-        return utbGrad.getUtbetalingsgradArbeidsforhold().getInternArbeidsforholdRef().gjelderFor(InternArbeidsforholdRefDto.ref(arbeidsforhold.getArbeidsforholdRef().getReferanse()));
-    }
-
-    private static Boolean matcherArbeidsgiver(no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BGAndelArbeidsforhold arbeidsforhold, UtbetalingsgradPrAktivitetDto utbGrad) {
-        return utbGrad.getUtbetalingsgradArbeidsforhold().getArbeidsgiver()
-                .map(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver::getIdentifikator)
-                .map(id -> id.equals(arbeidsforhold.getArbeidsgiver().getIdentifikator()))
-                .orElse(false);
     }
 
     private static BigDecimal mapFraBeløp(Beløp beløp) {
