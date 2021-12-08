@@ -53,24 +53,13 @@ public class MapBrevBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(finnAndelerSomHarSøkt(beregningsgrunnlagPeriode, utbetalingsgradGrunnlag), utbetalingsgradGrunnlag, beregningsgrunnlagPeriode.getPeriode()),
+                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), utbetalingsgradGrunnlag, beregningsgrunnlagPeriode.getPeriode()),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats());
     }
-
-    private static List<BeregningsgrunnlagPrStatusOgAndel> finnAndelerSomHarSøkt(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode,
-                                                                                 UtbetalingsgradGrunnlag utbetalingsgradGrunnlag) {
-        return beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(a -> harSøktUtbetaling(beregningsgrunnlagPeriode, utbetalingsgradGrunnlag, a))
-                .collect(Collectors.toList());
-    }
-
-    private static boolean harSøktUtbetaling(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode, UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, BeregningsgrunnlagPrStatusOgAndel a) {
-        return finnUtbetalingsgradForAndel(a, beregningsgrunnlagPeriode.getPeriode(), utbetalingsgradGrunnlag).compareTo(BigDecimal.ZERO) > 0;
-    }
-
+    
     private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList,
                                                                          UtbetalingsgradGrunnlag utbetalingsgradGrunnlag, IntervallEntitet periode) {
         return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, utbetalingsgradGrunnlag, periode)).collect(Collectors.toList());
