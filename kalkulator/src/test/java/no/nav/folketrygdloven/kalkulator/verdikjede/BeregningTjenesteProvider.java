@@ -14,7 +14,7 @@ import no.nav.folketrygdloven.kalkulator.steg.fullføre.ytelse.fp.FullføreBereg
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FaktaOmBeregningTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.TilfelleUtlederMockTjeneste;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.ytelse.AvklaringsbehovutledertjenesteVurderRefusjonFP;
 import no.nav.folketrygdloven.kalkulator.ytelse.fp.MapRefusjonPerioderFraVLTilRegelFP;
@@ -33,7 +33,7 @@ class BeregningTjenesteProvider {
         var fordelPerioderTjeneste = new FordelPerioderTjeneste(
                 new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
         );
-        var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste();
+        var fastsettBeregningsgrunnlagPerioderTjeneste = new FastsettNaturalytelsePerioderTjeneste();
 
         MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());

@@ -45,21 +45,21 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 
-public class FastsettBeregningsgrunnlagPerioderTjenesteImplTest {
+public class FastsettNaturalytelsePerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
     private static final String ORG_NUMMER = "915933149";
     private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();
-    private FastsettBeregningsgrunnlagPerioderTjeneste tjeneste;
+    private FastsettNaturalytelsePerioderTjeneste tjeneste;
     private KoblingReferanse behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
     @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
-        tjeneste = new FastsettBeregningsgrunnlagPerioderTjeneste();
+        tjeneste = new FastsettNaturalytelsePerioderTjeneste();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(List.of(ORG_NUMMER), iayGrunnlagBuilder);
 
     }

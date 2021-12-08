@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester;
 
-import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste.MÅNEDER_I_1_ÅR;
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste.MÅNEDER_I_1_ÅR;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

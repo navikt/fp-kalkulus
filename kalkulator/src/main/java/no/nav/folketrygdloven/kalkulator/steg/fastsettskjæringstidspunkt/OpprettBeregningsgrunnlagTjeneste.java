@@ -24,13 +24,13 @@ import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFakta;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettBeregningsgrunnlagPerioderTjeneste;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste;
 
 
 @ApplicationScoped
 public class OpprettBeregningsgrunnlagTjeneste {
 
-    private FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste;
+    private final FastsettNaturalytelsePerioderTjeneste fastsettNaturalytelsePerioderTjeneste = new FastsettNaturalytelsePerioderTjeneste();
     private Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser;
     private Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste;
     private Instance<FastsettFakta> fastsettFaktaTjeneste;
@@ -40,11 +40,9 @@ public class OpprettBeregningsgrunnlagTjeneste {
     }
 
     @Inject
-    public OpprettBeregningsgrunnlagTjeneste(FastsettBeregningsgrunnlagPerioderTjeneste fastsettBeregningsgrunnlagPerioderTjeneste,
-                                             @Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser,
+    public OpprettBeregningsgrunnlagTjeneste(@Any Instance<FastsettSkjæringstidspunktOgStatuser> fastsettSkjæringstidspunktOgStatuser,
                                              @Any Instance<FastsettBeregningsperiode> fastsettBeregningsperiodeTjeneste,
                                              @Any Instance<FastsettFakta> fastsettFaktaTjeneste) {
-        this.fastsettBeregningsgrunnlagPerioderTjeneste = fastsettBeregningsgrunnlagPerioderTjeneste;
         this.fastsettSkjæringstidspunktOgStatuser = fastsettSkjæringstidspunktOgStatuser;
         this.fastsettBeregningsperiodeTjeneste = fastsettBeregningsperiodeTjeneste;
         this.fastsettFaktaTjeneste = fastsettFaktaTjeneste;
@@ -83,7 +81,7 @@ public class OpprettBeregningsgrunnlagTjeneste {
                 .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag()));
 
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
-        var resultatMedNaturalytelse = fastsettBeregningsgrunnlagPerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
+        var resultatMedNaturalytelse = fastsettNaturalytelsePerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
         BeregningsgrunnlagVerifiserer.verifiserOppdatertBeregningsgrunnlag(resultatMedNaturalytelse.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatMedNaturalytelse.getBeregningsgrunnlag(),
                 faktaAggregatDto.orElse(null),

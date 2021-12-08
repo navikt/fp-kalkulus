@@ -3,12 +3,10 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.perioder.FastsettPeriodeRegel;
+import no.nav.folketrygdloven.beregningsgrunnlag.perioder.naturalytelse.FastsettPerioderNaturalytelseRegel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.naturalytelse.PeriodeModellNaturalytelse;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.JsonMapper;
@@ -23,22 +21,21 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.fpsak.nare.evaluation.Evaluation;
 
 
-@ApplicationScoped
-public class FastsettBeregningsgrunnlagPerioderTjeneste {
+public class FastsettNaturalytelsePerioderTjeneste {
     public static final int MÅNEDER_I_1_ÅR = 12;
 
-    private MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
+    private final MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse oversetterFraRegelNaturalytelse = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse();
 
     public BeregningsgrunnlagRegelResultat fastsettPerioderForNaturalytelse(BeregningsgrunnlagInput input,
                                                                             BeregningsgrunnlagDto beregningsgrunnlag) {
-        PeriodeModell periodeModell = MapNaturalytelserFraVLTilRegel.map(input, beregningsgrunnlag);
+        PeriodeModellNaturalytelse periodeModell = MapNaturalytelserFraVLTilRegel.map(input, beregningsgrunnlag);
         return kjørRegelOgMapTilVLNaturalytelse(beregningsgrunnlag, periodeModell);
     }
 
-    private BeregningsgrunnlagRegelResultat kjørRegelOgMapTilVLNaturalytelse(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModell input) {
+    private BeregningsgrunnlagRegelResultat kjørRegelOgMapTilVLNaturalytelse(BeregningsgrunnlagDto beregningsgrunnlag, PeriodeModellNaturalytelse input) {
         String regelInput = toJson(input);
         List<SplittetPeriode> splittedePerioder = new ArrayList<>();
-        Evaluation evaluation = new FastsettPeriodeRegel().evaluer(input, splittedePerioder);
+        Evaluation evaluation = new FastsettPerioderNaturalytelseRegel().evaluer(input, splittedePerioder);
         RegelResultat regelResultat = RegelmodellOversetter.getRegelResultat(evaluation, regelInput);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = oversetterFraRegelNaturalytelse.mapFraRegel(splittedePerioder, beregningsgrunnlag);
         return new BeregningsgrunnlagRegelResultat(nyttBeregningsgrunnlag,

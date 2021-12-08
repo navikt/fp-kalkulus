@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.NaturalYtelse;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.ArbeidsforholdOgInntektsmelding;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.naturalytelse.NaturalytelserPrArbeidsforhold;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.naturalytelse.PeriodeModellNaturalytelse;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapSplittetPeriodeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
@@ -27,19 +27,19 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 public class MapNaturalytelserFraVLTilRegel {
 
 
-    public static PeriodeModell map(BeregningsgrunnlagInput input,
-                                    BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static PeriodeModellNaturalytelse map(BeregningsgrunnlagInput input,
+                                                 BeregningsgrunnlagDto beregningsgrunnlag) {
         precondition(beregningsgrunnlag);
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
         var beregningsgrunnlagPeriode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
         var andeler = beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
         var eksisterendePerioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
                 .map(MapSplittetPeriodeFraVLTilRegel::map).collect(Collectors.toList());
-        var regelInntektsmeldinger = mapInntektsmeldinger(new Input(andeler, input.getInntektsmeldinger()));
-        return PeriodeModell.builder()
+        var naturalytelsePrArbeidsforhold = mapInntektsmeldinger(new Input(andeler, input.getInntektsmeldinger()));
+        return PeriodeModellNaturalytelse.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medGrunnbeløp(beregningsgrunnlag.getGrunnbeløp().getVerdi())
-                .medInntektsmeldinger(regelInntektsmeldinger)
+                .medInntektsmeldinger(naturalytelsePrArbeidsforhold)
                 .medEksisterendePerioder(eksisterendePerioder)
                 .build();
     }
@@ -51,7 +51,7 @@ public class MapNaturalytelserFraVLTilRegel {
         }
     }
 
-    private static List<ArbeidsforholdOgInntektsmelding> mapInntektsmeldinger(Input inputTilMapping) {
+    private static List<NaturalytelserPrArbeidsforhold> mapInntektsmeldinger(Input inputTilMapping) {
         return inputTilMapping.getAndeler()
                 .stream()
                 .filter(MapNaturalytelserFraVLTilRegel::harArbeidsgiver)
@@ -73,10 +73,10 @@ public class MapNaturalytelserFraVLTilRegel {
                 matchendeInntektsmelding.isPresent() ? matchendeInntektsmelding.get().getArbeidsforholdRef() : InternArbeidsforholdRefDto.nullRef());
     }
 
-    private static ArbeidsforholdOgInntektsmelding lagArbeidsforholdOgInntektsmelding(BeregningsgrunnlagPrStatusOgAndelDto andel, Collection<InntektsmeldingDto> inntektsmeldinger) {
+    private static NaturalytelserPrArbeidsforhold lagArbeidsforholdOgInntektsmelding(BeregningsgrunnlagPrStatusOgAndelDto andel, Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<NaturalYtelse> naturalytelser = mapNaturalytelseFraInntektsmelding(andel, inntektsmeldinger);
         Arbeidsforhold arbeidsforhold = lagArbeidsforhold(inntektsmeldinger, andel);
-        return ArbeidsforholdOgInntektsmelding.builder()
+        return NaturalytelserPrArbeidsforhold.builder()
                 .medAndelsnr(andel.getAndelsnr())
                 .medNaturalytelser(naturalytelser)
                 .medArbeidsforhold(arbeidsforhold)
