@@ -27,7 +27,7 @@ public final class VurderRefusjonDtoTjeneste {
     }
 
     public static Optional<RefusjonTilVurderingDto> lagDto(BeregningsgrunnlagGUIInput input) {
-        Optional<BeregningsgrunnlagDto> beregningsgrunnlag = input.getVurderRefusjonBeregningsgrunnlagGrunnlag().orElse(input.getBeregningsgrunnlagGrunnlag()).getBeregningsgrunnlag();
+        Optional<BeregningsgrunnlagDto> beregningsgrunnlag = input.getBeregningsgrunnlagGrunnlag().getBeregningsgrunnlag();
         List<BeregningsgrunnlagDto> originaleGrunnlag = input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling().stream()
                 .flatMap(gr -> gr.getBeregningsgrunnlag().stream()).collect(Collectors.toList());
         if (originaleGrunnlag.isEmpty() || beregningsgrunnlag.isEmpty()) {

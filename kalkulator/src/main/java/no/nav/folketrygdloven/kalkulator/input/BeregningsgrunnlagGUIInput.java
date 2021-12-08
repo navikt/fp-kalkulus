@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.RefusjonskravDatoDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -43,14 +42,8 @@ public class BeregningsgrunnlagGUIInput {
     /** Grunnlag fra fordelsteget. Brukes i visning av automatisk fordeling og utledning av andeler som skal redigeres */
     private BeregningsgrunnlagGrunnlagDto fordelBeregningsgrunnlagGrunnlag;
 
-    /** Grunnlag fra vurderrefusjonsteget. Brukes i visning av avklaringsbehov og andeler som kan redigeres. */
-    private BeregningsgrunnlagGrunnlagDto vurderRefusjonBeregningsgrunnlagGrunnlag;
-
     /** Grunnlag for Beregningsgrunnlg opprettet eller modifisert av modulen i original behandling. Settes på av modulen. */
     private List<BeregningsgrunnlagGrunnlagDto> beregningsgrunnlagGrunnlagFraForrigeBehandling = new ArrayList<>();
-
-    /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere og alle behandlinger på fagsaken */
-    private List<RefusjonskravDatoDto> refusjonskravDatoer;
 
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere */
     private List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver;
@@ -70,26 +63,23 @@ public class BeregningsgrunnlagGUIInput {
 
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                      List<RefusjonskravDatoDto> refusjonskravDatoer,
                                       List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
                                       OpptjeningAktiviteterDto opptjeningAktiviteter, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         this.koblingReferanse = Objects.requireNonNull(koblingReferanse, "behandlingReferanse");
         this.iayGrunnlag = iayGrunnlag;
-        this.refusjonskravDatoer = refusjonskravDatoer;
         this.kravperioderPrArbeidsgiver = kravperioderPrArbeidsgiver;
         this.opptjeningAktiviteter = opptjeningAktiviteter;
         this.ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlag;
     }
 
     private BeregningsgrunnlagGUIInput(BeregningsgrunnlagGUIInput input) {
-        this(input.getKoblingReferanse(), input.getIayGrunnlag(), input.getRefusjonskravDatoer(),
+        this(input.getKoblingReferanse(), input.getIayGrunnlag(),
                 input.getKravperioderPrArbeidsgiver(),
                 input.getOpptjeningAktiviteter(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
-        this.vurderRefusjonBeregningsgrunnlagGrunnlag = input.vurderRefusjonBeregningsgrunnlagGrunnlag;
         this.toggles = input.getToggles();
 
     }
@@ -155,20 +145,12 @@ public class BeregningsgrunnlagGUIInput {
         return opptjeningAktiviteter;
     }
 
-    public List<RefusjonskravDatoDto> getRefusjonskravDatoer() {
-        return refusjonskravDatoer;
-    }
-
     public List<KravperioderPrArbeidsforholdDto> getKravperioderPrArbeidsgiver() {
         return kravperioderPrArbeidsgiver;
     }
 
     public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningBeregningsgrunnlagGrunnlag() {
         return Optional.ofNullable(faktaOmBeregningBeregningsgrunnlagGrunnlag);
-    }
-
-    public Optional<BeregningsgrunnlagGrunnlagDto> getVurderRefusjonBeregningsgrunnlagGrunnlag() {
-        return Optional.ofNullable(vurderRefusjonBeregningsgrunnlagGrunnlag);
     }
 
     /** Sjekk fagsakytelsetype før denne kalles. */
@@ -249,16 +231,6 @@ public class BeregningsgrunnlagGUIInput {
         }
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.fordelBeregningsgrunnlagGrunnlag = grunnlag;
-        return newInput;
-    }
-
-    // Brukes i FP-SAK
-    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraVurderRefusjon(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
-            throw new IllegalArgumentException("Grunnlaget er ikke fra vurderRefusjon.");
-        }
-        var newInput = new BeregningsgrunnlagGUIInput(this);
-        newInput.vurderRefusjonBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

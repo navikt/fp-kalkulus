@@ -95,7 +95,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
             .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         // Act
@@ -126,7 +126,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste.lagDto(input);
@@ -150,7 +150,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
         BeregningsgrunnlagGrunnlagDtoBuilder oppdatere = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag);
         oppdatere.medRegisterAktiviteter(builder.build());
 
-        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), List.of(), new OpptjeningAktiviteterDto(), null)
+        var input = new BeregningsgrunnlagGUIInput(koblingReferanse, iayGrunnlag, List.of(), new OpptjeningAktiviteterDto(), null)
                 .medBeregningsgrunnlagGrunnlag(oppdatere.build(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER));
 
         Optional<FaktaOmBeregningDto> dto = faktaOmBeregningDtoTjeneste
