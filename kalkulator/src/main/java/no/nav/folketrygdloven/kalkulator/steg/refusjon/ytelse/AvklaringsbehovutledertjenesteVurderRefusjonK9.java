@@ -25,20 +25,21 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 @ApplicationScoped
 @FagsakYtelseTypeRef("PSB")
 @FagsakYtelseTypeRef("PPN")
-public class AvklaringsbehovutledertjenesteVurderRefusjonPleiepenger implements AvklaringsbehovutledertjenesteVurderRefusjon {
+@FagsakYtelseTypeRef("OMP")
+public class AvklaringsbehovutledertjenesteVurderRefusjonK9 implements AvklaringsbehovutledertjenesteVurderRefusjon {
 
-    private static final Logger log = LoggerFactory.getLogger(AvklaringsbehovutledertjenesteVurderRefusjonPleiepenger.class);
+    private static final Logger log = LoggerFactory.getLogger(AvklaringsbehovutledertjenesteVurderRefusjonK9.class);
 
 
     @Inject
-    public AvklaringsbehovutledertjenesteVurderRefusjonPleiepenger() {
+    public AvklaringsbehovutledertjenesteVurderRefusjonK9() {
     }
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagInput input,
                                                                    BeregningsgrunnlagDto periodisertMedRefusjonOgGradering) {
 
-        if (!KonfigurasjonVerdi.get("VURDER_REFUSJON_PSB",false)) {
+        if (!KonfigurasjonVerdi.get("VURDER_REFUSJON_K9",false)) {
             return Collections.emptyList();
         }
 
