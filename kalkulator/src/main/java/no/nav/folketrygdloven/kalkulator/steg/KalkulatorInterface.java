@@ -5,6 +5,7 @@ import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInpu
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 
 /**
@@ -46,6 +47,13 @@ public interface KalkulatorInterface {
      */
     BeregningResultatAggregat foreslåBesteberegning(ForeslåBesteberegningInput input);
 
+    /** Vurderer beregningsgrunnlagsvilkåret
+     *
+     * @param input Input til steget
+     * @return Vurdering av vilkår
+     */
+    BeregningResultatAggregat vurderBeregningsgrunnlagvilkår(StegProsesseringInput input);
+
     /** Steg 4: Vurder refusjonskrav
      *
      * Vurderer beregningsgrunnlagvilkåret
@@ -53,7 +61,7 @@ public interface KalkulatorInterface {
      * @param input Input til steget
      * @return Vurdering av refusjonskrav
      */
-    BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(StegProsesseringInput input);
+    BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input);
 
     /** Steg 5: Fordel beregningsgrunnlag
      *

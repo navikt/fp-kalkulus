@@ -7,6 +7,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRU
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEBEREGNING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_VILKAR_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.BESTEBEREGNET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
@@ -19,6 +20,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPRETTET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +40,7 @@ public class MapTilstandTilSteg {
         MAP_TILSTAND_STEG.put(BESTEBEREGNET, FORS_BESTEBEREGNING);
         MAP_TILSTAND_STEG.put(FORESLÅTT, FORS_BERGRUNN);
         MAP_TILSTAND_STEG.put(FORESLÅTT_UT, FORS_BERGRUNN);
+        MAP_TILSTAND_STEG.put(VURDERT_VILKÅR, VURDER_VILKAR_BERGRUNN);
         MAP_TILSTAND_STEG.put(VURDERT_REFUSJON, VURDER_REF_BERGRUNN);
         MAP_TILSTAND_STEG.put(VURDERT_REFUSJON_UT, VURDER_REF_BERGRUNN);
         MAP_TILSTAND_STEG.put(OPPDATERT_MED_REFUSJON_OG_GRADERING, FORDEL_BERGRUNN);

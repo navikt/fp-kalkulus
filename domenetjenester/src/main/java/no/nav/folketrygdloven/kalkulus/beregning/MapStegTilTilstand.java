@@ -7,6 +7,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BERGRU
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.FORS_BESTEBEREGNING;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.KOFAKBER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_REF_BERGRUNN;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg.VURDER_VILKAR_BERGRUNN;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.BESTEBEREGNET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER;
@@ -19,6 +20,7 @@ import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstan
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.OPPRETTET;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_REFUSJON_UT;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand.VURDERT_VILKÅR;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +35,7 @@ public class MapStegTilTilstand {
             KOFAKBER, OPPDATERT_MED_ANDELER,
             FORS_BESTEBEREGNING, BESTEBEREGNET,
             FORS_BERGRUNN, FORESLÅTT,
+            VURDER_VILKAR_BERGRUNN, VURDERT_VILKÅR,
             VURDER_REF_BERGRUNN, VURDERT_REFUSJON,
             FORDEL_BERGRUNN, OPPDATERT_MED_REFUSJON_OG_GRADERING,
             FAST_BERGRUNN, FASTSATT);

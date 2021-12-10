@@ -41,7 +41,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
-import no.nav.folketrygdloven.kalkulator.verdikjede.VerdikjedeTestHjelper;
+import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -57,7 +57,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MAY, 10);
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = SKJÆRINGSTIDSPUNKT_OPPTJENING;
 
-    private VerdikjedeTestHjelper verdikjedeTestHjelper = new VerdikjedeTestHjelper();
+    private TestHjelper testHjelper = new TestHjelper();
 
     private Collection<InntektsmeldingDto> inntektsmeldinger = List.of();
 
@@ -80,7 +80,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
+        testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         var iayGrunnlag = iayGrunnlagBuilder.medData(registerBuilder).medInntektsmeldinger(inntektsmeldinger).build();
@@ -114,7 +114,7 @@ public class VurderBeregningsgrunnlagTjenesteTest {
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
             .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
-        verdikjedeTestHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
+        testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
 
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
         InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();

@@ -116,7 +116,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
                 .medBeregningsgrunnlagGrunnlag(grunnlag);
 
         // Act
-        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForRefusjon(input, beregningsgrunnlag);
+        BeregningsgrunnlagRegelResultat periodisertBG = fordelPerioderTjeneste.fastsettPerioderForRefusjon(input);
         BeregningsgrunnlagGrunnlagDto periodisertGrunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(grunnlag)
                 .medBeregningsgrunnlag(periodisertBG.getBeregningsgrunnlag())
                 .build(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);

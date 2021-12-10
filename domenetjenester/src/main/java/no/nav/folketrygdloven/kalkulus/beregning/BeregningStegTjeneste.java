@@ -2,11 +2,13 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,6 +21,7 @@ import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
@@ -41,7 +44,6 @@ import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -50,7 +52,6 @@ public class BeregningStegTjeneste {
     private BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste;
     private BeregningsgrunnlagRepository repository;
     private RegelsporingRepository regelsporingRepository;
-    private RullTilbakeTjeneste rullTilbakeTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private ForlengelseTjeneste forlengelseTjeneste;
 
@@ -60,12 +61,11 @@ public class BeregningStegTjeneste {
 
     @Inject
     public BeregningStegTjeneste(BeregningsgrunnlagTjeneste beregningsgrunnlagTjeneste, BeregningsgrunnlagRepository repository,
-                                 RegelsporingRepository regelsporingRepository, RullTilbakeTjeneste rullTilbakeTjeneste,
+                                 RegelsporingRepository regelsporingRepository,
                                  AvklaringsbehovTjeneste avklaringsbehovTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
         this.beregningsgrunnlagTjeneste = beregningsgrunnlagTjeneste;
         this.repository = repository;
         this.regelsporingRepository = regelsporingRepository;
-        this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.forlengelseTjeneste = forlengelseTjeneste;
     }
@@ -74,7 +74,7 @@ public class BeregningStegTjeneste {
      * Beregner for gitt steg
      *
      * @param stegType Stegtype - hvilket steg som beregnes (alle etter første steg er mulige)
-     * @param input Steginput
+     * @param input    Steginput
      * @return
      */
     public TilstandResponse beregnFor(BeregningSteg stegType, StegProsesseringInput input) {
@@ -85,6 +85,8 @@ public class BeregningStegTjeneste {
             return foreslåBesteberegning((ForeslåBesteberegningInput) input);
         } else if (stegType.equals(BeregningSteg.FORS_BERGRUNN)) {
             return foreslåBeregningsgrunnlag((ForeslåBeregningsgrunnlagInput) input);
+        } else if (stegType.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
+            return vurderBeregningsgrunnlagsvilkår((VurderBeregningsgrunnlagvilkårInput) input);
         } else if (stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN)) {
             return vurderRefusjonForBeregningsgrunnlaget((VurderRefusjonBeregningsgrunnlagInput) input);
         } else if (stegType.equals(BeregningSteg.FORDEL_BERGRUNN)) {
@@ -169,6 +171,7 @@ public class BeregningStegTjeneste {
         return new TilstandResponse(input.getKoblingReferanse().getKoblingUuid(), List.of());
     }
 
+
     /**
      * VurderRefusjonBeregningsgrunnlag
      * Steg 4. VURDER_REF_BERGRUNN
@@ -176,174 +179,221 @@ public class BeregningStegTjeneste {
      * @param input {@link BeregningsgrunnlagInput}
      * @return {@link BeregningAvklaringsbehovResultat}
      */
-    private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
+    private TilstandResponse vurderBeregningsgrunnlagsvilkår(VurderBeregningsgrunnlagvilkårInput input) {
+        var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
         lagreOgKopier(input, beregningResultatAggregat);
         if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
             throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
         }
-        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
-            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
-        }
-        lagreAvklaringsbehov(input, beregningResultatAggregat);
-        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
-
-    }
-
-    /**
-     * FordelBeregningsgrunnlag
-     * Steg 5. FORDEL_BERGRUNN
-     *
-     * @param input {@link BeregningsgrunnlagInput}
-     * @return {@link BeregningAvklaringsbehovResultat}
-     */
-    private TilstandResponse fordelBeregningsgrunnlag(FordelBeregningsgrunnlagInput input) {
-        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
-        lagreOgKopier(input, beregningResultatAggregat);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
 
-    /**
-     * FastsettBeregningsgrunnlagSteg
-     * Steg 6. FAST_BERGRUNN
-     *
-     * @param input {@link BeregningsgrunnlagInput}
-     */
-    public TilstandResponse fastsettBeregningsgrunnlag(StegProsesseringInput input) {
-        var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
-        repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-        lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
-        return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
-    }
 
-    private void lagreOgKopier(StegProsesseringInput input,
-                               BeregningResultatAggregat resultat) {
-        // Lagring av grunnlag fra steg
-        repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-        lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
-        // Kopiering av data og spoling fram til neste tilstand
-        SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
-                resultat.getBeregningsgrunnlagGrunnlag(),
-                input.getForrigeGrunnlagFraSteg(),
-                input.getForrigeGrunnlagFraStegUt()).map(builder -> builder.build(input.getStegUtTilstand()))
-                .map(KalkulatorTilEntitetMapper::mapGrunnlag)
-                .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
-    }
+        /**
+         * VurderRefusjonBeregningsgrunnlag
+         * Steg 4. VURDER_REF_BERGRUNN
+         *
+         * @param input {@link BeregningsgrunnlagInput}
+         * @return {@link BeregningAvklaringsbehovResultat}
+         */
+        private TilstandResponse vurderRefusjonForBeregningsgrunnlaget (VurderRefusjonBeregningsgrunnlagInput input){
+            BeregningResultatAggregat beregningResultatAggregat;
+            // Fjerners når k9-sak kaller nytt steg
+            if (regelsporingRepository.hentRegelSporingPeriodeMedGittType(input.getKoblingId(), List.of(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING)).isEmpty()) {
+                var resultatVilkårsvurdering = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
+                var nyInput = new StegProsesseringInput(input.medBeregningsgrunnlagGrunnlag(resultatVilkårsvurdering.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+                var refusjonResultat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(new VurderRefusjonBeregningsgrunnlagInput(nyInput));
+                beregningResultatAggregat = BeregningResultatAggregat.Builder.fra(input)
+                        .medAvklaringsbehov(refusjonResultat.getBeregningAvklaringsbehovResultater())
+                        .medBeregningsgrunnlag(refusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                        .medVilkårResultat(resultatVilkårsvurdering.getBeregningVilkårResultat())
+                        .medRegelSporingAggregat(new RegelSporingAggregat(
+                                refusjonResultat.getRegelSporingAggregat().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
+                                Stream.concat(refusjonResultat.getRegelSporingAggregat().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream),
+                                                resultatVilkårsvurdering.getRegelSporingAggregat().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream))
+                                        .collect(Collectors.toList())))
+                        .build();
+                if (beregningResultatAggregat.getBeregningVilkårResultat() == null) {
+                    throw new IllegalStateException("Hadde ikke vilkårsresultat for input med ref " + input.getKoblingReferanse());
+                }
+            } else {
+                beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
+            }
+            lagreOgKopier(input, beregningResultatAggregat);
+            if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
+                return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
+            }
+            lagreAvklaringsbehov(input, beregningResultatAggregat);
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
 
-
-    private TilstandResponse mapTilstandResponse(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
-        var avklaringsbehov = resultat.getBeregningAvklaringsbehovResultater().stream()
-            .map(res -> new AvklaringsbehovMedTilstandDto(
-                res.getBeregningAvklaringsbehovDefinisjon(),
-                res.getVenteårsak(),
-                res.getVentefrist()))
-            .collect(Collectors.toList());
-        if (resultat.getBeregningVilkårResultat() != null) {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(),
-                avklaringsbehov,
-                resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
-        } else {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov);
         }
-    }
 
-    private TilstandResponse mapTilstandResponseUtenAvklaringsbehov(KoblingReferanse koblingReferanse, BeregningResultatAggregat resultat) {
-        if (resultat.getBeregningVilkårResultat() != null) {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(),
-                    Collections.emptyList(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
-        } else {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(), Collections.emptyList());
+        /**
+         * FordelBeregningsgrunnlag
+         * Steg 5. FORDEL_BERGRUNN
+         *
+         * @param input {@link BeregningsgrunnlagInput}
+         * @return {@link BeregningAvklaringsbehovResultat}
+         */
+        private TilstandResponse fordelBeregningsgrunnlag (FordelBeregningsgrunnlagInput input){
+            var beregningResultatAggregat = beregningsgrunnlagTjeneste.fordelBeregningsgrunnlag(input);
+            lagreOgKopier(input, beregningResultatAggregat);
+            lagreAvklaringsbehov(input, beregningResultatAggregat);
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
         }
-    }
 
-    private void lagreRegelsporing(Long koblingId, Optional<RegelSporingAggregat> regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
-        if (regelsporinger.isPresent()) {
-            lagreRegelSporingPerioder(koblingId, regelsporinger.get(), stegTilstand);
-            lagreRegelSporingGrunnlag(koblingId, regelsporinger.get(), stegTilstand);
+        /**
+         * FastsettBeregningsgrunnlagSteg
+         * Steg 6. FAST_BERGRUNN
+         *
+         * @param input {@link BeregningsgrunnlagInput}
+         */
+        public TilstandResponse fastsettBeregningsgrunnlag (StegProsesseringInput input){
+            var beregningResultatAggregat = beregningsgrunnlagTjeneste.fastsettBeregningsgrunnlag(input);
+            repository.lagre(input.getKoblingId(), mapGrunnlag(beregningResultatAggregat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+            lagreRegelsporing(input.getKoblingId(), beregningResultatAggregat.getRegelSporingAggregat(), input.getStegTilstand());
+            return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
         }
-    }
 
-    private void lagreRegelSporingGrunnlag(Long koblingId, RegelSporingAggregat regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
-        var regelsporingGrunnlag = regelsporinger.getRegelsporingerGrunnlag();
-        if (regelsporingGrunnlag != null) {
-            regelsporingGrunnlag.forEach(sporing -> {
-                validerRiktigTilstandForGrunnlagSporing(stegTilstand, sporing.getRegelType());
-                RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
-                    .medRegelEvaluering(sporing.getRegelEvaluering())
-                    .medRegelInput(sporing.getRegelInput());
-                regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.getRegelType());
-            });
+        private void lagreOgKopier (StegProsesseringInput input,
+                BeregningResultatAggregat resultat){
+            // Lagring av grunnlag fra steg
+            repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+            lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
+            // Kopiering av data og spoling fram til neste tilstand
+            SpolFramoverTjeneste.finnGrunnlagDetSkalSpolesTil(resultat.getBeregningAvklaringsbehovResultater(),
+                            resultat.getBeregningsgrunnlagGrunnlag(),
+                            input.getForrigeGrunnlagFraSteg(),
+                            input.getForrigeGrunnlagFraStegUt()).map(builder -> builder.build(input.getStegUtTilstand()))
+                    .map(KalkulatorTilEntitetMapper::mapGrunnlag)
+                    .ifPresent(gr -> repository.lagre(input.getKoblingId(), gr, input.getStegUtTilstand()));
         }
-    }
-
-    private void lagreRegelSporingPerioder(Long koblingId, RegelSporingAggregat regelsporinger, BeregningsgrunnlagTilstand stegTilstand) {
-        if (regelsporinger.getRegelsporingPerioder() != null) {
-            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.getRegelsporingPerioder()
-                .stream()
-                .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
-            validerRiktigTilstandForPeriodeSporing(stegTilstand, sporingPerioderPrType);
-            Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
-            regelsporingRepository.lagre(koblingId, builderMap);
-        }
-    }
-
-    private void validerRiktigTilstandForPeriodeSporing(BeregningsgrunnlagTilstand stegTilstand, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType) {
-        Optional<BeregningsgrunnlagPeriodeRegelType> typeMedFeilTilstand = sporingPerioderPrType.keySet().stream().filter(type -> !erPeriodeRegelLagretIGyldigTilstand(stegTilstand, type)).findFirst();
-
-        if (typeMedFeilTilstand.isPresent()) {
-            throw new IllegalStateException("Kan ikke lagre regelsporing for " + typeMedFeilTilstand.get().getKode() + " i tilstand " + stegTilstand.getKode());
-        }
-    }
-
-    private void validerRiktigTilstandForGrunnlagSporing(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagRegelType regelType) {
-        if (!erGrunnlagRegelLagretIGyldigTilstand(stegTilstand, regelType)) {
-            throw new IllegalStateException("Kan ikke lagre regelsporing for " + regelType.getKode() + " i tilstand " + stegTilstand.getKode());
-        }
-    }
-
-    private boolean erPeriodeRegelLagretIGyldigTilstand(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagPeriodeRegelType regelType) {
-        return regelType.getLagretTilstand().equals(stegTilstand);
-    }
 
 
-    private boolean erGrunnlagRegelLagretIGyldigTilstand(BeregningsgrunnlagTilstand stegTilstand, BeregningsgrunnlagRegelType regelType) {
-        return regelType.getLagretTilstand().equals(stegTilstand);
-    }
-
-    private List<RegelSporingPeriodeEntitet.Builder> lagRegelSporingPeriodeBuilders(Map.Entry<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> e) {
-        return e.getValue().stream().map(sporing -> RegelSporingPeriodeEntitet.ny()
-            .medRegelEvaluering(sporing.getRegelEvaluering())
-            .medRegelInput(sporing.getRegelInput())
-            .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
-            .collect(Collectors.toList());
-    }
-
-    private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat beregningResultatAggregat) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
-            List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
-                    .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
-                    .filter(ap -> !ap.erVentepunkt())
+        private TilstandResponse mapTilstandResponse (KoblingReferanse koblingReferanse, BeregningResultatAggregat
+        resultat){
+            var avklaringsbehov = resultat.getBeregningAvklaringsbehovResultater().stream()
+                    .map(res -> new AvklaringsbehovMedTilstandDto(
+                            res.getBeregningAvklaringsbehovDefinisjon(),
+                            res.getVenteårsak(),
+                            res.getVentefrist()))
                     .collect(Collectors.toList());
-            avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
+            if (resultat.getBeregningVilkårResultat() != null) {
+                return new TilstandResponse(koblingReferanse.getKoblingUuid(),
+                        avklaringsbehov,
+                        resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
+                        resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
+            } else {
+                return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov);
+            }
         }
-    }
 
-    private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            avklaringsbehovTjeneste.validerIngenAvklaringsbehovFørStegÅpne(stegType, koblingId);
+        private TilstandResponse mapTilstandResponseUtenAvklaringsbehov (KoblingReferanse
+        koblingReferanse, BeregningResultatAggregat resultat){
+            if (resultat.getBeregningVilkårResultat() != null) {
+                return new TilstandResponse(koblingReferanse.getKoblingUuid(),
+                        Collections.emptyList(),
+                        resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
+                        resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
+            } else {
+                return new TilstandResponse(koblingReferanse.getKoblingUuid(), Collections.emptyList());
+            }
         }
-    }
 
-    private void validerIngenÅpneAvklaringsbehov(Long koblingId) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
+        private void lagreRegelsporing (Long
+        koblingId, Optional < RegelSporingAggregat > regelsporinger, BeregningsgrunnlagTilstand stegTilstand){
+            if (regelsporinger.isPresent()) {
+                lagreRegelSporingPerioder(koblingId, regelsporinger.get(), stegTilstand);
+                lagreRegelSporingGrunnlag(koblingId, regelsporinger.get(), stegTilstand);
+            }
         }
-    }
 
-}
+        private void lagreRegelSporingGrunnlag (Long koblingId, RegelSporingAggregat
+        regelsporinger, BeregningsgrunnlagTilstand stegTilstand){
+            var regelsporingGrunnlag = regelsporinger.getRegelsporingerGrunnlag();
+            if (regelsporingGrunnlag != null) {
+                regelsporingGrunnlag.forEach(sporing -> {
+                    validerRiktigTilstandForGrunnlagSporing(stegTilstand, sporing.getRegelType());
+                    RegelSporingGrunnlagEntitet.Builder sporingGrunnlagEntitet = RegelSporingGrunnlagEntitet.ny()
+                            .medRegelEvaluering(sporing.getRegelEvaluering())
+                            .medRegelInput(sporing.getRegelInput());
+                    regelsporingRepository.lagre(koblingId, sporingGrunnlagEntitet, sporing.getRegelType());
+                });
+            }
+        }
+
+        private void lagreRegelSporingPerioder (Long koblingId, RegelSporingAggregat
+        regelsporinger, BeregningsgrunnlagTilstand stegTilstand){
+            if (regelsporinger.getRegelsporingPerioder() != null) {
+                Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriode>> sporingPerioderPrType = regelsporinger.getRegelsporingPerioder()
+                        .stream()
+                        .collect(Collectors.groupingBy(RegelSporingPeriode::getRegelType));
+                validerRiktigTilstandForPeriodeSporing(stegTilstand, sporingPerioderPrType);
+                Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> builderMap = sporingPerioderPrType.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, this::lagRegelSporingPeriodeBuilders));
+                regelsporingRepository.lagre(koblingId, builderMap);
+            }
+        }
+
+        private void validerRiktigTilstandForPeriodeSporing (BeregningsgrunnlagTilstand
+        stegTilstand, Map < BeregningsgrunnlagPeriodeRegelType, List < RegelSporingPeriode >> sporingPerioderPrType){
+            Optional<BeregningsgrunnlagPeriodeRegelType> typeMedFeilTilstand = sporingPerioderPrType.keySet().stream().filter(type -> !erPeriodeRegelLagretIGyldigTilstand(stegTilstand, type)).findFirst();
+
+            if (typeMedFeilTilstand.isPresent()) {
+                throw new IllegalStateException("Kan ikke lagre regelsporing for " + typeMedFeilTilstand.get().getKode() + " i tilstand " + stegTilstand.getKode());
+            }
+        }
+
+        private void validerRiktigTilstandForGrunnlagSporing (BeregningsgrunnlagTilstand
+        stegTilstand, BeregningsgrunnlagRegelType regelType){
+            if (!erGrunnlagRegelLagretIGyldigTilstand(stegTilstand, regelType)) {
+                throw new IllegalStateException("Kan ikke lagre regelsporing for " + regelType.getKode() + " i tilstand " + stegTilstand.getKode());
+            }
+        }
+
+        private boolean erPeriodeRegelLagretIGyldigTilstand (BeregningsgrunnlagTilstand
+        stegTilstand, BeregningsgrunnlagPeriodeRegelType regelType){
+            return regelType.getLagretTilstand().equals(stegTilstand);
+        }
+
+
+        private boolean erGrunnlagRegelLagretIGyldigTilstand (BeregningsgrunnlagTilstand
+        stegTilstand, BeregningsgrunnlagRegelType regelType){
+            return regelType.getLagretTilstand().equals(stegTilstand);
+        }
+
+        private List<RegelSporingPeriodeEntitet.Builder> lagRegelSporingPeriodeBuilders
+        (Map.Entry < BeregningsgrunnlagPeriodeRegelType, List < RegelSporingPeriode >> e){
+            return e.getValue().stream().map(sporing -> RegelSporingPeriodeEntitet.ny()
+                            .medRegelEvaluering(sporing.getRegelEvaluering())
+                            .medRegelInput(sporing.getRegelInput())
+                            .medPeriode(IntervallEntitet.fraOgMedTilOgMed(sporing.getPeriode().getFomDato(), sporing.getPeriode().getTomDato())))
+                    .collect(Collectors.toList());
+        }
+
+        private void lagreAvklaringsbehov (StegProsesseringInput input, BeregningResultatAggregat
+        beregningResultatAggregat){
+            if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+                // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+                List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
+                        .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
+                        .filter(ap -> !ap.erVentepunkt())
+                        .collect(Collectors.toList());
+                avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
+            }
+        }
+
+        private void kontrollerIngenUløsteAvklaringsbehovFørSteg (BeregningSteg stegType, Long koblingId){
+            if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+                avklaringsbehovTjeneste.validerIngenAvklaringsbehovFørStegÅpne(stegType, koblingId);
+            }
+        }
+
+        private void validerIngenÅpneAvklaringsbehov (Long koblingId){
+            if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
+                avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
+            }
+        }
+
+    }

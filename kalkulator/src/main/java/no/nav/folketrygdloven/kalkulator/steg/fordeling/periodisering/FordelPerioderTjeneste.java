@@ -56,8 +56,8 @@ public class FordelPerioderTjeneste {
 
 
 
-    public BeregningsgrunnlagRegelResultat fastsettPerioderForRefusjon(BeregningsgrunnlagInput input,
-                                                                                  BeregningsgrunnlagDto beregningsgrunnlag) {
+    public BeregningsgrunnlagRegelResultat fastsettPerioderForRefusjon(BeregningsgrunnlagInput input) {
+        var beregningsgrunnlag = input.getBeregningsgrunnlag();
         var ref = input.getKoblingReferanse();
         var mapperForYtelse = FagsakYtelseTypeRef.Lookup.find(oversetterTilRegelRefusjon, ref.getFagsakYtelseType());
 

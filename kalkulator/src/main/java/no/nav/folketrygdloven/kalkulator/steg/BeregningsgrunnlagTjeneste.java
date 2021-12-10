@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
@@ -17,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInpu
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetOverstyringerDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
@@ -141,34 +141,42 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                 .build();
     }
 
+    /**
+     * Vurderer beregningsgrunnlagsvilkåret
+     *
+     * @param input Input til vurdering av vilkåret
+     * @return Resultat av vilkårsvurdering
+     */
     @Override
-    public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(StegProsesseringInput input) {
+    public BeregningResultatAggregat vurderBeregningsgrunnlagvilkår(StegProsesseringInput input) {
         BeregningsgrunnlagRegelResultat vilkårVurderingResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderBeregningsgrunnlagTjeneste)
                 .vurderBeregningsgrunnlag(input, input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto vurdertBeregningsgrunnlag = vilkårVurderingResultat.getBeregningsgrunnlag();
         BeregningVilkårResultat vilkårResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vilkårTjeneste)
                 .lagVilkårResultatFordel(input, vilkårVurderingResultat.getVilkårsresultat());
-        if (!vilkårResultat.getErVilkårOppfylt()) {
-            // Om vilkåret ikke er oppfylt kan vi returnere uten å kjøre fordeling
-            return BeregningResultatAggregat.Builder.fra(input)
-                    .medAvklaringsbehov(vilkårVurderingResultat.getAvklaringsbehov())
-                    .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
-                    .medVilkårResultat(vilkårResultat)
-                    .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
-                    .build();
-        } else {
-            BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input, vurdertBeregningsgrunnlag);
-            return Builder.fra(input)
-                    .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
-                    .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
-                    .medVilkårResultat(vilkårResultat)
-                    .medRegelSporingAggregat(new RegelSporingAggregat(
-                            vurderRefusjonResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingerGrunnlag).orElse(Collections.emptyList()),
-                            Stream.concat(vurderRefusjonResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream),
-                                    vilkårVurderingResultat.getRegelsporinger().map(RegelSporingAggregat::getRegelsporingPerioder).stream().flatMap(Collection::stream))
-                                    .collect(Collectors.toList())))
-                    .build();
-        }
+        return BeregningResultatAggregat.Builder.fra(input)
+                .medAvklaringsbehov(vilkårVurderingResultat.getAvklaringsbehov())
+                .medBeregningsgrunnlag(vurdertBeregningsgrunnlag, input.getStegTilstand())
+                .medVilkårResultat(vilkårResultat)
+                .medRegelSporingAggregat(vilkårVurderingResultat.getRegelsporinger().orElse(null))
+                .build();
+    }
+
+
+    /**
+     * Vurderer peridoder med refusjon
+     *
+     * @param input Input til steget
+     * @return Resultat av vurdering av refusjonskrav
+     */
+    @Override
+    public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input) {
+        BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input);
+        return Builder.fra(input)
+                .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
+                .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
+                .medRegelSporingAggregat(vurderRefusjonResultat.getRegelsporinger().orElse(null))
+                .build();
     }
 
     /**
