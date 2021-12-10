@@ -25,7 +25,7 @@ public enum BeregningSteg implements Kodeverdi {
     // Kun for foreldrepenger
     FORS_BESTEBEREGNING("FORS_BESTEBEREGNING", "Foreslå besteberegning"),
 
-    VURDER_VILKAR_BERGRUNN("VURDER_VILKAR", "Vurder beregningsgrunnlagsvilkår"),
+    VURDER_VILKAR_BERGRUNN("VURDER_VILKAR_BERGRUNN", "Vurder beregningsgrunnlagsvilkår"),
 
     VURDER_REF_BERGRUNN("VURDER_REF_BERGRUNN", "Vurder refusjon for beregningsgrunnlaget"),
     FORDEL_BERGRUNN("FORDEL_BERGRUNN", "Fordel beregningsgrunnlag"),
