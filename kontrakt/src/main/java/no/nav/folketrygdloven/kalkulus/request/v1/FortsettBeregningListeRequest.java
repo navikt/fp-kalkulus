@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
@@ -50,6 +53,11 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
     @JsonProperty(value = "kalkulatorInput")
     @Valid
     private Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse;
+
+    /** ytelsesspesifiktGrunnlag per ekstern kobling referanse. Brukes fra steg vurder-refusjon for ytelser med uttak mellom vurder-vilkår og vurder-refusjon */
+    @JsonProperty(value = "ytelsespesifiktGrunnlagPrKoblingReferanse")
+    @Valid
+    private Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse;
 
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
@@ -89,6 +97,32 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
     }
 
+
+    private FortsettBeregningListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                         @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
+                                          @JsonProperty(value = "ytelsespesifiktGrunnlagPrKoblingReferanse") Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
+                                          @JsonProperty(value = "kalkulatorInput") Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
+                                         @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType) {
+        this.eksternReferanser = new LinkedHashSet<>(Objects.requireNonNull(eksternReferanser, "eksterneReferanser"));
+        this.ytelsespesifiktGrunnlagPrKoblingReferanse = ytelsespesifiktGrunnlagPrKoblingReferanse;
+        this.kalkulatorInputPerKoblingReferanse = kalkulatorInputPerKoblingReferanse;
+        this.ytelseSomSkalBeregnes = Objects.requireNonNull(ytelseSomSkalBeregnes, "ytelseSomSkalBeregnes");
+        this.stegType = Objects.requireNonNull(stegType, "stegType");
+        this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
+    }
+
+
+    public static FortsettBeregningListeRequest medOppdaterteUtbetalingsgrader(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
+                                                                               @JsonProperty(value = "eksternReferanser", required = true) @Valid @NotNull List<UUID> eksternReferanser,
+                                                                               @JsonProperty(value = "utbetalingsgraderPrReferanse") Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
+                                                                               @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                                               @JsonProperty(value = "stegType", required = true) @NotNull @Valid StegType stegType) {
+
+
+        return new FortsettBeregningListeRequest(saksnummer, eksternReferanser, ytelsespesifiktGrunnlagPrKoblingReferanse, Map.of(), ytelseSomSkalBeregnes, stegType);
+    }
+
     public List<UUID> getEksternReferanser() {
         return List.copyOf(new LinkedHashSet<>(eksternReferanser));
     }
@@ -110,4 +144,7 @@ public class FortsettBeregningListeRequest implements KalkulusRequest {
         return kalkulatorInputPerKoblingReferanse;
     }
 
+    public Map<UUID, YtelsespesifiktGrunnlagDto> getYtelsespesifiktGrunnlagPrKoblingReferanse() {
+        return ytelsespesifiktGrunnlagPrKoblingReferanse;
+    }
 }

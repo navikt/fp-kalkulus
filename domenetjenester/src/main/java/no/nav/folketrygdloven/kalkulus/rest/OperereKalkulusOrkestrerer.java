@@ -23,6 +23,8 @@ import no.nav.folketrygdloven.kalkulus.beregning.input.HåndteringInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -96,6 +98,7 @@ public class OperereKalkulusOrkestrerer {
     }
 
     public Resultat<KalkulusRespons> lagInputOgBeregnVidere(Map<UUID, KalkulatorInputDto> inputPrReferanse,
+                                                            Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
                                                             List<UUID> eksternReferanser,
                                                             YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                             Saksnummer saksnummer,
@@ -106,7 +109,7 @@ public class OperereKalkulusOrkestrerer {
         var koblingRelasjoner = koblingTjeneste.hentKoblingRelasjoner(koblingIder);
         // Lag input
         BeregningSteg beregningSteg = BeregningSteg.fraKode(stegType.getKode());
-        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, koblingIder);
+        var hentInputResultat = kalkulatorInputTjeneste.hentOgLagre(inputPrReferanse, ytelsespesifiktGrunnlagPrKoblingReferanse, koblingIder);
         if (hentInputResultat.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
             return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
         }

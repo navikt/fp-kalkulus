@@ -125,6 +125,7 @@ public class OperereKalkulusRestTjeneste {
 
         Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgBeregnVidere(
                 spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                spesifikasjon.getYtelsespesifiktGrunnlagPrKoblingReferanse(),
                 spesifikasjon.getEksternReferanser(),
                 spesifikasjon.getYtelseSomSkalBeregnes(),
                 new Saksnummer(spesifikasjon.getSaksnummer()),

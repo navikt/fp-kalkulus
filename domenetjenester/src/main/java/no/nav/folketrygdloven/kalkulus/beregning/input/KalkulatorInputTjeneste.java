@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import no.nav.folketrygdloven.kalkulus.beregning.v1.YtelsespesifiktGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -55,6 +56,20 @@ public class KalkulatorInputTjeneste {
         }
         return hentForKoblinger(koblingIder);
     }
+
+    public Resultat<KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse,
+                                                    Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
+                                                    Set<Long> koblingIder) {
+        if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
+            // kalkulatorinput oppdateres
+            lagreKalkulatorInput(inputPrReferanse);
+        } else if (ytelsespesifiktGrunnlagPrKoblingReferanse != null && !ytelsespesifiktGrunnlagPrKoblingReferanse.isEmpty()) {
+            oppdaterYtelsesspesifiktGrunnlag(ytelsespesifiktGrunnlagPrKoblingReferanse);
+        }
+        return hentForKoblinger(koblingIder);
+    }
+
+
 
     public Resultat<KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) {
         var kalkulatorInputEntitetListe = beregningsgrunnlagRepository.hentHvisEksistererKalkulatorInput(koblingId);
@@ -126,6 +141,20 @@ public class KalkulatorInputTjeneste {
             Optional<KoblingEntitet> kobling = koblinger.stream().filter(k -> k.getKoblingReferanse().getReferanse().equals(ref)).findFirst();
             kobling.ifPresent(k -> lagreKalkulatorInput(k.getId(), input));
         });
+    }
+
+    public void oppdaterYtelsesspesifiktGrunnlag(Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse) {
+        List<KoblingEntitet> koblinger = koblingTjeneste.hentKoblinger(ytelsespesifiktGrunnlagPrKoblingReferanse.keySet()
+                .stream()
+                .map(KoblingReferanse::new)
+                .collect(Collectors.toList()));
+        var resultatPrKobling = hentForKoblinger(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList())).getResultatPrKoblingHvisFinnes();
+        resultatPrKobling.ifPresent(longKalkulatorInputDtoMap -> longKalkulatorInputDtoMap.forEach((key, value) -> {
+            var kobling = koblinger.stream().filter(k -> k.getId().equals(key)).findFirst().orElseThrow();
+            var ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlagPrKoblingReferanse.get(kobling.getKoblingReferanse().getReferanse());
+            var oppdatertInput = value.medYtelsespesifiktGrunnlag(ytelsespesifiktGrunnlag);
+            lagreKalkulatorInput(key, oppdatertInput);
+        }));
     }
 
 }
