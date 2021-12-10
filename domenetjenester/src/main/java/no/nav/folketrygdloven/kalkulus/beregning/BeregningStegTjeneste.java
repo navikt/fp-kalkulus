@@ -360,6 +360,10 @@ public class BeregningStegTjeneste {
 
         private boolean erPeriodeRegelLagretIGyldigTilstand (BeregningsgrunnlagTilstand
         stegTilstand, BeregningsgrunnlagPeriodeRegelType regelType){
+            // Tillater lagring i to steg til k9-sak er prodsatt med nytt steg
+            if (regelType.equals(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING)) {
+                return regelType.getLagretTilstand().equals(stegTilstand) || stegTilstand.equals(BeregningsgrunnlagTilstand.VURDERT_REFUSJON);
+            }
             return regelType.getLagretTilstand().equals(stegTilstand);
         }
 

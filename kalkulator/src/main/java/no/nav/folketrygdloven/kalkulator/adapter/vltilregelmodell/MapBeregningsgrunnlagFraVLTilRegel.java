@@ -38,6 +38,7 @@ import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FullføreBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
@@ -154,11 +155,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private BigDecimal mapUregulertGrunnbeløp(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        if ((input instanceof FordelBeregningsgrunnlagInput)) {
-            return ((FordelBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        if ((input instanceof VurderBeregningsgrunnlagvilkårInput)) {
+            return ((VurderBeregningsgrunnlagvilkårInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
         if ((input instanceof VurderRefusjonBeregningsgrunnlagInput)) {
             return ((VurderRefusjonBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
+        }
+        if ((input instanceof FordelBeregningsgrunnlagInput)) {
+            return ((FordelBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
         }
         if ((input instanceof FullføreBeregningsgrunnlagInput)) {
             return ((FullføreBeregningsgrunnlagInput) input).getUregulertGrunnbeløp().map(Beløp::getVerdi).orElse(beregningsgrunnlag.getGrunnbeløp().getVerdi());
@@ -168,7 +172,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     private YtelsesSpesifiktGrunnlag mapYtelsesSpesifiktGrunnlag(BeregningsgrunnlagInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
         return FagsakYtelseTypeRef.Lookup.find(ytelsesSpesifikkMapper, input.getFagsakYtelseType())
-        .map(mapper -> mapper.map(beregningsgrunnlag, input)).orElse(null);
+                .map(mapper -> mapper.map(beregningsgrunnlag, input)).orElse(null);
     }
 
     private List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak> mapPeriodeÅrsak(List<BeregningsgrunnlagPeriodeÅrsakDto> beregningsgrunnlagPeriodeÅrsaker) {
@@ -305,9 +309,6 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                 .medUtbetalingsprosentSVP(finnUtbetalingsgradForAndel(vlBGPStatus, vlBGPStatus.getBeregningsgrunnlagPeriode().getPeriode(), input.getYtelsespesifiktGrunnlag()))
                 .build();
     }
-
-
-
 
 
     private Periode beregningsperiodeFor(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus) {
