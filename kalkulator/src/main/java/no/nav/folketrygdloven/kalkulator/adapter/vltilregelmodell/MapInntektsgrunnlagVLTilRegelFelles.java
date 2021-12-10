@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraSykepengervedtak;
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harSykepengerPåGrunnlagAvDagpenger;
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraYtelsevedtak;
+import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -202,10 +202,14 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                                                      FagsakYtelseType fagsakYtelseType) {
 
         Collection<YtelseDto> ytelser = ytelseFilter.getFiltrertYtelser();
-        Boolean harSPAvDP = harSykepengerPåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt);
+        Boolean harSPAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.SYKEPENGER);
+        Boolean harPSBAvDP = harYtelsePåGrunnlagAvDagpenger(ytelser, skjæringstidspunkt, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
 
         if (harSPAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_SYKEPENGER", false)) {
-            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser);
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, FagsakYtelseType.SYKEPENGER);
+            inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
+        } if (harPSBAvDP && KonfigurasjonVerdi.get("BEREGNE_DAGPENGER_FRA_PLEIEPENGER", false)) {
+            var dagpenger = mapDagpengerFraInfotrygdvedtak(skjæringstidspunkt, ytelser, FagsakYtelseType.PLEIEPENGER_SYKT_BARN);
             inntektsgrunnlag.leggTilPeriodeinntekt(dagpenger);
         } else {
             Optional<YtelseDto> nyesteVedtakForDagsats = MeldekortUtils.sisteVedtakFørStpForType(ytelseFilter, skjæringstidspunkt, Set.of(FagsakYtelseType.DAGPENGER));
@@ -217,8 +221,8 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         }
     }
 
-    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser) {
-        BigDecimal dagsats = finnDagsatsFraSykepengervedtak(ytelser, skjæringstidspunkt);
+    private Periodeinntekt mapDagpengerFraInfotrygdvedtak(LocalDate skjæringstidspunkt, Collection<YtelseDto> ytelser, FagsakYtelseType ytelse) {
+        BigDecimal dagsats = finnDagsatsFraYtelsevedtak(ytelser, skjæringstidspunkt, ytelse);
 
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
@@ -313,14 +317,21 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         if (harStatus(input, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSAVKLARINGSPENGER)) {
             mapTilstøtendeYtelseAAP(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
         }
-        if (harStatus(input, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.DAGPENGER)
-                || harStatus(input, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SYKEPENGER_AV_DAGPENGER)) {
+        if (erDagpenger(input)) {
             mapTilstøtendeYtelseDagpenger(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
         }
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
         oppgittOpptjeningOpt.ifPresent(oppgittOpptjening -> mapOppgittOpptjening(inntektsgrunnlag, oppgittOpptjening));
 
     }
+
+    private boolean erDagpenger(BeregningsgrunnlagInput input) {
+        List<BeregningsgrunnlagAktivitetStatusDto> statuser = input.getBeregningsgrunnlag() == null
+                ? Collections.emptyList()
+                : input.getBeregningsgrunnlag().getAktivitetStatuser();
+        return statuser.stream().anyMatch(akt -> akt.getAktivitetStatus().erDagpenger());
+    }
+
 
     private boolean harStatus(BeregningsgrunnlagInput input, no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status) {
         List<BeregningsgrunnlagAktivitetStatusDto> statuser = input.getBeregningsgrunnlag() == null

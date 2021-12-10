@@ -53,9 +53,6 @@ public class MapBGStatuserFraVLTilRegel {
         if (Aktivitet.ARBEIDSTAKERINNTEKT.equals(aktivitetType)) {
             return lagAktivPeriodeForArbeidstaker(inntektsmeldinger, ba, aktivitetType, regelPeriode);
         }
-        if (Aktivitet.SYKEPENGER_AV_DAGPENGER_MOTTAKER.equals(aktivitetType)) {
-            return AktivPeriode.forAndre(Aktivitet.SYKEPENGER_AV_DAGPENGER_MOTTAKER, regelPeriode);
-        }
         return AktivPeriode.forAndre(aktivitetType, regelPeriode);
     }
 

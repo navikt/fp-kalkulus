@@ -15,14 +15,14 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektPeriodeType;
 
 public class InfotrygdvedtakMedDagpengerTjeneste {
 
-    public static Boolean harSykepengerPåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt) {
+    public static Boolean harYtelsePåGrunnlagAvDagpenger(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, FagsakYtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
-        return finnSykepengerBasertPåDagpenger(ytelser, beregningstidspunkt).isPresent();
+        return finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse).isPresent();
     }
 
-    public static BigDecimal finnDagsatsFraSykepengervedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt) {
+    public static BigDecimal finnDagsatsFraYtelsevedtak(Collection<YtelseDto> ytelser, LocalDate skjæringstidspunkt, FagsakYtelseType ytelse) {
         LocalDate beregningstidspunkt = finnBeregningstidspunkt(skjæringstidspunkt);
-        var ytelseGrunnlag = finnSykepengerBasertPåDagpenger(ytelser, beregningstidspunkt);
+        var ytelseGrunnlag = finnYtelseBasertPåDagpenger(ytelser, beregningstidspunkt, ytelse);
 
         var spAvDP = ytelseGrunnlag.stream()
                 .flatMap(yg -> yg.getFordeling().stream())
@@ -35,14 +35,14 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
             if (hyppighet == null || InntektPeriodeType.DAGLIG.equals(hyppighet)) {
                 return f.getBeløp();
             }
-            throw new IllegalArgumentException("Hånterer foreløpig kun dagsats som periodetype for sykepenger av dagpenger.");
+            throw new IllegalArgumentException("Hånterer foreløpig kun dagsats som periodetype for ytelse av dagpenger.");
         }).orElse(BigDecimal.ZERO);
     }
 
-    private static Optional<YtelseGrunnlagDto> finnSykepengerBasertPåDagpenger(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt) {
+    private static Optional<YtelseGrunnlagDto> finnYtelseBasertPåDagpenger(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, FagsakYtelseType ytelse) {
         return ytelser.stream()
                 .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
-                .filter(y -> y.getRelatertYtelseType().equals(FagsakYtelseType.SYKEPENGER))
+                .filter(y -> y.getRelatertYtelseType().equals(ytelse))
                 .flatMap(y -> y.getYtelseGrunnlag().stream())
                 .filter(gr -> Arbeidskategori.DAGPENGER.equals(gr.getArbeidskategori()) ||
                         Arbeidskategori.KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER.equals(gr.getArbeidskategori()))

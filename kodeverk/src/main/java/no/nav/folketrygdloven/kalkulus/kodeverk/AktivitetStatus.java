@@ -25,6 +25,7 @@ public enum AktivitetStatus implements Kodeverdi {
     ARBEIDSTAKER("AT", "Arbeidstaker", Inntektskategori.ARBEIDSTAKER),
     DAGPENGER("DP", "Dagpenger", Inntektskategori.DAGPENGER),
     SYKEPENGER_AV_DAGPENGER("SP_AV_DP", "Sykepenger av dagpenger", Inntektskategori.DAGPENGER),
+    PLEIEPENGER_AV_DAGPENGER("PSB_AV_DP", "Pleiepenger av dagpenger", Inntektskategori.DAGPENGER),
     FRILANSER("FL", "Frilanser", Inntektskategori.FRILANSER),
     MILITÆR_ELLER_SIVIL("MS", "Militær eller sivil", Inntektskategori.ARBEIDSTAKER),
     SELVSTENDIG_NÆRINGSDRIVENDE("SN", "Selvstendig næringsdrivende", Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE),
@@ -92,7 +93,7 @@ public enum AktivitetStatus implements Kodeverdi {
     private static final Set<AktivitetStatus> FL_STATUSER = new HashSet<>(Arrays.asList(FRILANSER,
         KOMBINERT_AT_FL_SN, KOMBINERT_AT_FL, KOMBINERT_FL_SN));
 
-    private static final Set<AktivitetStatus> DP_STATUSER = new HashSet<>(Arrays.asList(DAGPENGER, SYKEPENGER_AV_DAGPENGER));
+    private static final Set<AktivitetStatus> DP_STATUSER = new HashSet<>(Arrays.asList(DAGPENGER, SYKEPENGER_AV_DAGPENGER, PLEIEPENGER_AV_DAGPENGER));
 
     public boolean erArbeidstaker() {
         return AT_STATUSER.contains(this);

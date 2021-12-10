@@ -79,3 +79,5 @@ spec:
       value: "true"
     - name: VURDER_REFUSJON_K9
       value: "false"
+    - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
+      value: "false"

@@ -20,6 +20,7 @@ public enum UttakArbeidType {
     MIDL_INAKTIV("MIDL_INAKTIV", "Inaktiv", "MIDL_INAKTIV"),
     DAGPENGER("DAGPENGER", "Dagpenger", "DP"),
     SYKEPENGER_AV_DAGPENGER("SP_AV_DP", "Sykepenger av dagpenger", "SP_AV_DP"),
+    PLEIEPENGER_AV_DAGPENGER("PSB_AV_DP", "Pleiepenger av dagpenger", "PSB_AV_DP"),
     BRUKERS_ANDEL("BA", "Brukers andel", "BA"), // Brukes når søker kun søker uttak for ytelse (PSB)
     IKKE_YRKESAKTIV("IKKE_YRKESAKTIV", "Ikke yrkesaktiv", "IKKE_YRKESAKTIV"),
     ANNET("ANNET", "Annet"),
