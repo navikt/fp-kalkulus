@@ -202,8 +202,7 @@ public class BeregningStegTjeneste {
             // Fjerners når k9-sak kaller nytt steg
             if (regelsporingRepository.hentRegelSporingPeriodeMedGittType(input.getKoblingId(), List.of(BeregningsgrunnlagPeriodeRegelType.VILKÅR_VURDERING)).isEmpty()) {
                 var resultatVilkårsvurdering = beregningsgrunnlagTjeneste.vurderBeregningsgrunnlagvilkår(input);
-                var nyInput = new StegProsesseringInput(input.medBeregningsgrunnlagGrunnlag(resultatVilkårsvurdering.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
-                var refusjonResultat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(new VurderRefusjonBeregningsgrunnlagInput(nyInput));
+                var refusjonResultat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(lagOppdatertInput(input, resultatVilkårsvurdering));
                 beregningResultatAggregat = BeregningResultatAggregat.Builder.fra(input)
                         .medAvklaringsbehov(refusjonResultat.getBeregningAvklaringsbehovResultater())
                         .medBeregningsgrunnlag(refusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())
@@ -229,7 +228,14 @@ public class BeregningStegTjeneste {
 
         }
 
-        /**
+    private VurderRefusjonBeregningsgrunnlagInput lagOppdatertInput(VurderRefusjonBeregningsgrunnlagInput input, BeregningResultatAggregat resultatVilkårsvurdering) {
+        var stegInput = new StegProsesseringInput(input.medBeregningsgrunnlagGrunnlag(resultatVilkårsvurdering.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
+        var vurderRefusjonInput = new VurderRefusjonBeregningsgrunnlagInput(stegInput);
+        vurderRefusjonInput = vurderRefusjonInput.medBeregningsgrunnlagGrunnlagFraForrigeBehandling(input.getBeregningsgrunnlagGrunnlagFraForrigeBehandling());
+        return vurderRefusjonInput;
+    }
+
+    /**
          * FordelBeregningsgrunnlag
          * Steg 5. FORDEL_BERGRUNN
          *
