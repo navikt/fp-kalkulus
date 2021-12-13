@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
     <name>Kalkulus :: Kalkulator</name>
 
+    
     <dependencies>
         <!-- Interne avhengigheter  -->
         <dependency>
