@@ -1,6 +1,6 @@
 ![Bygg og deploy](https://github.com/navikt/ft-kalkulus/workflows/Bygg%20og%20deploy/badge.svg)
 <!--
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=navikt_ft-kalkulus&metric=alert_status)](https://sonarcloud.io/dashboard?id=navikt_ft-kalkulus) 
+[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=navikt_ft-kalkulus&metric=alert_status)](https://sonarcloud.io/dashboard?id=navikt_ft-kalkulus)
 [![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=navikt_ft-kalkulus&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=navikt_ft-kalkulus)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=navikt_ft-kalkulus&metric=bugs)](https://sonarcloud.io/component_measures/metric/reliability_rating/list?id=navikt_ft-kalkulus)
 [![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=navikt_ft-kalkulus&metric=vulnerabilities)](https://sonarcloud.io/component_measures/metric/security_rating/list?id=navikt_ft-kalkulus)
@@ -21,7 +21,7 @@ Dette er en kalkulator for å beregne et *beregningsgrunnlag* for følgende ytel
  * pleiepenger for pleie av nærstående [ftrl 9-13](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-13)
  * omsorgspenger [ftrl 9-5](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-5)
  * opplæringspenger [ftrl 9-14](https://lovdata.no/nav/folketrygdloven/kap9/%C2%A79-14)
-  
+
 Reglene baserer seg i hovedsak på beregningsregler fra Sykepenger [ftrl 8](https://lovdata.no/nav/folketrygdloven/kap8/%C2%A78), med noen få særbestemmelser videre angitt under kapitler [ftrl 14](https://lovdata.no/nav/folketrygdloven/kap14) og [ftrl 9](https://lovdata.no/nav/folketrygdloven/kap9)
 
 Beregningsgrunnlaget er utgangspunktet for en maksimal dagsats som kan utbetales bruker i en angitt periode.
@@ -55,6 +55,11 @@ docker-compose down
 ```
 ./mvnw clean install
 ```
+
+## Github Codespaces
+
+* Generer en PAT med tilgang til å lese repo. Sett opp for SSO med Navikt.
+* Legg denne inn som en [Github Codespace secret](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) under <din konto>/settings. Gi den navn "GH_ACCESS_TOKEN". Dette er påkrevd for å hente pakker fra andre private repoer i Nav.
 
 ## Teknologistakk
 * Java 16
