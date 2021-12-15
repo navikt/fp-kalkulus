@@ -18,7 +18,7 @@ public enum FaktaVurderingKilde implements Kodeverdi {
 
     SAKSBEHANDLER("SAKSBEHANDLER", "Saksbehandler"),
     KALKULATOR("KALKULATOR", "Kalkulator"),
-    UDEFINERT("-", "Ingen inntektskategori (default)"),
+    UDEFINERT("-", "Uspesifisert"),
     ;
 
     private static final Map<String, FaktaVurderingKilde> KODER = new LinkedHashMap<>();

@@ -12,8 +12,6 @@
     <sequence-generator name="SEQ_BG_SG_PR_STATUS" allocation-size="50" sequence-name="SEQ_BG_SG_PR_STATUS" />
     <sequence-generator name="SEQ_BG_FAKTA_BER_TILFELLE" allocation-size="50" sequence-name="SEQ_BG_FAKTA_BER_TILFELLE" />
     <sequence-generator name="SEQ_GR_BEREGNINGSGRUNNLAG" allocation-size="50" sequence-name="SEQ_GR_BEREGNINGSGRUNNLAG" />
-    <sequence-generator name="SEQ_BG_FRILANS_ANDEL" allocation-size="50" sequence-name="SEQ_BG_FRILANS_ANDEL" />
-    <sequence-generator name="SEQ_BG_ARBEIDSTAKER_ANDEL" allocation-size="50" sequence-name="SEQ_BG_ARBEIDSTAKER_ANDEL" />
     <sequence-generator name="SEQ_BG_AKTIVITETER" allocation-size="50" sequence-name="SEQ_BG_AKTIVITETER"/>
     <sequence-generator name="SEQ_BG_AKTIVITET" allocation-size="50" sequence-name="SEQ_BG_AKTIVITET"/>
     <sequence-generator name="SEQ_BG_AKTIVITET_OVERSTYRINGER" allocation-size="50" sequence-name="SEQ_BG_AKTIVITET_OVERSTYRINGER"/>
