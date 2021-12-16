@@ -18,11 +18,11 @@
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kontrakt</artifactId>
+            <artifactId>kalkulus-kontrakt</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulator</artifactId>
+            <artifactId>kalkulus-kalkulator</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

@@ -10,15 +10,19 @@
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
-    <artifactId>kontrakt</artifactId>
+    <artifactId>kalkulus-kontrakt</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Kontrakt</name>
+
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
 
     <dependencies>
         <!-- Interne avhengigheter -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kodeverk</artifactId>
+            <artifactId>kalkulus-kodeverk</artifactId>
         </dependency>
 
         <!-- Eksterne avhengigheter til andre prosjekter -->
@@ -43,29 +47,5 @@
             <artifactId>jakarta.el</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

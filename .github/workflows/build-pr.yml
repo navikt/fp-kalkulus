@@ -30,7 +30,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          mvn package --quiet --batch-mode --settings .github/.m2/settings.xml --file pom.xml -DtrimStackTrace=false
+          mvn verify --quiet --batch-mode --settings .github/.m2/settings.xml --file pom.xml -DtrimStackTrace=false
         env:
           TZ: "Europe/Oslo"
           GITHUB_TOKEN: ${{ secrets.READER_TOKEN }}
