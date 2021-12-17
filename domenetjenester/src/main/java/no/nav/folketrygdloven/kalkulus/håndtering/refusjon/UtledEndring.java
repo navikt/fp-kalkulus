@@ -18,7 +18,10 @@ public final class UtledEndring {
         BeregningRefusjonOverstyringerDto refusjonOverstyringer = beregningsgrunnlagGrunnlagDto.getRefusjonOverstyringer()
                 .orElseThrow(() -> new IllegalArgumentException("Skal ha refusjonoverstyringer her"));
         Optional<BeregningRefusjonOverstyringerDto> forrigeRefusjonOverstyringer = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getRefusjonOverstyringer);
-        RefusjonoverstyringEndring refusjonoverstyringEndring = UtledEndringIRefusjonsperiode.utledRefusjonoverstyringEndring(refusjonOverstyringer, forrigeRefusjonOverstyringer);
+        RefusjonoverstyringEndring refusjonoverstyringEndring = UtledEndringIRefusjonsperiode.utledRefusjonoverstyringEndring(refusjonOverstyringer,
+                beregningsgrunnlagGrunnlagDto.getBeregningsgrunnlag().orElseThrow(),
+                forrigeRefusjonOverstyringer,
+                forrigeGrunnlag.stream().flatMap(gr -> gr.getBeregningsgrunnlag().stream()).findFirst());
         return new Endringer(refusjonoverstyringEndring);
     }
 }

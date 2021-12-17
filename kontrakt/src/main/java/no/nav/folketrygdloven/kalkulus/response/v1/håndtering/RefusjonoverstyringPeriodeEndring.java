@@ -31,15 +31,21 @@ public class RefusjonoverstyringPeriodeEndring {
     @NotNull
     private DatoEndring fastsattRefusjonFomEndring;
 
+    @JsonProperty(value = "fastsattDelvisRefusjonFørDatoEndring")
+    @Valid
+    private RefusjonEndring fastsattDelvisRefusjonFørDatoEndring;
+
     public RefusjonoverstyringPeriodeEndring() {
     }
 
     public RefusjonoverstyringPeriodeEndring(@Valid @NotNull Aktør arbeidsgiver,
                                              @Valid String arbeidsforholdRef,
-                                             @Valid @NotNull DatoEndring fastsattRefusjonFomEndring) {
+                                             @Valid @NotNull DatoEndring fastsattRefusjonFomEndring,
+                                             @Valid RefusjonEndring fastsattDelvisRefusjonFørDatoEndring) {
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
         this.fastsattRefusjonFomEndring = fastsattRefusjonFomEndring;
+        this.fastsattDelvisRefusjonFørDatoEndring = fastsattDelvisRefusjonFørDatoEndring;
     }
 
     public Aktør getArbeidsgiver() {
@@ -52,5 +58,9 @@ public class RefusjonoverstyringPeriodeEndring {
 
     public DatoEndring getFastsattRefusjonFomEndring() {
         return fastsattRefusjonFomEndring;
+    }
+
+    public RefusjonEndring getFastsattDelvisRefusjonFørDatoEndring() {
+        return fastsattDelvisRefusjonFørDatoEndring;
     }
 }
