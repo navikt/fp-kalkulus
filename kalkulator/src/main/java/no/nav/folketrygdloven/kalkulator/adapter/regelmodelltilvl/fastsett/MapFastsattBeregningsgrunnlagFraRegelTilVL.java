@@ -106,7 +106,7 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
                 .medRedusertRefusjonPrÅr(regelResultat.getRedusertRefusjonPrÅr())
                 .medAvkortetBrukersAndelPrÅr(verifisertBeløp(regelResultat.getAvkortetBrukersAndelPrÅr()))
                 .medRedusertBrukersAndelPrÅr(verifisertBeløp(regelResultat.getRedusertBrukersAndelPrÅr()))
-                .medAvkortetFørGraderingPrÅr(verifisertBeløp(regelResultat.getAndelsmessigFørGraderingPrAar()));
+                .medAvkortetFørGraderingPrÅr(verifisertBeløp(regelResultat.getAndelsmessigFørGraderingPrAar() == null ? BigDecimal.ZERO : regelResultat.getAndelsmessigFørGraderingPrAar()));
     }
 
     private static BigDecimal verifisertBeløp(BigDecimal beløp) {
@@ -130,7 +130,7 @@ public class MapFastsattBeregningsgrunnlagFraRegelTilVL {
                 .medMaksimalRefusjonPrÅr(BigDecimal.ZERO)
                 .medAvkortetRefusjonPrÅr(BigDecimal.ZERO)
                 .medRedusertRefusjonPrÅr(BigDecimal.ZERO)
-                .medAvkortetFørGraderingPrÅr(regelResultat.getAndelsmessigFørGraderingPrAar());
+                .medAvkortetFørGraderingPrÅr(verifisertBeløp(regelResultat.getAndelsmessigFørGraderingPrAar() == null ? BigDecimal.ZERO : regelResultat.getAndelsmessigFørGraderingPrAar()));
     }
 
 }

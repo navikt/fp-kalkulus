@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.mapTilKontrakt;
 
+import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDENES_ENDE;
 import static no.nav.folketrygdloven.kalkulus.mapTilKontrakt.MapDetaljertBeregningsgrunnlag.mapSammenligningsgrunnlag;
 
 import java.math.BigDecimal;
@@ -46,18 +47,18 @@ public class MapBrevBeregningsgrunnlag {
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(BeregningsgrunnlagPeriode beregningsgrunnlagPeriode) {
         return new BeregningsgrunnlagPeriodeDto(
-                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList()),
+                mapAndeler(beregningsgrunnlagPeriode.getBeregningsgrunnlagPrStatusOgAndelList(), beregningsgrunnlagPeriode.getPeriode().getTomDato().equals(TIDENES_ENDE)),
                 new Periode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeTom()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getBruttoPrÅr()),
                 mapFraBeløp(beregningsgrunnlagPeriode.getAvkortetPrÅr()),
                 beregningsgrunnlagPeriode.getDagsats());
     }
 
-    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList) {
-        return beregningsgrunnlagPrStatusOgAndelList.stream().map(MapBrevBeregningsgrunnlag::mapAndel).collect(Collectors.toList());
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> mapAndeler(List<BeregningsgrunnlagPrStatusOgAndel> beregningsgrunnlagPrStatusOgAndelList, boolean erSistePeriode) {
+        return beregningsgrunnlagPrStatusOgAndelList.stream().map(a -> mapAndel(a, erSistePeriode)).collect(Collectors.toList());
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel) {
+    private static BeregningsgrunnlagPrStatusOgAndelDto mapAndel(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         return new BeregningsgrunnlagPrStatusOgAndelDto(
                 andel.getAndelsnr(),
                 AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()),
@@ -66,7 +67,7 @@ public class MapBrevBeregningsgrunnlag {
                 mapFraBeløp(andel.getBruttoPrÅr()),
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
-                finnUgradertDagsatsBruker(andel),
+                finnUgradertDagsatsBruker(andel, erSistePeriode),
                 finnUgradertDagsatsArbeidsgiver(andel),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
@@ -78,7 +79,7 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getFastsattAvSaksbehandler());
     }
 
-    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel) {
+    private static Long finnUgradertDagsatsBruker(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         if (andel.getDagsatsBruker() == null) {
             return null;
         }
@@ -86,7 +87,9 @@ public class MapBrevBeregningsgrunnlag {
             return 0L;
         }
         var andelTilBruker = andel.getAvkortetBrukersAndelPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
-        return andel.getAvkortetFørGraderingPrÅr().getVerdi().multiply(andelTilBruker)
+        // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
+        var avkortetFørGraderingPrÅr = erSistePeriode ? BigDecimal.ZERO : andel.getAvkortetFørGraderingPrÅr().getVerdi();
+        return avkortetFørGraderingPrÅr.multiply(andelTilBruker)
                 .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
     }
 
