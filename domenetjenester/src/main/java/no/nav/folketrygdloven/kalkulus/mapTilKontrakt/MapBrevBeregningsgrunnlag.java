@@ -68,7 +68,7 @@ public class MapBrevBeregningsgrunnlag {
                 andel.getDagsatsBruker(),
                 andel.getDagsatsArbeidsgiver(),
                 finnUgradertDagsatsBruker(andel, erSistePeriode),
-                finnUgradertDagsatsArbeidsgiver(andel),
+                finnUgradertDagsatsArbeidsgiver(andel, erSistePeriode),
                 Inntektskategori.fraKode(andel.getInntektskategori().getKode()),
                 mapBgAndelArbeidsforhold(andel),
                 mapFraBeløp(andel.getAvkortetFørGraderingPrÅr()),
@@ -93,7 +93,7 @@ public class MapBrevBeregningsgrunnlag {
                 .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
     }
 
-    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel) {
+    private static Long finnUgradertDagsatsArbeidsgiver(BeregningsgrunnlagPrStatusOgAndel andel, boolean erSistePeriode) {
         if (andel.getDagsatsArbeidsgiver() == null) {
             return null;
         }
@@ -101,7 +101,9 @@ public class MapBrevBeregningsgrunnlag {
             return 0L;
         }
         var andelTilArbeidsgiver = andel.getAvkortetRefusjonPrÅr().getVerdi().divide(andel.getAvkortetPrÅr().getVerdi(), 10, RoundingMode.HALF_UP);
-        return andel.getAvkortetFørGraderingPrÅr().getVerdi().multiply(andelTilArbeidsgiver)
+        // Grunnet en feil i mapping har vi ikke lagret avkortetFørGradering for andeler i siste periode for en del behandlinger før 16.12.2021
+        var avkortetFørGraderingPrÅr = erSistePeriode ? BigDecimal.ZERO : andel.getAvkortetFørGraderingPrÅr().getVerdi();
+        return avkortetFørGraderingPrÅr.multiply(andelTilArbeidsgiver)
                 .divide(BigDecimal.valueOf(260), 10, RoundingMode.HALF_UP).longValue();
 
     }
