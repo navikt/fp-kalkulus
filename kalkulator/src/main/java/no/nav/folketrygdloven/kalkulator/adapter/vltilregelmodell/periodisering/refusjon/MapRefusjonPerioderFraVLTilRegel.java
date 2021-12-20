@@ -57,6 +57,9 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
 
     protected ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste;
 
+    MapRefusjonPerioderFraVLTilRegel() {
+    }
+
     protected MapRefusjonPerioderFraVLTilRegel(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
         this.arbeidsgiverRefusjonskravTjeneste = arbeidsgiverRefusjonskravTjeneste;
     }
