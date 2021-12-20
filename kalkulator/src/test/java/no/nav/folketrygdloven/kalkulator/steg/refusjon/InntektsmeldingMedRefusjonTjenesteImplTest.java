@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -40,7 +43,9 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private static final String ORGNR = "974760673";
@@ -49,6 +54,14 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
+
+    private final InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste = new InntektsmeldingMedRefusjonTjeneste(
+            new ArbeidsgiverRefusjonskravTjeneste(
+                    new KravTjeneste(
+                            new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
+                    )
+            )
+    );
 
 
     @Test
@@ -72,11 +85,12 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
                 BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
-                input.getKravPrArbeidsgiver());
+                input.getKravPrArbeidsgiver(),
+                FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
@@ -97,17 +111,17 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(registerBuilder)
-            .medInntektsmeldinger(List.of(im1, im2)).build();
+                .medData(registerBuilder)
+                .medInntektsmeldinger(List.of(im1, im2)).build();
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag,
-            BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
+                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
 
         // Act
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
-            input.getIayGrunnlag(),
-            input.getBeregningsgrunnlagGrunnlag(),
-            input.getKravPrArbeidsgiver());
+                input.getIayGrunnlag(),
+                input.getBeregningsgrunnlagGrunnlag(),
+                input.getKravPrArbeidsgiver(), FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).hasSize(1);
@@ -124,17 +138,17 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet(ORGNR2);
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(registerBuilder)
-            .medInntektsmeldinger(List.of()).build();
+                .medData(registerBuilder)
+                .medInntektsmeldinger(List.of()).build();
 
         // Act
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag);
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
-            input.getIayGrunnlag(),
-            input.getBeregningsgrunnlagGrunnlag(),
-            input.getKravPrArbeidsgiver()
-            );
+                input.getIayGrunnlag(),
+                input.getBeregningsgrunnlagGrunnlag(),
+                input.getKravPrArbeidsgiver(),
+                FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).isEmpty();
@@ -154,18 +168,18 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         førsteInnsendingMap.put(arbeidsgiver2, SKJÆRINGSTIDSPUNKT.plusMonths(2));
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlag = byggGrunnlag(aktivitetAggregat, List.of(arbeidsgiver, arbeidsgiver2));
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medData(registerBuilder)
-            .medInntektsmeldinger(List.of(im1, im2)).build();
+                .medData(registerBuilder)
+                .medInntektsmeldinger(List.of(im1, im2)).build();
 
         // Act
         BeregningsgrunnlagInput input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlagOgIAY(koblingReferanse, grunnlag,
-            BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
-        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+                BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER, iayGrunnlag, førsteInnsendingMap);
+        Set<Arbeidsgiver> arbeidsgivereSomHarSøktForSent = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 koblingReferanse,
-            input.getIayGrunnlag(),
-            input.getBeregningsgrunnlagGrunnlag(),
-            input.getKravPrArbeidsgiver()
-        );
+                input.getIayGrunnlag(),
+                input.getBeregningsgrunnlagGrunnlag(),
+                input.getKravPrArbeidsgiver(),
+                FagsakYtelseType.FORELDREPENGER);
 
         // Assert
         assertThat(arbeidsgivereSomHarSøktForSent).isEmpty();
@@ -174,21 +188,21 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
 
     private BeregningsgrunnlagGrunnlagDtoBuilder byggGrunnlag(BeregningAktivitetAggregatDto aktivitetAggregat, List<Arbeidsgiver> arbeidsgivere) {
         return BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(aktivitetAggregat)
-            .medBeregningsgrunnlag(lagBeregningsgrunnlag(arbeidsgivere));
+                .medRegisterAktiviteter(aktivitetAggregat)
+                .medBeregningsgrunnlag(lagBeregningsgrunnlag(arbeidsgivere));
     }
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(List<Arbeidsgiver> ags) {
 
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
         BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
-            .build(bg);
+                .build(bg);
         ags.forEach(ag -> BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag))
-            .build(periode)
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag))
+                .build(periode)
         );
         return bg;
     }
@@ -211,7 +225,7 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
         Intervall arbeidsperiode1 = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
         var aktørArbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
         BeregningAktivitetAggregatDto.Builder aktivitetAggregatBuilder = BeregningAktivitetAggregatDto.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);
         for (String nr : orgnr) {
             InternArbeidsforholdRefDto ref = InternArbeidsforholdRefDto.nullRef();
             Arbeidsgiver ag = leggTilYrkesaktivitet(arbeidsperiode1, aktørArbeidBuilder, nr, ref);
@@ -232,12 +246,12 @@ public class InntektsmeldingMedRefusjonTjenesteImplTest {
     private Arbeidsgiver leggTilYrkesaktivitet(Intervall arbeidsperiode, InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder aktørArbeidBuilder, String orgnr, InternArbeidsforholdRefDto arbeidsforholdId) {
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
         AktivitetsAvtaleDtoBuilder aaBuilder1 = AktivitetsAvtaleDtoBuilder.ny()
-            .medPeriode(arbeidsperiode);
+                .medPeriode(arbeidsperiode);
         YrkesaktivitetDtoBuilder yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty())
-            .medArbeidsgiver(arbeidsgiver)
-            .medArbeidsforholdId(arbeidsforholdId)
-            .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
-            .leggTilAktivitetsAvtale(aaBuilder1);
+                .medArbeidsgiver(arbeidsgiver)
+                .medArbeidsforholdId(arbeidsforholdId)
+                .medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                .leggTilAktivitetsAvtale(aaBuilder1);
         aktørArbeidBuilder.leggTilYrkesaktivitet(yaBuilder);
         return arbeidsgiver;
     }

@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnFørsteDagEtterBekreftetPermisjon;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
@@ -19,6 +20,10 @@ import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public abstract class MapRefusjonPerioderFraVLTilRegelUtbgrad
         extends MapRefusjonPerioderFraVLTilRegel {
+
+    public MapRefusjonPerioderFraVLTilRegelUtbgrad(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
+        super(arbeidsgiverRefusjonskravTjeneste);
+    }
 
     @Override
     protected Optional<LocalDate> utledStartdatoPermisjon(Input input,

@@ -8,6 +8,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.kalkulator.felles.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -17,27 +21,39 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
+@ApplicationScoped
 public class InntektsmeldingMedRefusjonTjeneste {
 
-    public static Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
-                                                                              InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                              BeregningsgrunnlagGrunnlagDto grunnlag,
-                                                                              List<KravperioderPrArbeidsforholdDto> kravperioder
-                                                                              ) {
+    private ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste;
+
+    public InntektsmeldingMedRefusjonTjeneste() {
+    }
+
+    @Inject
+    public InntektsmeldingMedRefusjonTjeneste(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
+        this.arbeidsgiverRefusjonskravTjeneste = arbeidsgiverRefusjonskravTjeneste;
+    }
+
+    public Set<Arbeidsgiver> finnArbeidsgiverSomHarSøktRefusjonForSent(KoblingReferanse koblingReferanse,
+                                                                       InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                       BeregningsgrunnlagGrunnlagDto grunnlag,
+                                                                       List<KravperioderPrArbeidsforholdDto> kravperioder,
+                                                                       FagsakYtelseType ytelseType) {
         Collection<YrkesaktivitetDto> yrkesaktiviteter = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(iayGrunnlag, grunnlag, koblingReferanse.getSkjæringstidspunktBeregning());
         LocalDate skjæringstidspunktBeregning = grunnlag.getBeregningsgrunnlag().map(BeregningsgrunnlagDto::getSkjæringstidspunkt)
             .orElseThrow(() -> new IllegalStateException("Utviklerfeil: Skal ha beregningsgrunnlag"));
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = grunnlag.getGjeldendeAktiviteter();
-        var harSøktForSentMap = LagArbeidsgiverForSentRefusjonskravMap.lagFristTidslinjePrArbeidsgiver(
+        var harSøktForSentMap = arbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
                 yrkesaktiviteter,
                 kravperioder,
                 gjeldendeAktiviteter,
                 skjæringstidspunktBeregning,
-                Optional.empty()
-        );
+                Optional.empty(),
+                ytelseType);
         return finnArbeidsgivereSomHarSøktForSent(harSøktForSentMap);
     }
 

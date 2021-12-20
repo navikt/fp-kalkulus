@@ -17,6 +17,9 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refus
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.refusjon.MapRefusjonPerioderFraVLTilRegel;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -47,12 +50,19 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019,1,1);
     public static final KoblingReferanseMock REF = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     public static final BigDecimal REFUSJON = BigDecimal.valueOf(44733);
     private BeregningsgrunnlagDto bg = lagBgMedEnPeriode();
+
+    private ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste = new ArbeidsgiverRefusjonskravTjeneste(
+            new KravTjeneste(
+                    new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
+            )
+    );
 
 
     /**
@@ -62,7 +72,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     @Test
     public void skal_mappe_til_regel_for_arbeid_over_skjæringstidspunktet_med_inntektsmelding_med_id_og_arbeid_i_samme_virksomhet_som_tilkommer_etter_skjæringstidspunkt() {
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
-        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP();
+        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP(arbeidsgiverRefusjonskravTjeneste);
         KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
         InternArbeidsforholdRefDto refArbeidsforhold1 = InternArbeidsforholdRefDto.nyRef();
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, refArbeidsforhold1);
@@ -92,7 +102,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     @Test
     public void arbeid_slutter_før_skjæringstidspunkt_for_opptjening_inntektsmelding_kommer_uten_id_for_arbeidsforhold_i_samme_virksomhet_etter_skjæringstidspunktet() {
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
-        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP();
+        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP(arbeidsgiverRefusjonskravTjeneste);
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
         KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, InternArbeidsforholdRefDto.nullRef());
@@ -124,7 +134,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     @Test
     public void arbeid_slutter_før_skjæringstidspunkt_for_opptjening_inntektsmelding_kommer_med_id_for_arbeidsforhold_i_samme_virksomhet_etter_skjæringstidspunktet() {
         Arbeidsgiver ag1 = Arbeidsgiver.virksomhet("994507508");
-        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP();
+        MapRefusjonPerioderFraVLTilRegel mapper = new MapRefusjonPerioderFraVLTilRegelFP(arbeidsgiverRefusjonskravTjeneste);
         LocalDate skjæringstidspunktOpptjening = SKJÆRINGSTIDSPUNKT.plusDays(15);
         KoblingReferanseMock behandlingRef = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, skjæringstidspunktOpptjening);
         BeregningsgrunnlagDto bg = lagBgMedEnAndel(ag1, InternArbeidsforholdRefDto.nullRef());

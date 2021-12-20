@@ -21,6 +21,9 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.GrunnbeløpTestKonstanter;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -55,7 +58,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 public class AvklaringsbehovUtlederFaktaOmBeregningTest {
 
     @WeldSetup
-    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld().addPackages(true, FaktaOmBeregningTilfelleTjeneste.class));
+    WeldInitiator weldInitiator = WeldInitiator.of(WeldInitiator.createWeld()
+            .addPackages(true, FaktaOmBeregningTilfelleTjeneste.class)
+            .addPackages(true, InntektsmeldingMedRefusjonTjeneste.class));
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, Month.MARCH, 23);
     private final InternArbeidsforholdRefDto arbId = InternArbeidsforholdRefDto.namedRef("A");

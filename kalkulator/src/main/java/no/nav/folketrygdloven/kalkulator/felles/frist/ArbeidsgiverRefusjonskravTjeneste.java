@@ -10,6 +10,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningRefusjonOverstyringerDto;
@@ -17,15 +21,28 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforhold
 import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-public class LagArbeidsgiverForSentRefusjonskravMap {
+@ApplicationScoped
+public class ArbeidsgiverRefusjonskravTjeneste {
 
-    public static Map<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>> lagFristTidslinjePrArbeidsgiver(Collection<YrkesaktivitetDto> yrkesaktiviteter,
-                                                                                        List<KravperioderPrArbeidsforholdDto> kravperioder,
-                                                                                        BeregningAktivitetAggregatDto gjeldendeAktiviteter,
-                                                                                        LocalDate skjæringstidspunktBeregning,
-                                                                                        Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer) {
+    private KravTjeneste kravTjeneste;
+
+    public ArbeidsgiverRefusjonskravTjeneste() {
+    }
+
+    @Inject
+    public ArbeidsgiverRefusjonskravTjeneste(KravTjeneste kravTjeneste) {
+        this.kravTjeneste = kravTjeneste;
+    }
+
+    public Map<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>> lagFristTidslinjePrArbeidsgiver(Collection<YrkesaktivitetDto> yrkesaktiviteter,
+                                                                                              List<KravperioderPrArbeidsforholdDto> kravperioder,
+                                                                                              BeregningAktivitetAggregatDto gjeldendeAktiviteter,
+                                                                                              LocalDate skjæringstidspunktBeregning,
+                                                                                              Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer,
+                                                                                              FagsakYtelseType ytelseType) {
         Map<YrkesaktivitetDto, List<PerioderForKravDto>> yrkesaktivitetKravperioderMap = lagMap(yrkesaktiviteter, kravperioder);
         var tidslinjeMap = new HashMap<Arbeidsgiver, LocalDateTimeline<KravOgUtfall>>();
         for (var entry : yrkesaktivitetKravperioderMap.entrySet()) {
@@ -37,12 +54,12 @@ public class LagArbeidsgiverForSentRefusjonskravMap {
                         .findFirst()
                         .flatMap(BeregningRefusjonOverstyringDto::getFørsteMuligeRefusjonFom);
 
-                var tidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+                var tidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                         entry.getValue(),
                         yrkesaktivitet,
                         gjeldendeAktiviteter,
                         skjæringstidspunktBeregning,
-                        overstyrtRefusjonFom);
+                        overstyrtRefusjonFom, ytelseType);
                 tidslinjeMap.put(yrkesaktivitet.getArbeidsgiver(),
                         eksisterendeTidslinje == null ? tidslinje : KombinerRefusjonskravFristTidslinje.kombinerOgKompress(eksisterendeTidslinje, tidslinje));
 

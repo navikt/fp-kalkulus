@@ -22,8 +22,9 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger;
-import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPerioderForGraderingOgUtbetalingsgrad;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -90,6 +91,13 @@ public class FordelPerioderTjenesteTest {
     private FordelPerioderTjeneste tjeneste;
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
 
+
+    private final ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste = new ArbeidsgiverRefusjonskravTjeneste(
+            new KravTjeneste(
+                    new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
+            )
+    );
+
     @BeforeEach
     public void setUp() {
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
@@ -99,9 +107,7 @@ public class FordelPerioderTjenesteTest {
     }
 
     private FordelPerioderTjeneste lagTjeneste() {
-        var oversetterTilRegelRefusjonOgGradering = new MapPerioderForGraderingOgUtbetalingsgrad();
-        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP();
-        var oversetterFraRegelTilVLRefusjonOgGradering = new MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLGraderingOgUtbetalingsgrad();
+        var oversetterTilRegelRefusjon = new MapRefusjonPerioderFraVLTilRegelFP(arbeidsgiverRefusjonskravTjeneste);
         return new FordelPerioderTjeneste(
                 new UnitTestLookupInstanceImpl<>(oversetterTilRegelRefusjon)
         );
@@ -145,7 +151,7 @@ public class FordelPerioderTjenesteTest {
     private void fjernAktivitet(Arbeidsgiver arbeidsgiver, InternArbeidsforholdRefDto arbeidsforholdRef) {
         aktiviteter.stream()
                 .filter(a -> a.gjelderFor(arbeidsgiver, arbeidsforholdRef)).findFirst()
-                .ifPresent(a -> aktiviteter.remove(a));
+                .ifPresent(aktiviteter::remove);
         lagAggregatEntitetFraListe(aktiviteter);
     }
 

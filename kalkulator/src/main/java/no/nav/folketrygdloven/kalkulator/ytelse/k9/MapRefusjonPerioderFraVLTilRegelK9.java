@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
@@ -19,6 +20,9 @@ import no.nav.fpsak.tidsserie.StandardCombinators;
 
 public abstract class MapRefusjonPerioderFraVLTilRegelK9 extends MapRefusjonPerioderFraVLTilRegelUtbgrad {
 
+    public MapRefusjonPerioderFraVLTilRegelK9(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
+        super(arbeidsgiverRefusjonskravTjeneste);
+    }
 
     /** Finner gyldige perioder for refusjon basert på perioder med utbetalingsgrad og ansettelse
      *

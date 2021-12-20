@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
@@ -21,6 +22,13 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.Refusj
 
 @ApplicationScoped
 class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTjeneste {
+
+    private final InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste;
+
+    @Inject
+    public VurderRefusjonTilfelleDtoTjeneste(InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste) {
+        this.inntektsmeldingMedRefusjonTjeneste = inntektsmeldingMedRefusjonTjeneste;
+    }
 
     @Override
     public void lagDto(BeregningsgrunnlagGUIInput input, FaktaOmBeregningDto faktaOmBeregningDto) {
@@ -38,12 +46,12 @@ class VurderRefusjonTilfelleDtoTjeneste implements FaktaOmBeregningTilfelleDtoTj
             .map(BeregningRefusjonOverstyringerDto::getRefusjonOverstyringer)
             .orElse(Collections.emptyList());
 
-        Set<Arbeidsgiver> arbeidsgivere = InntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
+        Set<Arbeidsgiver> arbeidsgivere = inntektsmeldingMedRefusjonTjeneste.finnArbeidsgiverSomHarSøktRefusjonForSent(
                 input.getKoblingReferanse(),
                 input.getIayGrunnlag(),
                 input.getBeregningsgrunnlagGrunnlag(),
-                input.getKravperioderPrArbeidsgiver()
-        );
+                input.getKravperioderPrArbeidsgiver(),
+                input.getFagsakYtelseType());
         return arbeidsgivere
             .stream()
             .map(arbeidsgiver -> {

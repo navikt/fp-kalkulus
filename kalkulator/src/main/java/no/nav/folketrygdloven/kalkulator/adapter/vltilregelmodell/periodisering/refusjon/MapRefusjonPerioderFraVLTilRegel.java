@@ -3,7 +3,6 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering
 import static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.Utfall.GODKJENT;
 import static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.Utfall.IKKE_VURDERT;
 import static no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.refusjon.Utfall.UNDERKJENT;
-import static no.nav.folketrygdloven.kalkulator.felles.frist.LagArbeidsgiverForSentRefusjonskravMap.lagFristTidslinjePrArbeidsgiver;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -33,6 +32,7 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.FinnYrkesaktiviteterForBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.KravOgUtfall;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
@@ -55,9 +55,12 @@ import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 public abstract class MapRefusjonPerioderFraVLTilRegel {
 
+    protected ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste;
 
-    protected MapRefusjonPerioderFraVLTilRegel() {
+    protected MapRefusjonPerioderFraVLTilRegel(ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste) {
+        this.arbeidsgiverRefusjonskravTjeneste = arbeidsgiverRefusjonskravTjeneste;
     }
+
 
     public PeriodeModellRefusjon map(BeregningsgrunnlagInput input,
                                      BeregningsgrunnlagDto beregningsgrunnlag) {
@@ -119,12 +122,13 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = input.getBeregningsgrunnlagGrunnlag().getGjeldendeAktiviteter();
         Optional<BeregningRefusjonOverstyringerDto> refusjonOverstyringer = input.getBeregningsgrunnlagGrunnlag().getRefusjonOverstyringer();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
-        var fristvurdertTidslinjePrArbeidsgiver = lagFristTidslinjePrArbeidsgiver(
+        var fristvurdertTidslinjePrArbeidsgiver = arbeidsgiverRefusjonskravTjeneste.lagFristTidslinjePrArbeidsgiver(
                 filter.getYrkesaktiviteterForBeregning(),
                 input.getKravPrArbeidsgiver(),
                 gjeldendeAktiviteter,
                 input.getSkjæringstidspunktForBeregning(),
-                refusjonOverstyringer);
+                refusjonOverstyringer,
+                input.getFagsakYtelseType());
         return fristvurdertTidslinjePrArbeidsgiver.entrySet().stream()
                 .map(e -> new HashMap.SimpleEntry<>(mapArbeidsgiver(e.getKey()), mapTilUtfallTidslinje(e.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

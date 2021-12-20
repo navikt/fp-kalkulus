@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
+import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.InntektsmeldingMedRefusjonTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -43,6 +47,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.FaktaOmBeregningDto;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
 class VurderRefusjonTilfelleDtoTjenesteTest {
     private static final String ORGNR = "974760673";
@@ -63,7 +68,15 @@ class VurderRefusjonTilfelleDtoTjenesteTest {
         arbeidsgiverNavnMap.put(ORGNR2, ARBEIDSGIVER_NAVN2);
     }
 
-    private VurderRefusjonTilfelleDtoTjeneste vurderRefusjonTilfelleDtoTjeneste = new VurderRefusjonTilfelleDtoTjeneste();
+    private final InntektsmeldingMedRefusjonTjeneste inntektsmeldingMedRefusjonTjeneste = new InntektsmeldingMedRefusjonTjeneste(
+            new ArbeidsgiverRefusjonskravTjeneste(
+                    new KravTjeneste(
+                            new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer())
+                    )
+            )
+    );
+
+    private final VurderRefusjonTilfelleDtoTjeneste vurderRefusjonTilfelleDtoTjeneste = new VurderRefusjonTilfelleDtoTjeneste(inntektsmeldingMedRefusjonTjeneste);
 
     @Test
     void skal_lage_dto_for_arbeidsgiver_som_har_søkt_refusjon_for_sent() {

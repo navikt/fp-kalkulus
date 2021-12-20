@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.felles.frist;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,15 +21,19 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
+import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
-class HarYrkesaktivitetInnsendtRefusjonForSentTest {
+class KravTjenesteTest {
 
     public static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.now();
     public static final Arbeidsgiver ARBEIDSGIVER1 = Arbeidsgiver.virksomhet("37432232");
+
+    private final KravTjeneste kravTjeneste = new KravTjeneste(new UnitTestLookupInstanceImpl<>(new TreMånedersFristVurderer()));
 
 
     @Test
@@ -40,12 +43,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.isEmpty()).isTrue();
     }
@@ -60,12 +63,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(1);
         LocalDateSegment<KravOgUtfall> kravSegment = kravTidslinje.iterator().next();
@@ -85,12 +88,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(2);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
@@ -119,12 +122,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(1);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
@@ -146,12 +149,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(1);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
@@ -176,12 +179,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(2);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
@@ -212,12 +215,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                Optional.empty());
+                Optional.empty(), FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(2);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
@@ -244,12 +247,12 @@ class HarYrkesaktivitetInnsendtRefusjonForSentTest {
         BeregningAktivitetAggregatDto gjeldendeAktiviteter = lagGjeldendeAktiviteter(ansattPeriode);
         YrkesaktivitetDto yrkesaktivitet = lagYrkesaktivitet(ansattPeriode);
 
-        LocalDateTimeline<KravOgUtfall> kravTidslinje = HarYrkesaktivitetInnsendtRefusjonForSent.lagTidslinjeForYrkesaktivitet(
+        LocalDateTimeline<KravOgUtfall> kravTidslinje = kravTjeneste.lagTidslinjeForYrkesaktivitet(
                 kravperioder,
                 yrkesaktivitet,
                 gjeldendeAktiviteter,
                 SKJÆRINGSTIDSPUNKT_BEREGNING,
-                overstyrtFom);
+                overstyrtFom, FagsakYtelseType.FORELDREPENGER);
 
         assertThat(kravTidslinje.size()).isEqualTo(1);
         Iterator<LocalDateSegment<KravOgUtfall>> iterator = kravTidslinje.iterator();
