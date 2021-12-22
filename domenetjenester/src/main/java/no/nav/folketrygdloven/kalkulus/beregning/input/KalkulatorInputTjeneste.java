@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
@@ -26,6 +27,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
+import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.k9.felles.exception.TekniskException;
 
@@ -49,7 +51,7 @@ public class KalkulatorInputTjeneste {
         // CDI-runner
     }
 
-    public Resultat<KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
+    public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
         if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
             // kalkulatorinput oppdateres
             lagreKalkulatorInput(inputPrReferanse);
@@ -57,9 +59,9 @@ public class KalkulatorInputTjeneste {
         return hentForKoblinger(koblingIder);
     }
 
-    public Resultat<KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse,
-                                                    Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
-                                                    Set<Long> koblingIder) {
+    public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse,
+                                                     Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
+                                                     Set<Long> koblingIder) throws UgyldigInputException {
         if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
             // kalkulatorinput oppdateres
             lagreKalkulatorInput(inputPrReferanse);
@@ -71,7 +73,7 @@ public class KalkulatorInputTjeneste {
 
 
 
-    public Resultat<KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) {
+    public Map<Long, KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) throws UgyldigInputException {
         var kalkulatorInputEntitetListe = beregningsgrunnlagRepository.hentHvisEksistererKalkulatorInput(koblingId);
         List<Long> koblingUtenInput = koblingId.stream().filter(id -> kalkulatorInputEntitetListe.stream().map(KalkulatorInputEntitet::getKoblingId).noneMatch(k -> k.equals(id)))
                 .collect(Collectors.toList());
@@ -83,17 +85,13 @@ public class KalkulatorInputTjeneste {
         for (KalkulatorInputEntitet input : kalkulatorInputEntitetListe) {
             String json = input.getInput();
 
-            Optional<KalkulatorInputDto> inputDto = konverterTilInput(json, input.getKoblingId());
-            if (inputDto.isEmpty()) {
-                return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
-            } else {
-                inputMap.put(input.getKoblingId(), inputDto.get());
-            }
+            var inputDto = konverterTilInput(json, input.getKoblingId());
+            inputMap.put(input.getKoblingId(), inputDto);
         }
-        return new Resultat<>(HentInputResponsKode.GYLDIG_INPUT, inputMap);
+        return inputMap;
     }
 
-    static Optional<KalkulatorInputDto> konverterTilInput(String json, Long koblingId) {
+    static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
         KalkulatorInputDto input;
         try {
             input = READER.forType(KalkulatorInputDto.class).readValue(json);
@@ -103,9 +101,9 @@ public class KalkulatorInputTjeneste {
 
         var violations = VALIDATOR.validate(input);
         if (!violations.isEmpty()) {
-            return Optional.empty();
+            throw new UgyldigInputException("FT-KALKULUS-INPUT-1000004", "Ugyldig kalkulatorinput: " + violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
         }
-        return Optional.of(input);
+        return input;
 
     }
 
@@ -148,13 +146,13 @@ public class KalkulatorInputTjeneste {
                 .stream()
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList()));
-        var resultatPrKobling = hentForKoblinger(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList())).getResultatPrKoblingHvisFinnes();
-        resultatPrKobling.ifPresent(longKalkulatorInputDtoMap -> longKalkulatorInputDtoMap.forEach((key, value) -> {
+        var resultatPrKobling = hentForKoblinger(koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()));
+        resultatPrKobling.forEach((key, value) -> {
             var kobling = koblinger.stream().filter(k -> k.getId().equals(key)).findFirst().orElseThrow();
             var ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlagPrKoblingReferanse.get(kobling.getKoblingReferanse().getReferanse());
             var oppdatertInput = value.medYtelsespesifiktGrunnlag(ytelsespesifiktGrunnlag);
             lagreKalkulatorInput(key, oppdatertInput);
-        }));
+        });
     }
 
 }

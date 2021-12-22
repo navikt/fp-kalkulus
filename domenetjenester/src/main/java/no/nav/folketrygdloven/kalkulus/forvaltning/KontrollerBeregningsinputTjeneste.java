@@ -2,9 +2,7 @@ package no.nav.folketrygdloven.kalkulus.forvaltning;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.ForeslåBeregningsgrunnlagFRISINN;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.beregning.input.StegProsessInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -54,9 +51,9 @@ public class KontrollerBeregningsinputTjeneste {
     }
 
     public Optional<DiffResultatDto> kontrollerInputForKobling(KoblingEntitet kobling) {
-        Resultat<StegProsesseringInput> res = stegProsessInputTjeneste.lagFortsettInput(Set.of(kobling.getId()),
+        var res = stegProsessInputTjeneste.lagFortsettInput(Set.of(kobling.getId()),
                 BeregningSteg.FORS_BERGRUNN); // Bruker dette steget fordi det er her inntekt fastsettes
-        ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.getResultatPrKobling().get(kobling.getId());
+        ForeslåBeregningsgrunnlagInput input = (ForeslåBeregningsgrunnlagInput) res.get(kobling.getId());
         BeregningsgrunnlagGrunnlagEntitet sisteGrunnlagFraKofak = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitet(kobling.getId(), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER).orElseThrow();
         BeregningsgrunnlagGrunnlagDto bgDto = BehandlingslagerTilKalkulusMapper.mapGrunnlag(sisteGrunnlagFraKofak);
         BeregningsgrunnlagInput beregningsgrunnlagInput = input.medBeregningsgrunnlagGrunnlag(bgDto);
@@ -118,14 +115,4 @@ public class KontrollerBeregningsinputTjeneste {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private Map<AktivitetStatus, BigDecimal> lagBruttoPrStatusMap(BeregningsgrunnlagDto grunnlag) {
-        Map<AktivitetStatus, BigDecimal> map = new HashMap<>();
-        grunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList()
-                .forEach(andel -> {
-                    BigDecimal foreløpigBrutto = map.getOrDefault(andel.getAktivitetStatus(), BigDecimal.ZERO);
-                    BigDecimal nyBrutto = foreløpigBrutto.add(andel.getBruttoPrÅr());
-                    map.put(andel.getAktivitetStatus(), nyBrutto);
-                });
-        return map;
-    }
 }

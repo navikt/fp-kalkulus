@@ -62,15 +62,11 @@ public class StegProsessInputTjeneste {
     }
 
     @Deprecated // Bruk kalkulatorInputTjeneste og lagBeregningsgrunnlagInput separat (sjå OperereKalkulusOrkestrerer)
-    public Resultat<StegProsesseringInput> lagFortsettInput(Set<Long> koblingId,
-                                                            BeregningSteg stegType) {
+    public Map<Long, StegProsesseringInput> lagFortsettInput(Set<Long> koblingId,
+                                                             BeregningSteg stegType) {
         Objects.requireNonNull(koblingId, "koblingId");
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingId);
-        if (inputRespons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
-            return new Resultat<>(inputRespons.getKode());
-        }
-
-        return Resultat.forGyldigInputMedData(lagBeregningsgrunnlagInput(koblingId, inputRespons.getResultatPrKobling(), stegType, List.of()));
+        return lagBeregningsgrunnlagInput(koblingId, inputRespons, stegType, List.of());
     }
 
     public Map<Long, StegProsesseringInput> lagBeregningsgrunnlagInput(Set<Long> koblingId,

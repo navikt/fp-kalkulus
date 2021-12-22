@@ -4,7 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,8 +34,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import no.nav.folketrygdloven.kalkulus.beregning.input.HentInputResponsKode;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -98,19 +95,19 @@ public class OperereKalkulusRestTjeneste {
     public Response beregn(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-
-        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgStartBeregning(
-                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                spesifikasjon.getYtelseSomSkalBeregnes(),
-                spesifikasjon.getKoblingRelasjon(),
-                new Saksnummer(spesifikasjon.getSaksnummer()),
-                new AktørId(spesifikasjon.getAktør().getIdent())
-        );
-
-        return Response.ok(new TilstandListeResponse(respons.getResultatPrReferanse()
-                .values().stream()
-                .map(r -> (TilstandResponse) r)
-                .toList())).build();
+        Map<Long, KalkulusRespons> respons;
+        try {
+            respons = orkestrerer.start(
+                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    spesifikasjon.getKoblingRelasjon(),
+                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    new AktørId(spesifikasjon.getAktør().getIdent())
+            );
+        } catch (UgyldigInputException e) {
+            return Response.ok(new OppdateringListeRespons(true)).build();
+        }
+        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
     }
 
     @POST
@@ -122,24 +119,20 @@ public class OperereKalkulusRestTjeneste {
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response beregnVidere(@NotNull @Valid FortsettBeregningListeRequestAbacDto spesifikasjon) {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
-
-        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgBeregnVidere(
-                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                spesifikasjon.getYtelsespesifiktGrunnlagPrKoblingReferanse(),
-                spesifikasjon.getEksternReferanser(),
-                spesifikasjon.getYtelseSomSkalBeregnes(),
-                new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getStegType()
-        );
-
-        if (respons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+        Map<Long, KalkulusRespons> respons;
+        try {
+            respons = orkestrerer.fortsett(
+                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                    spesifikasjon.getYtelsespesifiktGrunnlagPrKoblingReferanse(),
+                    spesifikasjon.getEksternReferanser(),
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    spesifikasjon.getStegType()
+            );
+        } catch (UgyldigInputException e) {
             return Response.ok(new OppdateringListeRespons(true)).build();
-        } else {
-            return Response.ok(new TilstandListeResponse(respons.getResultatPrKobling()
-                    .values().stream()
-                    .map(r -> (TilstandResponse) r)
-                    .toList())).build();
         }
+        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
     }
 
     @POST
@@ -152,22 +145,21 @@ public class OperereKalkulusRestTjeneste {
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
-
-        Resultat<KalkulusRespons> respons = orkestrerer.lagInputOgHåndter(
-                spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                spesifikasjon.getYtelseSomSkalBeregnes(),
-                new Saksnummer(spesifikasjon.getSaksnummer()),
-                spesifikasjon.getHåndterBeregningListe());
-
-        if (respons.getKode() == HentInputResponsKode.ETTERSPØR_NY_INPUT) {
+        Map<Long, KalkulusRespons> respons;
+        try {
+            respons = orkestrerer.håndter(
+                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    spesifikasjon.getHåndterBeregningListe());
+        } catch (UgyldigInputException e) {
             return Response.ok(new OppdateringListeRespons(true)).build();
-        } else {
-            List<OppdateringPrRequest> oppdateringer = respons.getResultatPrReferanse().entrySet().stream()
-                    .sorted(Comparator.comparing(e -> respons.getSkjæringstidspunktPrReferanse().get(e.getKey())))
-                    .map(res -> new OppdateringPrRequest((OppdateringRespons) res.getValue(), res.getKey()))
-                    .collect(Collectors.toList());
-            return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
         }
+
+        List<OppdateringPrRequest> oppdateringer = respons.values().stream()
+                .map(kalkulusRespons -> new OppdateringPrRequest((OppdateringRespons) kalkulusRespons, kalkulusRespons.getEksternReferanse()))
+                .collect(Collectors.toList());
+        return Response.ok(Objects.requireNonNullElseGet(new OppdateringListeRespons(oppdateringer), OppdateringRespons::TOM_RESPONS)).build();
     }
 
     @POST

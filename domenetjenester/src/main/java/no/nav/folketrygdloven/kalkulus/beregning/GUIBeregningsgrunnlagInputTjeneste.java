@@ -3,15 +3,12 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper.mapAvklaringsbehov;
 import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper.mapGrunnlag;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.Dependent;
@@ -19,9 +16,7 @@ import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
-import no.nav.folketrygdloven.kalkulus.beregning.input.HentInputResponsKode;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -114,8 +109,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
 
     /**
      * Returnerer BeregningsgrunnlagInput for alle angitte koblinger (hvis eksisterer).
+     * @return
      */
-    public Resultat<BeregningsgrunnlagGUIInput> lagInputForKoblinger(List<Long> koblingIder, List<KoblingRelasjon> koblingRelasjoner) {
+    public Map<Long, BeregningsgrunnlagGUIInput> lagInputForKoblinger(List<Long> koblingIder, List<KoblingRelasjon> koblingRelasjoner) {
         var beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository
                 .hentBeregningsgrunnlagGrunnlagEntiteter(koblingIder);
 
@@ -124,29 +120,24 @@ public class GUIBeregningsgrunnlagInputTjeneste {
 
         var kalkulatorInputDtoResultat = kalkulatorInputTjeneste.hentForKoblinger(koblingerMedBeregningsgrunnlag);
 
-        if (kalkulatorInputDtoResultat.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
-            return new Resultat<>(HentInputResponsKode.ETTERSPØR_NY_INPUT);
-        } else {
-            var originaleGrunnlag = beregningsgrunnlagRepository
-                    .hentBeregningsgrunnlagGrunnlagEntiteter(koblingRelasjoner.stream().map(KoblingRelasjon::getOriginalKoblingId).collect(Collectors.toList()));
-            return mapKalkulatorInputTilModellForGyldigInput(koblingerMedBeregningsgrunnlag,
-                    koblingRelasjoner,
-                    beregningsgrunnlagGrunnlagEntiteter,
-                    originaleGrunnlag,
-                    kalkulatorInputDtoResultat);
-        }
+    var originaleGrunnlag = beregningsgrunnlagRepository
+            .hentBeregningsgrunnlagGrunnlagEntiteter(koblingRelasjoner.stream().map(KoblingRelasjon::getOriginalKoblingId).collect(Collectors.toList()));
+    return mapKalkulatorInputTilModell(koblingerMedBeregningsgrunnlag,
+            koblingRelasjoner,
+            beregningsgrunnlagGrunnlagEntiteter,
+            originaleGrunnlag,
+            kalkulatorInputDtoResultat);
 
     }
 
-    private Resultat<BeregningsgrunnlagGUIInput> mapKalkulatorInputTilModellForGyldigInput(Set<Long> koblingIder,
-                                                                                           List<KoblingRelasjon> koblingRelasjoner,
-                                                                                           List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
-                                                                                           List<BeregningsgrunnlagGrunnlagEntitet> originaleGrunnlag,
-                                                                                           Resultat<KalkulatorInputDto> kalkulatorInputDtoResultat) {
+    private Map<Long, BeregningsgrunnlagGUIInput> mapKalkulatorInputTilModell(Set<Long> koblingIder,
+                                                                              List<KoblingRelasjon> koblingRelasjoner,
+                                                                              List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
+                                                                              List<BeregningsgrunnlagGrunnlagEntitet> originaleGrunnlag,
+                                                                              Map<Long, KalkulatorInputDto> koblingKalkulatorInput) {
         List<BeregningsgrunnlagTilstand> aktiveTilstander = beregningsgrunnlagGrunnlagEntiteter.stream().map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
                 .distinct()
                 .collect(Collectors.toList());
-        Map<Long, KalkulatorInputDto> koblingKalkulatorInput = kalkulatorInputDtoResultat.getResultatPrKobling();
 
         Map<Long, KoblingEntitet> koblinger = koblingRepository.hentKoblingerFor(koblingIder)
                 .stream().collect(Collectors.toMap(KoblingEntitet::getId, Function.identity()));
@@ -164,13 +155,13 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                         .flatMap(orginalKobling -> originaleGrunnlag.stream().filter(gr -> gr.getKoblingId().equals(orginalKobling)))
                         .collect(Collectors.toList())));
 
-        return Resultat.forGyldigInputMedData(mapInputListe(
+        return mapInputListe(
                 beregningsgrunnlagGrunnlagEntiteter,
                 grunnlagFraFordel,
                 avklaringsbehovPrKobling,
                 koblingKalkulatorInput,
                 koblinger,
-                originaleGrunnlagMap));
+                originaleGrunnlagMap);
     }
 
     private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {

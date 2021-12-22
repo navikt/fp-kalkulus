@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+
+import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
 
 
 class KalkulatorInputTjenesteTest {
@@ -552,20 +554,16 @@ class KalkulatorInputTjenesteTest {
     @Test
     void skal_konvertere_input() {
         var dto = KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT, 1L);
-        assertThat(dto).isPresent();
     }
 
     @Test
     void skal_gi_empty_ved_feil() {
-        var dto = KalkulatorInputTjeneste.konverterTilInput(INPUT_UTEN_SKJÆRINGSTIDSPUNKT, 1L);
-        assertThat(dto).isEmpty();
-
+        assertThrows(UgyldigInputException.class, () -> KalkulatorInputTjeneste.konverterTilInput(INPUT_UTEN_SKJÆRINGSTIDSPUNKT, 1L));
     }
 
     @Test
     void skal_konvertere_input_med_nytt_felt() {
         var dto = KalkulatorInputTjeneste.konverterTilInput(GYLDIG_INPUT_MED_NYTT_FELT, 1L);
-        assertThat(dto).isPresent();
     }
 
 

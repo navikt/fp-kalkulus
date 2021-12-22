@@ -4,7 +4,6 @@ import static no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilK
 import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput;
 import static no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator.mapFraKalkulatorInput;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt.Avklar
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleInput;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
@@ -192,7 +190,7 @@ public class AksjonspunktMigreringTjeneste {
         var beregningsgrunnlagGrunnlagEntiteter = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
         var inputRespons = kalkulatorInputTjeneste.hentForKoblinger(koblingIder);
 
-        Map<Long, InntektsmeldingAggregatDto> inntektsmeldingerPrKobling = inputRespons.getResultatPrKobling().entrySet().stream()
+        Map<Long, InntektsmeldingAggregatDto> inntektsmeldingerPrKobling = inputRespons.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         e -> MapIAYTilKalulator.mapInntektsmelding(e.getValue().getIayGrunnlag().getInntektsmeldingDto())
@@ -273,8 +271,8 @@ public class AksjonspunktMigreringTjeneste {
         return koblingerMedAvvik;
     }
 
-    private BeregningsgrunnlagGUIInput lagInput(Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitetMap, Resultat<KalkulatorInputDto> inputRespons, KoblingEntitet kobling) {
-        KalkulatorInputDto kalkulatorInputDto = inputRespons.getResultatPrKobling().get(kobling.getId());
+    private BeregningsgrunnlagGUIInput lagInput(Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitetMap, Map<Long, KalkulatorInputDto> inputRespons, KoblingEntitet kobling) {
+        KalkulatorInputDto kalkulatorInputDto = inputRespons.get(kobling.getId());
         BeregningsgrunnlagGrunnlagDto mappetGrunnlag = mapGrunnlag(grunnlagEntitetMap.get(kobling.getId()));
         return mapFraKalkulatorInput(kobling,
                 kalkulatorInputDto,
@@ -315,7 +313,7 @@ public class AksjonspunktMigreringTjeneste {
         var koblingStegInputMap = grunnlagEntiteter.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        e -> mapFraKalkulatorInputTilBeregningsgrunnlagInput(finnKobling(koblinger, e.getKey()), inputRespons.getResultatPrKobling().get(e.getKey()), Optional.of(e.getValue())))
+                        e -> mapFraKalkulatorInputTilBeregningsgrunnlagInput(finnKobling(koblinger, e.getKey()), inputRespons.get(e.getKey()), Optional.of(e.getValue())))
                 );
         var utleder = finnImplementasjonForYtelseType(FagsakYtelseType.fraKode(data.getYtelseSomSkalBeregnes().getKode()), apUtlederFastsettAktiviteter);
 

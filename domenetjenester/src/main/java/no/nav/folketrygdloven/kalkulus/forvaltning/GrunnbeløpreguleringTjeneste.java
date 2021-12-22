@@ -8,7 +8,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
@@ -46,8 +45,8 @@ public class GrunnbeløpreguleringTjeneste {
             return GrunnbeløpReguleringStatus.IKKE_VURDERT;
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> gjeldendeBG = koblingEntitetOpt.flatMap(k -> beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntitet(k.getId()));
-        Resultat<KalkulatorInputDto> inputresultat = kalkulatorInputTjeneste.hentForKoblinger(Collections.singletonList(koblingEntitetOpt.get().getId()));
-        KalkulatorInputDto input = inputresultat.getResultatPrKobling().get(koblingEntitetOpt.get().getId());
+        var inputresultat = kalkulatorInputTjeneste.hentForKoblinger(Collections.singletonList(koblingEntitetOpt.get().getId()));
+        KalkulatorInputDto input = inputresultat.get(koblingEntitetOpt.get().getId());
         BeregningSats nySats = beregningsgrunnlagRepository.finnGrunnbeløp(input.getSkjæringstidspunkt());
         return Greguleringsstatusutleder.utledStatus(gjeldendeBG, BigDecimal.valueOf(nySats.getVerdi()), koblingEntitetOpt.get().getYtelseTyperKalkulusStøtter());
     }

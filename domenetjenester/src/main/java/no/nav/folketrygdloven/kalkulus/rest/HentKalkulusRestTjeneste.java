@@ -38,9 +38,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulator.guitjenester.BeregningsgrunnlagDtoTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulus.beregning.GUIBeregningsgrunnlagInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.HentInputResponsKode;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
-import no.nav.folketrygdloven.kalkulus.beregning.input.Resultat;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -118,10 +116,10 @@ public class HentKalkulusRestTjeneste {
         if (YtelseTyperKalkulusStøtterKontrakt.OMSORGSPENGER.equals(ytelseType) || YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN.equals(ytelseType)) {
             List<Long> koblinger = new ArrayList<>();
             koblingReferanser.forEach(ref -> koblingTjeneste.hentKoblingHvisFinnes(ref, ytelseType).ifPresent(koblinger::add));
-            Resultat<BeregningsgrunnlagGUIInput> input = guiInputTjeneste.lagInputForKoblinger(koblinger, List.of());
+            var input = guiInputTjeneste.lagInputForKoblinger(koblinger, List.of());
             List<BeregningsgrunnlagGrunnlagEntitet> grunnlag = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblingReferanser, ytelseType);
             dtoer = new ArrayList<>();
-            input.getResultatPrKobling().forEach((key, value) -> {
+            input.forEach((key, value) -> {
                 Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagForKobling = grunnlag.stream()
                         .filter(gr -> gr.getKoblingId().equals(key))
                         .findFirst();
@@ -176,17 +174,19 @@ public class HentKalkulusRestTjeneste {
             var ytelseType = YtelseTyperKalkulusStøtterKontrakt.fraKode(ytelseTyper.iterator().next().getKode());
             kalkulatorInputTjeneste.lagreKalkulatorInput(ytelseType, spesifikasjon.getKalkulatorInputPerKoblingReferanse());
         }
-        Resultat<BeregningsgrunnlagGUIInput> inputResultat = finnInputForGenereringAvDtoTilGUI(spesifikasjoner);
-        if (inputResultat.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
+        Map<Long, BeregningsgrunnlagGUIInput> inputResultat;
+        try {
+            inputResultat = finnInputForGenereringAvDtoTilGUI(spesifikasjoner);
+        } catch (UgyldigInputException e) {
             return Response.ok(new BeregningsgrunnlagListe(true)).build();
-        } else {
-            List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> dtoPrReferanse = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(
-                    inputResultat.getResultatPrKobling(), spesifikasjoner).entrySet()
-                    .stream()
-                    .map(e -> new BeregningsgrunnlagPrReferanse<>(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
-            return Response.ok(new BeregningsgrunnlagListe(dtoPrReferanse)).build();
         }
+
+        List<BeregningsgrunnlagPrReferanse<BeregningsgrunnlagDto>> dtoPrReferanse = hentBeregningsgrunnlagDtoForGUIForSpesifikasjon(
+                inputResultat, spesifikasjoner).entrySet()
+                .stream()
+                .map(e -> new BeregningsgrunnlagPrReferanse<>(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+        return Response.ok(new BeregningsgrunnlagListe(dtoPrReferanse)).build();
     }
 
     /**
@@ -210,19 +210,14 @@ public class HentKalkulusRestTjeneste {
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet = beregningsgrunnlagRepository
                 .hentBeregningsgrunnlagGrunnlagEntitet(koblingId.get());
-        Resultat<BeregningsgrunnlagGUIInput> resultatInput = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of());
-        if (resultatInput.getKode().equals(HentInputResponsKode.ETTERSPØR_NY_INPUT)) {
-            throw new IllegalStateException("Kan ikke hente ny input for kall til frisinnGrunnlag");
-        } else {
-            BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of()).getResultatPrKobling().values().iterator().next();
-            final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
-                    .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
-                    .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
-                    .map(bgDto -> Response.ok(bgDto).build())
-                    .findFirst()
-                    .orElse(Response.noContent().build());
-            return response;
-        }
+        BeregningsgrunnlagGUIInput input = guiInputTjeneste.lagInputForKoblinger(List.of(koblingId.get()), List.of()).values().iterator().next();
+        final Response response = beregningsgrunnlagGrunnlagEntitet.stream()
+                .flatMap(gr -> gr.getBeregningsgrunnlag().stream())
+                .map(bg -> MapBeregningsgrunnlagFRISINN.map(bg, input.getIayGrunnlag().getOppgittOpptjening(), input.getYtelsespesifiktGrunnlag()))
+                .map(bgDto -> Response.ok(bgDto).build())
+                .findFirst()
+                .orElse(Response.noContent().build());
+        return response;
     }
 
     private List<BeregningsgrunnlagGrunnlagEntitet> hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(Collection<KoblingReferanse> koblingReferanser,
@@ -252,7 +247,7 @@ public class HentKalkulusRestTjeneste {
                 .stream().collect(Collectors.toMap(input -> input.getKoblingReferanse().getKoblingUuid(), input -> mapTilDto(spesifikasjoner, input)));
     }
 
-    private Resultat<BeregningsgrunnlagGUIInput> finnInputForGenereringAvDtoTilGUI(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
+    private Map<Long, BeregningsgrunnlagGUIInput> finnInputForGenereringAvDtoTilGUI(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner) {
         var koblingReferanser = spesifikasjoner.stream().map(HentBeregningsgrunnlagDtoForGUIRequest::getKoblingReferanse)
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toSet());
@@ -263,7 +258,7 @@ public class HentKalkulusRestTjeneste {
                 .collect(Collectors.toSet());
 
         if (ytelseSomSkalBeregnes.isEmpty()) {
-            return Resultat.forGyldigInputMedData(Map.of());
+            return Map.of();
         } else if (ytelseSomSkalBeregnes.size() != 1) {
             throw new IllegalArgumentException("Støtter kun at alle har samme ytelse type. Fikk: " + ytelseSomSkalBeregnes);
         }
@@ -272,8 +267,7 @@ public class HentKalkulusRestTjeneste {
         var koblingIds = koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
         var koblingRelasjoner = koblingTjeneste.hentKoblingRelasjoner(koblingIds);
 
-        Resultat<BeregningsgrunnlagGUIInput> inputResultat = guiInputTjeneste.lagInputForKoblinger(koblingIds, koblingRelasjoner);
-        return inputResultat;
+        return guiInputTjeneste.lagInputForKoblinger(koblingIds, koblingRelasjoner);
     }
 
     private BeregningsgrunnlagDto mapTilDto(Collection<HentBeregningsgrunnlagDtoForGUIRequest> spesifikasjoner, BeregningsgrunnlagGUIInput input) {
