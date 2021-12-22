@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.håndtering;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,9 +7,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;
@@ -23,13 +18,10 @@ import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
-import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.k9.felles.exception.TekniskException;
 
 @ApplicationScoped
 public class HåndtererApplikasjonTjeneste {
-    private static final Logger LOG = LoggerFactory.getLogger(HåndtererApplikasjonTjeneste.class);
-
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
@@ -45,30 +37,14 @@ public class HåndtererApplikasjonTjeneste {
     }
 
     public OppdateringRespons håndter(HåndterBeregningsgrunnlagInput håndterBeregningInput, HåndterBeregningDto håndterBeregningDto) {
-
         Long koblingId = håndterBeregningInput.getKoblingId();
-
-        // Siden vi i starten kan få inn avklaringsbehov som ikke er lagret i kalkulus (gamle saker fra før dette ble introdusert)
-        // må vi sjekke på dette intill gamle saker har passert beregning
-        boolean skalLøseAvklaringsbehovEtterOppdatering = false;
         AvklaringsbehovDefinisjon avklaringsbehovdefinisjon = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            if (harUtledetAvklaringsbehov(koblingId, avklaringsbehovdefinisjon)) {
-                skalLøseAvklaringsbehovEtterOppdatering = true;
-            } else if (avklaringsbehovdefinisjon.erOverstyring()) {
-                opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
-                skalLøseAvklaringsbehovEtterOppdatering = true;
-            } else {
-                LOG.info("FT-406871: Prøver å løse avklaringsbehov {} på kobling {} men dette er ikke lagret som utledet i kalkulus", håndterBeregningDto.getKode(), koblingId);
-            }
+        if (avklaringsbehovdefinisjon.erOverstyring()) {
+            opprettOverstyringAvklaringsbehov(koblingId, avklaringsbehovdefinisjon);
         }
-
         BeregningsgrunnlagTilstand tilstand = MapHåndteringskodeTilTilstand.map(håndterBeregningDto.getKode());
         HåndteringResultat resultat = håndterOgLagre(håndterBeregningInput, håndterBeregningDto, håndterBeregningDto.getKode(), tilstand);
-
-        if (skalLøseAvklaringsbehovEtterOppdatering) {
-            løsAvklaringsbehov(koblingId, håndterBeregningDto);
-        }
+        løsAvklaringsbehov(koblingId, håndterBeregningDto);
         if (resultat.getEndring() != null) {
             return new OppdateringRespons(resultat.getEndring(), håndterBeregningInput.getKoblingReferanse().getKoblingUuid());
         } else {
@@ -76,18 +52,12 @@ public class HåndtererApplikasjonTjeneste {
         }
     }
 
-    private boolean harUtledetAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {
-        return avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, avklaringsbehovdefinisjon).isPresent();
-    }
-
     private void løsAvklaringsbehov(Long koblingId, HåndterBeregningDto håndterBeregningDto) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            AvklaringsbehovDefinisjon avklaringsbehov = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
-            avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(koblingId, avklaringsbehov);
-            avklaringsbehovTjeneste.settOpprettetVedBehov(koblingId, avklaringsbehov);
-            avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehov,
-                    håndterBeregningDto.getBegrunnelse());
-        }
+        AvklaringsbehovDefinisjon avklaringsbehov = AvklaringsbehovDefinisjon.fraHåndtering(håndterBeregningDto.getKode());
+        avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtter(koblingId, avklaringsbehov);
+        avklaringsbehovTjeneste.settOpprettetVedBehov(koblingId, avklaringsbehov);
+        avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehov,
+                håndterBeregningDto.getBegrunnelse());
     }
 
     private void opprettOverstyringAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovdefinisjon) {

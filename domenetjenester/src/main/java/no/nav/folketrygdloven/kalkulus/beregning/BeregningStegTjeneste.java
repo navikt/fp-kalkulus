@@ -351,26 +351,20 @@ public class BeregningStegTjeneste {
 
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat
             beregningResultatAggregat) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
-            List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
-                    .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
-                    .filter(ap -> !ap.erVentepunkt())
-                    .collect(Collectors.toList());
-            avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
-        }
+        // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+        List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
+                .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
+                .filter(ap -> !ap.erVentepunkt())
+                .collect(Collectors.toList());
+        avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
     }
 
     private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            avklaringsbehovTjeneste.validerIngenAvklaringsbehovFørStegÅpne(stegType, koblingId);
-        }
+        avklaringsbehovTjeneste.validerIngenAvklaringsbehovFørStegÅpne(stegType, koblingId);
     }
 
     private void validerIngenÅpneAvklaringsbehov(Long koblingId) {
-        if (avklaringsbehovTjeneste.skalLagreAvklaringsbehovIKalkulus()) {
-            avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
-        }
+        avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
     }
 
 }

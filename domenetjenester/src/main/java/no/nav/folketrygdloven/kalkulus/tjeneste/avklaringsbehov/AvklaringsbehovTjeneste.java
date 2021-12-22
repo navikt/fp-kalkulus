@@ -21,7 +21,6 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.k9.felles.exception.TekniskException;
-import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
 
 @ApplicationScoped
 public class AvklaringsbehovTjeneste {
@@ -30,7 +29,6 @@ public class AvklaringsbehovTjeneste {
     private AvklaringsbehovRepository avklaringsbehovRepository;
     private KoblingRepository koblingRepository;
     private AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste;
-    private boolean skalLagreAvklaringsbehovIKalkulus;
 
     AvklaringsbehovTjeneste() {
         // CDI
@@ -39,16 +37,10 @@ public class AvklaringsbehovTjeneste {
     @Inject
     public AvklaringsbehovTjeneste(AvklaringsbehovRepository avklaringsbehovRepository,
                                    KoblingRepository koblingRepository,
-                                   AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste,
-                                   @KonfigVerdi(value = "LAGRE_AKSJONSPUNKT_I_KALKULUS", defaultVerdi = "false", required = false) boolean skalLagreAvklaringsbehovIKalkulus) {
+                                   AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste) {
         this.avklaringsbehovRepository = avklaringsbehovRepository;
         this.koblingRepository = koblingRepository;
         this.avklaringsbehovKontrollTjeneste = avklaringsbehovKontrollTjeneste;
-        this.skalLagreAvklaringsbehovIKalkulus = skalLagreAvklaringsbehovIKalkulus;
-    }
-
-    public boolean skalLagreAvklaringsbehovIKalkulus() {
-        return skalLagreAvklaringsbehovIKalkulus;
     }
 
     public void lagreAvklaringsresultater(Long koblingid, List<AvklaringsbehovDefinisjon> avklaringsbehov) {
@@ -131,15 +123,13 @@ public class AvklaringsbehovTjeneste {
     }
 
     private void validerAtABKanLøses(AvklaringsbehovDefinisjon definisjon, Long koblingId) {
-        if (skalLagreAvklaringsbehovIKalkulus()) {
-            Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = hentAvklaringsbehov(koblingId, definisjon);
-            if (avklaringsbehovEntitet.isEmpty()) {
-                throw new TekniskException("FT-406872",
-                        String.format("Prøver å løse avklaringsbehov %s for kobling %s uten at dette er utledet for koblingen", definisjon, koblingId));
-            } else if (!AvklaringsbehovStatus.OPPRETTET.equals(avklaringsbehovEntitet.get().getStatus())) {
-                throw new TekniskException("FT-406873",
-                        String.format("Prøver å løse avklaringsbehov %s for kobling %s men det har ugyldig status %s", definisjon, koblingId, avklaringsbehovEntitet.get().getStatus()));
-            }
+        Optional<AvklaringsbehovEntitet> avklaringsbehovEntitet = hentAvklaringsbehov(koblingId, definisjon);
+        if (avklaringsbehovEntitet.isEmpty()) {
+            throw new TekniskException("FT-406872",
+                    String.format("Prøver å løse avklaringsbehov %s for kobling %s uten at dette er utledet for koblingen", definisjon, koblingId));
+        } else if (!AvklaringsbehovStatus.OPPRETTET.equals(avklaringsbehovEntitet.get().getStatus())) {
+            throw new TekniskException("FT-406873",
+                    String.format("Prøver å løse avklaringsbehov %s for kobling %s men det har ugyldig status %s", definisjon, koblingId, avklaringsbehovEntitet.get().getStatus()));
         }
     }
 

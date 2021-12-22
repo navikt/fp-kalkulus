@@ -70,8 +70,6 @@ spec:
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
       value: "false"
-    - name: LAGRE_AKSJONSPUNKT_I_KALKULUS
-      value: "true"
     - name: SKAL_VURDERE_FORLENGELSE
       value: "false"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER

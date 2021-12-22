@@ -44,7 +44,7 @@ class AvklaringsbehovTjenesteTest extends EntityManagerAwareTest {
         avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
         koblingRepository.lagre(kobling);
-        avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste, true);
+        avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
     }
 
     @Test
