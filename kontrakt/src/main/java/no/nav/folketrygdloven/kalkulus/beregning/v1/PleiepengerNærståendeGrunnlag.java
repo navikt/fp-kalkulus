@@ -22,7 +22,7 @@ public class PleiepengerNærståendeGrunnlag extends YtelsespesifiktGrunnlagDto 
     public static final String YTELSE_TYPE = "PPN";
 
     @JsonProperty(value = "utbetalingsgradPrAktivitet", required = true)
-    @Size(min = 1)
+    @Size()
     @Valid
     private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
