@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGradering;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodeModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.PeriodisertBruttoBeregningsgrunnlag;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.AndelGradering;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.PeriodeModellGradering;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.SplittetPeriode;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapPeriodisertBruttoBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapSplittetPeriodeFraVLTilRegel;
@@ -24,8 +24,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 
 public class MapPerioderForGraderingFraVLTilRegel {
 
-    public static PeriodeModell map(BeregningsgrunnlagInput input,
-                             BeregningsgrunnlagDto beregningsgrunnlag) {
+    public static PeriodeModellGradering map(BeregningsgrunnlagInput input,
+                                             BeregningsgrunnlagDto beregningsgrunnlag) {
         var iayGrunnlag = input.getIayGrunnlag();
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), iayGrunnlag.getAktørArbeidFraRegister());
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
@@ -46,17 +46,16 @@ public class MapPerioderForGraderingFraVLTilRegel {
                 List.copyOf(regelAndelGraderinger));
     }
 
-    private static PeriodeModell mapPeriodeModell(BeregningsgrunnlagDto vlBeregningsgrunnlag,
+    private static PeriodeModellGradering mapPeriodeModell(BeregningsgrunnlagDto vlBeregningsgrunnlag,
                                                   LocalDate skjæringstidspunkt,
                                                   List<SplittetPeriode> eksisterendePerioder,
                                                   List<AndelGradering> regelAndelGraderinger) {
         List<PeriodisertBruttoBeregningsgrunnlag> periodiseringBruttoBg = MapPeriodisertBruttoBeregningsgrunnlag.map(vlBeregningsgrunnlag);
 
-        return PeriodeModell.builder()
+        return PeriodeModellGradering.builder()
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .medGrunnbeløp(vlBeregningsgrunnlag.getGrunnbeløp().getVerdi())
                 .medAndelGraderinger(regelAndelGraderinger)
-                .medEndringISøktYtelse(Collections.emptyList())
                 .medEksisterendePerioder(eksisterendePerioder)
                 .medPeriodisertBruttoBeregningsgrunnlag(periodiseringBruttoBg)
                 .build();

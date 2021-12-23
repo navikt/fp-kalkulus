@@ -13,13 +13,11 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AndelGraderingImpl;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.AndelGradering;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapArbeidsforholdFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk.MapAktivitetStatusV2FraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering;
-import no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
@@ -36,11 +34,11 @@ public final class MapAndelGradering {
     }
 
 
-    public static AndelGraderingImpl mapGradering(AndelGradering andelGradering,
-                                                     BeregningsgrunnlagDto beregningsgrunnlag,
-                                                     Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                     YrkesaktivitetFilterDto filter,
-                                                     LocalDate skjæringstidspunktBeregning) {
+    public static AndelGradering mapGradering(no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering andelGradering,
+                                              BeregningsgrunnlagDto beregningsgrunnlag,
+                                              Collection<InntektsmeldingDto> inntektsmeldinger,
+                                              YrkesaktivitetFilterDto filter,
+                                              LocalDate skjæringstidspunktBeregning) {
 
         if (andelGradering.getAktivitetStatus().erArbeidstaker()) {
             return mapGraderingForArbeid(andelGradering, beregningsgrunnlag, inntektsmeldinger, filter, skjæringstidspunktBeregning);
@@ -51,12 +49,12 @@ public final class MapAndelGradering {
 
 
 
-    private static AndelGraderingImpl mapGraderingForArbeid(AndelGradering andelGradering,
-                                                            BeregningsgrunnlagDto beregningsgrunnlag,
-                                                            Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                            YrkesaktivitetFilterDto filter,
-                                                            LocalDate skjæringstidspunktBeregning) {
-        AndelGraderingImpl.Builder builder = AndelGraderingImpl.builder();
+    private static AndelGradering mapGraderingForArbeid(no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering andelGradering,
+                                                        BeregningsgrunnlagDto beregningsgrunnlag,
+                                                        Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                        YrkesaktivitetFilterDto filter,
+                                                        LocalDate skjæringstidspunktBeregning) {
+        AndelGradering.Builder builder = AndelGradering.builder();
         builder.medNyAktivitetTidslinje(finnTidslinjeForNyAktivitet(
                 beregningsgrunnlag,
                 UttakArbeidType.ORDINÆRT_ARBEID,
@@ -72,7 +70,7 @@ public final class MapAndelGradering {
 
 
     private static Arbeidsforhold lagArbeidsforhold(Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                    AndelGradering andelGradering,
+                                                    no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering andelGradering,
                                                     YrkesaktivitetFilterDto filter,
                                                     LocalDate skjæringstidspunktBeregning) {
         Optional<YrkesaktivitetDto> yrkesaktivitet = finnAlleYrkesaktiviteterInkludertFjernetIOverstyring(filter, skjæringstidspunktBeregning)
@@ -87,7 +85,7 @@ public final class MapAndelGradering {
             return arbeidsforhold;
     }
 
-    private static InternArbeidsforholdRefDto finnArbeidsforholdReferanse(Collection<InntektsmeldingDto> inntektsmeldinger, AndelGradering andelGradering) {
+    private static InternArbeidsforholdRefDto finnArbeidsforholdReferanse(Collection<InntektsmeldingDto> inntektsmeldinger, no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering andelGradering) {
         Optional<InntektsmeldingDto> matchendeInntektsmelding = inntektsmeldinger.stream()
                 .filter(im -> andelGradering.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()))
                 .filter(im -> im.getArbeidsforholdRef().gjelderForSpesifiktArbeidsforhold())
@@ -96,16 +94,16 @@ public final class MapAndelGradering {
     }
 
 
-    public static AndelGraderingImpl mapGraderingForFLSN(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                         AndelGradering andelGradering,
+    public static AndelGradering mapGraderingForFLSN(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                         no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering andelGradering,
                                                          YrkesaktivitetFilterDto filter,
                                                          LocalDate skjæringstidspunktBeregning) {
         if (andelGradering.getAktivitetStatus().erArbeidstaker()) {
             throw new IllegalArgumentException("Gradering for arbeidstaker skal ikke mappes her");
         }
         var regelAktivitetStatus = MapAktivitetStatusV2FraVLTilRegel.map(andelGradering.getAktivitetStatus(), null);
-        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering> graderinger = mapGraderingPerioder(andelGradering.getGraderinger());
-        AndelGraderingImpl.Builder builder = AndelGraderingImpl.builder()
+        List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.Gradering> graderinger = mapGraderingPerioder(andelGradering.getGraderinger());
+        AndelGradering.Builder builder = AndelGradering.builder()
             .medAktivitetStatus(regelAktivitetStatus)
             .medGraderinger(graderinger);
 
@@ -131,17 +129,16 @@ public final class MapAndelGradering {
         return builder.build();
     }
 
-    private static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering> mapGraderingPerioder(List<Gradering> graderingList) {
+    private static List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.Gradering> mapGraderingPerioder(List<no.nav.folketrygdloven.kalkulator.modell.gradering.AndelGradering.Gradering> graderingList) {
         return graderingList.stream()
-            .map(gradering -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Gradering(
-                Periode.of(gradering.getPeriode().getFomDato(), gradering.getPeriode().getTomDato()),
-                gradering.getArbeidstidProsent()))
+            .map(gradering -> new no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.gradering.Gradering(
+                Periode.of(gradering.getPeriode().getFomDato(), gradering.getPeriode().getTomDato())))
             .collect(Collectors.toList());
     }
 
 
     private static void settTidslinjeForNyAktivitetForStatus(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                             AndelGraderingImpl.Builder builder,
+                                                             AndelGradering.Builder builder,
                                                              no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus status) {
         builder.medNyAktivitetTidslinje(finnNyAndelTidslinje(status, beregningsgrunnlag));
     }
