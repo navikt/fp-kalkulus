@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,6 +13,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -20,6 +24,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 @ApplicationScoped
 public class RegelsporingRepository {
+
+    private static final Logger log = LoggerFactory.getLogger(RegelsporingRepository.class);
 
     private static final String KOBLING_ID = "koblingId";
     private EntityManager entityManager;
@@ -42,11 +48,11 @@ public class RegelsporingRepository {
     public void lagre(Long koblingId, Map<BeregningsgrunnlagPeriodeRegelType, List<RegelSporingPeriodeEntitet.Builder>> regelSporingPerioder) {
         regelSporingPerioder.forEach((key, value) -> value.stream()
                 .map(builder -> builder.build(koblingId, key)).forEach(sporing -> {
-            if (!sporing.erAktiv()) {
-                throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
-            }
-            entityManager.persist(sporing);
-        }));
+                    if (!sporing.erAktiv()) {
+                        throw new IllegalArgumentException("Kan ikke lagre en inaktivt reglsporing");
+                    }
+                    entityManager.persist(sporing);
+                }));
         entityManager.flush();
     }
 
@@ -66,27 +72,43 @@ public class RegelsporingRepository {
      * Rydder alle regelsporinger lagret lik eller før gitt tilstand
      *
      * @param koblingId KoblingId
-     * @param tilstand Beregningsgrunnlagtilstand
+     * @param tilstand  Beregningsgrunnlagtilstand
      */
     public void ryddRegelsporingForTilstand(Long koblingId, BeregningsgrunnlagTilstand tilstand) {
 
         // Rydd grunnlag-sporing
-        var typerSomSkalRyddes = Arrays.stream(BeregningsgrunnlagRegelType.values()).filter(t -> !t.getLagretTilstand().erFør(tilstand))
+        var typerSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagRegelType.class)
+                .stream()
+                .filter(t -> !t.getLagretTilstand().erFør(tilstand))
                 .collect(Collectors.toList());
-        var eksisterendeRegelsporing = hentRegelSporingGrunnlagMedGittType(koblingId, typerSomSkalRyddes);
-        eksisterendeRegelsporing.forEach(rs -> {
-            rs.setAktiv(false);
-            entityManager.persist(rs);
-        });
+
+        var grunnlagQuery = entityManager.createQuery("Update RegelSporingGrunnlagEntitet " +
+                        "set aktiv = false " +
+                        "where koblingId = :koblingId " +
+                        "and aktiv = true " +
+                        "and regelType in (:tilstander)")
+                .setParameter(KOBLING_ID, koblingId)
+                .setParameter("tilstander", typerSomSkalRyddes);
+
+        var oppdaterteRader = grunnlagQuery.executeUpdate();
+        log.info("Deaktivert {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
 
         // Rydd periode-sporing
-        var periodetyperSomSkalRyddes = Arrays.stream(BeregningsgrunnlagPeriodeRegelType.values()).filter(t -> !t.getLagretTilstand().erFør(tilstand))
+        var periodetyperSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagPeriodeRegelType.class)
+                .stream()
+                .filter(t -> !t.getLagretTilstand().erFør(tilstand))
                 .collect(Collectors.toList());
-        var eksisterendePeriodeRegelsporing = hentRegelSporingPeriodeMedGittType(koblingId, periodetyperSomSkalRyddes);
-        eksisterendePeriodeRegelsporing.forEach(rs -> {
-            rs.setAktiv(false);
-            entityManager.persist(rs);
-        });
+
+        var perioderQuery = entityManager.createQuery("Update RegelSporingPeriodeEntitet " +
+                        "set aktiv = false " +
+                        "where koblingId = :koblingId " +
+                        "and aktiv = true " +
+                        "and regelType in (:tilstander)")
+                .setParameter(KOBLING_ID, koblingId)
+                .setParameter("tilstander", periodetyperSomSkalRyddes);
+
+        var perioderOppdaterteRader = perioderQuery.executeUpdate();
+        log.info("Deaktivert {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
 
         entityManager.flush();
     }
@@ -95,7 +117,7 @@ public class RegelsporingRepository {
      * Rydder alle regelsporinger lagret lik eller før gitt tilstand
      *
      * @param koblingIder Et sett med KoblingIder
-     * @param tilstand Beregningsgrunnlagtilstand
+     * @param tilstand    Beregningsgrunnlagtilstand
      */
     public void ryddRegelsporingerForTilstand(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
         // Rydd grunnlag-sporing
@@ -110,7 +132,6 @@ public class RegelsporingRepository {
     }
 
 
-
     /**
      * Henter aktiv RegelsporingPeriode med gitt type
      *
@@ -122,7 +143,7 @@ public class RegelsporingRepository {
                 "from RegelSporingPeriodeEntitet sporing " +
                         "where sporing.koblingId=:koblingId " +
                         "and sporing.aktiv = :aktiv " +
-                "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
+                        "and sporing.regelType in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
         query.setParameter(KOBLING_ID, koblingId); //$NON-NLS-1$
         query.setParameter("aktiv", true); //$NON-NLS-1$
         query.setParameter("regeltype", regelTyper);
@@ -185,7 +206,6 @@ public class RegelsporingRepository {
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
     }
-
 
 
     /**

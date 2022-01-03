@@ -173,7 +173,7 @@ public class OperereKalkulusRestTjeneste {
         MDC.put("prosess_saksnummer", saksnummer);
         for (var k : spesifikasjon.getRequestPrReferanse()) {
             var koblingReferanse = new KoblingReferanse(k.getKoblingReferanse());
-            MDC.put("prosess_koblingreferanse", k.toString());
+            MDC.put("prosess_koblingreferanse", koblingReferanse.getReferanse().toString());
             var kopt = koblingTjeneste.hentFor(koblingReferanse);
 
             // Vi kaster ikkje feil om vi ikkje finner kobling

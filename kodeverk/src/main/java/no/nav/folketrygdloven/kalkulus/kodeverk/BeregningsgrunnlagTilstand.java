@@ -43,22 +43,21 @@ public enum BeregningsgrunnlagTilstand implements Kodeverdi {
      * <p>
      * IKKE ENDRE REKKEFØLGE AV TILSTANDER UTEN Å ENDRE REKKEFØLGE AV LAGRING.
      */
-    private static final List<BeregningsgrunnlagTilstand> tilstandRekkefølge = Collections.unmodifiableList(
-            List.of(
-                    OPPRETTET,
-                    FASTSATT_BEREGNINGSAKTIVITETER,
-                    OPPDATERT_MED_ANDELER,
-                    KOFAKBER_UT,
-                    FORESLÅTT,
-                    FORESLÅTT_UT,
-                    BESTEBEREGNET,
-                    VURDERT_VILKÅR,
-                    VURDERT_REFUSJON,
-                    VURDERT_REFUSJON_UT,
-                    OPPDATERT_MED_REFUSJON_OG_GRADERING,
-                    FASTSATT_INN,
-                    FASTSATT
-            ));
+    private static final List<BeregningsgrunnlagTilstand> tilstandRekkefølge = List.of(
+            OPPRETTET,
+            FASTSATT_BEREGNINGSAKTIVITETER,
+            OPPDATERT_MED_ANDELER,
+            KOFAKBER_UT,
+            FORESLÅTT,
+            FORESLÅTT_UT,
+            BESTEBEREGNET,
+            VURDERT_VILKÅR,
+            VURDERT_REFUSJON,
+            VURDERT_REFUSJON_UT,
+            OPPDATERT_MED_REFUSJON_OG_GRADERING,
+            FASTSATT_INN,
+            FASTSATT
+    );
 
     static {
         for (var v : values()) {
