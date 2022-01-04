@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaKortvarigArbeidsforhold.fastsettFaktaForKortvarigeArbeidsforhold;
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaLønnsendring.fastsettFaktaForLønnsendring;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,28 +10,27 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
-import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("OMP")
 public class FastsettFaktaTjenesteOMP implements FastsettFakta {
 
     public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
         if (!harRefusjonPåSkjæringstidspunktet(beregningsgrunnlag.getSkjæringstidspunkt(), iayGrunnlag)) {
             List<FaktaArbeidsforholdDto> faktaArbeidsforholdDtos = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);
-            if (!faktaArbeidsforholdDtos.isEmpty()) {
-                FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
-                faktaArbeidsforholdDtos.forEach(faktaBuilder::erstattEksisterendeEllerLeggTil);
-                return Optional.of(faktaBuilder.build());
-            }
+            faktaArbeidsforholdDtos.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        }
+        List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag);
+        faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        if (!faktaBuilder.manglerFakta()) {
+            return Optional.of(faktaBuilder.build());
         }
         return Optional.empty();
     }

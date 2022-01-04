@@ -14,6 +14,9 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaVurderingKilde;
 
 class FastsettFaktaKortvarigArbeidsforhold {
 
+    private FastsettFaktaKortvarigArbeidsforhold() {
+    }
+
     static List<FaktaArbeidsforholdDto> fastsettFaktaForKortvarigeArbeidsforhold(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         if (beregningsgrunnlag.getAktivitetStatuser().stream().noneMatch(a -> a.getAktivitetStatus().erSelvstendigNæringsdrivende())) {

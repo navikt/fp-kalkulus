@@ -20,13 +20,26 @@ public class Saksopplysninger {
     @Valid
     @JsonProperty(value = "arbeidsforholdMedLønnsendring")
     @Size
-    private List<ArbeidsforholdMedLønnsendring> arbeidsforholdMedLønnsendring;
+    private List<ArbeidsforholdDto> arbeidsforholdMedLønnsendring;
 
-    public List<ArbeidsforholdMedLønnsendring> getArbeidsforholdMedLønnsendring() {
+    @Valid
+    @JsonProperty(value = "kortvarigeArbeidsforhold")
+    @Size
+    private List<ArbeidsforholdDto> kortvarigeArbeidsforhold;
+
+    public List<ArbeidsforholdDto> getArbeidsforholdMedLønnsendring() {
         return arbeidsforholdMedLønnsendring;
     }
 
-    public void setArbeidsforholdMedLønnsendring(List<ArbeidsforholdMedLønnsendring> arbeidsforholdMedLønnsendring) {
+    public void setArbeidsforholdMedLønnsendring(List<ArbeidsforholdDto> arbeidsforholdMedLønnsendring) {
         this.arbeidsforholdMedLønnsendring = arbeidsforholdMedLønnsendring;
+    }
+
+    public List<ArbeidsforholdDto> getKortvarigeArbeidsforhold() {
+        return kortvarigeArbeidsforhold;
+    }
+
+    public void setKortvarigeArbeidsforhold(List<ArbeidsforholdDto> kortvarigeArbeidsforhold) {
+        this.kortvarigeArbeidsforhold = kortvarigeArbeidsforhold;
     }
 }

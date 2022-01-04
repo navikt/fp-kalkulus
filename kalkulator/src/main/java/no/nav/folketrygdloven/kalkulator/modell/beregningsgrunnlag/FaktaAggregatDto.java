@@ -3,17 +3,21 @@ package no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.modell.typer.FaktaVurdering;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 
-public class FaktaAggregatDto  {
+public class FaktaAggregatDto {
 
     private List<FaktaArbeidsforholdDto> faktaArbeidsforholdListe = new ArrayList<>();
     private FaktaAktørDto faktaAktør;
 
-    public FaktaAggregatDto() { }
+    public FaktaAggregatDto() {
+    }
 
     public FaktaAggregatDto(FaktaAggregatDto faktaAggregatDto) {
         this.faktaArbeidsforholdListe = faktaAggregatDto.getFaktaArbeidsforhold().stream().map(FaktaArbeidsforholdDto::new).collect(Collectors.toList());
@@ -52,6 +56,29 @@ public class FaktaAggregatDto  {
         eksisterende.ifPresent(this.faktaArbeidsforholdListe::remove);
         this.faktaArbeidsforholdListe.add(faktaArbeidsforhold);
     }
+
+    private void leggTilFaktaArbeidsforholdOgKopierEksisterende(FaktaArbeidsforholdDto faktaArbeidsforhold) {
+        var eksisterende = this.faktaArbeidsforholdListe.stream()
+                .filter(fa -> fa.gjelderFor(faktaArbeidsforhold.getArbeidsgiver(), faktaArbeidsforhold.getArbeidsforholdRef()))
+                .findFirst();
+        eksisterende.ifPresentOrElse(kopier(faktaArbeidsforhold), () -> this.faktaArbeidsforholdListe.add(faktaArbeidsforhold));
+    }
+
+    private Consumer<FaktaArbeidsforholdDto> kopier(FaktaArbeidsforholdDto faktaArbeidsforhold) {
+        return e -> {
+            var faktaBuilder = FaktaArbeidsforholdDto.builder(e);
+            kopierVurdering(faktaBuilder::medErTidsbegrenset, faktaArbeidsforhold.getErTidsbegrenset());
+            kopierVurdering(faktaBuilder::medHarMottattYtelse, faktaArbeidsforhold.getHarMottattYtelse());
+            kopierVurdering(faktaBuilder::medHarLønnsendringIBeregningsperioden, faktaArbeidsforhold.getHarLønnsendringIBeregningsperioden());
+        };
+    }
+
+    private void kopierVurdering(Function<FaktaVurdering, FaktaArbeidsforholdDto.Builder> builderFunction, FaktaVurdering vurdering) {
+        if (vurdering != null) {
+            builderFunction.apply(vurdering);
+        }
+    }
+
 
     void setFaktaAktør(FaktaAktørDto faktaAktør) {
         this.faktaAktør = faktaAktør;
@@ -96,6 +123,11 @@ public class FaktaAggregatDto  {
 
         public Builder erstattEksisterendeEllerLeggTil(FaktaArbeidsforholdDto faktaArbeidsforhold) { // NOSONAR
             kladd.leggTilFaktaArbeidsforholdOgErstattEksisterende(faktaArbeidsforhold);
+            return this;
+        }
+
+        public Builder kopierTilEksisterenderEllerLeggTil(FaktaArbeidsforholdDto faktaArbeidsforhold) { // NOSONAR
+            kladd.leggTilFaktaArbeidsforholdOgKopierEksisterende(faktaArbeidsforhold);
             return this;
         }
 

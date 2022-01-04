@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta;
 
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaKortvarigArbeidsforhold.fastsettFaktaForKortvarigeArbeidsforhold;
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaLønnsendring.fastsettFaktaForLønnsendring;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +20,12 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 public class FastsettFaktaTjenestePleiepenger implements FastsettFakta {
 
     public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        List<FaktaArbeidsforholdDto> faktaArbeidsforholdDtos = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);
-        if (!faktaArbeidsforholdDtos.isEmpty()) {
-            FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
-            faktaArbeidsforholdDtos.forEach(faktaBuilder::erstattEksisterendeEllerLeggTil);
+        List<FaktaArbeidsforholdDto> faktaKortvarig = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);
+        FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
+        faktaKortvarig.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag);
+        faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        if (!faktaBuilder.manglerFakta()) {
             return Optional.of(faktaBuilder.build());
         }
         return Optional.empty();
