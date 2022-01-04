@@ -1,10 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing;
 
-import static no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.PayloadUtil.getPayload;
-
-import java.sql.Clob;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -15,16 +11,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.engine.jdbc.ClobProxy;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter;
-import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
@@ -44,21 +36,13 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Lob
+    @Type(type = "jsonb")
     @Column(name = "regel_evaluering_json")
-    @DiffIgnore
-    private Clob regelEvaluering;
+    private String regelEvaluering;
 
-    @Transient
-    private transient AtomicReference<String> regelEvalueringCached = new AtomicReference<>();
-
-    @Lob
+    @Type(type = "jsonb")
     @Column(name = "regel_input_json")
-    @DiffIgnore
-    private Clob regelInput;
-
-    @Transient
-    private transient AtomicReference<String> regelInputCached = new AtomicReference<>();
+    private String regelInput;
 
     @Convert(converter= BeregningsgrunnlagPeriodeRegelTypeKodeverdiConverter.class)
     @Column(name="regel_type", nullable = false)
@@ -86,25 +70,11 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
     }
 
     public String getRegelEvaluering() {
-        return getPayload(regelEvaluering, regelEvalueringCached);
-    }
-
-    void setRegelEvaluering(String regelEvaluering) {
-        if (this.id != null && this.regelEvaluering != null) {
-            throw new IllegalStateException("Kan ikke overskrive regelEvaluering for RegelSporingPeriodeEntitet: " + this.id);
-        }
-        this.regelEvaluering = regelEvaluering == null || regelEvaluering.isEmpty() ? null : ClobProxy.generateProxy(regelEvaluering);
+        return regelEvaluering;
     }
 
     public String getRegelInput() {
-        return getPayload(regelInput, regelInputCached);
-    }
-
-    void setRegelInput(String regelInput) {
-        if (this.id != null && this.regelInput != null) {
-            throw new IllegalStateException("Kan ikke overskrive regelInput for RegelSporingPeriodeEntitet: " + this.id);
-        }
-        this.regelInput = regelInput == null || regelInput.isEmpty() ? null : ClobProxy.generateProxy(regelInput);
+        return regelInput;
     }
 
     public BeregningsgrunnlagPeriodeRegelType getRegelType() {
@@ -137,13 +107,13 @@ public class RegelSporingPeriodeEntitet extends BaseEntitet {
 
         public Builder medRegelInput(String regelInput) {
             Objects.requireNonNull(regelInput, "regelInput");
-            kladd.setRegelInput(regelInput);
+            kladd.regelInput = regelInput;
             return this;
         }
 
         public Builder medRegelEvaluering(String regelEvaluering) {
             Objects.requireNonNull(regelEvaluering, "regelInput");
-            kladd.setRegelEvaluering(regelEvaluering);
+            kladd.regelEvaluering = regelEvaluering;
             return this;
         }
 
