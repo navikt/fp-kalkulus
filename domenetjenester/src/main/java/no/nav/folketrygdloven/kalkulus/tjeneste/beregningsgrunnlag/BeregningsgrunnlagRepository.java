@@ -381,8 +381,14 @@ public class BeregningsgrunnlagRepository {
     }
 
     public void deaktiverKalkulatorInput(Long koblingId) {
-        Optional<KalkulatorInputEntitet> kalkulatorInputEntitet = hentHvisEksitererKalkulatorInput(koblingId);
-        kalkulatorInputEntitet.ifPresent(this::deaktiverKalkulatorInput);
+        var query = entityManager.createQuery("Update KalkulatorInput " +
+                        "set aktiv = false " +
+                        "where koblingId = :koblingId ")
+                .setParameter(KOBLING_ID, koblingId);
+
+        var perioderOppdaterteRader = query.executeUpdate();
+        LOG.debug("Deaktivert {} KalkulatorInput for koblingId={}", perioderOppdaterteRader, koblingId);
+        entityManager.flush();
     }
 
     public void deaktiverBeregningsgrunnlagGrunnlagEntitet(Long koblingId) {
@@ -396,12 +402,6 @@ public class BeregningsgrunnlagRepository {
 
     private void deaktiverBeregningsgrunnlagGrunnlagEntitet(BeregningsgrunnlagGrunnlagEntitet entitet) {
         endreAktivOgLagre(entitet, false);
-    }
-
-    private void deaktiverKalkulatorInput(KalkulatorInputEntitet entitet) {
-        entitet.setAktiv(false);
-        entityManager.persist(entitet);
-        entityManager.flush();
     }
 
     private void endreAktivOgLagre(BeregningsgrunnlagGrunnlagEntitet entitet, boolean aktiv) {
@@ -459,19 +459,9 @@ public class BeregningsgrunnlagRepository {
     }
 
     public boolean lagreOgSjekkStatus(KalkulatorInputEntitet input) {
-        Optional<KalkulatorInputEntitet> inputEntitetOptional = hentHvisEksitererKalkulatorInput(input.getKoblingId());
 
-        if (inputEntitetOptional.isPresent()) {
-            KalkulatorInputEntitet utdaterInput = inputEntitetOptional.get();
-            // ingen endring i input trenger ikke lagre
-            if (input.getInput().equals(utdaterInput.getInput())) {
-                return false;
-            } else {
-                utdaterInput.setAktiv(false);
-                entityManager.persist(utdaterInput);
-                entityManager.flush();
-            }
-        }
+        deaktiverKalkulatorInput(input.getKoblingId());
+
         entityManager.persist(input);
         entityManager.flush();
         return true;
