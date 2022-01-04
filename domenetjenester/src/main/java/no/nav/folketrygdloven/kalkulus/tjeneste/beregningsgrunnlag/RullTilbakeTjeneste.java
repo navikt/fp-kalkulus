@@ -46,7 +46,7 @@ public class RullTilbakeTjeneste {
     private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {
         Set<Long> rullTilbakeKoblinger = rullTilbakeListe.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
         beregningsgrunnlagRepository.deaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeListe);
-        regelsporingRepository.ryddRegelsporingerForTilstand(rullTilbakeKoblinger, tilstand);
+        regelsporingRepository.ryddRegelsporingForTilstand(rullTilbakeKoblinger, tilstand);
         Optional<BeregningsgrunnlagTilstand> forrigeObligatoriskTilstand = tilstand.erObligatoriskTilstand() ? Optional.of(tilstand) : BeregningsgrunnlagTilstand.finnForrigeObligatoriskTilstand(tilstand);
         if (forrigeObligatoriskTilstand.isPresent()) {
             beregningsgrunnlagRepository.reaktiverBeregningsgrunnlagGrunnlagEntiteter(rullTilbakeKoblinger, forrigeObligatoriskTilstand.get());

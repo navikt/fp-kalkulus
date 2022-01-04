@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.tjeneste.sporing;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +74,16 @@ public class RegelsporingRepository {
      * @param tilstand  Beregningsgrunnlagtilstand
      */
     public void ryddRegelsporingForTilstand(Long koblingId, BeregningsgrunnlagTilstand tilstand) {
+        ryddRegelsporingForTilstand(Set.of(koblingId), tilstand);
+    }
+
+    /**
+     * Rydder alle regelsporinger lagret lik eller før gitt tilstand
+     *
+     * @param koblingIder koblingIder
+     * @param tilstand  Beregningsgrunnlagtilstand
+     */
+    public void ryddRegelsporingForTilstand(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
 
         // Rydd grunnlag-sporing
         var typerSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagRegelType.class)
@@ -84,14 +93,14 @@ public class RegelsporingRepository {
 
         var grunnlagQuery = entityManager.createQuery("Update RegelSporingGrunnlagEntitet " +
                         "set aktiv = false " +
-                        "where koblingId = :koblingId " +
+                        "where koblingId in :koblingId " +
                         "and aktiv = true " +
                         "and regelType in (:tilstander)")
-                .setParameter(KOBLING_ID, koblingId)
+                .setParameter(KOBLING_ID, koblingIder)
                 .setParameter("tilstander", typerSomSkalRyddes);
 
         var oppdaterteRader = grunnlagQuery.executeUpdate();
-        log.info("Deaktivert {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingId);
+        log.info("Deaktivert {} regelsporringsgrunnlag for koblingId={}", oppdaterteRader, koblingIder);
 
         // Rydd periode-sporing
         var periodetyperSomSkalRyddes = EnumSet.allOf(BeregningsgrunnlagPeriodeRegelType.class)
@@ -101,36 +110,17 @@ public class RegelsporingRepository {
 
         var perioderQuery = entityManager.createQuery("Update RegelSporingPeriodeEntitet " +
                         "set aktiv = false " +
-                        "where koblingId = :koblingId " +
+                        "where koblingId in :koblingId " +
                         "and aktiv = true " +
                         "and regelType in (:tilstander)")
-                .setParameter(KOBLING_ID, koblingId)
+                .setParameter(KOBLING_ID, koblingIder)
                 .setParameter("tilstander", periodetyperSomSkalRyddes);
 
         var perioderOppdaterteRader = perioderQuery.executeUpdate();
-        log.info("Deaktivert {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingId);
+        log.info("Deaktivert {} regelsporringsperioder for koblingId={}", perioderOppdaterteRader, koblingIder);
 
         entityManager.flush();
     }
-
-    /**
-     * Rydder alle regelsporinger lagret lik eller før gitt tilstand
-     *
-     * @param koblingIder Et sett med KoblingIder
-     * @param tilstand    Beregningsgrunnlagtilstand
-     */
-    public void ryddRegelsporingerForTilstand(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
-        // Rydd grunnlag-sporing
-        var typerSomSkalRyddes = Arrays.stream(BeregningsgrunnlagRegelType.values()).filter(t -> !t.getLagretTilstand().erFør(tilstand))
-                .collect(Collectors.toList());
-        deaktiverRegelSporingerGrunnlagMedGittType(koblingIder, typerSomSkalRyddes);
-
-        // Rydd periode-sporing
-        var periodetyperSomSkalRyddes = Arrays.stream(BeregningsgrunnlagPeriodeRegelType.values()).filter(t -> !t.getLagretTilstand().erFør(tilstand))
-                .collect(Collectors.toList());
-        deaktiverRegelSporingerPeriodeMedGittType(koblingIder, periodetyperSomSkalRyddes);
-    }
-
 
     /**
      * Henter aktiv RegelsporingPeriode med gitt type
@@ -169,27 +159,6 @@ public class RegelsporingRepository {
     }
 
     /**
-     * Deaktiverer aktiv RegelsporingPeriode med gitt type
-     *
-     * @param koblingIder et sett med koblingIder
-     */
-    public void deaktiverRegelSporingerPeriodeMedGittType(Set<Long> koblingIder, List<BeregningsgrunnlagPeriodeRegelType> regelTyper) {
-        var query = entityManager.createNativeQuery(
-                "update REGEL_SPORING_PERIODE " +
-                        "set aktiv = :deaktiver " +
-                        "where kobling_id in :koblingId " +
-                        "and aktiv = :aktiv " +
-                        "and regel_type in :regeltype", RegelSporingPeriodeEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingIder); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        query.setParameter("regeltype", regelTyper.stream().map(BeregningsgrunnlagPeriodeRegelType::getKode).collect(Collectors.toList()));
-        query.setParameter("deaktiver", false);
-        query.executeUpdate();
-        entityManager.flush();
-    }
-
-
-    /**
      * Henter aktiv RegelsporingPeriode med gitt type
      *
      * @param koblingId en koblingId
@@ -205,29 +174,6 @@ public class RegelsporingRepository {
         query.setParameter("aktiv", true); //$NON-NLS-1$
         query.setParameter("regeltype", regelTyper);
         return query.getResultList();
-    }
-
-
-    /**
-     * Henter aktiv RegelsporingPeriode med gitt type
-     *
-     * @param koblingIder et sett med koblingIder
-     * @return Alle aktive {@link no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.RegelSporingPeriodeEntitet}
-     */
-    public void deaktiverRegelSporingerGrunnlagMedGittType(Set<Long> koblingIder, List<BeregningsgrunnlagRegelType> regelTyper) {
-        var query = entityManager.createNativeQuery(
-                "update REGEL_SPORING_GRUNNLAG " +
-                        "set aktiv = :deaktiver " +
-                        "where kobling_id in :koblingId " +
-                        "and aktiv = :aktiv " +
-                        "and regel_type in :regeltype", RegelSporingGrunnlagEntitet.class); //$NON-NLS-1$
-        query.setParameter(KOBLING_ID, koblingIder); //$NON-NLS-1$
-        query.setParameter("aktiv", true); //$NON-NLS-1$
-        query.setParameter("regeltype", regelTyper.stream().map(BeregningsgrunnlagRegelType::getKode).collect(Collectors.toList()));
-        query.setParameter("deaktiver", false);
-
-        query.executeUpdate();
-        entityManager.flush();
     }
 
 }
