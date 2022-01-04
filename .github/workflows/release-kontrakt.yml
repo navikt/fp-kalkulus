@@ -19,7 +19,7 @@ jobs:
       - name: Publish artifacts
         shell: bash
         run: |
-           mvn deploy -e --batch-mode --settings .github/.m2/settings.xml --file pom.xml -DtrimStackTrace=false -Dchangelist= -Dsha1= -Drevision=$NEW_VERSION -Dfile.encoding=UTF-8
+           mvn deploy -e --batch-mode --settings .github/.m2/settings.xml --file pom.xml -am -pl kontrakt,kalkulator -DtrimStackTrace=false -Dchangelist= -Dsha1= -Drevision=$NEW_VERSION -Dfile.encoding=UTF-8
         env:
           NEW_VERSION: ${{ github.event.release.tag_name }}
           GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
