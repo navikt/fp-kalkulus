@@ -1,6 +1,10 @@
 package no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing;
 
+import static no.nav.folketrygdloven.kalkulus.domene.entiteter.sporing.PayloadUtil.getPayload;
+
+import java.sql.Clob;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -8,12 +12,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Type;
+import org.hibernate.engine.jdbc.ClobProxy;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.BeregningsgrunnlagRegelTypeKodeverdiConverter;
+import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 
@@ -32,22 +39,33 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Type(type = "jsonb")
-    @Column(name = "regel_evaluering_json")
-    private String regelEvaluering;
-
-    @Type(type = "jsonb")
+    @Lob
     @Column(name = "regel_input_json")
-    private String regelInput;
+    @DiffIgnore
+    private Clob regelInput;
 
-    @Convert(converter= BeregningsgrunnlagRegelTypeKodeverdiConverter.class)
-    @Column(name="regel_type", nullable = false)
+    @Transient
+    private transient AtomicReference<String> regelInputCached = new AtomicReference<>();
+
+    @Lob
+    @Column(name = "regel_evaluering_json")
+    private Clob regelEvaluering;
+
+    @Transient
+    private transient AtomicReference<String> regelEvalueringCached = new AtomicReference<>();
+
+    @Convert(converter = BeregningsgrunnlagRegelTypeKodeverdiConverter.class)
+    @Column(name = "regel_type", nullable = false)
     private BeregningsgrunnlagRegelType regelType;
 
     @Column(name = "aktiv", nullable = false)
     private boolean aktiv = true;
 
     public RegelSporingGrunnlagEntitet() {
+    }
+
+    public static Builder ny() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -59,11 +77,25 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     }
 
     public String getRegelEvaluering() {
-        return this.regelEvaluering;
+        return getPayload(regelEvaluering, regelEvalueringCached);
+    }
+
+    void setRegelEvaluering(String regelEvaluering) {
+        if (this.id != null && this.regelEvaluering != null) {
+            throw new IllegalStateException("Kan ikke overskrive regelEvaluering for RegelSporingGrunnlagEntitet: " + this.id);
+        }
+        this.regelEvaluering = regelEvaluering == null || regelEvaluering.isEmpty() ? null : ClobProxy.generateProxy(regelEvaluering);
     }
 
     public String getRegelInput() {
-        return regelInput;
+        return getPayload(regelInput, regelInputCached);
+    }
+
+    void setRegelInput(String regelInput) {
+        if (this.id != null && this.regelInput != null) {
+            throw new IllegalStateException("Kan ikke overskrive regelInput for RegelSporingGrunnlagEntitet: " + this.id);
+        }
+        this.regelInput = regelInput == null || regelInput.isEmpty() ? null : ClobProxy.generateProxy(regelInput);
     }
 
     public BeregningsgrunnlagRegelType getRegelType() {
@@ -78,10 +110,6 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
         this.aktiv = aktiv;
     }
 
-    public static Builder ny() {
-        return new Builder();
-    }
-
     public static class Builder {
 
         private RegelSporingGrunnlagEntitet kladd;
@@ -92,13 +120,13 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
 
         public Builder medRegelInput(String regelInput) {
             Objects.requireNonNull(regelInput, "regelInput");
-            kladd.regelInput = regelInput;
+            kladd.setRegelInput(regelInput);
             return this;
         }
 
         public Builder medRegelEvaluering(String regelEvaluering) {
             Objects.requireNonNull(regelEvaluering, "regelInput");
-            kladd.regelEvaluering = regelEvaluering;
+            kladd.setRegelEvaluering(regelEvaluering);
             return this;
         }
 
