@@ -32,12 +32,10 @@ public class RegelSporingGrunnlagEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false)
     private Long koblingId;
 
-    @Type(type = "jsonb")
-    @Column(name = "regel_evaluering_json")
+    @Column(name = "regel_evaluering_json", columnDefinition="TEXT")
     private String regelEvaluering;
 
-    @Type(type = "jsonb")
-    @Column(name = "regel_input_json")
+    @Column(name = "regel_input_json", columnDefinition="TEXT")
     private String regelInput;
 
     @Convert(converter= BeregningsgrunnlagRegelTypeKodeverdiConverter.class)

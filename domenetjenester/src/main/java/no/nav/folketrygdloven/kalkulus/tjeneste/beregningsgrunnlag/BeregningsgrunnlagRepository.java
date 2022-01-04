@@ -38,12 +38,9 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.FaktaAggregatEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.SammenligningsgrunnlagPrStatus;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.GrunnlagReferanse;
-import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSatsType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
 @ApplicationScoped
 public class BeregningsgrunnlagRepository {
@@ -51,8 +48,8 @@ public class BeregningsgrunnlagRepository {
     private static final String BEREGNINGSGRUNNLAG_TILSTAND = "beregningsgrunnlagTilstand";
     private static final String BEREGNINGSGRUNNLAG = "beregningsgrunnlag";
     private static final String BUILDER = "beregningsgrunnlagGrunnlagBuilder";
-    private EntityManager entityManager;
     private static final Logger LOG = LoggerFactory.getLogger(BeregningsgrunnlagRepository.class);
+    private EntityManager entityManager;
 
     protected BeregningsgrunnlagRepository() {
         // for CDI proxy
@@ -69,9 +66,9 @@ public class BeregningsgrunnlagRepository {
      * eller ikke.
      * Om revurderingen ikke har grunnlag opprettet i denne tilstanden returneres grunnlaget fra originalbehandlingen for samme tilstand.
      *
-     * @param koblingId                  en koblingId
-     * @param skjæringstidspunktOpptjening                  skjæringstidspunkt for opptjening
-     * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
+     * @param koblingId                    en koblingId
+     * @param skjæringstidspunktOpptjening skjæringstidspunkt for opptjening
+     * @param beregningsgrunnlagTilstand   steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
      */
@@ -143,13 +140,13 @@ public class BeregningsgrunnlagRepository {
     /**
      * Henter originalt grunnlag for kobling med gitt tilstand
      *
-     * @param koblingId         koblingId
-     * @param tilstand          Tilstand for grunnlag
-     * @return  Originalt grunnlag med gitt tilstand
+     * @param koblingId koblingId
+     * @param tilstand  Tilstand for grunnlag
+     * @return Originalt grunnlag med gitt tilstand
      */
     @SuppressWarnings("unchecked")
     public Optional<BeregningsgrunnlagGrunnlagEntitet> hentOriginalGrunnlagForTilstand(Long koblingId,
-                                                                                      BeregningsgrunnlagTilstand tilstand) {
+                                                                                       BeregningsgrunnlagTilstand tilstand) {
         Query query = entityManager.createNativeQuery(
                 "SELECT GR.* FROM  GR_BEREGNINGSGRUNNLAG GR " +
                         "INNER JOIN KOBLING_RELASJON KR ON KR.ORIGINAL_KOBLING_ID = GR.KOBLING_ID " +
@@ -190,7 +187,7 @@ public class BeregningsgrunnlagRepository {
      * Henter siste {@link BeregningsgrunnlagGrunnlagEntitet} opprettet i et bestemt steg. Ignorerer om grunnlaget er aktivt eller ikke.
      *
      * @param koblingId                  en koblingId
-     * @param opprettetTidspunktMin minste opprettet tidspunkt
+     * @param opprettetTidspunktMin      minste opprettet tidspunkt
      * @param beregningsgrunnlagTilstand steget {@link BeregningsgrunnlagGrunnlagEntitet} er opprettet i
      * @return Hvis det finnes et eller fler BeregningsgrunnlagGrunnlagEntitet som har blitt opprettet i {@code stegOpprettet} returneres den
      * som ble opprettet sist
