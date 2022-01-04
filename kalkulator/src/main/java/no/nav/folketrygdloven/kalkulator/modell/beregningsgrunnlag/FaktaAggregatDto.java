@@ -74,7 +74,7 @@ public class FaktaAggregatDto {
     }
 
     private void kopierVurdering(Function<FaktaVurdering, FaktaArbeidsforholdDto.Builder> builderFunction, FaktaVurdering vurdering) {
-        if (vurdering != null) {
+        if (vurdering != null && vurdering.getVurdering() != null) {
             builderFunction.apply(vurdering);
         }
     }

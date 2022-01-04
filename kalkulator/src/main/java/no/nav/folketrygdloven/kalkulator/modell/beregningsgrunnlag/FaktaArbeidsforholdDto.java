@@ -129,17 +129,17 @@ public class FaktaArbeidsforholdDto {
         }
 
         public Builder medHarMottattYtelseFastsattAvSaksbehandler(Boolean harMottattYtelse) {
-            mal.harMottattYtelse = new FaktaVurdering(harMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
+            mal.harMottattYtelse = harMottattYtelse == null ? null : new FaktaVurdering(harMottattYtelse, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medErTidsbegrensetFastsattAvSaksbehandler(Boolean erTidsbegrenset) {
-            mal.erTidsbegrenset = new FaktaVurdering(erTidsbegrenset, FaktaVurderingKilde.SAKSBEHANDLER);
+            mal.erTidsbegrenset = erTidsbegrenset == null ? null : new FaktaVurdering(erTidsbegrenset, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 
         public Builder medHarLønnsendringIBeregningsperiodenFastsattAvSaksbehandler(Boolean harLønnsendringIBeregningsperioden) {
-            mal.harLønnsendringIBeregningsperioden = new FaktaVurdering(harLønnsendringIBeregningsperioden, FaktaVurderingKilde.SAKSBEHANDLER);
+            mal.harLønnsendringIBeregningsperioden = harLønnsendringIBeregningsperioden == null ? null : new FaktaVurdering(harLønnsendringIBeregningsperioden, FaktaVurderingKilde.SAKSBEHANDLER);
             return this;
         }
 

@@ -16,7 +16,7 @@ class ArbeidMedLønnsendringTjeneste {
     static List<ArbeidsforholdDto> lagArbeidsforholdMedLønnsendring(BeregningsgrunnlagGUIInput input) {
         var lønnsendringArbeidsforhold = input.getFaktaAggregat().stream()
                 .flatMap(f -> f.getFaktaArbeidsforhold().stream())
-                .filter(FaktaArbeidsforholdDto::getHarLønnsendringIBeregningsperiodenVurdering);
+                .filter(faktaArbeidsforholdDto -> faktaArbeidsforholdDto.getHarLønnsendringIBeregningsperiodenVurdering() != null && faktaArbeidsforholdDto.getHarLønnsendringIBeregningsperiodenVurdering());
         return lønnsendringArbeidsforhold.map(a -> new ArbeidsforholdDto(a.getArbeidsgiver().getIdentifikator(), a.getArbeidsforholdRef().getReferanse()))
                 .collect(Collectors.toList());
     }
