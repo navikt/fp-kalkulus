@@ -549,6 +549,93 @@ class BeregningRefusjonTjenesteTest {
         assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
     }
 
+    @Test
+    public void skal_finne_andel_hvis_refusjonskrav_har_økt_før_og_etter_helg() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriodeOriginal = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriodeOriginal, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 0);
+
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, LocalDate.of(2022, Month.JANUARY, 7))
+                .build(revurderingBG);
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(LocalDate.of(2022, Month.JANUARY, 8), LocalDate.of(2022, Month.JANUARY, 9))
+                .build(revurderingBG);
+
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode3 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(LocalDate.of(2022, Month.JANUARY, 10), TIDENES_ENDE)
+                .build(revurderingBG);
+
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
+
+
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 0);
+
+        leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
+
+
+        // Act
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
+
+        // Assert
+        assertThat(resultat).hasSize(1);
+        RefusjonAndel forventetAndel = lagForventetAndel(AG1, REF1, 100000, 50000);
+        Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE);
+        assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
+    }
+    
+    @Test
+    public void skal_finne_to_andeler_hvis_refusjonskrav_har_økt_før_og_etter_helg_men_ulikt() {
+        // Arrange
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriodeOriginal = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, TIDENES_ENDE)
+                .build(originaltBG);
+        leggTilAndel(beregningsgrunnlagPeriodeOriginal, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 0);
+
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode1 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, LocalDate.of(2022, Month.JANUARY, 7))
+                .build(revurderingBG);
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode2 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(LocalDate.of(2022, Month.JANUARY, 8), LocalDate.of(2022, Month.JANUARY, 9))
+                .build(revurderingBG);
+
+
+        BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode3 = BeregningsgrunnlagPeriodeDto.builder()
+                .medBeregningsgrunnlagPeriode(LocalDate.of(2022, Month.JANUARY, 10), TIDENES_ENDE)
+                .build(revurderingBG);
+
+        leggTilAndel(beregningsgrunnlagPeriode1, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 50000);
+
+
+        leggTilAndel(beregningsgrunnlagPeriode2, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 0);
+
+        leggTilAndel(beregningsgrunnlagPeriode3, AktivitetStatus.ARBEIDSTAKER, AG1, REF1, 100000, 40000);
+
+
+        // Act
+        Map<Intervall, List<RefusjonAndel>> resultat = kjørUtleder(ALLEREDE_UTBETALT_TOM);
+
+        // Assert
+        assertThat(resultat).hasSize(2);
+        RefusjonAndel forventetAndel = lagForventetAndel(AG1, REF1, 100000, 50000);
+        Intervall forventetInterval = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT_BEREGNING,  LocalDate.of(2022, Month.JANUARY, 7));
+        assertMap(resultat, forventetInterval, Collections.singletonList(forventetAndel));
+
+        RefusjonAndel forventetAndel2 = lagForventetAndel(AG1, REF1, 100000, 40000);
+        Intervall forventetInterval2 = Intervall.fraOgMedTilOgMed(LocalDate.of(2022, Month.JANUARY, 10),  TIDENES_ENDE);
+        assertMap(resultat, forventetInterval2, Collections.singletonList(forventetAndel2));
+    }
+
+
+
+
     private Map<Intervall, List<RefusjonAndel>> kjørUtleder(LocalDate alleredeUtbetaltTOM) {
         return BeregningRefusjonTjeneste.finnUtbetaltePerioderMedAndelerMedØktRefusjon(revurderingBG, originaltBG, alleredeUtbetaltTOM, BigDecimal.valueOf(600000));
     }

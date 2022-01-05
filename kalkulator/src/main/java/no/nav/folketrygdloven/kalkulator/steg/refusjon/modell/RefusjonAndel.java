@@ -66,14 +66,11 @@ public class RefusjonAndel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RefusjonAndel that = (RefusjonAndel) o;
-        return Objects.equals(aktivitetStatus, that.aktivitetStatus) &&
-                Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
-                Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef);
+        return aktivitetStatus == that.aktivitetStatus && Objects.equals(arbeidsgiver, that.arbeidsgiver) && Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef) && Objects.equals(brutto, that.brutto) && Objects.equals(refusjon, that.refusjon);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef);
+        return Objects.hash(aktivitetStatus, arbeidsgiver, arbeidsforholdRef, brutto, refusjon);
     }
-
 }

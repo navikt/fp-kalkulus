@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndel;
@@ -16,6 +17,7 @@ import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonAndelNøkk
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.modell.RefusjonPeriodeEndring;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.fpsak.tidsserie.LocalDateSegment;
 import no.nav.fpsak.tidsserie.LocalDateTimeline;
 
 /**
@@ -48,8 +50,15 @@ public final class BeregningRefusjonTjeneste {
         LocalDateTimeline<RefusjonPeriode> originalUtbetaltTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(originaltBeregningsgrunnlag, true).intersection(alleredeUtbetaltPeriode);
         LocalDateTimeline<RefusjonPeriode> revurderingTidslinje = RefusjonTidslinjeTjeneste.lagTidslinje(revurderingBeregningsgrunnlag, false);
         LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje = RefusjonTidslinjeTjeneste.kombinerTidslinjer(originalUtbetaltTidslinje, revurderingTidslinje);
+        var helgekomprimertTidslinje = komprimerForHelg(endringTidslinje);
+        return vurderPerioder(helgekomprimertTidslinje, grenseverdi);
+    }
 
-        return vurderPerioder(endringTidslinje, grenseverdi);
+    private static LocalDateTimeline<RefusjonPeriodeEndring> komprimerForHelg(LocalDateTimeline<RefusjonPeriodeEndring> endringTidslinje) {
+        var factory = new TimelineWeekendCompressor.CompressorFactory<RefusjonPeriodeEndring>(Objects::equals, (i, lhs, rhs) -> new LocalDateSegment<>(i, lhs.getValue()));
+        TimelineWeekendCompressor<RefusjonPeriodeEndring> compressor = endringTidslinje.toSegments().stream()
+                .collect(factory::get, TimelineWeekendCompressor::accept, TimelineWeekendCompressor::combine);
+        return new LocalDateTimeline<>(compressor.getSegmenter());
     }
 
     private static LocalDateTimeline<RefusjonPeriode> finnAlleredeUtbetaltPeriode(LocalDate alleredeUtbetaltTOM) {

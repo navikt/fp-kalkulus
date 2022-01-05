@@ -64,4 +64,17 @@ public class RefusjonPeriodeEndring {
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RefusjonPeriodeEndring that = (RefusjonPeriodeEndring) o;
+        return Objects.equals(originaleAndeler, that.originaleAndeler) && Objects.equals(revurderingAndeler, that.revurderingAndeler);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(originaleAndeler, revurderingAndeler);
+    }
 }
