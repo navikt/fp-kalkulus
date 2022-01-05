@@ -48,9 +48,6 @@ public class BeregningsgrunnlagGUIInput {
     /** Datoer for innsending og oppstart av refusjon for alle arbeidsgivere */
     private List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver;
 
-    /** Grunnlag som skal brukes for preutfylling i fakta om beregning skjermbildet */
-    private BeregningsgrunnlagGrunnlagDto faktaOmBeregningBeregningsgrunnlagGrunnlag;
-
     /** IAY grunnlag benyttet av beregningsgrunnlag. Merk kan bli modifisert av innhenting av inntekter for beregning, sammenligning. */
     private InntektArbeidYtelseGrunnlagDto iayGrunnlag;
 
@@ -78,7 +75,6 @@ public class BeregningsgrunnlagGUIInput {
                 input.getOpptjeningAktiviteter(), input.getYtelsespesifiktGrunnlag());
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
-        this.faktaOmBeregningBeregningsgrunnlagGrunnlag = input.faktaOmBeregningBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
         this.toggles = input.getToggles();
 
@@ -149,10 +145,6 @@ public class BeregningsgrunnlagGUIInput {
         return kravperioderPrArbeidsgiver;
     }
 
-    public Optional<BeregningsgrunnlagGrunnlagDto> getFaktaOmBeregningBeregningsgrunnlagGrunnlag() {
-        return Optional.ofNullable(faktaOmBeregningBeregningsgrunnlagGrunnlag);
-    }
-
     /** Sjekk fagsakytelsetype før denne kalles. */
     @SuppressWarnings("unchecked")
     public <V extends YtelsespesifiktGrunnlag> V getYtelsespesifiktGrunnlag() {
@@ -211,17 +203,6 @@ public class BeregningsgrunnlagGUIInput {
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(List<BeregningsgrunnlagGrunnlagDto> grunnlag) {
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
-        return newInput;
-    }
-
-    // Brukes i FP-SAK
-    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraFaktaOmBeregning(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        if (!(grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.KOFAKBER_UT)
-                || grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER))) {
-            throw new IllegalArgumentException("Grunnlaget er ikke fra fakta om beregning.");
-        }
-        var newInput = new BeregningsgrunnlagGUIInput(this);
-        newInput.faktaOmBeregningBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

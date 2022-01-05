@@ -30,8 +30,7 @@ public class AndelerForFaktaOmBeregningTjeneste {
     }
 
     public static List<AndelForFaktaOmBeregningDto> lagAndelerForFaktaOmBeregning(BeregningsgrunnlagGUIInput input) {
-        return input.getFaktaOmBeregningBeregningsgrunnlagGrunnlag()
-                .orElse(input.getBeregningsgrunnlagGrunnlag())
+        return input.getBeregningsgrunnlagGrunnlag()
                 .getBeregningsgrunnlag()
                 .map(BeregningsgrunnlagDto::getBeregningsgrunnlagPerioder)
                 .filter(c -> !c.isEmpty())
