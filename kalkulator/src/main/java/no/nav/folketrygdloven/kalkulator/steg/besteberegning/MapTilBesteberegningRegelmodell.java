@@ -188,21 +188,15 @@ public class MapTilBesteberegningRegelmodell {
     }
 
     private static RelatertYtelseType mapTilRegelytelse(YtelseType ytelseType) {
-        if (!(ytelseType instanceof OffentligYtelseType)) {
+        if (!(ytelseType instanceof OffentligYtelseType ytelse)) {
             throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
         }
-        var ytelse = (OffentligYtelseType) ytelseType;
-        switch(ytelse) {
-            case SVANGERSKAPSPENGER:
-                return RelatertYtelseType.SVANGERSKAPSPENGER;
-            case FORELDREPENGER:
-                return RelatertYtelseType.FORELDREPENGER;
-            case SYKEPENGER:
-            case SYKEPENGER_FISKER:
-                return RelatertYtelseType.SYKEPENGER;
-            default:
-                throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
-        }
+        return switch (ytelse) {
+            case SVANGERSKAPSPENGER -> RelatertYtelseType.SVANGERSKAPSPENGER;
+            case FORELDREPENGER -> RelatertYtelseType.FORELDREPENGER;
+            case SYKEPENGER, SYKEPENGER_FISKER -> RelatertYtelseType.SYKEPENGER;
+            default -> throw new IllegalStateException("Støtte på ukjent ytelse under besteberegning " + ytelseType.getKode());
+        };
     }
 
 

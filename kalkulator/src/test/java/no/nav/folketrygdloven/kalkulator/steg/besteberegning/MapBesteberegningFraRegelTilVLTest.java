@@ -54,6 +54,28 @@ class MapBesteberegningFraRegelTilVLTest {
     }
 
     @Test
+    public void en_andel_bb_mappes_mot_flere_arbeidsandeler() {
+        // Arrange
+        String arbRef = UUID.randomUUID().toString();
+        String arbRef2 = UUID.randomUUID().toString();
+        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var andeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef),
+                byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef2));
+        andeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
+        var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());
+        var bbAndeler = List.of(lagBBAndel("123", null, 400000));
+        bg.leggTilBeregningsgrunnlagPeriode(bgp);
+
+        // Act
+        BeregningsgrunnlagDto mappedBg = mapTilBeregningsgrunnlag(true, bg, bbAndeler);
+
+        // Assert
+        assertAntalAndeler(mappedBg, 2);
+        assertAndel(mappedBg, AktivitetStatus.ARBEIDSTAKER, 200000, "123", arbRef);
+        assertAndel(mappedBg, AktivitetStatus.ARBEIDSTAKER, 200000, "123", arbRef2);
+    }
+
+    @Test
     public void to_andel_bb_mappes_mot_matchende_andel_bg() {
         // Arrange
         String arbRef = UUID.randomUUID().toString();

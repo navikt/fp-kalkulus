@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.besteberegning;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class MapBesteberegningFraRegelTilVL {
                 .collect(Collectors.toList());
         if (!andelerMedBesteberegningSatt.isEmpty()) {
             throw new IllegalStateException("Feil ved mapping fra regelmodell til domenemodell i besteberegning:" +
-                    " Det finnes andeler med besteberegnet satt, ugyldig tilstand. Andeler: " + andelerMedBesteberegningSatt.toString());
+                    " Det finnes andeler med besteberegnet satt, ugyldig tilstand. Andeler: " + andelerMedBesteberegningSatt);
         }
     }
 
@@ -69,19 +70,41 @@ public class MapBesteberegningFraRegelTilVL {
 
     private static void oppdaterAndelerMedBesteberegnetInntekt(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
         AktivitetNøkkel aktivitetNøkkel = a.getAktivitetNøkkel();
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnMatchendeAndelIPeriode(periode, aktivitetNøkkel);
-        if (matchendeAndel.isPresent()) {
-            oppdaterBesteberegningForAndel(a, matchendeAndel.get());
+        if (harArbeidsgiver(a.getAktivitetNøkkel())) {
+            fordelTilArbeidsandeler(periode, a);
         } else {
-            leggPåDagpenger(periode, a);
+            Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = finnEnesteMatchendeAndelIPeriode(periode, aktivitetNøkkel);
+            if (matchendeAndel.isPresent()) {
+                oppdaterBesteberegningForAndel(a.getBesteberegnetPrÅr(), matchendeAndel.get());
+            } else {
+                leggPåDagpenger(periode, a);
+            }
         }
     }
 
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnMatchendeAndelIPeriode(BeregningsgrunnlagPeriodeDto periode, AktivitetNøkkel aktivitetNøkkel) {
+    private static void fordelTilArbeidsandeler(BeregningsgrunnlagPeriodeDto periode, BesteberegnetAndel a) {
+        List<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndeler = finnArbeidstakerAndel(periode, a.getAktivitetNøkkel());
+        if (matchendeAndeler.isEmpty()) {
+            leggPåDagpenger(periode, a);
+        } else {
+            fordelLiktTilAlleMatchendeAndeler(matchendeAndeler, a);
+        }
+    }
+
+    private static void fordelLiktTilAlleMatchendeAndeler(List<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndeler, BesteberegnetAndel a) {
+        var antallAndeler = BigDecimal.valueOf(matchendeAndeler.size());
+        // antallAndeler skal aldri være 0 her, sjekkes utenfor
+        var besteberegnetPrAndel = a.getBesteberegnetPrÅr().divide(antallAndeler, 10, RoundingMode.HALF_EVEN);
+        matchendeAndeler.forEach(andel -> oppdaterBesteberegningForAndel(besteberegnetPrAndel, andel));
+    }
+
+    private static boolean harArbeidsgiver(AktivitetNøkkel aktivitetNøkkel) {
+        return aktivitetNøkkel.getOrgnr() != null || aktivitetNøkkel.getAktørId() != null;
+    }
+
+    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnEnesteMatchendeAndelIPeriode(BeregningsgrunnlagPeriodeDto periode, AktivitetNøkkel aktivitetNøkkel) {
         Optional<BeregningsgrunnlagPrStatusOgAndelDto> matchendeAndel = Optional.empty();
-        if (aktivitetNøkkel.getType().equals(Aktivitet.ARBEIDSTAKERINNTEKT)) {
-            matchendeAndel = finnArbeidstakerAndel(periode, aktivitetNøkkel);
-        } else if (aktivitetNøkkel.getType().equals(Aktivitet.FRILANSINNTEKT)) {
+        if (aktivitetNøkkel.getType().equals(Aktivitet.FRILANSINNTEKT)) {
             matchendeAndel = finnFørsteAndel(periode, AktivitetStatus.FRILANSER);
         } else if (aktivitetNøkkel.getType().equals(Aktivitet.NÆRINGSINNTEKT)) {
             matchendeAndel = finnFørsteAndel(periode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -98,20 +121,15 @@ public class MapBesteberegningFraRegelTilVL {
             case YTELSE_FOR_FRILANS -> finnFørsteAndel(periode, AktivitetStatus.FRILANSER);
             case YTELSE_FOR_NÆRING -> finnFørsteAndel(periode, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
             case YTELSE_FOR_ARBEIDSAVKLARINGSPENGER, YTELSE_FOR_DAGPENGER -> finnFørsteAndel(periode, AktivitetStatus.DAGPENGER);
-            default -> throw new IllegalStateException("Ukjent ytelsegrunnlagtype: " + aktivitetNøkkel.getYtelseGrunnlagType());
         };
     }
 
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnArbeidstakerAndel(BeregningsgrunnlagPeriodeDto periode, AktivitetNøkkel aktivitetNøkkel) {
+    private static List<BeregningsgrunnlagPrStatusOgAndelDto> finnArbeidstakerAndel(BeregningsgrunnlagPeriodeDto periode, AktivitetNøkkel aktivitetNøkkel) {
         String identifikator = aktivitetNøkkel.getOrgnr() != null ? aktivitetNøkkel.getOrgnr() : aktivitetNøkkel.getAktørId();
-        List<BeregningsgrunnlagPrStatusOgAndelDto> matchendeArbeidsforholdAndeler = periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(bgAndel -> bgAndel.getArbeidsgiver().isPresent())
+        return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().filter(bgAndel -> bgAndel.getArbeidsgiver().isPresent())
                 .filter(bgAndel -> bgAndel.getArbeidsgiver().get().getIdentifikator().equals(identifikator))
                 .filter(bgAndel -> bgAndel.getBgAndelArbeidsforhold().get().getArbeidsforholdRef().gjelderFor(InternArbeidsforholdRefDto.ref(aktivitetNøkkel.getArbeidsforholdId())))
                 .collect(Collectors.toList());
-        if (matchendeArbeidsforholdAndeler.size() > 1) {
-            throw new IllegalStateException("Fant flere andeler i grunnlag som matcher arbeidsforhold fra a-inntekt");
-        }
-        return matchendeArbeidsforholdAndeler.size() == 0 ? Optional.empty() : Optional.of(matchendeArbeidsforholdAndeler.get(0));
     }
 
     private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnFørsteAndel(BeregningsgrunnlagPeriodeDto periode, AktivitetStatus status) {
@@ -120,9 +138,9 @@ public class MapBesteberegningFraRegelTilVL {
                 .findFirst();
     }
 
-    private static void oppdaterBesteberegningForAndel(BesteberegnetAndel besteberegnetAndel, BeregningsgrunnlagPrStatusOgAndelDto matchendeAndel) {
+    private static void oppdaterBesteberegningForAndel(BigDecimal besteberegnetBeløp, BeregningsgrunnlagPrStatusOgAndelDto matchendeAndel) {
         BigDecimal besteberegnet = matchendeAndel.getBesteberegningPrÅr();
-        BigDecimal beregnet = besteberegnet == null ? besteberegnetAndel.getBesteberegnetPrÅr() : besteberegnet.add(besteberegnetAndel.getBesteberegnetPrÅr());
+        BigDecimal beregnet = besteberegnet == null ? besteberegnetBeløp : besteberegnet.add(besteberegnetBeløp);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(matchendeAndel)
                 .medBesteberegningPrÅr(beregnet);
     }
@@ -132,7 +150,7 @@ public class MapBesteberegningFraRegelTilVL {
                 .filter(andel -> andel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER))
                 .findFirst();
         if (dagpengeAndel.isPresent()) {
-            oppdaterBesteberegningForAndel(a, dagpengeAndel.get());
+            oppdaterBesteberegningForAndel(a.getBesteberegnetPrÅr(), dagpengeAndel.get());
         } else {
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medKilde(AndelKilde.PROSESS_BESTEBEREGNING)
                     .medBesteberegningPrÅr(a.getBesteberegnetPrÅr())
