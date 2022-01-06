@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntektsgrunnlag.InntektsgrunnlagDto;
@@ -26,7 +27,12 @@ public class InntektsgrunnlagTjeneste {
                 .filter(inntekt -> inntekt.getInntektsKilde().equals(InntektskildeType.INNTEKT_SAMMENLIGNING))
                 .collect(Collectors.toList());
         List<Arbeidsgiver> frilansArbeidsgivere = finnFrilansArbeidsgivere(input);
-        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(input.getSkjæringstidspunktForBeregning(), frilansArbeidsgivere);
+        var sg = input.getBeregningsgrunnlag() != null ? input.getBeregningsgrunnlag().getSammenligningsgrunnlag() : null;
+        if (sg == null) {
+            return Optional.empty();
+        }
+        Intervall sammenligningsperiode = Intervall.fraOgMedTilOgMed(sg.getSammenligningsperiodeFom(), sg.getSammenligningsperiodeTom());
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(sammenligningsperiode, frilansArbeidsgivere);
         return mapper.map(sammenligningInntekter);
     }
 

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
@@ -26,10 +27,11 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.gui.inntek
 
 class InntektsgrunnlagMapperTest {
     private static final LocalDate STP = LocalDate.now();
+    private static final Intervall SG_PERIODE = Intervall.fraOgMedTilOgMed(LocalDate.now().minusMonths(12), LocalDate.now());
 
     @Test
     public void skal_teste_at_korrekte_inntekter_mappes() {
-        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(LocalDate.now(), Collections.emptyList());
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(SG_PERIODE, Collections.emptyList());
         InntektDtoBuilder feilKilde = lagInntekt("123", InntektskildeType.INNTEKT_BEREGNING);
         InntektDtoBuilder korrektKilde = lagInntekt("123", InntektskildeType.INNTEKT_SAMMENLIGNING);
         feilKilde.leggTilInntektspost(lagInntektspost(feilKilde, 5000, månederFør(3)));
@@ -47,7 +49,7 @@ class InntektsgrunnlagMapperTest {
 
     @Test
     public void skal_teste_at_inntekter_uten_arbeidsgiver_mappes_til_ytelse() {
-        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(LocalDate.now(), Collections.emptyList());
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(SG_PERIODE, Collections.emptyList());
         InntektDtoBuilder korrektKilde = lagInntekt(null, InntektskildeType.INNTEKT_SAMMENLIGNING);
         korrektKilde.leggTilInntektspost(lagInntektspost(korrektKilde, 5000, månederFør(3), InntektspostType.YTELSE));
         korrektKilde.leggTilInntektspost(lagInntektspost(korrektKilde, 5000, månederFør(2), InntektspostType.YTELSE));
@@ -69,7 +71,7 @@ class InntektsgrunnlagMapperTest {
 
     @Test
     public void skal_teste_at_frilans_merkes_korrekt() {
-        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(LocalDate.now(), Collections.singletonList(Arbeidsgiver.virksomhet("321")));
+        InntektsgrunnlagMapper mapper = new InntektsgrunnlagMapper(SG_PERIODE, Collections.singletonList(Arbeidsgiver.virksomhet("321")));
         InntektDtoBuilder inntektFL = lagInntekt("321", InntektskildeType.INNTEKT_SAMMENLIGNING);
         InntektDtoBuilder inntektAT = lagInntekt("123", InntektskildeType.INNTEKT_SAMMENLIGNING);
         inntektFL.leggTilInntektspost(lagInntektspost(inntektFL, 3000, månederFør(3)));
@@ -85,21 +87,21 @@ class InntektsgrunnlagMapperTest {
 
         assertThat(dto.get().getMåneder().get(0).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
-                .anyMatch(innt -> innt.getAktivitetStatus().erFrilanser()
+                .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
                         && innt.getBeløp().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(0).getInntekter().stream()
-                .anyMatch(innt -> innt.getAktivitetStatus().erArbeidstaker()
+                .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
                         && innt.getBeløp().intValue() == 5000))
                 .isTrue();
 
         assertThat(dto.get().getMåneder().get(1).getInntekter()).hasSize(2);
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
-                .anyMatch(innt -> innt.getAktivitetStatus().erFrilanser()
+                .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.FRILANSINNTEKT)
                         && innt.getBeløp().intValue() == 3000))
                 .isTrue();
         assertThat(dto.get().getMåneder().get(1).getInntekter().stream()
-                .anyMatch(innt -> innt.getAktivitetStatus().erArbeidstaker()
+                .anyMatch(innt -> innt.getInntektAktivitetType().equals(InntektAktivitetType.ARBEIDSTAKERINNTEKT)
                         && innt.getBeløp().intValue() == 5000))
                 .isTrue();
 

@@ -95,9 +95,7 @@ public class BeregningsgrunnlagDtoTjeneste {
     }
 
     private void mapInntektsgrunnlag(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
-        if (input.isEnabled("visning-inntektsgrunnlag", false)) {
-            InntektsgrunnlagTjeneste.lagDto(input).ifPresent(dto::setInntektsgrunnlag);
-        }
+        InntektsgrunnlagTjeneste.lagDto(input).ifPresent(dto::setInntektsgrunnlag);
     }
 
     private void mapOverstyring(BeregningsgrunnlagGUIInput input, BeregningsgrunnlagDto dto) {
