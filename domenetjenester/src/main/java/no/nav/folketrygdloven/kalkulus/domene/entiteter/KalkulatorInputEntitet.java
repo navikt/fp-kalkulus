@@ -6,21 +6,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Lob;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.ColumnTransformer;
 
 import no.nav.folketrygdloven.kalkulus.felles.jpa.BaseEntitet;
 
 
 @Entity(name = "KalkulatorInput")
 @Table(name = "KALKULATOR_INPUT")
-@TypeDef(
-        name = "jsonb",
-        typeClass = JsonBinaryType.class
-)
 public class KalkulatorInputEntitet extends BaseEntitet {
 
     @Id
@@ -30,7 +25,7 @@ public class KalkulatorInputEntitet extends BaseEntitet {
     @Column(name = "kobling_id", nullable = false, updatable = false, unique = true)
     private Long koblingId;
 
-    @Type(type = "jsonb")
+    @ColumnTransformer(read="cast(input as text)", write="to_jsonb(?::text)")
     @Column(name = "input", nullable = false, updatable = false)
     private String input;
 
