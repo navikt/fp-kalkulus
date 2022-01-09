@@ -67,7 +67,6 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.k9.felles.testutilities.db.Commit;
 import no.nav.k9.felles.testutilities.db.EntityManagerAwareTest;
 
 @ExtendWith(JpaExtension.class)
@@ -99,7 +98,6 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
                 koblingRepository = new KoblingRepository(getEntityManager());
         }
 
-        @Commit
         @Test
         public void skal_lagre_ned_json_input() throws Exception {
                 AktørId aktørId = new AktørId("1234123412341");
