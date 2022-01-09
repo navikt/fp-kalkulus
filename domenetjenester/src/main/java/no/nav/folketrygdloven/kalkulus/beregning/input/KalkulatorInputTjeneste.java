@@ -97,7 +97,7 @@ public class KalkulatorInputTjeneste {
         return inputMap;
     }
 
-    static KalkulatorInputDto konverterTilInput(String jgit son, Long koblingId) {
+    static KalkulatorInputDto konverterTilInput(String json, Long koblingId) {
         KalkulatorInputDto input;
         try {
             input = READER.forType(KalkulatorInputDto.class).readValue(json);
