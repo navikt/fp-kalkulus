@@ -19,7 +19,7 @@ services:
     network_mode: service:db
 
   db:
-    image: postgres:latest
+    image: postgres:12
     restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -33,4 +33,4 @@ services:
 
 # Persist database information after your VM shuts down (just these two lines!)
 volumes:
-  postgres_data:
+  postgres_data: null
