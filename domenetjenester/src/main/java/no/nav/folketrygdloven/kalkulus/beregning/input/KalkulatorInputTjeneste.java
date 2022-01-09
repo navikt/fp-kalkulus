@@ -1,7 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -102,8 +100,6 @@ public class KalkulatorInputTjeneste {
         try {
             input = READER.forType(KalkulatorInputDto.class).readValue(json);
         } catch (JsonProcessingException e) {
-            var encoded = Base64.getEncoder().encodeToString(json.getBytes(Charset.forName("UTF8")));
-            System.out.println(encoded);
             throw new TekniskException("FT-KALKULUS-INPUT-1000002",
                     String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s",
                             koblingId, e.getMessage()));
