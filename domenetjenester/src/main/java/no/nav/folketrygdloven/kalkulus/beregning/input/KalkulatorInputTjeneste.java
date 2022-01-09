@@ -96,7 +96,6 @@ public class KalkulatorInputTjeneste {
         try {
             input = READER.forType(KalkulatorInputDto.class).readValue(json);
         } catch (JsonProcessingException e) {
-            System.out.println(json);
             throw new TekniskException("FT-KALKULUS-INPUT-1000002", String.format("Kalkulus klarte ikke lese opp input for koblingId %s med følgende feilmelding %s", koblingId, e.getMessage()));
         }
 
