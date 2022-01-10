@@ -59,7 +59,7 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
-        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, iayGrunnlag);
+        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, iayGrunnlag, input.getInntektsmeldinger());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode, Collections.emptyList());
 
     }

@@ -114,12 +114,13 @@ public class FaktaOmBeregningAndelDtoTjeneste {
 
     /// Arbeidsforhold uten inntektsmelding
     static List<FaktaOmBeregningAndelDto> lagArbeidsforholdUtenInntektsmeldingDtoList(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                      InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+                                                                                      InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                                      Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<YrkesaktivitetDto> aktiviteterMedLønnsendring;
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
-            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         } else {
-            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag);
+            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         }
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();

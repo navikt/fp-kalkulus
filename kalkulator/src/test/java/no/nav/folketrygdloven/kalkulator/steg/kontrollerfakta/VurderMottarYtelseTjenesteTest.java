@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeid
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -29,7 +27,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
-import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidsforholdHandlingType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
@@ -94,7 +91,7 @@ public class VurderMottarYtelseTjenesteTest {
                 .build(periode);
 
         // Act
-        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build());
+        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, InntektArbeidYtelseGrunnlagDtoBuilder.nytt().build(), Collections.emptyList());
 
         // Assert
         assertThat(skalVurdereMottarYtelse).isFalse();
@@ -111,7 +108,7 @@ public class VurderMottarYtelseTjenesteTest {
 
         // Act
         InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlagDto = lagIAYMedYtelse();
-        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, inntektArbeidYtelseGrunnlagDto);
+        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, inntektArbeidYtelseGrunnlagDto, Collections.emptyList());
 
         // Assert
         assertThat(skalVurdereMottarYtelse).isTrue();
@@ -139,23 +136,13 @@ public class VurderMottarYtelseTjenesteTest {
         oppdatere.leggTilAktørInntekt(lagAktørInntektMedYtelse());
         InntektArbeidYtelseGrunnlagDto iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.oppdatere(Optional.empty())
                 .medData(oppdatere)
-                .medInformasjon(brukUtenInntektsmelding(ARB_ID, ORGNR))
                 .build();
 
         // Act
-        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, iayGrunnlag);
+        boolean skalVurdereMottarYtelse = VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, iayGrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(skalVurdereMottarYtelse).isTrue();
-    }
-
-    private ArbeidsforholdInformasjonDto brukUtenInntektsmelding(InternArbeidsforholdRefDto arbId, String orgnr) {
-        ArbeidsforholdInformasjonDtoBuilder informasjonBuilder = ArbeidsforholdInformasjonDtoBuilder
-                .oppdatere(Optional.empty());
-        ArbeidsforholdOverstyringDtoBuilder overstyringBuilder = informasjonBuilder.getOverstyringBuilderFor(Arbeidsgiver.virksomhet(orgnr), arbId);
-        overstyringBuilder.medHandling(ArbeidsforholdHandlingType.BRUK_UTEN_INNTEKTSMELDING);
-        informasjonBuilder.leggTil(overstyringBuilder);
-        return informasjonBuilder.build();
     }
 
     private InntektArbeidYtelseGrunnlagDto lagIAYMedYtelse() {

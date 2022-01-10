@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +62,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
 
         // Act
         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerUtenInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
-            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, iayGrunnlagMock);
+            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(andelerUtenInntektsmelding).hasSize(1);
@@ -71,8 +72,6 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
     public void skal_returnere_andeler_uten_inntektsmelding_privatperson_som_arbeidsgiver() {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.person(AKTØR_ID_ARBEIDSGIVER);
-        InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
-        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.empty());
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -81,7 +80,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
 
         // Act
         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerUtenInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
-            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, iayGrunnlagMock);
+            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(andelerUtenInntektsmelding).hasSize(1);
@@ -93,10 +92,9 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
         // Arrange
         Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(ORGNR);
         InntektsmeldingDto im = InntektsmeldingDtoBuilder.builder().medArbeidsgiver(arbeidsgiver).medArbeidsforholdId(ARB_ID).build();
-        InntektArbeidYtelseGrunnlagDto iayGrunnlagMock = mock(InntektArbeidYtelseGrunnlagDto.class);
         InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder aggregat = InntektsmeldingAggregatDto.InntektsmeldingAggregatDtoBuilder.ny();
         aggregat.leggTil(im);
-        when(iayGrunnlagMock.getInntektsmeldinger()).thenReturn(Optional.of(aggregat.build()));
+        InntektsmeldingAggregatDto imAgg = aggregat.build();
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
             .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
@@ -105,7 +103,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
 
         // Act
         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerUtenInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
-            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, iayGrunnlagMock);
+            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, imAgg.getAlleInntektsmeldinger());
 
         // Assert
         assertThat(andelerUtenInntektsmelding).isEmpty();
@@ -123,7 +121,7 @@ public class ArbeidstakerUtenInntektsmeldingTjenesteTest {
 
         // Act
         Collection<BeregningsgrunnlagPrStatusOgAndelDto> andelerUtenInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
-            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, iayGrunnlagMock);
+            .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(andelerUtenInntektsmelding).isEmpty();

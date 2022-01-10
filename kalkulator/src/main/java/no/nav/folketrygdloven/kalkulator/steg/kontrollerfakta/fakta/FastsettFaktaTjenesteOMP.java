@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.Fasts
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFaktaLønnsendring.fastsettFaktaForLønnsendring;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,20 +15,21 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("OMP")
 public class FastsettFaktaTjenesteOMP implements FastsettFakta {
 
-    public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public Optional<FaktaAggregatDto> fastsettFakta(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                    InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                    Collection<InntektsmeldingDto> inntektsmeldinger) {
         FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
-        if (!harRefusjonPåSkjæringstidspunktet(beregningsgrunnlag.getSkjæringstidspunkt(), iayGrunnlag)) {
+        if (!harRefusjonPåSkjæringstidspunktet(beregningsgrunnlag.getSkjæringstidspunkt(), inntektsmeldinger)) {
             List<FaktaArbeidsforholdDto> faktaArbeidsforholdDtos = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);
             faktaArbeidsforholdDtos.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
         }
-        List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag);
+        List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
         faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
         if (!faktaBuilder.manglerFakta()) {
             return Optional.of(faktaBuilder.build());
@@ -35,19 +37,12 @@ public class FastsettFaktaTjenesteOMP implements FastsettFakta {
         return Optional.empty();
     }
 
-    private boolean harRefusjonPåSkjæringstidspunktet(LocalDate skjæringstidspunktForBeregning, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        List<InntektsmeldingDto> inntektsmeldinger = finnInntektsmeldinger(iayGrunnlag);
+    private boolean harRefusjonPåSkjæringstidspunktet(LocalDate skjæringstidspunktForBeregning, Collection<InntektsmeldingDto> inntektsmeldinger) {
         return harMinstEnInntektsmeldingMedRefusjonFraSkjæringstidspunktet(inntektsmeldinger, skjæringstidspunktForBeregning);
     }
 
-    private boolean harMinstEnInntektsmeldingMedRefusjonFraSkjæringstidspunktet(List<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunktForBeregning) {
+    private boolean harMinstEnInntektsmeldingMedRefusjonFraSkjæringstidspunktet(Collection<InntektsmeldingDto> inntektsmeldinger, LocalDate skjæringstidspunktForBeregning) {
         return inntektsmeldinger.stream().anyMatch(im -> harInntektsmeldingRefusjonFraStart(im) || harEndringIRefusjonFraSkjæringstidspunktet(im, skjæringstidspunktForBeregning));
-    }
-
-    private List<InntektsmeldingDto> finnInntektsmeldinger(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return iayGrunnlag.getInntektsmeldinger()
-                .map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
-                .orElse(List.of());
     }
 
     private boolean harEndringIRefusjonFraSkjæringstidspunktet(InntektsmeldingDto im, LocalDate skjæringstidspunktForBeregning) {

@@ -37,9 +37,9 @@ public class VurderLønnsendringOppdaterer implements FaktaOmBeregningTilfelleOp
                 .collect(Collectors.toList());
         List<YrkesaktivitetDto> aktiviteterMedLønnsendring;
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING",false)) {
-            aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, input.getIayGrunnlag());
+            aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         } else {
-            aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, input.getIayGrunnlag());
+            aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger());
         }
         FaktaAggregatDto.Builder faktaAggregatBuilder = grunnlagBuilder.getFaktaAggregatBuilder();
         arbeidstakerAndeler.stream().filter(a -> a.getBgAndelArbeidsforhold().isPresent())

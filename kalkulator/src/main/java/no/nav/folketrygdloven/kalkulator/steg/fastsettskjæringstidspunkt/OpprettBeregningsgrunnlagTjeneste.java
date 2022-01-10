@@ -74,11 +74,11 @@ public class OpprettBeregningsgrunnlagTjeneste {
 
         // Fastsett beregningsperiode
         var medFastsattBeregningsperiode = FagsakYtelseTypeRef.Lookup.find(fastsettBeregningsperiodeTjeneste, input.getFagsakYtelseType()).orElseThrow()
-                .fastsettBeregningsperiode(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
+                .fastsettBeregningsperiode(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag(), input.getInntektsmeldinger());
 
         // Fastsett fakta
         Optional<FaktaAggregatDto> faktaAggregatDto = FagsakYtelseTypeRef.Lookup.find(fastsettFaktaTjeneste, input.getFagsakYtelseType())
-                .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag()));
+                .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag(), input.getInntektsmeldinger()));
 
         BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
         var resultatMedNaturalytelse = fastsettNaturalytelsePerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);

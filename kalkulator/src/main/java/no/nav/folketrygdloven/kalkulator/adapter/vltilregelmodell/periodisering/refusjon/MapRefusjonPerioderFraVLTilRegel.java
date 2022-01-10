@@ -31,8 +31,8 @@ import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.MapSplittetPeriodeFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.FinnYrkesaktiviteterForBeregningTjeneste;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravOgUtfall;
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravOgUtfall;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.konfig.Konfigverdier;
@@ -43,7 +43,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
@@ -164,10 +163,7 @@ public abstract class MapRefusjonPerioderFraVLTilRegel {
         var grunnlag = inputAndeler.getBeregningsgrunnlagInput().getBeregningsgrunnlagGrunnlag();
         var iayGrunnlag = inputAndeler.getBeregningsgrunnlagInput().getIayGrunnlag();
         Collection<YrkesaktivitetDto> yrkesaktiviteterSomErRelevant = FinnYrkesaktiviteterForBeregningTjeneste.finnYrkesaktiviteter(iayGrunnlag, grunnlag, referanse.getSkjæringstidspunktBeregning());
-        Collection<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger()
-                .map(InntektsmeldingAggregatDto::getInntektsmeldingerSomSkalBrukes)
-                .orElse(Collections.emptyList());
-        return inntektsmeldinger.stream()
+        return inputAndeler.getInntektsmeldinger().stream()
                 .filter(this::harRefusjon)
                 .filter(im -> erFraRelevantArbeidsgiver(im, yrkesaktiviteterSomErRelevant))
                 .map(im -> mapRefusjonForInntektsmelding(im, inputAndeler))

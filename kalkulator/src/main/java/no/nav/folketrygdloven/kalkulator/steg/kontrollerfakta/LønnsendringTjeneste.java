@@ -27,13 +27,13 @@ public class LønnsendringTjeneste {
         // Skjul
     }
 
-    public static boolean brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteterMedLønnsendringUtenIM = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, iayGrunnlag);
+    public static boolean brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
+        List<YrkesaktivitetDto> aktiviteterMedLønnsendringUtenIM = finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
         return !aktiviteterMedLønnsendringUtenIM.isEmpty();
     }
 
-    public static boolean brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        List<YrkesaktivitetDto> aktiviteter = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag);
+    public static boolean brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
+        List<YrkesaktivitetDto> aktiviteter = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
         return !aktiviteter.isEmpty();
 
     }
@@ -45,11 +45,13 @@ public class LønnsendringTjeneste {
      * @param iayGrunnlag        InntektArbeidYtelseGrunnlag
      * @return Liste med aktiviteter som har lønnsendring
      */
-    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                  InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                                  Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         // Vi teller ikkje med første dag, siden man då har ein heil måned med inntekt å beregne fra
         Intervall sisteMåned = Intervall.fraOgMedTilOgMed(stpBeregning.minusMonths(1).withDayOfMonth(2), stpBeregning.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()));
-        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, sisteMåned);
+        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, sisteMåned, inntektsmeldinger);
     }
 
     /**
@@ -59,15 +61,18 @@ public class LønnsendringTjeneste {
      * @param iayGrunnlag        InntektArbeidYtelseGrunnlag
      * @return Liste med aktiviteter som har lønnsendring
      */
-    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                                Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         Intervall beregningsperiode = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(stpBeregning);
-        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, beregningsperiode);
+        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, beregningsperiode, inntektsmeldinger);
     }
 
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                            Intervall beregningsperiode) {
+                                                                                            Intervall beregningsperiode,
+                                                                                            Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
         Optional<AktørArbeidDto> aktørArbeid = iayGrunnlag.getAktørArbeidFraRegister();
@@ -83,9 +88,6 @@ public class LønnsendringTjeneste {
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }
-        List<InntektsmeldingDto> inntektsmeldinger = iayGrunnlag.getInntektsmeldinger().stream()
-                .flatMap(im -> im.getAlleInntektsmeldinger().stream())
-                .collect(Collectors.toList());
         return aktiviteterMedLønnsendring.stream()
                 .filter(ya -> ya.getArbeidsgiver() != null && ya.getArbeidsgiver().getIdentifikator() != null)
                 .filter(ya -> finnesKorresponderendeBeregningsgrunnlagsandel(arbeidstakerAndeler, ya))
@@ -93,7 +95,7 @@ public class LønnsendringTjeneste {
                 .collect(Collectors.toList());
     }
 
-    private static boolean manglerInntektsmelding(List<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {
+    private static boolean manglerInntektsmelding(Collection<InntektsmeldingDto> inntektsmeldinger, YrkesaktivitetDto ya) {
         return inntektsmeldinger.stream().noneMatch(im -> ya.gjelderFor(im.getArbeidsgiver(), im.getArbeidsforholdRef()));
     }
 
@@ -125,8 +127,9 @@ public class LønnsendringTjeneste {
         return aktivitetsAvtaler
                 .stream()
                 .filter(aa -> aa.getSisteLønnsendringsdato() != null)
-                .filter(aa -> aa.getSisteLønnsendringsdato().equals(periode.getFomDato()) || aa.getSisteLønnsendringsdato().isAfter(periode.getFomDato()))
-                .filter(aa -> aa.getSisteLønnsendringsdato().equals(periode.getTomDato()) || aa.getSisteLønnsendringsdato().isBefore(periode.getTomDato()))
-                .count() > 0;
+                .filter(aa -> aa.getSisteLønnsendringsdato().equals(periode.getFomDato())
+                        || aa.getSisteLønnsendringsdato().isAfter(periode.getFomDato()))
+                .anyMatch(aa -> aa.getSisteLønnsendringsdato().equals(periode.getTomDato())
+                        || aa.getSisteLønnsendringsdato().isBefore(periode.getTomDato()));
     }
 }

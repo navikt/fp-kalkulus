@@ -26,10 +26,10 @@ public class VurderLønnsendringTilfelleUtleder implements TilfelleUtleder {
             BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING",false)) {
-            return LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
+            return LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger()) ?
                     Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
         } else {
-            return LønnsendringTjeneste.brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag()) ?
+            return LønnsendringTjeneste.brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger()) ?
                     Optional.of(FaktaOmBeregningTilfelle.VURDER_LØNNSENDRING) : Optional.empty();
         }
     }

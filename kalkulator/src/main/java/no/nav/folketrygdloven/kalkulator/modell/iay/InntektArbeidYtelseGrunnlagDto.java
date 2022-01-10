@@ -50,6 +50,9 @@ public class InntektArbeidYtelseGrunnlagDto {
 
     /**
      * Returnerer aggregat som holder alle inntektsmeldingene som benyttes i behandlingen.
+     * OBS: For de fleste tilfeller er
+     * {@link no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput #getInntektsmeldinger}
+     * den korrekte måten å hente ut inntektsmeldinger på, da det ligger filtreringer man ikke får med om man henter alle.
      */
     public Optional<InntektsmeldingAggregatDto> getInntektsmeldinger() {
         return Optional.ofNullable(inntektsmeldinger);

@@ -23,7 +23,7 @@ public class VurderMottarYtelseTilfelleUtleder implements TilfelleUtleder {
     public Optional<FaktaOmBeregningTilfelle> utled(FaktaOmBeregningInput input, BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
-        return VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, input.getIayGrunnlag()) ?
+        return VurderMottarYtelseTjeneste.skalVurdereMottattYtelse(beregningsgrunnlag, input.getIayGrunnlag(), input.getInntektsmeldinger()) ?
             Optional.of(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE) : Optional.empty();
     }
 

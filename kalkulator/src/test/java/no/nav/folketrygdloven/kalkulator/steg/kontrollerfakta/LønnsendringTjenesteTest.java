@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
@@ -50,7 +50,7 @@ public class LønnsendringTjenesteTest {
             iayGrunnlagBuilder);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build());
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build(), Collections.emptyList());
 
         // Assert
         assertThat(brukerHarLønnsendring).isTrue();
@@ -71,7 +71,9 @@ public class LønnsendringTjenesteTest {
                 iayGrunnlagBuilder);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlagBuilder.build());
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag,
+                iayGrunnlagBuilder.build(),
+                Collections.emptyList());
 
         // Assert
         assertThat(brukerHarLønnsendring).isFalse();
@@ -92,7 +94,7 @@ public class LønnsendringTjenesteTest {
             .build();
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(brukerHarLønnsendring).isFalse();
@@ -120,7 +122,7 @@ public class LønnsendringTjenesteTest {
         medOverstyrtPeriode(arbeidType, arbeidsgiver, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusMonths(10), SKJÆRINGSTIDSPUNKT_OPPTJENING, iayGrunnlag);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(brukerHarLønnsendring).isTrue();
@@ -146,7 +148,7 @@ public class LønnsendringTjenesteTest {
         medOverstyrtPeriode(arbeidType, arbeidsgiver, fraOgMed, SKJÆRINGSTIDSPUNKT_OPPTJENING.minusDays(1), iayGrunnlag);
 
         // Act
-        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+        boolean brukerHarLønnsendring = LønnsendringTjeneste.brukerHarHattLønnsendringISisteMånedOgManglerInntektsmelding(beregningsgrunnlag, iayGrunnlag, Collections.emptyList());
 
         // Assert
         assertThat(brukerHarLønnsendring).isFalse();

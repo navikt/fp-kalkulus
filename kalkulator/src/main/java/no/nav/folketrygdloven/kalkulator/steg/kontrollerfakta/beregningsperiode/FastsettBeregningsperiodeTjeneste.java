@@ -3,12 +3,15 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeATFL.fastsettBeregningsperiodeForATFL;
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiodeForLønnsendring.fastsettBeregningsperiodeForLønnsendring;
 
+import java.util.Collection;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 
 @ApplicationScoped
 @FagsakYtelseTypeRef("FP")
@@ -23,12 +26,13 @@ public class FastsettBeregningsperiodeTjeneste implements FastsettBeregningsperi
     public FastsettBeregningsperiodeTjeneste() {}
 
     public BeregningsgrunnlagDto fastsettBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                           InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+                                                           InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                           Collection<InntektsmeldingDto> inntektsmeldinger) {
         // Fastsetter først for alle ATFL-andeler
         var fastsattForATFL = fastsettBeregningsperiodeForATFL(beregningsgrunnlag, beregningsperiodeTjeneste.fastsettBeregningsperiodeForATFLAndeler(beregningsgrunnlag.getSkjæringstidspunkt()));
         // Fastsetter for arbeidsforhold med lønnsendring innenfor siste 3 måneder før skjæringstidspunktet
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
-            var fastsattForLønnsendring = fastsettBeregningsperiodeForLønnsendring(fastsattForATFL, inntektArbeidYtelseGrunnlag);
+            var fastsattForLønnsendring = fastsettBeregningsperiodeForLønnsendring(fastsattForATFL, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
             return fastsattForLønnsendring;
 
         } else {

@@ -46,7 +46,7 @@ public class FastsettSkjæringstidspunktOgStatuserK14 implements FastsettSkjæri
                 regelResultatFastsettSkjæringstidspunkt,
                 regelResultatFastsettStatus);
         var nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), regelmodell, regelResultater, iayGrunnlag, grunnbeløpSatser);
-        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, iayGrunnlag);
+        var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, iayGrunnlag, input.getInntektsmeldinger());
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode,
                 new RegelSporingAggregat(
                         mapRegelSporingGrunnlag(regelResultatFastsettSkjæringstidspunkt, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT),

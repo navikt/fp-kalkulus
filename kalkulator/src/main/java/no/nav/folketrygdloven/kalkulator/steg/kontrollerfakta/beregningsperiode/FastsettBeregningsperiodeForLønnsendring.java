@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode
 import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmelding;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +16,7 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
@@ -22,12 +24,14 @@ public class FastsettBeregningsperiodeForLønnsendring {
 
     private FastsettBeregningsperiodeForLønnsendring() {}
 
-    static BeregningsgrunnlagDto fastsettBeregningsperiodeForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag) {
+    static BeregningsgrunnlagDto fastsettBeregningsperiodeForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                          InntektArbeidYtelseGrunnlagDto inntektArbeidYtelseGrunnlag,
+                                                                          Collection<InntektsmeldingDto> inntektsmeldinger) {
         Intervall beregningsperiodeATFL = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(beregningsgrunnlag.getSkjæringstidspunkt());
         Intervall toFørsteMåneder = Intervall.fraOgMedTilOgMed(beregningsperiodeATFL.getFomDato().plusDays(1), beregningsperiodeATFL.getTomDato().withDayOfMonth(1));
         Intervall sisteMåned = Intervall.fraOgMedTilOgMed(beregningsperiodeATFL.getTomDato().withDayOfMonth(2), beregningsperiodeATFL.getTomDato());
 
-        List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, toFørsteMåneder);
+        List<YrkesaktivitetDto> yrkesaktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, toFørsteMåneder, inntektsmeldinger);
         BeregningsgrunnlagDto nyttBeregningsgrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         if (!yrkesaktiviteterMedLønnsendring.isEmpty()) {
             nyttBeregningsgrunnlag.getBeregningsgrunnlagPerioder().forEach(periode -> {

@@ -1,9 +1,12 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
+import java.util.Collection;
+
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
@@ -14,7 +17,9 @@ public class VurderMottarYtelseTjeneste {
         // Skjul
     }
 
-    public static boolean skalVurdereMottattYtelse(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static boolean skalVurdereMottattYtelse(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                   InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                   Collection<InntektsmeldingDto> inntektsmeldinger) {
         boolean erFrilanser = erFrilanser(beregningsgrunnlag);
 
         InntektFilterDto filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
@@ -24,7 +29,7 @@ public class VurderMottarYtelseTjeneste {
             return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.FRILANSER);
         }
         var arbeidstakerSomManglerInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
-                .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag);
+                .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, inntektsmeldinger);
         if (!arbeidstakerSomManglerInntektsmelding.isEmpty()) {
             return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.ARBEIDSTAKER);
         }
