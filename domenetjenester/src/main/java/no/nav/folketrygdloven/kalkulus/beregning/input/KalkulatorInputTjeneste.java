@@ -107,8 +107,10 @@ public class KalkulatorInputTjeneste {
 
         var violations = VALIDATOR.validate(input);
         if (!violations.isEmpty()) {
-            throw new UgyldigInputException("FT-KALKULUS-INPUT-1000004", "Ugyldig kalkulatorinput: "
-                    + violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
+            throw new UgyldigInputException("FT-KALKULUS-INPUT-1000004",
+                    String.format("Ugyldig kalkulatorinput for kobling %s med følgende feilmeldinger: %s",
+                            koblingId,
+                            violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList())));
         }
         return input;
 

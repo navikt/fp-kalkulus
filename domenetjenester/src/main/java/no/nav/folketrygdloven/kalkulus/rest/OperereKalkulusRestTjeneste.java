@@ -22,6 +22,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -67,6 +69,8 @@ import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
 @Transactional
 public class OperereKalkulusRestTjeneste {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OperereKalkulusRestTjeneste.class);
+
     private KoblingTjeneste koblingTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private OperereKalkulusOrkestrerer orkestrerer;
@@ -105,6 +109,7 @@ public class OperereKalkulusRestTjeneste {
                     new AktørId(spesifikasjon.getAktør().getIdent())
             );
         } catch (UgyldigInputException e) {
+            LOG.warn("Konvertering av input feilet: " + e.getMessage());
             return Response.ok(new OppdateringListeRespons(true)).build();
         }
         return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
