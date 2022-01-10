@@ -105,7 +105,7 @@ public class UtbetalingDto {
     }
 
     @AssertTrue(message = "Det skal ikke være arbeidsgiver hvis det er en ytelse")
-    private boolean isYtelseIngenArbeidsgiver() {
+    public boolean isYtelseIngenArbeidsgiver() {
         var utbetalingspostList = poster.stream().filter(utbetalingsPostDto -> InntektspostType.YTELSE.equals(utbetalingsPostDto.getInntektspostType())).collect(Collectors.toList());
 
         boolean erEnYtelse = !utbetalingspostList.isEmpty();
@@ -113,7 +113,7 @@ public class UtbetalingDto {
     }
 
     @AssertTrue(message = "Kan ikke blande andre inntektspostyper med ytelse i samme utbetaling")
-    private boolean isYtelseKanIkkeBlandeMedAndreInntektstyper() {
+    public boolean isYtelseKanIkkeBlandeMedAndreInntektstyper() {
         var utbetalingsDto = poster.stream().filter(utbetalingsPostDto -> utbetalingsPostDto.getInntektspostType() == InntektspostType.YTELSE).findFirst();
 
         if (utbetalingsDto.isEmpty()) {

@@ -94,7 +94,7 @@ public class YrkesaktivitetDto {
     }
 
     @AssertTrue(message = "Må ha arbeidsgiver for arbeidtype FRILANSER_OPPDRAGSTAKER eller ORDINÆRT_ARBEIDSFORHOLD.")
-    private boolean okArbeidsgiver() {
+    public boolean okArbeidsgiver() {
         return arbeidsgiver != null || !(arbeidType.equals(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD) || arbeidType.equals(ArbeidType.FRILANSER_OPPDRAGSTAKER_MED_MER));
     }
 

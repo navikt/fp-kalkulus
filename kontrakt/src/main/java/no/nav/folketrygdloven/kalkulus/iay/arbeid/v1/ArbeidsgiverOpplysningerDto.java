@@ -61,7 +61,7 @@ public class ArbeidsgiverOpplysningerDto {
     }
 
     @AssertTrue(message = "Aktør av typen orgnr skal ikke ha oppgitt fødselsdato")
-    private boolean erGyldig() {
+    public boolean erGyldig() {
         if (aktør.getErOrganisasjon()) {
             return fødselsdato == null;
         }

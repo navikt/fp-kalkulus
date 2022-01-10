@@ -68,7 +68,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
 
 
     @AssertTrue(message = "Liste med utbetalingsgrader skal ikke ha duplikate arbeidsforhold")
-    private boolean isIngenDuplikateArbeidsforhold() {
+    public boolean isIngenDuplikateArbeidsforhold() {
         long antallUnike = utbetalingsgradPrAktivitet.stream().map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
                 .distinct()
                 .count();
