@@ -102,6 +102,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <exclusion>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+            </exclusion>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
