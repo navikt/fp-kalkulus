@@ -19,6 +19,7 @@ import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.jaspi.DefaultAuthConfigFactory;
 import org.eclipse.jetty.security.jaspi.JaspiAuthenticatorFactory;
+import org.eclipse.jetty.security.jaspi.provider.JaspiAuthConfigProvider;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -45,7 +46,6 @@ import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
 import no.nav.k9.felles.konfigurasjon.env.Environment;
 import no.nav.k9.felles.oidc.OidcApplication;
-import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthConfigProvider;
 import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthModule;
 
 public class JettyServer {
@@ -123,12 +123,14 @@ public class JettyServer {
     }
 
     protected void konfigurerSikkerhet() {
-        var authConfigFactory = new DefaultAuthConfigFactory();
-        AuthConfigFactory.setFactory(authConfigFactory);
-        authConfigFactory.registerConfigProvider(new OidcAuthConfigProvider(new OidcAuthModule()),
-                "HttpServlet",
-                "server /ftkalkulus",
-                "OIDC Authentication");
+        var factory = new DefaultAuthConfigFactory();
+
+        factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
+            "HttpServlet",
+            "server /ftkalkulus",
+            "OIDC Authentication");
+
+        AuthConfigFactory.setFactory(factory);
     }
 
     protected void migrerDatabaser() throws IOException {
