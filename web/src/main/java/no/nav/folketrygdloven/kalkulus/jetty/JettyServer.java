@@ -127,7 +127,7 @@ public class JettyServer {
 
         factory.registerConfigProvider(new JaspiAuthConfigProvider(new OidcAuthModule()),
             "HttpServlet",
-            "server /ftkalkulus",
+            "server /ftkalkulus/api",
             "OIDC Authentication");
 
         AuthConfigFactory.setFactory(factory);
