@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.detaljert
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

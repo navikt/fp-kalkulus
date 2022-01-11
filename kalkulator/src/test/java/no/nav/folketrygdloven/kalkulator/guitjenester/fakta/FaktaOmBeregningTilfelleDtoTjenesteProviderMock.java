@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.inject.Instance;
+import javax.enterprise.inject.Instance;
 
 public class FaktaOmBeregningTilfelleDtoTjenesteProviderMock {
 

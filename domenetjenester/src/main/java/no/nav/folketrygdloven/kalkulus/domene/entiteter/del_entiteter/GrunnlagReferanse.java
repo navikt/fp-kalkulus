@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter;
 import java.util.Objects;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

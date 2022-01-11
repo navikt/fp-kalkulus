@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.app.jackson;
 
-import jakarta.validation.constraints.Pattern;
+import javax.validation.constraints.Pattern;
 
 class Patternklasse {
 

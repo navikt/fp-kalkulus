@@ -4,7 +4,7 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.fakta;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

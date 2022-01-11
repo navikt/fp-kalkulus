@@ -3,11 +3,11 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter;
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;

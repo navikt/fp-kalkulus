@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;

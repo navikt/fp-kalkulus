@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;

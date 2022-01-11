@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.ytelse.fp;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;

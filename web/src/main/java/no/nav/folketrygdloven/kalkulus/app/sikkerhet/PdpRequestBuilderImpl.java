@@ -1,8 +1,8 @@
 package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
-import jakarta.annotation.Priority;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Alternative;
+import javax.annotation.Priority;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 
 import no.nav.k9.felles.sikkerhet.abac.AbacAttributtSamling;
 import no.nav.k9.felles.sikkerhet.abac.PdpKlient;

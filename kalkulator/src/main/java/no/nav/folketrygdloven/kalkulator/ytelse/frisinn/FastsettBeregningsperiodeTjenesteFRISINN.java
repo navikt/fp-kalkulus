@@ -4,7 +4,7 @@ import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsp
 
 import java.util.Collection;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;

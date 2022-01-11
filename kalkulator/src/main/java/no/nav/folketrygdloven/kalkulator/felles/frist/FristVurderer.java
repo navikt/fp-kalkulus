@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.felles.frist;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import jakarta.enterprise.inject.Instance;
+import javax.enterprise.inject.Instance;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.modell.iay.PerioderForKravDto;

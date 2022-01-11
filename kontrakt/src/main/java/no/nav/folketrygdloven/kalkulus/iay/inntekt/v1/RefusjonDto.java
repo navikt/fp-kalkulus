@@ -5,7 +5,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 import java.time.LocalDate;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

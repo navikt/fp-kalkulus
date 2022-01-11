@@ -2,11 +2,11 @@ package no.nav.folketrygdloven.kalkulus.håndtering;
 
 import java.util.Objects;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.Dependent;
-import jakarta.enterprise.inject.Instance;
-import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulus.beregning.MapHåndteringskodeTilTilstand;

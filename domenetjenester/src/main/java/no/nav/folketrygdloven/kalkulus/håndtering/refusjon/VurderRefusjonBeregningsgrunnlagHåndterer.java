@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.håndtering.refusjon;
 
 import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapVurderRefusjonBeregningsgrunnlagDto;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;

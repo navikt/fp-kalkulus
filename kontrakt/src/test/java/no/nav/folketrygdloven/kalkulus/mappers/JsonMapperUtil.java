@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.validation.Validation;
+import javax.validation.Validation;
 
 import org.assertj.core.api.Assertions;
 

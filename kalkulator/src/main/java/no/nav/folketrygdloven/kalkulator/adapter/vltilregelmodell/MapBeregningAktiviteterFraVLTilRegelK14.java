@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Aktivitet;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;

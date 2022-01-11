@@ -23,14 +23,13 @@ services:
     restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../lokalutvikling/postgres-init:/docker-entrypoint-initdb.d/
+      - /workspace/.devcontainer/db:/docker-entrypoint-initdb.d
     environment:
       TZ: "UTC"
       PGTZ: "UTC"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_USER: "postgres"
-      POSTGRES_DB: postgres
-
+      POSTGRES_PASSWORD: "ftkalkulus_unit"
+      POSTGRES_USER: "ftkalkulus_unit"
+      POSTGRES_DB: ftkalkulus_unit
 
 # Persist database information after your VM shuts down (just these two lines!)
 volumes:

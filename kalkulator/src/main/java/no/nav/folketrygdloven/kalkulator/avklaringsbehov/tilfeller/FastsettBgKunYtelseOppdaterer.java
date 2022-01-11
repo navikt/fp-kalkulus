@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KalkulatorException;

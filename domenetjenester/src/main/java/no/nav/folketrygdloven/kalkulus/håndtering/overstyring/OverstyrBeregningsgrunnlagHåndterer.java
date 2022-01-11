@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulus.håndtering.overstyring;
 
 import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoMapper.mapOverstyrBeregningsgrunnlagDto;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.BeregningFaktaOgOverstyringHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;

@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.felles.diff;
 
 import static java.util.Arrays.asList;
 
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
+import javassist.Modifier;
 
 public class TraverseGraphConfig {
 

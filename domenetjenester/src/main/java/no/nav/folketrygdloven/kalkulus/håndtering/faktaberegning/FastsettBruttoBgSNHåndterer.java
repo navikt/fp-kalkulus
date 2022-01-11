@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.håndtering.faktaberegning;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettBruttoBeregningsgrunnlagSNHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;

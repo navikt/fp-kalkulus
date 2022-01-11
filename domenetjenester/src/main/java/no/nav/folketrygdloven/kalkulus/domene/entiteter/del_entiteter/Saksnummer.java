@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
 

@@ -3,8 +3,8 @@ package no.nav.folketrygdloven.kalkulus.opptjening.v1;
 
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -2,8 +2,8 @@ package no.nav.folketrygdloven.kalkulus.felles.jpa;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall;
 

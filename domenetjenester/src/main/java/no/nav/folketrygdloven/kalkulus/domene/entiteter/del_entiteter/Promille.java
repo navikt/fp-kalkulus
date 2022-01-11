@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.ChangeTracked;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;
