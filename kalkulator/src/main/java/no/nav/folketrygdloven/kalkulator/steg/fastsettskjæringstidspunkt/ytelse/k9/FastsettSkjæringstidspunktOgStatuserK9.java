@@ -6,7 +6,7 @@ import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRege
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;

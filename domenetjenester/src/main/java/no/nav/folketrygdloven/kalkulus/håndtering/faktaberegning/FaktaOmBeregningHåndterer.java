@@ -4,8 +4,8 @@ import static no.nav.folketrygdloven.kalkulus.håndtering.mapping.OppdatererDtoM
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.BeregningFaktaOgOverstyringHåndterer;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;

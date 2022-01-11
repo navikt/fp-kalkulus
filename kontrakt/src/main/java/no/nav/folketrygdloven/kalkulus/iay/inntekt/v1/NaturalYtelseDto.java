@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.iay.inntekt.v1;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

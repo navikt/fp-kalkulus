@@ -3,9 +3,9 @@ package no.nav.folketrygdloven.kalkulator.modell.iay;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import javax.validation.Valid;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -3,7 +3,7 @@ package no.nav.folketrygdloven.kalkulus.felles.v1;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;

@@ -18,15 +18,11 @@
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt</artifactId>
+            <artifactId>kalkulus-kontrakt-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kalkulator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
+            <artifactId>kalkulus-kalkulator-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.k9.felles.sikkerhet</groupId>
@@ -37,14 +33,30 @@
             <artifactId>k9-felles-db</artifactId>
         </dependency>
 
-        <!-- Eksterne avhengigheter til andre prosjekter-->
+        <!-- Eksterne avhengigheter til andre biblioteker, prosjekter-->
+         <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
+            <artifactId>hibernate-core-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -56,6 +68,8 @@
             <artifactId>weld-servlet-core</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- test avhengigheter-->
         <dependency>
             <groupId>no.nav.k9.felles</groupId>
             <artifactId>k9-felles-testutilities</artifactId>

@@ -14,14 +14,11 @@
     <packaging>jar</packaging>
     <name>Kalkulus :: Web :: Applikasjon</name>
     <properties>
-        <geronimo.jaspi.version>2.0.0</geronimo.jaspi.version>
-        <geronimo.osgi.version>1.1</geronimo.osgi.version>
         <swagger-ui.version>4.1.3</swagger-ui.version>
 
-        <replacer.version>1.5.3</replacer.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
 
-        <jersey.version>2.34</jersey.version>
+        <jersey.version>3.0.2</jersey.version>
     </properties>
 
     <dependencyManagement>
@@ -29,7 +26,7 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-bom</artifactId>
-                <version>10.0.1</version>
+                <version>11.0.7</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -46,27 +43,15 @@
                 <version>5.0.1</version>
             </dependency>
 
-            <!-- Sikkerhet: Geronimo -->
-            <dependency>
-                <groupId>org.apache.geronimo.components</groupId>
-                <artifactId>geronimo-jaspi</artifactId>
-                <version>${geronimo.jaspi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-osgi-locator</artifactId>
-                <version>${geronimo.osgi.version}</version>
-            </dependency>
-
             <!-- Swagger og Swagger-UI -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2</artifactId>
+                <artifactId>swagger-jaxrs2-jakarta</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-core</artifactId>
+                <artifactId>swagger-core-jakarta</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
             <dependency>
@@ -90,12 +75,12 @@
 
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kalkulator</artifactId>
+            <artifactId>kalkulus-kalkulator-jakarta</artifactId>
         </dependency>
 
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt</artifactId>
+            <artifactId>kalkulus-kontrakt-jakarta</artifactId>
         </dependency>
         <!-- Test avhengigheter -->
         <dependency>
@@ -115,8 +100,8 @@
             <artifactId>jersey-cdi1x-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
@@ -223,12 +208,6 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-annotations</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -245,14 +224,6 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jaspi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.components</groupId>
-            <artifactId>geronimo-jaspi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-osgi-locator</artifactId>
         </dependency>
 
         <!-- Metrics, logging, helse- og selftest -->
@@ -301,11 +272,11 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
+            <artifactId>swagger-core-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2</artifactId>
+            <artifactId>swagger-jaxrs2-jakarta</artifactId>
         </dependency>
 
         <dependency>

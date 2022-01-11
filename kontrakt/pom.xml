@@ -10,19 +10,20 @@
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
-    <artifactId>kalkulus-kontrakt</artifactId>
+    <artifactId>kalkulus-kontrakt-jakarta</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Kontrakt</name>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <legacy.artifactId>kalkulus-kontrakt</legacy.artifactId>
     </properties>
 
     <dependencies>
         <!-- Interne avhengigheter -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kodeverk</artifactId>
+            <artifactId>kalkulus-kodeverk-jakarta</artifactId>
         </dependency>
 
         <!-- Eksterne avhengigheter til andre prosjekter -->
@@ -41,10 +42,12 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

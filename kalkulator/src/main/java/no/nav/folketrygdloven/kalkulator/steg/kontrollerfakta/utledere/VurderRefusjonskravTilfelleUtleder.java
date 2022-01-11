@@ -2,9 +2,9 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Any;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;

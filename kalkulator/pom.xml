@@ -9,19 +9,20 @@
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
-    <artifactId>kalkulus-kalkulator</artifactId>
+    <artifactId>kalkulus-kalkulator-jakarta</artifactId>
     <packaging>jar</packaging>
     <name>Kalkulus :: Kalkulator</name>
 
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
+        <legacy.artifactId>kalkulus-kalkulator</legacy.artifactId>
     </properties>
 
     <dependencies>
         <!-- Interne avhengigheter  -->
         <dependency>
             <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-            <artifactId>kalkulus-kontrakt</artifactId>
+            <artifactId>kalkulus-kontrakt-jakarta</artifactId>
         </dependency>
 
         <!-- Eksterne avhengigheter til andre NAV-prosjekter-->
@@ -38,12 +39,26 @@
             <groupId>no.nav.fpsak.tidsserie</groupId>
             <artifactId>fpsak-tidsserie</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
         </dependency>
+
         <!-- Eksterne avhengigheter til andre prosjekter-->
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-junit5</artifactId>

@@ -3,69 +3,65 @@ package no.nav.folketrygdloven.kalkulus.jetty;
 import static no.nav.k9.felles.konfigurasjon.env.Cluster.LOCAL;
 import static no.nav.k9.felles.konfigurasjon.env.Cluster.NAIS_CLUSTER_NAME;
 
-import java.io.File;
 import java.io.IOException;
-import java.security.Security;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import org.apache.geronimo.components.jaspi.AuthConfigFactoryImpl;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.plus.jndi.EnvEntry;
-import org.eclipse.jetty.plus.webapp.EnvConfiguration;
-import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.jaspi.DefaultAuthConfigFactory;
 import org.eclipse.jetty.security.jaspi.JaspiAuthenticatorFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
-import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.MetaData;
-import org.eclipse.jetty.webapp.WebAppConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebInfConfiguration;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationConfig;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatabaseScript;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceRole;
 import no.nav.folketrygdloven.kalkulus.jetty.db.DatasourceUtil;
 import no.nav.k9.felles.konfigurasjon.env.Environment;
 import no.nav.k9.felles.oidc.OidcApplication;
+import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthConfigProvider;
+import no.nav.k9.felles.sikkerhet.jaspic.OidcAuthModule;
 
 public class JettyServer {
 
     /**
-     * nedstrippet sett med Jetty configurations for raskere startup.
+     * Legges først slik at alltid resetter context før prosesserer nye requests.
+     * Kjøres først så ikke risikerer andre har satt Request#setHandled(true).
      */
-    protected static final Configuration[] CONFIGURATIONS = new Configuration[]{
-            new WebAppConfiguration(),
-            new WebInfConfiguration(),
-            new WebXmlConfiguration(),
-            new AnnotationConfiguration(),
-            new EnvConfiguration(),
-            new PlusConfiguration(),
-    };
+    static final class ResetLogContextHandler extends AbstractHandler {
+        @Override
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
+            MDC.clear();
+        }
+    }
+
     private static final Environment ENV = Environment.current();
     private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
     private AppKonfigurasjon appKonfigurasjon;
@@ -97,7 +93,7 @@ public class JettyServer {
 
     protected void start(AppKonfigurasjon appKonfigurasjon) throws Exception {
         Server server = new Server(appKonfigurasjon.getServerPort());
-        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[]{}));
+        server.setConnectors(createConnectors(appKonfigurasjon, server).toArray(new Connector[] {}));
 
         var handlers = new HandlerList(new ResetLogContextHandler(), createContext(appKonfigurasjon));
         server.setHandler(handlers);
@@ -113,9 +109,7 @@ public class JettyServer {
 
     protected void konfigurer() throws Exception {
         konfigurerMiljø();
-
-        File jaspiConf = new File(System.getProperty("conf", "./conf") + "/jaspi-conf.xml"); // NOSONAR
-        konfigurerSikkerhet(jaspiConf);
+        konfigurerSikkerhet();
         konfigurerJndi();
     }
 
@@ -128,14 +122,13 @@ public class JettyServer {
                 DatasourceUtil.createDatasource("defaultDS", DatasourceRole.USER, ENV.getCluster(), 4));
     }
 
-    protected void konfigurerSikkerhet(File jaspiConf) {
-        Security.setProperty(AuthConfigFactory.DEFAULT_FACTORY_SECURITY_PROPERTY, AuthConfigFactoryImpl.class.getCanonicalName());
-
-        if (!jaspiConf.exists()) {
-            throw new IllegalStateException("Missing required file: " + jaspiConf.getAbsolutePath());
-        }
-        System.setProperty("org.apache.geronimo.jaspic.configurationFile", jaspiConf.getAbsolutePath());
-
+    protected void konfigurerSikkerhet() {
+        var authConfigFactory = new DefaultAuthConfigFactory();
+        AuthConfigFactory.setFactory(authConfigFactory);
+        authConfigFactory.registerConfigProvider(new OidcAuthConfigProvider(new OidcAuthModule()),
+                "HttpServlet",
+                "server /ftkalkulus",
+                "OIDC Authentication");
     }
 
     protected void migrerDatabaser() throws IOException {
@@ -146,7 +139,8 @@ public class JettyServer {
             // operasjoner
             initSql = null;
         }
-        DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(), 1);
+        DataSource migreringDs = DatasourceUtil.createDatasource("defaultDS", DatasourceRole.ADMIN, ENV.getCluster(),
+                1);
         try {
             DatabaseScript.migrate(migreringDs, initSql);
             migreringDs.getConnection().close();
@@ -160,7 +154,8 @@ public class JettyServer {
         var webAppContext = new WebAppContext();
         webAppContext.setParentLoaderPriority(true);
 
-        // må hoppe litt bukk for å hente web.xml fra classpath i stedet for fra filsystem.
+        // må hoppe litt bukk for å hente web.xml fra classpath i stedet for fra
+        // filsystem.
         String descriptor;
         try (var resource = Resource.newClassPathResource("/WEB-INF/web.xml")) {
             descriptor = resource.getURI().toURL().toExternalForm();
@@ -168,11 +163,11 @@ public class JettyServer {
         webAppContext.setDescriptor(descriptor);
         webAppContext.setBaseResource(createResourceCollection());
         webAppContext.setContextPath(appKonfigurasjon.getContextPath());
-        webAppContext.setConfigurations(CONFIGURATIONS);
 
         webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
-        webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", "^.*jersey-.*.jar$|^.*felles-.*.jar$");
+        webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern",
+                "^.*jersey-.*.jar$|^.*felles-.*.jar$");
         webAppContext.setSecurityHandler(createSecurityHandler());
         updateMetaData(webAppContext.getMetaData());
         return webAppContext;
@@ -220,7 +215,8 @@ public class JettyServer {
     @SuppressWarnings("resource")
     protected List<Connector> createConnectors(AppKonfigurasjon appKonfigurasjon, Server server) {
         List<Connector> connectors = new ArrayList<>();
-        ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(createHttpConfiguration()));
+        ServerConnector httpConnector = new ServerConnector(server,
+                new HttpConnectionFactory(createHttpConfiguration()));
         httpConnector.setPort(appKonfigurasjon.getServerPort());
         connectors.add(httpConnector);
 
@@ -229,20 +225,7 @@ public class JettyServer {
 
     @SuppressWarnings("resource")
     protected ResourceCollection createResourceCollection() throws IOException {
-        return new ResourceCollection(
-                Resource.newClassPathResource("META-INF/resources/webjars/"),
-                Resource.newClassPathResource("/web"));
-    }
-
-    /**
-     * Legges først slik at alltid resetter context før prosesserer nye requests. Kjøres først så ikke risikerer andre har satt
-     * Request#setHandled(true).
-     */
-    static final class ResetLogContextHandler extends AbstractHandler {
-        @Override
-        public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
-            MDC.clear();
-        }
+        return new ResourceCollection(Resource.newClassPathResource("/web"));
     }
 
 }

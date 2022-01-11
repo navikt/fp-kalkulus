@@ -101,11 +101,8 @@ public class JettyDevServer extends JettyServer {
     }
 
     @Override
-    protected void konfigurerSikkerhet(File jaspiConf) {
-        // overstyrer angitt dir for lokal testing
-        File alternativeJaspiConf = new File("src/main/resources/jetty/jaspi-conf.xml");
-        super.konfigurerSikkerhet(alternativeJaspiConf);
-
+    protected void konfigurerSikkerhet() {
+        super.konfigurerSikkerhet();
         // truststore avgjør hva vi stoler på av sertifikater når vi gjør utadgående TLS kall
         initCryptoStoreConfig("truststore", "javax.net.ssl.trustStore", "javax.net.ssl.trustStorePassword", "changeit");
         initCryptoStoreConfig("keystore", "javax.net.ssl.keyStore", "javax.net.ssl.keyStorePassword", "changeit");

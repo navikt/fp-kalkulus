@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov.tilfeller;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;

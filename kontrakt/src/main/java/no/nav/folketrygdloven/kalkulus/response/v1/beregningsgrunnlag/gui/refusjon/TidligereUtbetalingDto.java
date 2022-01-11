@@ -5,8 +5,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

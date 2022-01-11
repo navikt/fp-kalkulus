@@ -3,12 +3,12 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.mapping.RefusjonskravFristUtfallKodeverdiConverter;
 import no.nav.folketrygdloven.kalkulus.felles.diff.IndexKey;

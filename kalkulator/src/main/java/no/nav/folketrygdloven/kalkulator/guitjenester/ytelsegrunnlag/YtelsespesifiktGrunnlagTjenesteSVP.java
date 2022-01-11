@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.guitjenester.ytelsegrunnlag;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;

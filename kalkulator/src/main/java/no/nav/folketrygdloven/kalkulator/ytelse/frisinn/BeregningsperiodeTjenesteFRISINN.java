@@ -2,7 +2,7 @@ package no.nav.folketrygdloven.kalkulator.ytelse.frisinn;
 
 import java.time.LocalDate;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;

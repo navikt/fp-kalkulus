@@ -3,10 +3,10 @@ package no.nav.folketrygdloven.kalkulus.felles.jpa;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 import no.nav.folketrygdloven.kalkulus.felles.diff.DiffIgnore;
 import no.nav.k9.sikkerhet.context.SubjectHandler;
