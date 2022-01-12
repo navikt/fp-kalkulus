@@ -47,7 +47,7 @@
 
         <beregningsgrunnlag.regelmodell.version>2.1.55</beregningsgrunnlag.regelmodell.version>
 
-        <felles.version>0.2.18</felles.version>
+        <felles.version>0.6.5</felles.version>
 
         <prometheus.version>0.14.1</prometheus.version>
         <junit.version>5.8.1</junit.version>
@@ -60,6 +60,13 @@
                 <!-- Importer først for å sikre samme avhengigheter gjennom hele. -->
                 <groupId>no.nav.k9.felles</groupId>
                 <artifactId>k9-felles-root</artifactId>
+                <version>${felles.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.k9.felles.integrasjon</groupId>
+                <artifactId>k9-felles-integrasjon-pom</artifactId>
                 <version>${felles.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -86,7 +93,7 @@
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>jakarta.el</artifactId>
-                <version>3.0.3</version>
+                <version>4.0.1</version>
             </dependency>
 
             <!-- Felles biblioteker - Importerte avhengigheter. -->
@@ -101,14 +108,6 @@
                 <artifactId>k9-sikkerhet-sts</artifactId>
                 <version>${felles.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>no.nav.k9.felles.integrasjon</groupId>
-                <artifactId>k9-felles-integrasjon-pom</artifactId>
-                <version>${felles.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
             <dependency>
                 <!-- Importer først for å sikre samme avhengigheter gjennom hele. -->
                 <groupId>no.nav.k9.felles</groupId>
@@ -119,19 +118,19 @@
             <!-- Interne avhengigheter -->
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kontrakt</artifactId>
+                <artifactId>kalkulus-kontrakt-jakarta</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kodeverk</artifactId>
+                <artifactId>kalkulus-kodeverk-jakarta</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>no.nav.folketrygdloven.kalkulus</groupId>
-                <artifactId>kalkulus-kalkulator</artifactId>
+                <artifactId>kalkulus-kalkulator-jakarta</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -158,13 +157,13 @@
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>2.0.2</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <!-- kan fjernes ved Jakarta EE 9/ oppgradering av jakarta.platform -->
                 <groupId>jakarta.persistence</groupId>
                 <artifactId>jakarta.persistence-api</artifactId>
-                <version>2.2.3</version>
+                <version>3.0.0</version>
             </dependency>
 
             <dependency>
@@ -185,12 +184,13 @@
                 <artifactId>javassist</artifactId>
                 <version>3.28.0-GA</version>
             </dependency>
-
             <dependency>
-                <groupId>org.jboss.spec.javax.annotation</groupId>
-                <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-                <version>2.0.1.Final</version>
+                <!-- for Bean validation -->
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>7.0.1.Final</version>
             </dependency>
+
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
@@ -272,26 +272,39 @@
                 <version>${prometheus.version}</version>
             </dependency>
             <dependency>
-                <!-- for Bean validation -->
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>6.2.0.Final</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-junit5</artifactId>
-                <version>2.0.2.Final</version>
+                <version>3.0.0.Final</version>
                 <scope>test</scope>
             </dependency>
 
             <!--Swagger -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-jaxrs2-jakarta</artifactId>
+                <version>${swagger.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.module</groupId>
+                        <artifactId>jackson-module-jaxb-annotations</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-core-jakarta</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.22.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -518,9 +531,10 @@
                                 <property name="plugin_classpath" refid="maven.plugin.classpath" />
                                 <java classname="no.nav.k9.dev.jakarta.App">
                                     <arg value="${project.build.directory}/${project.build.finalName}.jar" />
-                                    <arg value="${project.build.directory}/${project.artifactId}-jakarta-${project.version}.jar" />
+                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}.jar" />
                                     <arg value="-q" />
                                     <arg value="-o" />
+                                    <arg value="--reverse" />
                                     <classpath>
                                         <pathelement path="${plugin_classpath}" />
                                     </classpath>
@@ -539,9 +553,10 @@
                                 <property name="plugin_classpath" refid="maven.plugin.classpath" />
                                 <java classname="no.nav.k9.dev.jakarta.App">
                                     <arg value="${project.build.directory}/${project.build.finalName}-sources.jar" />
-                                    <arg value="${project.build.directory}/${project.artifactId}-jakarta-${project.version}-sources.jar" />
+                                    <arg value="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar" />
                                     <arg value="-q" />
                                     <arg value="-o" />
+                                    <arg value="--reverse" />
                                     <classpath>
                                         <pathelement path="${plugin_classpath}" />
                                     </classpath>
@@ -554,7 +569,7 @@
                     <dependency>
                         <groupId>no.nav.k9.dev</groupId>
                         <artifactId>dev-jakarta-transform</artifactId>
-                        <version>0.6.0</version>
+                        <version>0.6.2</version>
                     </dependency>
                     <dependency>
                         <groupId>ant-contrib</groupId>
@@ -592,11 +607,12 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <target>
-                                        <unzip src="${project.build.directory}/${project.artifactId}-jakarta-${project.version}.jar"
-                                            dest="${project.build.directory}/jakarta">
+                                        <unzip src="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"
+                                            dest="${project.build.directory}/javax">
                                             <patternset>
                                                 <include name="META-INF/maven/**/pom.xml" />
                                             </patternset>
+                                            <mapper type="flatten"/>
                                         </unzip>
                                     </target>
                                 </configuration>
@@ -611,15 +627,15 @@
                                     <target>
                                         <!-- ompakker jar fil uten pom.xml -->
                                         <jar
-                                            destfile="${project.build.directory}/${project.artifactId}-jakarta-${project.version}-TOBEDEPLOYED.jar">
+                                            destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar">
                                             <zipfileset
-                                                src="${project.build.directory}/${project.artifactId}-jakarta-${project.version}.jar"
+                                                src="${project.build.directory}/${legacy.artifactId}-${project.version}.jar"
                                                 excludes="META-INF/maven/**" />
                                         </jar>
                                         <jar
-                                            destfile="${project.build.directory}/${project.artifactId}-jakarta-${project.version}-sources-TOBEDEPLOYED.jar">
+                                            destfile="${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar">
                                             <zipfileset
-                                                src="${project.build.directory}/${project.artifactId}-jakarta-${project.version}-sources.jar"
+                                                src="${project.build.directory}/${legacy.artifactId}-${project.version}-sources.jar"
                                                 excludes="META-INF/maven/**" />
                                         </jar>
                                     </target>
@@ -641,9 +657,9 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <pomFile>${project.build.directory}/jakarta/META-INF/maven/${project.groupId}/${project.artifactId}/pom.xml</pomFile>
-                                    <file>${project.build.directory}/${project.artifactId}-jakarta-${project.version}-TOBEDEPLOYED.jar</file>
-                                    <sources>${project.build.directory}/${project.artifactId}-jakarta-${project.version}-sources-TOBEDEPLOYED.jar</sources>
+                                    <pomFile>${project.build.directory}/javax/pom.xml</pomFile>
+                                    <file>${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar</file>
+                                    <sources>${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar</sources>
                                 </configuration>
                             </execution>
                         </executions>
@@ -660,10 +676,10 @@
                                 <configuration>
                                     <repositoryId>github</repositoryId>
                                     <!-- må matche unpacked pom.xml fra over (disse endrer ikke path ved transform p.t.) -->
-                                    <pomFile>${project.build.directory}/jakarta/META-INF/maven/${project.groupId}/${project.artifactId}/pom.xml</pomFile>
+                                    <pomFile>${project.build.directory}/javax/pom.xml</pomFile>
                                     <url>${project.distributionManagement.repository.url}</url>
-                                    <file>${project.build.directory}/${project.artifactId}-jakarta-${project.version}-TOBEDEPLOYED.jar</file>
-                                    <sources>${project.build.directory}/${project.artifactId}-jakarta-${project.version}-sources-TOBEDEPLOYED.jar</sources>
+                                    <file>${project.build.directory}/${legacy.artifactId}-${project.version}-TOBEDEPLOYED.jar</file>
+                                    <sources>${project.build.directory}/${legacy.artifactId}-${project.version}-sources-TOBEDEPLOYED.jar</sources>
                                     <skip>${maven.deploy.skip}</skip>
                                 </configuration>
                             </execution>
@@ -678,7 +694,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/navikt/k9-sak/</url>
+            <url>https://maven.pkg.github.com/navikt/k9-felles</url>
         </repository>
         <repository>
             <!-- bruker SNAPSHOT versjon av eclipse-transformer (0.3.0-SNAPSHOT) -->

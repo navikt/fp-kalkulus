@@ -6,7 +6,7 @@ import static no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodi
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;

@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.iay.v1;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

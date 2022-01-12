@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1.besteberegning;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
