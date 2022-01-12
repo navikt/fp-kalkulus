@@ -11,7 +11,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 public class VurderRefusjonBeregningsgrunnlagHåndterer {
 
     private VurderRefusjonBeregningsgrunnlagHåndterer() {
-        // skjul
+        // skjuler public konstruktør
     }
 
     public static BeregningsgrunnlagGrunnlagDto håndter(VurderRefusjonBeregningsgrunnlagDto dto, BeregningsgrunnlagInput input) {
