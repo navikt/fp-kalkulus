@@ -1,4 +1,4 @@
-FROM navikt/java:16-appdynamics
+FROM navikt/java:17-appdynamics
 LABEL org.opencontainers.image.source=https://github.com/navikt/ft-kalkulus
 ENV APPD_ENABLED=true
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
