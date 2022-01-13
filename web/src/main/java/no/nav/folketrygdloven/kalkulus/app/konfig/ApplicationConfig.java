@@ -6,12 +6,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+
 import org.glassfish.jersey.server.ServerProperties;
 
+import io.swagger.v3.core.jackson.ModelResolver;
+import io.swagger.v3.core.jackson.TypeNameResolver;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
@@ -33,8 +38,17 @@ public class ApplicationConfig extends Application {
 
     public static final String API_URI = "/api";
 
+    static {
+        // config for OpenAPI
+        TypeNameResolver.std.setUseFqn(true);  // use fully-qualified names as schema names
+        ModelResolver.enumsAsRef = true; // use reusable enums (do not inline per api)
+    }
+
+    private final OpenApiContext openApiContext;
+    private final OpenAPI openApi;
+
     public ApplicationConfig() {
-        OpenAPI oas = new OpenAPI();
+        var oas = new OpenAPI();
         Info info = new Info()
                 .title("Kalkulus")
                 .version("1.0")
@@ -49,10 +63,10 @@ public class ApplicationConfig extends Application {
                 .scannerClass("io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner")
                 .resourcePackages(Set.of("no.nav.folketrygdloven"));
         try {
-            new JaxrsOpenApiContextBuilder<>()
+            this.openApiContext = new JaxrsOpenApiContextBuilder<>()
                     .openApiConfiguration(oasConfig)
-                    .buildContext(true)
-                    .read();
+                    .buildContext(true);
+            this.openApi = this.openApiContext.read();
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -90,5 +104,10 @@ public class ApplicationConfig extends Application {
         properties.put(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
         properties.put(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
         return properties;
+    }
+
+    String getOpenApiSpec() throws Exception {
+        return this.openApiContext.getOutputYamlMapper().writer(new DefaultPrettyPrinter())
+                .writeValueAsString(this.openApi);
     }
 }
