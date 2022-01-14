@@ -62,7 +62,7 @@ docker-compose down
 * Legg denne inn som en [Github Codespace secret](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-encrypted-secrets-for-your-codespaces) under <din konto>/settings. Gi den navn "GH_ACCESS_TOKEN". Dette er påkrevd for å hente pakker fra andre private repoer i Nav.
 
 ## Teknologistakk
-* Java 16
+* Java 17
 * Postgres 12
 * Hibernate
 * Weld SE
