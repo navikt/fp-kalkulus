@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.foreslå.RegelForeslåBeregningsgrunnlag;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.PeriodeÅrsak;
@@ -21,7 +20,6 @@ import no.nav.folketrygdloven.kalkulator.JsonMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapBeregningsgrunnlagFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapRegelSporingFraRegelTilVL;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -39,6 +37,7 @@ import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingPeriode;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.KortvarigArbeidsforholdTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.fpsak.nare.evaluation.Evaluation;
@@ -47,7 +46,7 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef()
 public class ForeslåBeregningsgrunnlag {
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
-    private MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
+    private final MapBeregningsgrunnlagFraRegelTilVL mapBeregningsgrunnlagFraRegelTilVL = new MapBeregningsgrunnlagFraRegelTilVL();
 
     public ForeslåBeregningsgrunnlag() {
         // CDI
