@@ -42,6 +42,7 @@ class LagKravperioder {
                 .filter(im -> (im.getRefusjonBeløpPerMnd() != null &&
                         im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) > 0) ||
                         !im.getEndringerRefusjon().isEmpty())
+                .filter(im -> !refusjonOpphørerFørStart(im, finnStartdatoRefusjon(im, skjæringstidspunktBeregning, iayGrunnlag.getArbeidDto())))
                 .forEach(im -> {
                     PerioderForKrav perioderForKravDto = lagPerioderForKrav(im,
                             finnInnsendsingsdato(refusjonskravDatoer, im.getArbeidsgiver(), skjæringstidspunktBeregning),
@@ -85,42 +86,38 @@ class LagKravperioder {
         return perioderForKravDto;
     }
 
-    private static LocalDate finnStartdatoRefusjon(InntektsmeldingDto im, LocalDate skjæringstidspunktBeregning, ArbeidDto arbeidDto) {
-        LocalDate startRefusjon;
-        if (arbeidDto != null) {
-            LocalDate startDatoArbeid = arbeidDto.getYrkesaktiviteter().stream()
-                    .filter(y -> y.getArbeidsgiver().getIdent().equals(im.getArbeidsgiver().getIdent()) &&
-                            matcherReferanse(y.getAbakusReferanse(), im.getArbeidsforholdRef()))
-                    .flatMap(y -> y.getAktivitetsAvtaler().stream())
-                    .filter(a -> a.getStillingsprosent() == null)
-                    .filter(a -> a.getPeriode().getFom().isAfter(skjæringstidspunktBeregning))
-                    .map(AktivitetsAvtaleDto::getPeriode)
-                    .map(Periode::getFom)
-                    .min(Comparator.naturalOrder())
-                    .orElse(skjæringstidspunktBeregning);
-            if (startDatoArbeid.isAfter(skjæringstidspunktBeregning)) {
-                if (im.getStartDatoPermisjon() == null) {
-                    startRefusjon = startDatoArbeid;
-                } else {
-                    startRefusjon = startDatoArbeid.isAfter(im.getStartDatoPermisjon()) ? startDatoArbeid : im.getStartDatoPermisjon();
-                }
-            } else {
-                startRefusjon = skjæringstidspunktBeregning;
-            }
-        } else {
-            startRefusjon = skjæringstidspunktBeregning;
+    private static LocalDate finnStartdatoRefusjon(InntektsmeldingDto im, LocalDate skjæringstidspunktBeregning,
+                                                   ArbeidDto arbeidDto) {
+        if (arbeidDto == null) {
+            throw new IllegalStateException("Krever arbeidDto for mapping av inntektsmelding");
         }
-        return startRefusjon;
+        LocalDate startDatoArbeid = finnStartdatoArbeid(im, skjæringstidspunktBeregning, arbeidDto);
+        return startDatoArbeid.isAfter(skjæringstidspunktBeregning) ? startDatoArbeid : skjæringstidspunktBeregning;
+    }
+
+    private static LocalDate finnStartdatoArbeid(InntektsmeldingDto im, LocalDate skjæringstidspunktBeregning, ArbeidDto arbeidDto) {
+        return arbeidDto.getYrkesaktiviteter().stream()
+                .filter(y -> y.getArbeidsgiver().getIdent().equals(im.getArbeidsgiver().getIdent()) &&
+                        matcherReferanse(y.getAbakusReferanse(), im.getArbeidsforholdRef()))
+                .flatMap(y -> y.getAktivitetsAvtaler().stream())
+                .filter(a -> a.getStillingsprosent() == null)
+                .map(AktivitetsAvtaleDto::getPeriode)
+                .filter(a -> !a.getTom().isBefore(skjæringstidspunktBeregning))
+                .map(Periode::getFom)
+                .min(Comparator.naturalOrder())
+                .orElse(skjæringstidspunktBeregning);
     }
 
     private static boolean matcherReferanse(InternArbeidsforholdRefDto abakusReferanse, InternArbeidsforholdRefDto abakusReferanse2) {
-        return abakusReferanse == null || abakusReferanse.getAbakusReferanse() == null || abakusReferanse2 == null || abakusReferanse2.getAbakusReferanse() == null ||
-                Objects.equals(abakusReferanse.getAbakusReferanse(), abakusReferanse2.getAbakusReferanse());
+        return MapIAYTilKalulator.mapArbeidsforholdRef(abakusReferanse).gjelderFor(MapIAYTilKalulator.mapArbeidsforholdRef(abakusReferanse2));
     }
 
     private static List<Refusjonsperiode> lagPerioder(InntektsmeldingDto im, LocalDate startdatoRefusjon) {
         ArrayList<LocalDateSegment<BigDecimal>> alleSegmenter = new ArrayList<>();
-        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) ==0)) {
+        if (refusjonOpphørerFørStart(im, startdatoRefusjon)) {
+            return Collections.emptyList();
+        }
+        if (!(im.getRefusjonBeløpPerMnd() == null || im.getRefusjonBeløpPerMnd().getVerdi().compareTo(BigDecimal.ZERO) == 0)) {
             alleSegmenter.add(new LocalDateSegment<>(startdatoRefusjon, TIDENES_ENDE, im.getRefusjonBeløpPerMnd().getVerdi()));
         }
 
@@ -138,12 +135,14 @@ class LagKravperioder {
             }
             return new LocalDateSegment<>(interval, lhs.getValue());
         });
-
-
         return refusjonTidslinje.stream()
                 .map(r -> new Refusjonsperiode(new Periode(r.getFom(), r.getTom()), r.getValue()))
                 .collect(Collectors.toList());
 
+    }
+
+    private static boolean refusjonOpphørerFørStart(InntektsmeldingDto im, LocalDate startdatoRefusjon) {
+        return im.getRefusjonOpphører() != null && im.getRefusjonOpphører().isBefore(startdatoRefusjon);
     }
 
 }
