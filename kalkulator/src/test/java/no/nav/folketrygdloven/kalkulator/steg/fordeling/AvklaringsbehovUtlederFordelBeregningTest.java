@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +57,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
 
     private List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(KoblingReferanse ref, BeregningsgrunnlagGrunnlagDto grunnlag) {
         ForeldrepengerGrunnlag foreldrepengerGrunnlag = new ForeldrepengerGrunnlag(100, false);
-        List<BeregningAvklaringsbehovResultat> avklaringsbehovResultats = AvklaringsbehovUtlederFordelBeregning.utledAvklaringsbehovFor(ref, grunnlag, foreldrepengerGrunnlag, List.of());
+        List<BeregningAvklaringsbehovResultat> avklaringsbehovResultats = AvklaringsbehovUtlederFordelBeregning.utledAvklaringsbehovFor(ref, grunnlag, foreldrepengerGrunnlag, List.of(), Collections.emptyList());
         return avklaringsbehovResultats;
     }
 

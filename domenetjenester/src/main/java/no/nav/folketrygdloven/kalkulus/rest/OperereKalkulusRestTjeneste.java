@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,14 +43,21 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
+import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
+import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
+import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandListeResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringListeRespons;
@@ -74,6 +82,7 @@ public class OperereKalkulusRestTjeneste {
     private KoblingTjeneste koblingTjeneste;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private OperereKalkulusOrkestrerer orkestrerer;
+    private KopierBeregningsgrunnlagTjeneste kopierTjeneste;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
@@ -82,10 +91,39 @@ public class OperereKalkulusRestTjeneste {
     @Inject
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                        RullTilbakeTjeneste rullTilbakeTjeneste,
-                                       OperereKalkulusOrkestrerer orkestrerer) {
+                                       OperereKalkulusOrkestrerer orkestrerer,
+                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.orkestrerer = orkestrerer;
+        this.kopierTjeneste = kopierTjeneste;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/beregn/bolk")
+    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
+            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
+    })
+    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
+    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
+    public Response beregn(@NotNull @Valid BeregnListeRequestAbacDto spesifikasjon) {
+        var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
+        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
+        Map<Long, KalkulusRespons> respons;
+        try {
+            respons = orkestrerer.beregn(
+                    BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
+                    new Saksnummer(spesifikasjon.getSaksnummer()),
+                    new AktørId(spesifikasjon.getAktør().getIdent()),
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    spesifikasjon.getBeregnForListe()
+            );
+        } catch (UgyldigInputException e) {
+            LOG.warn("Konvertering av input feilet: " + e.getMessage());
+            return Response.ok(new OppdateringListeRespons(true)).build();
+        }
+        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
     }
 
     @POST
@@ -96,18 +134,21 @@ public class OperereKalkulusRestTjeneste {
     })
     @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response beregn(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
+    public Response start(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
         MDC.put("prosess_saksnummer", saksnummer.getVerdi());
         Map<Long, KalkulusRespons> respons;
         try {
-            respons = orkestrerer.start(
-                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
-                    spesifikasjon.getKoblingRelasjon(),
+            var beregnForListe = spesifikasjon.getKalkulatorInputPerKoblingReferanse().entrySet()
+                    .stream()
+                    .map(e -> new BeregnForRequest(e.getKey(), spesifikasjon.getKoblingRelasjon().get(e.getKey()), e.getValue(), Collections.emptyList()))
+                    .toList();
+            respons = orkestrerer.beregn(
+                    BeregningSteg.FASTSETT_STP_BER,
                     new Saksnummer(spesifikasjon.getSaksnummer()),
-                    new AktørId(spesifikasjon.getAktør().getIdent())
-            );
+                    new AktørId(spesifikasjon.getAktør().getIdent()),
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    beregnForListe);
         } catch (UgyldigInputException e) {
             LOG.warn("Konvertering av input feilet: " + e.getMessage());
             return Response.ok(new OppdateringListeRespons(true)).build();
@@ -126,18 +167,45 @@ public class OperereKalkulusRestTjeneste {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
         Map<Long, KalkulusRespons> respons;
         try {
-            respons = orkestrerer.fortsett(
-                    spesifikasjon.getKalkulatorInputPerKoblingReferanse(),
-                    spesifikasjon.getYtelsespesifiktGrunnlagPrKoblingReferanse(),
-                    spesifikasjon.getEksternReferanser(),
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
+            var beregnForListe = spesifikasjon.getEksternReferanser()
+                    .stream()
+                    .map(r -> new BeregnForRequest(r,
+                            Collections.emptyList(),
+                            spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null ? spesifikasjon.getKalkulatorInputPerKoblingReferanse().get(r) : null,
+                            Collections.emptyList()))
+                    .toList();
+            respons = orkestrerer.beregn(BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
                     new Saksnummer(spesifikasjon.getSaksnummer()),
-                    spesifikasjon.getStegType()
+                    null, // OK i ein overgangsfase til vi går over til å kalle nytt endepunkt
+                    spesifikasjon.getYtelseSomSkalBeregnes(),
+                    beregnForListe
             );
         } catch (UgyldigInputException e) {
-            return Response.ok(new OppdateringListeRespons(true)).build();
+            return Response.ok(new TilstandListeResponse(true)).build();
         }
         return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/kopier/bolk")
+    @Operation(description = "Kopierer beregning fra eksisterende referanse til ny referanse. Kopien som opprettes er fra steget som vurderer vilkår for beregning.",
+            tags = "beregn",
+            summary = ("Kopierer en beregning."), responses = {
+            @ApiResponse(description = "Liste med kopierte referanser dersom alle koblinger er kopiert", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KopiResponse.class)))
+    })
+    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
+    public Response kopierBeregning(@NotNull @Valid KopierBeregningListeRequestAbacDto spesifikasjon) {
+        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
+        kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
+                spesifikasjon.getKopierBeregningListe(),
+                spesifikasjon.getYtelseSomSkalBeregnes(),
+                new Saksnummer(spesifikasjon.getSaksnummer())
+        );
+        return Response.ok(spesifikasjon.getKopierBeregningListe()
+                .stream()
+                .map(KopierBeregningRequest::getEksternReferanse)
+                .map(KopiResponse::new).collect(Collectors.toList())).build();
     }
 
     @POST
@@ -197,6 +265,32 @@ public class OperereKalkulusRestTjeneste {
         return Response.ok().build();
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class BeregnListeRequestAbacDto extends BeregnListeRequest implements AbacDto {
+
+        public BeregnListeRequestAbacDto() {
+        }
+
+        public BeregnListeRequestAbacDto(String saksnummer,
+                                         PersonIdent aktør,
+                                         YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                         StegType stegType,
+                                         List<BeregnForRequest> beregnForListe) {
+            super(saksnummer, aktør, ytelseSomSkalBeregnes, stegType, beregnForListe);
+        }
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            var abacDataAttributter = AbacDataAttributter.opprett();
+
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBeregnForListe().stream().map(BeregnForRequest::getEksternReferanse).collect(Collectors.toList()));
+            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
+            return abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, getAktør().getIdent());
+        }
+    }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
@@ -244,6 +338,30 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+    public static class KopierBeregningListeRequestAbacDto extends KopierBeregningListeRequest implements AbacDto {
+
+        public KopierBeregningListeRequestAbacDto() {
+        }
+
+        public KopierBeregningListeRequestAbacDto(String saksnummer,
+                                                  YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                                  List<KopierBeregningRequest> kopierBeregningListe) {
+            super(saksnummer, ytelseSomSkalBeregnes, kopierBeregningListe);
+        }
+
+
+        @Override
+        public AbacDataAttributter abacAttributter() {
+            final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKopierBeregningListe().stream().map(KopierBeregningRequest::getEksternReferanse).collect(Collectors.toList()));
+            return abacDataAttributter;
+        }
+    }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)

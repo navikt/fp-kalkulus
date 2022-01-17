@@ -19,14 +19,17 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.forlengelse.ForlengelseperioderEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.k9.felles.exception.TekniskException;
 
@@ -37,15 +40,19 @@ public class GUIBeregningsgrunnlagInputTjeneste {
     private KoblingRepository koblingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
+    private ForlengelseRepository forlengelseRepository;
 
     @Inject
     public GUIBeregningsgrunnlagInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                               KoblingRepository koblingRepository,
-                                              AvklaringsbehovTjeneste avklaringsbehovTjeneste, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+                                              AvklaringsbehovTjeneste avklaringsbehovTjeneste,
+                                              KalkulatorInputTjeneste kalkulatorInputTjeneste,
+                                              ForlengelseRepository forlengelseRepository) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingRepository = koblingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
+        this.forlengelseRepository = forlengelseRepository;
     }
 
     /**
@@ -59,6 +66,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
      * @param koblingKalkulatorInput              KalkulatorInput for koblinger
      * @param koblinger                           Koblingentiteter
      * @param originaleGrunnlagMap
+     * @param forlengelsePerioderPrKobling
      * @return Liste med restinput
      */
     private static Map<Long, BeregningsgrunnlagGUIInput> mapInputListe(
@@ -67,7 +75,8 @@ public class GUIBeregningsgrunnlagInputTjeneste {
             Map<Long, List<AvklaringsbehovEntitet>> avklaringsbehovPrKobling,
             Map<Long, KalkulatorInputDto> koblingKalkulatorInput,
             Map<Long, KoblingEntitet> koblinger,
-            Map<Long, List<BeregningsgrunnlagGrunnlagEntitet>> originaleGrunnlagMap) {
+            Map<Long, List<BeregningsgrunnlagGrunnlagEntitet>> originaleGrunnlagMap,
+            Map<Long, List<IntervallEntitet>> forlengelsePerioderPrKobling) {
         return beregningsgrunnlagGrunnlagEntiteter.stream()
                 .map(grunnlagEntitet -> {
                     Long koblingId = grunnlagEntitet.getKoblingId();
@@ -76,7 +85,8 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                     var kobling = Optional.ofNullable(koblinger.get(koblingId))
                             .orElseThrow(() -> new TekniskException("FT-KALKULUS-INPUT-1000003", String.format("Kalkulus finner ikke kobling: %s", koblingId)));
                     var avklaringsbehov = avklaringsbehovPrKobling.getOrDefault(koblingId, Collections.emptyList());
-                    BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet));
+                    var forlengelseperioder = forlengelsePerioderPrKobling.getOrDefault(koblingId, Collections.emptyList());
+                    BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet), forlengelseperioder);
                     return leggTilGrunnlagFraFordel(input, grunnlagFraFordel)
                             .medBeregningsgrunnlagGrunnlag(mapGrunnlag(grunnlagEntitet))
                             .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(mapOriginaleGrunnlag(originaleGrunnlagMap, koblingId))
@@ -90,11 +100,12 @@ public class GUIBeregningsgrunnlagInputTjeneste {
 
     private static BeregningsgrunnlagGUIInput lagInput(KoblingEntitet koblingEntitet,
                                                        KalkulatorInputDto kalkulatorInput,
-                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, List<IntervallEntitet> forlengelseperioder) {
         return MapTilGUIInputFraKalkulator.mapFraKalkulatorInput(
                 koblingEntitet,
                 kalkulatorInput,
-                beregningsgrunnlagGrunnlagEntitet
+                beregningsgrunnlagGrunnlagEntitet,
+                forlengelseperioder
         );
     }
 
@@ -149,6 +160,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
         Map<Long, List<AvklaringsbehovEntitet>> avklaringsbehovPrKobling = avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(koblingIder).stream()
                 .collect(Collectors.groupingBy(AvklaringsbehovEntitet::getKoblingId));
 
+        var forlengelsePerioderPrKobling = forlengelseRepository.hentAktivePerioderForKoblingId(koblingIder)
+                .stream().collect(Collectors.toMap(ForlengelseperioderEntitet::getKoblingId, ForlengelseperioderEntitet::getForlengelseintervaller));
+
         var originaleGrunnlagMap = koblingIder.stream().collect(Collectors.toMap(
                 Function.identity(),
                 id -> koblingRelasjoner.stream().filter(r -> r.getKoblingId().equals(id)).map(KoblingRelasjon::getOriginalKoblingId)
@@ -161,7 +175,8 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 avklaringsbehovPrKobling,
                 koblingKalkulatorInput,
                 koblinger,
-                originaleGrunnlagMap);
+                originaleGrunnlagMap,
+                forlengelsePerioderPrKobling);
     }
 
     private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {

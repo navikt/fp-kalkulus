@@ -14,6 +14,7 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleInput;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelBeregningsgrunnlagTilfelleTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingTilfelle;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 
 public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
 
@@ -25,22 +26,25 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
                                                            AktivitetGradering aktivitetGradering,
                                                            BeregningsgrunnlagPeriodeDto periode,
                                                            List<BeregningsgrunnlagPeriodeDto> perioder,
-                                                           Collection<InntektsmeldingDto> inntektsmeldinger) {
-        boolean grunnetTidligerePerioder = skalRedigereGrunnetTidligerePerioder(grunnlag, aktivitetGradering, periode, perioder, inntektsmeldinger);
+                                                           Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                           List<Intervall> forlengelseperioder) {
+        boolean grunnetTidligerePerioder = skalRedigereGrunnetTidligerePerioder(grunnlag, aktivitetGradering, periode, perioder, inntektsmeldinger, forlengelseperioder);
         if (grunnetTidligerePerioder) {
             return true;
         }
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering,
-                periode, inntektsmeldinger);
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = utledTilfellerForAndelerIPeriode(
+                grunnlag,
+                aktivitetGradering,
+                periode, inntektsmeldinger, forlengelseperioder);
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andelFraSteg -> andelLiggerITilfelleMap(andelFraSteg, periodeTilfelleMap));
     }
 
     public static boolean skalRedigereGrunnetTidligerePerioder(BeregningsgrunnlagGrunnlagDto grunnlag, AktivitetGradering aktivitetGradering,
                                                                BeregningsgrunnlagPeriodeDto periode, List<BeregningsgrunnlagPeriodeDto> perioder,
-                                                               Collection<InntektsmeldingDto> inntektsmeldinger) {
+                                                               Collection<InntektsmeldingDto> inntektsmeldinger, List<Intervall> forlengelseperioder) {
         return perioder.stream()
                 .filter(p -> p.getBeregningsgrunnlagPeriodeFom().isBefore(periode.getBeregningsgrunnlagPeriodeFom()))
-                .flatMap(p -> utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering, p, inntektsmeldinger).values().stream())
+                .flatMap(p -> utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering, p, inntektsmeldinger, forlengelseperioder).values().stream())
                 .anyMatch(tilfelle -> tilfelle.equals(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0)
                         || tilfelle.equals(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0));
     }
@@ -49,9 +53,9 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
                                                             AktivitetGradering aktivitetGradering,
                                                             BeregningsgrunnlagPeriodeDto periode,
                                                             Collection<InntektsmeldingDto> inntektsmeldinger,
-                                                            Beløp grunnbeløp) {
+                                                            Beløp grunnbeløp, List<Intervall> forlengelseperioder) {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> periodeTilfelleMap = utledTilfellerForAndelerIPeriode(grunnlag, aktivitetGradering,
-                periode, inntektsmeldinger);
+                periode, inntektsmeldinger, forlengelseperioder);
         return periode.getBeregningsgrunnlagPrStatusOgAndelList().stream().anyMatch(andelFraSteg -> andelLiggerITilfelleMap(andelFraSteg, periodeTilfelleMap)
                 && RefusjonDtoTjeneste.skalKunneEndreRefusjon(andelFraSteg, periode, aktivitetGradering, grunnbeløp));
     }
@@ -59,8 +63,9 @@ public class ManuellBehandlingRefusjonGraderingDtoTjeneste {
     private static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> utledTilfellerForAndelerIPeriode(BeregningsgrunnlagGrunnlagDto grunnlag,
                                                                                                                  AktivitetGradering aktivitetGradering,
                                                                                                                  BeregningsgrunnlagPeriodeDto periode,
-                                                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger) {
-        var fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(grunnlag.getBeregningsgrunnlag().orElse(null), aktivitetGradering, inntektsmeldinger);
+                                                                                                                 Collection<InntektsmeldingDto> inntektsmeldinger,
+                                                                                                                 List<Intervall> forlengelseperioder) {
+        var fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(grunnlag.getBeregningsgrunnlag().orElse(null), aktivitetGradering, inntektsmeldinger, forlengelseperioder);
         return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periode, fordelingInput);
     }
 

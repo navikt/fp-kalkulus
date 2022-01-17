@@ -22,13 +22,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.SammenligningsgrunnlagType;
 import no.nav.k9.felles.util.Tuple;
 
-class BeregningsgrunnlagDiffSjekker {
+public class BeregningsgrunnlagDiffSjekker {
 
     private BeregningsgrunnlagDiffSjekker() {
         // Skjul
     }
 
-    static boolean harSignifikantDiffIAktiviteter(BeregningAktivitetAggregatDto aktivt, BeregningAktivitetAggregatDto forrige) {
+    public static boolean harSignifikantDiffIAktiviteter(BeregningAktivitetAggregatDto aktivt, BeregningAktivitetAggregatDto forrige) {
         if (aktivt.getBeregningAktiviteter().size() != forrige.getBeregningAktiviteter().size()) {
             return true;
         }
@@ -52,7 +52,7 @@ class BeregningsgrunnlagDiffSjekker {
         return harPeriodeDiff(aktivePerioder, forrigePerioder);
     }
 
-    static Set<Intervall> finnPerioderUtenDiff(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
+    public static Set<Intervall> finnPerioderUtenDiff(BeregningsgrunnlagDto aktivt, BeregningsgrunnlagDto forrige) {
         if (harDiffIFelterPåBeregningsgrunnlag(aktivt, forrige)){
             return Set.of();
         }

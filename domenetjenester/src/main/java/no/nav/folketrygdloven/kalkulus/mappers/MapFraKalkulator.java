@@ -47,6 +47,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.v1.Refusjonsperiode;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
@@ -78,14 +79,14 @@ public class MapFraKalkulator {
 
     public static BeregningsgrunnlagInput mapFraKalkulatorInputTilBeregningsgrunnlagInput(KoblingEntitet kobling,
                                                                                           KalkulatorInputDto input,
-                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet) {
+                                                                                          Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                                                          List<IntervallEntitet> forlengelseperioder) {
         var koblingId = kobling.getId();
         var skjæringstidspunkt = input.getSkjæringstidspunkt();
 
         var ytelseType = FagsakYtelseType.fraKode(kobling.getYtelseTyperKalkulusStøtter().getKode());
         var aktørId = new AktørId(kobling.getAktørId().getId());
         var build = Skjæringstidspunkt.builder()
-                .medFørsteUttaksdato(skjæringstidspunkt)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunkt).build();
 
         var ref = KoblingReferanse.fra(ytelseType, aktørId, koblingId, kobling.getKoblingReferanse().getReferanse(), Optional.empty(), build);
@@ -104,14 +105,18 @@ public class MapFraKalkulator {
                         iayGrunnlagMappet,
                         beregningsgrunnlagGrunnlagEntitet));
 
-
         utenGrunnbeløp.leggTilKonfigverdi(BeregningsperiodeTjeneste.INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         utenGrunnbeløp.leggTilToggle(TOGGLE_SPLITTE_SAMMENLIGNINGSGRUNNLAG, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_TSF_1715, false);
         utenGrunnbeløp.leggTilToggle(TOGGLE_AUTOMATISK_BESTEBEREGNING, true); // Legger til toggle for å kunne teste verdikjede
+        utenGrunnbeløp.setForlengelseperioder(mapPerioder(forlengelseperioder));
         return beregningsgrunnlagGrunnlagEntitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag)
                 .map(utenGrunnbeløp::medBeregningsgrunnlagGrunnlag)
                 .orElse(utenGrunnbeløp);
+    }
+
+    public static List<Intervall> mapPerioder(List<IntervallEntitet> forlengelseperioder) {
+        return forlengelseperioder.stream().map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato())).toList();
     }
 
     public static List<KravperioderPrArbeidsforholdDto> mapFraDto(List<KravperioderPrArbeidsforhold> kravPrArbeidsforhold, List<RefusjonskravDatoDto> refusjonskravDatoer, InntektArbeidYtelseGrunnlagDto iayGrunnlag, LocalDate stp) {

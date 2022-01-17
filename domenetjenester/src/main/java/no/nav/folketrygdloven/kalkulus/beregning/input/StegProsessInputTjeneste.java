@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.beregning.input;
 
-import static no.nav.folketrygdloven.kalkulus.mappers.MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,25 +11,24 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
-import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
-import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.forlengelse.ForlengelseperiodeEntitet;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.forlengelse.ForlengelseperioderEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
-import no.nav.folketrygdloven.kalkulus.mappers.GrunnbeløpMapper;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 
 @ApplicationScoped
 public class StegProsessInputTjeneste {
 
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private ForlengelseRepository forlengelseRepository;
     private KoblingRepository koblingRepository;
     private KalkulatorInputTjeneste kalkulatorInputTjeneste;
     private StegInputMapper stegInputMapper;
@@ -40,25 +38,12 @@ public class StegProsessInputTjeneste {
     }
 
     @Inject
-    public StegProsessInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, KoblingRepository koblingRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+    public StegProsessInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository, ForlengelseRepository forlengelseRepository, KoblingRepository koblingRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.forlengelseRepository = forlengelseRepository;
         this.koblingRepository = koblingRepository;
         this.kalkulatorInputTjeneste = kalkulatorInputTjeneste;
         this.stegInputMapper = new StegInputMapper(beregningsgrunnlagRepository);
-    }
-
-    public FastsettBeregningsaktiviteterInput lagStartInput(KoblingEntitet koblingEntitet, KalkulatorInputDto input) {
-        var beregningsgrunnlagInput = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, input, Optional.empty());
-        var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
-                koblingEntitet,
-                beregningsgrunnlagInput.getSkjæringstidspunktOpptjening(),
-                BeregningsgrunnlagTilstand.OPPRETTET);
-        var grunnlagFraStegUt = finnForrigeAvklarteGrunnlagForTilstand(grunnlagFraSteg, BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        var stegProsesseringInput = new StegProsesseringInput(beregningsgrunnlagInput, BeregningsgrunnlagTilstand.OPPRETTET)
-                .medForrigeGrunnlagFraStegUt(grunnlagFraStegUt.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
-                .medForrigeGrunnlagFraSteg(grunnlagFraSteg.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag).orElse(null))
-                .medStegUtTilstand(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
-        return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
     }
 
     @Deprecated // Bruk kalkulatorInputTjeneste og lagBeregningsgrunnlagInput separat (sjå OperereKalkulusOrkestrerer)
@@ -76,18 +61,26 @@ public class StegProsessInputTjeneste {
         var koblingEntiteter = koblingRepository.hentKoblingerFor(koblingId);
         var grunnlagEntiteter = beregningsgrunnlagRepository.hentBeregningsgrunnlagGrunnlagEntiteter(koblingId)
                 .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
-        List<Long> koblingUtenGrunnlag = koblingId.stream().filter(id -> grunnlagEntiteter.keySet().stream().noneMatch(k -> k.equals(id)))
-                .collect(Collectors.toList());
-        if (!koblingUtenGrunnlag.isEmpty()) {
-            throw new IllegalStateException("Skal ha grunnlag i steg" + stegType.getKode() + ". Fant ikke grunnlag for " + koblingUtenGrunnlag);
-        }
+        var forlengelsePerioderPrKobling = forlengelseRepository.hentAktivePerioderForKoblingId(koblingId)
+                .stream().collect(Collectors.toMap(ForlengelseperioderEntitet::getKoblingId, Function.identity()));
 
         Map<Long, StegProsesseringInput> koblingStegInputMap = koblingEntiteter.stream()
                 .collect(Collectors.toMap(
                         KoblingEntitet::getId,
-                        id -> stegInputMapper.mapStegInput(id, inputPrKobling.get(id.getId()), grunnlagEntiteter.get(id.getId()), stegType, finnOriginalKobling(id, koblingRelasjoner))
+                        kobling -> stegInputMapper.mapStegInput(kobling,
+                                inputPrKobling.get(kobling.getId()),
+                                Optional.ofNullable(grunnlagEntiteter.get(kobling.getId())),
+                                stegType,
+                                finnOriginalKobling(kobling, koblingRelasjoner),
+                                finnForlengelseperioder(forlengelsePerioderPrKobling, kobling))
                         ));
         return koblingStegInputMap;
+    }
+
+    private List<IntervallEntitet> finnForlengelseperioder(Map<Long, ForlengelseperioderEntitet> forlengelsePerioderPrKobling, KoblingEntitet kobling) {
+        var forlengelseperioderEntitet = forlengelsePerioderPrKobling.get(kobling.getId());
+        return forlengelseperioderEntitet != null ?
+                forlengelseperioderEntitet.getForlengelseperioder().stream().map(ForlengelseperiodeEntitet::getPeriode).toList() : Collections.emptyList();
     }
 
     private List<Long> finnOriginalKobling(KoblingEntitet kobling, List<KoblingRelasjon> koblingRelasjoner) {
@@ -95,17 +88,6 @@ public class StegProsessInputTjeneste {
                 .filter(r -> r.getKoblingId().equals(kobling.getId()))
                 .map(KoblingRelasjon::getOriginalKoblingId)
                 .collect(Collectors.toList());
-    }
-
-
-    private List<Grunnbeløp> finnSatser() {
-        return new GrunnbeløpMapper(beregningsgrunnlagRepository.finnAlleSatser()).mapGrunnbeløpSatser();
-    }
-
-    private Optional<BeregningsgrunnlagGrunnlagEntitet> finnForrigeAvklarteGrunnlagForTilstand(Optional<BeregningsgrunnlagGrunnlagEntitet> forrigeGrunnlagFraSteg, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {
-        return forrigeGrunnlagFraSteg
-                .map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId)
-                .flatMap(koblingId -> beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetOpprettetEtter(koblingId, forrigeGrunnlagFraSteg.get().getOpprettetTidspunkt(), beregningsgrunnlagTilstand));
     }
 
 }

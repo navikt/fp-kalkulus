@@ -16,16 +16,15 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.hibernate.jpa.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-
-import org.hibernate.jpa.QueryHints;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.BeregningSats;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.KalkulatorInputEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningAktivitetAggregatEntitet;
@@ -294,7 +293,7 @@ public class BeregningsgrunnlagRepository {
 
     private BeregningsgrunnlagGrunnlagEntitet settFaktaFraTidligere(Long koblingId, BeregningsgrunnlagGrunnlagEntitet nyttGrunnlag, Optional<BeregningsgrunnlagGrunnlagEntitet> tidligereAggregat) {
         if (nyttGrunnlag.getFaktaAggregat().isEmpty()) {
-            nyttGrunnlag = BeregningsgrunnlagGrunnlagBuilder.oppdatere(nyttGrunnlag)
+            nyttGrunnlag = BeregningsgrunnlagGrunnlagBuilder.kopiere(nyttGrunnlag)
                     .medFaktaAggregat(tidligereAggregat.get().getFaktaAggregat().orElse(null))
                     .build(koblingId, nyttGrunnlag.getBeregningsgrunnlagTilstand());
         }
@@ -374,7 +373,7 @@ public class BeregningsgrunnlagRepository {
             LOG.info("Fant ingen aktiv grunnlag for kobling " + koblingId + ". Oppretter ny grunnlagbuilder.");
         }
         Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlag = entitetOpt.isPresent() ? Optional.of(entitetOpt.get()) : Optional.empty();
-        return BeregningsgrunnlagGrunnlagBuilder.oppdatere(grunnlag);
+        return BeregningsgrunnlagGrunnlagBuilder.kopiere(grunnlag);
     }
 
     public void deaktiverKalkulatorInput(Long koblingId) {

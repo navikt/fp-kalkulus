@@ -46,7 +46,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 class MapFormidlingsdataBeregningsgrunnlagTest {
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100000);
     private static final LocalDate STP_DATO = LocalDate.of(2021, 6, 1);
-    private static final Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medFørsteUttaksdato(STP_DATO)
+    private static final Skjæringstidspunkt STP = Skjæringstidspunkt.builder()
             .medSkjæringstidspunktOpptjening(STP_DATO).build();
     private List<UtbetalingsgradPrAktivitetDto> utbGrader = new ArrayList<>();
     private List<BeregningsgrunnlagPeriodeDto> bgPerioder = new ArrayList<>();

@@ -12,6 +12,7 @@ import no.nav.folketrygdloven.kalkulus.beregning.MapTilstandTilSteg;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -20,6 +21,7 @@ public class RullTilbakeTjeneste {
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
     private RegelsporingRepository regelsporingRepository;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
+    private ForlengelseTjeneste forlengelseTjeneste;
 
     public RullTilbakeTjeneste() {
         // CDI
@@ -28,10 +30,11 @@ public class RullTilbakeTjeneste {
     @Inject
     public RullTilbakeTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
                                RegelsporingRepository regelsporingRepository,
-                               AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
+                               AvklaringsbehovTjeneste avklaringsbehovTjeneste, ForlengelseTjeneste forlengelseTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.regelsporingRepository = regelsporingRepository;
         this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
+        this.forlengelseTjeneste = forlengelseTjeneste;
     }
 
     public void rullTilbakeTilObligatoriskTilstandFørVedBehov(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
@@ -41,6 +44,8 @@ public class RullTilbakeTjeneste {
             rullTilbakeGrunnlag(tilstand, rullTilbakeListe);
         }
         avklaringsbehovTjeneste.avbrytAlleAvklaringsbehovEtterEllerISteg(koblingIder, MapTilstandTilSteg.mapTilSteg(tilstand));
+        forlengelseTjeneste.deaktiverVedTilbakerulling(koblingIder, tilstand);
+
     }
 
     private void rullTilbakeGrunnlag(BeregningsgrunnlagTilstand tilstand, List<BeregningsgrunnlagGrunnlagEntitet> rullTilbakeListe) {

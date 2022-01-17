@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.beregning;
 
 import static no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper.mapGrunnlag;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
@@ -22,6 +20,7 @@ import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningResultatAggregat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
@@ -36,12 +35,12 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.kopiering.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.kopiering.SpolFramoverTjeneste;
 import no.nav.folketrygdloven.kalkulus.mapTilEntitet.KalkulatorTilEntitetMapper;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandResponse;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 
 @ApplicationScoped
@@ -77,7 +76,9 @@ public class BeregningStegTjeneste {
      */
     public TilstandResponse beregnFor(BeregningSteg stegType, StegProsesseringInput input) {
         kontrollerIngenUløsteAvklaringsbehovFørSteg(stegType, input.getKoblingId());
-        if (stegType.equals(BeregningSteg.KOFAKBER)) {
+        if (stegType.equals(BeregningSteg.FASTSETT_STP_BER)) {
+            return fastsettBeregningsaktiviteter((FastsettBeregningsaktiviteterInput) input);
+        } else if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return kontrollerFaktaBeregningsgrunnlag((FaktaOmBeregningInput) input);
         } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {
             return foreslåBesteberegning((ForeslåBesteberegningInput) input);
@@ -106,9 +107,6 @@ public class BeregningStegTjeneste {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
-        if (forlengelseTjeneste.erForlengelse(input, resultat)) {
-            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), resultat);
-        }
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -123,9 +121,6 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
-            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
-        }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -140,9 +135,6 @@ public class BeregningStegTjeneste {
     private TilstandResponse foreslåBeregningsgrunnlag(ForeslåBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.foreslåBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
-            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
-        }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -198,9 +190,6 @@ public class BeregningStegTjeneste {
     private TilstandResponse vurderRefusjonForBeregningsgrunnlaget(VurderRefusjonBeregningsgrunnlagInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.vurderRefusjonskravForBeregninggrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
-        if (forlengelseTjeneste.erForlengelse(input, beregningResultatAggregat)) {
-            return mapTilstandResponseUtenAvklaringsbehov(input.getKoblingReferanse(), beregningResultatAggregat);
-        }
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
 
@@ -235,6 +224,8 @@ public class BeregningStegTjeneste {
 
     private void lagreOgKopier(StegProsesseringInput input,
                                BeregningResultatAggregat resultat) {
+        // Validering ved forlengelse
+        forlengelseTjeneste.validerIngenEndringUtenforForlengelse(input, resultat.getBeregningsgrunnlag(), input.getForrigeGrunnlagFraSteg().flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag));
         // Lagring av grunnlag fra steg
         repository.lagre(input.getKoblingId(), mapGrunnlag(resultat.getBeregningsgrunnlagGrunnlag()), input.getStegTilstand());
         lagreRegelsporing(input.getKoblingReferanse().getKoblingId(), resultat.getRegelSporingAggregat(), input.getStegTilstand());
@@ -263,18 +254,6 @@ public class BeregningStegTjeneste {
                     resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
         } else {
             return new TilstandResponse(koblingReferanse.getKoblingUuid(), avklaringsbehov);
-        }
-    }
-
-    private TilstandResponse mapTilstandResponseUtenAvklaringsbehov(KoblingReferanse
-                                                                            koblingReferanse, BeregningResultatAggregat resultat) {
-        if (resultat.getBeregningVilkårResultat() != null) {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(),
-                    Collections.emptyList(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt(),
-                    resultat.getBeregningVilkårResultat().getErVilkårOppfylt() ? null : resultat.getBeregningVilkårResultat().getVilkårsavslagsårsak());
-        } else {
-            return new TilstandResponse(koblingReferanse.getKoblingUuid(), Collections.emptyList());
         }
     }
 
@@ -351,12 +330,12 @@ public class BeregningStegTjeneste {
 
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat
             beregningResultatAggregat) {
-        // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
-        List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
-                .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
-                .filter(ap -> !ap.erVentepunkt())
-                .collect(Collectors.toList());
-        avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
+            // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+            List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
+                    .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
+                    .filter(ap -> !ap.erVentepunkt())
+                    .collect(Collectors.toList());
+            avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
     }
 
     private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {

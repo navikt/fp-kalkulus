@@ -50,8 +50,12 @@ public class KoblingReferanse {
     }
 
 
-    public static KoblingReferanse fra(FagsakYtelseType fagsakYtelseType, AktørId aktørId, // NOSONAR
-                                       Long koblingId, UUID koblingUuid, Optional<Long> originalKoblingId, Skjæringstidspunkt skjæringstidspunkt) {
+    public static KoblingReferanse fra(FagsakYtelseType fagsakYtelseType,
+                                       AktørId aktørId, // NOSONAR
+                                       Long koblingId,
+                                       UUID koblingUuid,
+                                       Optional<Long> originalKoblingId,
+                                       Skjæringstidspunkt skjæringstidspunkt) {
         return new KoblingReferanse(fagsakYtelseType,
                 aktørId,
                 koblingId,
@@ -98,12 +102,6 @@ public class KoblingReferanse {
         // precondition
         return skjæringstidspunkt.getSkjæringstidspunktOpptjening();
     }
-
-    public LocalDate getFørsteUttaksdato() {
-        // precondition
-        return skjæringstidspunkt.getFørsteUttaksdato();
-    }
-
 
     @Override
     public int hashCode() {
@@ -158,4 +156,5 @@ public class KoblingReferanse {
             getOriginalKoblingId(),
             skjæringstidspunkt);
     }
+
 }

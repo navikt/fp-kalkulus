@@ -29,7 +29,6 @@ public class StegProsesseringInput extends BeregningsgrunnlagInput {
     /** Forrige grunnlag for steg-tilstand */
     private BeregningsgrunnlagGrunnlagDto forrigeGrunnlagFraSteg;
 
-
     public StegProsesseringInput(BeregningsgrunnlagInput input, BeregningsgrunnlagTilstand stegTilstand) {
         super(input);
         this.stegTilstand = stegTilstand;

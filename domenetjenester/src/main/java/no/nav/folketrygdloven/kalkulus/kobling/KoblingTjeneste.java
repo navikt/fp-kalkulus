@@ -36,7 +36,7 @@ public class KoblingTjeneste {
         this.låsRepository = låsRepository;
     }
 
-    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer) {
+    public List<KoblingEntitet> finnEllerOpprett(List<KoblingReferanse> referanser, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, AktørId aktørId, Saksnummer saksnummer, boolean erForlengelse) {
         var eksisterendeKoblinger = hentKoblinger(referanser, ytelseTyperKalkulusStøtter);
         var alleKoblinger = new ArrayList<>(eksisterendeKoblinger);
         if (eksisterendeKoblinger.size() != referanser.size()) {
@@ -44,7 +44,7 @@ public class KoblingTjeneste {
                     .filter(ref -> eksisterendeKoblinger.stream().map(KoblingEntitet::getKoblingReferanse)
                             .map(KoblingReferanse::getReferanse)
                             .noneMatch(koblingRef -> koblingRef.equals(ref.getReferanse())))
-                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId))
+                    .map(ref -> new KoblingEntitet(ref, ytelseTyperKalkulusStøtter, saksnummer, aktørId, erForlengelse))
                     .collect(Collectors.toList());
             nyeKoblinger.forEach(kobling -> repository.lagre(kobling));
             alleKoblinger.addAll(nyeKoblinger);
@@ -52,18 +52,20 @@ public class KoblingTjeneste {
         return alleKoblinger;
     }
 
-    public void opprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {
+    public List<KoblingRelasjon> finnOgOpprettKoblingRelasjoner(Map<UUID, List<UUID>> koblingrelasjoner) {
         var referanser = koblingrelasjoner.keySet().stream().map(KoblingReferanse::new)
                 .collect(Collectors.toCollection(ArrayList::new));
         referanser.addAll(koblingrelasjoner.values().stream().flatMap(Collection::stream).map(KoblingReferanse::new).collect(Collectors.toList()));
         var alleKoblinger = hentKoblinger(referanser);
-        var koblingRelasjoner = koblingrelasjoner.entrySet().stream()
+        var koblingRelasjonEniteter = koblingrelasjoner.entrySet().stream()
+                .filter(e -> !e.getValue().isEmpty())
                 .flatMap(e -> {
                     var koblingId = finnIdFraListe(e.getKey(), alleKoblinger);
                     return e.getValue().stream().map(v -> new KoblingRelasjon(koblingId, finnIdFraListe(v, alleKoblinger)));
                 })
                 .collect(Collectors.toList());
-        koblingRelasjoner.forEach(repository::lagre);
+        koblingRelasjonEniteter.forEach(repository::lagre);
+        return repository.hentRelasjonerFor(alleKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet()));
     }
 
     private Long finnIdFraListe(UUID referanse, List<KoblingEntitet> alleKoblinger) {

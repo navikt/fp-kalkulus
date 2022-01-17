@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class StegType extends Kodeverk{
     static final String KODEVERK = "STEG_TYPE";
 
+    public static final StegType FASTSETT_STP_BER = new StegType("FASTSETT_STP_BER");
     public static final StegType KOFAKBER = new StegType("KOFAKBER");
     public static final StegType FORS_BESTEBEREGNING = new StegType("FORS_BESTEBEREGNING");
     public static final StegType FORS_BERGRUNN = new StegType("FORS_BERGRUNN");

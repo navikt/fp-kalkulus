@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,10 +62,10 @@ class MapFraKalkulatorTest {
         UUID randomUUID = UUID.randomUUID();
         YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter = YtelseTyperKalkulusStøtterKontrakt.DAGPENGER;
         Saksnummer saksnummer1 = new Saksnummer(saksnummer);
-        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy());
+        KoblingEntitet koblingEntitet = new KoblingEntitet(new KoblingReferanse(randomUUID), ytelseTyperKalkulusStøtter, saksnummer1, AktørId.dummy(), false);
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
-        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty());
+        BeregningsgrunnlagInput input = mapFraKalkulatorInputTilBeregningsgrunnlagInput(koblingEntitet, kalkulatorInputDto, Optional.empty(), Collections.emptyList());
 
         assertThat(input.getKoblingReferanse().getKoblingId()).isEqualTo(koblingEntitet.getId());
     }

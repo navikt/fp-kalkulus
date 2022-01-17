@@ -346,11 +346,11 @@ public class RefusjonOgGraderingTjenesteTest {
             .build());
 
         // Act
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, List.of(im1));
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelerMedTilfeller = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, List.of(im1), Collections.emptyList());
+        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelerMedTilfeller = FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(periode1, fordelingInput);
 
         // Assert
-        assertThat(andelerMedTilfeller.containsValue(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0));
+        assertThat(andelerMedTilfeller.containsValue(FordelingTilfelle.GRADERT_ANDEL_SOM_VILLE_HA_BLITT_AVKORTET_TIL_0)).isTrue();
     }
 
     @Test
@@ -371,13 +371,16 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0));
+        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.FORESLÅTT_BG_PÅ_GRADERT_ANDEL_ER_0)).isTrue();
     }
 
 
     private Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(BeregningsgrunnlagDto bg, AktivitetGradering aktivitetGradering, Collection<InntektsmeldingDto> inntektsmeldinger) {
-        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, inntektsmeldinger);
-        return FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandling(fordelingInput);
+        FordelBeregningsgrunnlagTilfelleInput fordelingInput = new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, inntektsmeldinger, Collections.emptyList());
+        return fordelingInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
+                .map(p -> FordelBeregningsgrunnlagTilfelleTjeneste.vurderManuellBehandlingForPeriode(p, fordelingInput))
+                .filter(r -> !r.isEmpty())
+                .findFirst().orElse(Collections.emptyMap());
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {

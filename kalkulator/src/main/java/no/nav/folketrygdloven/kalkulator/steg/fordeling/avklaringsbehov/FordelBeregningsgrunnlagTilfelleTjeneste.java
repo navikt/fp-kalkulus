@@ -1,17 +1,19 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.avklaringsbehov.PerioderTilVurderingTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 /**
@@ -23,20 +25,13 @@ public final class FordelBeregningsgrunnlagTilfelleTjeneste {
         // Skjuler default konstruktør
     }
 
-    public static boolean harTilfelleForFordeling(FordelBeregningsgrunnlagTilfelleInput input) {
-        Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> andelTilfelleMap = vurderManuellBehandling(input);
-        return !andelTilfelleMap.isEmpty();
-
-    }
-
-    public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandling(FordelBeregningsgrunnlagTilfelleInput input) {
-        BeregningsgrunnlagDto beregningsgrunnlag = input.getBeregningsgrunnlag();
-        for (BeregningsgrunnlagPeriodeDto periode : beregningsgrunnlag.getBeregningsgrunnlagPerioder()) {
-            Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> tilfelleMap = vurderManuellBehandlingForPeriode(periode, input);
-            if (!tilfelleMap.isEmpty())
-                return tilfelleMap;
-        }
-        return Collections.emptyMap();
+    public static List<Intervall> finnPerioderMedBehovForManuellVurdering(FordelBeregningsgrunnlagTilfelleInput input) {
+        var perioderTilVurderingTjeneste = new PerioderTilVurderingTjeneste(input.getForlengelseperioder(), input.getBeregningsgrunnlag());
+        return input.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
+                .filter(p -> perioderTilVurderingTjeneste.erTilVurdering(p.getPeriode()))
+                .filter(p -> !vurderManuellBehandlingForPeriode(p, input).isEmpty())
+                .map(BeregningsgrunnlagPeriodeDto::getPeriode)
+                .collect(Collectors.toList());
     }
 
     public static Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> vurderManuellBehandlingForPeriode(BeregningsgrunnlagPeriodeDto periode,

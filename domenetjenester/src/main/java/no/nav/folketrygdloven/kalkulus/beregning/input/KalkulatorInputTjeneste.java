@@ -25,6 +25,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.mappers.JsonMapper;
 import no.nav.folketrygdloven.kalkulus.rest.UgyldigInputException;
@@ -43,7 +44,7 @@ public class KalkulatorInputTjeneste {
 
     @Inject
     public KalkulatorInputTjeneste(BeregningsgrunnlagRepository beregningsgrunnlagRepository,
-            KoblingTjeneste koblingTjeneste) {
+                                   KoblingTjeneste koblingTjeneste) {
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
         this.koblingTjeneste = koblingTjeneste;
     }
@@ -52,26 +53,33 @@ public class KalkulatorInputTjeneste {
         // CDI-runner
     }
 
-    public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse,
-            Set<Long> koblingIder) {
-        if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
+    public Map<Long, KalkulatorInputDto> hentOgLagreForSteg(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder, BeregningSteg stegType) {
+        if (inputPrReferanse != null && !inputPrReferanse.isEmpty() && skalOppdatereInputISteg(stegType)) {
             // kalkulatorinput oppdateres
-            lagreKalkulatorInput(inputPrReferanse);
+            return lagreKalkulatorInput(inputPrReferanse);
         }
-        return hentForKoblinger(koblingIder);
+        return hentOgOppdaterDersomUtdatert(inputPrReferanse, koblingIder);
     }
 
-    public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse,
-            Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse,
-            Set<Long> koblingIder) throws UgyldigInputException {
-        if (inputPrReferanse != null && !inputPrReferanse.isEmpty()) {
-            // kalkulatorinput oppdateres
-            lagreKalkulatorInput(inputPrReferanse);
-        } else if (ytelsespesifiktGrunnlagPrKoblingReferanse != null
-                && !ytelsespesifiktGrunnlagPrKoblingReferanse.isEmpty()) {
-            oppdaterYtelsesspesifiktGrunnlag(ytelsespesifiktGrunnlagPrKoblingReferanse);
+    private boolean skalOppdatereInputISteg(BeregningSteg stegType) {
+        return stegType.equals(BeregningSteg.FASTSETT_STP_BER) || stegType.equals(BeregningSteg.VURDER_REF_BERGRUNN);
+    }
+
+    public Map<Long, KalkulatorInputDto> hentOgLagre(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
+        return hentOgOppdaterDersomUtdatert(inputPrReferanse, koblingIder);
+    }
+
+    private Map<Long, KalkulatorInputDto> hentOgOppdaterDersomUtdatert(Map<UUID, KalkulatorInputDto> inputPrReferanse, Set<Long> koblingIder) {
+        try {
+            return hentForKoblinger(koblingIder);
+        } catch (UgyldigInputException e) {
+            if (!inputPrReferanse.isEmpty()) {
+                // kalkulatorinput oppdateres
+                return lagreKalkulatorInput(inputPrReferanse);
+            } else {
+                throw e;
+            }
         }
-        return hentForKoblinger(koblingIder);
     }
 
     public Map<Long, KalkulatorInputDto> hentForKoblinger(Collection<Long> koblingId) throws UgyldigInputException {
@@ -130,7 +138,7 @@ public class KalkulatorInputTjeneste {
     }
 
     public void lagreKalkulatorInput(YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter,
-            Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
+                                     Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
         List<KoblingEntitet> koblinger = koblingTjeneste.hentKoblinger(kalkulatorInputPerKoblingReferanse.keySet()
                 .stream()
                 .map(KoblingReferanse::new)
@@ -142,34 +150,21 @@ public class KalkulatorInputTjeneste {
         });
     }
 
-    public void lagreKalkulatorInput(Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
+    public Map<Long, KalkulatorInputDto> lagreKalkulatorInput(Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse) {
         List<KoblingEntitet> koblinger = koblingTjeneste.hentKoblinger(kalkulatorInputPerKoblingReferanse.keySet()
                 .stream()
                 .map(KoblingReferanse::new)
                 .collect(Collectors.toList()));
+        Map<Long, KalkulatorInputDto> lagretMap = new HashMap<>();
         kalkulatorInputPerKoblingReferanse.forEach((ref, input) -> {
             Optional<KoblingEntitet> kobling = koblinger.stream()
                     .filter(k -> k.getKoblingReferanse().getReferanse().equals(ref)).findFirst();
-            kobling.ifPresent(k -> lagreKalkulatorInput(k.getId(), input));
+            kobling.ifPresent(k -> {
+                lagreKalkulatorInput(k.getId(), input);
+                lagretMap.put(k.getId(), input);
+            });
         });
-    }
-
-    public void oppdaterYtelsesspesifiktGrunnlag(
-            Map<UUID, YtelsespesifiktGrunnlagDto> ytelsespesifiktGrunnlagPrKoblingReferanse) {
-        List<KoblingEntitet> koblinger = koblingTjeneste
-                .hentKoblinger(ytelsespesifiktGrunnlagPrKoblingReferanse.keySet()
-                        .stream()
-                        .map(KoblingReferanse::new)
-                        .collect(Collectors.toList()));
-        var resultatPrKobling = hentForKoblinger(
-                koblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList()));
-        resultatPrKobling.forEach((key, value) -> {
-            var kobling = koblinger.stream().filter(k -> k.getId().equals(key)).findFirst().orElseThrow();
-            var ytelsespesifiktGrunnlag = ytelsespesifiktGrunnlagPrKoblingReferanse
-                    .get(kobling.getKoblingReferanse().getReferanse());
-            var oppdatertInput = value.medYtelsespesifiktGrunnlag(ytelsespesifiktGrunnlag);
-            lagreKalkulatorInput(key, oppdatertInput);
-        });
+        return lagretMap;
     }
 
 }

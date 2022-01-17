@@ -5,7 +5,9 @@ import static java.util.Collections.singletonList;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningVenteårsak;
 
@@ -33,6 +35,7 @@ public class BeregningAvklaringsbehovResultat {
         return new BeregningAvklaringsbehovResultat(avklaringsbehovDefinisjon);
     }
 
+
     /**
      * Factory-metode direkte basert på {@link AvklaringsbehovDefinisjon}, returnerer liste. Ingen callback for consumer.
      */
@@ -58,6 +61,7 @@ public class BeregningAvklaringsbehovResultat {
     public LocalDateTime getVentefrist() {
         return ventefrist;
     }
+
 
     @Override
     public String toString() {

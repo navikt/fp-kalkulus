@@ -34,6 +34,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontr
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.extensions.JpaExtension;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseRepository;
+import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.kobling.KoblingRepository;
 import no.nav.folketrygdloven.kalkulus.tjeneste.sporing.RegelsporingRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
@@ -47,6 +49,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     private KoblingRepository koblingRepository;
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
+    private ForlengelseTjeneste forlengelseTjeneste;
     private Long koblingId;
 
     @BeforeEach
@@ -54,21 +57,22 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         repository = new BeregningsgrunnlagRepository(getEntityManager());
         regelsporingRepository = new RegelsporingRepository(getEntityManager());
         koblingRepository = new KoblingRepository(getEntityManager());
+        forlengelseTjeneste = new ForlengelseTjeneste(new ForlengelseRepository(getEntityManager()), true);
         AvklaringsbehovRepository avklaringsbehovRepository = new AvklaringsbehovRepository(getEntityManager());
         AvklaringsbehovKontrollTjeneste avklaringsbehovKontrollTjeneste = new AvklaringsbehovKontrollTjeneste();
         avklaringsbehovTjeneste = new AvklaringsbehovTjeneste(avklaringsbehovRepository, koblingRepository, avklaringsbehovKontrollTjeneste);
-        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository, avklaringsbehovTjeneste);
+        rullTilbakeTjeneste = new RullTilbakeTjeneste(repository, regelsporingRepository, avklaringsbehovTjeneste, forlengelseTjeneste);
     }
 
     @Test
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv() {
         prepareTestData();
         // Arrange
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
@@ -90,11 +94,11 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_før_aktiv_og_ny_tilstand_er_obligatorisk_tilstand() {
         prepareTestData();
         // Arrange
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
@@ -117,11 +121,11 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
     public void skal_ikkje_rulle_tilbake_til_obligatorisk_tilstand_når_ny_tilstand_er_etter_aktiv() {
         prepareTestData();
         // Arrange
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FORESLÅTT);
@@ -144,7 +148,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         repository.lagreOgSjekkStatus(input);
         AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER);
@@ -175,7 +179,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         AvklaringsbehovDefinisjon avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.VURDER_FAKTA_FOR_ATFL_SN;
         avklaringsbehovTjeneste.opprettEllerGjennopprettAvklaringsbehov(koblingId, avklaringsbehovDefinisjon);
         avklaringsbehovTjeneste.løsAvklaringsbehov(koblingId, avklaringsbehovDefinisjon, "Begrunnelse");
-        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        repository.lagre(koblingId, BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(LocalDate.now())
                         .build()), BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER);
@@ -210,7 +214,7 @@ public class RullTilbakeTjenesteTest extends EntityManagerAwareTest {
         AktørId aktørId = new AktørId("1234123412341");
         KoblingReferanse koblingReferanse = new KoblingReferanse(UUID.randomUUID());
         Saksnummer saksnummer = new Saksnummer("1234");
-        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.FORELDREPENGER, saksnummer, aktørId);
+        KoblingEntitet koblingEntitet = new KoblingEntitet(koblingReferanse, YtelseTyperKalkulusStøtterKontrakt.FORELDREPENGER, saksnummer, aktørId, false);
         koblingRepository.lagre(koblingEntitet);
         koblingId = koblingEntitet.getId();
     }

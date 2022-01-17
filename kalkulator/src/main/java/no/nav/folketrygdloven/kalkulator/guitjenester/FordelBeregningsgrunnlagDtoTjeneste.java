@@ -83,28 +83,32 @@ public class FordelBeregningsgrunnlagDtoTjeneste {
                         aktivitetGradering,
                         periodeFraSteg,
                         forrigeBgFraSteg.getBeregningsgrunnlagPerioder(),
-                        input.getInntektsmeldinger()));
+                        input.getInntektsmeldinger(),
+                        input.getForlengelseperioder()));
         fordelBGPeriode.setSkalRedigereInntekt(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalSaksbehandlerRedigereInntekt(
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
                         periodeFraSteg,
                         forrigeBgFraSteg.getBeregningsgrunnlagPerioder(),
-                        input.getInntektsmeldinger()));
+                        input.getInntektsmeldinger(),
+                        input.getForlengelseperioder()));
         fordelBGPeriode.setSkalPreutfyllesMedBeregningsgrunnlag(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalRedigereGrunnetTidligerePerioder(
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
                         periodeFraSteg,
                         forrigeBgFraSteg.getBeregningsgrunnlagPerioder(),
-                        input.getInntektsmeldinger()));
+                        input.getInntektsmeldinger(),
+                        input.getForlengelseperioder()));
         fordelBGPeriode.setSkalKunneEndreRefusjon(ManuellBehandlingRefusjonGraderingDtoTjeneste
                 .skalSaksbehandlerRedigereRefusjon(
                         input.getBeregningsgrunnlagGrunnlag(),
                         aktivitetGradering,
                         periodeFraSteg,
                         input.getInntektsmeldinger(),
-                        grunnbeløp));
+                        grunnbeløp,
+                        input.getForlengelseperioder()));
         RefusjonDtoTjeneste.slåSammenRefusjonForAndelerISammeArbeidsforhold(fordelAndeler);
         return fordelAndeler;
     }

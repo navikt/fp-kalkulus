@@ -5,12 +5,14 @@ import static no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand.mapTi
 
 import java.time.LocalDate;
 import java.time.MonthDay;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
+import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBesteberegningInput;
@@ -19,10 +21,12 @@ import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderBeregningsgrunnlagvilkårInput;
 import no.nav.folketrygdloven.kalkulator.input.VurderRefusjonBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
+import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -44,11 +48,14 @@ class StegInputMapper {
 
     protected StegProsesseringInput mapStegInput(KoblingEntitet kobling,
                                                  KalkulatorInputDto input,
-                                                 BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet,
+                                                 Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
                                                  BeregningSteg stegType,
-                                                 List<Long> originaleKoblinger) {
-        StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType);
-        if (stegType.equals(BeregningSteg.KOFAKBER)) {
+                                                 List<Long> originaleKoblinger,
+                                                 List<IntervallEntitet> forlengelseperioder) {
+        StegProsesseringInput stegProsesseringInput = lagStegProsesseringInput(kobling, input, grunnlagEntitet, stegType, forlengelseperioder);
+        if (stegType.equals(BeregningSteg.FASTSETT_STP_BER)) {
+            return new FastsettBeregningsaktiviteterInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
+        } else if (stegType.equals(BeregningSteg.KOFAKBER)) {
             return new FaktaOmBeregningInput(stegProsesseringInput).medGrunnbeløpsatser(finnSatser());
         } else if (stegType.equals(BeregningSteg.FORS_BESTEBEREGNING)) {
             return lagInputForeslåBesteberegning(stegProsesseringInput);
@@ -110,8 +117,12 @@ class StegInputMapper {
         return entitet.map(BehandlingslagerTilKalkulusMapper::mapGrunnlag);
     }
 
-    private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling, KalkulatorInputDto input, BeregningsgrunnlagGrunnlagEntitet grunnlagEntitet, BeregningSteg stegType) {
-        var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, Optional.of(grunnlagEntitet));
+    private StegProsesseringInput lagStegProsesseringInput(KoblingEntitet kobling,
+                                                           KalkulatorInputDto input,
+                                                           Optional<BeregningsgrunnlagGrunnlagEntitet> grunnlagEntitet,
+                                                           BeregningSteg stegType,
+                                                           List<IntervallEntitet> forlengelseperioder) {
+        var beregningsgrunnlagInput = MapFraKalkulator.mapFraKalkulatorInputTilBeregningsgrunnlagInput(kobling, input, grunnlagEntitet, forlengelseperioder);
         var grunnlagFraSteg = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForBehandlinger(
                 kobling,
                 beregningsgrunnlagInput.getSkjæringstidspunktOpptjening(),
@@ -133,7 +144,8 @@ class StegInputMapper {
         return foreslåBeregningsgrunnlagInput.medGrunnbeløpsatser(finnSatser());
     }
 
-    private FordelBeregningsgrunnlagInput lagInputFordel(StegProsesseringInput stegProsesseringInput, Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {
+    private FordelBeregningsgrunnlagInput lagInputFordel(StegProsesseringInput stegProsesseringInput,
+                                                         Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {
         var fordelBeregningsgrunnlagInput = new FordelBeregningsgrunnlagInput(stegProsesseringInput);
         if (førsteFastsatteGrunnlagEntitet.isPresent()) {
             fordelBeregningsgrunnlagInput = førsteFastsatteGrunnlagEntitet.get().getBeregningsgrunnlag()
@@ -143,6 +155,11 @@ class StegInputMapper {
                     .orElse(fordelBeregningsgrunnlagInput);
         }
         return fordelBeregningsgrunnlagInput;
+    }
+
+    private List<Intervall> mapIntervaller(List<IntervallEntitet> forlengelseperioder) {
+        return forlengelseperioder != null ?
+                forlengelseperioder.stream().map(p -> Intervall.fraOgMedTilOgMed(p.getFomDato(), p.getTomDato())).toList() : Collections.emptyList();
     }
 
     private FullføreBeregningsgrunnlagInput lagInputFullføre(StegProsesseringInput stegProsesseringInput, Optional<BeregningsgrunnlagGrunnlagEntitet> førsteFastsatteGrunnlagEntitet) {

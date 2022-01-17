@@ -25,6 +25,14 @@ public class FordelBeregningsgrunnlagInput extends StegProsesseringInput {
     }
 
 
+    public FordelBeregningsgrunnlagInput(FordelBeregningsgrunnlagInput input) {
+        super(input);
+        super.stegTilstand = BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING;
+        super.stegUtTilstand = BeregningsgrunnlagTilstand.FASTSATT_INN;
+        this.uregulertGrunnbeløp = input.uregulertGrunnbeløp;
+    }
+
+
     public Optional<Beløp> getUregulertGrunnbeløp() {
         return Optional.ofNullable(uregulertGrunnbeløp);
     }

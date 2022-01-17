@@ -209,11 +209,11 @@ public class AksjonspunktMigreringTjeneste {
                         Map.Entry::getKey,
                         e -> new FordelBeregningsgrunnlagTilfelleInput(e.getValue(),
                                 AktivitetGradering.INGEN_GRADERING,
-                                inntektsmeldingerPrKobling.get(e.getKey()).getAlleInntektsmeldinger()))
+                                inntektsmeldingerPrKobling.get(e.getKey()).getAlleInntektsmeldinger(), Collections.emptyList()))
                 );
 
         var koblingerMedFordelTilfelle = fordelingInputPrKobling.entrySet().stream()
-                .filter(e -> FordelBeregningsgrunnlagTilfelleTjeneste.harTilfelleForFordeling(e.getValue()))
+                .filter(e -> !FordelBeregningsgrunnlagTilfelleTjeneste.finnPerioderMedBehovForManuellVurdering(e.getValue()).isEmpty())
                 .map(Map.Entry::getKey)
                 .map(id -> finnKobling(koblinger, id))
                 .collect(Collectors.toList());
@@ -276,7 +276,7 @@ public class AksjonspunktMigreringTjeneste {
         BeregningsgrunnlagGrunnlagDto mappetGrunnlag = mapGrunnlag(grunnlagEntitetMap.get(kobling.getId()));
         return mapFraKalkulatorInput(kobling,
                 kalkulatorInputDto,
-                Optional.of(grunnlagEntitetMap.get(kobling.getId()))).medBeregningsgrunnlagGrunnlag(mappetGrunnlag);
+                Optional.of(grunnlagEntitetMap.get(kobling.getId())), Collections.emptyList()).medBeregningsgrunnlagGrunnlag(mappetGrunnlag);
     }
 
     private List<KoblingEntitet> finnKoblingerMedAvvik(List<KoblingEntitet> koblinger) {
@@ -313,7 +313,7 @@ public class AksjonspunktMigreringTjeneste {
         var koblingStegInputMap = grunnlagEntiteter.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        e -> mapFraKalkulatorInputTilBeregningsgrunnlagInput(finnKobling(koblinger, e.getKey()), inputRespons.get(e.getKey()), Optional.of(e.getValue())))
+                        e -> mapFraKalkulatorInputTilBeregningsgrunnlagInput(finnKobling(koblinger, e.getKey()), inputRespons.get(e.getKey()), Optional.of(e.getValue()), Collections.emptyList()))
                 );
         var utleder = finnImplementasjonForYtelseType(FagsakYtelseType.fraKode(data.getYtelseSomSkalBeregnes().getKode()), apUtlederFastsettAktiviteter);
 

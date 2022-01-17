@@ -24,6 +24,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
@@ -56,6 +57,8 @@ public class BeregningsgrunnlagGUIInput {
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
+    private List<Intervall> forlengelseperioder;
+
     private Map<String, Boolean> toggles = new HashMap<>();
 
     public BeregningsgrunnlagGUIInput(KoblingReferanse koblingReferanse,
@@ -78,6 +81,14 @@ public class BeregningsgrunnlagGUIInput {
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
         this.toggles = input.getToggles();
 
+    }
+
+    public List<Intervall> getForlengelseperioder() {
+        return forlengelseperioder;
+    }
+
+    public void setForlengelseperioder(List<Intervall> forlengelseperioder) {
+        this.forlengelseperioder = forlengelseperioder;
     }
 
     public List<AvklaringsbehovDto> getAvklaringsbehov() {

@@ -9,7 +9,6 @@ import java.util.Objects;
 public class Skjæringstidspunkt {
     private LocalDate skjæringstidspunktOpptjening;
     private LocalDate skjæringstidspunktBeregning;
-    private LocalDate førsteUttaksdato;
 
     private Skjæringstidspunkt() {
         // hide constructor
@@ -18,7 +17,6 @@ public class Skjæringstidspunkt {
     private Skjæringstidspunkt(Skjæringstidspunkt other) {
         this.skjæringstidspunktOpptjening = other.skjæringstidspunktOpptjening;
         this.skjæringstidspunktBeregning = other.skjæringstidspunktBeregning;
-        this.førsteUttaksdato = other.førsteUttaksdato;
     }
 
 
@@ -32,14 +30,9 @@ public class Skjæringstidspunkt {
         return skjæringstidspunktBeregning;
     }
 
-    /** Første uttaksdato er første dag bruker får utbetalt ytelse. */
-    public LocalDate getFørsteUttaksdato() {
-        return førsteUttaksdato;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(skjæringstidspunktBeregning, skjæringstidspunktOpptjening, førsteUttaksdato);
+        return Objects.hash(skjæringstidspunktBeregning, skjæringstidspunktOpptjening);
     }
 
     @Override
@@ -51,8 +44,7 @@ public class Skjæringstidspunkt {
         }
         Skjæringstidspunkt other = (Skjæringstidspunkt) obj;
         return Objects.equals(this.skjæringstidspunktBeregning, other.skjæringstidspunktBeregning)
-                && Objects.equals(this.skjæringstidspunktOpptjening, other.skjæringstidspunktOpptjening)
-                && Objects.equals(this.førsteUttaksdato, other.førsteUttaksdato);
+                && Objects.equals(this.skjæringstidspunktOpptjening, other.skjæringstidspunktOpptjening);
     }
 
     @Override
@@ -90,10 +82,6 @@ public class Skjæringstidspunkt {
             return this;
         }
 
-        public Builder medFørsteUttaksdato(LocalDate dato) {
-            kladd.førsteUttaksdato = dato;
-            return this;
-        }
 
         public Skjæringstidspunkt build() {
             return kladd;

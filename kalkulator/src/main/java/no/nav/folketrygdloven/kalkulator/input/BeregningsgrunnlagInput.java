@@ -19,6 +19,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.KravperioderPrArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto.OpptjeningPeriodeDto;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /** Inputstruktur for beregningsgrunnlag tjenester. */
@@ -41,6 +42,9 @@ public class BeregningsgrunnlagInput {
 
     private final YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag;
 
+    private List<Intervall> forlengelseperioder;
+
+
     private Map<String, Boolean> toggles = new HashMap<>();
 
     private Map<String, Object> konfigverdier = new HashMap<>();
@@ -62,6 +66,7 @@ public class BeregningsgrunnlagInput {
         this.beregningsgrunnlagGrunnlag = input.getBeregningsgrunnlagGrunnlag();
         this.toggles = input.getToggles();
         this.konfigverdier = input.getKonfigverdier();
+        this.forlengelseperioder = input.getForlengelseperioder();
     }
 
     public Map<String, Boolean> getToggles() {
@@ -89,6 +94,13 @@ public class BeregningsgrunnlagInput {
         return toggles.getOrDefault(feature, defaultValue);
     }
 
+    public List<Intervall> getForlengelseperioder() {
+        return forlengelseperioder == null ? Collections.emptyList() : forlengelseperioder;
+    }
+
+    public void setForlengelseperioder(List<Intervall> forlengelseperioder) {
+        this.forlengelseperioder = forlengelseperioder;
+    }
 
     public void setToggles(Map<String, Boolean> toggles) {
         this.toggles = toggles;

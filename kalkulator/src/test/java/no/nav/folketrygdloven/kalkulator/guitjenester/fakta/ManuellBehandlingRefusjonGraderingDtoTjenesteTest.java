@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +81,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
 
         // Act
         boolean kreverManuellBehandling = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(grunnlag,
-                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), bgFørFordeling.getBeregningsgrunnlagPerioder(), inntektsmeldinger);
+                new AktivitetGradering(graderinger), bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), bgFørFordeling.getBeregningsgrunnlagPerioder(), inntektsmeldinger, Collections.emptyList());
 
         // Assert
         assertThat(kreverManuellBehandling).isTrue();
@@ -113,14 +114,14 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
                 new AktivitetGradering(graderingNæring),
                 periode,
                 bg.getBeregningsgrunnlagPerioder(),
-                List.of());
+                List.of(), Collections.emptyList());
 
         boolean kreverManuellBehandling2 = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereInntekt(
                 grunnlag,
                 new AktivitetGradering(graderingNæring),
                 periode2,
                 bg.getBeregningsgrunnlagPerioder(),
-                List.of());
+                List.of(), Collections.emptyList());
 
 
         // Assert
@@ -143,7 +144,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
         boolean kreverManuellBehandlingAvRefusjon = ManuellBehandlingRefusjonGraderingDtoTjeneste.skalSaksbehandlerRedigereRefusjon(
                 grunnlag,
             new AktivitetGradering(graderinger),
-            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP));
+            bgFørFordeling.getBeregningsgrunnlagPerioder().get(0), inntektsmeldinger, new Beløp(GRUNNBELØP), Collections.emptyList());
 
         // Assert
         assertThat(kreverManuellBehandlingAvRefusjon).isTrue();

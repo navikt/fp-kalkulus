@@ -17,12 +17,12 @@ public class BeregningsgrunnlagGrunnlagBuilder {
         return new BeregningsgrunnlagGrunnlagBuilder(new BeregningsgrunnlagGrunnlagEntitet());
     }
 
-    public static BeregningsgrunnlagGrunnlagBuilder oppdatere(BeregningsgrunnlagGrunnlagEntitet kladd) {
+    public static BeregningsgrunnlagGrunnlagBuilder kopiere(BeregningsgrunnlagGrunnlagEntitet kladd) {
         return new BeregningsgrunnlagGrunnlagBuilder(new BeregningsgrunnlagGrunnlagEntitet(kladd));
     }
 
-    public static BeregningsgrunnlagGrunnlagBuilder oppdatere(Optional<BeregningsgrunnlagGrunnlagEntitet> kladd) {
-        return kladd.map(BeregningsgrunnlagGrunnlagBuilder::oppdatere).orElseGet(BeregningsgrunnlagGrunnlagBuilder::nytt);
+    public static BeregningsgrunnlagGrunnlagBuilder kopiere(Optional<BeregningsgrunnlagGrunnlagEntitet> kladd) {
+        return kladd.map(BeregningsgrunnlagGrunnlagBuilder::kopiere).orElseGet(BeregningsgrunnlagGrunnlagBuilder::nytt);
     }
 
     public BeregningsgrunnlagGrunnlagBuilder medBeregningsgrunnlag(BeregningsgrunnlagEntitet beregningsgrunnlag) {

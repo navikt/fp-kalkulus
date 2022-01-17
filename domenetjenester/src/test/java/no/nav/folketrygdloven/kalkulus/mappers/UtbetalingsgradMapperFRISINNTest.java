@@ -296,7 +296,7 @@ class UtbetalingsgradMapperFRISINNTest {
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagÅrsgrunnlag(beregnetPrÅr)))
                 .build(bg);
-        return Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        return Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
                         .build())
@@ -315,7 +315,7 @@ class UtbetalingsgradMapperFRISINNTest {
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagÅrsgrunnlag(beregnetPrÅr)))
                 .build(bg);
-        return Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        return Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
                         .build())

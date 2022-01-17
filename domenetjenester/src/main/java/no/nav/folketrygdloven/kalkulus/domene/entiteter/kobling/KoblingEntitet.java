@@ -68,7 +68,7 @@ public class KoblingEntitet extends BaseEntitet implements IndexKey {
     public KoblingEntitet() {
     }
 
-    public KoblingEntitet(KoblingReferanse koblingReferanse, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, Saksnummer saksnummer, AktørId aktørId) {
+    public KoblingEntitet(KoblingReferanse koblingReferanse, YtelseTyperKalkulusStøtterKontrakt ytelseTyperKalkulusStøtter, Saksnummer saksnummer, AktørId aktørId, boolean erForlengelse) {
         Objects.requireNonNull(saksnummer, "saksnummer");
         Objects.requireNonNull(koblingReferanse, "koblingReferanse");
         Objects.requireNonNull(aktørId, "aktørId");

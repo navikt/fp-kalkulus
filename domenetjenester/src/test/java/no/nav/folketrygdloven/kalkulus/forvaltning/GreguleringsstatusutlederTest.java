@@ -43,7 +43,7 @@ class GreguleringsstatusutlederTest {
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(800000)))
                 .build(bg);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
                         .build())
@@ -73,7 +73,7 @@ class GreguleringsstatusutlederTest {
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
                         .medGrunnlagPrÅr(lagBeregnet(400000)))
                 .build(bg);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
                         .build())
@@ -99,7 +99,7 @@ class GreguleringsstatusutlederTest {
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(200000)))
                 .build(bg);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
                         .build())
@@ -125,7 +125,7 @@ class GreguleringsstatusutlederTest {
                         .medAndelsnr(1L)
                         .medGrunnlagPrÅr(lagBeregnet(200000)))
                 .build(bg);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
                         .build())
@@ -151,7 +151,7 @@ class GreguleringsstatusutlederTest {
                         .medBGAndelArbeidsforhold(BGAndelArbeidsforhold.builder().medArbeidsgiver(Arbeidsgiver.virksomhet("999999999")))
                         .medGrunnlagPrÅr(lagBeregnet(610000)))
                 .build(bg);
-        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.oppdatere(Optional.empty())
+        Optional<BeregningsgrunnlagGrunnlagEntitet> gr = Optional.of(BeregningsgrunnlagGrunnlagBuilder.kopiere(Optional.empty())
                 .medRegisterAktiviteter(BeregningAktivitetAggregatEntitet.builder()
                         .medSkjæringstidspunktOpptjening(STP)
                         .build())
