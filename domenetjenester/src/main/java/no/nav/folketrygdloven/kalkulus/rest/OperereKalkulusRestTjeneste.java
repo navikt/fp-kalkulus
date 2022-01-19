@@ -4,24 +4,11 @@ import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessurs
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +24,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
-import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
@@ -51,11 +48,9 @@ import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagRequest;
-import no.nav.folketrygdloven.kalkulus.request.v1.FortsettBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
-import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.KopiResponse;
 import no.nav.folketrygdloven.kalkulus.response.v1.TilstandListeResponse;
@@ -126,66 +121,6 @@ public class OperereKalkulusRestTjeneste {
         } catch (UgyldigInputException e) {
             LOG.warn("Konvertering av input feilet: " + e.getMessage());
             return Response.ok(new OppdateringListeRespons(true)).build();
-        }
-        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/start/bolk")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
-            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
-    })
-    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
-    @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
-    public Response start(@NotNull @Valid StartBeregningListeRequestAbacDto spesifikasjon) {
-        var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
-        MDC.put("prosess_saksnummer", saksnummer.getVerdi());
-        Map<Long, KalkulusRespons> respons;
-        try {
-            var beregnForListe = spesifikasjon.getKalkulatorInputPerKoblingReferanse().entrySet()
-                    .stream()
-                    .map(e -> new BeregnForRequest(e.getKey(), spesifikasjon.getKoblingRelasjon().get(e.getKey()), e.getValue(), Collections.emptyList()))
-                    .toList();
-            respons = orkestrerer.beregn(
-                    BeregningSteg.FASTSETT_STP_BER,
-                    new Saksnummer(spesifikasjon.getSaksnummer()),
-                    new AktørId(spesifikasjon.getAktør().getIdent()),
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
-                    beregnForListe);
-        } catch (UgyldigInputException e) {
-            LOG.warn("Konvertering av input feilet: " + e.getMessage());
-            return Response.ok(new OppdateringListeRespons(true)).build();
-        }
-        return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/fortsett/bolk")
-    @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Fortsetter en beregning basert på stegInput."), responses = {
-            @ApiResponse(description = "Liste med avklaringsbehov som har oppstått", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
-    })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
-    public Response beregnVidere(@NotNull @Valid FortsettBeregningListeRequestAbacDto spesifikasjon) {
-        MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
-        Map<Long, KalkulusRespons> respons;
-        try {
-            var beregnForListe = spesifikasjon.getEksternReferanser()
-                    .stream()
-                    .map(r -> new BeregnForRequest(r,
-                            Collections.emptyList(),
-                            spesifikasjon.getKalkulatorInputPerKoblingReferanse() != null ? spesifikasjon.getKalkulatorInputPerKoblingReferanse().get(r) : null,
-                            Collections.emptyList()))
-                    .toList();
-            respons = orkestrerer.beregn(BeregningSteg.fraKode(spesifikasjon.getStegType().getKode()),
-                    new Saksnummer(spesifikasjon.getSaksnummer()),
-                    null, // OK i ein overgangsfase til vi går over til å kalle nytt endepunkt
-                    spesifikasjon.getYtelseSomSkalBeregnes(),
-                    beregnForListe
-            );
-        } catch (UgyldigInputException e) {
-            return Response.ok(new TilstandListeResponse(true)).build();
         }
         return Response.ok(new TilstandListeResponse(respons.values().stream().map(r -> (TilstandResponse) r).toList())).build();
     }
@@ -298,54 +233,6 @@ public class OperereKalkulusRestTjeneste {
         }
     }
 
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class StartBeregningListeRequestAbacDto extends StartBeregningListeRequest implements AbacDto {
-
-        public StartBeregningListeRequestAbacDto() {
-        }
-
-        public StartBeregningListeRequestAbacDto(Map<UUID, KalkulatorInputDto> kalkulatorInput, String saksnummer, PersonIdent aktør,
-                                                 YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                                                 Map<UUID, List<UUID>> koblingRelasjoner) {
-            super(kalkulatorInput, saksnummer, aktør, ytelseSomSkalBeregnes, koblingRelasjoner);
-        }
-
-        @Override
-        public AbacDataAttributter abacAttributter() {
-            var abacDataAttributter = AbacDataAttributter.opprett();
-
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKalkulatorInputPerKoblingReferanse().keySet());
-            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
-            return abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, getAktør().getIdent());
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class FortsettBeregningListeRequestAbacDto extends FortsettBeregningListeRequest implements AbacDto {
-
-        public FortsettBeregningListeRequestAbacDto() {
-        }
-
-        public FortsettBeregningListeRequestAbacDto(String saksnummer,
-                                                    List<UUID> eksternReferanser,
-                                                    Map<UUID, KalkulatorInputDto> kalkulatorInputPerKoblingReferanse,
-                                                    StegType stegType, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
-            super(saksnummer, eksternReferanser, kalkulatorInputPerKoblingReferanse, ytelseSomSkalBeregnes, stegType);
-        }
-
-        @Override
-        public AbacDataAttributter abacAttributter() {
-            final var abacDataAttributter = AbacDataAttributter.opprett();
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getEksternReferanser());
-            return abacDataAttributter;
-        }
-    }
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
@@ -368,7 +255,6 @@ public class OperereKalkulusRestTjeneste {
             return abacDataAttributter;
         }
     }
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)

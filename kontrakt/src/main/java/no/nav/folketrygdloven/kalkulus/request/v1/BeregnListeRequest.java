@@ -51,21 +51,25 @@ public class BeregnListeRequest implements KalkulusRequest {
     @Valid
     private StegType stegType;
 
-    @JsonProperty(value = "fordelBeregningListe", required = true)
+    @JsonProperty(value = "beregnForListe")
     @Size(min=1)
-    @NotNull
     @Valid
     private List<BeregnForRequest> beregnForListe;
 
+    @JsonProperty(value = "fordelBeregningListe")
+    @Size(min=1)
+    @Valid
+    private List<BeregnForRequest> fordelBeregningListe;
 
     protected BeregnListeRequest() {
     }
 
     @JsonCreator
-    public BeregnListeRequest(String saksnummer,
-                              PersonIdent aktør, YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
-                              StegType stegType,
-                              List<BeregnForRequest> beregnForListe) {
+    public BeregnListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
+                              @JsonProperty(value = "aktør", required = true) PersonIdent aktør,
+                              @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                              @JsonProperty(value = "stegType", required = true) StegType stegType,
+                              @JsonProperty(value = "beregnForListe") List<BeregnForRequest> beregnForListe) {
         this.saksnummer = saksnummer;
         this.aktør = aktør;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
@@ -91,7 +95,7 @@ public class BeregnListeRequest implements KalkulusRequest {
     }
 
     public List<BeregnForRequest> getBeregnForListe() {
-        return beregnForListe;
+        return fordelBeregningListe != null ? fordelBeregningListe : beregnForListe;
     }
 
     @AssertTrue

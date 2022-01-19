@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,11 +44,13 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.RelatertYtelseType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.opptjening.v1.OpptjeningPeriodeDto;
-import no.nav.folketrygdloven.kalkulus.request.v1.StartBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.BeregnForRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
 
 public class KalkulatorMapperTest {
 
@@ -82,21 +83,20 @@ public class KalkulatorMapperTest {
         KalkulatorInputDto kalkulatorInputDto = byggKalkulatorInput();
 
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
-        StartBeregningListeRequest spesifikasjon = new StartBeregningListeRequest(
-                Map.of(koblingReferanse.toUuidReferanse(), kalkulatorInputDto),
-                saksnummer, dummy,
-                YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
-                Map.of(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID())));
+        BeregnListeRequest spesifikasjon = new BeregnListeRequest(
+                saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                StegType.FASTSETT_STP_BER,
+                List.of(new BeregnForRequest(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
 
         String json = WRITER_JSON.writeValueAsString(spesifikasjon);
         System.out.println(json);
 
-        StartBeregningListeRequest roundTripped = READER_JSON.forType(StartBeregningListeRequest.class).readValue(json);
+        BeregnListeRequest roundTripped = READER_JSON.forType(BeregnListeRequest.class).readValue(json);
 
         assertThat(roundTripped).isNotNull();
         assertThat(roundTripped.getAktør()).isEqualTo(dummy);
         assertThat(roundTripped.getSaksnummer()).isEqualTo(saksnummer);
-        assertThat(roundTripped.getKalkulatorInputPerKoblingReferanse().keySet().iterator().next()).isEqualTo(koblingReferanse.toUuidReferanse());
+        assertThat(roundTripped.getBeregnForListe().iterator().next().getEksternReferanse()).isEqualTo(koblingReferanse.toUuidReferanse());
         validateResult(roundTripped);
     }
 
