@@ -65,6 +65,7 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringPrRequ
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.RullTilbakeTjeneste;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
+import no.nav.k9.felles.konfigurasjon.konfig.KonfigVerdi;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.AbacDto;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
@@ -83,6 +84,7 @@ public class OperereKalkulusRestTjeneste {
     private RullTilbakeTjeneste rullTilbakeTjeneste;
     private OperereKalkulusOrkestrerer orkestrerer;
     private KopierBeregningsgrunnlagTjeneste kopierTjeneste;
+    private boolean enableForlengelse;
 
     public OperereKalkulusRestTjeneste() {
         // for CDI
@@ -92,11 +94,13 @@ public class OperereKalkulusRestTjeneste {
     public OperereKalkulusRestTjeneste(KoblingTjeneste koblingTjeneste,
                                        RullTilbakeTjeneste rullTilbakeTjeneste,
                                        OperereKalkulusOrkestrerer orkestrerer,
-                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste) {
+                                       KopierBeregningsgrunnlagTjeneste kopierTjeneste,
+                                       @KonfigVerdi(value = "SKAL_VURDERE_FORLENGELSE", defaultVerdi = "false", required = false) boolean enableForlengelse) {
         this.koblingTjeneste = koblingTjeneste;
         this.rullTilbakeTjeneste = rullTilbakeTjeneste;
         this.orkestrerer = orkestrerer;
         this.kopierTjeneste = kopierTjeneste;
+        this.enableForlengelse = enableForlengelse;
     }
 
     @POST
@@ -196,6 +200,9 @@ public class OperereKalkulusRestTjeneste {
     })
     @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
     public Response kopierBeregning(@NotNull @Valid KopierBeregningListeRequestAbacDto spesifikasjon) {
+        if (!enableForlengelse) {
+            throw new IllegalStateException("Kan ikke kalle kopier uten at forlengelse er skrudd på");
+        }
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
         kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
                 spesifikasjon.getKopierBeregningListe(),

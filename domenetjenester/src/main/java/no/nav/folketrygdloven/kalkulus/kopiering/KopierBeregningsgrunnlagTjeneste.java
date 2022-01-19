@@ -2,21 +2,25 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
+import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
 import no.nav.folketrygdloven.kalkulus.tjeneste.beregningsgrunnlag.BeregningsgrunnlagRepository;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 
@@ -25,14 +29,18 @@ public class KopierBeregningsgrunnlagTjeneste {
 
     private KoblingTjeneste koblingTjeneste;
     private BeregningsgrunnlagRepository beregningsgrunnlagRepository;
+    private AvklaringsbehovTjeneste avklaringsbehovTjeneste;
 
     public KopierBeregningsgrunnlagTjeneste() {
     }
 
     @Inject
-    public KopierBeregningsgrunnlagTjeneste(KoblingTjeneste koblingTjeneste, BeregningsgrunnlagRepository beregningsgrunnlagRepository, KalkulatorInputTjeneste kalkulatorInputTjeneste) {
+    public KopierBeregningsgrunnlagTjeneste(KoblingTjeneste koblingTjeneste,
+                                            BeregningsgrunnlagRepository beregningsgrunnlagRepository,
+                                            AvklaringsbehovTjeneste avklaringsbehovTjeneste) {
         this.koblingTjeneste = koblingTjeneste;
         this.beregningsgrunnlagRepository = beregningsgrunnlagRepository;
+        this.avklaringsbehovTjeneste = avklaringsbehovTjeneste;
     }
 
 
@@ -43,17 +51,18 @@ public class KopierBeregningsgrunnlagTjeneste {
      * Dersom det ikke finnes grunnlag med denne tilstanden kopieres grunnlag fra foreslå (FORSLÅTT_UT eller FORSLÅTT)
      *
      * @param kopiRequests Referanser som skal kopieres
-     * @param ytelseType          Ytelsetype
-     * @param saksnummer          Saksnummer
+     * @param ytelseType   Ytelsetype
+     * @param saksnummer   Saksnummer
      */
     public void kopierGrunnlagOgOpprettKoblinger(List<KopierBeregningRequest> kopiRequests,
                                                  YtelseTyperKalkulusStøtterKontrakt ytelseType,
                                                  Saksnummer saksnummer) {
-            var eksisterendeKoblinger = finnEksisterendeKoblinger(kopiRequests, ytelseType);
-            var aktørId = validerKoblingerOgFinnAktørId(eksisterendeKoblinger, ytelseType, saksnummer);
-            var nyeKoblinger = opprettNyeKoblinger(kopiRequests, ytelseType, aktørId, saksnummer);
-            kopierBeregningsgrunnlag(kopiRequests, nyeKoblinger, eksisterendeKoblinger);
-            opprettKoblingrelasjoner(kopiRequests);
+        var eksisterendeKoblinger = finnEksisterendeKoblinger(kopiRequests, ytelseType);
+        var aktørId = validerKoblingerOgFinnAktørId(eksisterendeKoblinger, ytelseType, saksnummer);
+        var nyeKoblinger = opprettNyeKoblinger(kopiRequests, ytelseType, aktørId, saksnummer);
+        opprettKoblingrelasjoner(kopiRequests);
+        kopierBeregningsgrunnlag(kopiRequests, nyeKoblinger, eksisterendeKoblinger);
+        kopierAvklaringsbehov(kopiRequests, eksisterendeKoblinger, nyeKoblinger);
     }
 
 
@@ -112,6 +121,7 @@ public class KopierBeregningsgrunnlagTjeneste {
     }
 
     private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalKopieres(List<KoblingEntitet> eksisterendeKoblinger) {
+        // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
         var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), BeregningsgrunnlagTilstand.VURDERT_VILKÅR);
         List<Long> koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(mapTilId(eksisterendeKoblinger), vurdertVilkårGrunnlag);
         var foreslåttUtGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIdUtenVurdertVilkårGrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT_UT);
@@ -125,11 +135,29 @@ public class KopierBeregningsgrunnlagTjeneste {
         return grunnlagSomSkalKopieres;
     }
 
-    private List<Long> finnKoblingIdIkkeInkludertIListeMedGrunnlag(List<Long> listeMedId, List<BeregningsgrunnlagGrunnlagEntitet> vurdertVilkårGrunnlag) {
-        var idForGrunnlagMedVilkårvurdering = vurdertVilkårGrunnlag.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId);
+    private List<Long> finnKoblingIdIkkeInkludertIListeMedGrunnlag(List<Long> listeMedId, List<BeregningsgrunnlagGrunnlagEntitet> grunnlagsliste) {
+        var idForGrunnlagMedVilkårvurdering = grunnlagsliste.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId);
         return listeMedId.stream().filter(i -> idForGrunnlagMedVilkårvurdering.noneMatch(id -> id.equals(i)))
                 .collect(Collectors.toList());
     }
+
+    private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger) {
+        var eksisterendeKoblingIder = eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
+        var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKoblingIder);
+        avklaringsbehovSomMåKopieres.forEach(ab -> {
+            var nyKobling = finnNyKobling(ab.getKoblingId(), eksisterendeKoblinger, nyeKoblinger, kopiRequests);
+            avklaringsbehovTjeneste.kopierAvklaringsbehov(nyKobling, ab);
+        });
+    }
+
+    private Set<AvklaringsbehovEntitet> finnAvklaringsbehovSomSkalKopieres(Set<Long> eksisterendeKoblingIder) {
+        return avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(eksisterendeKoblingIder)
+                .stream()
+                .filter(ap -> ap.getStegFunnet().erFør(BeregningSteg.VURDER_REF_BERGRUNN))
+                .filter(ap -> ap.getStatus().equals(AvklaringsbehovStatus.UTFØRT))
+                .collect(Collectors.toSet());
+    }
+
 
     private List<Long> mapTilId(List<KoblingEntitet> eksisterendeKoblinger) {
         return eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toList());
@@ -154,14 +182,19 @@ public class KopierBeregningsgrunnlagTjeneste {
                                  List<KoblingEntitet> eksisterendeKoblinger,
                                  List<KoblingEntitet> nyeKoblinger,
                                  List<KopierBeregningRequest> kopiRequests) {
+        return finnNyKobling(eksisterendeKoblingId, eksisterendeKoblinger, nyeKoblinger, kopiRequests).getId();
+    }
+
+    private KoblingEntitet finnNyKobling(Long eksisterendeKoblingId,
+                                         List<KoblingEntitet> eksisterendeKoblinger,
+                                         List<KoblingEntitet> nyeKoblinger,
+                                         List<KopierBeregningRequest> kopiRequests) {
         var nyKoblingReferanse = finnNyKoblingReferanse(eksisterendeKoblingId, eksisterendeKoblinger, kopiRequests);
         return nyeKoblinger.stream()
                 .filter(k -> k.getKoblingReferanse().getReferanse().equals(nyKoblingReferanse))
-                .map(KoblingEntitet::getId)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Forventer å finne ny koblingid for forlengelse"));
+                .orElseThrow(() -> new IllegalStateException("Forventer å finne ny kobling for forlengelse"));
     }
-
 
 
 }

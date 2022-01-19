@@ -7,12 +7,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovKontrollTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
@@ -57,6 +56,17 @@ public class AvklaringsbehovTjeneste {
         } else {
             reaktiverAvklaringsbehov(eksisterendeAP.get());
         }
+    }
+
+    public void kopierAvklaringsbehov(KoblingEntitet nyKobling, AvklaringsbehovEntitet avklaringsbehov) {
+        Optional<AvklaringsbehovEntitet> eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling, avklaringsbehov.getDefinisjon());
+        AvklaringsbehovEntitet kopiert;
+        if (eksisterendeAP.isEmpty()) {
+            kopiert = avklaringsbehovKontrollTjeneste.opprettForKoblingLikEksisterende(nyKobling, avklaringsbehov);
+        } else {
+            kopiert = avklaringsbehovKontrollTjeneste.kopierDataFraAvklaringsbehov(eksisterendeAP.get(), avklaringsbehov);
+        }
+        avklaringsbehovRepository.lagre(kopiert);
     }
 
     public Optional<AvklaringsbehovEntitet> hentAvklaringsbehov(Long koblingId, AvklaringsbehovDefinisjon definisjon) {

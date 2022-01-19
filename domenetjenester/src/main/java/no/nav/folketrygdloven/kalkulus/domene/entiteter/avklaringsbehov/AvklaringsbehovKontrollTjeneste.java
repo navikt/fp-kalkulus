@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovStatus;
@@ -22,6 +21,20 @@ public class AvklaringsbehovKontrollTjeneste {
         apBuilder.medStatus(AvklaringsbehovStatus.OPPRETTET);
         return apBuilder.buildFor(koblingId);
     }
+
+    public AvklaringsbehovEntitet opprettForKoblingLikEksisterende(KoblingEntitet kobling, AvklaringsbehovEntitet kopierFra) {
+        no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder apBuilder = new no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet.Builder(kopierFra.getDefinisjon());
+        apBuilder.medStatus(kopierFra.getStatus());
+        apBuilder.medBegrunnelse(kopierFra.getBegrunnelse());
+        return apBuilder.buildFor(kobling);
+    }
+
+    public AvklaringsbehovEntitet kopierDataFraAvklaringsbehov(AvklaringsbehovEntitet kopierTil, AvklaringsbehovEntitet kopierFra) {
+        kopierTil.setStatus(kopierFra.getStatus());
+        kopierTil.setBegrunnelse(kopierFra.getBegrunnelse());
+        return kopierTil;
+    }
+
 
     public void gjennopprett(AvklaringsbehovEntitet avklaringsbehovEntitet) {
         avklaringsbehovEntitet.setStatus(AvklaringsbehovStatus.OPPRETTET);
