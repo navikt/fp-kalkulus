@@ -44,19 +44,21 @@ public class ForlengelseTjeneste {
     }
 
     public void lagrePerioderForForlengelse(BeregningSteg steg, List<BeregnForRequest> beregnForListe, List<KoblingEntitet> koblinger) {
-        var requesterMedForlengelse = beregnForListe.stream()
-                .filter(r -> r.getForlengelsePerioder() != null && !r.getForlengelsePerioder().isEmpty())
-                .toList();
-        var forlengelser = requesterMedForlengelse
-                .stream()
-                .map(r -> {
-                    var perioder = r.getForlengelsePerioder().stream().map(p -> new ForlengelseperiodeEntitet(IntervallEntitet.fraOgMedTilOgMed(p.getFom(), p.getTom()))).toList();
-                    return new ForlengelseperioderEntitet(finnKobligForRequest(koblinger, r).getId(), perioder);
-                }).toList();
-        if (steg.erEtter(BeregningSteg.VURDER_REF_BERGRUNN)) {
-            validerIngenEndringer(steg, koblinger, requesterMedForlengelse, forlengelser);
-        } else {
-            forlengelseRepository.lagre(forlengelser);
+        if (skalVurdereForlengelse) {
+            var requesterMedForlengelse = beregnForListe.stream()
+                    .filter(r -> r.getForlengelsePerioder() != null && !r.getForlengelsePerioder().isEmpty())
+                    .toList();
+            var forlengelser = requesterMedForlengelse
+                    .stream()
+                    .map(r -> {
+                        var perioder = r.getForlengelsePerioder().stream().map(p -> new ForlengelseperiodeEntitet(IntervallEntitet.fraOgMedTilOgMed(p.getFom(), p.getTom()))).toList();
+                        return new ForlengelseperioderEntitet(finnKobligForRequest(koblinger, r).getId(), perioder);
+                    }).toList();
+            if (steg.erEtter(BeregningSteg.VURDER_REF_BERGRUNN)) {
+                validerIngenEndringer(steg, koblinger, requesterMedForlengelse, forlengelser);
+            } else {
+                forlengelseRepository.lagre(forlengelser);
+            }
         }
     }
 
@@ -131,8 +133,10 @@ public class ForlengelseTjeneste {
     }
 
     public void deaktiverVedTilbakerulling(Set<Long> koblingIder, BeregningsgrunnlagTilstand tilstand) {
-        if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
-            forlengelseRepository.deaktiverAlle(koblingIder);
+        if (skalVurdereForlengelse) {
+            if (tilstand.erFør(BeregningsgrunnlagTilstand.VURDERT_REFUSJON)) {
+                forlengelseRepository.deaktiverAlle(koblingIder);
+            }
         }
     }
 }
