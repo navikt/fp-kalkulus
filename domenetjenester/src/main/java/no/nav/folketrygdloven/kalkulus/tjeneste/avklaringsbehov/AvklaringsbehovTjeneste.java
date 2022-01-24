@@ -98,11 +98,10 @@ public class AvklaringsbehovTjeneste {
     }
 
     /**
-     *
      * @param stegSomSkalBeregnes beregningsteget vi nå skal beregne
-     * @param koblingId koblingen som skal beregnes
-     * Alle avklaringsbehov som er funnet før steget vi nå skal til
-     * må være løst eller avbrutt før vi kan fortsette beregningen
+     * @param koblingId           koblingen som skal beregnes
+     *                            Alle avklaringsbehov som er funnet før steget vi nå skal til
+     *                            må være løst eller avbrutt før vi kan fortsette beregningen
      */
     public void validerIngenAvklaringsbehovFørStegÅpne(BeregningSteg stegSomSkalBeregnes, Long koblingId) {
         List<AvklaringsbehovEntitet> åpneAvklaringsbehovFørSteg = hentAlleAvklaringsbehovForKobling(koblingId).stream()
@@ -117,9 +116,7 @@ public class AvklaringsbehovTjeneste {
     }
 
     /**
-     *
-     * @param koblingId
-     * Skal sjekke at det kun finnes avbrutte avklaringsbehov (eller ingen avklaringsbehov) for en kobling
+     * @param koblingId Skal sjekke at det kun finnes avbrutte avklaringsbehov (eller ingen avklaringsbehov) for en kobling
      */
     public void validerIngenÅpneAvklaringsbehovPåKobling(Long koblingId) {
         List<AvklaringsbehovEntitet> alleAvklaringsbehovIkkeAvbrutt = hentAlleAvklaringsbehovForKobling(koblingId).stream()
@@ -151,7 +148,7 @@ public class AvklaringsbehovTjeneste {
             avklaringsbehovRepository.lagre(avklaringsbehovEntitet);
         } else if (AvklaringsbehovStatus.AVBRUTT.equals(eksisterendeAP.get().getStatus())) {
             reaktiverAvklaringsbehov(eksisterendeAP.get());
-        } else if (AvklaringsbehovStatus.OPPRETTET.equals(eksisterendeAP.get().getStatus())) {
+        } else if (AvklaringsbehovStatus.OPPRETTET.equals(eksisterendeAP.get().getStatus()) && !eksisterendeAP.get().getDefinisjon().erOverstyring()) {
             throw new TekniskException("FT-406871",
                     String.format("Det er utledet avklaringsbehov med definisjon %s som allerede finnes på koblingen med id %s.", utledetAP, kobling.getId()));
         }
@@ -177,11 +174,19 @@ public class AvklaringsbehovTjeneste {
 
     public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg) {
         List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
-        alleApPåKobling.forEach(ap -> {
-            if (!ap.getStegFunnet().erFør(steg)) {
-                avbrytAvklaringsbehov(ap.getKoblingId(), ap);
-            }
-        });
+        alleApPåKobling
+                .stream()
+                .filter(ab -> !ab.getDefinisjon().erOverstyring()).forEach(ap -> {
+                    if (!ap.getStegFunnet().erFør(steg)) {
+                        avbrytAvklaringsbehov(ap.getKoblingId(), ap);
+                    }
+                });
+        alleApPåKobling
+                .stream().filter(a -> a.getDefinisjon().erOverstyring()).forEach(ap -> {
+                    if (!ap.getStegFunnet().erFør(steg)) {
+                        reaktiverAvklaringsbehov(ap);
+                    }
+                });
     }
 
     public void avbrytAlleAvklaringsbehovEtter(Long koblingId, AvklaringsbehovDefinisjon avklaringsbehovDefinisjon) {
@@ -191,14 +196,23 @@ public class AvklaringsbehovTjeneste {
         if (gjeldendeAP.isEmpty()) {
             kastManglendeAvklaringsbehovFeil(koblingId, avklaringsbehovDefinisjon);
         }
-        alleApPåKobling.forEach(ap -> {
-            if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
-                avbrytAvklaringsbehov(koblingId, ap);
-            }
-        });
+        alleApPåKobling
+                .stream().filter(a -> !a.getDefinisjon().erOverstyring()).forEach(ap -> {
+                    if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
+                        avbrytAvklaringsbehov(koblingId, ap);
+                    }
+                });
+        alleApPåKobling
+                .stream().filter(a -> a.getDefinisjon().erOverstyring()).forEach(ap -> {
+                    if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
+                        reaktiverAvklaringsbehov(ap);
+                    }
+                });
     }
 
-    /** Avbryter alle avklaringsbehov på kobling
+    /**
+     * Avbryter alle avklaringsbehov på kobling
+     *
      * @param koblingId KoblingId
      */
     public void avbrytAlleAvklaringsbehov(Long koblingId) {
