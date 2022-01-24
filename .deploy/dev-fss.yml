@@ -80,3 +80,5 @@ spec:
       value: "true"
     - name: BEREGNE_DAGPENGER_FRA_PLEIEPENGER
       value: "true"
+    - name: FORDELING_UTEN_KRAV
+      value: "true"

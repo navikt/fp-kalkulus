@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -269,6 +270,12 @@ public class BeregningsgrunnlagDto {
 
         public BeregningsgrunnlagDto getBeregningsgrunnlag() {
             return kladd;
+        }
+
+        public Optional<BeregningsgrunnlagPeriodeDto.Builder> getPeriodeBuilderFor(Intervall periode) {
+            return kladd.getBeregningsgrunnlagPerioder().stream().filter(p -> p.getPeriode().equals(periode))
+                    .findFirst()
+                    .map(BeregningsgrunnlagPeriodeDto::oppdater);
         }
 
         public BeregningsgrunnlagDto build() {

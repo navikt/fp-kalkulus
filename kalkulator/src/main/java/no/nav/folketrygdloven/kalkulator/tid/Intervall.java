@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulator.tid;
 import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -48,6 +49,10 @@ public class Intervall implements Comparable<Intervall>, Serializable {
         boolean tomAfterOrEqual = this.getTomDato().isAfter(other.getFomDato()) || this.getTomDato().isEqual(other.getFomDato());
         boolean overlapper = fomBeforeOrEqual && tomAfterOrEqual;
         return overlapper;
+    }
+
+    public boolean erHelg() {
+        return fomDato.getDayOfWeek().equals(DayOfWeek.SATURDAY) && fomDato.plusDays(1).equals(tomDato);
     }
 
     public boolean inkluderer(LocalDate dato) {

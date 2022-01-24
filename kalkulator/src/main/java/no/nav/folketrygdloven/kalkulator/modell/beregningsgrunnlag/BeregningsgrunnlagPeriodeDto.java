@@ -187,6 +187,8 @@ public class BeregningsgrunnlagPeriodeDto {
             this.kladd = new BeregningsgrunnlagPeriodeDto(eksisterendeBeregningsgrunnlagPeriod);
         }
 
+
+
         public static Builder kopier(BeregningsgrunnlagPeriodeDto p) {
             return new Builder(p);
         }
