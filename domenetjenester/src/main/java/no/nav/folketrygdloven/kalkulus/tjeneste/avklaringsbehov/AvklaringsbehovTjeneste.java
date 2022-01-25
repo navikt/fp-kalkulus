@@ -58,6 +58,16 @@ public class AvklaringsbehovTjeneste {
         }
     }
 
+    public void gjennopprettOverstyringForSteg(Long koblingId, BeregningSteg steg) {
+        KoblingEntitet koblingEntitet = koblingRepository.hentKoblingMedId(koblingId).orElseThrow();
+        var eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(koblingEntitet);
+        var avbrutteOverstyringer = eksisterendeAP.stream()
+                .filter(ap -> ap.getDefinisjon().getStegFunnet().equals(steg) && ap.getDefinisjon().erOverstyring())
+                .filter(ap -> ap.getStatus().equals(AvklaringsbehovStatus.AVBRUTT))
+                .toList();
+        avbrutteOverstyringer.forEach(this::reaktiverAvklaringsbehov);
+    }
+
     public void kopierAvklaringsbehov(KoblingEntitet nyKobling, AvklaringsbehovEntitet avklaringsbehov) {
         Optional<AvklaringsbehovEntitet> eksisterendeAP = avklaringsbehovRepository.hentAvklaringsbehovForKobling(nyKobling, avklaringsbehov.getDefinisjon());
         AvklaringsbehovEntitet kopiert;
@@ -121,6 +131,7 @@ public class AvklaringsbehovTjeneste {
     public void validerIngenÅpneAvklaringsbehovPåKobling(Long koblingId) {
         List<AvklaringsbehovEntitet> alleAvklaringsbehovIkkeAvbrutt = hentAlleAvklaringsbehovForKobling(koblingId).stream()
                 .filter(ap -> !AvklaringsbehovStatus.AVBRUTT.equals(ap.getStatus()))
+                .filter(ap -> !ap.getDefinisjon().erOverstyring())
                 .collect(Collectors.toList());
         if (!alleAvklaringsbehovIkkeAvbrutt.isEmpty()) {
             throw new TekniskException("FT-406875",
@@ -175,16 +186,9 @@ public class AvklaringsbehovTjeneste {
     public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg) {
         List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
         alleApPåKobling
-                .stream()
-                .filter(ab -> !ab.getDefinisjon().erOverstyring()).forEach(ap -> {
+                .stream().forEach(ap -> {
                     if (!ap.getStegFunnet().erFør(steg)) {
                         avbrytAvklaringsbehov(ap.getKoblingId(), ap);
-                    }
-                });
-        alleApPåKobling
-                .stream().filter(a -> a.getDefinisjon().erOverstyring()).forEach(ap -> {
-                    if (!ap.getStegFunnet().erFør(steg)) {
-                        reaktiverAvklaringsbehov(ap);
                     }
                 });
     }
@@ -196,18 +200,11 @@ public class AvklaringsbehovTjeneste {
         if (gjeldendeAP.isEmpty()) {
             kastManglendeAvklaringsbehovFeil(koblingId, avklaringsbehovDefinisjon);
         }
-        alleApPåKobling
-                .stream().filter(a -> !a.getDefinisjon().erOverstyring()).forEach(ap -> {
-                    if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
-                        avbrytAvklaringsbehov(koblingId, ap);
-                    }
-                });
-        alleApPåKobling
-                .stream().filter(a -> a.getDefinisjon().erOverstyring()).forEach(ap -> {
-                    if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
-                        reaktiverAvklaringsbehov(ap);
-                    }
-                });
+        alleApPåKobling.forEach(ap -> {
+            if (avklaringsbehovErFunnetEtter(ap, gjeldendeAP.get())) {
+                avbrytAvklaringsbehov(koblingId, ap);
+            }
+        });
     }
 
     /**

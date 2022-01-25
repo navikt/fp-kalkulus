@@ -336,6 +336,7 @@ public class BeregningStegTjeneste {
                     .filter(ap -> !ap.erVentepunkt())
                     .collect(Collectors.toList());
             avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
+            avklaringsbehovTjeneste.gjennopprettOverstyringForSteg(input.getKoblingId(), MapTilstandTilSteg.mapTilSteg(input.getStegTilstand()));
     }
 
     private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {
