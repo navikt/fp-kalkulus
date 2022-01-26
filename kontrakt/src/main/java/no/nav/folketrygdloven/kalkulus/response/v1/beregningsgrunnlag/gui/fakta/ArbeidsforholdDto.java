@@ -5,6 +5,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import java.util.Objects;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -17,6 +19,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE, isGetterVisibility = NONE, creatorVisibility = NONE)
 public class ArbeidsforholdDto {
 
+    @Valid
+    @JsonProperty("andelsnr")
+    @Min(0)
+    @Max(1000)
+    private Long andelsnr;
 
     @Valid
     @JsonProperty(value = "arbeidsgiverIdent")
@@ -33,7 +40,8 @@ public class ArbeidsforholdDto {
         // Hibernate
     }
 
-    public ArbeidsforholdDto(String arbeidsgiverIdent, String arbeidsforholdId) {
+    public ArbeidsforholdDto(Long andelsnr, String arbeidsgiverIdent, String arbeidsforholdId) {
+        this.andelsnr = andelsnr;
         this.arbeidsgiverIdent = arbeidsgiverIdent;
         this.arbeidsforholdId = arbeidsforholdId;
     }
@@ -54,6 +62,10 @@ public class ArbeidsforholdDto {
         this.arbeidsgiverIdent = arbeidsgiverIdent;
     }
 
+
+    public Long getAndelsnr() {
+        return andelsnr;
+    }
 
     @Override
     public boolean equals(Object o) {
