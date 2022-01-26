@@ -11,6 +11,11 @@ public class AktivitetStatusMatcher {
                 mapAktivitetStatus(uttakArbeidType).equals(status);
     }
 
+    public static boolean matcherStatusUtenIkkeYrkesaktiv(AktivitetStatus status, UttakArbeidType uttakArbeidType) {
+        return !UttakArbeidType.IKKE_YRKESAKTIV.equals(uttakArbeidType) && mapAktivitetStatus(uttakArbeidType).equals(status);
+    }
+
+
     private static AktivitetStatus mapAktivitetStatus(UttakArbeidType uttakArbeidType) {
         if (UttakArbeidType.ORDINÆRT_ARBEID.equals(uttakArbeidType)) {
             return AktivitetStatus.ARBEIDSTAKER;
