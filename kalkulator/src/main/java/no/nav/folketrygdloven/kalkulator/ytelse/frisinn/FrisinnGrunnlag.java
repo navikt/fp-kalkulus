@@ -14,7 +14,9 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
 
     private final int DEKNINGSGRAD_80 = 80;
     private final int DEKNINGSGRAD_60 = 60;
+    private final int DEKNINGSGRAD_70 = 70;
     private final LocalDate FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD = LocalDate.of(2020,11,1);
+    private final LocalDate ENDRET_DEKNINGSGRAD_DATO_70_PROSENT = LocalDate.of(2022,1,1);
 
     private Integer grunnbeløpMilitærHarKravPå = 2;
     private final List<FrisinnPeriode> frisinnPerioder;
@@ -39,8 +41,10 @@ public class FrisinnGrunnlag extends UtbetalingsgradGrunnlag implements Ytelsesp
     public int getDekningsgradForDato(LocalDate dato) {
         if (dato.isBefore(FØRSTE_DAG_MED_REDUSERT_DEKNINGSGRAD)) {
             return DEKNINGSGRAD_80;
-        } else {
+        } else if (dato.isBefore(ENDRET_DEKNINGSGRAD_DATO_70_PROSENT)) {
             return DEKNINGSGRAD_60;
+        } else {
+            return DEKNINGSGRAD_70;
         }
     }
 
