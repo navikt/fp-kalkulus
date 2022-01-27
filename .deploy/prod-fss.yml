@@ -53,13 +53,18 @@ spec:
       value: http://abac-duplo.default/application/authorize
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
-    # Sikkerhet
-    - name: OIDC_STS_HOST_URL
-      value: https://security-token-service.nais.adeo.no
-    - name: OIDC_OPENAM_HOST_URL
+    #OpenID
+    - name: OPENIDCONNECT_ISSOHOST
       value: https://isso.adeo.no:443/isso/oauth2
-    - name: OIDC_OPENAM_CLIENT_ID
-      value: ftkalkulus-p
+    - name: OPENIDCONNECT_ISSOISSUER
+      value: https://isso.adeo.no:443/isso/oauth2
+    - name: OPENIDCONNECT_ISSOJWKS
+      value: https://isso.adeo.no:443/isso/oauth2/connect/jwk_uri
+    #OIDC
+    - name: OIDC_STS_ISSUER_URL
+      value: https://security-token-service.nais.adeo.no
+    - name: OIDC_STS_JWKS_URL
+      value: http://security-token-service.default/rest/v1/sts/jwks
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
