@@ -90,6 +90,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         andelBuilder.medInntektskategori(korrektAndel.getFastsattInntektskategori().getInntektskategori())
                 .medInntektskategoriAutomatiskFordeling(korrektAndel.getFastsattInntektskategori().getInntektskategoriAutomatiskFordeling())
                 .medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr())
+                .medFordeltPrÅr(korrektAndel.getFordeltPrÅr())
                 .medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
         if (korrektAndel.getPgiSnitt() != null) {
             andelBuilder.medPgi(korrektAndel.getPgiSnitt(),

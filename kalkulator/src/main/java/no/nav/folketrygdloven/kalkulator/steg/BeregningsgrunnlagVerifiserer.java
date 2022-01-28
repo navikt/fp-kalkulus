@@ -160,8 +160,11 @@ public final class BeregningsgrunnlagVerifiserer {
         Objects.requireNonNull(andel.getGjeldendeInntektskategori(), "Inntektskategori");
         if (!andel.getAktivitetStatus().equals(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE) && !andel.getArbeidsforholdType().equals(OpptjeningAktivitetType.ETTERLØNN_SLUTTPAKKE)) {
             Objects.requireNonNull(andel.getBruttoPrÅr(), "BruttoPrÅr");
-            if (andel.getBeregnetPrÅr() == null && erLagtTilIFordeling(andel)) {
+            if (andel.getKilde().equals(AndelKilde.PROSESS_OMFORDELING)) {
                 Objects.requireNonNull(andel.getFordeltPrÅr(), "fordeltPrÅr");
+            }
+            if (andel.getKilde().equals(AndelKilde.SAKSBEHANDLER_FORDELING)) {
+                Objects.requireNonNull(andel.getManueltFordeltPrÅr(), "manueltFordeltPrÅr");
             }
         }
         if (andel.getKilde().equals(AndelKilde.PROSESS_START)) {
