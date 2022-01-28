@@ -98,6 +98,11 @@ public class KoblingReferanse {
         return skjæringstidspunkt.getSkjæringstidspunktBeregning();
     }
 
+    public LocalDate getFørsteUttaksdato() {
+        // precondition
+        return skjæringstidspunkt.getFørsteUttaksdato();
+    }
+
     public LocalDate getSkjæringstidspunktOpptjening() {
         // precondition
         return skjæringstidspunkt.getSkjæringstidspunktOpptjening();

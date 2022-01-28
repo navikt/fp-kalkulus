@@ -12,15 +12,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
-import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
-
-import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
-
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
+import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
@@ -31,7 +29,6 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
-
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
@@ -46,7 +43,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 class MapFormidlingsdataBeregningsgrunnlagTest {
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100000);
     private static final LocalDate STP_DATO = LocalDate.of(2021, 6, 1);
-    private static final Skjæringstidspunkt STP = Skjæringstidspunkt.builder()
+    private static final Skjæringstidspunkt STP = Skjæringstidspunkt.builder().medFørsteUttaksdato(STP_DATO)
             .medSkjæringstidspunktOpptjening(STP_DATO).build();
     private List<UtbetalingsgradPrAktivitetDto> utbGrader = new ArrayList<>();
     private List<BeregningsgrunnlagPeriodeDto> bgPerioder = new ArrayList<>();

@@ -20,6 +20,7 @@ public class MapTilGUIInputFraKalkulator {
                                                                    KalkulatorInputDto input,
                                                                    Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, List<IntervallEntitet> forlengelseperioder) {
         var skjæringstidspunkt = Skjæringstidspunkt.builder()
+                .medFørsteUttaksdato(input.getSkjæringstidspunkt())
                 .medSkjæringstidspunktOpptjening(input.getSkjæringstidspunkt()).build();
         var ref = KoblingReferanse.fra(
                 FagsakYtelseType.fraKode(kobling.getYtelseTyperKalkulusStøtter().getKode()),

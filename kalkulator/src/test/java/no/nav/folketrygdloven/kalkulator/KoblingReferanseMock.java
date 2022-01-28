@@ -22,6 +22,7 @@ public class KoblingReferanseMock extends KoblingReferanse {
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(skjæringstidspunktBeregning)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunktOpptjening)
+                .medFørsteUttaksdato(skjæringstidspunktOpptjening.plusDays(1))
                 .build();
     }
 
@@ -31,6 +32,7 @@ public class KoblingReferanseMock extends KoblingReferanse {
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
                 .medSkjæringstidspunktBeregning(skjæringstidspunkt)
                 .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
+                .medFørsteUttaksdato(skjæringstidspunkt.plusDays(1))
                 .build();
     }
 
@@ -39,6 +41,7 @@ public class KoblingReferanseMock extends KoblingReferanse {
         this.skjæringstidspunkt = Skjæringstidspunkt.builder()
             .medSkjæringstidspunktBeregning(skjæringstidspunkt)
             .medSkjæringstidspunktOpptjening(skjæringstidspunkt)
+            .medFørsteUttaksdato(skjæringstidspunkt.plusDays(1))
             .build();
     }
 
@@ -65,6 +68,11 @@ public class KoblingReferanseMock extends KoblingReferanse {
     @Override
     public AktørId getAktørId() {
         return AKTØR_ID;
+    }
+
+    @Override
+    public LocalDate getFørsteUttaksdato() {
+        return skjæringstidspunkt.getFørsteUttaksdato();
     }
 
     @Override
