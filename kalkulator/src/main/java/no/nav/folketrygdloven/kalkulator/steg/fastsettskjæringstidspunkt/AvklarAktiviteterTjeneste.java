@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
@@ -78,9 +79,16 @@ public class AvklarAktiviteterTjeneste {
         if (nyligsteVedtak.isEmpty()) {
             return Optional.empty();
         }
-
-        Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), ytelseUnderBehandling);
-        return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+        if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyligsteVedtak.get(),
+                    skjæringstidspunkt,
+                    Set.of(ytelseTypeForMeldekort),
+                    ytelseUnderBehandling);
+            return meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).map(f -> f.multiply(BigDecimal.valueOf(200)));
+        } else {
+            Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), ytelseUnderBehandling);
+            return Optional.of(nyligsteMeldekort.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent).map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+        }
     }
 
 }

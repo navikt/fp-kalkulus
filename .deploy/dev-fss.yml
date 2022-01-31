@@ -77,3 +77,7 @@ spec:
       value: "true"
     - name: FORDELING_UTEN_KRAV
       value: "true"
+    - name: MELDEKORT_DELVIS_PERIODE
+      value: "true"
+
+

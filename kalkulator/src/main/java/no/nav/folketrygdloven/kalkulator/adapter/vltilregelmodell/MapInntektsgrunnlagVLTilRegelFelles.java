@@ -4,6 +4,7 @@ import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpeng
 import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
@@ -179,20 +179,31 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         inntektsgrunnlag.leggTilPeriodeinntekt(aap);
     }
 
-    private Periodeinntekt mapYtelseFraArenavedtak(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType, YtelseDto nyesteVedtakForDagsats, FagsakYtelseType arbeidsavklaringspenger) {
-        Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats,
-                skjæringstidspunkt,
-                Set.of(arbeidsavklaringspenger), fagsakYtelseType);
-        BigDecimal dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
-                .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getDagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
-        BigDecimal utbetalingsgradProsent = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
-                .map(Stillingsprosent::getVerdi).orElse(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG);
+    private Periodeinntekt mapYtelseFraArenavedtak(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, FagsakYtelseType fagsakYtelseType, YtelseDto nyesteVedtakForDagsats, FagsakYtelseType arenaYtelse) {
+        BigDecimal dagsats;
+        BigDecimal utbetalingsfaktor;
 
+        if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyesteVedtakForDagsats, skjæringstidspunkt, Set.of(arenaYtelse), fagsakYtelseType);
+            utbetalingsfaktor = meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).orElse(BigDecimal.ONE);
+            dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
+                    .orElse(meldekort.map(MeldekortUtils.Meldekort::dagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        } else {
+            Optional<YtelseAnvistDto> sisteUtbetalingFørStp = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtakForDagsats,
+                    skjæringstidspunkt,
+                    Set.of(arenaYtelse), fagsakYtelseType);
+            utbetalingsfaktor = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
+                    .map(Stillingsprosent::getVerdi)
+                    .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, RoundingMode.HALF_UP))
+                    .orElse(BigDecimal.ONE);
+            dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
+                    .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+        }
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP)
                 .medInntekt(dagsats)
                 .medMåned(skjæringstidspunkt)
-                .medUtbetalingsgrad(utbetalingsgradProsent)
+                .medUtbetalingsfaktor(utbetalingsfaktor)
                 .build();
     }
 
@@ -229,7 +240,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 .medInntekt(dagsats)
                 .medMåned(skjæringstidspunkt)
                 // Antar alltid full utbetaling ved overgang fra dagpenger til sykepenger
-                .medUtbetalingsgrad(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG)
+                .medUtbetalingsfaktor(BigDecimal.ONE)
                 .build();
     }
 

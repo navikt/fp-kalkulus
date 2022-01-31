@@ -429,8 +429,8 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         assertThat(dpMånedsInntekter).hasSize(1);
         BigDecimal dagsats = BigDecimal.valueOf(MELDEKORTSATS1);
         assertThat(dpMånedsInntekter.get(0).getInntekt()).isEqualByComparingTo(dagsats);
-        assertThat(dpMånedsInntekter.get(0).getUtbetalingsgrad()).hasValueSatisfying(utbg ->
-            assertThat(utbg).isEqualByComparingTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+        assertThat(dpMånedsInntekter.get(0).getUtbetalingsfaktor()).hasValueSatisfying(utbg ->
+            assertThat(utbg).isEqualByComparingTo(BigDecimal.ONE));
     }
 
     @Test
@@ -452,8 +452,8 @@ public class MapBeregningsgrunnlagFraVLTilRegelTest {
         assertThat(dpMånedsInntekter).hasSize(1);
         BigDecimal dagsats = BigDecimal.valueOf(MELDEKORTSATS1);
         assertThat(dpMånedsInntekter.get(0).getInntekt()).isEqualByComparingTo(dagsats);
-        assertThat(dpMånedsInntekter.get(0).getUtbetalingsgrad()).hasValueSatisfying(utbg ->
-            assertThat(utbg).isEqualByComparingTo(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG));
+        assertThat(dpMånedsInntekter.get(0).getUtbetalingsfaktor()).hasValueSatisfying(utbg ->
+            assertThat(utbg).isEqualByComparingTo(BigDecimal.ONE));
     }
 
     @Test

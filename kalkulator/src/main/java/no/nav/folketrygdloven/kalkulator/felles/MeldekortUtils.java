@@ -2,6 +2,7 @@ package no.nav.folketrygdloven.kalkulator.felles;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -14,11 +15,16 @@ import no.nav.folketrygdloven.kalkulator.konfig.KonfigTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Stillingsprosent;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.Virkedager;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 public class MeldekortUtils {
 
     public static final BigDecimal MAX_UTBETALING_PROSENT_AAP_DAG = BigDecimal.valueOf(200);
+    public static final long ANDEL_PR_DAG_AV_200 = 20L;
 
     private MeldekortUtils() {}
 
@@ -84,6 +90,48 @@ public class MeldekortUtils {
                 .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
     }
 
+
+    public static List<Meldekort> finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
+        return ytelseFilter.getFiltrertYtelser().stream()
+                .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
+                .flatMap(ytelse ->  {
+                    var vedtaksperiode = ytelse.getPeriode();
+                    return ytelse.getYtelseAnvist().stream().flatMap(ya -> mapTilMeldekort(vedtaksperiode, ya).stream());
+                }).collect(Collectors.toList());
+    }
+
+    private static Optional<Meldekort> mapTilMeldekort(Intervall vedtaksperiode, YtelseAnvistDto ya) {
+        var fom = vedtaksperiode.getFomDato().isAfter(ya.getAnvistFOM()) ? vedtaksperiode.getFomDato() : ya.getAnvistFOM();
+        var tom = vedtaksperiode.getTomDato().isBefore(ya.getAnvistTOM()) ? vedtaksperiode.getTomDato() : ya.getAnvistTOM();
+        if (fom.isAfter(tom)) {
+            return Optional.empty();
+        }
+        var gyldigPeriode = Intervall.fraOgMedTilOgMed(fom, tom);
+        var antallVirkedager = Virkedager.beregnAntallVirkedagerEllerKunHelg(fom, tom);
+        var utbetalingsgrad = ya.getUtbetalingsgradProsent();
+        var utbetalingsfaktor = utbetalingsgrad.map(Stillingsprosent::getVerdi).map(v -> v.divide(BigDecimal.valueOf(antallVirkedager * ANDEL_PR_DAG_AV_200), RoundingMode.HALF_UP))
+                .orElse(BigDecimal.ZERO);
+        return Optional.of(new Meldekort(gyldigPeriode, ya.getDagsats().orElse(Beløp.ZERO), utbetalingsfaktor));
+    }
+
+
+    public static Optional<Meldekort> finnSisteHeleMeldekortFørStpMedJustertPeriode(YtelseFilterDto ytelseFilter,
+                                                                              YtelseDto sisteVedtak,
+                                                                              LocalDate skjæringstidspunkt,
+                                                                              Set<FagsakYtelseType> ytelseTyper,
+                                                                              FagsakYtelseType ytelseType) {
+
+
+        final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
+
+        var alleMeldekort = finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(ytelseFilter, ytelseTyper);
+        var sisteMeldekort = alleMeldekort.stream()
+                .filter(meldekort -> sisteVedtakFom.minus(KonfigTjeneste.forYtelse(ytelseType).getMeldekortPeriode()).isBefore(meldekort.periode().getTomDato()))
+                .filter(meldekort -> skjæringstidspunkt.isAfter(meldekort.periode().getTomDato()))
+                .max(Comparator.comparing(m -> m.periode().getTomDato()));
+        return sisteMeldekort;
+    }
+
     private static List<YtelseAnvistDto> alleMeldekortMedPeriode(LocalDate anvistFOM, LocalDate anvistTOM, List<YtelseAnvistDto> alleMeldekort) {
         return alleMeldekort.stream()
             .filter(meldekort -> Objects.equals(meldekort.getAnvistFOM(), anvistFOM))
@@ -98,4 +146,8 @@ public class MeldekortUtils {
     private static boolean matcherMeldekortFraSisteVedtak(YtelseAnvistDto meldekort, YtelseDto sisteVedtak) {
         return sisteVedtak.getYtelseAnvist().stream().anyMatch(ya -> Objects.equals(ya, meldekort));
     }
+
+
+    public record Meldekort(Intervall periode, Beløp dagsats, BigDecimal utbetalingsfaktor) {}
+
 }

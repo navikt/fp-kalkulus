@@ -45,21 +45,33 @@ class FinnInntektFraYtelse {
             return Optional.empty();
         }
 
-        Optional<YtelseAnvistDto> nyesteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(),
-                skjæringstidspunkt,
-                Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
-                ref.getFagsakYtelseType());
-
-        // Hvis søker kun har status DP / AAP tar ikke beregning hensyn til utbetalingsfaktor
-        int antallUnikeStatuserIPeriode = andel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getAktivitetStatus)
-                .collect(Collectors.toSet())
-                .size();
-
-        if (antallUnikeStatuserIPeriode > 1) {
-            return Optional.of(finnÅrsbeløpMedHensynTilUtbetalingsfaktor(nyesteVedtak.get(), nyesteMeldekort));
+        if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyesteVedtak.get(),
+                    skjæringstidspunkt,
+                    Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
+                    ref.getFagsakYtelseType());
+            var utbetalingsfaktor = meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).orElse(BigDecimal.ONE);
+            var dagsats = nyesteVedtak.get().getVedtaksDagsats().map(Beløp::getVerdi)
+                    .orElse(meldekort.map(MeldekortUtils.Meldekort::dagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));
+            return Optional.of(dagsats.multiply(utbetalingsfaktor).multiply(BigDecimal.valueOf(260)));
         } else {
-            return Optional.of(finnÅrsbeløp(nyesteVedtak.get(), nyesteMeldekort));
+
+            Optional<YtelseAnvistDto> nyesteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyesteVedtak.get(),
+                    skjæringstidspunkt,
+                    Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
+                    ref.getFagsakYtelseType());
+
+            // Hvis søker kun har status DP / AAP tar ikke beregning hensyn til utbetalingsfaktor
+            int antallUnikeStatuserIPeriode = andel.getBeregningsgrunnlagPeriode().getBeregningsgrunnlagPrStatusOgAndelList().stream()
+                    .map(BeregningsgrunnlagPrStatusOgAndelDto::getAktivitetStatus)
+                    .collect(Collectors.toSet())
+                    .size();
+
+            if (antallUnikeStatuserIPeriode > 1) {
+                return Optional.of(finnÅrsbeløpMedHensynTilUtbetalingsfaktor(nyesteVedtak.get(), nyesteMeldekort));
+            } else {
+                return Optional.of(finnÅrsbeløp(nyesteVedtak.get(), nyesteMeldekort));
+            }
         }
 
     }
