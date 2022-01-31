@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.input.PleiepengerSyktBarnGrunnlag;
@@ -58,7 +59,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
         var periode2 = omfordelt.getBeregningsgrunnlagPerioder().get(0);
         var fraStartAndel2 = periode2.getBeregningsgrunnlagPrStatusOgAndelList().get(0);
         assertThat(fraStartAndel2.getFordeltPrÅr()).isNull();
-        assertThat(fraStartAndel2.getBruttoPrÅr()).isEqualTo(bgFraStart);
+        assertThat(fraStartAndel2.getBruttoPrÅr()).isCloseTo(bgFraStart, Offset.offset(BigDecimal.valueOf(0.00000001)));
 
 
         var periode3 = omfordelt.getBeregningsgrunnlagPerioder().get(2);
@@ -67,7 +68,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
         assertThat(fraStartAndelPeriode3.getFordeltPrÅr()).isEqualTo(BigDecimal.ZERO);
         var tilkommetAndel = periode3.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertThat(tilkommetAndel.getArbeidsgiver().get()).isEqualTo(TILKOMMET_ARBEIDSGIVER);
-        assertThat(tilkommetAndel.getFordeltPrÅr()).isEqualTo(bgFraStart);
+        assertThat(tilkommetAndel.getFordeltPrÅr()).isCloseTo(bgFraStart, Offset.offset(BigDecimal.valueOf(0.00000001)));
     }
 
     @Test
@@ -94,7 +95,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
         assertThat(fraStartAndelPeriode2.getFordeltPrÅr()).isEqualTo(BigDecimal.ZERO);
         var tilkommetAndel = periode2.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertThat(tilkommetAndel.getArbeidsgiver().get()).isEqualTo(TILKOMMET_ARBEIDSGIVER);
-        assertThat(tilkommetAndel.getFordeltPrÅr()).isEqualTo(bgFraStart);
+        assertThat(tilkommetAndel.getFordeltPrÅr()).isCloseTo(bgFraStart, Offset.offset(BigDecimal.valueOf(0.00000001)));
     }
 
     @Test
@@ -122,10 +123,10 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
         assertThat(fraStartAndelPeriode2.getFordeltPrÅr()).isEqualTo(BigDecimal.ZERO);
         var tilkommetAndel = periode2.getBeregningsgrunnlagPrStatusOgAndelList().get(1);
         assertThat(tilkommetAndel.getArbeidsgiver().get()).isEqualTo(TILKOMMET_ARBEIDSGIVER);
-        assertThat(tilkommetAndel.getFordeltPrÅr()).isEqualTo(BigDecimal.valueOf(200_000));
+        assertThat(tilkommetAndel.getFordeltPrÅr()).isCloseTo(BigDecimal.valueOf(200_000), Offset.offset(BigDecimal.valueOf(0.00000001)));
         var tilkommetAndel2 = periode2.getBeregningsgrunnlagPrStatusOgAndelList().get(2);
         assertThat(tilkommetAndel2.getArbeidsgiver().get()).isEqualTo(TILKOMMET_ARBEIDSGIVER2);
-        assertThat(tilkommetAndel2.getFordeltPrÅr()).isEqualTo(BigDecimal.valueOf(200_000));
+        assertThat(tilkommetAndel2.getFordeltPrÅr()).isCloseTo(BigDecimal.valueOf(200_000), Offset.offset(BigDecimal.valueOf(0.00000001)));
     }
 
     @Test
