@@ -66,7 +66,7 @@ class AnvistAndelMapper {
         BigDecimal utbetaling = mapGrunnlagsbeløpTilÅrsbeløp(f).divide(BigDecimal.valueOf(260), RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(antallVirkedager))
                 .multiply(utbetalingsgradProsent)
-                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
         return new AnvistAndel(MapFraKalkulator.mapArbeidsgiver(f.getArbeidsgiver()),
                 utbetaling,
                 f.getErRefusjon() != null && f.getErRefusjon() ? new Stillingsprosent(100) : Stillingsprosent.ZERO,

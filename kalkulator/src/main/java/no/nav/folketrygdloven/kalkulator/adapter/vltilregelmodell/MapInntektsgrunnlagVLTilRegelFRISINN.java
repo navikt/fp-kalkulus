@@ -21,6 +21,7 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
+import no.nav.folketrygdloven.kalkulator.felles.MeldekortUtils;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
@@ -187,7 +188,7 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                 .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP: Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
                 .medUtbetalingsfaktor(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
-                        .map(s -> s.divide(BigDecimal.valueOf(200), RoundingMode.HALF_UP)).orElseThrow())
+                        .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow())
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
                 .build();
     }

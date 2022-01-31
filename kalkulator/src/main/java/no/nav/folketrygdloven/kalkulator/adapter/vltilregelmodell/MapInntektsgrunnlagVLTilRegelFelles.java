@@ -194,7 +194,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                     Set.of(arenaYtelse), fagsakYtelseType);
             utbetalingsfaktor = sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getUtbetalingsgradProsent)
                     .map(Stillingsprosent::getVerdi)
-                    .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, RoundingMode.HALF_UP))
+                    .map(v -> v.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP))
                     .orElse(BigDecimal.ONE);
             dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
                     .orElse(sisteUtbetalingFørStp.flatMap(YtelseAnvistDto::getBeløp).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));

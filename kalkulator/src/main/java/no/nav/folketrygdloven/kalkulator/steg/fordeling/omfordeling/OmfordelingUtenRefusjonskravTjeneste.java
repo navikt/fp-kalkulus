@@ -92,7 +92,7 @@ public class OmfordelingUtenRefusjonskravTjeneste {
         if (antallTilkommetMedUtbetaling > 0 && tilkommetMedUtbetaling.stream().allMatch(a -> a.utbetalingsgrad.compareTo(BigDecimal.valueOf(100)) == 0)) {
             var tilgjengeligForPerInntektskategoriOgAndel = bortfaltInntekt.stream()
                     .collect(Collectors.toMap(a -> a.inntektskategori,
-                            a -> a.beløp.getVerdi().divide(BigDecimal.valueOf(antallTilkommetMedUtbetaling), RoundingMode.HALF_EVEN),
+                            a -> a.beløp.getVerdi().divide(BigDecimal.valueOf(antallTilkommetMedUtbetaling), 10, RoundingMode.HALF_EVEN),
                             BigDecimal::add));
             tilkommet.stream()
                     .flatMap(a -> fordelLiktPerInntektskategori(tilgjengeligForPerInntektskategoriOgAndel, a))

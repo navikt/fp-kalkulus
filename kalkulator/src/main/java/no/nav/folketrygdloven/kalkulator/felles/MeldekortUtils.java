@@ -109,7 +109,7 @@ public class MeldekortUtils {
         var gyldigPeriode = Intervall.fraOgMedTilOgMed(fom, tom);
         var antallVirkedager = Virkedager.beregnAntallVirkedagerEllerKunHelg(fom, tom);
         var utbetalingsgrad = ya.getUtbetalingsgradProsent();
-        var utbetalingsfaktor = utbetalingsgrad.map(Stillingsprosent::getVerdi).map(v -> v.divide(BigDecimal.valueOf(antallVirkedager * ANDEL_PR_DAG_AV_200), RoundingMode.HALF_UP))
+        var utbetalingsfaktor = utbetalingsgrad.map(Stillingsprosent::getVerdi).map(v -> v.divide(BigDecimal.valueOf(antallVirkedager * ANDEL_PR_DAG_AV_200), 10, RoundingMode.HALF_UP))
                 .orElse(BigDecimal.ZERO);
         return Optional.of(new Meldekort(gyldigPeriode, ya.getDagsats().orElse(Beløp.ZERO), utbetalingsfaktor));
     }
