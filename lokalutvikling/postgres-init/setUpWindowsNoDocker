@@ -2,12 +2,12 @@ Lokalt databaseoppsett for windows uten docker
 1) Legg til postgres (C:\Program Files\PostgreSQL\12\bin) i pathvariabelen i miljøvariabler
 2) I eit kommandovindu med administratortilganger kjør følgende kommandoer:
 	initdb -D \kalkulus\data
-	pg_ctl -D \kalkulus\data -o "-p 5433" -l \kalkulus\logs start
-	createuser --port=5433 -s postgres
+	pg_ctl -D \kalkulus\data -o "-p 5432" -l \kalkulus\logs start
+	createuser --port=5432 -s postgres
 3) Åpne appen SQL SHELL (pqsl) ved å søke etter den i windows søkefeltet. Gjør følgende valg
 	Server [localhost]: (trykk enter)
 	Database [postgres]: (trykk enter)
-	Port [5432]: 5433
+	Port [5432]: 5432
 	Username [postgres]: (trykk enter)
 Du får sannsynligvis beskjeden
 WARNING: Console code page (850) differs from Windows code page (1252)
