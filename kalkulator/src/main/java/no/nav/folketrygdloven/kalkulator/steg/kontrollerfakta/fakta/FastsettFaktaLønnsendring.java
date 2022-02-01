@@ -26,7 +26,7 @@ class FastsettFaktaLønnsendring {
     static List<FaktaArbeidsforholdDto> fastsettFaktaForLønnsendring(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                      InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                      Collection<InntektsmeldingDto> inntektsmeldinger) {
-        var aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
+        var aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
         var andelerMedLønnsendring = finnAndelerMedLønnsendring(aktiviteterMedLønnsendring, beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0));
         return andelerMedLønnsendring.stream().map(a ->
                 FaktaArbeidsforholdDto.builder(a.getArbeidsgiver().orElseThrow(),

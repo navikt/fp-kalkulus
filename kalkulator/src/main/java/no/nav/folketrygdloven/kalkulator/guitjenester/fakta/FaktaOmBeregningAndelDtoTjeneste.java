@@ -120,7 +120,7 @@ public class FaktaOmBeregningAndelDtoTjeneste {
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
             aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringEtterFørsteDagISisteMåned(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         } else {
-            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
+            aktiviteterMedLønnsendring = LønnsendringTjeneste.finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(beregningsgrunnlag, inntektArbeidYtelseGrunnlag, inntektsmeldinger);
         }
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();

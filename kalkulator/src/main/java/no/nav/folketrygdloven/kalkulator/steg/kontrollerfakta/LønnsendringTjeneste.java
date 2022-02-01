@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +32,7 @@ public class LønnsendringTjeneste {
     }
 
     public static boolean brukerHarHattLønnsendringIHeleBeregningsperiodenOgManglerInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag, Collection<InntektsmeldingDto> inntektsmeldinger) {
-        List<YrkesaktivitetDto> aktiviteter = finnAktiviteterMedLønnsendringIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
+        List<YrkesaktivitetDto> aktiviteter = finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
         return !aktiviteter.isEmpty();
 
     }
@@ -50,7 +49,7 @@ public class LønnsendringTjeneste {
                                                                                                   Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         // Vi teller ikkje med første dag, siden man då har ein heil måned med inntekt å beregne fra
-        Intervall sisteMåned = Intervall.fraOgMedTilOgMed(stpBeregning.minusMonths(1).withDayOfMonth(2), stpBeregning.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()));
+        Intervall sisteMåned = Intervall.fraOgMedTilOgMed(stpBeregning.minusMonths(1).withDayOfMonth(2), stpBeregning);
         return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, sisteMåned, inntektsmeldinger);
     }
 
@@ -61,17 +60,17 @@ public class LønnsendringTjeneste {
      * @param iayGrunnlag        InntektArbeidYtelseGrunnlag
      * @return Liste med aktiviteter som har lønnsendring
      */
-    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag,
-                                                                                                InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                                Collection<InntektsmeldingDto> inntektsmeldinger) {
+    public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmeldingIHeleBeregningsperioden(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                                                                   InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                                                                                                   Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate stpBeregning = beregningsgrunnlag.getSkjæringstidspunkt();
         Intervall beregningsperiode = new BeregningsperiodeTjeneste().fastsettBeregningsperiodeForATFLAndeler(stpBeregning);
-        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, beregningsperiode, inntektsmeldinger);
+        return finnAktiviteterMedLønnsendringUtenInntektsmelding(beregningsgrunnlag, iayGrunnlag, Intervall.fraOgMedTilOgMed(beregningsperiode.getFomDato(), stpBeregning), inntektsmeldinger);
     }
 
     public static List<YrkesaktivitetDto> finnAktiviteterMedLønnsendringUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag,
                                                                                             InntektArbeidYtelseGrunnlagDto iayGrunnlag,
-                                                                                            Intervall beregningsperiode,
+                                                                                            Intervall periode,
                                                                                             Collection<InntektsmeldingDto> inntektsmeldinger) {
         LocalDate skjæringstidspunkt = beregningsgrunnlag.getSkjæringstidspunkt();
 
@@ -84,7 +83,7 @@ public class LønnsendringTjeneste {
         }
 
         var filter = new YrkesaktivitetFilterDto(iayGrunnlag.getArbeidsforholdInformasjon(), aktørArbeid).før(skjæringstidspunkt);
-        Collection<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIPerioden(filter, beregningsperiode, skjæringstidspunkt);
+        Collection<YrkesaktivitetDto> aktiviteterMedLønnsendring = finnAktiviteterMedLønnsendringIPerioden(filter, periode, skjæringstidspunkt);
         if (aktiviteterMedLønnsendring.isEmpty()) {
             return Collections.emptyList();
         }
