@@ -59,11 +59,10 @@ public class FordelBeregningsgrunnlagTilfelleInput {
     }
 
     public static FordelBeregningsgrunnlagTilfelleInput fraBeregningsgrunnlagRestInput(BeregningsgrunnlagGUIInput input) {
-        BeregningsgrunnlagDto bg = input.getFordelBeregningsgrunnlag().orElseThrow(() -> new IllegalStateException("Skal ikke kalle fordel-logikk uten å ha utført steg"));
         AktivitetGradering aktivitetGradering = input.getYtelsespesifiktGrunnlag() instanceof ForeldrepengerGrunnlag ?
                 ((ForeldrepengerGrunnlag) input.getYtelsespesifiktGrunnlag()).getAktivitetGradering() : AktivitetGradering.INGEN_GRADERING;
         Collection<InntektsmeldingDto> inntektsmeldinger = input.getInntektsmeldinger();
-        return new FordelBeregningsgrunnlagTilfelleInput(bg, aktivitetGradering, inntektsmeldinger, input.getForlengelseperioder());
+        return new FordelBeregningsgrunnlagTilfelleInput(input.getBeregningsgrunnlag(), aktivitetGradering, inntektsmeldinger, input.getForlengelseperioder());
     }
 
     private void verifyStateForBuild() {

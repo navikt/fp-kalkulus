@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
@@ -87,8 +86,7 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                     var avklaringsbehov = avklaringsbehovPrKobling.getOrDefault(koblingId, Collections.emptyList());
                     var forlengelseperioder = forlengelsePerioderPrKobling.getOrDefault(koblingId, Collections.emptyList());
                     BeregningsgrunnlagGUIInput input = lagInput(kobling, kalkulatorInput, Optional.of(grunnlagEntitet), forlengelseperioder);
-                    return leggTilGrunnlagFraFordel(input, grunnlagFraFordel)
-                            .medBeregningsgrunnlagGrunnlag(mapGrunnlag(grunnlagEntitet))
+                    return input.medBeregningsgrunnlagGrunnlag(mapGrunnlag(grunnlagEntitet))
                             .medBeregningsgrunnlagGrunnlagFraForrigeBehandling(mapOriginaleGrunnlag(originaleGrunnlagMap, koblingId))
                             .medAvklaringsbehov(mapAvklaringsbehov(avklaringsbehov));
                 }).collect(Collectors.toMap(g -> g.getKoblingReferanse().getKoblingId(), Function.identity()));
@@ -107,15 +105,6 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 beregningsgrunnlagGrunnlagEntitet,
                 forlengelseperioder
         );
-    }
-
-    private static BeregningsgrunnlagGUIInput leggTilGrunnlagFraFordel(BeregningsgrunnlagGUIInput input,
-                                                                       Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel) {
-        Long koblingId = input.getKoblingReferanse().getKoblingId();
-        if (grunnlagFraFordel.containsKey(koblingId)) {
-            return input.medBeregningsgrunnlagGrunnlagFraFordel(mapGrunnlag(grunnlagFraFordel.get(koblingId)));
-        }
-        return input;
     }
 
     /**

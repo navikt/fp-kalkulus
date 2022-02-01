@@ -95,13 +95,6 @@ public class BeregningsgrunnlagGUIInput {
         return avklaringsbehov == null ? Collections.emptyList() : avklaringsbehov;
     }
 
-    public Optional<BeregningsgrunnlagDto> getFordelBeregningsgrunnlag() {
-        if (fordelBeregningsgrunnlagGrunnlag == null) {
-            return Optional.empty();
-        }
-        return fordelBeregningsgrunnlagGrunnlag.getBeregningsgrunnlag();
-    }
-
     public KoblingReferanse getKoblingReferanse() {
         return koblingReferanse;
     }
@@ -214,15 +207,6 @@ public class BeregningsgrunnlagGUIInput {
     public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraForrigeBehandling(List<BeregningsgrunnlagGrunnlagDto> grunnlag) {
         var newInput = new BeregningsgrunnlagGUIInput(this);
         newInput.beregningsgrunnlagGrunnlagFraForrigeBehandling = grunnlag;
-        return newInput;
-    }
-
-    public BeregningsgrunnlagGUIInput medBeregningsgrunnlagGrunnlagFraFordel(BeregningsgrunnlagGrunnlagDto grunnlag) {
-        if (!grunnlag.getBeregningsgrunnlagTilstand().equals(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)) {
-            throw new IllegalArgumentException("Grunnlaget er ikke fra fordel.");
-        }
-        var newInput = new BeregningsgrunnlagGUIInput(this);
-        newInput.fordelBeregningsgrunnlagGrunnlag = grunnlag;
         return newInput;
     }
 

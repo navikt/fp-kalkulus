@@ -156,6 +156,10 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         return grunnlagPrÅr.getBruttoPrÅr();
     }
 
+    public BigDecimal getBruttoUtenManueltFordelt() {
+        return grunnlagPrÅr.getBruttoUtenManueltFordelt();
+    }
+
     public BigDecimal getOverstyrtPrÅr() {
         return grunnlagPrÅr.getOverstyrtPrÅr();
     }

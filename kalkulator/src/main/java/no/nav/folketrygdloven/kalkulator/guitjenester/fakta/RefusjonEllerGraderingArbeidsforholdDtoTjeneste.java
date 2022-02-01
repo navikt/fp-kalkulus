@@ -54,11 +54,7 @@ public class RefusjonEllerGraderingArbeidsforholdDtoTjeneste {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> tilfelleMap = new HashMap<>();
         beregningsgrunnlag.getBeregningsgrunnlagPerioder()
                 .forEach(periode -> {
-                    BeregningsgrunnlagPeriodeDto periodeFraSteg = fordelingInput.getBeregningsgrunnlag().getBeregningsgrunnlagPerioder().stream()
-                            .filter(p -> p.getPeriode().getFomDato().equals(periode.getBeregningsgrunnlagPeriodeFom()))
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalStateException("Forventet å finne matchende periode"));
-                    var andelTilfelleMap = vurderManuellBehandlingForPeriode(periodeFraSteg, fordelingInput);
+                    var andelTilfelleMap = vurderManuellBehandlingForPeriode(periode, fordelingInput);
                     tilfelleMap.putAll(andelTilfelleMap.entrySet().stream()
                             .filter(e -> Boolean.FALSE.equals(e.getKey().erLagtTilAvSaksbehandler()))
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));

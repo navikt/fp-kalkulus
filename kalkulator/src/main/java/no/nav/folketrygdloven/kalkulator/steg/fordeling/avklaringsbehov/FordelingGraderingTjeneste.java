@@ -59,7 +59,7 @@ public final class FordelingGraderingTjeneste {
     }
 
     public static boolean skalGraderePåAndelUtenBeregningsgrunnlag(BeregningsgrunnlagPrStatusOgAndelDto andel, boolean harGraderingIBGPeriode) {
-        boolean harIkkjeBeregningsgrunnlag = andel.getBruttoPrÅr() == null || andel.getBruttoPrÅr().compareTo(BigDecimal.ZERO) == 0;
+        boolean harIkkjeBeregningsgrunnlag = andel.getBruttoUtenManueltFordelt() == null || andel.getBruttoUtenManueltFordelt().compareTo(BigDecimal.ZERO) == 0;
         return harGraderingIBGPeriode && harIkkjeBeregningsgrunnlag;
     }
 
@@ -81,7 +81,7 @@ public final class FordelingGraderingTjeneste {
         return periode.getBeregningsgrunnlagPrStatusOgAndelList()
                 .stream()
                 .filter(a -> statuserSomSkalTelles.contains(a.getAktivitetStatus()))
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoPrÅr)
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBruttoUtenManueltFordelt)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
