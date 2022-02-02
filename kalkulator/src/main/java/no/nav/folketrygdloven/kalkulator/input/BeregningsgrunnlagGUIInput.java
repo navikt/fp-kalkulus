@@ -80,7 +80,7 @@ public class BeregningsgrunnlagGUIInput {
         this.fordelBeregningsgrunnlagGrunnlag = input.fordelBeregningsgrunnlagGrunnlag;
         this.beregningsgrunnlagGrunnlagFraForrigeBehandling = input.beregningsgrunnlagGrunnlagFraForrigeBehandling;
         this.toggles = input.getToggles();
-
+        this.forlengelseperioder = input.getForlengelseperioder();
     }
 
     public List<Intervall> getForlengelseperioder() {

@@ -98,7 +98,8 @@ public class GUIBeregningsgrunnlagInputTjeneste {
 
     private static BeregningsgrunnlagGUIInput lagInput(KoblingEntitet koblingEntitet,
                                                        KalkulatorInputDto kalkulatorInput,
-                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet, List<IntervallEntitet> forlengelseperioder) {
+                                                       Optional<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntitet,
+                                                       List<IntervallEntitet> forlengelseperioder) {
         return MapTilGUIInputFraKalkulator.mapFraKalkulatorInput(
                 koblingEntitet,
                 kalkulatorInput,
