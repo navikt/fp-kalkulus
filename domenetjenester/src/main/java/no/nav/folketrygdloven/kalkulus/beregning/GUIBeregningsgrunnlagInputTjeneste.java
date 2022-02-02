@@ -23,7 +23,6 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingRelasjon;
 import no.nav.folketrygdloven.kalkulus.felles.jpa.IntervallEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.KalkulatorInputDto;
-import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.mapFraEntitet.BehandlingslagerTilKalkulusMapper;
 import no.nav.folketrygdloven.kalkulus.mappers.MapTilGUIInputFraKalkulator;
 import no.nav.folketrygdloven.kalkulus.tjeneste.avklaringsbehov.AvklaringsbehovTjeneste;
@@ -60,7 +59,6 @@ public class GUIBeregningsgrunnlagInputTjeneste {
      * Ingen databasekall skal gjøres her inne for å unngå at databasekall gjøres i loop.
      *
      * @param beregningsgrunnlagGrunnlagEntiteter Alle aktive grunnlagsentiteter for koblinger
-     * @param grunnlagFraFordel                   Grunnlag fra fordel-steget om dette er kjørt
      * @param avklaringsbehovPrKobling             Avklaringsbehov for koblinger
      * @param koblingKalkulatorInput              KalkulatorInput for koblinger
      * @param koblinger                           Koblingentiteter
@@ -70,7 +68,6 @@ public class GUIBeregningsgrunnlagInputTjeneste {
      */
     private static Map<Long, BeregningsgrunnlagGUIInput> mapInputListe(
             List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
-            Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel,
             Map<Long, List<AvklaringsbehovEntitet>> avklaringsbehovPrKobling,
             Map<Long, KalkulatorInputDto> koblingKalkulatorInput,
             Map<Long, KoblingEntitet> koblinger,
@@ -136,16 +133,9 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                                                                               List<BeregningsgrunnlagGrunnlagEntitet> beregningsgrunnlagGrunnlagEntiteter,
                                                                               List<BeregningsgrunnlagGrunnlagEntitet> originaleGrunnlag,
                                                                               Map<Long, KalkulatorInputDto> koblingKalkulatorInput) {
-        List<BeregningsgrunnlagTilstand> aktiveTilstander = beregningsgrunnlagGrunnlagEntiteter.stream().map(BeregningsgrunnlagGrunnlagEntitet::getBeregningsgrunnlagTilstand)
-                .distinct()
-                .collect(Collectors.toList());
 
         Map<Long, KoblingEntitet> koblinger = koblingRepository.hentKoblingerFor(koblingIder)
                 .stream().collect(Collectors.toMap(KoblingEntitet::getId, Function.identity()));
-
-        Map<Long, BeregningsgrunnlagGrunnlagEntitet> grunnlagFraFordel = alleTilstanderErFørFordel(aktiveTilstander) ? Map.of() :
-                beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(koblingIder, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING)
-                        .stream().collect(Collectors.toMap(BeregningsgrunnlagGrunnlagEntitet::getKoblingId, Function.identity()));
 
         Map<Long, List<AvklaringsbehovEntitet>> avklaringsbehovPrKobling = avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(koblingIder).stream()
                 .collect(Collectors.groupingBy(AvklaringsbehovEntitet::getKoblingId));
@@ -161,7 +151,6 @@ public class GUIBeregningsgrunnlagInputTjeneste {
 
         return mapInputListe(
                 beregningsgrunnlagGrunnlagEntiteter,
-                grunnlagFraFordel,
                 avklaringsbehovPrKobling,
                 koblingKalkulatorInput,
                 koblinger,
@@ -169,8 +158,4 @@ public class GUIBeregningsgrunnlagInputTjeneste {
                 forlengelsePerioderPrKobling);
     }
 
-    private boolean alleTilstanderErFørFordel(List<BeregningsgrunnlagTilstand> aktiveTilstander) {
-        return aktiveTilstander.stream()
-                .allMatch(tilstand -> tilstand.erFør(BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING));
-    }
 }
