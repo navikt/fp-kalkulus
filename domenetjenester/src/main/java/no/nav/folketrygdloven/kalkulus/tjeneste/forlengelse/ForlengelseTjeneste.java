@@ -4,14 +4,15 @@ import static no.nav.folketrygdloven.kalkulus.felles.tid.AbstractIntervall.TIDEN
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
@@ -41,6 +42,13 @@ public class ForlengelseTjeneste {
     public ForlengelseTjeneste(ForlengelseRepository forlengelseRepository, @KonfigVerdi(value = "SKAL_VURDERE_FORLENGELSE", defaultVerdi = "false", required = false) boolean skalVurdereForlengelse) {
         this.forlengelseRepository = forlengelseRepository;
         this.skalVurdereForlengelse = skalVurdereForlengelse;
+    }
+
+    public Map<Long, Boolean> erForlengelser(Set<Long> koblingIder) {
+        var forlengelser = forlengelseRepository.hentAktivePerioderForKoblingId(koblingIder);
+        return koblingIder.stream()
+                .collect(Collectors.toMap(Function.identity(),
+                        k -> forlengelser.stream().anyMatch(f -> f.getKoblingId().equals(k) && !f.getForlengelseperioder().isEmpty())));
     }
 
     public void lagrePerioderForForlengelse(BeregningSteg steg, List<BeregnForRequest> beregnForListe, List<KoblingEntitet> koblinger) {

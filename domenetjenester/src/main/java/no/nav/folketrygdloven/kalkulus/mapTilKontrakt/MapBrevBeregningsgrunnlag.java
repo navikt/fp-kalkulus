@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.Bereg
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPeriode;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndel;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Beløp;
+import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -26,10 +27,10 @@ import no.nav.folketrygdloven.kalkulus.response.v1.beregningsgrunnlag.brev.Bereg
 public class MapBrevBeregningsgrunnlag {
 
 
-    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet) {
+    public static BeregningsgrunnlagGrunnlagDto mapGrunnlag(KoblingReferanse koblingReferanse, BeregningsgrunnlagGrunnlagEntitet beregningsgrunnlagGrunnlagEntitet, boolean erForlengelse) {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlagEntitet.getBeregningsgrunnlag()
                 .map(MapBrevBeregningsgrunnlag::map).orElse(null);
-        return new BeregningsgrunnlagGrunnlagDto(beregningsgrunnlag);
+        return new BeregningsgrunnlagGrunnlagDto(koblingReferanse.getReferanse(), beregningsgrunnlag, erForlengelse);
     }
 
     public static BeregningsgrunnlagDto map(BeregningsgrunnlagEntitet beregningsgrunnlagEntitet) {
