@@ -34,9 +34,13 @@ public abstract class Aktør {
 
     public abstract boolean getErPerson();
 
+    private String getIdentString() {
+        return "MASKERT";
+    }
+
     @Override
     public String toString() {
-        return getIdent() + "<" + getIdentType() + ">";
+        return getIdentString() + "<" + getIdentType() + ">";
     }
 
     @Override
