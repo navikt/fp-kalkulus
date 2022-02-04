@@ -46,10 +46,10 @@ class FinnInntektFraYtelse {
         }
 
         if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
-            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyesteVedtak.get(),
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter,
                     skjæringstidspunkt,
-                    Set.of(mapTilYtelseType(andel.getAktivitetStatus())),
-                    ref.getFagsakYtelseType());
+                    Set.of(mapTilYtelseType(andel.getAktivitetStatus()))
+            );
             var utbetalingsfaktor = meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).orElse(BigDecimal.ONE);
             var dagsats = nyesteVedtak.get().getVedtaksDagsats().map(Beløp::getVerdi)
                     .orElse(meldekort.map(MeldekortUtils.Meldekort::dagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));

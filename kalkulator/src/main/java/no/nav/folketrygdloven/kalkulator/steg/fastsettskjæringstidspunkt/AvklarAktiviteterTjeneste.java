@@ -80,10 +80,10 @@ public class AvklarAktiviteterTjeneste {
             return Optional.empty();
         }
         if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
-            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyligsteVedtak.get(),
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter,
                     skjæringstidspunkt,
-                    Set.of(ytelseTypeForMeldekort),
-                    ytelseUnderBehandling);
+                    Set.of(ytelseTypeForMeldekort)
+            );
             return meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).map(f -> f.multiply(BigDecimal.valueOf(200)));
         } else {
             Optional<YtelseAnvistDto> nyligsteMeldekort = MeldekortUtils.sisteHeleMeldekortFørStp(ytelseFilter, nyligsteVedtak.get(), skjæringstidspunkt, Set.of(ytelseTypeForMeldekort), ytelseUnderBehandling);

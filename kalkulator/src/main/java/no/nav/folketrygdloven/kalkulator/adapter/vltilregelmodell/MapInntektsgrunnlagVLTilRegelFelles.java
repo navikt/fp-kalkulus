@@ -184,7 +184,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         BigDecimal utbetalingsfaktor;
 
         if (KonfigurasjonVerdi.get("MELDEKORT_DELVIS_PERIODE", false)) {
-            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, nyesteVedtakForDagsats, skjæringstidspunkt, Set.of(arenaYtelse), fagsakYtelseType);
+            var meldekort = MeldekortUtils.finnSisteHeleMeldekortFørStpMedJustertPeriode(ytelseFilter, skjæringstidspunkt, Set.of(arenaYtelse));
             utbetalingsfaktor = meldekort.map(MeldekortUtils.Meldekort::utbetalingsfaktor).orElse(BigDecimal.ONE);
             dagsats = nyesteVedtakForDagsats.getVedtaksDagsats().map(Beløp::getVerdi)
                     .orElse(meldekort.map(MeldekortUtils.Meldekort::dagsats).map(Beløp::getVerdi).orElse(BigDecimal.ZERO));

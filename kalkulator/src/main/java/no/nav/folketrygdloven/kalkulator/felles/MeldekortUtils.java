@@ -116,20 +116,14 @@ public class MeldekortUtils {
 
 
     public static Optional<Meldekort> finnSisteHeleMeldekortFørStpMedJustertPeriode(YtelseFilterDto ytelseFilter,
-                                                                              YtelseDto sisteVedtak,
-                                                                              LocalDate skjæringstidspunkt,
-                                                                              Set<FagsakYtelseType> ytelseTyper,
-                                                                              FagsakYtelseType ytelseType) {
+                                                                                    LocalDate skjæringstidspunkt,
+                                                                                    Set<FagsakYtelseType> ytelseTyper) {
 
-
-        final LocalDate sisteVedtakFom = sisteVedtak.getPeriode().getFomDato();
 
         var alleMeldekort = finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(ytelseFilter, ytelseTyper);
-        var sisteMeldekort = alleMeldekort.stream()
-                .filter(meldekort -> sisteVedtakFom.minus(KonfigTjeneste.forYtelse(ytelseType).getMeldekortPeriode()).isBefore(meldekort.periode().getTomDato()))
-                .filter(meldekort -> skjæringstidspunkt.isAfter(meldekort.periode().getTomDato()))
-                .max(Comparator.comparing(m -> m.periode().getTomDato()));
-        return sisteMeldekort;
+        return alleMeldekort.stream()
+                .filter(meldekort -> skjæringstidspunkt.isAfter(meldekort.periode().getFomDato()))
+                .max(Comparator.comparing(m -> m.periode().getFomDato()));
     }
 
     private static List<YtelseAnvistDto> alleMeldekortMedPeriode(LocalDate anvistFOM, LocalDate anvistTOM, List<YtelseAnvistDto> alleMeldekort) {

@@ -157,7 +157,7 @@ public class HentKalkulusRestTjeneste {
         var dtoer = hentBeregningsgrunnlagGrunnlagEntitetForSpesifikasjon(koblinger).stream()
                 .map(grunnlag -> MapBrevBeregningsgrunnlag.mapGrunnlag(
                         finnEksternReferanse(koblinger, grunnlag.getKoblingId()),
-                        grunnlag, 
+                        grunnlag,
                         erForlengelsePrKobling.getOrDefault(grunnlag.getKoblingId(), false)))
                 .collect(Collectors.toList());
         return dtoer.isEmpty() ? Response.noContent().build() : Response.ok(dtoer).build();
