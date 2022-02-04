@@ -20,7 +20,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.UttakArbeidType;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public final class UtbetalingsgradArbeidsforholdDto {
+public final class AktivitetDto {
 
     @JsonProperty(value = "arbeidsgiver", required = true)
     @Valid
@@ -35,10 +35,10 @@ public final class UtbetalingsgradArbeidsforholdDto {
     @NotNull
     private UttakArbeidType uttakArbeidType;
 
-    public UtbetalingsgradArbeidsforholdDto() {
+    public AktivitetDto() {
     }
 
-    public UtbetalingsgradArbeidsforholdDto(@Valid Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType) {
+    public AktivitetDto(@Valid Aktør arbeidsgiver, @Valid InternArbeidsforholdRefDto internArbeidsforholdRef, @Valid @NotNull UttakArbeidType uttakArbeidType) {
         this.arbeidsgiver = arbeidsgiver;
         this.internArbeidsforholdRef = internArbeidsforholdRef;
         this.uttakArbeidType = uttakArbeidType;
@@ -69,7 +69,7 @@ public final class UtbetalingsgradArbeidsforholdDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UtbetalingsgradArbeidsforholdDto that = (UtbetalingsgradArbeidsforholdDto) o;
+        AktivitetDto that = (AktivitetDto) o;
         return Objects.equals(arbeidsgiver, that.arbeidsgiver) &&
                 Objects.equals(internArbeidsforholdRef, that.internArbeidsforholdRef) &&
                 Objects.equals(uttakArbeidType, that.uttakArbeidType);

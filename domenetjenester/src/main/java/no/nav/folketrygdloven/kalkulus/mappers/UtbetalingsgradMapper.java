@@ -10,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforhol
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.beregning.v1.AktivitetDto;
 import no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradPrAktivitetDto;
 
 class UtbetalingsgradMapper {
@@ -22,7 +23,7 @@ class UtbetalingsgradMapper {
                 .collect(Collectors.toList());
     }
 
-    private static List<Map.Entry<no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto, List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+    private static List<Map.Entry<AktivitetDto, List<no.nav.folketrygdloven.kalkulus.beregning.v1.PeriodeMedUtbetalingsgradDto>>> samleArbeidsforhold(List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         return utbetalingsgradPrAktivitet.stream()
                 .collect(Collectors.toMap(
                         UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto,
@@ -49,7 +50,7 @@ class UtbetalingsgradMapper {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(periodeMedUtbetalingsgradDto.getPeriode().getFom(), periodeMedUtbetalingsgradDto.getPeriode().getTom()), periodeMedUtbetalingsgradDto.getUtbetalingsgrad());
     }
 
-    public static UtbetalingsgradArbeidsforholdDto mapArbeidsforhold(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
+    public static UtbetalingsgradArbeidsforholdDto mapArbeidsforhold(AktivitetDto utbetalingsgradArbeidsforholdDto) {
         return new UtbetalingsgradArbeidsforholdDto(MapFraKalkulator.mapArbeidsgiver(utbetalingsgradArbeidsforholdDto.getArbeidsgiver()), mapReferanse(utbetalingsgradArbeidsforholdDto), mapUttakArbeidType(utbetalingsgradArbeidsforholdDto.getUttakArbeidType()));
     }
 
@@ -57,7 +58,7 @@ class UtbetalingsgradMapper {
         return UttakArbeidType.fraKode(uttakArbeidType.getKode());
     }
 
-    private static InternArbeidsforholdRefDto mapReferanse(no.nav.folketrygdloven.kalkulus.beregning.v1.UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto) {
+    private static InternArbeidsforholdRefDto mapReferanse(AktivitetDto utbetalingsgradArbeidsforholdDto) {
         return utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : InternArbeidsforholdRefDto.ref(utbetalingsgradArbeidsforholdDto.getInternArbeidsforholdRef().getAbakusReferanse());
     }
 

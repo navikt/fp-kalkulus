@@ -23,7 +23,7 @@ public class UtbetalingsgradPrAktivitetDto {
     @JsonProperty(value = "utbetalingsgradArbeidsforholdDto", required = true)
     @Valid
     @NotNull
-    private UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto;
+    private AktivitetDto utbetalingsgradArbeidsforholdDto;
 
     @JsonProperty(value = "periodeMedUtbetalingsgrad", required = true)
     @Valid
@@ -34,7 +34,7 @@ public class UtbetalingsgradPrAktivitetDto {
     public UtbetalingsgradPrAktivitetDto() {
     }
 
-    public UtbetalingsgradPrAktivitetDto(@Valid @NotNull UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforholdDto, @Valid @NotNull @NotEmpty List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
+    public UtbetalingsgradPrAktivitetDto(@Valid @NotNull AktivitetDto utbetalingsgradArbeidsforholdDto, @Valid @NotNull @NotEmpty List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
         this.utbetalingsgradArbeidsforholdDto = utbetalingsgradArbeidsforholdDto;
         this.periodeMedUtbetalingsgrad = periodeMedUtbetalingsgrad;
     }
@@ -43,7 +43,7 @@ public class UtbetalingsgradPrAktivitetDto {
         return periodeMedUtbetalingsgrad;
     }
 
-    public UtbetalingsgradArbeidsforholdDto getUtbetalingsgradArbeidsforholdDto() {
+    public AktivitetDto getUtbetalingsgradArbeidsforholdDto() {
         return utbetalingsgradArbeidsforholdDto;
     }
 
