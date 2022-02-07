@@ -103,6 +103,7 @@ public class MapTilBesteberegningRegelmodell {
                 case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
                 case DAGPENGER -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
                 case ARBEIDSAVKLARINGSPENGER -> YtelseAktivitetType.YTELSE_FOR_ARBEIDSAVKLARINGSPENGER;
+                case BRUKERS_ANDEL -> finnAktivitetstatusFraInntektskategori(andel);
                 default -> throw new IllegalStateException("Fikk inn ukjent aktivitetstatus ved mapping til besteberegning, status var " + andel.getAktivitetStatus());
             };
         }
@@ -115,6 +116,17 @@ public class MapTilBesteberegningRegelmodell {
                 default -> throw new IllegalStateException("Fikk inn ukjent arbeidskategori ved mapping til besteberegning, kategori var " + andel.getArbeidskategori());
             };
         }
+    }
+
+    private static YtelseAktivitetType finnAktivitetstatusFraInntektskategori(Ytelseandel andel) {
+        return switch (andel.getInntektskategori()) {
+            case ARBEIDSTAKER, SJØMANN -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
+            case SELVSTENDIG_NÆRINGSDRIVENDE, DAGMAMMA, JORDBRUKER, FISKER -> YtelseAktivitetType.YTELSE_FOR_NÆRING;
+            case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
+            case ARBEIDSAVKLARINGSPENGER -> YtelseAktivitetType.YTELSE_FOR_ARBEIDSAVKLARINGSPENGER;
+            case DAGPENGER, ARBEIDSTAKER_UTEN_FERIEPENGER -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
+            default -> throw new IllegalStateException("Fikk inn ukjent inntektskategori ved mapping til besteberegning, status var " + andel.getInntektskategori());
+        };
     }
 
     /** Finner total brutto beregningsgrunnlag i første periode.

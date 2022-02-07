@@ -79,7 +79,7 @@ class ForeldrepengerGrunnlagMapper {
         return andeler.stream()
                 .map(a -> {
                     if (a.getAktivitetStatus() != null) {
-                        return new Ytelseandel(a.getAktivitetStatus(), a.getDagsats());
+                        return new Ytelseandel(a.getAktivitetStatus(), a.getInntektskategori(), a.getDagsats());
                     } else {
                         return new Ytelseandel(a.getArbeidskategori(), a.getDagsats());
                     }
