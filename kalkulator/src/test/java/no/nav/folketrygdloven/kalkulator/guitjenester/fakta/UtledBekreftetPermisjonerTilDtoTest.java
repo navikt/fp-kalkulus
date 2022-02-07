@@ -224,7 +224,7 @@ public class UtledBekreftetPermisjonerTilDtoTest {
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .medGrunnbeløp(BigDecimal.valueOf(500_000))
             .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(bg);
         BGAndelArbeidsforholdDto.Builder builder = BGAndelArbeidsforholdDto.builder()

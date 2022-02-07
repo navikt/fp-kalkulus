@@ -15,7 +15,6 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulus.tjeneste.forlengelse.ForlengelseTjeneste;
 
 public final class SpolFramoverTjeneste {
 
@@ -90,9 +89,9 @@ public final class SpolFramoverTjeneste {
                         .filter(p -> p.getPeriode().equals(periode.getPeriode()))
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException("Fant ikke periode som skulle kopieres i forrige grunnlag"));
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder(forrigePeriode));
+                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(forrigePeriode));
             } else {
-                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.builder(periode));
+                bgBuilder.leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagPeriodeDto.kopier(periode));
             }
         });
     }

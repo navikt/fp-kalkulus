@@ -44,7 +44,7 @@ public class VurderMottarYtelseTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_OPPTJENING)
                 .medGrunnbeløp(BigDecimal.valueOf(91425L))
                 .build();
-        periode = BeregningsgrunnlagPeriodeDto.builder()
+        periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
 

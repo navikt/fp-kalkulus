@@ -23,7 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.Skjæringstidspunkt;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -280,7 +280,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     }
 
     private BeregningsgrunnlagGrunnlagDto mapForOmsorgspenger() {
-        OmsorgspengerGrunnlag ompGr = new OmsorgspengerGrunnlag(utbGrader);
+        OmsorgspengerGrunnlag ompGr = new OmsorgspengerGrunnlag(utbGrader, null);
         return map(ompGr);
     }
 
@@ -312,11 +312,11 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         return STP_DATO.plusDays(i);
     }
 
-    private UtbetalingsgradArbeidsforholdDto lagYGArbeid(String orgnr, String ref, UttakArbeidType uttakArbeidType) {
+    private AktivitetDto lagYGArbeid(String orgnr, String ref, UttakArbeidType uttakArbeidType) {
         if (orgnr == null) {
-            return new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), uttakArbeidType);
+            return new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), uttakArbeidType);
         }
-        return new UtbetalingsgradArbeidsforholdDto(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver.virksomhet(orgnr),
+        return new AktivitetDto(no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver.virksomhet(orgnr),
                 InternArbeidsforholdRefDto.ref(ref), uttakArbeidType);
     }
 
@@ -324,7 +324,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
         return new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(fom, tom), BigDecimal.valueOf(utbGrad));
     }
 
-    private void lagUtbGrunnlasg(UtbetalingsgradArbeidsforholdDto arbfor, PeriodeMedUtbetalingsgradDto... utbPerioder) {
+    private void lagUtbGrunnlasg(AktivitetDto arbfor, PeriodeMedUtbetalingsgradDto... utbPerioder) {
         utbGrader.add(new UtbetalingsgradPrAktivitetDto(arbfor, Arrays.asList(utbPerioder)));
     }
 

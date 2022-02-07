@@ -76,7 +76,7 @@ public class FordelRefusjonTjenesteTest {
         oppdatertBg = BeregningsgrunnlagDto.builder()
                 .medGrunnbeløp(BigDecimal.TEN)
                 .medSkjæringstidspunkt(FOM).build();
-        periode = BeregningsgrunnlagPeriodeDto.builder()
+        periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(FOM, TOM)
                 .build(oppdatertBg);
         endretPeriode = new FordelBeregningsgrunnlagPeriodeDto(andelListe, FOM, TOM);

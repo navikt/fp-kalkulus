@@ -173,7 +173,7 @@ class UtledEndringIRefusjonsperiodeTest {
                 .medSkjæringstidspunkt(stp)
                 .build();
 
-        var periode1 = BeregningsgrunnlagPeriodeDto.builder()
+        var periode1 = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(stp, refusjonFom.minusDays(1))
                 .build(bg);
 
@@ -182,7 +182,7 @@ class UtledEndringIRefusjonsperiodeTest {
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder().medArbeidsgiver(ag).medArbeidsforholdRef(arbeidsforholdRef).medSaksbehandletRefusjonPrÅr(saksbehandletRefusjonPrÅr))
                 .build(periode1);
 
-        var periode2 = BeregningsgrunnlagPeriodeDto.builder()
+        var periode2 = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(refusjonFom, TIDENES_ENDE)
                 .build(bg);
 
@@ -198,7 +198,7 @@ class UtledEndringIRefusjonsperiodeTest {
                 .medSkjæringstidspunkt(stp)
                 .build();
 
-        var periode1 = BeregningsgrunnlagPeriodeDto.builder()
+        var periode1 = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(stp, TIDENES_ENDE)
                 .build(bg);
 

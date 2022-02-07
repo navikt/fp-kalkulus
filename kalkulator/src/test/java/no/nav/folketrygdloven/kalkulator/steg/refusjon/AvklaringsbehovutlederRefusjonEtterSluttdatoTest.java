@@ -146,7 +146,7 @@ class AvklaringsbehovutlederRefusjonEtterSluttdatoTest {
     }
 
     private void lagBGPeriode(LocalDate fom, LocalDate tom, BeregningsgrunnlagPrStatusOgAndelDto.Builder... andeler) {
-        BeregningsgrunnlagPeriodeDto.Builder bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom, tom);
+        BeregningsgrunnlagPeriodeDto.Builder bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom, tom);
         List<BeregningsgrunnlagPrStatusOgAndelDto.Builder> bgAndeler = Arrays.asList(andeler);
         bgAndeler.forEach(bgPeriodeBuilder::leggTilBeregningsgrunnlagPrStatusOgAndel);
         grunnlagBuilder.leggTilBeregningsgrunnlagPeriode(bgPeriodeBuilder);

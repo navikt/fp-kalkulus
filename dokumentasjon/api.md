@@ -148,7 +148,7 @@ Starter en beregning med gitt inputdata
     "kvalifisererTilBesteberegning": false,
     "utbetalingsgradPrAktivitet": [
       {
-        "utbetalingsgradArbeidsforholdDto": {
+        "aktivitetDto": {
           "arbeidsgiver": {
             "identType": "ORGNUMMER",
             "ident": "910909088"
@@ -169,7 +169,7 @@ Starter en beregning med gitt inputdata
         ]
       },
       {
-        "utbetalingsgradArbeidsforholdDto": {
+        "aktivitetDto": {
           "arbeidsgiver": {
             "identType": "ORGNUMMER",
             "ident": "910909088"

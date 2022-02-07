@@ -4,12 +4,11 @@ package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.kodeverk;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.periodisering.AktivitetStatusV2;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -17,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 
 public class MapUttakArbeidTypeTilAktivitetStatusV2 {
 
-    public static AktivitetStatusV2 mapAktivitetStatus(UtbetalingsgradArbeidsforholdDto utbetalingsgradAktivitet, List<UtbetalingsgradPrAktivitetDto> allePerioder) {
+    public static AktivitetStatusV2 mapAktivitetStatus(AktivitetDto utbetalingsgradAktivitet, List<UtbetalingsgradPrAktivitetDto> allePerioder) {
         UttakArbeidType uttakArbeidType = utbetalingsgradAktivitet.getUttakArbeidType();
         if (UttakArbeidType.ORDINÆRT_ARBEID.equals(uttakArbeidType)) {
             return AktivitetStatusV2.AT;
@@ -65,7 +64,7 @@ public class MapUttakArbeidTypeTilAktivitetStatusV2 {
         List<UtbetalingsgradPrAktivitetDto> aktiviteterISisteSøktePeriode = finnAktiviteterMedSammePeriode(allePerioder, sisteSøkteAktivitet);
         if (aktiviteterISisteSøktePeriode.size() > 1) {
             List<UttakArbeidType> uttakarbeidTyper = aktiviteterISisteSøktePeriode.stream().map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforhold)
-                    .map(UtbetalingsgradArbeidsforholdDto::getUttakArbeidType)
+                    .map(AktivitetDto::getUttakArbeidType)
                     .collect(Collectors.toList());
             throw new UnsupportedOperationException("Støtter ikke overgang til ikke-yrkesaktiv for flere statuser samtidig: " + uttakarbeidTyper);
         }

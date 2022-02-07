@@ -30,7 +30,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLNaturalytelse ext
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Ingen matchende perioder"));
         var andelListe = originalPeriode.getBeregningsgrunnlagPrStatusOgAndelList();
-        var bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
+        var bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(splittetPeriode.getPeriode().getFom(), periodeTom);
         splittetPeriode.getPeriodeÅrsaker().stream()
             .map(MapPeriodeÅrsakFraRegelTilVL::map)

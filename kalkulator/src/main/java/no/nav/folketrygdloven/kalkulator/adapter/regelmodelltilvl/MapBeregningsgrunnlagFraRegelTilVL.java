@@ -274,7 +274,7 @@ public class MapBeregningsgrunnlagFraRegelTilVL {
                                                                              final BeregningsgrunnlagPeriodeDto vlBGPeriode,
                                                                              BeregningsgrunnlagDto eksisterendeVLGrunnlag) {
         if (vlBGPeriode == null) {
-            BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder()
+            BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.ny()
                     .medBeregningsgrunnlagPeriode(
                             resultatGrunnlagPeriode.getBeregningsgrunnlagPeriode().getFom(),
                             resultatGrunnlagPeriode.getBeregningsgrunnlagPeriode().getTomOrNull()

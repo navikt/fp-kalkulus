@@ -38,7 +38,7 @@ class MapBesteberegningFraRegelTilVLTest {
     public void en_andel_bb_mappes_mot_matchende_andel_bg() {
         // Arrange
         String arbRef = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var andeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef));
         andeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
         var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());
@@ -58,7 +58,7 @@ class MapBesteberegningFraRegelTilVLTest {
         // Arrange
         String arbRef = UUID.randomUUID().toString();
         String arbRef2 = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var andeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef),
                 byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef2));
         andeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
@@ -79,7 +79,7 @@ class MapBesteberegningFraRegelTilVLTest {
     public void to_andel_bb_mappes_mot_matchende_andel_bg() {
         // Arrange
         String arbRef = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var andeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef));
         andeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
         var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());
@@ -99,7 +99,7 @@ class MapBesteberegningFraRegelTilVLTest {
     public void skal_ikke_mappe_andeler_når_det_ikke_skal_brukes_besteberegning() {
         // Arrange
         String arbRef = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var andeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef));
         andeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
         var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());
@@ -117,7 +117,7 @@ class MapBesteberegningFraRegelTilVLTest {
     public void bg_andel_uten_bb_andel_skal_få_besteberegnet_lik_0() {
         // Arrange
         String arbRef = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var bgAndeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef));
         bgAndeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
         var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());
@@ -137,7 +137,7 @@ class MapBesteberegningFraRegelTilVLTest {
     public void bb_ytelse_for_arbeid_mappes_til_ytelseandel() {
         // Arrange
         var arbRef = UUID.randomUUID().toString();
-        var bgp = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
+        var bgp = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null);
         var bgAndeler = Arrays.asList(byggBgAndel(AktivitetStatus.ARBEIDSTAKER, "123", arbRef), byggBgAndel(AktivitetStatus.DAGPENGER));
         bgAndeler.forEach(bgp::leggTilBeregningsgrunnlagPrStatusOgAndel);
         var bg = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(LocalDate.now());

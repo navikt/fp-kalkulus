@@ -50,11 +50,11 @@ public class BeregningsgrunnlagPeriodeDto {
         this.dagsats = kopiereFra.dagsats;
     }
 
-    public static Builder builder() {
+    public static Builder ny() {
         return new Builder();
     }
 
-    public static Builder builder(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
+    public static Builder kopier(BeregningsgrunnlagPeriodeDto eksisterendeBeregningsgrunnlagPeriode) {
         return new Builder(eksisterendeBeregningsgrunnlagPeriode);
     }
 

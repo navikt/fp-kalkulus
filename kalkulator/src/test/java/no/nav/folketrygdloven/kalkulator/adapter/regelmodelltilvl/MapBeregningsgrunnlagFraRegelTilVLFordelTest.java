@@ -28,7 +28,7 @@ class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
     @Test
     void skal_kunne_legge_til_andel_for_arbeidsforhold() {
         // Arrange
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(LocalDate.now(), null).build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(LocalDate.now(), null).build();
         lagVLAndel(periode);
         Arbeidsforhold arbeidsforhold = lagRegelArbeidsforhold();
         BeregningsgrunnlagPrStatus atflStatus = BeregningsgrunnlagPrStatus.builder()

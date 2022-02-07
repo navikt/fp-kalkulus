@@ -184,7 +184,7 @@ public class FordelPerioderTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .build(beregningsgrunnlag);
 
@@ -1614,7 +1614,7 @@ public class FordelPerioderTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .build(beregningsgrunnlag);
 
@@ -1703,7 +1703,7 @@ public class FordelPerioderTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .build(beregningsgrunnlag);
 
@@ -1791,7 +1791,7 @@ public class FordelPerioderTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .build(beregningsgrunnlag);
 
@@ -1938,7 +1938,7 @@ public class FordelPerioderTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBeregningsgrunnlagPerioderBuilder(LocalDate fom, LocalDate tom, List<String> orgnrs) {
-        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
+        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.ny();
         for (String orgnr : orgnrs) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()

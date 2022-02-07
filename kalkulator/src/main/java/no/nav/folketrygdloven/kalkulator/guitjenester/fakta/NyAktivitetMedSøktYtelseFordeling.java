@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.YtelsespesifiktGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.avklaringsbehov.FordelingTilfelle;
@@ -42,7 +42,7 @@ class NyAktivitetMedSøktYtelseFordeling {
     }
 
     private static boolean matcherAndelAktivitetMedUtbetalingsgrad(BeregningsgrunnlagPrStatusOgAndelDto andel, UtbetalingsgradPrAktivitetDto utbAktivitet) {
-        UtbetalingsgradArbeidsforholdDto arbeidsforhold = utbAktivitet.getUtbetalingsgradArbeidsforhold();
+        AktivitetDto arbeidsforhold = utbAktivitet.getUtbetalingsgradArbeidsforhold();
         UttakArbeidType uttakArbeidType = arbeidsforhold.getUttakArbeidType();
         if (AktivitetStatusMatcher.matcherStatusEllerIkkeYrkesaktiv(andel.getAktivitetStatus(), uttakArbeidType)) {
             if (andel.getAktivitetStatus().erArbeidstaker()) {
@@ -53,7 +53,7 @@ class NyAktivitetMedSøktYtelseFordeling {
         return false;
     }
 
-    private static Boolean matcherArbeidSøktYtelse(BeregningsgrunnlagPrStatusOgAndelDto andel, UtbetalingsgradArbeidsforholdDto arbeidsforhold) {
+    private static Boolean matcherArbeidSøktYtelse(BeregningsgrunnlagPrStatusOgAndelDto andel, AktivitetDto arbeidsforhold) {
         return andel.getBgAndelArbeidsforhold()
                 .map(arb -> arb.getArbeidsgiver() != null && arbeidsforhold.getArbeidsgiver().isPresent() &&
                         arb.getArbeidsgiver().getIdentifikator().equals(arbeidsforhold.getArbeidsgiver().get().getIdentifikator()) &&

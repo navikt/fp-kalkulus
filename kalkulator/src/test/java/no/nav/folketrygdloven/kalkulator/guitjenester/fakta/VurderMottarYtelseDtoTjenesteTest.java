@@ -76,7 +76,7 @@ public class VurderMottarYtelseDtoTjenesteTest {
                 .medGrunnbeløp(BigDecimal.valueOf(91425L))
                 .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_MOTTAR_YTELSE))
                 .build();
-        periode = BeregningsgrunnlagPeriodeDto.builder()
+        periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
         grunnlag = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())

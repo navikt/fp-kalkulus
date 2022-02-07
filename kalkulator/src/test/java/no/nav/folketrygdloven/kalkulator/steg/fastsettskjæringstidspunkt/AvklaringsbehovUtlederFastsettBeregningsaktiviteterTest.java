@@ -130,7 +130,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.DAGPENGER))
             .medSkjæringstidspunkt(skjæringstidspunkt)
             .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
             .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -196,7 +196,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -233,7 +233,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -271,7 +271,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -311,7 +311,7 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterTest {
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSAVKLARINGSPENGER))
                 .medSkjæringstidspunkt(skjæringstidspunkt)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(skjæringstidspunkt, null)
                 .build(bgMedDagpenger);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()

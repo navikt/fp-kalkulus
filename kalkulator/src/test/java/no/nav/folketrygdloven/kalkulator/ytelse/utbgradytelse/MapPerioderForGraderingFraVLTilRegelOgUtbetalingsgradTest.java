@@ -38,7 +38,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -248,7 +248,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
 
-        BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         return bg;
     }
@@ -262,7 +262,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
     private UtbetalingsgradPrAktivitetDto lagTilretteleggingMedUtbelingsgrad(UttakArbeidType uttakArbeidType,
                                                                              Arbeidsgiver arbeidsgiver,
                                                                              PeriodeMedUtbetalingsgradDto... perioder) {
-        var tilretteleggingArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(arbeidsgiver, InternArbeidsforholdRefDto.nyRef(), uttakArbeidType);
+        var tilretteleggingArbeidsforhold = new AktivitetDto(arbeidsgiver, InternArbeidsforholdRefDto.nyRef(), uttakArbeidType);
         return new UtbetalingsgradPrAktivitetDto(tilretteleggingArbeidsforhold, List.of(perioder));
     }
 
@@ -307,7 +307,7 @@ public class MapPerioderForGraderingFraVLTilRegelOgUtbetalingsgradTest {
                 .medGrunnbeløp(BigDecimal.valueOf(99000))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .build();
-        BeregningsgrunnlagPeriodeDto periodeDto = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periodeDto = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .medBruttoPrÅr(BigDecimal.valueOf(531064))
                 .build(bg);

@@ -54,7 +54,7 @@ public class MapFraFordelingsmodell {
 
     private static BeregningsgrunnlagPeriodeDto mapPeriode(FordelPeriodeModell regelperiode, BeregningsgrunnlagDto eksisterendeBG) {
         var eksisterendePeriode = finnEksisterendePeriode(regelperiode, eksisterendeBG.getBeregningsgrunnlagPerioder());
-        var nyPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder(eksisterendePeriode);
+        var nyPeriodeBuilder = BeregningsgrunnlagPeriodeDto.kopier(eksisterendePeriode);
         regelperiode.getAndeler().forEach(regelAndel -> {
             if (regelAndel.erNytt()) {
                 var builder = mapNyAndel(eksisterendePeriode, regelAndel);

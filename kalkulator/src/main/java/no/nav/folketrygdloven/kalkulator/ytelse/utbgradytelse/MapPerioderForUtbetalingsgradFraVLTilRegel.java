@@ -26,8 +26,8 @@ import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -68,7 +68,7 @@ public class MapPerioderForUtbetalingsgradFraVLTilRegel {
     }
 
     private static boolean erAnsattIPerioden(KoblingReferanse ref,
-                                             UtbetalingsgradArbeidsforholdDto utbetalingsgradPrAktivitetDto,
+                                             AktivitetDto utbetalingsgradPrAktivitetDto,
                                              YrkesaktivitetFilterDto filter) {
         if (!utbetalingsgradPrAktivitetDto.getUttakArbeidType().equals(UttakArbeidType.ORDINÆRT_ARBEID)) {
             // Antar SN, FL og IKKE_YREKSAKTIV er aktiv i hele uttaksperioden
@@ -113,7 +113,7 @@ public class MapPerioderForUtbetalingsgradFraVLTilRegel {
         return builder.build();
     }
 
-    private static Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, UtbetalingsgradArbeidsforholdDto tilretteleggingArbeidsforhold) {
+    private static Optional<Arbeidsforhold> mapArbeidsforholdMedPeriode(KoblingReferanse ref, YrkesaktivitetFilterDto filter, AktivitetDto tilretteleggingArbeidsforhold) {
         return tilretteleggingArbeidsforhold.getArbeidsgiver().map(arbeidsgiver -> {
             InternArbeidsforholdRefDto tilretteleggingArbeidsforholdRef = tilretteleggingArbeidsforhold.getInternArbeidsforholdRef() == null ? InternArbeidsforholdRefDto.nullRef() : tilretteleggingArbeidsforhold.getInternArbeidsforholdRef();
             // Finner yrkesaktiviteter inkludert fjernet i overstyring siden vi kun er interessert i å lage nye arbeidsforhold for nye aktiviteter (Disse kan ikke fjernes)

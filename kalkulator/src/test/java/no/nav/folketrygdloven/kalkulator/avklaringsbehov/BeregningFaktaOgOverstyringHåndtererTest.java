@@ -141,7 +141,7 @@ public class BeregningFaktaOgOverstyringHåndtererTest {
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(aktivitetStatus))
                 .build();
         perioder.forEach(p -> {
-            BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato())
+            BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(p.getFomDato(), p.getTomDato())
                     .build(beregningsgrunnlag);
             BeregningsgrunnlagPrStatusOgAndelDto.ny().medAndelsnr(andelsnr)
                     .medInntektskategori(Inntektskategori.ARBEIDSTAKER)

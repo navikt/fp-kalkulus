@@ -61,7 +61,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
                 .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
@@ -96,7 +96,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         InternArbeidsforholdRefDto ref2 = InternArbeidsforholdRefDto.nyRef();
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -145,7 +145,7 @@ public class FastsettMånedsinntektUtenInntektsmeldingTilfelleUtlederTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT).build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null).build(bg);
         String orgnr = medKunstigArbeid ? OrgNummer.KUNSTIG_ORG : ORGNR;
         BeregningsgrunnlagPrStatusOgAndelDto.ny()

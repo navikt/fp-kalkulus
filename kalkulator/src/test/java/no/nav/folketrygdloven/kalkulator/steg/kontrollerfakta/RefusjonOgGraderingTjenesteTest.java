@@ -384,12 +384,12 @@ public class RefusjonOgGraderingTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg) {
-        return BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+        return BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
             .build(bg);
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(LocalDate fom, LocalDate tom, Collection<PeriodeÅrsak> periodeÅrsaker, BeregningsgrunnlagDto bg) {
-        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom, tom);
+        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom, tom);
         periodeÅrsaker.forEach(builder::leggTilPeriodeÅrsak);
         return builder
             .build(bg);

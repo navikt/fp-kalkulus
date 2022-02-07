@@ -418,7 +418,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(ANDEL_FOM, null)
                 .build(beregningsgrunnlag);
     }

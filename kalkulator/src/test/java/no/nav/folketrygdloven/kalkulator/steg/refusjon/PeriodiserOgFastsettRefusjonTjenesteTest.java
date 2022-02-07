@@ -317,7 +317,7 @@ class PeriodiserOgFastsettRefusjonTjenesteTest {
     }
 
     private void lagBGPeriode(LocalDate fom, LocalDate tom, PeriodeÅrsak periodeÅrsak, BeregningsgrunnlagPrStatusOgAndelDto.Builder... andeler) {
-        BeregningsgrunnlagPeriodeDto.Builder bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom, tom);
+        BeregningsgrunnlagPeriodeDto.Builder bgPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom, tom);
         if (periodeÅrsak != null) {
             bgPeriodeBuilder.leggTilPeriodeÅrsak(periodeÅrsak);
         }

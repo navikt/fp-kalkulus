@@ -15,11 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.BrukerSøktForAllePerioderMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
+import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.FordelBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
@@ -40,8 +41,8 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
-import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
+import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagPeriodeRegelType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
@@ -64,7 +65,10 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT_BEREGNING);
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
+            new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel),
+            ytelsesSpesifikkMapper,
+            new UnitTestLookupInstanceImpl<>(new BrukerSøktForAllePerioderMapper()));
     private VurderBeregningsgrunnlagTjeneste vurderBeregningsgrunnlagTjeneste = new VurderBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel);
 
 
@@ -72,13 +76,13 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     public void testVilkårsvurderingArbeidstakerMedBGOverHalvG() {
         // Arrange
         BeregningAktivitetAggregatDto beregningAktiviteter = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING,
-            OpptjeningAktivitetType.ARBEID);
+                OpptjeningAktivitetType.ARBEID);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(400_000);
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(beregningAktiviteter)
-            .medBeregningsgrunnlag(beregningsgrunnlag);
+                .medRegisterAktiviteter(beregningAktiviteter)
+                .medBeregningsgrunnlag(beregningsgrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
-            .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
         KoblingReferanse ref = lagReferanseMedSkjæringstidspunkt(koblingReferanse);
@@ -106,13 +110,13 @@ public class VurderBeregningsgrunnlagTjenesteTest {
     public void testVilkårsvurderingArbeidstakerMedBGUnderHalvG() {
         // Arrange
         BeregningAktivitetAggregatDto beregningAktiviteter = BeregningAktivitetTestUtil.opprettBeregningAktiviteter(SKJÆRINGSTIDSPUNKT_OPPTJENING,
-            OpptjeningAktivitetType.ARBEID);
+                OpptjeningAktivitetType.ARBEID);
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(40_000);
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagDtoBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(Optional.empty())
-            .medRegisterAktiviteter(beregningAktiviteter)
-            .medBeregningsgrunnlag(beregningsgrunnlag);
+                .medRegisterAktiviteter(beregningAktiviteter)
+                .medBeregningsgrunnlag(beregningsgrunnlag);
         BeregningsgrunnlagGrunnlagDto grunnlag = grunnlagDtoBuilder
-            .build(BeregningsgrunnlagTilstand.FORESLÅTT);
+                .build(BeregningsgrunnlagTilstand.FORESLÅTT);
         InntektArbeidYtelseAggregatBuilder registerBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         testHjelper.lagBehandlingForSN(BigDecimal.valueOf(12 * MÅNEDSINNTEKT1), 2015, registerBuilder);
 
@@ -140,37 +144,37 @@ public class VurderBeregningsgrunnlagTjenesteTest {
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag(int inntekt) {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
-            .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .medGrunnbeløp(BigDecimal.valueOf(600_000))
-            .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
-            .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
-            .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
-            .build(bg);
+                .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .medGrunnbeløp(BigDecimal.valueOf(600_000))
+                .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
+                .build();
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
+                .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_BEREGNING, null)
+                .build(bg);
         SammenligningsgrunnlagDto.builder()
-            .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .medRapportertPrÅr(BigDecimal.ZERO)
-            .medAvvikPromilleNy(BigDecimal.valueOf(0))
-            .build(bg);
+                .medSammenligningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING, SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .medRapportertPrÅr(BigDecimal.ZERO)
+                .medAvvikPromilleNy(BigDecimal.valueOf(0))
+                .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
-            .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
-                .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12))
-                .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING)
-                .medArbeidsgiver(Arbeidsgiver.virksomhet("1234"))
-                .medRefusjonskravPrÅr(BigDecimal.valueOf(inntekt), Utfall.GODKJENT))
-            .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
-            .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
-            .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
-            .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
-            .build(periode);
+                .medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder()
+                        .medArbeidsperiodeFom(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(12))
+                        .medArbeidsperiodeTom(SKJÆRINGSTIDSPUNKT_BEREGNING)
+                        .medArbeidsgiver(Arbeidsgiver.virksomhet("1234"))
+                        .medRefusjonskravPrÅr(BigDecimal.valueOf(inntekt), Utfall.GODKJENT))
+                .medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
+                .medInntektskategori(Inntektskategori.ARBEIDSTAKER)
+                .medBeregningsperiode(SKJÆRINGSTIDSPUNKT_BEREGNING.minusMonths(3).withDayOfMonth(1), SKJÆRINGSTIDSPUNKT_BEREGNING.withDayOfMonth(1).minusDays(1))
+                .medBeregnetPrÅr(BigDecimal.valueOf(inntekt))
+                .build(periode);
         return bg;
     }
 
     private static KoblingReferanse lagReferanseMedSkjæringstidspunkt(KoblingReferanse koblingReferanse) {
         return koblingReferanse.medSkjæringstidspunkt(Skjæringstidspunkt.builder()
-            .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
-            .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
-            .build());
+                .medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT_OPPTJENING)
+                .medSkjæringstidspunktBeregning(SKJÆRINGSTIDSPUNKT_BEREGNING)
+                .build());
     }
 
 }

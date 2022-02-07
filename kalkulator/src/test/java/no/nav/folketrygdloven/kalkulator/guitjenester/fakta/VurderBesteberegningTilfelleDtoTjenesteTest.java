@@ -77,7 +77,7 @@ public class VurderBesteberegningTilfelleDtoTjenesteTest {
         var beregningsgrunnlag = BeregningsgrunnlagDto.builder().medSkjæringstidspunkt(STP)
             .leggTilFaktaOmBeregningTilfeller(Collections.singletonList(FaktaOmBeregningTilfelle.VURDER_BESTEBEREGNING))
             .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)).build();
-        var periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(STP, null).build(beregningsgrunnlag);
+        var periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(STP, null).build(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto.ny().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER)
             .medBGAndelArbeidsforhold(bgAndelArbeidsforholdBuilder)
             .medInntektskategori(Inntektskategori.JORDBRUKER)

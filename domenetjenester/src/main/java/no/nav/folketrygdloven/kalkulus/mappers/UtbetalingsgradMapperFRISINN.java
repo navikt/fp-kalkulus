@@ -13,7 +13,7 @@ import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnPeriode;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittPeriodeInntekt;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
@@ -51,7 +51,7 @@ public class UtbetalingsgradMapperFRISINN {
     private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForNæring(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                BeregningsgrunnlagEntitet bg,
                                                                                List<FrisinnPeriode> frisinnPerioder) {
-        UtbetalingsgradArbeidsforholdDto snAktivitet = new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+        AktivitetDto snAktivitet = new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnNæringsInntekter(iayGrunnlag).stream()
                 .filter(pi -> erSøktFrisinnIPerioden(pi, frisinnPerioder, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .map(inntekt -> mapTilPeriodeMedUtbetalingsgrad(inntekt, bg, AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
@@ -62,7 +62,7 @@ public class UtbetalingsgradMapperFRISINN {
     private static UtbetalingsgradPrAktivitetDto mapUtbetalingsgraderForFrilans(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
                                                                                 BeregningsgrunnlagEntitet bg,
                                                                                 List<FrisinnPeriode> frisinnPerioder) {
-        UtbetalingsgradArbeidsforholdDto frilansAktivitet = new UtbetalingsgradArbeidsforholdDto(null,
+        AktivitetDto frilansAktivitet = new AktivitetDto(null,
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         List<PeriodeMedUtbetalingsgradDto> perioderMedUtbetalingsgrad = finnFrilansInntekter(iayGrunnlag).stream()
                 .filter(pi -> erSøktFrisinnIPerioden(pi, frisinnPerioder, AktivitetStatus.FRILANSER))

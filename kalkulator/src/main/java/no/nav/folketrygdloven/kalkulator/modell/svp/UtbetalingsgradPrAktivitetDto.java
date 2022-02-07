@@ -4,10 +4,10 @@ import java.util.List;
 
 public class UtbetalingsgradPrAktivitetDto {
 
-    private UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold;
+    private AktivitetDto utbetalingsgradArbeidsforhold;
     private List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad;
 
-    public UtbetalingsgradPrAktivitetDto(UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold,
+    public UtbetalingsgradPrAktivitetDto(AktivitetDto utbetalingsgradArbeidsforhold,
                                          List<PeriodeMedUtbetalingsgradDto> periodeMedUtbetalingsgrad) {
         this.utbetalingsgradArbeidsforhold = utbetalingsgradArbeidsforhold;
         this.periodeMedUtbetalingsgrad = periodeMedUtbetalingsgrad;
@@ -17,7 +17,7 @@ public class UtbetalingsgradPrAktivitetDto {
         return periodeMedUtbetalingsgrad;
     }
 
-    public UtbetalingsgradArbeidsforholdDto getUtbetalingsgradArbeidsforhold() {
+    public AktivitetDto getUtbetalingsgradArbeidsforhold() {
         return utbetalingsgradArbeidsforhold;
     }
 

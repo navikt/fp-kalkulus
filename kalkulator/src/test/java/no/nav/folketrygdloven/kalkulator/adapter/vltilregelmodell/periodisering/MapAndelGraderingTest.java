@@ -52,7 +52,7 @@ public class MapAndelGraderingTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(fom1)
                 .build();
-        BeregningsgrunnlagPeriodeDto bgperiode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom1, TIDENES_ENDE)
+        BeregningsgrunnlagPeriodeDto bgperiode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom1, TIDENES_ENDE)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE)
@@ -92,7 +92,7 @@ public class MapAndelGraderingTest {
         BeregningsgrunnlagDto bg = BeregningsgrunnlagDto.builder()
                 .medSkjæringstidspunkt(fom1)
                 .build();
-        BeregningsgrunnlagPeriodeDto bgperiode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom1, TIDENES_ENDE)
+        BeregningsgrunnlagPeriodeDto bgperiode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom1, TIDENES_ENDE)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(AktivitetStatus.FRILANSER)

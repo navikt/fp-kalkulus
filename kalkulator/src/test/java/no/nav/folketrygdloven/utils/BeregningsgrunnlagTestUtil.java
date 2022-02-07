@@ -82,7 +82,7 @@ public class BeregningsgrunnlagTestUtil {
         bgAktivitetStatusbuilder.medAktivitetStatus(statuser[0]).build(beregningsgrunnlag);
         List<AktivitetStatus> enkeltstatuser = oversettTilEnkeltstatuser(statuser);
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(skjæringstidspunktOpptjening, null)
             .build(beregningsgrunnlag);
         for (AktivitetStatus status : enkeltstatuser) {
@@ -169,7 +169,7 @@ public class BeregningsgrunnlagTestUtil {
         BeregningsgrunnlagAktivitetStatusDto.Builder bgAktivitetStatusbuilder = BeregningsgrunnlagAktivitetStatusDto.builder();
         bgAktivitetStatusbuilder.medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER).build(beregningsgrunnlag);
         for (int j = 0; j < perioder.size(); j++) {
-            BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
+            BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(perioder.get(j).getFomDato(), perioder.get(j).getTomDato())
                 .medAvkortetPrÅr(avkortet.get(j) != null ? BigDecimal.valueOf(avkortet.get(j)) : null)
                 .medRedusertPrÅr(redusert.get(j) != null ? BigDecimal.valueOf(redusert.get(j)) : null);

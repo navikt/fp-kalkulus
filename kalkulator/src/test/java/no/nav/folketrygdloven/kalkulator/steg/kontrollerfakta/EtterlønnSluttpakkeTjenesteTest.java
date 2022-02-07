@@ -93,7 +93,7 @@ public class EtterlønnSluttpakkeTjenesteTest {
             .medGrunnbeløp(BigDecimal.valueOf(93000))
             .leggTilAktivitetStatus(asb)
             .build();
-        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), null);
+        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING.minusYears(1), null);
         BeregningsgrunnlagPeriodeDto periode = periodeBuilder.build(beregningsgrunnlag);
         for (OpptjeningAktivitetType type : opptjeningAktivitetTypes) {
             BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.ny()

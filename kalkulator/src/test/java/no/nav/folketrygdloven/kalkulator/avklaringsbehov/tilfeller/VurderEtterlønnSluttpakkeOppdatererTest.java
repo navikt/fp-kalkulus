@@ -102,7 +102,7 @@ public class VurderEtterlønnSluttpakkeOppdatererTest {
     }
 
     private BeregningsgrunnlagPeriodeDto buildBeregningsgrunnlagPeriode(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate fom, LocalDate tom) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fom, tom)
             .build(beregningsgrunnlag);
     }

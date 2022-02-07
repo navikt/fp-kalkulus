@@ -86,7 +86,7 @@ public class RegelMapperTestDataHelper {
     }
 
     public static BeregningsgrunnlagPeriodeDto buildVLBGPeriode(BeregningsgrunnlagDto beregningsgrunnlag) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(beregningsgrunnlag.getSkjæringstidspunkt(), beregningsgrunnlag.getSkjæringstidspunkt().plusYears(3))
             .medBruttoPrÅr(BigDecimal.valueOf(534343.55))
             .medAvkortetPrÅr(BigDecimal.valueOf(223421.334))

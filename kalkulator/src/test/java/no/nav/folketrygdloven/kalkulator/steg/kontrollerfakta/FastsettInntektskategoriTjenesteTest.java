@@ -48,7 +48,7 @@ public class FastsettInntektskategoriTjenesteTest {
         BeregningsgrunnlagAktivitetStatusDto.builder()
             .medAktivitetStatus(aktivitetStatus)
             .build(beregningsgrunnlag);
-        var periode = BeregningsgrunnlagPeriodeDto.builder()
+        var periode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
             .build(beregningsgrunnlag);
         var bga = BGAndelArbeidsforholdDto

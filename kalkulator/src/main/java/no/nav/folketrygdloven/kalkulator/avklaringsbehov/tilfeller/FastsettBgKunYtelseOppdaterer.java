@@ -62,7 +62,7 @@ public class FastsettBgKunYtelseOppdaterer implements FaktaOmBeregningTilfelleOp
 
 
     private void fjernAndeler(BeregningsgrunnlagPeriodeDto periode, List<Long> andelsnrListe) {
-        BeregningsgrunnlagPeriodeDto.builder(periode).fjernBeregningsgrunnlagPrStatusOgAndelerSomIkkeLiggerIListeAvAndelsnr(andelsnrListe);
+        BeregningsgrunnlagPeriodeDto.kopier(periode).fjernBeregningsgrunnlagPrStatusOgAndelerSomIkkeLiggerIListeAvAndelsnr(andelsnrListe);
     }
 
 

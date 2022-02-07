@@ -17,8 +17,8 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.Beregningsgru
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -163,7 +163,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
 
 
     private BeregningsgrunnlagPeriodeDto.Builder lagPeriodeMedTilkommetAndel(LocalDate fom, LocalDate tom, BigDecimal bgFraStart) {
-        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
+        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.ny();
         periodeBuilder.medBeregningsgrunnlagPeriode(fom, tom);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder1 = lagArbeidFraStart(bgFraStart);
         periodeBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder1);
@@ -173,7 +173,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagPeriodeMedToTilkomneAndeler(LocalDate fom, LocalDate tom, BigDecimal bgFraStart) {
-        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
+        BeregningsgrunnlagPeriodeDto.Builder periodeBuilder = BeregningsgrunnlagPeriodeDto.ny();
         periodeBuilder.medBeregningsgrunnlagPeriode(fom, tom);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder1 = lagArbeidFraStart(bgFraStart);
         periodeBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder1);
@@ -188,10 +188,10 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
     private PleiepengerSyktBarnGrunnlag lagUtbetalingsgradGrunnlag(LocalDate arbeidFraStartTom, LocalDate tilkommetArbeidFom) {
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(
                 new UtbetalingsgradPrAktivitetDto(
-                        new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER_FRA_START, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        new AktivitetDto(ARBEIDSGIVER_FRA_START, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, arbeidFraStartTom), BigDecimal.valueOf(50)))),
                 new UtbetalingsgradPrAktivitetDto(
-                        new UtbetalingsgradArbeidsforholdDto(TILKOMMET_ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        new AktivitetDto(TILKOMMET_ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(tilkommetArbeidFom, SKJÆRINGSTIDSPUNKT.plusDays(15)), BigDecimal.valueOf(100))))
         ));
         return ytelsespesifiktGrunnlag;
@@ -201,13 +201,13 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
     private PleiepengerSyktBarnGrunnlag lagUtbetalingsgradGrunnlagForToTilkomnne(LocalDate arbeidFraStartTom, LocalDate tilkommetArbeidFom, BigDecimal tilkommetUtbetalingsgrad1, BigDecimal tilkommetUtbetalingsgrad2) {
         var ytelsespesifiktGrunnlag = new PleiepengerSyktBarnGrunnlag(List.of(
                 new UtbetalingsgradPrAktivitetDto(
-                        new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER_FRA_START, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        new AktivitetDto(ARBEIDSGIVER_FRA_START, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, arbeidFraStartTom), BigDecimal.valueOf(50)))),
                 new UtbetalingsgradPrAktivitetDto(
-                        new UtbetalingsgradArbeidsforholdDto(TILKOMMET_ARBEIDSGIVER2, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        new AktivitetDto(TILKOMMET_ARBEIDSGIVER2, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(tilkommetArbeidFom, SKJÆRINGSTIDSPUNKT.plusDays(15)), tilkommetUtbetalingsgrad2))),
                 new UtbetalingsgradPrAktivitetDto(
-                        new UtbetalingsgradArbeidsforholdDto(TILKOMMET_ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
+                        new AktivitetDto(TILKOMMET_ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID),
                         List.of(new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(tilkommetArbeidFom, SKJÆRINGSTIDSPUNKT.plusDays(15)), tilkommetUtbetalingsgrad1)))
         ));
         return ytelsespesifiktGrunnlag;
@@ -215,7 +215,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
 
 
     private BeregningsgrunnlagPeriodeDto.Builder lagPeriodeMedKunAndelFraStart(LocalDate fom, LocalDate tom, BigDecimal bgFraStart) {
-        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
+        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.ny();
         builder.medBeregningsgrunnlagPeriode(fom, tom);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagArbeidFraStart(bgFraStart);
         builder.leggTilBeregningsgrunnlagPrStatusOgAndel(andelBuilder);
@@ -254,7 +254,7 @@ class OmfordelingUtenRefusjonskravTjenesteTest {
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBeregningsgrunnlagPerioderBuilder(LocalDate fom, LocalDate tom,
                                                                                       Map<String, BigDecimal> orgnrs) {
-        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.builder();
+        BeregningsgrunnlagPeriodeDto.Builder builder = BeregningsgrunnlagPeriodeDto.ny();
         for (String orgnr : orgnrs.keySet()) {
             Arbeidsgiver arbeidsgiver = Arbeidsgiver.virksomhet(orgnr);
             BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()

@@ -18,7 +18,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatusMedHjemmel;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningsgrunnlagHjemmel;
@@ -57,7 +56,9 @@ import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.FaktaArbeidsf
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.SammenligningsgrunnlagPrStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Beløp;
+import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulator.ytelse.frisinn.FrisinnGrunnlag;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Hjemmel;
@@ -75,6 +76,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     );
     private Instance<MapInntektsgrunnlagVLTilRegel> alleInntektMappere;
     private Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper;
+    private Instance<SøknadsperiodeMapper> søknadsperiodeMapper;
 
     public MapBeregningsgrunnlagFraVLTilRegel() {
         // CDI
@@ -82,9 +84,11 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
     @Inject
     public MapBeregningsgrunnlagFraVLTilRegel(@Any Instance<MapInntektsgrunnlagVLTilRegel> inntektsmapper,
-                                              @Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper) {
+                                              @Any Instance<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper,
+                                              @Any Instance<SøknadsperiodeMapper> søknadsperiodeMapper) {
         this.alleInntektMappere = inntektsmapper;
         this.ytelsesSpesifikkMapper = ytelsesSpesifikkMapper;
+        this.søknadsperiodeMapper = søknadsperiodeMapper;
     }
 
     public List<no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.BeregningsgrunnlagPeriode> mapTilFordelingsregel(KoblingReferanse referanse,
@@ -329,7 +333,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
 
         for (BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus : vlBGPeriode.getBeregningsgrunnlagPrStatusOgAndelList()) {
             if (regelAktivitetStatus.equals(mapVLAktivitetStatus(vlBGPStatus.getAktivitetStatus()))) {
-                BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold = byggAndel(vlBGPStatus, input);
+                BeregningsgrunnlagPrArbeidsforhold regelArbeidsforhold = byggAndel(vlBGPStatus, vlBGPeriode.getPeriode(), input);
                 regelBGPStatusATFL.medArbeidsforhold(regelArbeidsforhold);
             }
         }
@@ -337,7 +341,7 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
     }
 
     private BeregningsgrunnlagPrArbeidsforhold byggAndel(BeregningsgrunnlagPrStatusOgAndelDto vlBGPStatus,
-                                                         BeregningsgrunnlagInput input) {
+                                                         Intervall periode, BeregningsgrunnlagInput input) {
         BeregningsgrunnlagPrArbeidsforhold.Builder builder = BeregningsgrunnlagPrArbeidsforhold.builder();
         builder
                 .medInntektskategori(MapInntektskategoriFraVLTilRegel.map(vlBGPStatus.getGjeldendeInntektskategori()))
@@ -358,9 +362,14 @@ public class MapBeregningsgrunnlagFraVLTilRegel {
                         .medNaturalytelseBortfaltPrÅr(bga.getNaturalytelseBortfaltPrÅr().orElse(null))
                         .medNaturalytelseTilkommetPrÅr(bga.getNaturalytelseTilkommetPrÅr().orElse(null))
                         .medErTidsbegrensetArbeidsforhold(erTidsbegrenset.orElse(null))
-                        .medGjeldendeRefusjonPrÅr(bga.getGjeldendeRefusjonPrÅr()));
+                        .medGjeldendeRefusjonPrÅr(bga.getGjeldendeRefusjonPrÅr())
+                        .medHarBrukerSøktFor(harBrukerSøktFor(input, bga.getArbeidsgiver(), periode)));
 
         return builder.build();
+    }
+
+    private boolean harBrukerSøktFor(BeregningsgrunnlagInput input, Arbeidsgiver arbeidsgiver, Intervall periode) {
+        return SøknadsperiodeMapper.finnTjeneste(søknadsperiodeMapper, input.getFagsakYtelseType()).harBrukerSøktFor(arbeidsgiver, periode, input.getYtelsespesifiktGrunnlag());
     }
 
     private boolean harHattMilitærIOpptjeningsperioden(BeregningAktivitetAggregatDto beregningAktivitetAggregat) {

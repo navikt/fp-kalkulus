@@ -50,7 +50,7 @@ public class FordelBeregningsgrunnlagHåndterer {
                                                   FordelBeregningsgrunnlagPeriodeDto endretPeriode) {
         BeregningsgrunnlagPeriodeDto korrektPeriode = getKorrektPeriode(input, perioder, endretPeriode);
         Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, korrektPeriode);
-        BeregningsgrunnlagPeriodeDto uendretPeriode = BeregningsgrunnlagPeriodeDto.builder(korrektPeriode).buildForKopi();
+        BeregningsgrunnlagPeriodeDto uendretPeriode = BeregningsgrunnlagPeriodeDto.kopier(korrektPeriode).buildForKopi();
         BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode)
                 .fjernAlleBeregningsgrunnlagPrStatusOgAndeler();
         // Må sortere med eksisterende først for å sette andelsnr på disse først

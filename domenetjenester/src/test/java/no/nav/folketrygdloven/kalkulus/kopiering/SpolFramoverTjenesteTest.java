@@ -233,7 +233,7 @@ class SpolFramoverTjenesteTest {
 
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto beregningsgrunnlag, LocalDate fomDato, LocalDate tomDato) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(fomDato, tomDato)
                 .build(beregningsgrunnlag);
     }

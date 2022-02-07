@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagGUIInput;
 import no.nav.folketrygdloven.kalkulator.input.UtbetalingsgradGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
@@ -169,7 +169,7 @@ public class MapFormidlingsdataBeregningsgrunnlag {
                 .anyMatch(utb -> harSøktUtbetalingIPeriode(utb.getPeriodeMedUtbetalingsgrad(), bgPeriode));
     }
 
-    private static boolean matcherMedBGAndel(UtbetalingsgradArbeidsforholdDto utbArbeid,
+    private static boolean matcherMedBGAndel(AktivitetDto utbArbeid,
                                              BeregningsgrunnlagPrStatusOgAndelDto bgAndel) {
         if (bgAndel.getAktivitetStatus().erFrilanser()) {
             return utbArbeid.getUttakArbeidType().equals(UttakArbeidType.FRILANS);

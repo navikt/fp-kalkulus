@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
+import no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -31,7 +31,7 @@ class NyAktivitetMedSøktYtelseFordelingTest {
     @Test
     void skal_lage_periode_for_nytt_arbeidsforhold() {
         // Arrange
-        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        AktivitetDto utbetalingsgradArbeidsforhold = new AktivitetDto(VIRKSOMHET, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         LocalDate fom = STP;
         LocalDate tom = STP.plusDays(10);
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetList = List.of(
@@ -58,7 +58,7 @@ class NyAktivitetMedSøktYtelseFordelingTest {
     @Test
     void skal_lage_periode_for_ny_næring() {
         // Arrange
-        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
+        AktivitetDto utbetalingsgradArbeidsforhold = new AktivitetDto(null, InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.SELVSTENDIG_NÆRINGSDRIVENDE);
         LocalDate fom = STP;
         LocalDate tom = STP.plusDays(10);
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitetList = List.of(

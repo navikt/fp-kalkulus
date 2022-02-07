@@ -37,7 +37,7 @@ public class BeregningsgrunnlagPeriodeTest {
 
     @Test
     public void skal_ikke_bygge_instans_hvis_mangler_påkrevde_felter() {
-        var beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder();
+        var beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny();
         try {
             beregningsgrunnlagPeriodeBuilder.build(null);
         } catch (NullPointerException e) {
@@ -114,7 +114,7 @@ public class BeregningsgrunnlagPeriodeTest {
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBuilderMedPaakrevdeFelter() {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPrStatusOgAndel(beregningsgrunnlagPrStatusOgAndelListe)
             .medBeregningsgrunnlagPeriode(PERIODE_FOM, null);
     }

@@ -169,7 +169,7 @@ public class FaktaOmBeregningDtoTjenesteImplTest {
             .leggTilFaktaOmBeregningTilfeller(tilfeller)
             .build();
 
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlagDto);
 
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()

@@ -159,7 +159,7 @@ public class ManuellBehandlingRefusjonGraderingDtoTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto bg, LocalDate fom, LocalDate tom) {
-        return BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(fom, tom).build(bg);
+        return BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(fom, tom).build(bg);
     }
 
     private void leggTilArbeidstakerOver6GOgNæring(BeregningsgrunnlagPeriodeDto periode) {

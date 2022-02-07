@@ -52,7 +52,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
     }
 
     private BeregningsgrunnlagPeriodeDto lagPeriode(BeregningsgrunnlagDto forrigeBG, LocalDate fom, LocalDate tom) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(fom, tom)
                 .build(forrigeBG);
     }
@@ -673,12 +673,12 @@ public class FordelBeregningsgrunnlagHåndtererTest {
                 null, true, forrigeInntektskategori, true, forrigeFastsatt, null);
 
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag();
-        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode1 = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, SKJÆRINGSTIDSPUNKT.plusMonths(2).minusDays(1))
                 .build(beregningsgrunnlag);
         buildArbeidstakerAndel(arbId, andelsnr, periode1,
                 null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
-        BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode2 = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT.plusMonths(2), null)
                 .build(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildArbeidstakerAndel(arbId, andelsnr, periode2,

@@ -159,7 +159,7 @@ class MapFraFordelingsmodellTest {
     }
 
     private void lagBGPeriode(LocalDate fom, LocalDate tom, BeregningsgrunnlagPrStatusOgAndelDto.Builder... andeler) {
-        var periodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
+        var periodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(fom, tom);
         Arrays.asList(andeler).forEach(periodeBuilder::leggTilBeregningsgrunnlagPrStatusOgAndel);
         bg.leggTilBeregningsgrunnlagPeriode(periodeBuilder);

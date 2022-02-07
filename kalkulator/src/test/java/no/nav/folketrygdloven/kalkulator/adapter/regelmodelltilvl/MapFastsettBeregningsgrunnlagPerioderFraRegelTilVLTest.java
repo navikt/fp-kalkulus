@@ -106,7 +106,7 @@ public class MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest {
     }
 
     private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(BeregningsgrunnlagDto vlBeregningsgrunnlag) {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
                 .medBruttoPrÅr(BRUTTO_PR_ÅR)
                 .build(vlBeregningsgrunnlag);

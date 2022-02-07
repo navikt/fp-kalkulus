@@ -1,6 +1,5 @@
 package no.nav.folketrygdloven.kalkulus.beregning.v1;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +30,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     @JsonProperty(value = "søknadsperioderPrAktivitet")
     @Size()
     @Valid
-    private List<SøkadsperioderPrAktivitetDto> søknadsperioderPrAktivitet;
+    private List<SøknadsperioderPrAktivitetDto> søknadsperioderPrAktivitet;
 
     protected OmsorgspengerGrunnlag() {
         // default ctor
@@ -46,7 +45,7 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         return utbetalingsgradPrAktivitet;
     }
 
-    public List<SøkadsperioderPrAktivitetDto> getSøknadsperioderPrAktivitet() {
+    public List<SøknadsperioderPrAktivitetDto> getSøknadsperioderPrAktivitet() {
         return søknadsperioderPrAktivitet;
     }
 
@@ -92,10 +91,10 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         if (søknadsperioderPrAktivitet == null) {
             return true;
         }
-        long antallUnike = søknadsperioderPrAktivitet.stream().map(SøkadsperioderPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
+        long antallUnike = søknadsperioderPrAktivitet.stream().map(SøknadsperioderPrAktivitetDto::getAktivitet)
                 .distinct()
                 .count();
-        long antall = søknadsperioderPrAktivitet.stream().map(SøkadsperioderPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
+        long antall = søknadsperioderPrAktivitet.stream().map(SøknadsperioderPrAktivitetDto::getAktivitet)
                 .count();
         return antall == antallUnike;
     }

@@ -24,7 +24,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.svp.PeriodeMedUtbetalingsgradDto;
-import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.svp.UtbetalingsgradPrAktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -51,7 +50,7 @@ class FinnTilkommetInntektTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
 
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1));
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).isEmpty();
     }
@@ -69,7 +68,7 @@ class FinnTilkommetInntektTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
         assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
@@ -90,7 +89,7 @@ class FinnTilkommetInntektTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(1).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).isEmpty();
     }
@@ -109,7 +108,7 @@ class FinnTilkommetInntektTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).hasSize(1);
         assertThat(aktivitetDtos.get(0).getInntekter()).hasSize(1);
@@ -129,13 +128,13 @@ class FinnTilkommetInntektTjenesteTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag(List.of(ARBEIDSGIVER, ARBEIDSGIVER2));
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = lagUtbetalingsgradperiode(SKJÆRINGSTIDSPUNKT.plusMonths(2).withDayOfMonth(1).minusDays(1));
 
-        List<AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
+        List<no.nav.folketrygdloven.kalkulator.steg.fordeling.ytelse.psb.AktivitetDto> aktivitetDtos = tjeneste.finnAktiviteterMedTilkommetInntekt(beregningsgrunnlag, iayGrunnlag, utbetalingsgradPrAktivitet);
 
         assertThat(aktivitetDtos).isEmpty();
     }
 
     private List<UtbetalingsgradPrAktivitetDto> lagUtbetalingsgradperiode(LocalDate sisteSøkteDato) {
-        UtbetalingsgradArbeidsforholdDto utbetalingsgradArbeidsforhold = new UtbetalingsgradArbeidsforholdDto(ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
+        no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto utbetalingsgradArbeidsforhold = new no.nav.folketrygdloven.kalkulator.modell.svp.AktivitetDto(ARBEIDSGIVER, InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         PeriodeMedUtbetalingsgradDto søktPeriode = new PeriodeMedUtbetalingsgradDto(Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT, sisteSøkteDato), BigDecimal.TEN);
         List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet = List.of(new UtbetalingsgradPrAktivitetDto(utbetalingsgradArbeidsforhold, List.of(søktPeriode)));
         return utbetalingsgradPrAktivitet;
@@ -172,7 +171,7 @@ class FinnTilkommetInntektTjenesteTest {
                 .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE)
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, TIDENES_ENDE)
                 .build(beregningsgrunnlag);
 
         arbeidsgivere.forEach(a -> BeregningsgrunnlagPrStatusOgAndelDto.ny()

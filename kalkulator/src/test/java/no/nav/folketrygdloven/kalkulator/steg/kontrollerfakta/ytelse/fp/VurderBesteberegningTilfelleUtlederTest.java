@@ -46,7 +46,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 .medSkjæringstidspunkt(STP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(STP, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -99,7 +99,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 .medSkjæringstidspunkt(STP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(STP, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -145,7 +145,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 .medSkjæringstidspunkt(STP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(STP, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()
@@ -191,7 +191,7 @@ class VurderBesteberegningTilfelleUtlederTest {
                 .medSkjæringstidspunkt(STP)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.ARBEIDSTAKER))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(STP, null)
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.ny()

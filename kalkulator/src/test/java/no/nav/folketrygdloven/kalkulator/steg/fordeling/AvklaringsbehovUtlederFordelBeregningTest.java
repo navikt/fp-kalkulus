@@ -79,7 +79,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
                 .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()
@@ -101,7 +101,7 @@ public class AvklaringsbehovUtlederFordelBeregningTest {
                 .medGrunnbeløp(BigDecimal.valueOf(GrunnbeløpTestKonstanter.GRUNNBELØP_2018))
                 .leggTilFaktaOmBeregningTilfeller(listeMedTilfeller)
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT_OPPTJENING, null)
                 .build(beregningsgrunnlag);
         Arbeidsgiver virksomhet = Arbeidsgiver.virksomhet("1234534");

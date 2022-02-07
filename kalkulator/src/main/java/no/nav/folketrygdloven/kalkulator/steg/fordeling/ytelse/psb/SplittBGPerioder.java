@@ -60,7 +60,7 @@ public class SplittBGPerioder {
         BeregningsgrunnlagPeriodeDto.oppdater(beregningsgrunnlagPeriode)
             .medBeregningsgrunnlagPeriode(beregningsgrunnlagPeriode.getBeregningsgrunnlagPeriodeFom(), nyPeriodeFom.minusDays(1))
             .build();
-        var nyPeriode = BeregningsgrunnlagPeriodeDto.builder(beregningsgrunnlagPeriode)
+        var nyPeriode = BeregningsgrunnlagPeriodeDto.kopier(beregningsgrunnlagPeriode)
             .medBeregningsgrunnlagPeriode(nyPeriodeFom, eksisterendePeriodeTom)
             .leggTilPeriodeÅrsak(periodeÅrsak)
             .build(beregningsgrunnlag);

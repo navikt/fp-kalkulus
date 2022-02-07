@@ -63,7 +63,7 @@ public class MapBGSkjæringstidspunktOgStatuserFraRegelTilVL {
             .forEach(as -> BeregningsgrunnlagAktivitetStatusDto.builder()
                 .medAktivitetStatus(mapAktivitetStatusfraRegelmodell(regelModell, as))
                 .build(beregningsgrunnlag));
-        var beregningsgrunnlagPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        var beregningsgrunnlagPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(skjæringstidspunktForBeregning, null)
             .build(beregningsgrunnlag);
 

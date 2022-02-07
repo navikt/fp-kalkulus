@@ -421,7 +421,7 @@ public class GraderingUtenBeregningsgrunnlagTjenesteTest {
     }
 
     private BeregningsgrunnlagPeriodeDto lagBeregningsgrunnlagPeriode(LocalDate periodeFom, LocalDate periodeTom) {
-        return BeregningsgrunnlagPeriodeDto.builder().medBeregningsgrunnlagPeriode(periodeFom, periodeTom).build(beregningsgrunnlag);
+        return BeregningsgrunnlagPeriodeDto.ny().medBeregningsgrunnlagPeriode(periodeFom, periodeTom).build(beregningsgrunnlag);
     }
 
     private void lagBeregningsgrunnlagAndel(BeregningsgrunnlagPeriodeDto beregningsgrunnlagPeriode, AktivitetStatus aktivitetStatus, BigDecimal redusertPrÅr) {

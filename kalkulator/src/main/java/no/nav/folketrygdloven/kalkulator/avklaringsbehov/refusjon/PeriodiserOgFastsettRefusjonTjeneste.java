@@ -97,7 +97,7 @@ public final class PeriodiserOgFastsettRefusjonTjeneste {
         perioderINyttGrunnlag.forEach(nyttIntervall -> {
             LocalDate nyFom = nyttIntervall.getFomDato();
             BeregningsgrunnlagPeriodeDto eksisterendeBGPeriode = finnGammelPeriodePåStartdato(nyFom, eksisterendePerioder);
-            BeregningsgrunnlagPeriodeDto.Builder nyBGPeriode = BeregningsgrunnlagPeriodeDto.builder(eksisterendeBGPeriode)
+            BeregningsgrunnlagPeriodeDto.Builder nyBGPeriode = BeregningsgrunnlagPeriodeDto.kopier(eksisterendeBGPeriode)
                     .medBeregningsgrunnlagPeriode(nyFom, nyttIntervall.getTomDato());
 
             boolean erNyStartdato = !eksisterendeStartdatoer.contains(nyFom);

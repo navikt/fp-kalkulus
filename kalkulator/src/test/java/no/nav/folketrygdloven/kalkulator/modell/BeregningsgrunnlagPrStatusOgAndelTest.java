@@ -203,7 +203,7 @@ public class BeregningsgrunnlagPrStatusOgAndelTest {
     }
 
     private BeregningsgrunnlagPeriodeDto.Builder lagBeregningsgrunnlagPeriodeBuilder() {
-        return BeregningsgrunnlagPeriodeDto.builder()
+        return BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(PERIODE_FOM, null);
     }
 

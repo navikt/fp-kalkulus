@@ -25,7 +25,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
         LocalDate fom = LocalDate.now();
         LocalDate tom = fom.plusWeeks(6);
         BeregningsgrunnlagDto beregningsgrunnlag = mock(BeregningsgrunnlagDto.class);
-        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fom, tom)
             .build(beregningsgrunnlag);
 
@@ -61,7 +61,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
         LocalDate fom = LocalDate.now();
         LocalDate tom = fom.plusWeeks(6);
         BeregningsgrunnlagDto beregningsgrunnlag = mock(BeregningsgrunnlagDto.class);
-        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fom, tom)
             .leggTilPeriodeÅrsak(PeriodeÅrsak.REFUSJON_OPPHØRER)
             .build(beregningsgrunnlag);
@@ -82,7 +82,7 @@ public class MapSplittetPeriodeFraVLTilRegelTest {
         LocalDate fom = LocalDate.now();
         LocalDate tom = fom.plusWeeks(6);
         BeregningsgrunnlagDto beregningsgrunnlag = mock(BeregningsgrunnlagDto.class);
-        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto bgPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fom, tom)
             .leggTilPeriodeÅrsak(PeriodeÅrsak.GRADERING)
             .leggTilPeriodeÅrsak(PeriodeÅrsak.ENDRING_I_REFUSJONSKRAV)

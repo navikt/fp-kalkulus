@@ -60,7 +60,7 @@ class VilkårTjenesteFRISINNTest {
                 .medGrunnbeløp(BigDecimal.TEN)
                 .leggTilAktivitetStatus(BeregningsgrunnlagAktivitetStatusDto.builder().medAktivitetStatus(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE))
                 .build();
-        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto periode = BeregningsgrunnlagPeriodeDto.ny()
                 .medBeregningsgrunnlagPeriode(SØKNAD_FOM, SØKNAD_FOM.plusMonths(1))
                 .build(bg);
         BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny()

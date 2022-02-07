@@ -117,7 +117,7 @@ public class FinnÅrsinntektvisningstallTest {
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
-        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 
@@ -140,7 +140,7 @@ public class FinnÅrsinntektvisningstallTest {
             .medSkjæringstidspunkt(SKJÆRINGSTIDSPUNKT)
             .build();
 
-        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto aktivPeriode = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(SKJÆRINGSTIDSPUNKT, null)
             .build(grunnlag);
 

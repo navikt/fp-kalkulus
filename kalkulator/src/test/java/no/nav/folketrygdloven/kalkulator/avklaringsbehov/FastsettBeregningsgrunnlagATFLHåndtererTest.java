@@ -219,7 +219,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
     }
 
     private void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder, LocalDate fomDato, LocalDate tomDato, List<Boolean> erArbeidstakerList, List<Inntektskategori> inntektskategoriList) {
-        BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fomDato, tomDato);
         Assertions.assertThat(erArbeidstakerList).hasSize(inntektskategoriList.size());
         for (int i = 0; i < erArbeidstakerList.size(); i++) {
@@ -234,7 +234,7 @@ public class FastsettBeregningsgrunnlagATFLHåndtererTest {
 
 
     private void leggTilBeregningsgrunnlagPeriode(BeregningsgrunnlagDto.Builder beregningsgrunnlagBuilder, LocalDate fomDato, LocalDate tomDato, boolean erArbeidstaker, int antallAndeler) {
-        BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.builder()
+        BeregningsgrunnlagPeriodeDto.Builder beregningsgrunnlagPeriodeBuilder = BeregningsgrunnlagPeriodeDto.ny()
             .medBeregningsgrunnlagPeriode(fomDato, tomDato);
         for (int i = 0; i < antallAndeler; i++) {
             if (erArbeidstaker) {

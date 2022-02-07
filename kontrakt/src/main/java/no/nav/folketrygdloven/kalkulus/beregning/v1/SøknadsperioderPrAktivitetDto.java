@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, creatorVisibility = Visibility.NONE)
 @JsonInclude(value = Include.NON_ABSENT, content = Include.NON_EMPTY)
-public class SøkadsperioderPrAktivitetDto {
+public class SøknadsperioderPrAktivitetDto {
 
     @JsonProperty(value = "aktivitetDto", required = true)
     @Valid
@@ -35,10 +35,10 @@ public class SøkadsperioderPrAktivitetDto {
     @Size(min = 1)
     private List<Periode> perioder;
 
-    public SøkadsperioderPrAktivitetDto() {
+    public SøknadsperioderPrAktivitetDto() {
     }
 
-    public SøkadsperioderPrAktivitetDto(@Valid @NotNull AktivitetDto aktivitetDto, @Valid @NotNull @NotEmpty List<Periode> perioder) {
+    public SøknadsperioderPrAktivitetDto(@Valid @NotNull AktivitetDto aktivitetDto, @Valid @NotNull @NotEmpty List<Periode> perioder) {
         this.aktivitetDto = aktivitetDto;
         this.perioder = perioder;
     }
@@ -47,14 +47,14 @@ public class SøkadsperioderPrAktivitetDto {
         return perioder;
     }
 
-    public AktivitetDto getUtbetalingsgradArbeidsforholdDto() {
+    public AktivitetDto getAktivitet() {
         return aktivitetDto;
     }
 
     @Override
     public String toString() {
         return "UtbetalingsgradPrAktivitetDto{" +
-                "utbetalingsgradArbeidsforholdDto=" + aktivitetDto +
+                "aktivitetDto=" + aktivitetDto +
                 ", perioder=" + perioder +
                 '}';
     }
@@ -63,7 +63,7 @@ public class SøkadsperioderPrAktivitetDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SøkadsperioderPrAktivitetDto that = (SøkadsperioderPrAktivitetDto) o;
+        SøknadsperioderPrAktivitetDto that = (SøknadsperioderPrAktivitetDto) o;
         return Objects.equals(aktivitetDto, that.aktivitetDto) &&
                 Objects.equals(perioder, that.perioder);
     }
