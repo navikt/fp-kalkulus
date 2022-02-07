@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
