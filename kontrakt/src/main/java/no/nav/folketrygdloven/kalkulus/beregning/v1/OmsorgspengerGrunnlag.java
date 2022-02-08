@@ -37,8 +37,9 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     }
 
 
-    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
+    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, @Valid List<SøknadsperioderPrAktivitetDto> søknadsperioderPrAktivitet) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
+        this.søknadsperioderPrAktivitet = søknadsperioderPrAktivitet;
     }
 
     public List<UtbetalingsgradPrAktivitetDto> getUtbetalingsgradPrAktivitet() {
