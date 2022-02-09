@@ -41,8 +41,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     /**
      * Definerer steget som det kopieres fra
      */
-    @JsonProperty(value = "stegType", required = true)
-    @NotNull
+    @JsonProperty(value = "stegType")
     @Valid
     private StegType stegType;
 
