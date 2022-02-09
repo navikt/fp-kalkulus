@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 
 /**
@@ -37,6 +38,14 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @Valid
     private YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes;
 
+    /**
+     * Definerer steget som det kopieres fra
+     */
+    @JsonProperty(value = "stegType", required = true)
+    @NotNull
+    @Valid
+    private StegType stegType;
+
     @JsonProperty(value = "fordelBeregningListe", required = true)
     @Size(min=1)
     @NotNull
@@ -50,9 +59,11 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @JsonCreator
     public KopierBeregningListeRequest(String saksnummer,
                                        YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
+                                       StegType stegType,
                                        List<KopierBeregningRequest> kopierBeregningListe) {
         this.saksnummer = saksnummer;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
+        this.stegType = stegType;
         this.kopierBeregningListe = kopierBeregningListe;
     }
 
@@ -69,6 +80,7 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
         return kopierBeregningListe;
     }
 
-
-
+    public StegType getStegType() {
+        return stegType;
+    }
 }

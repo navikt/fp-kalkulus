@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import no.nav.folketrygdloven.kalkulus.beregning.MapStegTilTilstand;
 import no.nav.folketrygdloven.kalkulus.beregning.input.KalkulatorInputTjeneste;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.avklaringsbehov.AvklaringsbehovEntitet;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.beregningsgrunnlag.BeregningsgrunnlagGrunnlagBuilder;
@@ -56,17 +57,18 @@ public class KopierBeregningsgrunnlagTjeneste {
      * @param kopiRequests Referanser som skal kopieres
      * @param ytelseType   Ytelsetype
      * @param saksnummer   Saksnummer
+     * @param steg Definerer steget som vi kopierer beregningsgrunnlag fra
      */
     public void kopierGrunnlagOgOpprettKoblinger(List<KopierBeregningRequest> kopiRequests,
                                                  YtelseTyperKalkulusStøtterKontrakt ytelseType,
-                                                 Saksnummer saksnummer) {
+                                                 Saksnummer saksnummer, BeregningSteg steg) {
         var eksisterendeKoblinger = finnEksisterendeKoblinger(kopiRequests, ytelseType);
         var aktørId = validerKoblingerOgFinnAktørId(eksisterendeKoblinger, ytelseType, saksnummer);
         var nyeKoblinger = opprettNyeKoblinger(kopiRequests, ytelseType, aktørId, saksnummer);
         opprettKoblingrelasjoner(kopiRequests);
-        kopierBeregningsgrunnlag(kopiRequests, nyeKoblinger, eksisterendeKoblinger);
+        kopierBeregningsgrunnlag(kopiRequests, nyeKoblinger, eksisterendeKoblinger, steg);
         kopierKalkulatorInput(kopiRequests, eksisterendeKoblinger, nyeKoblinger);
-        kopierAvklaringsbehov(kopiRequests, eksisterendeKoblinger, nyeKoblinger);
+        kopierAvklaringsbehov(kopiRequests, eksisterendeKoblinger, nyeKoblinger, steg);
     }
 
     private void kopierKalkulatorInput(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger) {
@@ -119,17 +121,25 @@ public class KopierBeregningsgrunnlagTjeneste {
         return eksisterendeKoblinger;
     }
 
-    private void kopierBeregningsgrunnlag(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> nyeKoblinger, List<KoblingEntitet> eksisterendeKoblinger) {
-        List<BeregningsgrunnlagGrunnlagEntitet> grunnlagSomSkalKopieres = finnGrunnlagSomSkalKopieres(eksisterendeKoblinger);
+    private void kopierBeregningsgrunnlag(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> nyeKoblinger, List<KoblingEntitet> eksisterendeKoblinger, BeregningSteg steg) {
+        List<BeregningsgrunnlagGrunnlagEntitet> grunnlagSomSkalKopieres = finnGrunnlagSomSkalKopieres(eksisterendeKoblinger, steg);
 
         grunnlagSomSkalKopieres.forEach(gr -> {
             var nyKoblingId = finnNyKoblingId(gr.getKoblingId(), eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             var kopi = BeregningsgrunnlagGrunnlagBuilder.kopiere(gr);
-            beregningsgrunnlagRepository.lagre(nyKoblingId, kopi, BeregningsgrunnlagTilstand.VURDERT_VILKÅR);
+            beregningsgrunnlagRepository.lagre(nyKoblingId, kopi, MapStegTilTilstand.mapTilStegTilstand(steg));
         });
     }
 
-    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalKopieres(List<KoblingEntitet> eksisterendeKoblinger) {
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagSomSkalKopieres(List<KoblingEntitet> eksisterendeKoblinger, BeregningSteg steg) {
+        if (steg.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
+            return finnGrunnlagForKopiAvVilkårsvurdering(eksisterendeKoblinger);
+        }
+        // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
+        return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), MapStegTilTilstand.mapTilStegTilstand(steg));
+    }
+
+    private List<BeregningsgrunnlagGrunnlagEntitet> finnGrunnlagForKopiAvVilkårsvurdering(List<KoblingEntitet> eksisterendeKoblinger) {
         // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
         var vurdertVilkårGrunnlag = beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), BeregningsgrunnlagTilstand.VURDERT_VILKÅR);
         List<Long> koblingIdUtenVurdertVilkårGrunnlag = finnKoblingIdIkkeInkludertIListeMedGrunnlag(mapTilId(eksisterendeKoblinger), vurdertVilkårGrunnlag);
@@ -150,19 +160,19 @@ public class KopierBeregningsgrunnlagTjeneste {
                 .collect(Collectors.toList());
     }
 
-    private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger) {
+    private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger, BeregningSteg steg) {
         var eksisterendeKoblingIder = eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
-        var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKoblingIder);
+        var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKoblingIder, steg);
         avklaringsbehovSomMåKopieres.forEach(ab -> {
             var nyKobling = finnNyKobling(ab.getKoblingId(), eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             avklaringsbehovTjeneste.kopierAvklaringsbehov(nyKobling, ab);
         });
     }
 
-    private Set<AvklaringsbehovEntitet> finnAvklaringsbehovSomSkalKopieres(Set<Long> eksisterendeKoblingIder) {
+    private Set<AvklaringsbehovEntitet> finnAvklaringsbehovSomSkalKopieres(Set<Long> eksisterendeKoblingIder, BeregningSteg steg) {
         return avklaringsbehovTjeneste.hentAlleAvklaringsbehovForKoblinger(eksisterendeKoblingIder)
                 .stream()
-                .filter(ap -> ap.getStegFunnet().erFør(BeregningSteg.VURDER_REF_BERGRUNN))
+                .filter(ap -> ap.getStegFunnet().erFør(steg))
                 .filter(ap -> ap.getStatus().equals(AvklaringsbehovStatus.UTFØRT))
                 .collect(Collectors.toSet());
     }
