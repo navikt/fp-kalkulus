@@ -136,7 +136,9 @@ public class OmfordelingUtenRefusjonskravTjeneste {
     private static List<NøkkelOgUtbetalingsgrad> getTilkommetAktivitet(BeregningsgrunnlagPeriodeDto p, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         return p.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_PERIODISERING))
-                .filter(a -> a.getBgAndelArbeidsforhold().isEmpty() || a.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(BigDecimal.ZERO) == 0)
+                .filter(a -> a.getBgAndelArbeidsforhold().isEmpty() ||
+                        a.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr() == null ||
+                        a.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(BigDecimal.ZERO) == 0)
                 .map(a -> new NøkkelOgUtbetalingsgrad(
                         a.getAndelsnr(),
                         a.getAktivitetStatus(),
