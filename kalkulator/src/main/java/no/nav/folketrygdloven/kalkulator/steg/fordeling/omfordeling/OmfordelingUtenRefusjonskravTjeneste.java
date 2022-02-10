@@ -69,11 +69,18 @@ public class OmfordelingUtenRefusjonskravTjeneste {
 
     private static List<NøkkelOgBeløp> finnFordeling(BeregningsgrunnlagPeriodeDto p, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         var bortfaltInntekt = getBortfaltInntektPrAndelsnøkkel(p, ytelsespesifiktGrunnlag);
+        if (harIkkeBortfaltInntekt(bortfaltInntekt) == 0) {
+            return Collections.emptyList();
+        }
         var tilkommet = getTilkommetAktivitet(p, ytelsespesifiktGrunnlag);
         List<NøkkelOgBeløp> fordelt = fordelForTilkomneAndelerMedUtbetalingsgrad(bortfaltInntekt, tilkommet);
         List<NøkkelOgBeløp> fordeltUtenUtbetaling = fordelForTilkomneAndelerUtenUtbetalingsgrad(tilkommet);
         fordelt.addAll(fordeltUtenUtbetaling);
         return fordelt;
+    }
+
+    private static int harIkkeBortfaltInntekt(List<NøkkelOgBeløp> bortfaltInntekt) {
+        return bortfaltInntekt.stream().map(NøkkelOgBeløp::beløp).reduce(Beløp::adder).orElse(Beløp.ZERO).compareTo(Beløp.ZERO);
     }
 
     private static ArrayList<NøkkelOgBeløp> fordelForTilkomneAndelerUtenUtbetalingsgrad(List<NøkkelOgUtbetalingsgrad> tilkommet) {
@@ -129,6 +136,7 @@ public class OmfordelingUtenRefusjonskravTjeneste {
     private static List<NøkkelOgUtbetalingsgrad> getTilkommetAktivitet(BeregningsgrunnlagPeriodeDto p, YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
         return p.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                 .filter(a -> a.getKilde().equals(AndelKilde.PROSESS_PERIODISERING))
+                .filter(a -> a.getBgAndelArbeidsforhold().isEmpty() || a.getBgAndelArbeidsforhold().get().getGjeldendeRefusjonPrÅr().compareTo(BigDecimal.ZERO) == 0)
                 .map(a -> new NøkkelOgUtbetalingsgrad(
                         a.getAndelsnr(),
                         a.getAktivitetStatus(),
