@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,7 +17,7 @@ public class InntektDto {
     private AktørInntektDto aktørInntekt;
     private Arbeidsgiver arbeidsgiver;
     private InntektskildeType inntektsKilde;
-    private Set<InntektspostDto> inntektspost = new LinkedHashSet<>();
+    private List<InntektspostDto> inntektspost = new ArrayList<>();
 
     InntektDto() {
         // hibernate
@@ -31,7 +33,7 @@ public class InntektDto {
             InntektspostDto inntektspost = new InntektspostDto(ip);
             inntektspost.setInntekt(this);
             return inntektspost;
-        }).collect(Collectors.toCollection(LinkedHashSet::new));
+        }).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -82,7 +84,7 @@ public class InntektDto {
      * Alle utbetalinger utført av utbetaler (ufiltrert).
      */
     public Collection<InntektspostDto> getAlleInntektsposter() {
-        return Collections.unmodifiableSet(inntektspost);
+        return Collections.unmodifiableList(inntektspost);
     }
 
     void leggTilInntektspost(InntektspostDto inntektspost) {
