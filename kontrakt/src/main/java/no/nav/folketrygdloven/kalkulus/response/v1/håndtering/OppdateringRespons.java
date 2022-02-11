@@ -4,14 +4,13 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 import java.util.UUID;
 
-import jakarta.validation.Valid;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
 
 /**
@@ -31,6 +30,10 @@ public class OppdateringRespons implements KalkulusRespons {
     @Valid
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
 
+    @JsonProperty(value = "beregningAktiviteterEndring")
+    @Valid
+    private BeregningAktiviteterEndring beregningAktiviteterEndring;
+
     @JsonProperty(value = "faktaOmBeregningVurderinger")
     @Valid
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
@@ -48,6 +51,7 @@ public class OppdateringRespons implements KalkulusRespons {
 
     public OppdateringRespons(Endringer endringer, UUID eksternReferanse) {
         this.beregningsgrunnlagEndring = endringer.getBeregningsgrunnlagEndring();
+        this.beregningAktiviteterEndring = endringer.getBeregningAktiviteterEndring();
         this.faktaOmBeregningVurderinger = endringer.getFaktaOmBeregningVurderinger();
         this.refusjonoverstyringEndring = endringer.getRefusjonoverstyringEndring();
         this.varigEndretEllerNyoppstartetNæringEndring = endringer.getVarigEndretNæringEndring();
@@ -60,6 +64,10 @@ public class OppdateringRespons implements KalkulusRespons {
 
     public BeregningsgrunnlagEndring getBeregningsgrunnlagEndring() {
         return beregningsgrunnlagEndring;
+    }
+
+    public BeregningAktiviteterEndring getBeregningAktiviteterEndring() {
+        return beregningAktiviteterEndring;
     }
 
     public FaktaOmBeregningVurderinger getFaktaOmBeregningVurderinger() {

@@ -6,6 +6,7 @@ package no.nav.folketrygdloven.kalkulus.response.v1.håndtering;
 public class Endringer {
 
     private BeregningsgrunnlagEndring beregningsgrunnlagEndring;
+    private BeregningAktiviteterEndring beregningAktiviteterEndring;
     private FaktaOmBeregningVurderinger faktaOmBeregningVurderinger;
     private VarigEndretEllerNyoppstartetNæringEndring varigEndretEllerNyoppstartetNæringEndring;
     private RefusjonoverstyringEndring refusjonoverstyringEndring;
@@ -15,6 +16,10 @@ public class Endringer {
 
     public Endringer(RefusjonoverstyringEndring refusjonoverstyringEndring) {
         this.refusjonoverstyringEndring = refusjonoverstyringEndring;
+    }
+
+    public BeregningAktiviteterEndring getBeregningAktiviteterEndring() {
+        return beregningAktiviteterEndring;
     }
 
     public BeregningsgrunnlagEndring getBeregningsgrunnlagEndring() {
@@ -47,6 +52,11 @@ public class Endringer {
 
         public Builder medBeregningsgrunnlagEndring(BeregningsgrunnlagEndring beregningsgrunnlagEndring) {
             this.kladd.beregningsgrunnlagEndring = beregningsgrunnlagEndring;
+            return this;
+        }
+
+        public Builder medBeregningAktiviteterEndring(BeregningAktiviteterEndring beregningAktiviteterEndring) {
+            this.kladd.beregningAktiviteterEndring = beregningAktiviteterEndring;
             return this;
         }
 

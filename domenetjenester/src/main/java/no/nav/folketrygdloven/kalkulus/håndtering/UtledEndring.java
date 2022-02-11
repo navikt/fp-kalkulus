@@ -40,6 +40,11 @@ public class UtledEndring {
         Optional<BeregningsgrunnlagDto> forrigeBeregningsgrunnlagOpt = forrigeGrunnlag.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag);
         BeregningsgrunnlagEndring beregningsgrunnlagEndring = utledBeregningsgrunnlagEndring(beregningsgrunnlagDto, bgFraSteg, forrigeBeregningsgrunnlagOpt);
         endringBuilder.medBeregningsgrunnlagEndring(beregningsgrunnlagEndring);
+        UtledEndringIAktiviteter.utedEndring(dto, beregningsgrunnlagGrunnlagDto.getRegisterAktiviteter(),
+                beregningsgrunnlagGrunnlagDto.getGjeldendeAktiviteter(),
+                forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getRegisterAktiviteter),
+                forrigeGrunnlag.map(BeregningsgrunnlagGrunnlagDto::getGjeldendeAktiviteter))
+                .map(endringBuilder::medBeregningAktiviteterEndring);
         mapFaktaOmBeregningEndring(beregningsgrunnlagGrunnlagDto, forrigeGrunnlag, dto, endringBuilder)
                 .map(endringBuilder::medFaktaOmBeregningVurderinger);
         mapVarigEndretNæringEndring(forrigeGrunnlag, dto, endringBuilder, beregningsgrunnlagDto, iayGrunnlag)
