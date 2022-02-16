@@ -31,6 +31,12 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
     @Valid
     private InntektskategoriEndring inntektskategoriEndring;
 
+
+    @JsonProperty(value = "andelsnr")
+    @NotNull
+    @Valid
+    private Long andelsnr;
+
     @JsonProperty(value = "aktivitetStatus")
     @NotNull
     @Valid
@@ -52,16 +58,19 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         // For Json deserialisering
     }
 
-    public BeregningsgrunnlagPrStatusOgAndelEndring(@NotNull @Valid AktivitetStatus aktivitetStatus) {
+    public BeregningsgrunnlagPrStatusOgAndelEndring(Long andelsnr, AktivitetStatus aktivitetStatus) {
+        this.andelsnr = andelsnr;
         this.aktivitetStatus = aktivitetStatus;
     }
 
-    private BeregningsgrunnlagPrStatusOgAndelEndring(@Valid OpptjeningAktivitetType arbeidsforholdType) {
+    private BeregningsgrunnlagPrStatusOgAndelEndring(Long andelsnr, OpptjeningAktivitetType arbeidsforholdType) {
+        this.andelsnr = andelsnr;
         this.aktivitetStatus = AktivitetStatus.ARBEIDSTAKER;
         this.arbeidsforholdType = arbeidsforholdType;
     }
 
-    public BeregningsgrunnlagPrStatusOgAndelEndring(@Valid Aktør arbeidsgiver, @Valid String arbeidsforholdRef) {
+    public BeregningsgrunnlagPrStatusOgAndelEndring(Long andelsnr, Aktør arbeidsgiver, String arbeidsforholdRef) {
+        this.andelsnr = andelsnr;
         this.aktivitetStatus = AktivitetStatus.ARBEIDSTAKER;
         this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
@@ -109,8 +118,8 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         this.refusjonEndring = refusjonEndring;
     }
 
-    public static BeregningsgrunnlagPrStatusOgAndelEndring opprettForArbeidstakerUtenArbeidsgiver(OpptjeningAktivitetType arbeidsforholdType) {
-        return new BeregningsgrunnlagPrStatusOgAndelEndring(arbeidsforholdType);
+    public static BeregningsgrunnlagPrStatusOgAndelEndring opprettForArbeidstakerUtenArbeidsgiver(OpptjeningAktivitetType arbeidsforholdType, @NotNull @Valid Long andelsnr) {
+        return new BeregningsgrunnlagPrStatusOgAndelEndring(andelsnr, arbeidsforholdType);
     }
 
 }

@@ -8,9 +8,9 @@ import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.Endringer;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.OppdateringRespons;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.RefusjonoverstyringEndring;
 
-public final class UtledEndring {
+public final class UtledEndringForRefusjonOverstyring {
 
-    private UtledEndring() {
+    private UtledEndringForRefusjonOverstyring() {
         // skjul
     }
 

@@ -41,12 +41,12 @@ public class UtledEndringIAndel {
             if (andel.getArbeidsgiver().isPresent()) {
                 Arbeidsgiver arbeidsgiver = andel.getArbeidsgiver().get();
                 Aktør aktør = arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getIdentifikator()) : new AktørIdPersonident(arbeidsgiver.getIdentifikator());
-                andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(aktør, andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getReferanse).orElse(null));
+                andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), aktør, andel.getArbeidsforholdRef().map(InternArbeidsforholdRefDto::getReferanse).orElse(null));
             } else {
-                andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(andel.getArbeidsforholdType());
+                andelEndring = BeregningsgrunnlagPrStatusOgAndelEndring.opprettForArbeidstakerUtenArbeidsgiver(andel.getArbeidsforholdType(), andel.getAndelsnr());
             }
         } else {
-            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
+            andelEndring = new BeregningsgrunnlagPrStatusOgAndelEndring(andel.getAndelsnr(), AktivitetStatus.fraKode(andel.getAktivitetStatus().getKode()));
         }
         return andelEndring;
     }
