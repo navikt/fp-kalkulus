@@ -76,6 +76,10 @@ public class BeregningsgrunnlagPrStatusOgAndelEndring {
         this.arbeidsforholdRef = arbeidsforholdRef;
     }
 
+    public Long getAndelsnr() {
+        return andelsnr;
+    }
+
     public AktivitetStatus getAktivitetStatus() {
         return aktivitetStatus;
     }
