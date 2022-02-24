@@ -1,11 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.iay.ytelse.v1;
 
 import java.math.BigDecimal;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,6 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.felles.v1.BeløpDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Periode;
 
@@ -40,15 +41,26 @@ public class YtelseAnvistDto {
     @Digits(integer = 3, fraction = 2)
     private BigDecimal utbetalingsgradProsent;
 
+    @JsonProperty("anvisteAndeler")
+    @Size()
+    @Valid
+    private List<AnvistAndel> anvisteAndeler;
+
+
     public YtelseAnvistDto() {
         // default ctor
     }
 
-    public YtelseAnvistDto(@Valid Periode anvistPeriode, @Valid BeløpDto beløp, @Valid BeløpDto dagsats, @Valid BigDecimal utbetalingsgradProsent) {
+    public YtelseAnvistDto(Periode anvistPeriode,
+                           BeløpDto beløp,
+                           BeløpDto dagsats,
+                           BigDecimal utbetalingsgradProsent,
+                           List<AnvistAndel> anvisteAndeler) {
         this.anvistPeriode = anvistPeriode;
         this.beløp = beløp;
         this.dagsats = dagsats;
         this.utbetalingsgradProsent = utbetalingsgradProsent;
+        this.anvisteAndeler = anvisteAndeler;
     }
 
     public Periode getAnvistPeriode() {
@@ -65,5 +77,9 @@ public class YtelseAnvistDto {
 
     public BigDecimal getUtbetalingsgradProsent() {
         return utbetalingsgradProsent;
+    }
+
+    public List<AnvistAndel> getAnvisteAndeler() {
+        return anvisteAndeler;
     }
 }

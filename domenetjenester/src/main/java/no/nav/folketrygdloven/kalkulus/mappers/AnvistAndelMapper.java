@@ -31,15 +31,37 @@ class AnvistAndelMapper {
 
     public List<AnvistAndel> mapAnvisteAndeler(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist,
                                                no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto ytelseGrunnlag) {
+        if (ytelseAnvist.getAnvisteAndeler() != null) {
+            return ytelseAnvist.getAnvisteAndeler().stream()
+                    .map(aa -> mapAnvistAndelFraVedtak(aa, ytelseAnvist.getAnvistPeriode()))
+                    .toList();
+        }
         if (ytelseGrunnlag != null && ytelseGrunnlag.getFordeling() != null && Arbeidskategori.ARBEIDSTAKER.equals(ytelseGrunnlag.getArbeidskategori())) {
-            boolean harKunGyldigeArbeidsgivere = harKunGyldigeArbeidsgivere(ytelseGrunnlag);
-            if (harKunGyldigeArbeidsgivere) {
-                BigDecimal utbetalingsgradProsent = ytelseAnvist.getUtbetalingsgradProsent() == null ?
-                        BigDecimal.valueOf(100) : ytelseAnvist.getUtbetalingsgradProsent();
-                return ytelseGrunnlag.getFordeling().stream()
-                        .map(f -> mapYtelsegrunnlagTilAnvistAndel(ytelseAnvist, utbetalingsgradProsent, f))
-                        .collect(Collectors.toList());
-            }
+            return mapAnvisteAndelerFraInfotrygdgrunnlag(ytelseAnvist, ytelseGrunnlag);
+        }
+        return Collections.emptyList();
+    }
+
+    private AnvistAndel mapAnvistAndelFraVedtak(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.AnvistAndel aa, Periode anvistPeriode) {
+        int antallVirkedager = Virkedager.beregnAntallVirkedagerEllerKunHelg(anvistPeriode.getFom(), anvistPeriode.getTom());
+        return new AnvistAndel(
+                MapFraKalkulator.mapArbeidsgiver(aa.getArbeidsgiver()),
+                MapIAYTilKalulator.mapArbeidsforholdRef(aa.getArbeidsforholdId()),
+                aa.getDagsats().getVerdi().multiply(BigDecimal.valueOf(antallVirkedager)),
+                aa.getDagsats().getVerdi(),
+                aa.getRefusjonsgrad() != null ? new Stillingsprosent(aa.getRefusjonsgrad()) : null,
+                aa.getInntektskategori() != null ? aa.getInntektskategori() : Inntektskategori.UDEFINERT
+        );
+    }
+
+    private List<AnvistAndel> mapAnvisteAndelerFraInfotrygdgrunnlag(YtelseAnvistDto ytelseAnvist, YtelseGrunnlagDto ytelseGrunnlag) {
+        boolean harKunGyldigeArbeidsgivere = harKunGyldigeArbeidsgivere(ytelseGrunnlag);
+        if (harKunGyldigeArbeidsgivere) {
+            BigDecimal utbetalingsgradProsent = ytelseAnvist.getUtbetalingsgradProsent() == null ?
+                    BigDecimal.valueOf(100) : ytelseAnvist.getUtbetalingsgradProsent();
+            return ytelseGrunnlag.getFordeling().stream()
+                    .map(f -> mapYtelsegrunnlagTilAnvistAndel(ytelseAnvist, utbetalingsgradProsent, f))
+                    .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
