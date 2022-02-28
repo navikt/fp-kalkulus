@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagAktivitetStatusDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -24,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittEgenNæringDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.BeregningsperiodeTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektskildeType;
@@ -107,17 +107,22 @@ public class FastsettInntektskategoriTjeneste {
                 .collect(Collectors.toSet());
 
             List<Inntektskategori> inntektskategorier = virksomhetTypeSet.stream()
-                .map(v -> {
-                    if (v.getInntektskategori() == Inntektskategori.UDEFINERT) {
-                        return Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
-                    }
-                    return v.getInntektskategori();
-                })
+                .map(FastsettInntektskategoriTjeneste::finnInntektskategoriFraNæringstype)
                 .collect(Collectors.toList());
 
             return finnHøyestPrioriterteInntektskategoriForSN(inntektskategorier)
                 .orElse(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         }
         return Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
+    }
+
+    private static Inntektskategori finnInntektskategoriFraNæringstype(VirksomhetType virksomhetstype) {
+        return switch (virksomhetstype) {
+            case DAGMAMMA -> Inntektskategori.DAGMAMMA;
+            case FISKE -> Inntektskategori.FISKER;
+            case FRILANSER -> Inntektskategori.FRILANSER;
+            case JORDBRUK_SKOGBRUK -> Inntektskategori.JORDBRUKER;
+            case ENKELTPERSONFORETAK, ANNEN, UDEFINERT -> Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
+        };
     }
 }

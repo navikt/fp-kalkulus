@@ -17,13 +17,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum VirksomhetType implements Kodeverdi {
 
-    DAGMAMMA("DAGMAMMA", "Dagmamma i eget hjem/familiebarnehage", Inntektskategori.DAGMAMMA),
-    FISKE("FISKE", "Fiske", Inntektskategori.FISKER),
-    FRILANSER("FRILANSER", "Frilanser", Inntektskategori.FRILANSER),
-    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk", Inntektskategori.JORDBRUKER),
-    ENKELTPERSONFORETAK("ENK", "Enkeltpersonforetak", Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE),
-    ANNEN("ANNEN", "Annen næringsvirksomhet", Inntektskategori.UDEFINERT),
-    UDEFINERT("-", "Ikke definert", Inntektskategori.UDEFINERT),
+    DAGMAMMA("DAGMAMMA", "Dagmamma i eget hjem/familiebarnehage"),
+    FISKE("FISKE", "Fiske"),
+    FRILANSER("FRILANSER", "Frilanser"),
+    JORDBRUK_SKOGBRUK("JORDBRUK_SKOGBRUK", "Jordbruk"),
+    ENKELTPERSONFORETAK("ENK", "Enkeltpersonforetak"),
+    ANNEN("ANNEN", "Annen næringsvirksomhet"),
+    UDEFINERT("-", "Ikke definert"),
     ;
     private static final Map<String, VirksomhetType> KODER = new LinkedHashMap<>();
 
@@ -39,14 +39,12 @@ public enum VirksomhetType implements Kodeverdi {
 
     @JsonIgnore
     private String navn;
-    private Inntektskategori inntektskategori;
 
     private String kode;
 
-    VirksomhetType(String kode, String navn, Inntektskategori inntektskategori) {
+    VirksomhetType(String kode, String navn) {
         this.kode = kode;
         this.navn = navn;
-        this.inntektskategori = inntektskategori;
     }
 
     @JsonCreator(mode = Mode.DELEGATING)
@@ -61,7 +59,7 @@ public enum VirksomhetType implements Kodeverdi {
         }
         return ad;
     }
-    
+
     public static Map<String, VirksomhetType> kodeMap() {
         return Collections.unmodifiableMap(KODER);
     }
@@ -71,14 +69,10 @@ public enum VirksomhetType implements Kodeverdi {
     public String getKode() {
         return kode;
     }
-    
+
     @JsonProperty
     @Override
     public String getKodeverk() {
         return KODEVERK;
-    }
-    
-    public Inntektskategori getInntektskategori() {
-        return inntektskategori;
     }
 }
