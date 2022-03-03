@@ -30,7 +30,8 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         if (KonfigurasjonVerdi.get("BEREGNE_FRA_YTELSE_VEDTAK", false)) {
             var harForeldrepengerAvDagpenger = harForeldrepengerAvDagpenger(input, beregningsgrunnlag);
-            return harForeldrepengerAvDagpenger ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
+            var harIkkeAnvisteAndeler = harYtelseUtenAnvisteAndeler(input, beregningsgrunnlag);
+            return harIkkeAnvisteAndeler || harForeldrepengerAvDagpenger ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
         }
         return KontrollerFaktaBeregningTjeneste.harAktivitetStatusKunYtelse(beregningsgrunnlag) ?
                 Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
@@ -42,6 +43,13 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
                 .stream().flatMap(y -> y.getAlleYtelser().stream())
                 .filter(y -> y.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlag.getSkjæringstidspunkt())))
                 .anyMatch(this::erForeldrepengerAvDagpenger);
+    }
+
+    private boolean harYtelseUtenAnvisteAndeler(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        return input.getIayGrunnlag().getAktørYtelseFraRegister()
+                .stream().flatMap(y -> y.getAlleYtelser().stream())
+                .filter(y -> y.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlag.getSkjæringstidspunkt())))
+                .anyMatch(y -> y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().isEmpty()));
     }
 
     private boolean erForeldrepengerAvDagpenger(YtelseDto y) {

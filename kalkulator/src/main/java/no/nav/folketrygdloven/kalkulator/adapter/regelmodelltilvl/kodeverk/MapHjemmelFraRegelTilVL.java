@@ -11,6 +11,7 @@ public class MapHjemmelFraRegelTilVL {
     private static final Map<BeregningsgrunnlagHjemmel, Hjemmel> hjemmelMap =
         new EnumMap<>(BeregningsgrunnlagHjemmel.class);
     static {
+        hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9, Hjemmel.F_9_9);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_8_8_28, Hjemmel.F_9_8_8_28);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_28_8_30, Hjemmel.F_9_9_8_28_8_30);
         hjemmelMap.put(BeregningsgrunnlagHjemmel.F_9_9_8_38, Hjemmel.F_9_9_8_38);

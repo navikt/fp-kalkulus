@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY)
 public enum Hjemmel implements Kodeverdi {
 
+    F_9_9("F_9_9", "folketrygdloven § 9-9"),
+
     F_9_8_8_28("F_9_8_8_28", "folketrygdloven §§ 9-8 og 8-28"),
     F_9_9_8_28_8_30("F_9_9_8_28_8_30", "folketrygdloven §§ 9-9, 8-28 og 8-30"),
     F_9_9_8_35("F_9_9_8_35", "folketrygdloven §§ 9-9 og 8-35"),
