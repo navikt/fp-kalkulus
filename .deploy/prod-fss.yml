@@ -78,3 +78,6 @@ spec:
       value: "false"
     - name: MELDEKORT_DELVIS_PERIODE
       value: "false"
+    - name: BEREGNE_FRA_YTELSE_VEDTAK
+      value: "false"
+

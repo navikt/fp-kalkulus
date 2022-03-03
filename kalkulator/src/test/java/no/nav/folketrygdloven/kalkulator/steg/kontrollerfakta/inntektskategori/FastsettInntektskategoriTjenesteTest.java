@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
+package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +26,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektspostDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.OppgittOpptjeningDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
+import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -100,10 +101,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -116,10 +117,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.FRILANSER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FRILANSER);
@@ -133,10 +134,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.DAGPENGER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.DAGPENGER);
@@ -149,10 +150,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSAVKLARINGSPENGER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSAVKLARINGSPENGER);
@@ -166,10 +167,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
@@ -182,10 +183,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FISKER);
@@ -198,10 +199,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.JORDBRUKER);
@@ -214,10 +215,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.DAGMAMMA);
@@ -230,10 +231,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FISKER);
@@ -246,10 +247,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FISKER);
@@ -262,10 +263,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.JORDBRUKER);
@@ -278,10 +279,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.JORDBRUKER);
@@ -294,10 +295,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        BeregningsgrunnlagPeriodeDto periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        BeregningsgrunnlagPeriodeDto periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.DAGMAMMA);
@@ -310,10 +311,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, grunnlag);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.FISKER);
@@ -331,10 +332,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -352,10 +353,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);
@@ -373,10 +374,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.SJØMANN);
@@ -394,10 +395,10 @@ public class FastsettInntektskategoriTjenesteTest {
         var beregningsgrunnlag = lagBeregningsgrunnlag(AktivitetStatus.ARBEIDSTAKER);
 
         // Act
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
+        var medFastsattInntektskategori = FastsettInntektskategoriTjeneste.fastsettInntektskategori(beregningsgrunnlag, iay);
 
         // Assert
-        var periode = beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0);
+        var periode = medFastsattInntektskategori.getBeregningsgrunnlagPerioder().get(0);
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = periode.getBeregningsgrunnlagPrStatusOgAndelList();
         assertThat(andeler).hasSize(1);
         assertThat(andeler.get(0).getGjeldendeInntektskategori()).isEqualTo(Inntektskategori.ARBEIDSTAKER);

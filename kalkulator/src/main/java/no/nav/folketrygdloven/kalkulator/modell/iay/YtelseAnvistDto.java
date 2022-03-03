@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.modell.iay;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class YtelseAnvistDto {
     }
 
     public List<AnvistAndel> getAnvisteAndeler() {
-        return anvisteAndeler;
+        return anvisteAndeler == null ? Collections.emptyList() : anvisteAndeler;
     }
 
     public void setAnvisteAndeler(List<AnvistAndel> anvisteAndeler) {

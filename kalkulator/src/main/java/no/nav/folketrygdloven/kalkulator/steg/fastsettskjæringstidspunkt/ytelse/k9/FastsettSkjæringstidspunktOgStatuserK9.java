@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.MidlertidigInaktivType;
@@ -51,8 +50,8 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
         if (midlerTidigInaktivInput != null) {
             if (midlerTidigInaktivInput.name().equals(MidlertidigInaktivType.A.name())) {
                 List<AktivPeriode> aktiviteterPåStp = regelmodell.getAktivePerioder().stream().filter(aktivPeriode -> aktivPeriode.getPeriode().inneholder(input.getSkjæringstidspunktOpptjening())).collect(Collectors.toList());
-                if(!aktiviteterPåStp.isEmpty()) {
-                    throw new IllegalArgumentException("Skjæringstidspunktet kan ikke overlappe med aktive perioder for midlertidig inaktiv 8-47-A for: "+ aktiviteterPåStp);
+                if (!aktiviteterPåStp.isEmpty()) {
+                    throw new IllegalArgumentException("Skjæringstidspunktet kan ikke overlappe med aktive perioder for midlertidig inaktiv 8-47-A for: " + aktiviteterPåStp);
                 }
             }
             midlertidigInaktivType = MidlertidigInaktivType.valueOf(midlerTidigInaktivInput.name());
@@ -69,6 +68,7 @@ public class FastsettSkjæringstidspunktOgStatuserK9 implements FastsettSkjærin
                 regelResultatFastsettStatus);
         var nyttBeregningsgrunnlag = mapForSkjæringstidspunktOgStatuser(input.getKoblingReferanse(), k9Modell, regelResultater, iayGrunnlag, grunnbeløpSatser);
         var fastsattBeregningsperiode = fastsettBeregningsperiodeTjeneste.fastsettBeregningsperiode(nyttBeregningsgrunnlag, iayGrunnlag, input.getInntektsmeldinger());
+
         return new BeregningsgrunnlagRegelResultat(fastsattBeregningsperiode,
                 new RegelSporingAggregat(
                         mapRegelSporingGrunnlag(regelResultatFastsettSkjæringstidspunkt, BeregningsgrunnlagRegelType.SKJÆRINGSTIDSPUNKT),

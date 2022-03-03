@@ -72,7 +72,7 @@ public class BeregningsgrunnlagPrStatusOgAndelDto {
         this.pgi3 = kopiereFra.pgi3;
         this.årsbeløpFraTilstøtendeYtelse = kopiereFra.årsbeløpFraTilstøtendeYtelse;
         this.fastsattAvSaksbehandler = kopiereFra.fastsattAvSaksbehandler;
-        this.fastsattInntektskategori = kopiereFra.fastsattInntektskategori;
+        this.fastsattInntektskategori = new FastsattInntektskategori(kopiereFra.fastsattInntektskategori);
         this.kilde = kopiereFra.kilde;
         this.orginalDagsatsFraTilstøtendeYtelse = kopiereFra.orginalDagsatsFraTilstøtendeYtelse;
         this.avkortetFørGraderingPrÅr = kopiereFra.avkortetFørGraderingPrÅr;

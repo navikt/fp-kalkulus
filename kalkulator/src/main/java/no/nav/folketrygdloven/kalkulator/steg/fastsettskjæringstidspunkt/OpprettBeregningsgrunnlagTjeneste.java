@@ -1,6 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.steg.fastsettskjæringstidspunkt;
 
 
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori.FastsettInntektskategoriTjeneste.fastsettInntektskategori;
+
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,7 +23,6 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.BeregningsgrunnlagVerifiserer;
-import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.FastsettInntektskategoriTjeneste;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.beregningsperiode.FastsettBeregningsperiode;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.fakta.FastsettFakta;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.periodisering.FastsettNaturalytelsePerioderTjeneste;
@@ -70,11 +71,11 @@ public class OpprettBeregningsgrunnlagTjeneste {
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(beregningAktiviteter, resultatMedAndeler.getBeregningsgrunnlag()));
 
         // Fastsett inntektskategorier
-        FastsettInntektskategoriTjeneste.fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
+        var medFastsattInntektskategori = fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
 
         // Fastsett beregningsperiode
         var medFastsattBeregningsperiode = FagsakYtelseTypeRef.Lookup.find(fastsettBeregningsperiodeTjeneste, input.getFagsakYtelseType()).orElseThrow()
-                .fastsettBeregningsperiode(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag(), input.getInntektsmeldinger());
+                .fastsettBeregningsperiode(medFastsattInntektskategori, input.getIayGrunnlag(), input.getInntektsmeldinger());
 
         // Fastsett fakta
         Optional<FaktaAggregatDto> faktaAggregatDto = FagsakYtelseTypeRef.Lookup.find(fastsettFaktaTjeneste, input.getFagsakYtelseType())

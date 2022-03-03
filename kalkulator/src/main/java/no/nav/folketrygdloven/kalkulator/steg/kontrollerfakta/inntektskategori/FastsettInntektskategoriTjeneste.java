@@ -1,5 +1,6 @@
-package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
+package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori;
 
+import static no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori.FastsettInntektskategoriFraYtelseVedtak.opprettAndelerOgSettInntektskategorierFraYtelseVedtak;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.ARBEIDSTAKER;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.MIDLERTIDIG_INAKTIV;
 import static no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus.SELVSTENDIG_NÆRINGSDRIVENDE;
@@ -32,15 +33,19 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.VirksomhetType;
 
 public class FastsettInntektskategoriTjeneste {
 
-   private FastsettInntektskategoriTjeneste() {
+    private FastsettInntektskategoriTjeneste() {
         // hide me
     }
 
-    public static void fastsettInntektskategori(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto grunnlag) {
-        beregningsgrunnlag.getBeregningsgrunnlagPerioder().stream()
-            .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
-            .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(andel))
-                .medInntektskategori(finnInntektskategoriForStatus(andel, grunnlag, beregningsgrunnlag.getAktivitetStatuser(), beregningsgrunnlag.getSkjæringstidspunkt())));
+    public static BeregningsgrunnlagDto fastsettInntektskategori(BeregningsgrunnlagDto beregningsgrunnlag, InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+        var nyttGrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
+        nyttGrunnlag.getBeregningsgrunnlagPerioder().stream()
+                .flatMap(p -> p.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                .forEach(andel -> BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(Optional.of(andel))
+                        .medInntektskategori(finnInntektskategoriForStatus(andel, iayGrunnlag, beregningsgrunnlag.getAktivitetStatuser(), beregningsgrunnlag.getSkjæringstidspunkt())));
+
+        return opprettAndelerOgSettInntektskategorierFraYtelseVedtak(nyttGrunnlag, iayGrunnlag);
+
     }
 
     static Optional<Inntektskategori> finnHøyestPrioriterteInntektskategoriForSN(List<Inntektskategori> inntektskategorier) {
@@ -96,22 +101,22 @@ public class FastsettInntektskategoriTjeneste {
         return alleInntektsposter.stream()
                 .filter(ip -> ip.getPeriode().overlapper(periodeForÅLeteEtterSjøfolkinntekt))
                 .anyMatch(ip -> SkatteOgAvgiftsregelType.NETTOLØNN_FOR_SJØFOLK.equals(ip.getSkatteOgAvgiftsregelType())
-                || SkatteOgAvgiftsregelType.SÆRSKILT_FRADRAG_FOR_SJØFOLK.equals(ip.getSkatteOgAvgiftsregelType()));
+                        || SkatteOgAvgiftsregelType.SÆRSKILT_FRADRAG_FOR_SJØFOLK.equals(ip.getSkatteOgAvgiftsregelType()));
     }
 
     private static Inntektskategori finnInntektskategoriForSelvstendigNæringsdrivende(InntektArbeidYtelseGrunnlagDto grunnlag) {
         Optional<OppgittOpptjeningDto> oppgittOpptjening = grunnlag.getOppgittOpptjening();
         if (oppgittOpptjening.isPresent() && !oppgittOpptjening.get().getEgenNæring().isEmpty()) {
             Set<VirksomhetType> virksomhetTypeSet = oppgittOpptjening.get().getEgenNæring().stream()
-                .map(OppgittEgenNæringDto::getVirksomhetType)
-                .collect(Collectors.toSet());
+                    .map(OppgittEgenNæringDto::getVirksomhetType)
+                    .collect(Collectors.toSet());
 
             List<Inntektskategori> inntektskategorier = virksomhetTypeSet.stream()
-                .map(FastsettInntektskategoriTjeneste::finnInntektskategoriFraNæringstype)
-                .collect(Collectors.toList());
+                    .map(FastsettInntektskategoriTjeneste::finnInntektskategoriFraNæringstype)
+                    .collect(Collectors.toList());
 
             return finnHøyestPrioriterteInntektskategoriForSN(inntektskategorier)
-                .orElse(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
+                    .orElse(Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         }
         return Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE;
     }
