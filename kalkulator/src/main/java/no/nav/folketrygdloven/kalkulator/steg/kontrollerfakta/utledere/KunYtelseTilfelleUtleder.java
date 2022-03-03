@@ -29,9 +29,10 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
         BeregningsgrunnlagDto beregningsgrunnlag = beregningsgrunnlagGrunnlag.getBeregningsgrunnlag().orElse(null);
         Objects.requireNonNull(beregningsgrunnlag, "beregningsgrunnlag");
         if (KonfigurasjonVerdi.get("BEREGNE_FRA_YTELSE_VEDTAK", false)) {
+            var harKunYtelse = KontrollerFaktaBeregningTjeneste.harAktivitetStatusKunYtelse(beregningsgrunnlag);
             var harForeldrepengerAvDagpenger = harForeldrepengerAvDagpenger(input, beregningsgrunnlag);
             var harIkkeAnvisteAndeler = harYtelseUtenAnvisteAndeler(input, beregningsgrunnlag);
-            return harIkkeAnvisteAndeler || harForeldrepengerAvDagpenger ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
+            return harKunYtelse && (harIkkeAnvisteAndeler || harForeldrepengerAvDagpenger) ? Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();
         }
         return KontrollerFaktaBeregningTjeneste.harAktivitetStatusKunYtelse(beregningsgrunnlag) ?
                 Optional.of(FaktaOmBeregningTilfelle.FASTSETT_BG_KUN_YTELSE) : Optional.empty();

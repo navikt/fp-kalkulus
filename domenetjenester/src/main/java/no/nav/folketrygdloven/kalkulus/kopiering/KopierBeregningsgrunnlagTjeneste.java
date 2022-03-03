@@ -135,7 +135,6 @@ public class KopierBeregningsgrunnlagTjeneste {
         if (steg.equals(BeregningSteg.VURDER_VILKAR_BERGRUNN)) {
             return finnGrunnlagForKopiAvVilkårsvurdering(eksisterendeKoblinger);
         }
-        // Fordi det finnes grunnlag uten tilstand VURDER_VILKÅR må vi sjekke andre tilstander
         return beregningsgrunnlagRepository.hentSisteBeregningsgrunnlagGrunnlagEntitetForKoblinger(mapTilId(eksisterendeKoblinger), MapStegTilTilstand.mapTilStegTilstand(steg));
     }
 
