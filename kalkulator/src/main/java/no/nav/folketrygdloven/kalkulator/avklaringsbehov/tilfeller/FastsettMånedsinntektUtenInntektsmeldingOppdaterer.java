@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.FastsettFaktaOmBeregningVerdierTjeneste;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.dto.FaktaBeregningLagreDto;
@@ -48,14 +47,14 @@ public class FastsettMånedsinntektUtenInntektsmeldingOppdaterer implements Fakt
                 Optional<BeregningsgrunnlagPrStatusOgAndelDto> andelForArbeidsforhold = finnAndelIPeriode(beregningsgrunnlagAndel, periode);
                 if (andelForArbeidsforhold.isPresent()) {
                     RedigerbarAndelFaktaOmBeregningDto redigerbarAndel = lagRedigerbarAndel(andelForArbeidsforhold.get());
-                    FastsettFaktaOmBeregningVerdierTjeneste.fastsettVerdierForAndel(redigerbarAndel, mapTilFastsatteVerdier(andelForArbeidsforhold.get(), dtoAndel), periode, forrigePeriode);
+                    FastsettFaktaOmBeregningVerdierTjeneste.fastsettVerdierForAndel(redigerbarAndel, mapTilFastsatteVerdier(dtoAndel), periode, forrigePeriode);
                 }
             }
         }
     }
 
-    private FastsatteVerdierDto mapTilFastsatteVerdier(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel, FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
-        return FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(dtoAndel.getFastsattBeløp()).medInntektskategori(beregningsgrunnlagPrStatusOgAndel.getGjeldendeInntektskategori()).build();
+    private FastsatteVerdierDto mapTilFastsatteVerdier(FastsettMånedsinntektUtenInntektsmeldingAndelDto dtoAndel) {
+        return FastsatteVerdierDto.Builder.ny().medFastsattBeløpPrMnd(dtoAndel.getFastsattBeløp()).medInntektskategori(dtoAndel.getInntektskategori()).build();
     }
 
     private RedigerbarAndelFaktaOmBeregningDto lagRedigerbarAndel(BeregningsgrunnlagPrStatusOgAndelDto andelForArbeidsforhold) {
