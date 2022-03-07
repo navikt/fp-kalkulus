@@ -2,13 +2,16 @@ package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
 import java.util.Collection;
 
+import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
+import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.InntektspostType;
 
 public class VurderMottarYtelseTjeneste {
@@ -23,10 +26,11 @@ public class VurderMottarYtelseTjeneste {
         boolean erFrilanser = erFrilanser(beregningsgrunnlag);
 
         InntektFilterDto filter = new InntektFilterDto(iayGrunnlag.getAktørInntektFraRegister());
+        var ytelsefilter = new YtelseFilterDto(iayGrunnlag.getAktørYtelseFraRegister());
         filter = filter.filterSammenligningsgrunnlag();
 
         if (erFrilanser) {
-            return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.FRILANSER);
+            return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.FRILANSER) && harYtelseBasertPåFrilans(beregningsgrunnlag, ytelsefilter);
         }
         var arbeidstakerSomManglerInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
                 .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, inntektsmeldinger);
@@ -42,6 +46,18 @@ public class VurderMottarYtelseTjeneste {
             boolean overlapperYtelseMedBeregningsgrunnlaget = beregningsPeriodeForStatus.overlapper(inntektspostDto.getPeriode());
             return InntektspostType.YTELSE.equals(inntektspostDto.getInntektspostType()) && overlapperYtelseMedBeregningsgrunnlaget;
         });
+    }
+
+    private static boolean harYtelseBasertPåFrilans(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                    YtelseFilterDto ytelseFilterDto) {
+        if (!KonfigurasjonVerdi.get("VURDER_MOTTAR_YTELSE_FL_FILTRERING", false)) {
+            return true;
+        }
+        Intervall beregningsPeriodeForStatus = finnBeregningsperiodeForAktivitetStatus(beregningsgrunnlag, AktivitetStatus.FRILANSER);
+        return ytelseFilterDto.getFiltrertYtelser().stream()
+                .flatMap(y -> y.getYtelseAnvist().stream())
+                .filter(ya -> ya.getAnvistPeriode().overlapper(beregningsPeriodeForStatus))
+                .anyMatch(ya -> ya.getAnvisteAndeler().isEmpty() || ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.FRILANSER)));
     }
 
     public static boolean erFrilanser(BeregningsgrunnlagDto beregningsgrunnlag) {

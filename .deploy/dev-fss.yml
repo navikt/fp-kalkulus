@@ -81,6 +81,7 @@ spec:
       value: "true"
     - name: BEREGNE_FRA_YTELSE_VEDTAK
       value: "true"
-
+    - name: VURDER_MOTTAR_YTELSE_FL_FILTRERING
+      value: "true"
 
 
