@@ -40,6 +40,7 @@ import no.nav.folketrygdloven.kalkulator.steg.foreslå.ForeslåBeregningsgrunnla
 import no.nav.folketrygdloven.kalkulator.steg.fullføre.FullføreBeregningsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.AvklaringsbehovUtlederFaktaOmBeregning;
 import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlag;
+import no.nav.folketrygdloven.kalkulator.steg.refusjon.VurderRefusjonBeregningsgrunnlagFelles;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 
 /**
@@ -57,7 +58,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
     private final ForeslåBesteberegning foreslåBesteberegning = new ForeslåBesteberegning();
     private Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste;
     private Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste;
-    private Instance<VurderRefusjonBeregningsgrunnlag> vurderRefusjonBeregningsgrunnlag;
+    private VurderRefusjonBeregningsgrunnlag vurderRefusjonBeregningsgrunnlag;
     private Instance<VilkårTjeneste> vilkårTjeneste;
 
 
@@ -72,7 +73,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
                                       @Any Instance<AvklaringsbehovUtlederFastsettBeregningsaktiviteter> apUtlederFastsettAktiviteter,
                                       OpprettBeregningsgrunnlagTjeneste opprettBeregningsgrunnlagTjeneste,
                                       @Any Instance<FordelBeregningsgrunnlagTjeneste> fordelBeregningsgrunnlagTjeneste,
-                                      @Any Instance<VurderRefusjonBeregningsgrunnlag> vurderRefusjonBeregningsgrunnlag,
+                                      VurderRefusjonBeregningsgrunnlagFelles vurderRefusjonBeregningsgrunnlag,
                                       @Any Instance<ForeslåBeregningsgrunnlag> foreslåBeregningsgrunnlag,
                                       @Any Instance<VurderBeregningsgrunnlagTjeneste> vurderBeregningsgrunnlagTjeneste,
                                       @Any Instance<VilkårTjeneste> vilkårTjeneste) {
@@ -171,7 +172,7 @@ public class BeregningsgrunnlagTjeneste implements KalkulatorInterface {
      */
     @Override
     public BeregningResultatAggregat vurderRefusjonskravForBeregninggrunnlag(VurderRefusjonBeregningsgrunnlagInput input) {
-        BeregningsgrunnlagRegelResultat vurderRefusjonResultat = finnImplementasjonForYtelseType(input.getFagsakYtelseType(), vurderRefusjonBeregningsgrunnlag).vurderRefusjon(input);
+        BeregningsgrunnlagRegelResultat vurderRefusjonResultat = vurderRefusjonBeregningsgrunnlag.vurderRefusjon(input);
         return Builder.fra(input)
                 .medAvklaringsbehov(vurderRefusjonResultat.getAvklaringsbehov())
                 .medBeregningsgrunnlag(vurderRefusjonResultat.getBeregningsgrunnlag(), input.getStegTilstand())

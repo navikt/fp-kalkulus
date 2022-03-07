@@ -6,21 +6,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
 import no.nav.folketrygdloven.kalkulator.output.RegelSporingAggregat;
 import no.nav.folketrygdloven.kalkulator.steg.fordeling.periodisering.FordelPerioderTjeneste;
 
 @ApplicationScoped
-@FagsakYtelseTypeRef("PSB")
-@FagsakYtelseTypeRef("PPN")
-@FagsakYtelseTypeRef("FP")
-@FagsakYtelseTypeRef("SVP")
-@FagsakYtelseTypeRef("FRISINN")
 public class VurderRefusjonBeregningsgrunnlagFelles implements VurderRefusjonBeregningsgrunnlag {
     private FordelPerioderTjeneste fordelPerioderTjeneste;
     private Instance<AvklaringsbehovutledertjenesteVurderRefusjon> aksjonspunkutledere;

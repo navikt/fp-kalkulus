@@ -27,27 +27,17 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     @Valid
     private List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet;
 
-    @JsonProperty(value = "søknadsperioderPrAktivitet")
-    @Size()
-    @Valid
-    private List<SøknadsperioderPrAktivitetDto> søknadsperioderPrAktivitet;
-
     protected OmsorgspengerGrunnlag() {
         // default ctor
     }
 
 
-    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet, @Valid List<SøknadsperioderPrAktivitetDto> søknadsperioderPrAktivitet) {
+    public OmsorgspengerGrunnlag(@NotNull @Valid List<UtbetalingsgradPrAktivitetDto> utbetalingsgradPrAktivitet) {
         this.utbetalingsgradPrAktivitet = utbetalingsgradPrAktivitet;
-        this.søknadsperioderPrAktivitet = søknadsperioderPrAktivitet;
     }
 
     public List<UtbetalingsgradPrAktivitetDto> getUtbetalingsgradPrAktivitet() {
         return utbetalingsgradPrAktivitet;
-    }
-
-    public List<SøknadsperioderPrAktivitetDto> getSøknadsperioderPrAktivitet() {
-        return søknadsperioderPrAktivitet;
     }
 
     public static String getYtelseType() {
@@ -59,7 +49,6 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
     public String toString() {
         return "OmsorgspengerGrunnlag{" +
                 "utbetalingsgradPrAktivitet=" + utbetalingsgradPrAktivitet +
-                ", søknadsperioderPrAktivitet=" + søknadsperioderPrAktivitet +
                 '}';
     }
 
@@ -69,12 +58,12 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         OmsorgspengerGrunnlag that = (OmsorgspengerGrunnlag) o;
-        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet) && Objects.equals(søknadsperioderPrAktivitet, that.søknadsperioderPrAktivitet);
+        return Objects.equals(utbetalingsgradPrAktivitet, that.utbetalingsgradPrAktivitet);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet, søknadsperioderPrAktivitet);
+        return Objects.hash(super.hashCode(), utbetalingsgradPrAktivitet);
     }
 
     @AssertTrue(message = "Liste med utbetalingsgrader skal ikke ha duplikate arbeidsforhold")
@@ -83,19 +72,6 @@ public class OmsorgspengerGrunnlag extends YtelsespesifiktGrunnlagDto {
                 .distinct()
                 .count();
         long antall = utbetalingsgradPrAktivitet.stream().map(UtbetalingsgradPrAktivitetDto::getUtbetalingsgradArbeidsforholdDto)
-                .count();
-        return antall == antallUnike;
-    }
-
-    @AssertTrue(message = "Liste med søknadsperioder skal ikke ha duplikate arbeidsforhold")
-    public boolean isIngenDuplikateArbeidsforholdForSøknad() {
-        if (søknadsperioderPrAktivitet == null) {
-            return true;
-        }
-        long antallUnike = søknadsperioderPrAktivitet.stream().map(SøknadsperioderPrAktivitetDto::getAktivitet)
-                .distinct()
-                .count();
-        long antall = søknadsperioderPrAktivitet.stream().map(SøknadsperioderPrAktivitetDto::getAktivitet)
                 .count();
         return antall == antallUnike;
     }

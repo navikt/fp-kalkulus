@@ -23,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.BrukerSøktForAllePerioderMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
@@ -64,12 +63,12 @@ import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto
 import no.nav.folketrygdloven.kalkulator.modell.uttak.UttakArbeidType;
 import no.nav.folketrygdloven.kalkulator.output.BeregningAvklaringsbehovResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
+import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
 import no.nav.folketrygdloven.kalkulator.testutilities.behandling.beregningsgrunnlag.BeregningAktivitetTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
-import no.nav.folketrygdloven.kalkulator.testutilities.TestHjelper;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
+import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.NaturalYtelseType;
@@ -107,8 +106,7 @@ public class ForeslåBeregningsgrunnlagTest {
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
             new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel),
-            ytelsesSpesifikkMapper,
-            new UnitTestLookupInstanceImpl<>(new BrukerSøktForAllePerioderMapper()));
+            ytelsesSpesifikkMapper);
     private ForeslåBeregningsgrunnlag foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
 
     @BeforeEach
@@ -306,8 +304,7 @@ public class ForeslåBeregningsgrunnlagTest {
         UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new OmsorgspengerGrunnlagMapper());
         var mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(
                 new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel),
-                ytelsesSpesifikkMapper,
-                new UnitTestLookupInstanceImpl<>(new BrukerSøktForAllePerioderMapper()));
+                ytelsesSpesifikkMapper);
         var foreslåBeregningsgrunnlag = new ForeslåBeregningsgrunnlag(mapBeregningsgrunnlagFraVLTilRegel);
         return foreslåBeregningsgrunnlag.foreslåBeregningsgrunnlag(input);
     }
@@ -632,7 +629,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
         lagBehandling(inntektSammenligningsgrunnlag, inntektBeregnet,
@@ -656,7 +653,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(70_000);
         BigDecimal refusjon = BigDecimal.valueOf(50_000);
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(40_000);
@@ -681,7 +678,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(90_000);
         BigDecimal refusjon = BigDecimal.valueOf(90_000);
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(40_000);
@@ -706,7 +703,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
         BigDecimal refusjonskrav = BigDecimal.valueOf(MÅNEDSINNTEKT1).divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
@@ -738,7 +735,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nullRef(), UttakArbeidType.FRILANS);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
         BigDecimal inntektBeregnet = BigDecimal.valueOf(MÅNEDSINNTEKT1);
         BigDecimal inntektSammenligningsgrunnlag = BigDecimal.valueOf(MÅNEDSINNTEKT1 * 2);
 
@@ -778,7 +775,7 @@ public class ForeslåBeregningsgrunnlagTest {
         AktivitetDto aktivitetDto = new AktivitetDto(Arbeidsgiver.virksomhet(ARBEIDSFORHOLD_ORGNR1),
                 InternArbeidsforholdRefDto.nyRef(), UttakArbeidType.ORDINÆRT_ARBEID);
         UtbetalingsgradPrAktivitetDto utbetalingsgradPrAktivitetDto = new UtbetalingsgradPrAktivitetDto(aktivitetDto, List.of(periodeMedUtbetalingsgradDto));
-        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto), null);
+        OmsorgspengerGrunnlag omsorgspengerGrunnlag = new OmsorgspengerGrunnlag(List.of(utbetalingsgradPrAktivitetDto));
 
         var inntektArbeidYtelseBuilder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
 

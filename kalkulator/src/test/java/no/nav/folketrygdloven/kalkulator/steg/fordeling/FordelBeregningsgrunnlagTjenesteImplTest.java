@@ -18,14 +18,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
-import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.BrukerSøktForAllePerioderMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegelFelles;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.YtelsesspesifikkRegelMapper;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.ytelse.ForeldrepengerGrunnlagMapper;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
@@ -73,7 +72,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
     private InntektArbeidYtelseGrunnlagDtoBuilder iayGrunnlagBuilder;
     private MapInntektsgrunnlagVLTilRegel mapInntektsgrunnlagVLTilRegel = new MapInntektsgrunnlagVLTilRegelFelles();
     private final UnitTestLookupInstanceImpl<YtelsesspesifikkRegelMapper> ytelsesSpesifikkMapper = new UnitTestLookupInstanceImpl<>(new ForeldrepengerGrunnlagMapper());
-    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper, new UnitTestLookupInstanceImpl<>(new BrukerSøktForAllePerioderMapper()));
+    private MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel = new MapBeregningsgrunnlagFraVLTilRegel(new UnitTestLookupInstanceImpl<>(mapInntektsgrunnlagVLTilRegel), ytelsesSpesifikkMapper);
     private FordelPerioderTjeneste fordelPerioderTjeneste;
 
     private final ArbeidsgiverRefusjonskravTjeneste arbeidsgiverRefusjonskravTjeneste = new ArbeidsgiverRefusjonskravTjeneste(
@@ -105,7 +104,6 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
         BigDecimal beregnetPrÅr3 = BigDecimal.valueOf(240_000);
         orgnrsBeregnetMap.put(ORGNR3, beregnetPrÅr3);
         BeregningsgrunnlagGrunnlagDto grunnlag = lagBeregningsgrunnlag(orgnrsBeregnetMap, beregningAktivitetAggregat);
-        BeregningsgrunnlagDto beregningsgrunnlag = grunnlag.getBeregningsgrunnlag().get();
 
         // Inntektsmelding
         BigDecimal inntektPrMnd1 = BigDecimal.valueOf(10_000);

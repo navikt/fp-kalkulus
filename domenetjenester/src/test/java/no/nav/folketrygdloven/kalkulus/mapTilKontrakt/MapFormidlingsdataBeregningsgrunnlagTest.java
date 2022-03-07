@@ -280,7 +280,7 @@ class MapFormidlingsdataBeregningsgrunnlagTest {
     }
 
     private BeregningsgrunnlagGrunnlagDto mapForOmsorgspenger() {
-        OmsorgspengerGrunnlag ompGr = new OmsorgspengerGrunnlag(utbGrader, null);
+        OmsorgspengerGrunnlag ompGr = new OmsorgspengerGrunnlag(utbGrader);
         return map(ompGr);
     }
 
