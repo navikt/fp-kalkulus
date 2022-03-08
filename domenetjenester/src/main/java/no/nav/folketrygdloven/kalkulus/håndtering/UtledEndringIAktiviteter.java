@@ -13,6 +13,7 @@ import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.overstyring.OverstyrBeregningsaktiviteterDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktivitetEndring;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktivitetNøkkel;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktiviteterEndring;
@@ -27,7 +28,7 @@ class UtledEndringIAktiviteter {
             Optional<BeregningAktivitetAggregatDto> forrigeRegister,
             Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
 
-        if (dto instanceof AvklarAktiviteterHåndteringDto) {
+        if (dto instanceof AvklarAktiviteterHåndteringDto || dto instanceof OverstyrBeregningsaktiviteterDto) {
 
             var registerAktiviteter = register.getBeregningAktiviteter();
             var gjeldendeAktiviteter = gjeldende.getBeregningAktiviteter();

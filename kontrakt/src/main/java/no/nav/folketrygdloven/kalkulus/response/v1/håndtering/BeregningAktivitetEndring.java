@@ -20,9 +20,11 @@ public class BeregningAktivitetEndring {
     @Valid
     private BeregningAktivitetNøkkel aktivitetNøkkel;
 
+    @JsonProperty(value = "skalBrukesEndring")
     @Valid
     private ToggleEndring skalBrukesEndring;
 
+    @JsonProperty(value = "tomDatoEndring")
     @Valid
     private DatoEndring tomDatoEndring;
 
