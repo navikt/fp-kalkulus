@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 
 
@@ -31,26 +33,26 @@ public class BeregningAktivitetNøkkel {
     @Valid
     private LocalDate fom;
 
-    @JsonProperty(value = "arbeidsgiverIdentifikator")
+    @JsonProperty(value = "arbeidsgiver")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     @Valid
-    private String arbeidsgiverIdentifikator;
+    private Aktør arbeidsgiver;
 
     @JsonProperty(value = "arbeidsforholdRef")
     @Pattern(regexp = "^[\\p{Graph}\\p{Space}\\p{Sc}\\p{L}\\p{M}\\p{N}]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{regexp}'")
     @Valid
-    private String arbeidsforholdRef;
+    private InternArbeidsforholdRefDto arbeidsforholdRef;
 
     private BeregningAktivitetNøkkel() {
     }
 
     public BeregningAktivitetNøkkel(OpptjeningAktivitetType opptjeningAktivitetType,
                                     LocalDate fom,
-                                    String arbeidsgiverIdentifikator,
-                                    String arbeidsforholdRef) {
+                                    Aktør arbeidsgiver,
+                                    InternArbeidsforholdRefDto arbeidsforholdRef) {
         this.opptjeningAktivitetType = opptjeningAktivitetType;
         this.fom = fom;
-        this.arbeidsgiverIdentifikator = arbeidsgiverIdentifikator;
+        this.arbeidsgiver = arbeidsgiver;
         this.arbeidsforholdRef = arbeidsforholdRef;
     }
 
@@ -62,11 +64,11 @@ public class BeregningAktivitetNøkkel {
         return fom;
     }
 
-    public String getArbeidsgiverIdentifikator() {
-        return arbeidsgiverIdentifikator;
+    public Aktør getArbeidsgiver() {
+        return arbeidsgiver;
     }
 
-    public String getArbeidsforholdRef() {
+    public InternArbeidsforholdRefDto getArbeidsforholdRef() {
         return arbeidsforholdRef;
     }
 
@@ -81,13 +83,13 @@ public class BeregningAktivitetNøkkel {
         BeregningAktivitetNøkkel that = (BeregningAktivitetNøkkel) o;
         return Objects.equals(opptjeningAktivitetType, that.opptjeningAktivitetType)
                 && Objects.equals(fom, that.fom)
-                && Objects.equals(arbeidsgiverIdentifikator, that.arbeidsgiverIdentifikator)
+                && Objects.equals(arbeidsgiver, that.arbeidsgiver)
                 && Objects.equals(arbeidsforholdRef, that.arbeidsforholdRef);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(opptjeningAktivitetType, fom, arbeidsgiverIdentifikator, arbeidsforholdRef);
+        return Objects.hash(opptjeningAktivitetType, fom, arbeidsgiver, arbeidsforholdRef);
     }
 
 }

@@ -5,7 +5,12 @@ import java.util.Optional;
 
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Aktør;
+import no.nav.folketrygdloven.kalkulus.felles.v1.AktørIdPersonident;
+import no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto;
+import no.nav.folketrygdloven.kalkulus.felles.v1.Organisasjon;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.håndtering.v1.avklaraktiviteter.AvklarAktiviteterHåndteringDto;
 import no.nav.folketrygdloven.kalkulus.response.v1.håndtering.BeregningAktivitetEndring;
@@ -66,8 +71,12 @@ class UtledEndringIAktiviteter {
     private static BeregningAktivitetNøkkel mapNøkkel(BeregningAktivitetDto aktivitet) {
         return new BeregningAktivitetNøkkel(aktivitet.getOpptjeningAktivitetType(),
                 aktivitet.getPeriode().getFomDato(),
-                aktivitet.getArbeidsgiver() != null ? aktivitet.getArbeidsgiver().getIdentifikator() : null,
-                aktivitet.getArbeidsforholdRef() != null ? aktivitet.getArbeidsforholdRef().getReferanse() : null);
+                aktivitet.getArbeidsgiver() != null ? mapArbeidsgiver(aktivitet.getArbeidsgiver()) : null,
+                aktivitet.getArbeidsforholdRef() != null && aktivitet.getArbeidsforholdRef().getReferanse() != null ? new InternArbeidsforholdRefDto(aktivitet.getArbeidsforholdRef().getReferanse()) : null);
+    }
+
+    private static Aktør mapArbeidsgiver(Arbeidsgiver arbeidsgiver) {
+        return arbeidsgiver.getErVirksomhet() ? new Organisasjon(arbeidsgiver.getOrgnr()) : new AktørIdPersonident(arbeidsgiver.getAktørId().getAktørId());
     }
 
     private static Optional<Boolean> finnSkalBrukesForrige(BeregningAktivitetDto aktivitet, Optional<BeregningAktivitetAggregatDto> forrigeRegister, Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
