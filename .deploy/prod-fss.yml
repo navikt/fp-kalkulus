@@ -65,7 +65,7 @@ spec:
     - name: PSB_TILKOMMET_INNTEKT
       value: "false"
     - name: SKAL_VURDERE_FORLENGELSE
-      value: "false"
+      value: "true"
     - name: BEREGNE_DAGPENGER_FRA_SYKEPENGER
       value: "true"
     - name: AUTOMATISK_BEREGNE_LONNSENDRING
