@@ -29,6 +29,7 @@ public class FastsattInntektskategori implements Comparable<FastsattInntektskate
     public FastsattInntektskategori(FastsattInntektskategori fastsattInntektskategori) {
         this.inntektskategori = fastsattInntektskategori.getInntektskategori();
         this.inntektskategoriAutomatiskFordeling = fastsattInntektskategori.getInntektskategoriAutomatiskFordeling();
+        this.inntektskategoriManuellFordeling = fastsattInntektskategori.getInntektskategoriManuellFordeling();
     }
 
 
