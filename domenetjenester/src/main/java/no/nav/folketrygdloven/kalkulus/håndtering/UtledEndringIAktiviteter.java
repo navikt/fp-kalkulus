@@ -41,24 +41,25 @@ class UtledEndringIAktiviteter {
         return Optional.empty();
     }
 
-    private static BeregningAktivitetEndring utledEndring(BeregningAktivitetDto aktivitet, List<BeregningAktivitetDto> gjeldendeAktiviteter, Optional<BeregningAktivitetAggregatDto> forrigeRegister, Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
-        var gjeldendeAktivitet = finnKorresponderende(aktivitet, gjeldendeAktiviteter);
-        var skalBrukesEndring = finnSkalBrukesEndring(aktivitet, forrigeRegister, forrigeGjeldende, gjeldendeAktivitet);
-        var datoEndring = finnDatoEndring(aktivitet, gjeldendeAktivitet, forrigeGjeldende);
+    private static BeregningAktivitetEndring utledEndring(BeregningAktivitetDto registerAktivitet, List<BeregningAktivitetDto> gjeldendeAktiviteter, Optional<BeregningAktivitetAggregatDto> forrigeRegister, Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
+        var gjeldendeAktivitet = finnKorresponderende(registerAktivitet, gjeldendeAktiviteter);
+        var skalBrukesEndring = finnSkalBrukesEndring(registerAktivitet, forrigeRegister, forrigeGjeldende, gjeldendeAktivitet);
+        var datoEndring = finnDatoEndring(registerAktivitet, gjeldendeAktivitet, forrigeGjeldende);
         return new BeregningAktivitetEndring(
-                mapNøkkel(aktivitet),
+                mapNøkkel(registerAktivitet),
                 skalBrukesEndring,
                 datoEndring.orElse(null)
         );
     }
 
-    private static Optional<DatoEndring> finnDatoEndring(BeregningAktivitetDto aktivitet,
+    private static Optional<DatoEndring> finnDatoEndring(BeregningAktivitetDto registerAktivitet,
                                                          Optional<BeregningAktivitetDto> gjeldendeAktivitet,
                                                          Optional<BeregningAktivitetAggregatDto> forrigeGjeldende) {
         var forrigeKorresponderendeGjeldende = forrigeGjeldende.map(BeregningAktivitetAggregatDto::getBeregningAktiviteter)
-                .flatMap(akts -> finnKorresponderende(aktivitet, akts));
+                .flatMap(akts -> finnKorresponderende(registerAktivitet, akts));
         return gjeldendeAktivitet.map(a ->
-                new DatoEndring(forrigeKorresponderendeGjeldende.map(BeregningAktivitetDto::getPeriode).map(Intervall::getTomDato).orElse(null),
+                new DatoEndring(forrigeKorresponderendeGjeldende.map(BeregningAktivitetDto::getPeriode).map(Intervall::getTomDato)
+                        .orElse(registerAktivitet.getPeriode().getTomDato()),
                         a.getPeriode().getTomDato()));
     }
 
