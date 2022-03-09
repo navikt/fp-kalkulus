@@ -224,6 +224,14 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         return skalFastsetteGrunnlag;
     }
 
+    public LocalDate getBeregningsperiodeFom() {
+        return beregningsperiodeFom;
+    }
+
+    public LocalDate getBeregningsperiodeTom() {
+        return beregningsperiodeTom;
+    }
+
     public void setFordeltPrAar(BigDecimal fordeltPrAar) {
         this.fordeltPrAar = fordeltPrAar;
     }
