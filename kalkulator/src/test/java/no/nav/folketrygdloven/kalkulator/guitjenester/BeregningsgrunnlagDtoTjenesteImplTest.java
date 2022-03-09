@@ -178,8 +178,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(andelDto.getRedusertPrAar()).isEqualTo(REDUSERT_PR_AAR);
         assertThat(andelDto.getBruttoPrAar()).isEqualTo(OVERSTYRT_PR_AAR);
         assertThat(andelDto.getBeregnetPrAar()).isEqualTo(BRUTTO_PR_AAR);
-        assertThat(andelDto.getBeregningsgrunnlagFom()).isEqualTo(ANDEL_FOM);
-        assertThat(andelDto.getBeregningsgrunnlagTom()).isEqualTo(ANDEL_TOM);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
         assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(ORGNR);
     }
@@ -207,8 +205,6 @@ public class BeregningsgrunnlagDtoTjenesteImplTest {
         assertThat(andelDto.getRedusertPrAar()).isEqualTo(REDUSERT_PR_AAR);
         assertThat(andelDto.getBruttoPrAar()).isEqualTo(OVERSTYRT_PR_AAR);
         assertThat(andelDto.getBeregnetPrAar()).isEqualTo(BRUTTO_PR_AAR);
-        assertThat(andelDto.getBeregningsgrunnlagFom()).isEqualTo(ANDEL_FOM);
-        assertThat(andelDto.getBeregningsgrunnlagTom()).isEqualTo(ANDEL_TOM);
         assertThat(andelDto.getArbeidsforhold()).isNotNull();
         assertThat(andelDto.getArbeidsforhold().getArbeidsgiverIdent()).isEqualTo(aktørId.getAktørId());
     }

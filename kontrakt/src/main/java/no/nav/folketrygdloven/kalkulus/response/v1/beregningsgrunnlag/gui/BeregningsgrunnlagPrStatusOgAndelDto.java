@@ -168,16 +168,6 @@ public abstract class BeregningsgrunnlagPrStatusOgAndelDto {
         // trengs for deserialisering av JSON
     }
 
-    @JsonGetter
-    public LocalDate getBeregningsgrunnlagFom() {
-        return beregningsperiodeFom;
-    }
-
-    @JsonGetter
-    public LocalDate getBeregningsgrunnlagTom() {
-        return beregningsperiodeTom;
-    }
-
     public BigDecimal getBeregnetPrAar() {
         return beregnetPrAar;
     }
