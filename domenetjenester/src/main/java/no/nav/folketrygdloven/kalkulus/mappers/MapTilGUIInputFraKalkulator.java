@@ -30,8 +30,7 @@ public class MapTilGUIInputFraKalkulator {
                 kobling.getKoblingReferanse().getReferanse(),
                 Optional.empty(),
                 skjæringstidspunkt);
-        var iayGrunnlagMappet = new MapIAYTilKalulator(input.getIayGrunnlag())
-                .mapGrunnlag(input.getIayGrunnlag());
+        var iayGrunnlagMappet = MapIAYTilKalulator.mapGrunnlag(input.getIayGrunnlag());
         var beregningsgrunnlagGUIInput = new BeregningsgrunnlagGUIInput(
                 ref,
                 iayGrunnlagMappet,

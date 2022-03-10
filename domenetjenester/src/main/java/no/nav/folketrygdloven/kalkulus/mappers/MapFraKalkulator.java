@@ -109,7 +109,8 @@ public class MapFraKalkulator {
         if (kravPrArbeidsforhold == null) {
             // TODO: Fjern når alle konsumenter har tatt i bruk ny struktur
             kravPrArbeidsforhold = LagKravperioder.lagKravperioderPrArbeidsforhold(refusjonskravDatoer, iayGrunnlag, stp);
-        };
+        }
+        ;
         return kravPrArbeidsforhold.stream().map(MapFraKalkulator::mapKravPerioder).collect(Collectors.toList());
     }
 
@@ -184,7 +185,7 @@ public class MapFraKalkulator {
     }
 
     private static no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto mapFraDto(InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        return new MapIAYTilKalulator(iayGrunnlag).mapGrunnlag(iayGrunnlag);
+        return MapIAYTilKalulator.mapGrunnlag(iayGrunnlag);
     }
 
     private static Intervall mapPeriode(Periode periode) {

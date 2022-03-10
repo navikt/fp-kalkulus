@@ -8,11 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.modell.iay.AktivitetsAvtaleDtoBuilder;
-import no.nav.folketrygdloven.kalkulator.modell.iay.AnvistAndel;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdInformasjonDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdOverstyringDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsforholdReferanseDto;
-import no.nav.folketrygdloven.kalkulator.modell.iay.ArbeidsgiverOpplysningerDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
@@ -70,10 +68,7 @@ import no.nav.folketrygdloven.kalkulus.opptjening.v1.OppgittOpptjeningDto;
 
 public class MapIAYTilKalulator {
 
-    private final AnvistAndelMapper anvistAndelMapper;
-
-    public MapIAYTilKalulator(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
-        this.anvistAndelMapper = new AnvistAndelMapper(iayGrunnlag);
+    private MapIAYTilKalulator() {
     }
 
     public static InternArbeidsforholdRefDto mapArbeidsforholdRef(no.nav.folketrygdloven.kalkulus.felles.v1.InternArbeidsforholdRefDto arbeidsforholdRef) {
@@ -96,7 +91,7 @@ public class MapIAYTilKalulator {
                 EksternArbeidsforholdRef.nullRef() : EksternArbeidsforholdRef.ref(eksternReferanse.getReferanse());
     }
 
-    public InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
+    public static InntektArbeidYtelseGrunnlagDto mapGrunnlag(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto iayGrunnlag) {
         InntektArbeidYtelseGrunnlagDtoBuilder builder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         InntektArbeidYtelseAggregatBuilder data = mapAggregat(iayGrunnlag);
         builder.medData(data);
@@ -282,7 +277,7 @@ public class MapIAYTilKalulator {
         return builder;
     }
 
-    private InntektArbeidYtelseAggregatBuilder mapAggregat(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto grunnlagDto) {
+    private static InntektArbeidYtelseAggregatBuilder mapAggregat(no.nav.folketrygdloven.kalkulus.iay.v1.InntektArbeidYtelseGrunnlagDto grunnlagDto) {
         InntektArbeidYtelseAggregatBuilder builder = InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER);
         if (grunnlagDto.getArbeidDto() != null) {
             builder.leggTilAktørArbeid(mapArbeid(grunnlagDto.getArbeidDto()));
@@ -296,17 +291,17 @@ public class MapIAYTilKalulator {
         return builder;
     }
 
-    private InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder mapAktørYtelse(YtelserDto ytelser) {
+    private static InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder mapAktørYtelse(YtelserDto ytelser) {
         InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder builder = InntektArbeidYtelseAggregatBuilder.AktørYtelseBuilder.oppdatere(Optional.empty());
         ytelser.getYtelser().forEach(ytelse -> builder.leggTilYtelse(mapYtelse(ytelse)));
         return builder;
 
     }
 
-    private YtelseDtoBuilder mapYtelse(YtelseDto ytelse) {
+    private static YtelseDtoBuilder mapYtelse(YtelseDto ytelse) {
         YtelseDtoBuilder builder = YtelseDtoBuilder.oppdatere(Optional.empty());
         if (ytelse.getYtelseAnvist() != null) {
-            ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto, ytelse.getYtelseGrunnlag())));
+            ytelse.getYtelseAnvist().forEach(ytelseAnvistDto -> builder.leggTilYtelseAnvist(mapYtelseAnvist(ytelseAnvistDto)));
         }
         if (ytelse.getVedtaksDagsats() != null) {
             builder.medVedtaksDagsats(ytelse.getVedtaksDagsats().getVerdi());
@@ -340,8 +335,7 @@ public class MapIAYTilKalulator {
                 f.getErRefusjon());
     }
 
-    private YtelseAnvistDto mapYtelseAnvist(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist,
-                                                   no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseGrunnlagDto ytelseGrunnlag) {
+    private static YtelseAnvistDto mapYtelseAnvist(no.nav.folketrygdloven.kalkulus.iay.ytelse.v1.YtelseAnvistDto ytelseAnvist) {
         YtelseAnvistDtoBuilder builder = YtelseAnvistDtoBuilder.ny();
         builder.medAnvistPeriode(Intervall.fraOgMedTilOgMed(ytelseAnvist.getAnvistPeriode().getFom(), ytelseAnvist.getAnvistPeriode().getTom()));
         if (ytelseAnvist.getBeløp() != null) {
@@ -353,7 +347,7 @@ public class MapIAYTilKalulator {
         if (ytelseAnvist.getUtbetalingsgradProsent() != null) {
             builder.medUtbetalingsgradProsent(ytelseAnvist.getUtbetalingsgradProsent());
         }
-        builder.medAnvisteAndeler(anvistAndelMapper.mapAnvisteAndeler(ytelseAnvist, ytelseGrunnlag));
+        builder.medAnvisteAndeler(AnvistAndelMapper.mapAnvisteAndeler(ytelseAnvist));
         return builder.build();
     }
 
