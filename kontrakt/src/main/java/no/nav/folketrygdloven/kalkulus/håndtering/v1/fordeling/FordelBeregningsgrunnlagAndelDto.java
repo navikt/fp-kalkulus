@@ -4,16 +4,15 @@ package no.nav.folketrygdloven.kalkulus.håndtering.v1.fordeling;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,8 +52,7 @@ public class FordelBeregningsgrunnlagAndelDto extends FordelRedigerbarAndelDto {
                                             @Valid Integer forrigeRefusjonPrÅr,
                                             @Valid Integer forrigeArbeidsinntektPrÅr) {
         super(andelDto.getAndelsnr(), andelDto.getArbeidsgiverId(), andelDto.getArbeidsforholdId().getAbakusReferanse(),
-                andelDto.getNyAndel(), andelDto.getAktivitetStatus(), andelDto.getArbeidsforholdType(), andelDto.getLagtTilAvSaksbehandler(),
-                andelDto.getBeregningsperiodeFom(), andelDto.getBeregningsperiodeTom(), andelDto.getKilde());
+                andelDto.getNyAndel(), andelDto.getKilde());
         this.fastsatteVerdier = fastsatteVerdier;
         this.forrigeArbeidsinntektPrÅr = forrigeArbeidsinntektPrÅr;
         this.forrigeInntektskategori = forrigeInntektskategori;

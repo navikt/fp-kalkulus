@@ -92,7 +92,7 @@ public class FordelRefusjonTjenesteTest {
         lagDPAndelLagtTilAvSaksbehandler();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -107,7 +107,7 @@ public class FordelRefusjonTjenesteTest {
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(0);
@@ -127,7 +127,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periode);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -143,7 +143,7 @@ public class FordelRefusjonTjenesteTest {
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -159,7 +159,7 @@ public class FordelRefusjonTjenesteTest {
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -174,7 +174,7 @@ public class FordelRefusjonTjenesteTest {
         lagArbeidstakerAndel();
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel)).isNull();
@@ -192,7 +192,7 @@ public class FordelRefusjonTjenesteTest {
                 .build(periode);
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
 
         // Assert
@@ -224,10 +224,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         assertThat(map.get(fordeltAndel).intValue()).isEqualTo(REFUSJONPRÅR);
@@ -254,11 +254,11 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER),
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER),
                 new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -291,10 +291,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -326,10 +326,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -361,10 +361,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -401,10 +401,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;
@@ -441,10 +441,10 @@ public class FordelRefusjonTjenesteTest {
                 .medAndelsnr(2L)
                 .build(periodeForrige);
 
-        input = BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse, new Tuple<>(oppdatertBg, BeregningsgrunnlagTilstand.OPPDATERT_MED_ANDELER), new Tuple<>(forrigeBg, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         // Act
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, periode);
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> map = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, periode);
 
         // Assert
         double totalRefusjon = 2 * REFUSJONPRÅR;

@@ -20,11 +20,13 @@ public class FordelFastsatteVerdierDto {
     private FordelFastsatteVerdierDto(Integer refusjonPrÅr,
                                       Integer fastsattBeløp,
                                       Integer fastsattÅrsbeløp,
-                                      Inntektskategori inntektskategori) {
+                                      Inntektskategori inntektskategori,
+                                      Integer fastsattÅrsbeløpInklNaturalytelse) {
         this.refusjonPrÅr = refusjonPrÅr;
         this.fastsattBeløp = fastsattBeløp;
         this.fastsattÅrsbeløp = fastsattÅrsbeløp;
         this.inntektskategori = inntektskategori;
+        this.fastsattÅrsbeløpInklNaturalytelse = fastsattÅrsbeløpInklNaturalytelse;
     }
 
     public Integer getRefusjonPrÅr() {
@@ -64,7 +66,8 @@ public class FordelFastsatteVerdierDto {
                     fordelFastsatteVerdierDto.refusjonPrÅr,
                     fordelFastsatteVerdierDto.fastsattBeløp,
                     fordelFastsatteVerdierDto.fastsattÅrsbeløp,
-                    fordelFastsatteVerdierDto.inntektskategori
+                    fordelFastsatteVerdierDto.inntektskategori,
+                    fordelFastsatteVerdierDto.fastsattÅrsbeløpInklNaturalytelse
             );
         }
 

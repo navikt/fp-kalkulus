@@ -67,7 +67,7 @@ public class MapFraFordelingsmodell {
     }
 
     private static void oppdaterEksisterendeAndel(BeregningsgrunnlagPeriodeDto.Builder eksisterendePeriode, FordelAndelModell regelAndel) {
-        var andelBuilder = eksisterendePeriode.getBuilderForAndel(regelAndel.getAndelNr())
+        var andelBuilder = eksisterendePeriode.getBuilderForAndel(regelAndel.getAndelNr(), true)
                 .orElseThrow(() -> new IllegalStateException("Finner ikke builder for eksisterende andel med andelsnr " + regelAndel.getAndelNr()));
         settFelterFraRegelPåBuilder(regelAndel, andelBuilder);
     }

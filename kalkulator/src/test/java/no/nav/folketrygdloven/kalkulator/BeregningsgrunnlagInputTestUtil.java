@@ -12,6 +12,7 @@ import java.util.Optional;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.ForeslåBeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.OmsorgspengerGrunnlag;
 import no.nav.folketrygdloven.kalkulator.input.StegProsesseringInput;
 import no.nav.folketrygdloven.kalkulator.input.SvangerskapspengerGrunnlag;
@@ -51,6 +52,31 @@ public class BeregningsgrunnlagInputTestUtil {
         inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
         inputMedBeregningsgrunnlag.setToggles(toggles);
         return inputMedBeregningsgrunnlag;
+    }
+
+    public static HåndterBeregningsgrunnlagInput lagHåndteringInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse,
+                                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
+                                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> forrige) {
+        var input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
+        var inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        var håndterBeregningsgrunnlagInput = new HåndterBeregningsgrunnlagInput(inputMedBeregningsgrunnlag, forrige.getElement2());
+        var foorrigeGr = forrige.getElement1() == null ? null : lagGrunnlag(forrige.getElement1(), forrige.getElement2());
+        håndterBeregningsgrunnlagInput = håndterBeregningsgrunnlagInput.medForrigeGrunnlagFraHåndtering(foorrigeGr);
+        return håndterBeregningsgrunnlagInput;
+    }
+
+    public static HåndterBeregningsgrunnlagInput lagHåndteringInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse,
+                                                                                         Tuple<BeregningsgrunnlagDto, BeregningsgrunnlagTilstand> aktivt,
+                                                                                         BeregningsgrunnlagTilstand forrigeTilstand) {
+        var input = new BeregningsgrunnlagInput(koblingReferanse, null, null, List.of(), null);
+        BeregningsgrunnlagGrunnlagDto grunnlag = lagGrunnlag(aktivt.getElement1(), aktivt.getElement2());
+        var inputMedBeregningsgrunnlag = input.medBeregningsgrunnlagGrunnlag(grunnlag);
+        inputMedBeregningsgrunnlag.leggTilKonfigverdi(INNTEKT_RAPPORTERING_FRIST_DATO, 5);
+        inputMedBeregningsgrunnlag.setToggles(toggles);
+        return new HåndterBeregningsgrunnlagInput(inputMedBeregningsgrunnlag, forrigeTilstand);
     }
 
     public static BeregningsgrunnlagInput lagInputMedBeregningsgrunnlag(KoblingReferanse koblingReferanse, BeregningsgrunnlagDto beregningsgrunnlag, BeregningsgrunnlagTilstand beregningsgrunnlagTilstand) {

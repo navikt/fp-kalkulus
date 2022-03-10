@@ -43,7 +43,7 @@ public class OmfordelingUtenRefusjonskravTjeneste {
                 .forEach((andelsnr, fordelingForAndel) -> {
                     var fordelingIterator = fordelingForAndel.iterator();
                     var førsteAndel = fordelingIterator.next();
-                    var andelBuilder = periodeBuilder.getBuilderForAndel(førsteAndel.andelsnr).orElseThrow(() -> new IllegalStateException("Forventer å finne andelbuilder"));
+                    var andelBuilder = periodeBuilder.getBuilderForAndel(førsteAndel.andelsnr, true).orElseThrow(() -> new IllegalStateException("Forventer å finne andelbuilder"));
                     andelBuilder.medInntektskategoriManuellFordeling(førsteAndel.inntektskategori);
                     andelBuilder.medFordeltPrÅr(førsteAndel.beløp.getVerdi());
                     var andel = andelBuilder.build();

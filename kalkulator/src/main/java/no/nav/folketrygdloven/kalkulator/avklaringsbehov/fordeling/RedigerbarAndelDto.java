@@ -1,7 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling;
 
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
@@ -16,11 +15,6 @@ public class RedigerbarAndelDto {
     private String arbeidsforholdId;
     private Boolean nyAndel;
     private AndelKilde kilde;
-    private AktivitetStatus aktivitetStatus;
-    private OpptjeningAktivitetType arbeidsforholdType;
-    private LocalDate beregningsperiodeFom;
-    private LocalDate beregningsperiodeTom;
-
 
     protected RedigerbarAndelDto() { // NOSONAR
         // Jackson
@@ -30,20 +24,12 @@ public class RedigerbarAndelDto {
                               String arbeidsgiverId,
                               String arbeidsforholdId,
                               Boolean nyAndel,
-                              AndelKilde kilde,
-                              AktivitetStatus aktivitetStatus,
-                              OpptjeningAktivitetType arbeidsforholdType,
-                              LocalDate beregningsperiodeFom,
-                              LocalDate beregningsperiodeTom) {
+                              AndelKilde kilde) {
         this.andelsnr = andelsnr;
         this.arbeidsgiverId = arbeidsgiverId;
         this.arbeidsforholdId = arbeidsforholdId;
         this.nyAndel = nyAndel;
         this.kilde = kilde;
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsforholdType = arbeidsforholdType;
-        this.beregningsperiodeFom = beregningsperiodeFom;
-        this.beregningsperiodeTom = beregningsperiodeTom;
     }
 
     public RedigerbarAndelDto(Boolean nyAndel,
@@ -57,8 +43,6 @@ public class RedigerbarAndelDto {
         this.arbeidsforholdId = internArbeidsforholdId;
         this.andelsnr = andelsnr;
         this.kilde = kilde;
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsforholdType = arbeidsforholdType;
     }
 
     public RedigerbarAndelDto(Boolean nyAndel,
@@ -72,8 +56,6 @@ public class RedigerbarAndelDto {
         this.arbeidsforholdId = arbeidsforholdId == null ? null : arbeidsforholdId.getReferanse();
         this.andelsnr = andelsnr;
         this.kilde = kilde;
-        this.aktivitetStatus = aktivitetStatus;
-        this.arbeidsforholdType = arbeidsforholdType;
     }
 
 
@@ -83,10 +65,12 @@ public class RedigerbarAndelDto {
         this(nyAndel, null, (InternArbeidsforholdRefDto) null, andelsnr, aktivitetStatus, arbeidsforholdType, kilde);
     }
 
-    public AktivitetStatus getAktivitetStatus() {
-        return aktivitetStatus;
-    }
 
+    /**
+     * Returnerer andelsnr. Definerer andel som enten skal oppdateres eller kopieres for opprettelse av ny andel.
+     *
+     * @return Andelsnr
+     */
     public Long getAndelsnr() {
         return andelsnr;
     }
@@ -99,11 +83,8 @@ public class RedigerbarAndelDto {
         return arbeidsgiverId;
     }
 
-    public OpptjeningAktivitetType getArbeidsforholdType() {
-        return arbeidsforholdType;
-    }
 
-    public Boolean getNyAndel() {
+    public Boolean erNyAndel() {
         return nyAndel;
     }
 
@@ -111,15 +92,8 @@ public class RedigerbarAndelDto {
         return kilde.equals(AndelKilde.SAKSBEHANDLER_FORDELING) || kilde.equals(AndelKilde.SAKSBEHANDLER_KOFAKBER);
     }
 
-    public LocalDate getBeregningsperiodeFom() {
-        return beregningsperiodeFom;
-    }
-
-    public LocalDate getBeregningsperiodeTom() {
-        return beregningsperiodeTom;
-    }
-
     public AndelKilde getKilde() {
         return kilde;
     }
+
 }

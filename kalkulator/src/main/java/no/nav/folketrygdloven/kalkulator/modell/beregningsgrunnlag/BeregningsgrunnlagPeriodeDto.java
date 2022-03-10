@@ -188,16 +188,15 @@ public class BeregningsgrunnlagPeriodeDto {
         }
 
 
-
         public static Builder kopier(BeregningsgrunnlagPeriodeDto p) {
             return new Builder(p);
         }
 
-        public Optional<BeregningsgrunnlagPrStatusOgAndelDto.Builder> getBuilderForAndel(Long andelsnr) {
+        public Optional<BeregningsgrunnlagPrStatusOgAndelDto.Builder> getBuilderForAndel(Long andelsnr, boolean oppdater) {
             return this.kladd.getBeregningsgrunnlagPrStatusOgAndelList().stream()
                     .filter(a -> a.getAndelsnr().equals(andelsnr))
-                    .map(BeregningsgrunnlagPrStatusOgAndelDto.Builder::oppdatere)
-                    .findFirst();
+                    .findFirst()
+                    .map(a -> oppdater ? BeregningsgrunnlagPrStatusOgAndelDto.Builder.oppdatere(a) : BeregningsgrunnlagPrStatusOgAndelDto.kopier(a));
         }
 
         public Builder leggTilBeregningsgrunnlagPrStatusOgAndel(BeregningsgrunnlagPrStatusOgAndelDto beregningsgrunnlagPrStatusOgAndel) {

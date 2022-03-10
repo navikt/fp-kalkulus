@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -14,19 +14,14 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregni
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
-import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
-import no.nav.folketrygdloven.kalkulator.modell.typer.Refusjon;
-import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AndelKilde;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
-import no.nav.folketrygdloven.kalkulus.typer.AktørId;
-import no.nav.folketrygdloven.kalkulus.typer.OrgNummer;
 
 public class FordelBeregningsgrunnlagHåndterer {
 
@@ -34,7 +29,7 @@ public class FordelBeregningsgrunnlagHåndterer {
         // skjul
     }
 
-    public static BeregningsgrunnlagGrunnlagDto håndter(FordelBeregningsgrunnlagDto dto, BeregningsgrunnlagInput input) {
+    public static BeregningsgrunnlagGrunnlagDto håndter(FordelBeregningsgrunnlagDto dto, HåndterBeregningsgrunnlagInput input) {
         BeregningsgrunnlagGrunnlagDtoBuilder grunnlagBuilder = BeregningsgrunnlagGrunnlagDtoBuilder.oppdatere(input.getBeregningsgrunnlagGrunnlag());
         BeregningsgrunnlagDto beregningsgrunnlag = grunnlagBuilder.getBeregningsgrunnlagBuilder().getBeregningsgrunnlag();
         List<BeregningsgrunnlagPeriodeDto> perioder = beregningsgrunnlag.getBeregningsgrunnlagPerioder();
@@ -45,145 +40,73 @@ public class FordelBeregningsgrunnlagHåndterer {
     }
 
 
-    private static void fastsettVerdierForPeriode(BeregningsgrunnlagInput input,
+    private static void fastsettVerdierForPeriode(HåndterBeregningsgrunnlagInput input,
                                                   List<BeregningsgrunnlagPeriodeDto> perioder,
                                                   FordelBeregningsgrunnlagPeriodeDto endretPeriode) {
         BeregningsgrunnlagPeriodeDto korrektPeriode = getKorrektPeriode(input, perioder, endretPeriode);
-        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(input, endretPeriode, korrektPeriode);
-        BeregningsgrunnlagPeriodeDto uendretPeriode = BeregningsgrunnlagPeriodeDto.kopier(korrektPeriode).buildForKopi();
-        BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode)
-                .fjernAlleBeregningsgrunnlagPrStatusOgAndeler();
+        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap = FordelRefusjonTjeneste.getRefusjonPrÅrMap(endretPeriode, korrektPeriode);
+        BeregningsgrunnlagPeriodeDto.Builder perioderBuilder = BeregningsgrunnlagPeriodeDto.oppdater(korrektPeriode);
         // Må sortere med eksisterende først for å sette andelsnr på disse først
         List<FordelBeregningsgrunnlagAndelDto> sorted = sorterMedNyesteSist(endretPeriode);
         for (FordelBeregningsgrunnlagAndelDto endretAndel : sorted) {
-            perioderBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(fastsettVerdierForAndel(uendretPeriode, refusjonMap, endretAndel));
+            var builderFraAktivtGrunnlag = perioderBuilder.getBuilderForAndel(endretAndel.getAndelsnr(), !endretAndel.erNyAndel());
+            if (builderFraAktivtGrunnlag.isPresent()) {
+                fordel(refusjonMap, perioderBuilder, endretAndel, builderFraAktivtGrunnlag.get(), endretAndel.erNyAndel());
+            } else {
+                var builderFraForrigeGrunnlag = lagBuilderFraForrigeGrunnlagEllerNy(input.getForrigeGrunnlagFraHåndteringTilstand(), endretPeriode.getFom(), endretAndel);
+                fordel(refusjonMap, perioderBuilder, endretAndel, builderFraForrigeGrunnlag, true);
+            }
         }
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder fastsettVerdierForAndel(BeregningsgrunnlagPeriodeDto korrektPeriode,
-                                                                                        Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
-                                                                                        FordelBeregningsgrunnlagAndelDto endretAndel) {
+    private static void fordel(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                               BeregningsgrunnlagPeriodeDto.Builder perioderBuilder,
+                               FordelBeregningsgrunnlagAndelDto endretAndel,
+                               BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel, boolean skalLeggeTilAndel) {
+        fastsettVerdierForAndel(builderForAndel, refusjonMap, endretAndel);
+        if (skalLeggeTilAndel) {
+            builderForAndel.medAndelsnr(null);
+            builderForAndel.medKilde(AndelKilde.SAKSBEHANDLER_FORDELING);
+            perioderBuilder.leggTilBeregningsgrunnlagPrStatusOgAndel(builderForAndel);
+        }
+    }
+
+    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBuilderFraForrigeGrunnlagEllerNy(Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraHåndteringTilstand, LocalDate fom, FordelBeregningsgrunnlagAndelDto endretAndel) {
+        return forrigeGrunnlagFraHåndteringTilstand.flatMap(BeregningsgrunnlagGrunnlagDto::getBeregningsgrunnlag)
+                .stream()
+                .flatMap(bg -> bg.getBeregningsgrunnlagPerioder().stream())
+                .filter(p -> p.getPeriode().getFomDato().equals(fom))
+                .findFirst()
+                .stream()
+                .flatMap(a -> a.getBeregningsgrunnlagPrStatusOgAndelList().stream())
+                .filter(a -> a.getAndelsnr().equals(endretAndel.getAndelsnr()))
+                .findFirst()
+                .map(BeregningsgrunnlagPrStatusOgAndelDto::kopier)
+                .orElseThrow();
+    }
+
+    private static void fastsettVerdierForAndel(BeregningsgrunnlagPrStatusOgAndelDto.Builder builderForAndel,
+                                                Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
+                                                FordelBeregningsgrunnlagAndelDto endretAndel) {
         FordelFastsatteVerdierDto fastsatteVerdier = endretAndel.getFastsatteVerdier();
         FordelFastsatteVerdierDto verdierMedJustertRefusjon = lagVerdierMedFordeltRefusjon(refusjonMap, endretAndel, fastsatteVerdier);
-        return byggAndel(korrektPeriode, endretAndel, verdierMedJustertRefusjon);
+        settVerdierPåBuilder(builderForAndel, verdierMedJustertRefusjon);
     }
 
-    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder byggAndel(BeregningsgrunnlagPeriodeDto korrektPeriode, FordelBeregningsgrunnlagAndelDto endretAndel, FordelFastsatteVerdierDto verdierMedJustertRefusjon) {
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = lagBuilderMedInntektOgInntektskategori(endretAndel);
-        if (gjelderArbeidsforhold(endretAndel)) {
-            byggArbeidsforhold(korrektPeriode, endretAndel, verdierMedJustertRefusjon, andelBuilder);
-        }
-        Optional<BeregningsgrunnlagPrStatusOgAndelDto> korrektAndel = finnAndelMedMatchendeAndelsnr(korrektPeriode, endretAndel);
-        if (korrektAndel.isPresent()) {
-            if (gjelderAAPEllerDagpenger(endretAndel)) {
-                mapFelterForYtelse(korrektAndel.get(), andelBuilder);
-            }
-            if (!endretAndel.getNyAndel()) {
-                mapFelterForEksisterendeAndel(korrektAndel.get(), andelBuilder);
-                andelBuilder.medKilde(korrektAndel.get().getKilde());
-            }
-        }
-        return andelBuilder;
-    }
-
-    private static void mapFelterForEksisterendeAndel(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        andelBuilder.medInntektskategori(korrektAndel.getFastsattInntektskategori().getInntektskategori())
-                .medInntektskategoriAutomatiskFordeling(korrektAndel.getFastsattInntektskategori().getInntektskategoriAutomatiskFordeling())
-                .medBeregnetPrÅr(korrektAndel.getBeregnetPrÅr())
-                .medFordeltPrÅr(korrektAndel.getFordeltPrÅr())
-                .medOverstyrtPrÅr(korrektAndel.getOverstyrtPrÅr());
-        if (korrektAndel.getPgiSnitt() != null) {
-            andelBuilder.medPgi(korrektAndel.getPgiSnitt(),
-                    Arrays.asList(korrektAndel.getPgi1(), korrektAndel.getPgi2(), korrektAndel.getPgi3()));
-        }
-    }
-
-    private static Optional<BeregningsgrunnlagPrStatusOgAndelDto> finnAndelMedMatchendeAndelsnr(BeregningsgrunnlagPeriodeDto korrektPeriode, FordelBeregningsgrunnlagAndelDto endretAndel) {
-        return korrektPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(a -> a.getAndelsnr().equals(endretAndel.getAndelsnr())).findFirst();
-    }
-
-    private static void mapFelterForYtelse(BeregningsgrunnlagPrStatusOgAndelDto korrektAndel, BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        andelBuilder.medOrginalDagsatsFraTilstøtendeYtelse(korrektAndel.getOrginalDagsatsFraTilstøtendeYtelse());
-        andelBuilder.medÅrsbeløpFraTilstøtendeYtelse(korrektAndel.getÅrsbeløpFraTilstøtendeYtelseVerdi());
-    }
-
-    private static boolean gjelderAAPEllerDagpenger(FordelBeregningsgrunnlagAndelDto endretAndel) {
-        return endretAndel.getAktivitetStatus().equals(AktivitetStatus.ARBEIDSAVKLARINGSPENGER) || endretAndel.getAktivitetStatus().equals(AktivitetStatus.DAGPENGER);
-    }
-
-    private static boolean gjelderArbeidsforhold(FordelBeregningsgrunnlagAndelDto endretAndel) {
-        return endretAndel.getArbeidsgiverId() != null;
-    }
-
-    private static BeregningsgrunnlagPrStatusOgAndelDto.Builder lagBuilderMedInntektOgInntektskategori(FordelBeregningsgrunnlagAndelDto endretAndel) {
-        BeregningsgrunnlagPrStatusOgAndelDto.Builder builder = BeregningsgrunnlagPrStatusOgAndelDto.Builder.ny();
-
-        if (endretAndel.getBeregningsperiodeFom() != null) {
-            builder.medBeregningsperiode(endretAndel.getBeregningsperiodeFom(), endretAndel.getBeregningsperiodeTom());
-        }
-        return builder
-                .medAndelsnr(endretAndel.getNyAndel() ? null : endretAndel.getAndelsnr()) // Opprettholder andelsnr som andel ble lagret med forrige gang
-                .medAktivitetStatus(endretAndel.getAktivitetStatus())
-                .medInntektskategoriManuellFordeling(endretAndel.getFastsatteVerdier().getInntektskategori())
-                .medManueltFordeltPrÅr(endretAndel.getFastsatteVerdier().finnEllerUtregnFastsattBeløpPrÅr())
-                .medKilde(endretAndel.getKilde() == null ? AndelKilde.PROSESS_START : endretAndel.getKilde())
-                .medArbforholdType(endretAndel.getArbeidsforholdType())
+    private static void settVerdierPåBuilder(BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder,
+                                             FordelFastsatteVerdierDto verdierMedJustertRefusjon) {
+        andelBuilder.medInntektskategoriManuellFordeling(verdierMedJustertRefusjon.getInntektskategori())
+                .medManueltFordeltPrÅr(verdierMedJustertRefusjon.finnEllerUtregnFastsattBeløpPrÅr())
                 .medFastsattAvSaksbehandler(true);
-    }
-
-    private static void byggArbeidsforhold(BeregningsgrunnlagPeriodeDto korrektPeriode,
-                                           FordelBeregningsgrunnlagAndelDto endretAndel,
-                                           FordelFastsatteVerdierDto verdierMedJustertRefusjon,
-                                           BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
-        var arbeidsgiver = finnArbeidsgiver(endretAndel);
-        Optional<BGAndelArbeidsforholdDto> arbeidsforholdOpt = finnRiktigArbeidsforholdFraGrunnlag(korrektPeriode, endretAndel);
-        if (arbeidsforholdOpt.isPresent()) {
-            var arbeidsforhold = arbeidsforholdOpt.get();
-            BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder = andelBuilder.getBgAndelArbeidsforholdDtoBuilder().medArbeidsgiver(arbeidsgiver)
-                    .medArbeidsforholdRef(endretAndel.getArbeidsforholdId())
-                    .medManueltFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : null)
-                    .medArbeidsperiodeFom(arbeidsforhold.getArbeidsperiodeFom())
-                    .medSaksbehandletRefusjonPrÅr(arbeidsforhold.getSaksbehandletRefusjonPrÅr())
-                    .medRefusjonskravPrÅr(arbeidsforhold.getRefusjonskravPrÅr(), arbeidsforhold.getRefusjon().map(Refusjon::getRefusjonskravFristUtfall).orElse(null))
-                    .medArbeidsperiodeTom(arbeidsforhold.getArbeidsperiodeTom().orElse(null))
-                    .medHjemmel(arbeidsforhold.getHjemmelForRefusjonskravfrist());
-            if (!endretAndel.erLagtTilAvSaksbehandler() && endretAndel.getFastsatteVerdier().getFastsattÅrsbeløpInklNaturalytelse() == null) {
-                mapNaturalytelse(arbeidsforhold, abeidsforholdBuilder);
-            }
-            andelBuilder.medBGAndelArbeidsforhold(abeidsforholdBuilder);
-        }
-    }
-
-    private static void mapNaturalytelse(BGAndelArbeidsforholdDto arbeidsforhold, BGAndelArbeidsforholdDto.Builder abeidsforholdBuilder) {
-        abeidsforholdBuilder
-                .medNaturalytelseTilkommetPrÅr(arbeidsforhold.getNaturalytelseTilkommetPrÅr().orElse(null))
-                .medNaturalytelseBortfaltPrÅr(arbeidsforhold.getNaturalytelseBortfaltPrÅr().orElse(null));
-    }
-
-    private static Optional<BGAndelArbeidsforholdDto> finnRiktigArbeidsforholdFraGrunnlag(BeregningsgrunnlagPeriodeDto korrektPeriode, FordelBeregningsgrunnlagAndelDto endretAndel) {
-        return korrektPeriode
-                .getBeregningsgrunnlagPrStatusOgAndelList()
-                .stream()
-                .map(BeregningsgrunnlagPrStatusOgAndelDto::getBgAndelArbeidsforhold)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(a -> a.getArbeidsgiver().getIdentifikator().equals(endretAndel.getArbeidsgiverId()) && a.getArbeidsforholdRef().gjelderFor(endretAndel.getArbeidsforholdId()))
-                .findFirst();
-    }
-
-    private static Arbeidsgiver finnArbeidsgiver(FordelBeregningsgrunnlagAndelDto endretAndel) {
-        Arbeidsgiver arbeidsgiver;
-        if (OrgNummer.erGyldigOrgnr(endretAndel.getArbeidsgiverId())) {
-            arbeidsgiver = Arbeidsgiver.virksomhet(endretAndel.getArbeidsgiverId());
-        } else {
-            arbeidsgiver = Arbeidsgiver.person(new AktørId(endretAndel.getArbeidsgiverId()));
-        }
-        return arbeidsgiver;
+        andelBuilder.oppdaterArbeidsforholdHvisFinnes()
+                .ifPresent(b -> b.medNaturalytelseBortfaltPrÅr(null) // Ved omfordeling må vi nulle ut naturalytelse og inkludere dette i det fordelt beløp
+                        .medNaturalytelseTilkommetPrÅr(null)
+                        .medManueltFordeltRefusjonPrÅr(verdierMedJustertRefusjon.getRefusjonPrÅr() != null ? BigDecimal.valueOf(verdierMedJustertRefusjon.getRefusjonPrÅr()) : null));
     }
 
     private static FordelFastsatteVerdierDto lagVerdierMedFordeltRefusjon(Map<FordelBeregningsgrunnlagAndelDto, BigDecimal> refusjonMap,
-                                                                          FordelBeregningsgrunnlagAndelDto endretAndel, FordelFastsatteVerdierDto fastsatteVerdier) {
+                                                                          FordelBeregningsgrunnlagAndelDto endretAndel,
+                                                                          FordelFastsatteVerdierDto fastsatteVerdier) {
         return FordelFastsatteVerdierDto.Builder.oppdater(fastsatteVerdier)
                 .medRefusjonPrÅr(refusjonMap.get(endretAndel) != null ? refusjonMap.get(endretAndel).intValue() : null)
                 .build();
@@ -200,10 +123,10 @@ public class FordelBeregningsgrunnlagHåndterer {
 
     private static List<FordelBeregningsgrunnlagAndelDto> sorterMedNyesteSist(FordelBeregningsgrunnlagPeriodeDto endretPeriode) {
         Comparator<FordelBeregningsgrunnlagAndelDto> FordelBeregningsgrunnlagAndelDtoComparator = (a1, a2) -> {
-            if (a1.getNyAndel()) {
+            if (a1.erNyAndel()) {
                 return 1;
             }
-            if (a2.getNyAndel()) {
+            if (a2.erNyAndel()) {
                 return -1;
             }
             return 0;

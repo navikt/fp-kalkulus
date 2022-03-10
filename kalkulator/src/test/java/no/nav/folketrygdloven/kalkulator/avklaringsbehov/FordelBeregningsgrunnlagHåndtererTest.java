@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import static java.util.Collections.singletonList;
+import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag;
 import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagAndelDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagDto;
@@ -21,6 +23,7 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregni
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.RedigerbarAndelDto;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
+import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
@@ -43,7 +46,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
     private final Beløp GRUNNBELØP = new Beløp(600000);
     private static final String ORG_NUMMER = "915933149";
     public KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
-    private BeregningsgrunnlagInput input;
+    private HåndterBeregningsgrunnlagInput input;
 
     private BeregningsgrunnlagDto lagBeregningsgrunnlag() {
         return BeregningsgrunnlagDto.builder()
@@ -86,7 +89,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
                 false,
                 null,
                 null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
         FordelBeregningsgrunnlagAndelDto fordeltAndel = lagFordeltAndelInklNaturalytelse(andel, arbId, andelsnr, 0, inntektskategori);
@@ -128,7 +133,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel2 = buildArbeidstakerAndel(arbId2, andelsnr2, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel3 = buildArbeidstakerAndel(arbId2, andelsnr3, periode, null, true, Inntektskategori.FISKER, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         Integer fastsatt = 10_000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
@@ -168,7 +175,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildAPAndel(andelsnr, periode, true, true, BigDecimal.valueOf(100_000));
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         Integer fastsatt = 10_000;
         Inntektskategori inntektskategori = Inntektskategori.SJØMANN;
@@ -195,7 +204,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.FASTSATT_INN);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         boolean nyAndel = false;
         boolean lagtTilAvSaksbehandler = false;
@@ -230,7 +241,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BigDecimal refusjonskravPrÅr = BigDecimal.valueOf(120000);
         BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel = buildArbeidstakerAndel(arbId, andelsnr, periode, refusjonskravPrÅr, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
         BeregningsgrunnlagPrStatusOgAndelDto eksisterendeAndel2 = buildArbeidstakerAndel(arbId2, andelsnr2, periode, refusjonskravPrÅr, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.FASTSATT_INN);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         boolean nyAndel = false;
         boolean lagtTilAvSaksbehandler = false;
@@ -365,7 +378,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel1 = buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
         buildArbeidstakerAndel(arbId2, andelsnr2, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.KOFAKBER_UT);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         boolean nyAndel = false;
         boolean lagtTilAvSaksbehandler = false;
@@ -395,7 +410,9 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagDto beregningsgrunnlag = lagBeregningsgrunnlag();
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT, null);
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse, beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT);
+        input = lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                Tuple.of(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
+                BeregningsgrunnlagTilstand.FASTSATT_INN);
 
         final boolean nyAndel = false;
         final boolean lagtTilAvSaksbehandler = false;
@@ -464,7 +481,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagDto forrigeGrunnlag = BeregningsgrunnlagDto.builder(beregningsgrunnlag).build();
         buildArbeidstakerAndel(arbId, andelsnrForAndelLagtTilAvSaksbehandler, forrigeGrunnlag.getBeregningsgrunnlagPerioder().get(0),
                 null, false, Inntektskategori.SJØMANN, false, null, null);
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse,
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
                 new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT),
                 new Tuple<>(forrigeGrunnlag, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -524,7 +541,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
 
 
     @Test
-    public void skal_sette_verdier_på_andeler_for_tilbakehopp_til_steg_før_KOFAKBER() {
+    public void skal_sette_verdier_på_andeler_for_tilbakehopp_til_steg_før_FORDEL() {
         // Arrange
         var arbId = InternArbeidsforholdRefDto.nyRef();
         Long andelsnr = 1L;
@@ -541,8 +558,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel = buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER,
                 false, null, null);
 
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse,
-                new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT),
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
                 new Tuple<>(forrigeBG, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
         final boolean nyAndel = false;
@@ -614,7 +631,7 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPeriodeDto periode = lagPeriode(beregningsgrunnlag, SKJÆRINGSTIDSPUNKT, null);
         buildArbeidstakerAndel(arbId, andelsnr, periode, null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
 
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse,
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
                 new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT),
                 new Tuple<>(forrigeBG, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
@@ -686,8 +703,8 @@ public class FordelBeregningsgrunnlagHåndtererTest {
         BeregningsgrunnlagPrStatusOgAndelDto andel3 = buildArbeidstakerAndel(arbId2, andelsnr3, periode2,
                 null, false, Inntektskategori.ARBEIDSTAKER, false, null, null);
 
-        input = lagInputMedBeregningsgrunnlag(koblingReferanse,
-                new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.FORESLÅTT),
+        input = BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag(koblingReferanse,
+                new Tuple<>(beregningsgrunnlag, BeregningsgrunnlagTilstand.OPPDATERT_MED_REFUSJON_OG_GRADERING),
                 new Tuple<>(forrigeBG, BeregningsgrunnlagTilstand.FASTSATT_INN));
 
 
