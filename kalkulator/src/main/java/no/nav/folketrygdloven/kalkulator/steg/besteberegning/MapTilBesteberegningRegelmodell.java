@@ -89,7 +89,7 @@ public class MapTilBesteberegningRegelmodell {
                 .collect(Collectors.toList());
     }
 
-    private static List<YtelsegrunnlagAndel> mapYtelseandeler(List<Ytelseandel> andeler) {
+    static List<YtelsegrunnlagAndel> mapYtelseandeler(List<Ytelseandel> andeler) {
         return andeler.stream()
                 .map(a -> new YtelsegrunnlagAndel(mapTilYtelseAktivitetType(a), a.getDagsats() == null ? null : BigDecimal.valueOf(a.getDagsats())))
                 .collect(Collectors.toList());
@@ -112,7 +112,7 @@ public class MapTilBesteberegningRegelmodell {
                 case ARBEIDSTAKER, KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER, FISKER -> YtelseAktivitetType.YTELSE_FOR_ARBEID;
                 case SELVSTENDIG_NÆRINGSDRIVENDE, JORDBRUKER, DAGMAMMA -> YtelseAktivitetType.YTELSE_FOR_NÆRING;
                 case FRILANSER -> YtelseAktivitetType.YTELSE_FOR_FRILANS;
-                case DAGPENGER -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
+                case DAGPENGER, INAKTIV -> YtelseAktivitetType.YTELSE_FOR_DAGPENGER;
                 default -> throw new IllegalStateException("Fikk inn ukjent arbeidskategori ved mapping til besteberegning, kategori var " + andel.getArbeidskategori());
             };
         }

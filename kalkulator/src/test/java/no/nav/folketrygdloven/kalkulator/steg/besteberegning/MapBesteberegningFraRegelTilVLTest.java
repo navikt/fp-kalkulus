@@ -155,7 +155,7 @@ class MapBesteberegningFraRegelTilVLTest {
     }
 
     @Test
-    public void skal_mappe_seks_bneste_måneder() {
+    public void skal_mappe_seks_beste_måneder() {
         // Arrange
         var bbOutput = new BesteberegningOutput();
         bbOutput.setSkalBeregnesEtterSeksBesteMåneder(true);
@@ -185,7 +185,6 @@ class MapBesteberegningFraRegelTilVLTest {
             assertThat(ytelseAndel.get().getInntekt().intValue()).isEqualTo(10000);
         });
     }
-
 
     private void assertAndel(BeregningsgrunnlagDto mappedBg, AktivitetStatus status, int inntekt) {
         List<BeregningsgrunnlagPrStatusOgAndelDto> andeler = hentAndeler(mappedBg);
