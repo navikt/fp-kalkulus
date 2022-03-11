@@ -54,12 +54,12 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
 
         if(BeregningstidspunktTjeneste.finnBeregningstidspunkt(skjæringstidspunkt).isBefore(skjæringstidspunkt) && opphørerYtelseDagenFørStp(nyligsteVedtak.get(), skjæringstidspunkt)){
             Optional<YtelseAnvistDto> meldekortOpphørtYtelse = MeldekortUtils.finnMeldekortSomInkludererGittDato(ytelseFilterMeldekort, nyligsteVedtak.get(),
-                    Set.of(nyligsteVedtak.get().getRelatertYtelseType()), skjæringstidspunkt.minusDays(1));
+                    Set.of(nyligsteVedtak.get().getYtelseType()), skjæringstidspunkt.minusDays(1));
             return meldekortOpphørtYtelse.isPresent();
         }
 
         Optional<YtelseAnvistDto> meldekortLøpendeYtelse = MeldekortUtils.finnMeldekortSomInkludererGittDato(ytelseFilterMeldekort, nyligsteVedtak.get(),
-                Set.of(nyligsteVedtak.get().getRelatertYtelseType()), skjæringstidspunkt);
+                Set.of(nyligsteVedtak.get().getYtelseType()), skjæringstidspunkt);
         return meldekortLøpendeYtelse.isPresent();
     }
 
@@ -75,14 +75,14 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
 
         FagsakYtelseType ytelseType = hattAAPSiste4Mnd ? FagsakYtelseType.ARBEIDSAVKLARINGSPENGER : FagsakYtelseType.DAGPENGER;
         return aapOgDPYtelser.stream()
-            .filter(ytelse -> ytelseType.equals(ytelse.getRelatertYtelseType()))
+            .filter(ytelse -> ytelseType.equals(ytelse.getYtelseType()))
             .anyMatch(ytelse -> ytelse.getPeriode().getFomDato().isBefore(skjæringstidspunkt)
                 && !ytelse.getPeriode().getTomDato().isBefore(skjæringstidspunkt.minusDays(1)));
     }
 
     private static boolean hattGittYtelseIGittPeriode(List<YtelseDto> aapOgDPYtelser, LocalDate hattYtelseFom, FagsakYtelseType ytelseType) {
         return aapOgDPYtelser.stream()
-            .filter(ytelse -> ytelseType.equals(ytelse.getRelatertYtelseType()))
+            .filter(ytelse -> ytelseType.equals(ytelse.getYtelseType()))
             .flatMap(ytelse -> ytelse.getYtelseAnvist().stream())
             .anyMatch(ya -> !ya.getAnvistTOM().isBefore(hattYtelseFom));
     }
@@ -90,7 +90,7 @@ public class AutopunktUtlederFastsettBeregningsaktiviteterTjeneste {
     private static List<YtelseDto> getAAPogDPYtelser(Optional<AktørYtelseDto> aktørYtelse, LocalDate skjæringstidspunkt) {
         var filter = new YtelseFilterDto(aktørYtelse).før(skjæringstidspunkt);
         var ytelser = filter.getFiltrertYtelser().stream()
-            .filter(ytelse -> FagsakYtelseType.ARBEIDSAVKLARINGSPENGER.equals(ytelse.getRelatertYtelseType()) || FagsakYtelseType.DAGPENGER.equals(ytelse.getRelatertYtelseType()))
+            .filter(ytelse -> FagsakYtelseType.ARBEIDSAVKLARINGSPENGER.equals(ytelse.getYtelseType()) || FagsakYtelseType.DAGPENGER.equals(ytelse.getYtelseType()))
             .collect(Collectors.toList());
         return ytelser;
     }

@@ -57,7 +57,7 @@ public class ErArbeidsgiverInaktiv {
                 .map(AktørYtelseDto::getAlleYtelser)
                 .orElse(Collections.emptyList());
         return ytelser.stream()
-                .filter(yt-> !YTELSER_SOM_IKKE_PÅVIRKER_IM.contains(yt.getRelatertYtelseType()))
+                .filter(yt-> !YTELSER_SOM_IKKE_PÅVIRKER_IM.contains(yt.getYtelseType()))
                 .filter(yt -> harYtelseIPeriode(yt, periodeViDefinererSomAkivt))
                 .anyMatch(yt -> erYtelseForAG(yt, arbeidsgiver));
     }

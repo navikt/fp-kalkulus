@@ -30,7 +30,7 @@ public class MeldekortUtils {
 
     public static Optional<YtelseDto> sisteVedtakFørStpForType(YtelseFilterDto ytelseFilter, LocalDate skjæringstidspunkt, Set<FagsakYtelseType> ytelseTyper) {
         return ytelseFilter.getFiltrertYtelser().stream()
-            .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
+            .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
             .filter(ytelse -> !skjæringstidspunkt.isBefore(ytelse.getPeriode().getFomDato()))
             .max(Comparator.comparing(YtelseDto::getPeriode).thenComparing(ytelse -> ytelse.getPeriode().getTomDato()));
     }
@@ -86,14 +86,14 @@ public class MeldekortUtils {
 
     public static List<YtelseAnvistDto> finnAlleMeldekort(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
         return ytelseFilter.getFiltrertYtelser().stream()
-                .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
+                .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
                 .flatMap(ytelse -> ytelse.getYtelseAnvist().stream()).collect(Collectors.toList());
     }
 
 
     public static List<Meldekort> finnAlleMeldekortJustertForGyldigPeriodeOgUtbetaling(YtelseFilterDto ytelseFilter, Set<FagsakYtelseType> ytelseTyper){
         return ytelseFilter.getFiltrertYtelser().stream()
-                .filter(ytelse -> ytelseTyper.contains(ytelse.getRelatertYtelseType()))
+                .filter(ytelse -> ytelseTyper.contains(ytelse.getYtelseType()))
                 .flatMap(ytelse ->  {
                     var vedtaksperiode = ytelse.getPeriode();
                     return ytelse.getYtelseAnvist().stream().flatMap(ya -> mapTilMeldekort(vedtaksperiode, ya).stream());

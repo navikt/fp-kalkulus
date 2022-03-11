@@ -1,5 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -7,11 +10,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.FaktaOmBeregningTilfelleRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.input.FaktaOmBeregningInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagGrunnlagDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseAnvistDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
 import no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.KontrollerFaktaBeregningTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FagsakYtelseType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
@@ -40,24 +44,35 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
 
     // Sjekker for å kunne manuelt avgjere om grunnlaget er besteberegnet
     private boolean harForeldrepengerAvDagpenger(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        return input.getIayGrunnlag().getAktørYtelseFraRegister()
-                .stream().flatMap(y -> y.getAlleYtelser().stream())
-                .filter(y -> y.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlag.getSkjæringstidspunkt())))
-                .anyMatch(this::erForeldrepengerAvDagpenger);
+        return getYtelseFilterKap8(input, beregningsgrunnlag)
+                .filter(y -> y.getYtelseType().equals(FagsakYtelseType.FORELDREPENGER))
+                .getAlleYtelser()
+                .stream()
+                .anyMatch(this::erBasertPåDagpenger);
     }
 
     private boolean harYtelseUtenAnvisteAndeler(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        return input.getIayGrunnlag().getAktørYtelseFraRegister()
-                .stream().flatMap(y -> y.getAlleYtelser().stream())
-                .filter(y -> y.getPeriode().inkluderer(BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlag.getSkjæringstidspunkt())))
-                .anyMatch(y -> y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().isEmpty()));
+        List<YtelseAnvistDto> sisteAnvisninger = finnSisteAnvisninger(getYtelseFilterKap8(input, beregningsgrunnlag));
+        return sisteAnvisninger.isEmpty() || sisteAnvisninger.stream().anyMatch(a -> a.getAnvisteAndeler().isEmpty());
     }
 
-    private boolean erForeldrepengerAvDagpenger(YtelseDto y) {
-        if (y.getRelatertYtelseType().equals(FagsakYtelseType.FORELDREPENGER)) {
-            return y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER)));
-        }
-        return false;
+    private YtelseFilterDto getYtelseFilterKap8(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
+        return new YtelseFilterDto(input.getIayGrunnlag().getAktørYtelseFraRegister())
+                .før(beregningsgrunnlag.getSkjæringstidspunkt())
+                .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.DAGPENGER) && !y.getYtelseType().equals(FagsakYtelseType.ARBEIDSAVKLARINGSPENGER))
+                .filter(y -> y.getPeriode().getTomDato().isAfter(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
+    }
+
+    private List<YtelseAnvistDto> finnSisteAnvisninger(YtelseFilterDto filter) {
+        var ytelser = filter.getAlleYtelser();
+        var alleAnvisninger = ytelser.stream().flatMap(y -> y.getYtelseAnvist().stream()).toList();
+        var sisteDagMedAnvisning = alleAnvisninger.stream().max(Comparator.comparing(YtelseAnvistDto::getAnvistTOM)).map(YtelseAnvistDto::getAnvistTOM);
+        return sisteDagMedAnvisning.isEmpty() ? Collections.emptyList() : alleAnvisninger.stream()
+                .filter(a -> a.getAnvistTOM().equals(sisteDagMedAnvisning.get())).toList();
+    }
+
+    private boolean erBasertPåDagpenger(YtelseDto y) {
+        return y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER)));
     }
 
 }

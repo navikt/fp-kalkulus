@@ -74,7 +74,7 @@ class BeregneFraYtelse {
         return input.getIayGrunnlag().getAktørYtelseFraRegister()
                 .stream()
                 .flatMap(aktørYtelseDto -> aktørYtelseDto.getAlleYtelser().stream())
-                .filter(y -> y.getRelatertYtelseType().equals(FagsakYtelseType.SYKEPENGER))
+                .filter(y -> y.getYtelseType().equals(FagsakYtelseType.SYKEPENGER))
                 .filter(y -> y.getPeriode().overlapper(beregningsperiode))
                 .flatMap(y -> y.getYtelseAnvist().stream())
                 .filter(a -> a.getAnvistPeriode().overlapper(beregningsperiode))

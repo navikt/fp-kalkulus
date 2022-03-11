@@ -16,7 +16,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.TemaUnderkategori;
 public class YtelseDto {
 
     private Beløp vedtaksDagsats;
-    private FagsakYtelseType relatertYtelseType = FagsakYtelseType.UDEFINERT;
+    private FagsakYtelseType ytelseType = FagsakYtelseType.UDEFINERT;
     private Intervall periode;
     // Brukes til å skille ulike ytelser med samme ytelsetype
     private TemaUnderkategori temaUnderkategori = TemaUnderkategori.UDEFINERT;
@@ -28,7 +28,7 @@ public class YtelseDto {
     }
 
     public YtelseDto(YtelseDto ytelse) {
-        this.relatertYtelseType = ytelse.getRelatertYtelseType();
+        this.ytelseType = ytelse.getYtelseType();
         this.periode = ytelse.getPeriode();
         this.temaUnderkategori = ytelse.getBehandlingsTema();
         this.ytelseAnvist = ytelse.getYtelseAnvist().stream().map(YtelseAnvistDto::new).collect(Collectors.toCollection(LinkedHashSet::new));
@@ -43,12 +43,12 @@ public class YtelseDto {
         this.vedtaksDagsats = vedtaksDagsats;
     }
 
-    public FagsakYtelseType getRelatertYtelseType() {
-        return relatertYtelseType;
+    public FagsakYtelseType getYtelseType() {
+        return ytelseType;
     }
 
-    void setRelatertYtelseType(FagsakYtelseType relatertYtelseType) {
-        this.relatertYtelseType = relatertYtelseType;
+    void setYtelseType(FagsakYtelseType ytelseType) {
+        this.ytelseType = ytelseType;
     }
 
     public TemaUnderkategori getBehandlingsTema() {
@@ -91,20 +91,20 @@ public class YtelseDto {
         if (!(o instanceof YtelseDto))
             return false;
         YtelseDto that = (YtelseDto) o;
-        return Objects.equals(relatertYtelseType, that.relatertYtelseType) &&
+        return Objects.equals(ytelseType, that.ytelseType) &&
                 Objects.equals(temaUnderkategori, that.temaUnderkategori) &&
                 Objects.equals(periode, that.periode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(relatertYtelseType, periode);
+        return Objects.hash(ytelseType, periode);
     }
 
     @Override
     public String toString() {
         return "YtelseEntitet{" + //$NON-NLS-1$
-                "relatertYtelseType=" + relatertYtelseType + //$NON-NLS-1$
+                "relatertYtelseType=" + ytelseType + //$NON-NLS-1$
                 ", typeUnderkategori=" + temaUnderkategori + //$NON-NLS-1$
                 ", periode=" + periode + //$NON-NLS-1$
                 '}';

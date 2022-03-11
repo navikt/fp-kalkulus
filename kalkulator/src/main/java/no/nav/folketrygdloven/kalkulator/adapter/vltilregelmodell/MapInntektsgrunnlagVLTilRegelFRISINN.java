@@ -131,11 +131,11 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
                                 YtelseFilterDto ytelseFilter,
                                 LocalDate skjæringstidspunktOpptjening) {
         ytelseFilter.getAlleYtelser().stream()
-                .filter(y -> !y.getRelatertYtelseType().equals(FagsakYtelseType.FRISINN))
+                .filter(y -> !y.getYtelseType().equals(FagsakYtelseType.FRISINN))
                 .forEach(ytelse -> ytelse.getYtelseAnvist().stream()
                     .filter(ytelseAnvistDto -> !ytelseAnvistDto.getAnvistTOM().isBefore(skjæringstidspunktOpptjening.minusMonths(MÅNEDER_FØR_STP)))
                 .filter(this::harHattUtbetalingForPeriode)
-                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getRelatertYtelseType()))));
+                .forEach(anvist -> inntektsgrunnlag.leggTilPeriodeinntekt(byggPeriodeinntektForYtelse(anvist, ytelse.getVedtaksDagsats(), ytelse.getYtelseType()))));
     }
 
     private boolean harHattUtbetalingForPeriode(YtelseAnvistDto ytelse) {

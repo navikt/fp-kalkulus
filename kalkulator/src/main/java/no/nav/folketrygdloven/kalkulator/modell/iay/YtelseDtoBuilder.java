@@ -32,7 +32,7 @@ public class YtelseDtoBuilder {
     }
 
     public YtelseDtoBuilder medYtelseType(FagsakYtelseType relatertYtelseType) {
-        ytelse.setRelatertYtelseType(relatertYtelseType);
+        ytelse.setYtelseType(relatertYtelseType);
         return this;
     }
 
@@ -76,7 +76,7 @@ public class YtelseDtoBuilder {
     }
 
     private void validerUtbetalingsgrader() {
-        if (ytelse.getRelatertYtelseType().erArenaytelse()) {
+        if (ytelse.getYtelseType().erArenaytelse()) {
             Optional<YtelseAnvistDto> ulovligMeldekort = ytelse.getYtelseAnvist().stream()
                     .filter(this::harUtbetalingsgradOver200)
                     .findFirst();

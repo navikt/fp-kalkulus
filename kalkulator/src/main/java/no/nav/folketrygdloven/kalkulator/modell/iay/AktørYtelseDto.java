@@ -40,7 +40,7 @@ public class AktørYtelseDto {
 
     YtelseDtoBuilder getYtelseBuilderForType(FagsakYtelseType type, Intervall periode) {
         Optional<YtelseDto> ytelse = getAlleYtelser().stream()
-            .filter(ya -> ya.getPeriode().equals(periode) && ya.getRelatertYtelseType().equals(type))
+            .filter(ya -> ya.getPeriode().equals(periode) && ya.getYtelseType().equals(type))
             .findFirst();
         return YtelseDtoBuilder.oppdatere(ytelse).medPeriode(periode).medYtelseType(type);
     }

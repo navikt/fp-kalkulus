@@ -42,7 +42,7 @@ public class InfotrygdvedtakMedDagpengerTjeneste {
     private static Optional<YtelseGrunnlagDto> finnYtelseBasertPåDagpenger(Collection<YtelseDto> ytelser, LocalDate beregningstidspunkt, FagsakYtelseType ytelse) {
         return ytelser.stream()
                 .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
-                .filter(y -> y.getRelatertYtelseType().equals(ytelse))
+                .filter(y -> y.getYtelseType().equals(ytelse))
                 .flatMap(y -> y.getYtelseGrunnlag().stream())
                 .filter(gr -> Arbeidskategori.DAGPENGER.equals(gr.getArbeidskategori()) ||
                         Arbeidskategori.KOMBINASJON_ARBEIDSTAKER_OG_DAGPENGER.equals(gr.getArbeidskategori()))
