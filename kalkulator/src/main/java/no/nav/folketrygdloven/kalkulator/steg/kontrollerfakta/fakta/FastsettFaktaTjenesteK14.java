@@ -26,7 +26,7 @@ public class FastsettFaktaTjenesteK14 implements FastsettFakta {
         if (KonfigurasjonVerdi.get("AUTOMATISK_BEREGNE_LONNSENDRING", false)) {
             FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
             List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
-            faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+            faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterendeEllerLeggTil);
             if (!faktaBuilder.manglerFakta()) {
                 return Optional.of(faktaBuilder.build());
             }

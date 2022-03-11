@@ -126,7 +126,7 @@ public class FaktaAggregatDto {
             return this;
         }
 
-        public Builder kopierTilEksisterenderEllerLeggTil(FaktaArbeidsforholdDto faktaArbeidsforhold) { // NOSONAR
+        public Builder kopierTilEksisterendeEllerLeggTil(FaktaArbeidsforholdDto faktaArbeidsforhold) { // NOSONAR
             kladd.leggTilFaktaArbeidsforholdOgKopierEksisterende(faktaArbeidsforhold);
             return this;
         }

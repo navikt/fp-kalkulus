@@ -63,12 +63,15 @@ public class OpprettBeregningsgrunnlagTjeneste {
         var grunnlag = input.getBeregningsgrunnlagGrunnlag();
         BeregningAktivitetAggregatDto beregningAktiviteter = grunnlag.getGjeldendeAktiviteter();
 
+        // Fastsetter andeler, status og endelig skjæringstidpsunkt
         var resultatMedAndeler = FagsakYtelseTypeRef.Lookup.find(fastsettSkjæringstidspunktOgStatuser, input.getFagsakYtelseType())
                 .orElseThrow(() -> new IllegalStateException("Fant ikke FastsettSkjæringstidspunktOgStatuser for ytelsetype " + input.getFagsakYtelseType().getKode()))
                 .fastsett(input, beregningAktiviteter, input.getIayGrunnlag(), input.getGrunnbeløpsatser());
 
+        // Oppdaterer koblinginformasjon for videre prosessering
         KoblingReferanse refMedSkjæringstidspunkt = ref
             .medSkjæringstidspunkt(oppdaterSkjæringstidspunktForBeregning(beregningAktiviteter, resultatMedAndeler.getBeregningsgrunnlag()));
+        BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
 
         // Fastsett inntektskategorier
         var medFastsattInntektskategori = fastsettInntektskategori(resultatMedAndeler.getBeregningsgrunnlag(), input.getIayGrunnlag());
@@ -81,8 +84,9 @@ public class OpprettBeregningsgrunnlagTjeneste {
         Optional<FaktaAggregatDto> faktaAggregatDto = FagsakYtelseTypeRef.Lookup.find(fastsettFaktaTjeneste, input.getFagsakYtelseType())
                 .flatMap(t -> t.fastsettFakta(medFastsattBeregningsperiode, input.getIayGrunnlag(), input.getInntektsmeldinger()));
 
-        BeregningsgrunnlagInput newInput = input.medBehandlingReferanse(refMedSkjæringstidspunkt);
+        // Oppretter perioder for endring i naturalytelse (tilkommet/bortfalt)
         var resultatMedNaturalytelse = fastsettNaturalytelsePerioderTjeneste.fastsettPerioderForNaturalytelse(newInput, medFastsattBeregningsperiode);
+
         BeregningsgrunnlagVerifiserer.verifiserOppdatertBeregningsgrunnlag(resultatMedNaturalytelse.getBeregningsgrunnlag());
         return new BeregningsgrunnlagRegelResultat(resultatMedNaturalytelse.getBeregningsgrunnlag(),
                 faktaAggregatDto.orElse(null),

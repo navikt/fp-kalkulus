@@ -26,9 +26,9 @@ public class FastsettFaktaTjenestePleiepenger implements FastsettFakta {
                                                     Collection<InntektsmeldingDto> inntektsmeldinger) {
         List<FaktaArbeidsforholdDto> faktaKortvarig = fastsettFaktaForKortvarigeArbeidsforhold(beregningsgrunnlag, iayGrunnlag);
         FaktaAggregatDto.Builder faktaBuilder = FaktaAggregatDto.builder();
-        faktaKortvarig.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        faktaKortvarig.forEach(faktaBuilder::kopierTilEksisterendeEllerLeggTil);
         List<FaktaArbeidsforholdDto> faktaLønnsendring = fastsettFaktaForLønnsendring(beregningsgrunnlag, iayGrunnlag, inntektsmeldinger);
-        faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterenderEllerLeggTil);
+        faktaLønnsendring.forEach(faktaBuilder::kopierTilEksisterendeEllerLeggTil);
         if (!faktaBuilder.manglerFakta()) {
             return Optional.of(faktaBuilder.build());
         }
