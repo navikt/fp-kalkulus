@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
@@ -9,6 +10,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagD
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektFilterDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
 import no.nav.folketrygdloven.kalkulator.modell.iay.YtelseFilterDto;
+import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AktivitetStatus;
 import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
@@ -35,9 +37,13 @@ public class VurderMottarYtelseTjeneste {
         var arbeidstakerSomManglerInntektsmelding = ArbeidstakerUtenInntektsmeldingTjeneste
                 .finnArbeidstakerAndelerUtenInntektsmelding(beregningsgrunnlag, inntektsmeldinger);
         if (!arbeidstakerSomManglerInntektsmelding.isEmpty()) {
-            return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.ARBEIDSTAKER);
+            return mottarYtelseIBeregningsperiode(beregningsgrunnlag, filter, AktivitetStatus.ARBEIDSTAKER) && harArbeidstakerMottattYtelseForArbeidsforholdUtenInntektsmelding(beregningsgrunnlag, ytelsefilter, arbeidstakerSomManglerInntektsmelding);
         }
         return false;
+    }
+
+    private static boolean harArbeidstakerMottattYtelseForArbeidsforholdUtenInntektsmelding(BeregningsgrunnlagDto beregningsgrunnlag, YtelseFilterDto ytelsefilter, Collection<BeregningsgrunnlagPrStatusOgAndelDto> arbeidstakerSomManglerInntektsmelding) {
+        return arbeidstakerSomManglerInntektsmelding.stream().anyMatch(a -> harDirekteMottattYtelseForArbeidsgiver(beregningsgrunnlag, ytelsefilter, a.getArbeidsgiver().orElseThrow(() -> new IllegalStateException("Forventer å finne arbeidsgiver"))));
     }
 
     private static boolean mottarYtelseIBeregningsperiode(BeregningsgrunnlagDto beregningsgrunnlag, InntektFilterDto filter, AktivitetStatus aktivitetsStatus) {
@@ -59,6 +65,21 @@ public class VurderMottarYtelseTjeneste {
                 .filter(ya -> ya.getAnvistPeriode().overlapper(beregningsPeriodeForStatus))
                 .anyMatch(ya -> ya.getAnvisteAndeler().isEmpty() || ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.FRILANSER)));
     }
+
+    private static boolean harDirekteMottattYtelseForArbeidsgiver(BeregningsgrunnlagDto beregningsgrunnlag,
+                                                                  YtelseFilterDto ytelseFilterDto, Arbeidsgiver arbeidsgiver) {
+        if (!KonfigurasjonVerdi.get("VURDER_MOTTAR_YTELSE_AT_FILTRERING", false)) {
+            return true;
+        }
+        Intervall beregningsPeriodeForStatus = finnBeregningsperiodeForAktivitetStatus(beregningsgrunnlag, AktivitetStatus.ARBEIDSTAKER);
+        return ytelseFilterDto.getFiltrertYtelser().stream()
+                .flatMap(y -> y.getYtelseAnvist().stream())
+                .filter(ya -> ya.getAnvistPeriode().overlapper(beregningsPeriodeForStatus))
+                .anyMatch(ya -> ya.getAnvisteAndeler().isEmpty() ||
+                        ya.getAnvisteAndeler().stream()
+                        .anyMatch(a -> a.getArbeidsgiver().isPresent() && a.getArbeidsgiver().get().equals(arbeidsgiver) && a.getRefusjonsgrad().getVerdi().compareTo(BigDecimal.valueOf(100)) < 0));
+    }
+
 
     public static boolean erFrilanser(BeregningsgrunnlagDto beregningsgrunnlag) {
         return beregningsgrunnlag.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList().stream()
