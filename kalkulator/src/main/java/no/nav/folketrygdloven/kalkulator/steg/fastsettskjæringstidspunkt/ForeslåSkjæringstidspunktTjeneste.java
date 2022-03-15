@@ -4,7 +4,6 @@ import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.output.BeregningVilkårResultat;
 import no.nav.folketrygdloven.kalkulator.output.BeregningsgrunnlagRegelResultat;
@@ -35,7 +34,7 @@ public class ForeslåSkjæringstidspunktTjeneste {
             beregningsgrunnlagRegelResultat.setVilkårsresultat(List.of(new BeregningVilkårResultat(false, Vilkårsavslagsårsak.FOR_LAVT_BG, Intervall.fraOgMed(input.getSkjæringstidspunktOpptjening()))));
             return beregningsgrunnlagRegelResultat;
         }
-        var beregningsgrunnlagRegelResultat = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat, input.getIayGrunnlag());
+        var beregningsgrunnlagRegelResultat = opprettBeregningsgrunnlagTjeneste.fastsettSkjæringstidspunktOgStatuser(input, beregningAktivitetAggregat);
         beregningsgrunnlagRegelResultat.setRegisterAktiviteter(beregningAktivitetAggregat);
         return beregningsgrunnlagRegelResultat;
     }

@@ -30,7 +30,7 @@ public class FastsettBeregningsaktiviteterInput extends StegProsesseringInput {
                                               OpptjeningAktiviteterDto opptjeningAktiviteter,
                                               List<KravperioderPrArbeidsforholdDto> kravperioderPrArbeidsgiver,
                                               YtelsespesifiktGrunnlag ytelsespesifiktGrunnlag) {
-        super(BeregningsgrunnlagTilstand.FASTSATT_BEREGNINGSAKTIVITETER, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, kravperioderPrArbeidsgiver, ytelsespesifiktGrunnlag);
+        super(BeregningsgrunnlagTilstand.OPPRETTET, koblingReferanse, iayGrunnlag, opptjeningAktiviteter, kravperioderPrArbeidsgiver, ytelsespesifiktGrunnlag);
     }
 
     protected FastsettBeregningsaktiviteterInput(FastsettBeregningsaktiviteterInput input) {
