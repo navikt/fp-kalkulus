@@ -40,7 +40,7 @@ class FastsettBeregningAktiviteterTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     public static final FagsakYtelseType PLEIEPENGER_SYKT_BARN = FagsakYtelseType.PLEIEPENGER_SYKT_BARN;
     private static final KoblingReferanseMock KOBLING_REFERANSE = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT, PLEIEPENGER_SYKT_BARN);
-    public static final String ARBEIDSGIVER_ORGNR = "123456789";
+    public static final String ARBEIDSGIVER_ORGNR = "974652269";
     public static final Arbeidsgiver ARBEIDSGIVER = Arbeidsgiver.virksomhet(ARBEIDSGIVER_ORGNR);
     public static final InternArbeidsforholdRefDto NULL_REF = InternArbeidsforholdRefDto.nullRef();
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_ID = InternArbeidsforholdRefDto.nyRef();

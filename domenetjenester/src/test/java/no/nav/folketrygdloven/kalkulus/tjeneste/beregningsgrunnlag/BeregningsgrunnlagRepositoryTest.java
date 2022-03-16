@@ -90,7 +90,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
-    private final Organisasjon organisasjon = new Organisasjon("945748931");
+    private final Organisasjon organisasjon = new Organisasjon("974652269");
     private final BeløpDto beløpDto = new BeløpDto(BigDecimal.TEN);
 
     @BeforeEach
@@ -126,7 +126,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
         var readJsonTree = READER_JSON.readTree(resultat.getInput());
         assertThat(readJsonTree).isEqualTo(inputJsonTree);
 
-        assertThat(readJsonTree.has("jeg"));
+        assertThat(readJsonTree.has("jeg")).isTrue();
     }
 
     @Test
@@ -161,7 +161,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
         var readJsonTree = READER_JSON.readTree(resultat.getInput());
         assertThat(readJsonTree).isEqualTo(inputJsonTree);
-        assertThat(readJsonTree.has("iayGrunnlag"));
+        assertThat(readJsonTree.has("iayGrunnlag")).isTrue();
     }
 
     @Test
@@ -210,19 +210,20 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
     }
 
     private String getTestJSON() {
-        return "{\n" +
-                "  \"jeg\" : {\n" +
-                "    \"er\" : \"en\",\n" +
-                "    \"test\" : \"json\",\n" +
-                "    \"fordi\" : \"jeg\",\n" +
-                "    \"tester\" : \"jsonb\",\n" +
-                "    \"lagring\" : {\n" +
-                "      \"i\" : \"postgres\",\n" +
-                "      \"databasen\" : \"til\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"kalkulus\" : \"okey?\"\n" +
-                "}";
+        return """
+                {
+                  "jeg" : {
+                    "er" : "en",
+                    "test" : "json",
+                    "fordi" : "jeg",
+                    "tester" : "jsonb",
+                    "lagring" : {
+                      "i" : "postgres",
+                      "databasen" : "til"
+                    }
+                  },
+                  "kalkulus" : "okey?"
+                }""";
     }
 
     private KalkulatorInputDto byggKalkulatorInput() {
@@ -274,7 +275,7 @@ public class BeregningsgrunnlagRepositoryTest extends EntityManagerAwareTest {
 
     private List<YtelseDto> byggYtelseDto() {
         YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN,
-                List.of(new AnvistAndel(new Organisasjon("945748931"),
+                List.of(new AnvistAndel(new Organisasjon("974652269"),
                         new InternArbeidsforholdRefDto("r8j3wr8w3"),
                         beløpDto,
                         BigDecimal.valueOf(100),

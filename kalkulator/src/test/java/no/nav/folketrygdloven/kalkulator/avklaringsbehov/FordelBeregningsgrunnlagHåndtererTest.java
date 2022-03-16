@@ -2,7 +2,6 @@ package no.nav.folketrygdloven.kalkulator.avklaringsbehov;
 
 import static java.util.Collections.singletonList;
 import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagHåndteringInputMedBeregningsgrunnlag;
-import static no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagInputTestUtil.lagInputMedBeregningsgrunnlag;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -22,7 +21,6 @@ import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregni
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelBeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.FordelFastsatteVerdierDto;
 import no.nav.folketrygdloven.kalkulator.avklaringsbehov.fordeling.RedigerbarAndelDto;
-import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.HåndterBeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BGAndelArbeidsforholdDto;
@@ -44,7 +42,7 @@ import no.nav.folketrygdloven.utils.Tuple;
 public class FordelBeregningsgrunnlagHåndtererTest {
     private final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.now();
     private final Beløp GRUNNBELØP = new Beløp(600000);
-    private static final String ORG_NUMMER = "915933149";
+    private static final String ORG_NUMMER = "974652269";
     public KoblingReferanse koblingReferanse = new KoblingReferanseMock(SKJÆRINGSTIDSPUNKT);
     private HåndterBeregningsgrunnlagInput input;
 

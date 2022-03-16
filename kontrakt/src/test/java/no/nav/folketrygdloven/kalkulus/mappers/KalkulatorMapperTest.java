@@ -58,7 +58,7 @@ public class KalkulatorMapperTest {
 
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
-    private final Organisasjon organisasjon = new Organisasjon("945748931");
+    private final Organisasjon organisasjon = new Organisasjon("974652269");
     private final BeløpDto beløpDto = new BeløpDto(BigDecimal.TEN);
 
     @Test
@@ -129,7 +129,7 @@ public class KalkulatorMapperTest {
     }
 
     private List<YtelseDto> byggYtelseDto() {
-        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN, List.of(new AnvistAndel(new Organisasjon("945748931"),
+        YtelseAnvistDto ytelseAnvistDto = new YtelseAnvistDto(periode, beløpDto, beløpDto, BigDecimal.TEN, List.of(new AnvistAndel(new Organisasjon("974652269"),
                 new InternArbeidsforholdRefDto("r8j3wr8w3"),
                 beløpDto,
                 BigDecimal.valueOf(100),

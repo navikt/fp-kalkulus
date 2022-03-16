@@ -33,8 +33,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.FaktaOmBeregningTilfelle;
 public class FastsettMånedsinntektUtenInntektsmeldingOppdatererTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT_OPPTJENING = LocalDate.of(2018, 9, 30);
-    public static final String ORGNR = "78327942834";
-    private static final String ORGNR2 = "43253634231";
+    public static final String ORGNR = "974652269";
+    private static final String ORGNR2 = "999999999";
     private static final int ARBEIDSINNTEKT = 120000;
 
     private BeregningsgrunnlagDto beregningsgrunnlag;

@@ -36,7 +36,7 @@ class SpolFramoverTjenesteTest {
 
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
-    private static final String ORG_NUMMER = "915933149";
+    private static final String ORG_NUMMER = "974652269";
 
     @Test
     void skal_ikke_spole_framover_uten_avklaringsbehov() {

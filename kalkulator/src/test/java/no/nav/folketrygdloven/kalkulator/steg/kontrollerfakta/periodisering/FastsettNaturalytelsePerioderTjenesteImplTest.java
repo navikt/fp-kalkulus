@@ -48,7 +48,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.PeriodeÅrsak;
 public class FastsettNaturalytelsePerioderTjenesteImplTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
-    private static final String ORG_NUMMER = "915933149";
+    private static final String ORG_NUMMER = "974652269";
     private static final Intervall ARBEIDSPERIODE = Intervall.fraOgMedTilOgMed(SKJÆRINGSTIDSPUNKT.minusYears(2), TIDENES_ENDE);
     private BeregningAktivitetAggregatDto beregningAktivitetAggregat;
     private List<BeregningAktivitetDto> aktiviteter = new ArrayList<>();

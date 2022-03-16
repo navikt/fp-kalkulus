@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.mappers;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.READER_JSON;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.WRITER_JSON;
 import static no.nav.folketrygdloven.kalkulus.mappers.JsonMapperUtil.validateResult;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ public class ArbeidMapperTest {
     @Test
     void test_ArbeidsforholdOverstyringDto() throws JsonProcessingException {
 
-        Organisasjon organisasjon = new Organisasjon("945748931");
+        Organisasjon organisasjon = new Organisasjon("974652269");
 
         ArbeidsgiverOpplysningerDto dto = new ArbeidsgiverOpplysningerDto(organisasjon, "Veppsen");
 
@@ -34,7 +35,7 @@ public class ArbeidMapperTest {
     @Test
     void test_ArbeidsforholdOverstyringDto_person_med_dato() throws JsonProcessingException {
 
-        AktørIdPersonident person = new AktørIdPersonident("9457489311234");
+        AktørIdPersonident person = new AktørIdPersonident("9746522691234");
 
         ArbeidsgiverOpplysningerDto dto = new ArbeidsgiverOpplysningerDto(person, "Veppsen", LocalDate.now());
 

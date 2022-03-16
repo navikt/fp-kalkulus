@@ -22,7 +22,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 class MapBeregningsgrunnlagFraRegelTilVLFordelTest {
 
-    public static final String ARBEIDSGIVER_ORGNR = "134678202";
+    public static final String ARBEIDSGIVER_ORGNR = "974652269";
     public static final InternArbeidsforholdRefDto ARBEIDSFORHOLD_REF = InternArbeidsforholdRefDto.nyRef();
 
     @Test

@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger;
-import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.ArbeidsgiverRefusjonskravTjeneste;
+import no.nav.folketrygdloven.kalkulator.felles.frist.KravTjeneste;
 import no.nav.folketrygdloven.kalkulator.felles.frist.TreMånedersFristVurderer;
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.input.ForeldrepengerGrunnlag;
@@ -76,9 +76,9 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 public class FordelPerioderTjenesteTest {
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, Month.JANUARY, 4);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(90000L);
-    private static final String ORG_NUMMER = "915933149";
-    private static final String ORG_NUMMER_2 = "974760673";
-    private static final String ORG_NUMMER_3 = "976967631";
+    private static final String ORG_NUMMER = "974652269";
+    private static final String ORG_NUMMER_2 = "999999999";
+    private static final String ORG_NUMMER_3 = "9999999998";
 
     private static final AktørId ARBEIDSGIVER_AKTØR_ID = AktørId.dummy();
     private static final BigDecimal ANTALL_MÅNEDER_I_ÅR = BigDecimal.valueOf(12);

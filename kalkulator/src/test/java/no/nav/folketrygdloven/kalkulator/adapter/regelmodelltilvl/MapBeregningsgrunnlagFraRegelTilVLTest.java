@@ -54,7 +54,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
 
 public class MapBeregningsgrunnlagFraRegelTilVLTest {
 
-    private static final String ORGNR = "974761076";
+    private static final String ORGNR = "974652269";
 
     private KoblingReferanse koblingReferanse = new KoblingReferanseMock();
 

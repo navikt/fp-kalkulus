@@ -52,7 +52,7 @@ import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 class MapFraKalkulatorTest {
 
     private final Periode periode = new Periode(LocalDate.now(), LocalDate.now().plusMonths(2));
-    private final Organisasjon organisasjon = new Organisasjon("945748931");
+    private final Organisasjon organisasjon = new Organisasjon("974652269");
     private final InternArbeidsforholdRefDto ref = new InternArbeidsforholdRefDto(UUID.randomUUID().toString());
 
 

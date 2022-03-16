@@ -33,11 +33,11 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Utfall;
 
 public class RefusjonOgGraderingTjenesteTest {
 
-    private static final String ORG_NUMMER = "991825827";
+    private static final String ORG_NUMMER = "974652269";
     private static final LocalDate SKJÆRINGSTIDSPUNKT_BEREGNING = LocalDate.of(2018, 9, 30);
     private static final BigDecimal GRUNNBELØP = BigDecimal.valueOf(100_000);
     private Arbeidsgiver arbeidsgiver1 = Arbeidsgiver.virksomhet(ORG_NUMMER);
-    private Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet("456456456456");
+    private Arbeidsgiver arbeidsgiver2 = Arbeidsgiver.virksomhet("999999999");
 
     @Test
     public void returnererTrueForFLMedGraderingSomTilkommer() {
@@ -55,7 +55,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.NY_AKTIVITET);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.NY_AKTIVITET);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of());
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.NY_AKTIVITET);
     }
 
     // Gradering: Ja
@@ -190,7 +190,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.TOTALT_REFUSJONSKRAV_STØRRE_ENN_6G);
 
     }
 
@@ -254,7 +254,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, aktivitetGradering, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.NY_AKTIVITET);
     }
 
     // Gradering: Ja
@@ -302,7 +302,7 @@ public class RefusjonOgGraderingTjenesteTest {
         Map<BeregningsgrunnlagPrStatusOgAndelDto, FordelingTilfelle> manuellBehandlingForEndringAvBG = vurderManuellBehandling(bg, AktivitetGradering.INGEN_GRADERING, List.of(im1));
 
         // Assert
-        assertThat(manuellBehandlingForEndringAvBG.containsValue(FordelingTilfelle.NY_AKTIVITET));
+        assertThat(manuellBehandlingForEndringAvBG).containsValue(FordelingTilfelle.NY_AKTIVITET);
     }
 
     // Gradering: Nei
