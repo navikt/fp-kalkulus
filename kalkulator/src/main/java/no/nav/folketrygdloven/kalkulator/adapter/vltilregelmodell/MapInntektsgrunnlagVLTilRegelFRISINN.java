@@ -148,8 +148,8 @@ public class MapInntektsgrunnlagVLTilRegelFRISINN extends MapInntektsgrunnlagVLT
         return Periodeinntekt.builder()
                 .medInntektskildeOgPeriodeType(erAAPEllerDP(ytelsetype) ? Inntektskilde.TILSTØTENDE_YTELSE_DP_AAP: Inntektskilde.ANNEN_YTELSE)
                 .medInntekt(finnBeløp(anvist, vedtaksDagsats))
-                .medUtbetalingsfaktor(anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
-                        .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow())
+                .medUtbetalingsfaktor(erAAPEllerDP(ytelsetype) ? anvist.getUtbetalingsgradProsent().map(Stillingsprosent::getVerdi)
+                        .map(s -> s.divide(MeldekortUtils.MAX_UTBETALING_PROSENT_AAP_DAG, 10, RoundingMode.HALF_UP)).orElseThrow() : null)
                 .medPeriode(Periode.of(anvist.getAnvistFOM(), anvist.getAnvistTOM()))
                 .build();
     }
