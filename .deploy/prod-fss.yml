@@ -83,5 +83,5 @@ spec:
     - name: VURDER_MOTTAR_YTELSE_FL_FILTRERING
       value: "true"
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
-      value: "false"
+      value: "true"
 
