@@ -17,13 +17,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationTarget.Kind;
 import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
 import org.jboss.jandex.IndexReader;
 import org.jboss.jandex.Indexer;
@@ -130,31 +126,6 @@ public class IndexClasses {
                 })
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Fant ikke jandex index for location=" + location));
-    }
-
-    public List<Class<?>> getClassesWithAnnotation(Class<?> annotationClass) {
-
-        DotName search = DotName.createSimple(annotationClass.getName());
-        List<AnnotationInstance> annotations = getIndex().getAnnotations(search);
-
-        List<Class<?>> jsonTypes = new ArrayList<>();
-        for (AnnotationInstance annotation : annotations) {
-            if (Kind.CLASS.equals(annotation.target().kind())) {
-                String className = annotation.target().asClass().name().toString();
-                try {
-                    jsonTypes.add(Class.forName(className));
-                } catch (ClassNotFoundException e) {
-                    log.error("Kan ikke finne klasse i Classpath, som funnet i Jandex index", e);// NOSONAR
-                }
-            }
-        }
-
-        return jsonTypes;
-    }
-
-    public List<Class<?>> getSubClassesWithAnnotation(Class<?> klasse, Class<?> annotationClass) {
-        List<Class<?>> classesWithAnnotation = getClassesWithAnnotation(annotationClass);
-        return classesWithAnnotation.stream().filter(c -> klasse.isAssignableFrom(c)).collect(Collectors.toList());
     }
 
     public List<Class<?>> getClasses(Predicate<ClassInfo> predicate, Predicate<Class<?>> classPredicate) {

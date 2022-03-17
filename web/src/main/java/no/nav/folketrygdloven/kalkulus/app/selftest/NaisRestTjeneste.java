@@ -2,15 +2,13 @@ package no.nav.folketrygdloven.kalkulus.app.selftest;
 
 import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
-
-import io.swagger.v3.oas.annotations.Operation;
-import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationServiceStarter;
 
 @Path("/")
 @Produces(TEXT_PLAIN)
@@ -21,15 +19,8 @@ public class NaisRestTjeneste {
     private static final String RESPONSE_CACHE_VAL = "must-revalidate,no-cache,no-store";
     private static final String RESPONSE_OK = "OK";
 
-    private ApplicationServiceStarter starterService;
-
-    public NaisRestTjeneste() {
-        // CDI
-    }
-
     @Inject
-    public NaisRestTjeneste(ApplicationServiceStarter starterService) {
-        this.starterService = starterService;
+    public NaisRestTjeneste() {
     }
 
     @GET
@@ -53,7 +44,6 @@ public class NaisRestTjeneste {
     @Path("preStop")
     @Operation(description = "kalles på før stopp", tags = "nais", hidden = true)
     public Response preStop() {
-        starterService.stopServices();
         return Response.ok(RESPONSE_OK).build();
     }
 

@@ -1,16 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.app.jackson;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
-import jakarta.ws.rs.ext.ContextResolver;
-import jakarta.ws.rs.ext.Provider;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
@@ -20,7 +11,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import no.nav.folketrygdloven.kalkulus.app.IndexClasses;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
@@ -38,20 +30,6 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
 
         Collection<Class<?>> restClasses = new RestImplementationClasses().getImplementationClasses();
 
-        Set<Class<?>> scanClasses = new LinkedHashSet<>(restClasses);
-
-        // avled code location fra klassene
-        scanClasses
-                .stream()
-                .map(c -> {
-                    try {
-                        return c.getProtectionDomain().getCodeSource().getLocation().toURI();
-                    } catch (URISyntaxException e) {
-                        throw new IllegalArgumentException("Ikke en URI for klasse: " + c, e);
-                    }
-                })
-                .distinct()
-                .forEach(uri -> objectMapper.registerSubtypes(getJsonTypeNameClasses(uri)));
     }
 
     public static Module defaultModule() {
@@ -61,22 +39,7 @@ public class JacksonJsonConfig implements ContextResolver<ObjectMapper> {
     private static SimpleModule createModule() {
         SimpleModule module = new SimpleModule("VL-REST", new Version(1, 0, 0, null, null, null));
 
-        addSerializers(module);
-
         return module;
-    }
-
-    private static void addSerializers(SimpleModule module) {
-        module.addSerializer(new StringSerializer());
-    }
-
-    /**
-     * Scan subtyper dynamisk fra WAR slik at superklasse slipper å deklarere @JsonSubtypes.
-     */
-    public static List<Class<?>> getJsonTypeNameClasses(URI uri) {
-        IndexClasses indexClasses;
-        indexClasses = IndexClasses.getIndexFor(uri);
-        return indexClasses.getClassesWithAnnotation(JsonTypeName.class);
     }
 
     public ObjectMapper getObjectMapper() {

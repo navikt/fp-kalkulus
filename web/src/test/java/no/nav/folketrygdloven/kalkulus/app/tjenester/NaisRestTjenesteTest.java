@@ -1,15 +1,11 @@
 package no.nav.folketrygdloven.kalkulus.app.tjenester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.nav.folketrygdloven.kalkulus.app.konfig.ApplicationServiceStarter;
+import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.app.selftest.NaisRestTjeneste;
 
 @SuppressWarnings("resource")
@@ -17,11 +13,9 @@ public class NaisRestTjenesteTest {
 
     private NaisRestTjeneste restTjeneste;
 
-    private ApplicationServiceStarter serviceStarterMock = mock(ApplicationServiceStarter.class);
-
     @BeforeEach
     public void setup() {
-        restTjeneste = new NaisRestTjeneste(serviceStarterMock);
+        restTjeneste = new NaisRestTjeneste();
     }
 
     @Test
@@ -43,7 +37,6 @@ public class NaisRestTjenesteTest {
     public void test_preStop_skal_kalle_stopServices_og_returnere_status_ok() {
         Response response = restTjeneste.preStop();
 
-        verify(serviceStarterMock).stopServices();
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 }

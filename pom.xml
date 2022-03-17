@@ -32,8 +32,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <surefire.plugin.version>2.22.2</surefire.plugin.version>
-        <compiler.plugin.version>3.8.1</compiler.plugin.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -42,17 +40,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <fpsak.nare.version>2.1.5</fpsak.nare.version>
+        <fpsak.nare.version>2.2.2</fpsak.nare.version>
 
         <fpsak.tidsserie.version>2.5.7</fpsak.tidsserie.version>
 
-        <beregningsgrunnlag.regelmodell.version>2.1.65</beregningsgrunnlag.regelmodell.version>
+        <beregningsgrunnlag.regelmodell.version>2.1.66</beregningsgrunnlag.regelmodell.version>
 
         <felles.version>0.7.19</felles.version>
 
         <prometheus.version>0.15.0</prometheus.version>
         <junit.version>5.8.1</junit.version>
         <swagger.version>2.1.13</swagger.version>
+
     </properties>
 
     <dependencyManagement>
@@ -84,6 +83,7 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+
 
             <dependency>
                 <groupId>org.flywaydb</groupId>
@@ -329,6 +329,20 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
