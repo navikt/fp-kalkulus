@@ -1,14 +1,13 @@
 package no.nav.folketrygdloven.kalkulus.app.exceptions;
 
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import no.nav.folketrygdloven.kalkulus.felles.verktøy.TomtResultatException;
 import no.nav.k9.felles.exception.ManglerTilgangException;
 import no.nav.k9.felles.log.mdc.MDCOperations;
@@ -48,8 +47,7 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
     }
 
     private static void loggTilApplikasjonslogg(Throwable feil) {
-        var melding = "Fikk uventet feil: " + getExceptionMelding(feil);
-        LOGGER.warn(melding, feil);
+        LOGGER.warn("Fikk uventet feil: {}", getExceptionMelding(feil), feil);
     }
 
     private static String getExceptionMelding(Throwable feil) {
@@ -75,5 +73,4 @@ public class GeneralRestExceptionMapper implements ExceptionMapper<Throwable> {
             MDC.remove("prosess"); //$NON-NLS-1$
         }
     }
-
 }
