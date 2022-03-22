@@ -1,22 +1,5 @@
 package no.nav.folketrygdloven.kalkulator.steg.fordeling;
 
-import static no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger.opprett;
-import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest.GRUNNBELØP;
-import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapBeregningsgrunnlagFraVLTilRegel;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.MapInntektsgrunnlagVLTilRegel;
@@ -58,6 +41,23 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.Inntektskategori;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.utils.UnitTestLookupInstanceImpl;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static no.nav.folketrygdloven.kalkulator.OpprettKravPerioderFraInntektsmeldinger.opprett;
+import static no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.MapFastsettBeregningsgrunnlagPerioderFraRegelTilVLTest.GRUNNBELØP;
+import static no.nav.fpsak.tidsserie.LocalDateInterval.TIDENES_ENDE;
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FordelBeregningsgrunnlagTjenesteImplTest {
 
     private static final String ORGNR1 = "995428563";
@@ -84,7 +84,7 @@ public class FordelBeregningsgrunnlagTjenesteImplTest {
     @BeforeEach
     public void oppsett() {
         fordelPerioderTjeneste = lagTjeneste();
-        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjenesteImpl(new OmfordelBeregningsgrunnlagTjeneste(mapBeregningsgrunnlagFraVLTilRegel));
+        fordelBeregningsgrunnlagTjeneste = new FordelBeregningsgrunnlagTjenesteImpl(new OmfordelBeregningsgrunnlagTjeneste());
         iayGrunnlagBuilder = InntektArbeidYtelseGrunnlagDtoBuilder.nytt();
         leggTilYrkesaktiviteterOgBeregningAktiviteter(iayGrunnlagBuilder, List.of(ORGNR1, ORGNR2, ORGNR3));
         BeregningAktivitetAggregatDto.Builder builder = BeregningAktivitetAggregatDto.builder().medSkjæringstidspunktOpptjening(SKJÆRINGSTIDSPUNKT);
