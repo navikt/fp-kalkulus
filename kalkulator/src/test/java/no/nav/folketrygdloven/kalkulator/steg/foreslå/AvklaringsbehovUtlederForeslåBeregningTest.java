@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningUtfallÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
@@ -43,18 +44,18 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
     @Test
     public void skalFåAvklaringsbehov5042() {
         // Arrange
-        RegelResultat regelResultat = lagRegelResultat("5042");
+        RegelResultat regelResultat = lagRegelResultat(BeregningUtfallÅrsak.VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT);
         // Act
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
         var apDefs = avklaringsbehov.stream().map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon).collect(Collectors.toList());
-        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_SELVSTENDIG_NÆRINGSDRIVENDE);
+        assertThat(apDefs).containsExactly(AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE);
     }
 
     @Test
     public void skalFåAvklaringsbehov5049() {
         // Arrange
-        RegelResultat regelResultat = lagRegelResultat("5049");
+        RegelResultat regelResultat = lagRegelResultat(BeregningUtfallÅrsak.FASTSETT_SELVSTENDIG_NY_ARBEIDSLIVET);
         // Act
         List<BeregningAvklaringsbehovResultat> avklaringsbehov = AvklaringsbehovUtlederForeslåBeregning.utledAvklaringsbehov(lagInput(referanse), Collections.singletonList(regelResultat));
         // Assert
@@ -65,7 +66,7 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
     @Test
     public void skalFåAvklaringsbehov5038() {
         // Arrange
-        RegelResultat regelResultat = lagRegelResultat("5038");
+        RegelResultat regelResultat = lagRegelResultat(BeregningUtfallÅrsak.FASTSETT_AVVIK_OVER_25_PROSENT);
 
         var input = lagInput();
 
@@ -133,8 +134,8 @@ public class AvklaringsbehovUtlederForeslåBeregningTest {
         return new BeregningsgrunnlagInput(referanse, null, null, List.of(), foreldrepengerGrunnlag);
     }
 
-    private RegelResultat lagRegelResultat(String merknadKode) {
-        RegelMerknad regelMerknad = new RegelMerknad(merknadKode, "blablabla");
+    private RegelResultat lagRegelResultat(BeregningUtfallÅrsak utfallÅrsak) {
+        RegelMerknad regelMerknad = new RegelMerknad(utfallÅrsak);
         return new RegelResultat(ResultatBeregningType.IKKE_BEREGNET, "regelInput", "regelSporing")
             .medRegelMerknad(regelMerknad);
     }

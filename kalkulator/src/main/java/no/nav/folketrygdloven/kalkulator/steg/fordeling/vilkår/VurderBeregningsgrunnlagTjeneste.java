@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningUtfallÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -39,7 +40,8 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @FagsakYtelseTypeRef("*")
 public class VurderBeregningsgrunnlagTjeneste {
 
-    protected static final String FOR_LAVT_BG_MERKNAD = "1041";
+    protected static final Set<BeregningUtfallÅrsak> AVSLAGSÅRSAKER = Set.of(BeregningUtfallÅrsak.AVSLAG_UNDER_HALV_G,
+            BeregningUtfallÅrsak.AVSLAG_UNDER_TREKVART_G, BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT);
 
     protected MapBeregningsgrunnlagFraVLTilRegel mapBeregningsgrunnlagFraVLTilRegel;
 
@@ -87,8 +89,8 @@ public class VurderBeregningsgrunnlagTjeneste {
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
-        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
-                .noneMatch(FOR_LAVT_BG_MERKNAD::equals);
+        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+                .noneMatch(AVSLAGSÅRSAKER::contains);
         return new BeregningVilkårResultat(erVilkårOppfylt, erVilkårOppfylt ? null : Vilkårsavslagsårsak.FOR_LAVT_BG, periode);
     }
 

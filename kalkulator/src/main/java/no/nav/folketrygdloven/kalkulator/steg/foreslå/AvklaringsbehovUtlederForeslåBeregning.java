@@ -1,5 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.steg.foreslå;
 
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
+import static no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon.VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +37,13 @@ public class AvklaringsbehovUtlederForeslåBeregning {
     }
 
     private static AvklaringsbehovDefinisjon mapRegelMerknad(RegelMerknad regelMerknad) {
-        return AvklaringsbehovDefinisjon.fraKode(regelMerknad.getMerknadKode());
+        return switch (regelMerknad.utfallÅrsak()) {
+            case FASTSETT_AVVIK_OVER_25_PROSENT, FASTSETT_AVVIK_OVER_25_PROSENT_ARBEIDSTAKER, FASTSETT_AVVIK_OVER_25_PROSENT_FRILANS,
+                    FASTSETT_AVVIK_TIDSBEGRENSET_ARBEIDSTAKER -> FASTSETT_BEREGNINGSGRUNNLAG_ARBEIDSTAKER_FRILANS;
+            case FASTSETT_AVVIK_TIDSBEGRENSET -> FASTSETT_BEREGNINGSGRUNNLAG_TIDSBEGRENSET_ARBEIDSFORHOLD;
+            case FASTSETT_SELVSTENDIG_NY_ARBEIDSLIVET -> FASTSETT_BEREGNINGSGRUNNLAG_FOR_SN_NY_I_ARBEIDSLIVET;
+            case VARIG_ENDRING_OG_AVVIK_STØRRE_ENN_25_PROSENT -> VURDER_VARIG_ENDRET_ELLER_NYOPPSTARTET_NÆRING_SELVSTENDIG_NÆRINGSDRIVENDE;
+            default -> throw new IllegalArgumentException("Utviklerfeil: Uventet regelutfall " + regelMerknad.utfallÅrsak());
+        };
     }
 }

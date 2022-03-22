@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.BeregningUtfallÅrsak;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.resultat.Beregningsgrunnlag;
@@ -36,8 +36,6 @@ import no.nav.fpsak.nare.evaluation.Evaluation;
 @ApplicationScoped
 @FagsakYtelseTypeRef("FRISINN")
 public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgrunnlagTjeneste {
-
-    public static final String FRILANS_UTEN_INNTEKT_MERKNAD = "FRILANS_UTEN_INNTEKT";
 
     public VurderBeregningsgrunnlagTjenesteFRISINN() {
         // CDI
@@ -95,19 +93,19 @@ public class VurderBeregningsgrunnlagTjenesteFRISINN extends VurderBeregningsgru
     }
 
     private BeregningVilkårResultat lagVilkårResultatForPeriode(RegelResultat regelResultat, Intervall periode) {
-        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
-                .noneMatch(avslagskode -> FOR_LAVT_BG_MERKNAD.equals(avslagskode) || FRILANS_UTEN_INNTEKT_MERKNAD.equals(avslagskode));
+        boolean erVilkårOppfylt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+                .noneMatch(AVSLAGSÅRSAKER::contains);
         return new BeregningVilkårResultat(erVilkårOppfylt, finnAvslagsårsak(regelResultat), periode);
     }
 
     private Vilkårsavslagsårsak finnAvslagsårsak(RegelResultat regelResultat) {
-        boolean frilansUtenInntekt = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
-                .anyMatch(FRILANS_UTEN_INNTEKT_MERKNAD::equals);
+        boolean frilansUtenInntekt = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+                .anyMatch(BeregningUtfallÅrsak.FRISINN_FRILANS_UTEN_INNTEKT::equals);
         if (frilansUtenInntekt) {
             return Vilkårsavslagsårsak.SØKT_FL_INGEN_FL_INNTEKT;
         }
-        boolean harForLavtBG = regelResultat.getMerknader().stream().map(RegelMerknad::getMerknadKode)
-                .anyMatch(FOR_LAVT_BG_MERKNAD::equals);
+        boolean harForLavtBG = regelResultat.getMerknader().stream().map(RegelMerknad::utfallÅrsak)
+                .anyMatch(AVSLAGSÅRSAKER::contains);
         if (harForLavtBG) {
             return Vilkårsavslagsårsak.FOR_LAVT_BG;
         }

@@ -8,9 +8,7 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import no.nav.folketrygdloven.beregningsgrunnlag.Grunnbeløp;
 import no.nav.folketrygdloven.beregningsgrunnlag.RegelmodellOversetter;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelMerknad;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.ResultatBeregningType;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektsgrunnlag;
 import no.nav.folketrygdloven.kalkulator.BeregningsgrunnlagFeil;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
@@ -77,12 +75,8 @@ public class FastsettSkjæringstidspunktOgStatuserFRISINN implements FastsettSkj
     }
 
     private RegelResultat lagRegelresultat(String inputSkjæringstidspunkt, Evaluation evaluationSkjæringstidspunkt) {
-        if (evaluationSkjæringstidspunkt.result().equals(Resultat.NEI)) {
-            return new RegelResultat(ResultatBeregningType.IKKE_BEREGNET,
-                    inputSkjæringstidspunkt,
-                    RegelmodellOversetter.getSporing(evaluationSkjæringstidspunkt))
-                    .medRegelMerknad(new RegelMerknad(evaluationSkjæringstidspunkt.getOutcome().getReasonCode(),
-                            evaluationSkjæringstidspunkt.reason()));
+        if (!Resultat.JA.equals(evaluationSkjæringstidspunkt.result())) {
+            throw new IllegalArgumentException("Utviklerfeil: Umulig utfall");
         }
         return RegelmodellOversetter.getRegelResultat(evaluationSkjæringstidspunkt, inputSkjæringstidspunkt);
     }
