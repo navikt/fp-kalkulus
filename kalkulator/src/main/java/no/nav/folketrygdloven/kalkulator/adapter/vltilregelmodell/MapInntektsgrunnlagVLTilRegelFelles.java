@@ -353,7 +353,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
     private Periodeinntekt mapTilPeriodeInntekt(YtelseDto y, YtelseAnvistDto ya, AnvistAndel a) {
         return Periodeinntekt.builder().medInntekt(a.getDagsats())
                 .medInntektskildeOgPeriodeType(Inntektskilde.YTELSE_VEDTAK)
-                .medAktivitetStatus(Inntektskategori.valueOf(a.getInntektskategori().getKode()).getAktivitetStatus())
+                .medInntektskategori(Inntektskategori.valueOf(a.getInntektskategori().getKode()))
                 .medPeriode(Periode.of(ya.getAnvistFOM(), ya.getAnvistTOM()))
                 .build();
     }
