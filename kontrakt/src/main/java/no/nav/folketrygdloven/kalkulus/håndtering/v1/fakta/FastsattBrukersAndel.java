@@ -24,7 +24,6 @@ public class FastsattBrukersAndel {
 
     @JsonProperty("andelsnr")
     @Valid
-    @NotNull
     private Long andelsnr;
 
     @JsonProperty("nyAndel")
@@ -51,7 +50,7 @@ public class FastsattBrukersAndel {
     public FastsattBrukersAndel() {
     }
 
-    public FastsattBrukersAndel(@Valid @NotNull Long andelsnr, @Valid @NotNull Boolean nyAndel, @Valid @NotNull Boolean lagtTilAvSaksbehandler, @Valid @NotNull Integer fastsattBeløp, @Valid @NotNull Inntektskategori inntektskategori) {
+    public FastsattBrukersAndel(@Valid Long andelsnr, @Valid @NotNull Boolean nyAndel, @Valid @NotNull Boolean lagtTilAvSaksbehandler, @Valid @NotNull Integer fastsattBeløp, @Valid @NotNull Inntektskategori inntektskategori) {
         this.andelsnr = andelsnr;
         this.nyAndel = nyAndel;
         this.lagtTilAvSaksbehandler = lagtTilAvSaksbehandler;
