@@ -85,4 +85,5 @@ spec:
       value: "true"
     - name: VURDER_MOTTAR_YTELSE_AT_FILTRERING
       value: "true"
-
+    - name: MAP_YTELSE_DAGPENGER_FRA_ANDELER
+      value: "true"
