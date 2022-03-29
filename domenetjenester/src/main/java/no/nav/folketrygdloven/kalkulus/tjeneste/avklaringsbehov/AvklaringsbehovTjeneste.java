@@ -185,8 +185,7 @@ public class AvklaringsbehovTjeneste {
 
     public void avbrytAlleAvklaringsbehovEtterEllerISteg(Set<Long> koblingIder, BeregningSteg steg) {
         List<AvklaringsbehovEntitet> alleApPåKobling = avklaringsbehovRepository.hentAvklaringsbehovforKoblinger(koblingIder);
-        alleApPåKobling
-                .stream().forEach(ap -> {
+        alleApPåKobling.forEach(ap -> {
                     if (!ap.getStegFunnet().erFør(steg)) {
                         avbrytAvklaringsbehov(ap.getKoblingId(), ap);
                     }

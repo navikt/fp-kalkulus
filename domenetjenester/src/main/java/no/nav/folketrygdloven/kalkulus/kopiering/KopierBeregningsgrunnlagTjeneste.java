@@ -57,7 +57,7 @@ public class KopierBeregningsgrunnlagTjeneste {
      * @param kopiRequests Referanser som skal kopieres
      * @param ytelseType   Ytelsetype
      * @param saksnummer   Saksnummer
-     * @param steg Definerer steget som vi kopierer beregningsgrunnlag fra
+     * @param steg         Definerer steget som vi kopierer beregningsgrunnlag fra
      */
     public void kopierGrunnlagOgOpprettKoblinger(List<KopierBeregningRequest> kopiRequests,
                                                  YtelseTyperKalkulusStøtterKontrakt ytelseType,
@@ -162,6 +162,9 @@ public class KopierBeregningsgrunnlagTjeneste {
     private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger, BeregningSteg steg) {
         var eksisterendeKoblingIder = eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKoblingIder, steg);
+        // Avbryter først alle eksisterende på kopi-kobling (kan finnes i caser der vi flipper status fra ikke-forlengelse til forlengelse) 
+        nyeKoblinger.forEach(k -> avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(k.getId()));
+        // Kopierer alle fra eksisterende koblinger til kopi-koblinger
         avklaringsbehovSomMåKopieres.forEach(ab -> {
             var nyKobling = finnNyKobling(ab.getKoblingId(), eksisterendeKoblinger, nyeKoblinger, kopiRequests);
             avklaringsbehovTjeneste.kopierAvklaringsbehov(nyKobling, ab);
