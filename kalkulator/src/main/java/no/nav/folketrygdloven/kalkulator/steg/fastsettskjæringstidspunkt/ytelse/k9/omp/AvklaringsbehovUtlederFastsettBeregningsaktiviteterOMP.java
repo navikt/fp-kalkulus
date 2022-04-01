@@ -55,9 +55,11 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
 
     @Override
     public List<BeregningAvklaringsbehovResultat> utledAvklaringsbehov(BeregningsgrunnlagRegelResultat regelResultat, BeregningsgrunnlagInput input, boolean erOverstyrt) {
-        if (!regelResultat.getVilkårOppfylt()) {
+        if (regelResultat.getVilkårOppfylt() != null && !regelResultat.getVilkårOppfylt()) {
             return emptyList();
         }
+        LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
+        BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
         LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
         return utledAvklaringsbehovForOMP(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
