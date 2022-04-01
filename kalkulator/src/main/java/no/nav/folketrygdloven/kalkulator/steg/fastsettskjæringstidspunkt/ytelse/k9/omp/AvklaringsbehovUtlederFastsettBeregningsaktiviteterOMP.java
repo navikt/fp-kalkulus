@@ -60,8 +60,6 @@ public class AvklaringsbehovUtlederFastsettBeregningsaktiviteterOMP implements A
         }
         LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
         BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
-        LocalDate skjæringstidspunkt = regelResultat.getBeregningsgrunnlag().getSkjæringstidspunkt();
-        BeregningAktivitetAggregatDto registerAktiviteter = regelResultat.getRegisterAktiviteter();
         return utledAvklaringsbehovForOMP(registerAktiviteter, input, erOverstyrt, skjæringstidspunkt);
     }
 }
