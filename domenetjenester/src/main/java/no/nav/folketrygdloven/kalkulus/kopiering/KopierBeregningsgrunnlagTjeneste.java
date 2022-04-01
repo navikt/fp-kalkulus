@@ -154,15 +154,15 @@ public class KopierBeregningsgrunnlagTjeneste {
     }
 
     private List<Long> finnKoblingIdIkkeInkludertIListeMedGrunnlag(List<Long> listeMedId, List<BeregningsgrunnlagGrunnlagEntitet> grunnlagsliste) {
-        var idForGrunnlagMedVilkårvurdering = grunnlagsliste.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId);
-        return listeMedId.stream().filter(i -> idForGrunnlagMedVilkårvurdering.noneMatch(id -> id.equals(i)))
+        var idForGrunnlagMedVilkårvurdering = grunnlagsliste.stream().map(BeregningsgrunnlagGrunnlagEntitet::getKoblingId).collect(Collectors.toSet());
+        return listeMedId.stream().filter(i -> idForGrunnlagMedVilkårvurdering.stream().noneMatch(id -> id.equals(i)))
                 .collect(Collectors.toList());
     }
 
     private void kopierAvklaringsbehov(List<KopierBeregningRequest> kopiRequests, List<KoblingEntitet> eksisterendeKoblinger, List<KoblingEntitet> nyeKoblinger, BeregningSteg steg) {
         var eksisterendeKoblingIder = eksisterendeKoblinger.stream().map(KoblingEntitet::getId).collect(Collectors.toSet());
         var avklaringsbehovSomMåKopieres = finnAvklaringsbehovSomSkalKopieres(eksisterendeKoblingIder, steg);
-        // Avbryter først alle eksisterende på kopi-kobling (kan finnes i caser der vi flipper status fra ikke-forlengelse til forlengelse) 
+        // Avbryter først alle eksisterende på kopi-kobling (kan finnes i caser der vi flipper status fra ikke-forlengelse til forlengelse)
         nyeKoblinger.forEach(k -> avklaringsbehovTjeneste.avbrytAlleAvklaringsbehov(k.getId()));
         // Kopierer alle fra eksisterende koblinger til kopi-koblinger
         avklaringsbehovSomMåKopieres.forEach(ab -> {
