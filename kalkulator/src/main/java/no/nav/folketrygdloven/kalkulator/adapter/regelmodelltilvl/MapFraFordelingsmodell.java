@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.beregningsgrunnlag.fordel.andelsmessig.modell.FordelAndelModell;
 import no.nav.folketrygdloven.beregningsgrunnlag.fordel.andelsmessig.modell.FordelPeriodeModell;
+import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.AktivitetStatus;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.RegelResultat;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Arbeidsforhold;
 import no.nav.folketrygdloven.kalkulator.adapter.regelmodelltilvl.kodeverk.MapInntektskategoriRegelTilVL;
@@ -80,7 +81,7 @@ public class MapFraFordelingsmodell {
     }
 
     private static Optional<BGAndelArbeidsforholdDto.Builder> settFelterPåArbeidsforhold(FordelAndelModell regelAndel,
-                                                               BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
+                                                                                         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder) {
         if (regelAndel.getFordeltRefusjonPrÅr().isEmpty() && regelAndel.getNaturalytelseBortfaltPrÅr().isEmpty()) {
             return Optional.empty();
         }
@@ -115,7 +116,8 @@ public class MapFraFordelingsmodell {
             throw new IllegalStateException("Andelsnr er satt, men regelAndel er markert som ny. Ugyldig tilstand for andel" + regelAndel.toString());
         }
         var kalkulusAndel = kalkulusPeriode.getBeregningsgrunnlagPrStatusOgAndelList().stream()
-                .filter(bgpsa -> bgpsa.getBgAndelArbeidsforhold().isPresent())
+                .filter(bgpsa -> matcherAktivitetstatus(regelAndel, bgpsa)
+                        && (!bgpsa.getAktivitetStatus().erArbeidstaker() || matcherArbeidsinformasjon(regelAndel, bgpsa)))
                 .filter(bgpsa -> matcherArbeidsgiver(regelAndel, bgpsa))
                 .filter(bgpsa -> gjelderSammeArbeidsforhold(regelAndel, bgpsa))
                 .findFirst()
@@ -130,6 +132,16 @@ public class MapFraFordelingsmodell {
         kalkulusAndel.getBgAndelArbeidsforhold().ifPresent(bga -> andelBuilder.medBGAndelArbeidsforhold(BGAndelArbeidsforholdDto.builder(bga)));
         settFelterFraRegelPåBuilder(regelAndel, andelBuilder);
         return andelBuilder;
+    }
+
+    private static boolean matcherAktivitetstatus(FordelAndelModell regelAndel, BeregningsgrunnlagPrStatusOgAndelDto bgpsa) {
+        return bgpsa.getAktivitetStatus().getKode().equals(regelAndel.getAktivitetStatus().name());
+    }
+
+    private static boolean matcherArbeidsinformasjon(FordelAndelModell regelAndel, BeregningsgrunnlagPrStatusOgAndelDto bgpsa) {
+        return bgpsa.getBgAndelArbeidsforhold().isPresent() &&
+                matcherArbeidsgiver(regelAndel, bgpsa) &&
+                gjelderSammeArbeidsforhold(regelAndel, bgpsa);
     }
 
     private static BigDecimal verifiserIkkeNegativtBeløp(BigDecimal beløp) {

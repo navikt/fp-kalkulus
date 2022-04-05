@@ -74,6 +74,41 @@ class MapFraFordelingsmodellTest {
         assertAndel(andeler, 2L, 0, null, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
         assertAndel(andeler, 3L, 100000, null, Inntektskategori.SELVSTENDIG_NÆRINGSDRIVENDE);
     }
+    
+    @Test
+    public void skal_teste_mapping_av_tre_andeler_blir_fire_med_ny_andel_frilans() {
+        // Arrange
+        var ref = UUID.randomUUID();
+        lagBGPeriode(STP, STP.plusMonths(1),
+                lagBGAndel(1L, AktivitetStatus.BRUKERS_ANDEL,
+                        null, null, Inntektskategori.ARBEIDSTAKER),
+                lagBGAndel(2L, AktivitetStatus.BRUKERS_ANDEL,
+                        null, null, Inntektskategori.FRILANSER),
+                lagBGAndel(3L, AktivitetStatus.FRILANSER,
+                        null, null, Inntektskategori.UDEFINERT));
+        var regelPeriode = lagRegelPeriode(STP, STP.plusMonths(1),
+                lagRegelAndel(1L, AktivitetStatus.BRUKERS_ANDEL,
+                        null, null,
+                        0, null, Inntektskategori.ARBEIDSTAKER),
+                lagRegelAndel(2L, AktivitetStatus.BRUKERS_ANDEL,
+                        null, null,
+                        0, null, Inntektskategori.FRILANSER),
+                lagRegelAndel(3L, AktivitetStatus.FRILANSER,
+                        null, null,
+                        100000, null, Inntektskategori.ARBEIDSTAKER),
+                lagRegelAndel(null, AktivitetStatus.FRILANSER,
+                        null, null,
+                        100000, null, Inntektskategori.FRILANSER).erNytt(true));
+        var mappetBG = map(regelPeriode);
+
+        assertThat(mappetBG.getBeregningsgrunnlagPerioder()).hasSize(1);
+        var andeler = mappetBG.getBeregningsgrunnlagPerioder().get(0).getBeregningsgrunnlagPrStatusOgAndelList();
+        assertThat(andeler).hasSize(4);
+        assertAndel(andeler, 1L, 0, null, Inntektskategori.ARBEIDSTAKER);
+        assertAndel(andeler, 2L, 0, null, Inntektskategori.FRILANSER);
+        assertAndel(andeler, 3L, 100000, null, Inntektskategori.ARBEIDSTAKER);
+        assertAndel(andeler, 4L, 100000, null, Inntektskategori.FRILANSER);
+    }
 
     @Test
     public void skal_teste_mapping_av_tre_andeler_blir_fem() {
@@ -154,6 +189,9 @@ class MapFraFordelingsmodellTest {
                 .medFordeltRefusjonPrÅr(fordeltRefPrÅr == null ? null : BigDecimal.valueOf(fordeltRefPrÅr));
         if (orgnr != null) {
             regelBuilder.medArbeidsforhold(Arbeidsforhold.nyttArbeidsforholdHosVirksomhet(orgnr, referanse));
+        }
+        if (aktivitetStatus.erFrilanser()) {
+            regelBuilder.medArbeidsforhold(Arbeidsforhold.frilansArbeidsforhold());
         }
         return regelBuilder;
     }
