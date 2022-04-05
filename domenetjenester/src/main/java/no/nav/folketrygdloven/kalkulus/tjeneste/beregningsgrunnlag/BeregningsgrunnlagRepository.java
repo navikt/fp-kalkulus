@@ -378,9 +378,11 @@ public class BeregningsgrunnlagRepository {
 
     public void deaktiverKalkulatorInput(Long koblingId) {
         var query = entityManager.createQuery("Update KalkulatorInput " +
-                        "set aktiv = false " +
+                        "set aktiv = false, " +
+                        "endretTidspunkt = :endretTid " +
                         "where koblingId = :koblingId ")
-                .setParameter(KOBLING_ID, koblingId);
+                .setParameter(KOBLING_ID, koblingId)
+                .setParameter("endretTid", LocalDateTime.now());
 
         var perioderOppdaterteRader = query.executeUpdate();
         LOG.debug("Deaktivert {} KalkulatorInput for koblingId={}", perioderOppdaterteRader, koblingId);
