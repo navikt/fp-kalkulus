@@ -66,13 +66,6 @@ public class Arbeidsgiver implements Serializable {
     }
 
     /**
-     * Hvis arbeidsgiver er en privatperson, returner aktørId for person.
-     */
-    public AktørId getAktørIdString() {
-        return arbeidsgiverAktørId;
-    }
-
-    /**
      * Returneer ident for arbeidsgiver. Kan være Org nummer eller Aktør id (dersom arbeidsgiver er en enkelt person -
      * f.eks. for Frilans el.)
      */
