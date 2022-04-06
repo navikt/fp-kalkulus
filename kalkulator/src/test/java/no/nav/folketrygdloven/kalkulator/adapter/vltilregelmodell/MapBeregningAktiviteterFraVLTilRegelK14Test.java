@@ -15,12 +15,17 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.Periode;
 import no.nav.folketrygdloven.kalkulator.KoblingReferanseMock;
 import no.nav.folketrygdloven.kalkulator.input.FastsettBeregningsaktiviteterInput;
 import no.nav.folketrygdloven.kalkulator.modell.behandling.KoblingReferanse;
+import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseAggregatBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektArbeidYtelseGrunnlagDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.iay.InntektsmeldingDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.VersjonTypeDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
+import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDtoBuilder;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.InternArbeidsforholdRefDto;
 import no.nav.folketrygdloven.kalkulator.testutilities.BeregningInntektsmeldingTestUtil;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.ArbeidType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 import no.nav.folketrygdloven.kalkulus.typer.AktørId;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
@@ -64,16 +69,46 @@ public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            InntektsmeldingDto inntektsmelding) {
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmelding).build();
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medInntektsmeldinger(inntektsmelding)
+                .medData(lagData(opptjeningAktiviteter))
+                .build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, List.of(), null);
         return new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
     }
 
     private AktivitetStatusModell mapForSkjæringstidspunkt(KoblingReferanse ref, OpptjeningAktiviteterDto opptjeningAktiviteter,
                                                            List<InntektsmeldingDto> inntektsmeldinger) {
-        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt().medInntektsmeldinger(inntektsmeldinger).build();
+        var iayGrunnlag = InntektArbeidYtelseGrunnlagDtoBuilder.nytt()
+                .medInntektsmeldinger(inntektsmeldinger)
+                .medData(lagData(opptjeningAktiviteter))
+                .build();
         var input = new FastsettBeregningsaktiviteterInput(ref, iayGrunnlag, opptjeningAktiviteter, List.of(), null);
         return new MapBeregningAktiviteterFraVLTilRegelK14().mapForSkjæringstidspunkt(input);
+    }
+
+    private InntektArbeidYtelseAggregatBuilder lagData(OpptjeningAktiviteterDto opptjeningAktiviteter) {
+        var arbeidBuilder = InntektArbeidYtelseAggregatBuilder.AktørArbeidBuilder.oppdatere(Optional.empty());
+        opptjeningAktiviteter.getOpptjeningPerioder().stream()
+                .map(this::lagYA)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(arbeidBuilder::leggTilYrkesaktivitet);
+        return InntektArbeidYtelseAggregatBuilder.oppdatere(Optional.empty(), VersjonTypeDto.REGISTER).leggTilAktørArbeid(arbeidBuilder);
+    }
+
+    private Optional<YrkesaktivitetDto> lagYA(OpptjeningAktiviteterDto.OpptjeningPeriodeDto opp) {
+        if (opp.getArbeidsgiver().isPresent()) {
+            var yaBuilder = YrkesaktivitetDtoBuilder.oppdatere(Optional.empty()).medArbeidType(ArbeidType.ORDINÆRT_ARBEIDSFORHOLD)
+                    .medArbeidsgiver(opp.getArbeidsgiver().get())
+                    .medArbeidsforholdId(opp.getArbeidsforholdId());
+
+            var aktivitetsAvtaleBuilder = yaBuilder.getAktivitetsAvtaleBuilder();
+            aktivitetsAvtaleBuilder.medPeriode(opp.getPeriode()).medErAnsettelsesPeriode(true);
+            yaBuilder.leggTilAktivitetsAvtale(aktivitetsAvtaleBuilder);
+            return Optional.of(yaBuilder.build());
+        }
+        return Optional.empty();
     }
 
     @Test
