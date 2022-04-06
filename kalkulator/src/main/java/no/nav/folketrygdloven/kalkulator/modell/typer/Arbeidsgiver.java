@@ -66,6 +66,13 @@ public class Arbeidsgiver implements Serializable {
     }
 
     /**
+     * Hvis arbeidsgiver er en privatperson, returner aktørId for person.
+     */
+    public AktørId getAktørIdString() {
+        return arbeidsgiverAktørId;
+    }
+
+    /**
      * Returneer ident for arbeidsgiver. Kan være Org nummer eller Aktør id (dersom arbeidsgiver er en enkelt person -
      * f.eks. for Frilans el.)
      */
@@ -115,14 +122,18 @@ public class Arbeidsgiver implements Serializable {
     }
 
     private String getOrgnrString() {
+        return sisteTreSiffer();
+    }
+
+    private String sisteTreSiffer() {
         if (arbeidsgiverOrgnr == null) {
             return null;
         }
         int length = arbeidsgiverOrgnr.length();
-        if (length <= 4) {
+        if (length <= 3) {
             return "*".repeat(length);
         }
-        return "*".repeat(length - 4) + arbeidsgiverOrgnr.substring(length - 4);
+        return "*".repeat(length - 3) + arbeidsgiverOrgnr.substring(length - 3);
     }
 
     public static Arbeidsgiver fra(Arbeidsgiver arbeidsgiver) {
