@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.utledere;
 
-import java.util.Collections;
-import java.util.Comparator;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste.finnAnvisningerForDirekteOvergangFraKap8;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
     }
 
     private boolean harYtelseUtenAnvisteAndeler(FaktaOmBeregningInput input, BeregningsgrunnlagDto beregningsgrunnlag) {
-        List<YtelseAnvistDto> sisteAnvisninger = finnSisteAnvisninger(getYtelseFilterKap8(input, beregningsgrunnlag));
+        List<YtelseAnvistDto> sisteAnvisninger = finnAnvisningerForDirekteOvergangFraKap8(input.getIayGrunnlag(), beregningsgrunnlag.getSkjæringstidspunkt());
         return sisteAnvisninger.isEmpty() || sisteAnvisninger.stream().anyMatch(a -> a.getAnvisteAndeler().isEmpty());
     }
 
@@ -63,13 +63,7 @@ public class KunYtelseTilfelleUtleder implements TilfelleUtleder {
                 .filter(y -> y.getPeriode().getTomDato().isAfter(beregningsgrunnlag.getSkjæringstidspunkt().minusMonths(3).withDayOfMonth(1)));
     }
 
-    private List<YtelseAnvistDto> finnSisteAnvisninger(YtelseFilterDto filter) {
-        var ytelser = filter.getAlleYtelser();
-        var alleAnvisninger = ytelser.stream().flatMap(y -> y.getYtelseAnvist().stream()).toList();
-        var sisteDagMedAnvisning = alleAnvisninger.stream().max(Comparator.comparing(YtelseAnvistDto::getAnvistTOM)).map(YtelseAnvistDto::getAnvistTOM);
-        return sisteDagMedAnvisning.isEmpty() ? Collections.emptyList() : alleAnvisninger.stream()
-                .filter(a -> a.getAnvistTOM().equals(sisteDagMedAnvisning.get())).toList();
-    }
+
 
     private boolean erBasertPåDagpenger(YtelseDto y) {
         return y.getYtelseAnvist().stream().anyMatch(ya -> ya.getAnvisteAndeler().stream().anyMatch(a -> a.getInntektskategori().equals(Inntektskategori.DAGPENGER)));

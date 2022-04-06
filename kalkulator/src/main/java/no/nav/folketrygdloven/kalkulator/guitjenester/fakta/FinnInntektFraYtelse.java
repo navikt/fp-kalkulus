@@ -1,7 +1,7 @@
 package no.nav.folketrygdloven.kalkulator.guitjenester.fakta;
 
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraYtelsevedtak;
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraYtelsevedtak;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

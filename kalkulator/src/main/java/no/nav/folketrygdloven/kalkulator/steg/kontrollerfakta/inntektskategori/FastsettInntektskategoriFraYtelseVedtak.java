@@ -1,12 +1,13 @@
 package no.nav.folketrygdloven.kalkulator.steg.kontrollerfakta.inntektskategori;
 
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste.finnAnvisningerForDirekteOvergangFraKap8;
+
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
-import no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPeriodeDto;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningsgrunnlagPrStatusOgAndelDto;
@@ -28,19 +29,13 @@ public class FastsettInntektskategoriFraYtelseVedtak {
         }
 
         if (beregningsgrunnlagDto.getAktivitetStatuser().stream().allMatch(a -> a.getAktivitetStatus().equals(AktivitetStatus.KUN_YTELSE))) {
-            lagAndelerForInntektskategorierFraYtelse(beregningsgrunnlagDto, iay, nyttBg);
+            lagAndelerForInntektskategorierFraYtelse(iay, nyttBg);
         }
         return nyttBg;
     }
 
-    private static void lagAndelerForInntektskategorierFraYtelse(BeregningsgrunnlagDto beregningsgrunnlagDto, InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto nyttBg) {
-        var beregningstidspunkt = BeregningstidspunktTjeneste.finnBeregningstidspunkt(beregningsgrunnlagDto.getSkjæringstidspunkt());
-        var alleInntektskategorierFraYtelse = iay.getAktørYtelseFraRegister()
-                .stream()
-                .flatMap(a -> a.getAlleYtelser().stream())
-                .filter(y -> y.getPeriode().inkluderer(beregningstidspunkt))
-                .flatMap(y -> y.getYtelseAnvist().stream())
-                .filter(ya -> ya.getAnvistPeriode().inkluderer(beregningstidspunkt))
+    private static void lagAndelerForInntektskategorierFraYtelse(InntektArbeidYtelseGrunnlagDto iay, BeregningsgrunnlagDto nyttBg) {
+        var alleInntektskategorierFraYtelse = finnAnvisningerForDirekteOvergangFraKap8(iay, nyttBg.getSkjæringstidspunkt()).stream()
                 .flatMap(ya -> ya.getAnvisteAndeler().stream())
                 .map(AnvistAndel::getInntektskategori)
                 .sorted(Comparator.comparing(Inntektskategori::getKode))

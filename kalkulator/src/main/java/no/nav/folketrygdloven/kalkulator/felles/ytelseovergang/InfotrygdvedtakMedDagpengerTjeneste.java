@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulator.felles;
+package no.nav.folketrygdloven.kalkulator.felles.ytelseovergang;
 
 import static no.nav.folketrygdloven.kalkulator.felles.BeregningstidspunktTjeneste.finnBeregningstidspunkt;
 

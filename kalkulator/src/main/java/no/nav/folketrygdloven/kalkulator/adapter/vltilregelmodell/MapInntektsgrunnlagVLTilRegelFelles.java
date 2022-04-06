@@ -1,7 +1,8 @@
 package no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell;
 
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraYtelsevedtak;
-import static no.nav.folketrygdloven.kalkulator.felles.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.DirekteOvergangTjeneste.finnAnvisningerForDirekteOvergangFraKap8;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.InfotrygdvedtakMedDagpengerTjeneste.finnDagsatsFraYtelsevedtak;
+import static no.nav.folketrygdloven.kalkulator.felles.ytelseovergang.InfotrygdvedtakMedDagpengerTjeneste.harYtelsePåGrunnlagAvDagpenger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,7 +26,6 @@ import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.In
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskategori;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Inntektskilde;
 import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.Periodeinntekt;
-import no.nav.folketrygdloven.beregningsgrunnlag.regelmodell.grunnlag.inntekt.RelatertYtelseType;
 import no.nav.folketrygdloven.kalkulator.FagsakYtelseTypeRef;
 import no.nav.folketrygdloven.kalkulator.KonfigurasjonVerdi;
 import no.nav.folketrygdloven.kalkulator.adapter.vltilregelmodell.periodisering.FinnAnsettelsesPeriode;
@@ -335,22 +335,22 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
         if (erDagpenger(input)) {
             mapTilstøtendeYtelseDagpenger(inntektsgrunnlag, ytelseFilter, skjæringstidspunktBeregning, input.getFagsakYtelseType());
         }
-        leggTilFraYtelseVedtak(inntektsgrunnlag, ytelseFilter);
+        leggTilFraYtelseVedtak(iayGrunnlag, skjæringstidspunktBeregning, inntektsgrunnlag);
         Optional<OppgittOpptjeningDto> oppgittOpptjeningOpt = iayGrunnlag.getOppgittOpptjening();
         oppgittOpptjeningOpt.ifPresent(oppgittOpptjening -> mapOppgittOpptjening(inntektsgrunnlag, oppgittOpptjening));
 
     }
 
-    private void leggTilFraYtelseVedtak(Inntektsgrunnlag inntektsgrunnlag, YtelseFilterDto ytelseFilter) {
-        ytelseFilter.getFiltrertYtelser()
-                .stream()
-                .flatMap(y -> y.getYtelseAnvist().stream()
-                        .flatMap(ya -> ya.getAnvisteAndeler()
-                                .stream().map(a -> mapTilPeriodeInntekt(y, ya, a))))
+    private void leggTilFraYtelseVedtak(InntektArbeidYtelseGrunnlagDto iayGrunnlag,
+                                        LocalDate skjæringstidspunktBeregning,
+                                        Inntektsgrunnlag inntektsgrunnlag) {
+        finnAnvisningerForDirekteOvergangFraKap8(iayGrunnlag, skjæringstidspunktBeregning).stream()
+                .flatMap(ya -> ya.getAnvisteAndeler()
+                        .stream().map(a -> mapTilPeriodeInntekt(ya, a)))
                 .forEach(inntektsgrunnlag::leggTilPeriodeinntekt);
     }
 
-    private Periodeinntekt mapTilPeriodeInntekt(YtelseDto y, YtelseAnvistDto ya, AnvistAndel a) {
+    private Periodeinntekt mapTilPeriodeInntekt(YtelseAnvistDto ya, AnvistAndel a) {
         return Periodeinntekt.builder().medInntekt(a.getDagsats())
                 .medInntektskildeOgPeriodeType(Inntektskilde.YTELSE_VEDTAK)
                 .medInntektskategori(Inntektskategori.valueOf(a.getInntektskategori().getKode()))
