@@ -34,7 +34,7 @@ import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.Arbeidsforhold;
 
 public class MapBeregningAktiviteterFraVLTilRegelK14Test {
 
-    private static final String ORGNR = "915933149";
+    private static final String ORGNR = "974242931";
     private static final AktørId aktørId = AktørId.dummy();
     private static final LocalDate SKJÆRINGSTIDSPUNKT = LocalDate.of(2019, 1, 1);
 
