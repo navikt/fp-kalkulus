@@ -71,7 +71,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
                     .getAktørArbeidFraRegister()
                     .map(AktørArbeidDto::hentAlleYrkesaktiviteter)
                     .orElse(Collections.emptyList());
-            var gjeldendeTOM = finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, opptjeningsperiode.getPeriode(), arbeidsgiver);
+            var gjeldendeTOM = finnTomdatoTaHensynTilPermisjon(yrkesaktiviteter, opptjeningsperiode, skjæringstidspunktOpptjening, arbeidsgiver);
             if (gjeldendeTOM.isBefore(skjæringstidspunktOpptjening) && !gjeldendeTOM.equals(gjeldendePeriode.getTomDato())) {
                 LOGGER.info("FT-687459: Utledet tom {} på arbeidsgiver {} og referanse {}. Opprinnelig tom var {}", gjeldendeTOM,
                         opptjeningsperiode.getArbeidsgiver(),
@@ -89,7 +89,6 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
     private LocalDate finnTomdatoTaHensynTilPermisjon(Collection<YrkesaktivitetDto> yrkesaktiviteter,
                                                       OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode,
                                                       LocalDate skjæringstidspunktOpptjening,
-                                                      Intervall gjeldendePeriode,
                                                       Arbeidsgiver arbeidsgiver) {
         var relevantYrkesaktivitet = yrkesaktiviteter
                 .stream()
@@ -98,7 +97,11 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
                         opptjeningsperiode.getArbeidsforholdId()))
                 .findFirst();
         Optional<LocalDate> sisteDagFørPermisjonStart = relevantYrkesaktivitet.flatMap(ya -> finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, ya));
-        return sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato());
+        if (sisteDagFørPermisjonStart.isPresent() && sisteDagFørPermisjonStart.get().isBefore(opptjeningsperiode.getPeriode().getFomDato())) {
+            // Kan skje pga opptjening ikke hensyntar permisjon, og ingenting stopper aareg fra å ha permisjon hele arbeidsperioden
+            return opptjeningsperiode.getPeriode().getFomDato();
+        }
+        return sisteDagFørPermisjonStart.orElse(opptjeningsperiode.getPeriode().getTomDato());
     }
 
     private Optional<LocalDate> finnSisteDagFørPermisjonsstart(LocalDate skjæringstidspunktOpptjening, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, YrkesaktivitetDto relevantYrkesaktivitet) {
@@ -113,5 +116,4 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
                 .min(Comparator.naturalOrder())
                 .map(d -> d.minusDays(1));
     }
-
 }
