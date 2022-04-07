@@ -95,10 +95,9 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
                 .stream()
                 .filter(ya -> ya.gjelderFor(
                         arbeidsgiver,
-                        opptjeningsperiode.getArbeidsforholdId())
-                ).findFirst()
-                .orElseThrow(() -> new IllegalStateException("Forventer å finne yrkesaktivitet for arbeidstakerinntekt"));
-        Optional<LocalDate> sisteDagFørPermisjonStart = finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, relevantYrkesaktivitet);
+                        opptjeningsperiode.getArbeidsforholdId()))
+                .findFirst();
+        Optional<LocalDate> sisteDagFørPermisjonStart = relevantYrkesaktivitet.flatMap(ya -> finnSisteDagFørPermisjonsstart(skjæringstidspunktOpptjening, opptjeningsperiode, ya));
         return sisteDagFørPermisjonStart.orElse(gjeldendePeriode.getTomDato());
     }
 
