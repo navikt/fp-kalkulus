@@ -86,6 +86,13 @@ public class KoblingRepository {
         return query.getResultList();
     }
 
+    public List<KoblingEntitet> hentAlleKoblingerForSaksnummer(Saksnummer saksnummer) {
+        TypedQuery<KoblingEntitet> query = entityManager.createQuery(
+                "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);
+        query.setParameter("saksnummer", saksnummer);
+        return query.getResultList();
+    }
+
     public Optional<KoblingEntitet> hentSisteKoblingForSaksnummer(Saksnummer saksnummer) {
         TypedQuery<KoblingEntitet> query = entityManager.createQuery(
                 "SELECT k FROM Kobling k WHERE k.saksnummer = :saksnummer order by k.opprettetTidspunkt desc", KoblingEntitet.class);

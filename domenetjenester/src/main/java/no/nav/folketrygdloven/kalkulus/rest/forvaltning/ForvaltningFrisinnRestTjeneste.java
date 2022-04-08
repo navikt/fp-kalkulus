@@ -1,4 +1,4 @@
-package no.nav.folketrygdloven.kalkulus.rest;
+package no.nav.folketrygdloven.kalkulus.rest.forvaltning;
 
 import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;

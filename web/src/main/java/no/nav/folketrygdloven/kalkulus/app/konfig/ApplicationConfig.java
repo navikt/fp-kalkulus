@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-
 import org.glassfish.jersey.server.ServerProperties;
+
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.core.jackson.TypeNameResolver;
@@ -27,11 +27,12 @@ import no.nav.folketrygdloven.kalkulus.app.exceptions.GeneralRestExceptionMapper
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonMappingExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.exceptions.JsonParseExceptionMapper;
 import no.nav.folketrygdloven.kalkulus.app.jackson.JacksonJsonConfig;
-import no.nav.folketrygdloven.kalkulus.rest.ForvaltningFrisinnRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.GrunnbeløpRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.HentKalkulusRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.MigrerAksjonspunktRestTjeneste;
 import no.nav.folketrygdloven.kalkulus.rest.OperereKalkulusRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.rest.forvaltning.DiagnostikkBeregningRestTjeneste;
+import no.nav.folketrygdloven.kalkulus.rest.forvaltning.ForvaltningFrisinnRestTjeneste;
 
 @ApplicationPath(ApplicationConfig.API_URI)
 public class ApplicationConfig extends Application {
@@ -92,6 +93,7 @@ public class ApplicationConfig extends Application {
         // forvaltning
         classes.add(ForvaltningFrisinnRestTjeneste.class);
         classes.add(MigrerAksjonspunktRestTjeneste.class);
+        classes.add(DiagnostikkBeregningRestTjeneste.class);
 
 
         return Collections.unmodifiableSet(classes);
