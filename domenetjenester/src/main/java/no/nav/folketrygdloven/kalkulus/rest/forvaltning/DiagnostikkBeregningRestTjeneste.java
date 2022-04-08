@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.DRIFT;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.k9_DRIFT;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +49,7 @@ public class DiagnostikkBeregningRestTjeneste {
     @Path("/sak")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(description = "Henter en dump av info for debugging og analyse av en sak. Logger hvem som har hatt innsyn i sak", summary = ("Henter en dump av info for debugging og analyse av en sak"), tags = "forvaltning")
-    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, resource = DRIFT)
+    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, resource = k9_DRIFT)
     public Response dumpSak(@NotNull @FormParam("saksnummer") @Parameter(description = "saksnummer", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "10")) @Valid SaksnummerDto saksnummerDto,
                             @NotNull @FormParam("begrunnelse") @Parameter(description = "begrunnelse", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "2000")) @Valid KortTekst begrunnelse) {
 
