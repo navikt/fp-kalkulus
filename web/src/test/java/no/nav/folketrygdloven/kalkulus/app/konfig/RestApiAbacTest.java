@@ -98,8 +98,8 @@ public class RestApiAbacTest {
         if (annotation != null && annotation.action() == BeskyttetRessursActionAttributt.DUMMY) {
             fail(klasse.getSimpleName() + "." + metode.getName() + " Ikke bruk DUMMY-verdi for "
                     + BeskyttetRessursActionAttributt.class.getSimpleName());
-        } else if (annotation != null && annotation.resource().isEmpty()) {
-            fail(klasse.getSimpleName() + "." + metode.getName() + " En verdi for resource må være satt!");
+        } else if (annotation != null && annotation.resource().isEmpty() && annotation.property().isEmpty()) {
+            fail(klasse.getSimpleName() + "." + metode.getName() + " En verdi for resource eller property må være satt!");
         }
     }
 
