@@ -61,6 +61,9 @@ spec:
     - name: OIDC_OPENAM_CLIENT_ID
       value: ftkalkulus-p
 
+    - name: ABAC_ATTRIBUTT_DRIFT
+      value: "no.nav.abac.attributter.k9.drift"
+
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
       value: "false"
