@@ -3,6 +3,7 @@ package no.nav.folketrygdloven.kalkulus.kopiering;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.finnPerioderSomKanKopieres;
 import static no.nav.folketrygdloven.kalkulus.kopiering.KanKopierBeregningsgrunnlag.kanKopiereForrigeGrunnlagAvklartIStegUt;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public final class SpolFramoverTjeneste {
      * @param forrigeGrunnlagFraStegUt forrige grunnlag fra steg ut
      * @return Builder for grunnlag som det skal spoles fram til
      */
-    public static Optional<BeregningsgrunnlagGrunnlagDtoBuilder> finnGrunnlagDetSkalSpolesTil(List<BeregningAvklaringsbehovResultat> avklaringsbehov,
+    public static Optional<BeregningsgrunnlagGrunnlagDtoBuilder> finnGrunnlagDetSkalSpolesTil(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
                                                                                               BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                                                               Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraSteg,
                                                                                               Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlagFraStegUt) {

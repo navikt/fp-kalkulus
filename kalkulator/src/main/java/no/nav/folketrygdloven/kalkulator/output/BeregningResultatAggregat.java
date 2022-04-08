@@ -1,8 +1,10 @@
 package no.nav.folketrygdloven.kalkulator.output;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import no.nav.folketrygdloven.kalkulator.input.BeregningsgrunnlagInput;
 import no.nav.folketrygdloven.kalkulator.modell.beregningsgrunnlag.BeregningAktivitetAggregatDto;
@@ -16,7 +18,7 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningsgrunnlagTilstand;
 
 public class BeregningResultatAggregat {
 
-    protected List<BeregningAvklaringsbehovResultat> beregningAvklaringsbehovResultater = new ArrayList<>();
+    protected Set<BeregningAvklaringsbehovResultat> beregningAvklaringsbehovResultater = new HashSet<>();
 
     protected BeregningsgrunnlagGrunnlagDto beregningsgrunnlagGrunnlag;
 
@@ -24,7 +26,7 @@ public class BeregningResultatAggregat {
 
     protected RegelSporingAggregat regelSporingAggregat;
 
-    public List<BeregningAvklaringsbehovResultat> getBeregningAvklaringsbehovResultater() {
+    public Set<BeregningAvklaringsbehovResultat> getBeregningAvklaringsbehovResultater() {
         return beregningAvklaringsbehovResultater;
     }
 
@@ -43,6 +45,11 @@ public class BeregningResultatAggregat {
 
     public Optional<RegelSporingAggregat> getRegelSporingAggregat() {
         return Optional.ofNullable(regelSporingAggregat);
+    }
+
+
+    public void leggTilAvklaringsbehov(BeregningAvklaringsbehovResultat avklaringsbehovResultat) {
+        this.beregningAvklaringsbehovResultater.add(avklaringsbehovResultat);
     }
 
     public static class Builder {
@@ -89,7 +96,7 @@ public class BeregningResultatAggregat {
         }
 
         public Builder medAvklaringsbehov(List<BeregningAvklaringsbehovResultat> beregningAvklaringsbehovResultater) {
-            this.kladd.beregningAvklaringsbehovResultater = beregningAvklaringsbehovResultater;
+            this.kladd.beregningAvklaringsbehovResultater.addAll(beregningAvklaringsbehovResultater);
             return this;
         }
 

@@ -107,6 +107,7 @@ public class BeregningStegTjeneste {
         validerIngenÅpneAvklaringsbehov(input.getKoblingId());
         var resultat = beregningsgrunnlagTjeneste.fastsettBeregningsaktiviteter(input);
         lagreOgKopier(input, resultat);
+        leggTilOverstyringHvisFinnes(input.getKoblingId(), resultat, AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSAKTIVITETER);
         lagreAvklaringsbehov(input, resultat);
         return mapTilstandResponse(input.getKoblingReferanse(), resultat);
     }
@@ -121,6 +122,7 @@ public class BeregningStegTjeneste {
     private TilstandResponse kontrollerFaktaBeregningsgrunnlag(FaktaOmBeregningInput input) {
         var beregningResultatAggregat = beregningsgrunnlagTjeneste.kontrollerFaktaBeregningsgrunnlag(input);
         lagreOgKopier(input, beregningResultatAggregat);
+        leggTilOverstyringHvisFinnes(input.getKoblingId(), beregningResultatAggregat, AvklaringsbehovDefinisjon.OVERSTYRING_AV_BEREGNINGSGRUNNLAG);
         lagreAvklaringsbehov(input, beregningResultatAggregat);
         return mapTilstandResponse(input.getKoblingReferanse(), beregningResultatAggregat);
     }
@@ -330,13 +332,13 @@ public class BeregningStegTjeneste {
 
     private void lagreAvklaringsbehov(StegProsesseringInput input, BeregningResultatAggregat
             beregningResultatAggregat) {
-            // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
-            List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
-                    .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
-                    .filter(ap -> !ap.erVentepunkt())
-                    .collect(Collectors.toList());
-            avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
-            avklaringsbehovTjeneste.gjennopprettOverstyringForSteg(input.getKoblingId(), MapTilstandTilSteg.mapTilSteg(input.getStegTilstand()));
+        // Lagrer ikke ventepunkter i kalkulus da det ikke finnes en mekanisme i k9-sak som samspiller med dette
+        List<AvklaringsbehovDefinisjon> avklaringsbehovSomLagresIKalkulus = beregningResultatAggregat.getBeregningAvklaringsbehovResultater().stream()
+                .map(BeregningAvklaringsbehovResultat::getBeregningAvklaringsbehovDefinisjon)
+                .filter(ap -> !ap.erVentepunkt())
+                .collect(Collectors.toList());
+        avklaringsbehovTjeneste.lagreAvklaringsresultater(input.getKoblingId(), avklaringsbehovSomLagresIKalkulus);
+        avklaringsbehovTjeneste.gjennopprettOverstyringForSteg(input.getKoblingId(), MapTilstandTilSteg.mapTilSteg(input.getStegTilstand()));
     }
 
     private void kontrollerIngenUløsteAvklaringsbehovFørSteg(BeregningSteg stegType, Long koblingId) {
@@ -345,6 +347,16 @@ public class BeregningStegTjeneste {
 
     private void validerIngenÅpneAvklaringsbehov(Long koblingId) {
         avklaringsbehovTjeneste.validerIngenÅpneAvklaringsbehovPåKobling(koblingId);
+    }
+
+    private void leggTilOverstyringHvisFinnes(Long koblingId, BeregningResultatAggregat beregningResultatAggregat, AvklaringsbehovDefinisjon kode) {
+        if (!kode.erOverstyring()) {
+            throw new IllegalStateException("Kan ikke legge til aksjonspunkt som ikke er overstyring utenfor en aksjonspunktutleder");
+        }
+        var overstyrAksjonspunkt = avklaringsbehovTjeneste.hentAvklaringsbehov(koblingId, kode);
+        if (overstyrAksjonspunkt.isPresent()) {
+            beregningResultatAggregat.leggTilAvklaringsbehov(BeregningAvklaringsbehovResultat.opprettFor(kode));
+        }
     }
 
 }

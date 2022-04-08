@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.kopiering;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,7 @@ class KanKopierBeregningsgrunnlag {
      * @param nyttGrunnlag Nytt beregningsgrunnlagGrunnlag
      * @param forrigeGrunnlag Forrige grunnlag som lagres i beregningsteget
      */
-    static boolean kanKopiereForrigeGrunnlagAvklartIStegUt(List<BeregningAvklaringsbehovResultat> avklaringsbehov,
+    static boolean kanKopiereForrigeGrunnlagAvklartIStegUt(Collection<BeregningAvklaringsbehovResultat> avklaringsbehov,
                                                            BeregningsgrunnlagGrunnlagDto nyttGrunnlag,
                                                            Optional<BeregningsgrunnlagGrunnlagDto> forrigeGrunnlag) {
         if (avklaringsbehov.isEmpty()) {
