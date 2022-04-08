@@ -33,7 +33,7 @@ public class DiagnostikkSakLogg extends BaseEntitet {
     @Column(name = "tjeneste", updatable = false, length = 200)
     private String tjeneste;
 
-    DiagnostikkSakLogg() {
+    public DiagnostikkSakLogg() {
         // Hibernate
     }
 
