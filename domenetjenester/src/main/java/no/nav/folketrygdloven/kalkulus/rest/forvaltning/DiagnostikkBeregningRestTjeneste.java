@@ -29,7 +29,6 @@ import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt;
 public class DiagnostikkBeregningRestTjeneste {
 
     static final String BASE_PATH = "/diagnostikk";
-    private static final String DRIFT_ROLLE_PROP = "abac.attributt.drift";
 
     private DebugDumpsters dumpsters;
     private EntityManager entityManager;
@@ -48,7 +47,7 @@ public class DiagnostikkBeregningRestTjeneste {
     @Path("/sak")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(description = "Henter en dump av info for debugging og analyse av en sak. Logger hvem som har hatt innsyn i sak", summary = ("Henter en dump av info for debugging og analyse av en sak"), tags = "diagnostikk")
-    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = DRIFT_ROLLE_PROP)
+    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
     public Response dumpSak(@NotNull @FormParam("saksnummer") @Parameter(description = "saksnummer", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "10")) @Valid SaksnummerDto saksnummerDto,
                             @NotNull @FormParam("begrunnelse") @Parameter(description = "begrunnelse", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "2000")) @Valid KortTekst begrunnelse) {
 
