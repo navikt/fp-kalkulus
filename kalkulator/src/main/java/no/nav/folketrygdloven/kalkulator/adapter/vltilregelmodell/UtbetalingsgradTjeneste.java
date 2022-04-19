@@ -51,9 +51,7 @@ public class UtbetalingsgradTjeneste {
             }
             UtbetalingsgradGrunnlag utbetalingsgradGrunnlag = (UtbetalingsgradGrunnlag) ytelsesSpesifiktGrunnlag;
             return utbetalingsgradGrunnlag.getUtbetalingsgradPrAktivitet().stream()
-                    .filter(ubtGrad -> skalIgnorereYrkesaktiv ?
-                            matcherStatusUtenIkkeYrkesaktiv(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()) :
-                            matcherStatusEllerIkkeYrkesaktiv(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
+                    .filter(ubtGrad -> matcherStatusUtenIkkeYrkesaktiv(status, ubtGrad.getUtbetalingsgradArbeidsforhold().getUttakArbeidType()))
                     .flatMap(utb -> utb.getPeriodeMedUtbetalingsgrad().stream())
                     .filter(p -> p.getPeriode().inkluderer(periode.getFomDato()))
                     .map(PeriodeMedUtbetalingsgradDto::getUtbetalingsgrad)

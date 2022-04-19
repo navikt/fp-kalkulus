@@ -19,7 +19,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump.DebugDumpsters;
 import no.nav.folketrygdloven.kalkulus.rest.forvaltning.dump.KortTekst;
-import no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessurs;
 import no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt;
 
