@@ -62,7 +62,7 @@ spec:
       value: ftkalkulus-p
 
     - name: ABAC_ATTRIBUTT_DRIFT
-      value: "no.nav.abac.attributter.k9.drift"
+      value: "no.nav.abac.attributter.resource.duplo.kalkulus.drift"
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT
