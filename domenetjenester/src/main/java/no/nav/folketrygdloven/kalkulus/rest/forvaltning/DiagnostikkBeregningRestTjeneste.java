@@ -47,7 +47,7 @@ public class DiagnostikkBeregningRestTjeneste {
     @Path("/sak")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(description = "Henter en dump av info for debugging og analyse av en sak. Logger hvem som har hatt innsyn i sak", summary = ("Henter en dump av info for debugging og analyse av en sak"), tags = "diagnostikk")
-    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "abac.attributt.drift")
+    @BeskyttetRessurs(action = BeskyttetRessursActionAttributt.READ, property = "ABAC_ATTRIBUTT_DRIFT")
     public Response dumpSak(@NotNull @FormParam("saksnummer") @Parameter(description = "saksnummer", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "10")) @Valid SaksnummerDto saksnummerDto,
                             @NotNull @FormParam("begrunnelse") @Parameter(description = "begrunnelse", allowEmptyValue = false, required = true, schema = @Schema(type = "string", maximum = "2000")) @Valid KortTekst begrunnelse) {
 
