@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Size;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.k9.felles.sikkerhet.abac.AbacDataAttributter;
 import no.nav.k9.felles.sikkerhet.abac.AbacDto;
-import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
 
 @JsonFormat(shape = Shape.OBJECT)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, fieldVisibility = Visibility.ANY, isGetterVisibility = Visibility.NONE)
@@ -61,7 +60,6 @@ public class SaksnummerDto implements AbacDto {
     @Override
     public AbacDataAttributter abacAttributter() {
         final var abacDataAttributter = AbacDataAttributter.opprett();
-        abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getVerdi().getVerdi());
         return abacDataAttributter;
     }
 
