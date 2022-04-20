@@ -32,11 +32,18 @@ public class RefusjonTidslinjeTjeneste {
 
     private static List<RefusjonAndel> lagAndelsliste(List<BeregningsgrunnlagPrStatusOgAndelDto> bgAndeler, boolean utbetalt) {
         return bgAndeler.stream()
-                .map(a -> new RefusjonAndel(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null), a.getArbeidsforholdRef().orElse(null), getBrutto(a), getRefusjonskravPrÅr(a, utbetalt)))
+                .map(a -> new RefusjonAndel(a.getAktivitetStatus(), a.getArbeidsgiver().orElse(null), a.getArbeidsforholdRef().orElse(null), getBrutto(a, utbetalt), getRefusjonskravPrÅr(a, utbetalt)))
                 .collect(Collectors.toList());
     }
 
-    private static BigDecimal getBrutto(BeregningsgrunnlagPrStatusOgAndelDto a) {
+    private static BigDecimal getBrutto(BeregningsgrunnlagPrStatusOgAndelDto a, boolean utbetalt) {
+        // Tar hensyn til om det er søkt om ytelse i original behandling. Dersom det ikke er søkt vil dagsats vere 0.
+        // Dersom man ikke ser bort fra disse vil nye søknader kunne tolkes som et tilbaketrekk fra bruker.
+        // Forklaringen på dette er at brutto > 0 selv om utbetalingsgrad = 0, men refusjonskravPrÅr = 0 når utbetalingsgrad = 0.
+        // Ref: https://jira.adeo.no/browse/TSF-2590
+        if (utbetalt && (a.getDagsats() == null || a.getDagsats() == 0L)) {
+            return BigDecimal.ZERO;
+        }
         return a.getBruttoPrÅr() == null ? BigDecimal.ZERO : a.getBruttoPrÅr();
     }
 

@@ -158,6 +158,8 @@ class RefusjonTidslinjeTjenesteTest {
                               int bruttoPrÅr, int refusjonskravPrÅr) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
+                .medRedusertBrukersAndelPrÅr(refusjonskravPrÅr > bruttoPrÅr ? BigDecimal.ZERO : BigDecimal.valueOf(bruttoPrÅr - refusjonskravPrÅr))
+                .medRedusertRefusjonPrÅr(refusjonskravPrÅr > bruttoPrÅr ? BigDecimal.valueOf(bruttoPrÅr) : BigDecimal.valueOf(refusjonskravPrÅr))
                 .medBeregnetPrÅr(BigDecimal.valueOf(bruttoPrÅr));
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()

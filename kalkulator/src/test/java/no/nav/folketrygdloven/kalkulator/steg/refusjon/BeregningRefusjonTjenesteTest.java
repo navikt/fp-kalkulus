@@ -646,6 +646,8 @@ class BeregningRefusjonTjenesteTest {
                               double bruttoPrÅr, double refusjonskravPrÅr) {
         BeregningsgrunnlagPrStatusOgAndelDto.Builder andelBuilder = BeregningsgrunnlagPrStatusOgAndelDto.ny()
                 .medAktivitetStatus(aktivitetStatus)
+                .medRedusertBrukersAndelPrÅr(BigDecimal.valueOf(bruttoPrÅr - refusjonskravPrÅr))
+                .medRedusertRefusjonPrÅr(BigDecimal.valueOf(refusjonskravPrÅr))
                 .medBeregnetPrÅr(BigDecimal.valueOf(bruttoPrÅr));
         if (ag != null) {
             BGAndelArbeidsforholdDto.Builder bgAndelArbeidsforholdBuilder = BGAndelArbeidsforholdDto.builder()
