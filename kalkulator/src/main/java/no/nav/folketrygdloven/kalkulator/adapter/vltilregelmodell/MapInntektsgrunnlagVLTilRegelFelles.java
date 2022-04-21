@@ -355,6 +355,7 @@ public class MapInntektsgrunnlagVLTilRegelFelles extends MapInntektsgrunnlagVLTi
                 .medInntektskildeOgPeriodeType(Inntektskilde.YTELSE_VEDTAK)
                 .medInntektskategori(Inntektskategori.valueOf(a.getInntektskategori().getKode()))
                 .medPeriode(Periode.of(ya.getAnvistFOM(), ya.getAnvistTOM()))
+                .medUtbetalingsfaktor(BigDecimal.ONE)
                 .build();
     }
 
