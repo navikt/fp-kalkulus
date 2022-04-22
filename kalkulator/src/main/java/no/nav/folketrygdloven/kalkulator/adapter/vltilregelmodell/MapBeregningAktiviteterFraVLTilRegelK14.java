@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import no.nav.folketrygdloven.kalkulator.modell.iay.YrkesaktivitetDto;
 import no.nav.folketrygdloven.kalkulator.modell.opptjening.OpptjeningAktiviteterDto;
 import no.nav.folketrygdloven.kalkulator.modell.typer.Arbeidsgiver;
 import no.nav.folketrygdloven.kalkulator.tid.Intervall;
+import no.nav.folketrygdloven.kalkulus.kodeverk.PermisjonsbeskrivelseType;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivPeriode;
 import no.nav.folketrygdloven.skjæringstidspunkt.regelmodell.AktivitetStatusModell;
 import no.nav.fpsak.tidsserie.LocalDateInterval;
@@ -33,6 +35,9 @@ import no.nav.fpsak.tidsserie.LocalDateInterval;
 @FagsakYtelseTypeRef("SVP")
 public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAktiviteterFraVLTilRegel {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBeregningAktiviteterFraVLTilRegelK14.class);
+    private static final Set<PermisjonsbeskrivelseType> PERMISJONTYPER_SOM_IKKE_ER_RELEVANTE = Set.of(
+            PermisjonsbeskrivelseType.UTDANNINGSPERMISJON,
+            PermisjonsbeskrivelseType.PERMISJON_MED_FORELDREPENGER);
 
     @Override
     public AktivitetStatusModell mapForSkjæringstidspunkt(FastsettBeregningsaktiviteterInput input) {
@@ -107,6 +112,7 @@ public class MapBeregningAktiviteterFraVLTilRegelK14 implements MapBeregningAkti
     private Optional<LocalDate> finnSisteDagFørPermisjonsstart(LocalDate skjæringstidspunktOpptjening, OpptjeningAktiviteterDto.OpptjeningPeriodeDto opptjeningsperiode, YrkesaktivitetDto relevantYrkesaktivitet) {
         return relevantYrkesaktivitet.getPermisjoner()
                 .stream()
+                .filter(p -> !PERMISJONTYPER_SOM_IKKE_ER_RELEVANTE.contains(p.getPermisjonsbeskrivelseType()))
                 .filter(p -> p.getPeriode().getTomDato() != null && !p.getPeriode().getTomDato().equals(LocalDateInterval.TIDENES_ENDE)
                         && p.getProsentsats() != null && p.getProsentsats().compareTo(BigDecimal.valueOf(100)) == 0 &&
                         p.getPeriode().inkluderer(skjæringstidspunktOpptjening)
