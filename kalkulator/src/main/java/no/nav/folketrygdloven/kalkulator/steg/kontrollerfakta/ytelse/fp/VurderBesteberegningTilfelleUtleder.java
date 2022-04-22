@@ -21,7 +21,8 @@ import no.nav.folketrygdloven.kalkulus.kodeverk.OpptjeningAktivitetType;
 @FagsakYtelseTypeRef("FP")
 @FaktaOmBeregningTilfelleRef("VURDER_BESTEBEREGNING")
 public class VurderBesteberegningTilfelleUtleder implements TilfelleUtleder {
-    private static final Set<OpptjeningAktivitetType> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES = Set.of(OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER, OpptjeningAktivitetType.SYKEPENGER);
+    private static final Set<OpptjeningAktivitetType> AKTIVITETER_SOM_KAN_AUTOMATISK_BESTEBEREGNES = Set.of(OpptjeningAktivitetType.ARBEID, OpptjeningAktivitetType.DAGPENGER, OpptjeningAktivitetType.SYKEPENGER,
+            OpptjeningAktivitetType.FORELDREPENGER, OpptjeningAktivitetType.SVANGERSKAPSPENGER);
 
     public static final String TOGGLE_BESTEBEREGNING = "automatisk-besteberegning";
 
