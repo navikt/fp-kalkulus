@@ -67,12 +67,6 @@ jobs:
           docker push ${IMAGE_BASE_CR}:${TAG}
           docker push ${IMAGE_BASE_CR}:latest
 
-      - name: Release Drafter
-        uses: release-drafter/release-drafter@v5
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
-
       - name: Lukk gamle issues
         uses: actions/github-script@v6
         with:
