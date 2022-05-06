@@ -1,5 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
         if (attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID).isEmpty()) {
             Optional<AktørId> aktørId = utledAktørId(attributter);
-            aktørId.ifPresent(id -> pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, id));
+            aktørId.map(List::of).ifPresent(id -> pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, id));
         } else {
             pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
         }
