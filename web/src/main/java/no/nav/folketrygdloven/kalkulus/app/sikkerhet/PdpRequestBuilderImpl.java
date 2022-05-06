@@ -30,7 +30,7 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
     }
 
     @Inject
-    public PdpRequestBuilderImpl(@KonfigVerdi(value = "ABAC_DOMAIN") String abacDomain) {
+    public PdpRequestBuilderImpl(@KonfigVerdi(value = "abac.domain") String abacDomain) {
         this.abacDomain = abacDomain;
     }
 
