@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.app.sikkerhet;
 
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
@@ -24,6 +26,7 @@ import no.nav.k9.felles.sikkerhet.abac.StandardAbacAttributtType;
 @Priority(2)
 public class PdpRequestBuilderImpl implements PdpRequestBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PdpRequestBuilderImpl.class);
     private String abacDomain;
 
     public PdpRequestBuilderImpl() {
@@ -41,8 +44,10 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
         pdpRequest.put(AbacAttributter.XACML_1_0_ACTION_ACTION_ID, attributter.getActionType().getEksternKode());
         pdpRequest.put(AbacAttributter.RESOURCE_FELLES_DOMENE, abacDomain);
         pdpRequest.put(AbacAttributter.RESOURCE_FELLES_RESOURCE_TYPE, attributter.getResource());
-        pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
-        pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_FNR, attributter.getVerdier(StandardAbacAttributtType.FNR));
+
+        if (!attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID).isEmpty()) {
+            pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
+        }
 
         var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream().map(AvklaringsbehovDefinisjon::fraKode)
                 .map(AvklaringsbehovDefinisjon::getAvklaringsbehovType)
@@ -50,6 +55,7 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
                 .collect(Collectors.toSet());
 
         if (!aksjonspunktTyper.isEmpty()) {
+            LOG.info(aksjonspunktTyper.toString());
             pdpRequest.put(AbacAttributter.RESOURCE_K9_SAK_AKSJONSPUNKT_TYPE, aksjonspunktTyper);
         }
 

@@ -8,6 +8,7 @@ import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UP
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,7 @@ import no.nav.folketrygdloven.kalkulus.request.v1.BeregnListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.BeregningsgrunnlagRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningListeRequest;
+import no.nav.folketrygdloven.kalkulus.request.v1.HåndterBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningListeRequest;
 import no.nav.folketrygdloven.kalkulus.request.v1.KopierBeregningRequest;
 import no.nav.folketrygdloven.kalkulus.response.v1.KalkulusRespons;
@@ -284,7 +286,7 @@ public class OperereKalkulusRestTjeneste {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(value = JsonInclude.Include.NON_ABSENT, content = JsonInclude.Include.NON_EMPTY)
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
-    public static class HåndterBeregningListeRequestAbacDto extends HåndterBeregningListeRequest implements AbacDto {
+    public class HåndterBeregningListeRequestAbacDto extends HåndterBeregningListeRequest implements AbacDto {
 
         public HåndterBeregningListeRequestAbacDto() {
             // Jackson
@@ -295,7 +297,16 @@ public class OperereKalkulusRestTjeneste {
             final var abacDataAttributter = AbacDataAttributter.opprett();
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
+            var aktørIder = getAktørIder();
+            aktørIder.forEach(id -> abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, id));
             return abacDataAttributter;
+        }
+
+        private Set<AktørId> getAktørIder() {
+            return koblingTjeneste.hentKoblinger(getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getEksternReferanse).map(KoblingReferanse::new).collect(Collectors.toSet()))
+                    .stream()
+                    .map(KoblingEntitet::getAktørId)
+                    .collect(Collectors.toSet());
         }
     }
 
