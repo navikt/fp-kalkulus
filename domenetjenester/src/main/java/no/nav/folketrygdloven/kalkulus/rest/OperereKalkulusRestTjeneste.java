@@ -296,7 +296,8 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
-            abacDataAttributter.leggTil(StandardAbacAttributtType.AKSJONSPUNKT_KODE, getAksjonspunktKoder());
+            var aksjonspunktKoder = getAksjonspunktKoder();
+            aksjonspunktKoder.forEach(it -> abacDataAttributter.leggTil(StandardAbacAttributtType.AKSJONSPUNKT_KODE, it));
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;

@@ -60,7 +60,8 @@ public class PdpRequestBuilderImpl implements PdpRequestBuilder {
             pdpRequest.put(AbacAttributter.RESOURCE_FELLES_PERSON_AKTOERID_RESOURCE, attributter.getVerdier(StandardAbacAttributtType.AKTØR_ID));
         }
 
-        var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream().map(AvklaringsbehovDefinisjon::fraKode)
+        var aksjonspunktTyper = attributter.getVerdier(StandardAbacAttributtType.AKSJONSPUNKT_KODE).stream()
+                .map(AvklaringsbehovDefinisjon::fraKode)
                 .map(AvklaringsbehovDefinisjon::getAvklaringsbehovType)
                 .map(AvklaringsbehovType::getNavn) // Antar her at AvklaringsbehovType stemmer overens med offisiellKode fra AksjonspunktType
                 .collect(Collectors.toSet());
