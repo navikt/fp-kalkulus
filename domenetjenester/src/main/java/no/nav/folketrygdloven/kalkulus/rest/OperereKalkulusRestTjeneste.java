@@ -8,7 +8,6 @@ import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UP
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,8 +40,10 @@ import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.KoblingRef
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.del_entiteter.Saksnummer;
 import no.nav.folketrygdloven.kalkulus.domene.entiteter.kobling.KoblingEntitet;
 import no.nav.folketrygdloven.kalkulus.felles.v1.PersonIdent;
+import no.nav.folketrygdloven.kalkulus.håndtering.v1.HåndterBeregningDto;
 import no.nav.folketrygdloven.kalkulus.kobling.KoblingTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.BeregningSteg;
+import no.nav.folketrygdloven.kalkulus.kodeverk.HåndteringKode;
 import no.nav.folketrygdloven.kalkulus.kodeverk.StegType;
 import no.nav.folketrygdloven.kalkulus.kodeverk.YtelseTyperKalkulusStøtterKontrakt;
 import no.nav.folketrygdloven.kalkulus.kopiering.KopierBeregningsgrunnlagTjeneste;
@@ -295,9 +296,17 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
+            abacDataAttributter.leggTil(StandardAbacAttributtType.AKSJONSPUNKT_KODE, getAksjonspunktKoder());
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
+        }
+
+        private List<String> getAksjonspunktKoder() {
+            return getHåndterBeregningListe().stream().map(HåndterBeregningRequest::getHåndterBeregning)
+                    .map(HåndterBeregningDto::getKode)
+                    .map(HåndteringKode::getKode)
+                    .collect(Collectors.toList());
         }
 
     }
