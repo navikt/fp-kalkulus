@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -36,6 +37,10 @@ public class BeregnListeRequest implements KalkulusRequest {
     @Valid
     private String saksnummer;
 
+    @JsonProperty(value = "behandlingUuid", required = true)
+    @Valid
+    private UUID behandlingUuid;
+
     @JsonProperty(value = "aktør", required = true)
     @NotNull
     @Valid
@@ -66,11 +71,13 @@ public class BeregnListeRequest implements KalkulusRequest {
 
     @JsonCreator
     public BeregnListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
+                              @JsonProperty(value = "behandlingUuid") UUID behandlingUuid,
                               @JsonProperty(value = "aktør", required = true) PersonIdent aktør,
                               @JsonProperty(value = "ytelseSomSkalBeregnes", required = true) YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                               @JsonProperty(value = "stegType", required = true) StegType stegType,
                               @JsonProperty(value = "beregnForListe") List<BeregnForRequest> beregnForListe) {
         this.saksnummer = saksnummer;
+        this.behandlingUuid = behandlingUuid;
         this.aktør = aktør;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.stegType = stegType;
@@ -80,6 +87,11 @@ public class BeregnListeRequest implements KalkulusRequest {
     @Override
     public String getSaksnummer() {
         return saksnummer;
+    }
+
+    @Override
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
     }
 
     public PersonIdent getAktør() {

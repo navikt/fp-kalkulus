@@ -50,7 +50,7 @@ spec:
     - name: LOADBALANCER_URL
       value: https://ftkalkulus.nais.adeo.no
     - name: ABAC_PDP_ENDPOINT_URL
-      value: http://abac-duplo.default/application/authorize
+      value: http://abac-k9.default/application/authorize
     - name: SECURITYTOKENSERVICE_URL
       value: https://sts.adeo.no/SecurityTokenServiceProvider/
     # Sikkerhet
@@ -61,8 +61,14 @@ spec:
     - name: OIDC_OPENAM_CLIENT_ID
       value: ftkalkulus-p
 
+    - name: ABAC_DOMAIN
+      value: "k9"
     - name: ABAC_ATTRIBUTT_DRIFT
-      value: "no.nav.abac.attributter.resource.duplo.kalkulus.drift"
+      value: "no.nav.abac.attributter.k9.drift"
+    - name: ABAC_ATTRIBUTT_BEREGNINGSGRUNNLAG
+      value: "no.nav.abac.attributter.k9.beregningsgrunnlag"
+    - name: ABAC_ATTRIBUTT_FAGSAK
+      value: "no.nav.abac.attributter.k9.fagsak"
 
     # Feature-flag
     - name: PSB_TILKOMMET_INNTEKT

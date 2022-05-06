@@ -1,7 +1,9 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
+import java.rmi.server.UID;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,14 +37,20 @@ public class BeregningsgrunnlagListeRequest implements KalkulusRequest {
     @Valid
     private String saksnummer;
 
+    @JsonProperty(value = "behandlingUuid", required = true)
+    @Valid
+    private UUID behandlingUuid;
+
     protected BeregningsgrunnlagListeRequest() {
     }
 
     @JsonCreator
-    public BeregningsgrunnlagListeRequest(@JsonProperty(value = "saksnummer", required = true) @NotNull @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'") @Valid String saksnummer,
-                                          @JsonProperty(value = "beregningsgrunnlagRequest", required = true) @Valid @NotNull List<BeregningsgrunnlagRequest> requestPrReferanse) {
+    public BeregningsgrunnlagListeRequest(@JsonProperty(value = "saksnummer", required = true) String saksnummer,
+                                          @JsonProperty(value = "beregningsgrunnlagRequest", required = true) List<BeregningsgrunnlagRequest> requestPrReferanse,
+                                          @JsonProperty(value = "behandlingUuid") UUID behandlingUuid) {
         this.beregningsgrunnlagRequest = Objects.requireNonNull(requestPrReferanse, "requestPrReferanse");
         this.saksnummer = Objects.requireNonNull(saksnummer, "saksnummer");
+        this.behandlingUuid = behandlingUuid;
     }
 
     public List<BeregningsgrunnlagRequest> getRequestPrReferanse() {
@@ -52,5 +60,10 @@ public class BeregningsgrunnlagListeRequest implements KalkulusRequest {
     @Override
     public String getSaksnummer() {
         return saksnummer;
+    }
+
+    @Override
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
     }
 }

@@ -1,8 +1,15 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.k9_DRIFT;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -14,14 +21,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import no.nav.folketrygdloven.kalkulus.forvaltning.AksjonspunktMigreringTjeneste;
 import no.nav.folketrygdloven.kalkulus.kodeverk.AvklaringsbehovDefinisjon;
 import no.nav.folketrygdloven.kalkulus.request.v1.migrerAksjonspunkt.MigrerAksjonspunktListeRequest;
@@ -52,7 +51,7 @@ public class MigrerAksjonspunktRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/migrerAksjonspunkter")
     @Operation(description = "Migrerer/kopierer aksjonspunkt fra k9-sak til ft-kalkulus", tags = "migrerAksjonspunkt", summary = ("Migrerer aksjonspunkt."))
-    @BeskyttetRessurs(action = CREATE, resource = k9_DRIFT)
+    @BeskyttetRessurs(action = CREATE, property = DRIFT)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response migrerAksjonspunkt(@NotNull @Valid MigrerAksjonspunktListeRequestAbacDto spesifikasjon) {
         var avklaringsbehovDefinisjon = AvklaringsbehovDefinisjon.fraKode(spesifikasjon.getAvklaringsbehovKode());

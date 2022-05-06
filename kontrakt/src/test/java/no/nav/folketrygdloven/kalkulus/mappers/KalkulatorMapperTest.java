@@ -86,7 +86,7 @@ public class KalkulatorMapperTest {
 
         UuidDto koblingReferanse = new UuidDto(UUID.randomUUID());
         BeregnListeRequest spesifikasjon = new BeregnListeRequest(
-                saksnummer, dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
+                saksnummer, UUID.randomUUID(), dummy, YtelseTyperKalkulusStøtterKontrakt.PLEIEPENGER_SYKT_BARN,
                 StegType.FASTSETT_STP_BER,
                 List.of(new BeregnForRequest(koblingReferanse.toUuidReferanse(), List.of(UUID.randomUUID()), kalkulatorInputDto, null)));
 

@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest.forvaltning;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.DRIFT;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.DRIFT;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.math.RoundingMode;
@@ -63,7 +63,7 @@ public class ForvaltningFrisinnRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Kontroller beregningsinput", summary = ("Kontrollerer input for beregning for en liste med saksnummer."), tags = "frisinnForvaltning")
-    @BeskyttetRessurs(action = READ, resource = DRIFT)
+    @BeskyttetRessurs(action = READ, property = DRIFT)
     @Path("/kontrollerInput")
     public Response hentGrunnbeløp(@NotNull @Valid KontrollerInputForSakerRequestAbacDto spesifikasjon) {
         List<DiffResultatDto> differ = new ArrayList<>();

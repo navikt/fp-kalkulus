@@ -67,6 +67,10 @@ public enum AvklaringsbehovType implements Kodeverdi {
         return KODEVERK;
     }
 
+    public String getNavn() {
+        return navn;
+    }
+
     @JsonCreator(mode = Mode.DELEGATING)
     public static AvklaringsbehovType fraKode(Object node) {
         if (node == null) {

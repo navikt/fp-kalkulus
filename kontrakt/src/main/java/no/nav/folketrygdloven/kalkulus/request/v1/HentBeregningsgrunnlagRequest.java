@@ -36,12 +36,16 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
 
     @JsonProperty(value = "inkluderRegelSporing", required = false)
     private boolean inkluderRegelSporing;
-    
+
     //TODO: set saksnummer required + @NotNull når fpsak/k9-sak er oppdatert
     @JsonProperty(value = "saksnummer", required = false)
     @Pattern(regexp = "^[A-Za-z0-9_.\\-:]+$", message = "'${validatedValue}' matcher ikke tillatt pattern '{value}'")
     @Valid
     private String saksnummer;
+
+    @JsonProperty(value = "behandlingUuid", required = true)
+    @Valid
+    private UUID behandlingUuid;
 
     protected HentBeregningsgrunnlagRequest() {
         // default ctor
@@ -49,10 +53,12 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
 
     public HentBeregningsgrunnlagRequest(@Valid @NotNull UUID eksternReferanse,
                                          @Valid String saksnummer,
+                                         @Valid UUID behandlingUuid,
                                          @NotNull @Valid YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes) {
 
         this.eksternReferanse = eksternReferanse;
         this.saksnummer = saksnummer;
+        this.behandlingUuid = behandlingUuid;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
     }
 
@@ -78,10 +84,14 @@ public class HentBeregningsgrunnlagRequest implements KalkulusRequest {
     public boolean getInkluderRegelSporing() {
         return inkluderRegelSporing;
     }
-    
+
     @Override
     public String getSaksnummer() {
         return saksnummer;
     }
 
+    @Override
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
+    }
 }

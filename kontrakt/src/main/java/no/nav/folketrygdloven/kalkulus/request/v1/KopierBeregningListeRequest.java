@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.request.v1;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -33,6 +34,10 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @Valid
     private String saksnummer;
 
+    @JsonProperty(value = "behandlingUuid", required = true)
+    @Valid
+    private UUID behandlingUuid;
+
     @JsonProperty(value = "ytelseSomSkalBeregnes", required = true)
     @NotNull
     @Valid
@@ -57,10 +62,12 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
 
     @JsonCreator
     public KopierBeregningListeRequest(String saksnummer,
+                                       UUID behandlingUuid,
                                        YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                        StegType stegType,
                                        List<KopierBeregningRequest> kopierBeregningListe) {
         this.saksnummer = saksnummer;
+        this.behandlingUuid = behandlingUuid;
         this.ytelseSomSkalBeregnes = ytelseSomSkalBeregnes;
         this.stegType = stegType;
         this.kopierBeregningListe = kopierBeregningListe;
@@ -69,6 +76,11 @@ public class KopierBeregningListeRequest implements KalkulusRequest {
     @Override
     public String getSaksnummer() {
         return saksnummer;
+    }
+
+    @Override
+    public UUID getBehandlingUuid() {
+        return behandlingUuid;
     }
 
     public YtelseTyperKalkulusStøtterKontrakt getYtelseSomSkalBeregnes() {

@@ -1,6 +1,7 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.FAGSAK;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.CREATE;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.UPDATE;
 
@@ -100,7 +101,7 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Utfører beregning basert på reqest", tags = "beregn", summary = ("Starter en beregning basert på gitt input."), responses = {
             @ApiResponse(description = "Liste med avklaringsbehov som har oppstått per angitt eksternReferanse", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TilstandResponse.class)))
     })
-    @BeskyttetRessurs(action = CREATE, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = CREATE, property = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response beregn(@NotNull @Valid BeregnListeRequestAbacDto spesifikasjon) {
         var saksnummer = new Saksnummer(spesifikasjon.getSaksnummer());
@@ -129,7 +130,7 @@ public class OperereKalkulusRestTjeneste {
             summary = ("Kopierer en beregning."), responses = {
             @ApiResponse(description = "Liste med kopierte referanser dersom alle koblinger er kopiert", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = KopiResponse.class)))
     })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = UPDATE, property = BEREGNINGSGRUNNLAG)
     public Response kopierBeregning(@NotNull @Valid KopierBeregningListeRequestAbacDto spesifikasjon) {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
         kopierTjeneste.kopierGrunnlagOgOpprettKoblinger(
@@ -150,7 +151,7 @@ public class OperereKalkulusRestTjeneste {
     @Operation(description = "Oppdaterer beregningsgrunnlag for oppgitt liste", tags = "beregn", summary = ("Oppdaterer beregningsgrunnlag basert på løsning av avklaringsbehov for oppgitt liste."), responses = {
             @ApiResponse(description = "Liste med endringer som ble gjort under oppdatering", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = OppdateringListeRespons.class)))
     })
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = UPDATE, property = FAGSAK)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response oppdaterListe(@NotNull @Valid HåndterBeregningListeRequestAbacDto spesifikasjon) {
         MDC.put("prosess_saksnummer", spesifikasjon.getSaksnummer());
@@ -175,7 +176,7 @@ public class OperereKalkulusRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/deaktiver/bolk")
     @Operation(description = "Deaktiverer aktivt beregningsgrunnlag. Nullstiller beregning.", tags = "deaktiver", summary = ("Deaktiverer aktivt beregningsgrunnlag."))
-    @BeskyttetRessurs(action = UPDATE, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = UPDATE, property = BEREGNINGSGRUNNLAG)
     @SuppressWarnings("findsecbugs:JAXRS_ENDPOINT")
     public Response deaktiverBeregningsgrunnlag(@NotNull @Valid DeaktiverBeregningsgrunnlagRequestAbacDto spesifikasjon) {
         String saksnummer = spesifikasjon.getSaksnummer();
@@ -210,18 +211,20 @@ public class OperereKalkulusRestTjeneste {
         }
 
         public BeregnListeRequestAbacDto(String saksnummer,
+                                         UUID behandlingUuid,
                                          PersonIdent aktør,
                                          YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                          StegType stegType,
                                          List<BeregnForRequest> beregnForListe) {
-            super(saksnummer, aktør, ytelseSomSkalBeregnes, stegType, beregnForListe);
+            super(saksnummer, behandlingUuid, aktør, ytelseSomSkalBeregnes, stegType, beregnForListe);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             var abacDataAttributter = AbacDataAttributter.opprett();
-
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBeregnForListe().stream().map(BeregnForRequest::getEksternReferanse).collect(Collectors.toList()));
+            if (getBehandlingUuid() != null) {
+                abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            }
             abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter.leggTil(StandardAbacAttributtType.AKTØR_ID, getAktør().getIdent());
         }
@@ -236,16 +239,20 @@ public class OperereKalkulusRestTjeneste {
         }
 
         public KopierBeregningListeRequestAbacDto(String saksnummer,
+                                                  UUID behandlingUuid,
                                                   YtelseTyperKalkulusStøtterKontrakt ytelseSomSkalBeregnes,
                                                   List<KopierBeregningRequest> kopierBeregningListe, StegType stegType) {
-            super(saksnummer, ytelseSomSkalBeregnes, stegType, kopierBeregningListe);
+            super(saksnummer, behandlingUuid, ytelseSomSkalBeregnes, stegType, kopierBeregningListe);
         }
 
 
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getKopierBeregningListe().stream().map(KopierBeregningRequest::getEksternReferanse).collect(Collectors.toList()));
+            if (getBehandlingUuid() != null) {
+                abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            }
+            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
         }
     }
@@ -258,15 +265,18 @@ public class OperereKalkulusRestTjeneste {
         public DeaktiverBeregningsgrunnlagRequestAbacDto() {
         }
 
-        public DeaktiverBeregningsgrunnlagRequestAbacDto(String saksnummer, List<BeregningsgrunnlagRequest> requestPrReferanse) {
-            super(saksnummer, requestPrReferanse);
+        public DeaktiverBeregningsgrunnlagRequestAbacDto(String saksnummer, List<BeregningsgrunnlagRequest> requestPrReferanse, UUID behandlingUuid) {
+            super(saksnummer, requestPrReferanse, behandlingUuid);
         }
 
         @Override
         public AbacDataAttributter abacAttributter() {
             var abacDataAttributter = AbacDataAttributter.opprett();
             List<UUID> eksternReferanser = getRequestPrReferanse().stream().map(BeregningsgrunnlagRequest::getKoblingReferanse).collect(Collectors.toList());
-            abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, eksternReferanser);
+            if (getBehandlingUuid() != null) {
+                abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            }
+            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
         }
     }
@@ -283,8 +293,8 @@ public class OperereKalkulusRestTjeneste {
         @Override
         public AbacDataAttributter abacAttributter() {
             final var abacDataAttributter = AbacDataAttributter.opprett();
-
             abacDataAttributter.leggTil(StandardAbacAttributtType.BEHANDLING_UUID, getBehandlingUuid());
+            abacDataAttributter.leggTil(StandardAbacAttributtType.SAKSNUMMER, getSaksnummer());
             return abacDataAttributter;
         }
     }

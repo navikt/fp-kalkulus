@@ -1,6 +1,6 @@
 package no.nav.folketrygdloven.kalkulus.rest;
 
-import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributt.BEREGNINGSGRUNNLAG;
+import static no.nav.folketrygdloven.kalkulus.sikkerhet.KalkulusBeskyttetRessursAttributtMiljøvariabel.BEREGNINGSGRUNNLAG;
 import static no.nav.k9.felles.sikkerhet.abac.BeskyttetRessursActionAttributt.READ;
 
 import java.time.LocalDate;
@@ -68,7 +68,7 @@ public class GrunnbeløpRestTjeneste {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Hent grunnbeløp for angitt dato", summary = ("Returnerer grunnbeløp for dato."), tags = "grunnbelop")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
     @Path("/grunnbelop")
     public Response hentGrunnbeløp(@NotNull @Valid HentGrunnbeløpRequestAbacDto spesifikasjon) {
         BeregningSats grunnbeløp = beregningsgrunnlagRepository.finnGrunnbeløp(spesifikasjon.getDato());
@@ -80,7 +80,7 @@ public class GrunnbeløpRestTjeneste {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(description = "Verifiserer grunnbeløpet på et grunnlag, og kontrollerer at grunnbeløpet som er brukt fortsatt er korrekt.",
             summary = ("Returnerer en liste over koblinger og status for gregulering for hver kobling."), tags = "grunnbelop")
-    @BeskyttetRessurs(action = READ, resource = BEREGNINGSGRUNNLAG)
+    @BeskyttetRessurs(action = READ, property = BEREGNINGSGRUNNLAG)
     @Path("/kontrollerGregulering")
     public Response hentGrunnbeløp(@NotNull @Valid KontrollerGrunnbeløpRequestAbacDto spesifikasjon) {
         List<UUID> referanser = spesifikasjon.getKoblinger();
